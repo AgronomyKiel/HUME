@@ -1,4 +1,4 @@
-unit UMod;
+ï»¿unit UMod;
 
 {$IFDEF LINUX}
 {$DEFINE NONVISUAL}
@@ -12,7 +12,6 @@ interface
 uses
   //AdvGrid,
   SysUtils, Classes,
-  //Dialogs, Graphics, Controls, comctrls, ExtCtrls,
   System.IniFiles,
   System.UITypes,
   // DesignEditors,
@@ -23,7 +22,8 @@ uses
   UMeasValue, // HUME: MeasValue and TMeasList, handling measurement data
   UModUtils, // HUME: string routines and numerical routines
   {$IFNDEF NONVISUAL}
-  Windows, Messages,
+  Windows,
+  Messages,
   vcl.controls,
   vcl.ComCtrls,
   vcl.Graphics,
@@ -57,9 +57,17 @@ type
   TOptOption = (optAllInis, optAllInisSeperate, optOnlyActIni);
   /// Options for parameter Optimization
 
+  TContOutput  = (NoContOutput,
+                AllContoutput,
+                SubmodelSpecific); /// Options for continous output
+
 const
   ModelElementNames: TModelElementNames = ('State Variables', 'Variables',
     'Parameters', 'Exernal Values', 'Constants');
+
+  Path_sep =  '/';
+
+
   /// strings for Model element names
 
 type
@@ -128,31 +136,39 @@ type
     FDPar: real;
     Sens_f: textFile;
     /// Textfile variable for output
-    FSens_fn: TMyFileName;
+    FSens_fn: string;//TMyFileName;
     /// output file name for sensitivity data
     // MultSens_f_final, MultSens_f_cont: textFile;
 
-    procedure SetMAxValue(const MaxValue: real);
-    procedure SetMinValue(const MinValue: real);
-    procedure SetSteps(const Steps: Integer);
+    procedure SetMAxValue(const MaxValue: real); /// Sets maximum value during sensitivity analysis
+    procedure SetMinValue(const MinValue: real); /// Sets minimum value during sensitivity analysis
+    procedure SetSteps(const Steps: Integer);/// Sets number of steps of sensitivity analysis
   protected
   public
-    SelSenspar: TPar;
-    /// Parameter selected for sensitivity analysis
-    FOutList: TStringList;
-    /// Variables selected for output
-    MultSens_fn_final, MultSens_fn_cont: TMyFileName;
+    SelSenspar: TPar;        /// Parameter selected for sensitivity analysis
+    FOutList: TStringList;   /// Variables selected for output
+    MultSens_fn_final,
+     MultSens_fn_cont: string;//TMyFileName;
     constructor create(Model: TMod);
   published
+    /// properties for sensitivity analysis
     property MaxValue: real read FMaxValue write SetMAxValue;
     property MinValue: real read FMinValue write SetMinValue;
     property Steps: Integer read FSteps write SetSteps;
     property DPar: real read FDPar write FDPar;
     property OutList: TStringList read FOutList write FOutList;
-    property Sens_fn: TMyFileName read FSens_fn write FSens_fn;
+    property Sens_fn: string read FSens_fn write FSens_fn;
   end;
 
-  TSubmodel = class;
+  TSubmodel = class; /// abstract base type for a model component
+
+  { * -----------------------------------------------------------------
+    CLASS     TMod
+    ANCESTOR  TGraphicControl
+    PURPOSE   Basic model integrator and control module:
+    Provides routines for simulation process control,
+    parameter estimation and statistical quality control
+    ------------------------------------------------------------------ }
 
   { * -----------------------------------------------------------------
     CLASS     TMod
@@ -163,40 +179,34 @@ type
     ------------------------------------------------------------------ }
 // {$UNDEF NONVISUAL}
 {$IFDEF NONVISUAL}
-
-  TMod = class(TObject)
+/// class for coordinating the simulation of a model
+  TMod = class(TObject) /// from TObject if nonvisual
 {$ELSE}
-  TMod = class(TGraphicControl)
+  TMod = class(TGraphicControl) //7 from TGraphicControl if visual
 {$ENDIF}
   private
     fName : string; /// Name of Model
-    EXE_DIR: string;
+    EXE_DIR: string; /// directory where program file is located
     /// directory where program file is located
-    FApplicationPath: TPath;
+    FApplicationPath: TPath; /// directory where program file is located
     ///
 //    fParent: TWinControl;
 {$IFNDEF NONVISUAL}
-    fStatusBar: TStatusBar;
+    fStatusBar: TStatusBar; /// status bar in Main Formular Simulation info
 {$ENDIF}
     /// field for adress of status bar on main model formula
     FTitle: string;
     /// Modeltitle
 //    fControlFile: textFile;
     /// ControlFile containing list of Inifiles to be executed
-    fControlFileFn: TMyFileName;
-    /// Name for controlfile
-    FReg_FN: TMyFileName;
-    /// Name of file where regression results are stored
-    fDocu_FN: TMyFileName;
-    /// Name of file where Model documentation is stored
-    fDocu_FN2: TMyFileName;
-    /// Name of file where Model documentation 2 is stored
+    fControlFileFn: string; //TMyFileName; /// Name for controlfile
+    FReg_FN: string;//TMyFileName; /// Name of file where regression results are stored
+    fDocu_FN: string;//TMyFileName;  /// Name of file where Model documentation is stored
+    fDocu_FN2: string; // TMyFileName; /// Name of file where Model documentation 2 is stored
     fFNGlobalOutput: string; /// file name for global Output
 ///
-    FOutputPath: TPath;
-    /// default directory for output
-    fReadIniOutputPath: boolean;
-    /// flag for
+    FOutputPath: TPath; /// default directory for output
+    fReadIniOutputPath: boolean; /// flag for
     FInputPath: TPath;
     /// Default directory for input
     FSeparatorChar: Char;
@@ -209,8 +219,6 @@ type
     /// End of simulation
     FSensOptions: TSensitivityOptions;
     /// Options for sensitivity analysis
-    FFinalOutput: boolean;
-    /// Toggle choice for file output end of simulation
     FMinLegalValue: real;
     /// smallest measured value accepted in Optimization
     fReInitAfterRun: boolean;
@@ -222,13 +230,12 @@ type
     fChiSqr: real;
     /// field for total sum of squared differences (sim-meas)
     ///
-    fContOutput: boolean; ///
+    fContOutput: TContOutput; /// option for
     fOptContOutput: TOption;
     /// Toggle choice for file output every time step
 
-
+ // strings for section names in Ini files
     FStr_SectionName_TimeInit,
-    /// strings for section names in Ini files
     FStr_SectionNameMeasurementFiles, FStr_SectionNameUpdateFiles,
       FStr_SectionNameOutputFiles, FStr_SectionName_FileNames,
       FStr_SectionTopic_SimStart, FStr_SectionTopic_SimEnd,
@@ -239,7 +246,7 @@ type
       FStr_SectionTopic_ParamIniFN, FStr_SectionTopic_OptionIniFN,
       FStr_SectionTopic_WeatherFileFN, FStr_SectionTopic_OutputDir: string;
 
-
+    ///
     procedure setSubModel(index: Integer; const SubModel: TSubmodel);
     function getSubModel(index: Integer): TSubmodel;
     procedure Set_StartTime(const StartTime: TDateTime);
@@ -271,9 +278,9 @@ type
   protected
 
 {$IFNDEF NONVISUAL}
-    procedure Paint; override;
+    procedure Paint; override;  /// Method for showing object on the screen
 {$ENDIF}
-    /// Method for showing object on the screen
+
     procedure writeRes(fn: string);
     /// write parameters and filenames of simulation run to result file
   public
@@ -334,7 +341,8 @@ type
  //  destructor destroy; override;
 {$ENDIF}
     procedure Set_ControlFileFN(NewFN:string);// (NewFN:string);
-    function Get_ControlFileFn: TMyFileName;
+//    function Get_ControlFileFn: TMyFileName;
+    function Get_ControlFileFn: string;
     procedure setPropFromIniFile(strList: TStringList; submodname: string) ;
 
     procedure GetParameter(ParName: string; var Par: TPar;
@@ -426,17 +434,18 @@ type
     property StartTime: TDateTime read FStartTime write Set_StartTime;
     property EndTime: TDateTime read FEndTime write Set_EndTime;
     property ChiSqr: real read fChiSqr write fChiSqr;
-    property Reg_fn: TMyFileName read FReg_FN write FReg_FN;
+    property Reg_fn: string {TMyFileName} read FReg_FN write FReg_FN;
     property WriteResIni: boolean read fWriteResIni write fWriteResIni;
-    property Docu_fn: TMyFileName read fDocu_FN write fDocu_FN;
-    property Docu_fn2: TMyFileName read fDocu_FN2 write fDocu_FN2;
+    property Docu_fn: string {TMyFileName} read fDocu_FN write fDocu_FN;
+    property Docu_fn2: string {TMyFileName} read fDocu_FN2 write fDocu_FN2;
     property ModTime: TState read Time write Time;
     property LMOptions: TMarquardOptions read FLMOptions write FLMOptions;
     property SensOpt: TSensitivityOptions read FSensOptions write FSensOptions;
     property IniFileNames: TStringList read FIniFiles;
     property Title: string read FTitle write FTitle;
-    property ContOutput: boolean read FContOutput write FContOutput;
-    property FinalOutput: boolean read FFinalOutput write FFinalOutput;
+//    property ContOutput: TContOutput read FContOutput write FContOutput;
+    property OptContOutput: TContOutput read FContOutput write FContOutput;
+//    property FinalOutput: boolean read FFinalOutput write FFinalOutput;
     property MinLegalValue: real read FMinLegalValue write FMinLegalValue;
     /// smallest measurement value accepted in optimization
     property Str_SectionName_TimeInit: string read FStr_SectionName_TimeInit
@@ -491,38 +500,35 @@ type
     ------------------------------------------------------------------ }
 
 {$IFDEF NONVISUAL}
-
-  TSubmodel = class(TObject)
+/// abstract base type for a model component
+  TSubmodel = class(TObject) /// from TObject if nonvisual
 {$ELSE}
-  TSubmodel = class(TGraphicControl)
+  TSubmodel = class(TGraphicControl) /// from TGraphicControl if visual
 {$ENDIF}
   private
-    fName: string;
-    FCompIndex: Integer;
+    fName: string; /// Name of instance
+    FCompIndex: Integer; /// Index of computation order
     /// Index of computation order
-    fAssimilatedSubmodList: TStringList;
-    fUpdateValueList: TStringList;
-    fModelElementLists: TListsOf;
-    fDebugmodus: boolean;
+    fAssimilatedSubmodList: TStringList; /// List of assimilated submodels
+    fUpdateValueList: TStringList; /// List of update values
+    fModelElementLists: TListsOf; /// List of Model Elements, i.e. State, Vars, Params, Externals, Consts
+    fDebugmodus: boolean; /// flag for enabling debugging mode
     fOptContOutput: TOption;  // Option for writing output each time step
-    fWritecontinuouslyToFile: boolean;
-    /// Should output be written to file continously
-    ///
-    fOptFinalOutput: TOption;  // Option for writing output each time step
-    fWriteFinallyToFile: boolean;
-    ///
+    fWritecontinuouslyToFile: boolean; /// Should output be written to file continously
+    fOptFinalOutput: TOption;  // Option for writing final values output at end of simulation
+    fWriteFinallyToFile: boolean;   ///
 
     {$IFNDEF NONVISUAL}
-    fDebugForm: TFormDebugAbstract;
+    fDebugForm: TFormDebugAbstract; /// Pointer to abstract Form for debugging
     {$ENDIF}
-    procedure RegistrateParameter(Par: TPar); virtual;
-    procedure RegistrateOption(Option: TOption); virtual;
-    procedure RegistrateVariable(Variable: Tvar);
-    procedure RegistrateStateVar(State: TState); virtual;
-    procedure RegistrateConstant(Constant: Tvar); virtual;
-    procedure RegistrateSubMod(SubModname: string; var Model: TMod);
-    procedure ClearDataSeries;
-    procedure set_State(index: Integer; const State: TState);
+    procedure RegistrateParameter(Par: TPar); virtual; /// Registrate a parameter
+    procedure RegistrateOption(Option: TOption); virtual; /// Registrate an option
+    procedure RegistrateVariable(Variable: Tvar); virtual; /// Registrate a variable
+    procedure RegistrateStateVar(State: TState); virtual; /// Registrate a state variable
+    procedure RegistrateConstant(Constant: Tvar); virtual; /// Registrate a constant
+    procedure RegistrateSubMod(SubModname: string; var Model: TMod); virtual; /// Registrate a submodel
+    procedure ClearDataSeries; virtual; /// Clear data series
+    procedure set_State(index: Integer; const State: TState); virtual;
     function get_State(index: Integer): TState;
     procedure set_Par(index: Integer; const Par: TPar);
     function Get_Par(index: Integer): TPar;
@@ -534,13 +540,13 @@ type
     function get_Option(index: Integer): TOption;
     procedure set_ExternVar(index: Integer; const ExternVar: TExternV);
     function get_ExternVar(index: Integer): TExternV;
-    procedure InitStates(var GlobMod: TMod);
-    procedure InitParms(var GlobMod: TMod);
-    procedure InitVars(var GlobMod: TMod);
-    procedure InitOptions(var GlobMod: TMod);
-    procedure InitOutputFileNames(var GlobMod: TMod);
-    procedure InitUpdateFile(var GlobMod: TMod);
-    procedure IsOutput(var IsOutput:boolean);
+    procedure InitStates(var GlobMod: TMod); virtual; /// Initialisation of state variables
+    procedure InitParms(var GlobMod: TMod); virtual; /// Initialisation of parameters
+    procedure InitVars(var GlobMod: TMod); virtual; /// Initialisation of variables
+    procedure InitOptions(var GlobMod: TMod); virtual; /// Initialisation of options
+    procedure InitOutputFileNames(var GlobMod: TMod); virtual; /// Initialisation of output file names
+    procedure InitUpdateFile(var GlobMod: TMod); virtual; /// Initialisation of update file
+    procedure IsOutput(var IsOutput:boolean); virtual; /// Check for output
   protected
     function Get_GlobMod: TMod;
     procedure Set_GlobMod(Model: TMod); virtual;
@@ -549,76 +555,51 @@ type
     procedure Paint; override;  /// new Paint procedure
    {$ENDIF}
   public
-    submodname: string;
-    /// Name of instance
-    GlobMod: TMod;
-    /// Instance of class Tmod to which sub-model is linked
-    StateStrList: TStringList;
-    /// List of state variables
-    ParStrList: TStringList;
-    /// List of parameters
-    VarStrList: TStringList;
-    /// List of variables
-    ConstStrList: TStringList;
-    /// List of constants
-    OptionStrList: TStringList;
-    /// List of Options (saved as strings)
-    ExternVStrList: TStringList;
-    /// List of external values
-    ParIniF: TMyIniFile;
-    /// Ini-file with parameters
-    StateIniF: TMyIniFile;
-    /// Ini-file with initial values of state variables
-    OptionIniF: TMyIniFile;
-    /// Ini-file with options
-     f_state: TStreamWriter;
+    submodname: string; /// Name of instance
+    GlobMod: TMod; /// Instance of class Tmod to which sub-model is linked
+    StateStrList: TStringList;  /// List of state variables
+    ParStrList: TStringList;   /// List of parameters
+    VarStrList: TStringList;   /// List of variables
+    ConstStrList: TStringList;  /// List of constants
+    OptionStrList: TStringList;  /// List of Options (saved as strings)
+    ExternVStrList: TStringList;   /// List of external values
+    ParIniF: TMyIniFile;   /// Ini-file with parameters
+    StateIniF: TMyIniFile;  /// Ini-file with initial values of state variables
+    OptionIniF: TMyIniFile;  /// Ini-file with options
+     f_state: TStreamWriter; /// File variable for state output, now implemented as TStreamWriter
     // f_state: textfile;
     /// File variable for state output
-    ffin_state: TStreamWriter;
+    ffin_state: TStreamWriter; /// File variable for final state output, now implemented as TStreamWriter
     /// File variable for final state output
 //    f_rate: textFile; // TStreamWriter;
-    f_rate: TStreamWriter;
+    f_rate: TStreamWriter; /// File variable for rate output, now implemented as TStreamWriter
     /// File variable for rate output
-    fn_state,
-    /// File name for state output
-    fn_finalstate,
-    /// File name for final output of states
-    fn_rate: TMyFileName;
-    /// File name for rate output
-    FMeasValues: TTextFileH;
-    /// file with measured data
-    FMeasValues_2: TTextFileH;
-    /// file with measured data
-    FUpdValues: TTextFileH;
-    /// file with measured data for updating
-    SomethingMeasured: boolean;
-    /// true if measurement data is available
-    DoUpdate: boolean;
-    /// true if data for updating is available
-    NextUpdate: double;
-    /// Time of next Update
-    DataList: TStringList;
-    /// List of measured data series
-    IsActive: boolean;
-    /// Check for inactivation
+    fn_state,  /// File name for state output
+    fn_finalstate,  /// File name for final output of states
+    fn_rate: string {TMyFileName};  /// File name for rate output
+    FMeasValues: TTextFileH;  /// file with measured data
+    FMeasValues_2: TTextFileH; /// second file with measured data, meant for input with different time resolution
+    FUpdValues: TTextFileH; /// file with measured data for updating
+    SomethingMeasured: boolean;  /// true if measurement data is available
+    DoUpdate: boolean;  /// true if data for updating is available
+    NextUpdate: double; /// Time of next Update
+    DataList: TStringList;  /// List of measured data series
+    IsActive: boolean; /// Check for inactivation
 //    WriteFinallyTofile: boolean;
     /// Should output be written to file finally
-    ShowWarnings: boolean;
-    /// show warnings ?
-    GlobTime: TState;
-    /// global time of simulation model
-    ///
+    ShowWarnings: boolean; /// show warnings during simulation
+    GlobTime: TState;  /// global time of simulation model
 
 {$IFNDEF NONVISUAL}
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(AOwner: TComponent); override; /// constructor if visual
 {$ELSE}
-    constructor create;
+    constructor create; /// constructor if nonvisual
 {$ENDIF}
     procedure free;
     procedure BeforeDestruction; override;
+    /// method for creating and and initialising a TPar variable
     procedure ParCreate(ParName: string; ParUnits: string; DefaultValue: real;
       var Par: TPar; comm: string = ''); virtual;
-    /// method for creating and and initialising a TPar variable
     procedure OptCreate(OptName: string; Defaultstring: string;
       var Option: TOption; comm: string = '');
     /// creation objects for options
@@ -652,7 +633,7 @@ type
     procedure WriteStateName(var f: TStreamWriter; fn:string; IniFile: string = '');
 //    procedure WriteStateName(var f: textfile; fn:string); virtual;
 
-    procedure WriteFinalStateName(var f: TStreamWriter; fn:string; IniFile: string = ''); virtual;
+    procedure WriteFinalStateName(IniFile: string = ''); virtual;
 //    procedure WriteRateName(var f: textfile; fn:string);
     procedure WriteRateName(var f: TStreamWriter; fn:string);
     procedure SaveState(var f: TStreamWriter; IniFile: string = ''); virtual;
@@ -683,7 +664,6 @@ type
   {$IFDEF NONVISUAL}
     property name:string read fName write fName;
   {$ENDIF}
-
    {$IFNDEF NONVISUAL}
     procedure DblClick; override;
    // procedure Click; override;
@@ -703,8 +683,8 @@ type
     { write Set_ParStrList };
  //   property OnClick;//:TNotifyEvent read fOnClick write fOnClick;
     property CompIndex: Integer read FCompIndex write FCompIndex;
-    property FN_ratefn: TMyFileName read fn_rate write fn_rate;
-    property FN_Statefn: TMyFileName read fn_state write fn_state;
+    property FN_ratefn: string {TMyFileName} read fn_rate write fn_rate;
+    property FN_Statefn: string {TMyFileName} read fn_state write fn_state;
     property MeasFile: TTextFileH read FMeasValues write FMeasValues;
     // property fn_MeasFile: TMyFileName read get_fnMeasFile write set_fnMeasFile;
     property AssimilatedSubmodList: TStringList read fAssimilatedSubmodList
@@ -715,12 +695,12 @@ type
  //   property OnClick: TNotifyEvent read FOnClick write FOnClick;
 
    {$IFNDEF NONVISUAL}
-    property Parent;//: TWinControl read fParent write SetParent;
-    property Canvas;
-    property Visible;
+    property Parent; //: TWinControl read fParent write SetParent;
+    property Canvas; //
+    property Visible; //
     property color default clgreen;
     property DebugForm: TFormDebugAbstract read fDebugForm write fDebugForm;
-    property OnDblClick;//
+    property OnDblClick; // TNotifyEvent read FOnDblClick write FOnDblClick;
   {$ENDIF}
 
 
@@ -756,8 +736,8 @@ uses
 {$IFNDEF NONVISUAL}
   vcl.Forms,
 {$ENDIF}
-  UMrqMinD; // HUME: routines for parameter estimation (Marquard method)
-
+  UMrqMinD, // HUME: routines for parameter estimation (Marquard method)
+ System.TypInfo;
 { * *****************************************************************
   CLASS   TMarquardOptions
   METHOD  create
@@ -802,7 +782,7 @@ begin
   fn := 'sens.dat';
   FSens_fn := fn;
 {$IFDEF LINUX}
-  dir := fMod.GM_OutPutPath + 'Sens/';
+  dir := fMod.GM_OutPutPath + '/Sens/';
 {$ELSE}
   dir := fMod.GM_OutPutPath + '\Sens\';
 {$ENDIF}
@@ -890,7 +870,7 @@ end;
   OUTPUT  TMyFileName
   ****************************************************************** }
 
-function TMod.Get_ControlFileFn: TMyFileName;
+function TMod.Get_ControlFileFn: string;//TMyFileName;
 
 var
 //  FPropIniFile: TMyIniFile;
@@ -900,11 +880,17 @@ var
 
   begin
     begin
+      // extract path of application
       prop_path := ExtractFilePath(ParamStr(0));
+
+      // construct path of properties.ini
       fn := prop_path + 'properties.ini';
       // fn :=  'properties.ini';
       // fn := self.FPropIniFile.FileName;
+
+      // check if properties.ini exists
       if fileexists(fn) then
+      // if yes, read control file name from properties.ini
       begin
         if FPropIniFile = nil then
           FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
@@ -913,15 +899,19 @@ var
         NewCtrlFileFN := FPropIniFile.ReadString('Files', 'ControlFile', '');
       end;
     end;
+    // if control file exists, return control file name
     if fileexists(NewCtrlFileFN) then
       ControlFileFN := NewCtrlFileFN else
       ControlFileFN := '';
   end;
 
-  procedure GetControlFN_from_Dialog(var ControlFileFN: string);
+ // procedure for retrieving control file name from user dialog
+ procedure GetControlFN_from_Dialog(var ControlFileFN: string);
 
   begin
+ {$IFNDEF NONVISUAL}
     LookForControlfile(NewCtrlFileFN);
+{$ENDIF}
     if fileexists(ControlFileFN) then
     begin
       if FPropIniFile = nil then
@@ -933,7 +923,6 @@ var
       ControlFileFN := NewCtrlFileFN else
       ControlFileFN := '';
   end;
-
 
 begin
  if not IsDesignTime then
@@ -966,17 +955,16 @@ end;
   CLASS   TMod
   METHOD  Set_ControlFileFN
   PURPOSE Sets name of control Ini file (published for use in object inspector)
+          and reads or creates Ini files
   INPUT   const NewCtrlFileFN: TMyFileName
   COMMENT If no control files are existing they will be created
-  ****************************************************************** }
+ ****************************************************************** }
 
 procedure TMod.Set_ControlFileFN(newFN:string);
 
 var
   FPropIniFile: TMyIniFile;
   fn, NewCtrlFileFN, prop_path: string;
-
-
 
 begin
   fControlFileFn := newFN;
@@ -987,6 +975,15 @@ begin
   Init(ActIniFile);
 end;
 
+
+{ * *****************************************************************
+  CLASS   TMod
+  METHOD  setPropFromIniFile
+  PURPOSE Set properties from Ini file for a submodel
+  INPUT  strList: TStringList; List of all THumeNumEntity objects
+         submodname: string; Name of submodel
+  COMMENT
+ ****************************************************************** }
 
 procedure TMod.setPropFromIniFile(strList: TStringList; submodname: string);
 
@@ -1085,11 +1082,14 @@ var
   ParamIniFilefn: string;
   OptionInifilefn: string;
   WeatherFilefn: string;
+  Inifn, dir, fn : string;
 //  f: textFile;
 
 begin
   // change to application directory
-  if (ActIniFile <> nil) and FileExists(ActIniFile.FileName) then begin
+
+  Inifn := ExpandFileName(ActIniFile.FileName);
+  if (ActIniFile <> nil) and FileExists( Inifn) then begin
 
   if (FApplicationPath <> '') and DirectoryExists(FApplicationPath) then
   begin
@@ -1098,6 +1098,7 @@ begin
   if ReadIniOutputpath then
     GM_OutPutPath := ActIniFile.ReadString(Str_SectionName_FileNames,
       Str_SectionTopic_OutputDir, GM_OutPutPath);
+
 
   InitStateIniFile(StateInifilefn);
   InitParmIniFile(ParamIniFilefn);
@@ -1120,8 +1121,6 @@ begin
   Self.WeatherFile.init(WeatherFilefn);
   //InitWeatherFile(WeatherFilefn);
   InitTime(IniFile);
-  ContOutput := ActIniFile.ReadBool(FStr_SectionTopic_ContOutput,
-                                         self.FStr_SectionTopic_ContOutput, ContOutput);
 
   ModelEnd := false;
   SortSubMods;
@@ -1207,7 +1206,7 @@ begin
   Cursor := CrHandPoint;
 {$ENDIF}
  //  fContOutput := true;
-  FinalOutput := false;
+//  FinalOutput := false;
   ReInitAfterRun := true;
   fWriteResIni := true;
   // sets smallest measured value accepted in Optimization
@@ -1235,13 +1234,13 @@ begin
   EXE_DIR := extractFiledir(Application.exename);
 {$ENDIF}
   WeatherFile := TTextfileH.create;
-  if self.GM_ControlFile = '' then
-  begin
+//  if self.GM_ControlFile = '' then
+//  begin
     // ShowMessage('No Controlfile specified');
     // halt;
     // does not work because controlfile is not specified from the property
     // at that moment
-  end;
+//  end;
 
 {$IFNDEF NONVISUAL}
   SetPaintStyle;
@@ -1326,9 +1325,8 @@ begin
   begin
     with SubModel[i] do
     begin
-      if fWriteContinuouslyTofile then
+      if (fWriteContinuouslyTofile or (fContOutput = AllContoutput)) then
       begin
-//        WriteStateName(f_state, fn_state);
         WriteStateName(f_state, fn_state);
         WriteRateName(f_rate, fn_rate);
       end;
@@ -1354,21 +1352,21 @@ for i := 0 to SubModStrList.count - 1 do begin
   with SubModel[i] do begin
     if SubModel[i].fWriteFinallyToFile then begin
           if GlobMod <> nil then begin
-            fn_finalstate := extractfilename(GlobMod.fControlFileFn);
-            delete(fn_finalstate, pos('.', fn_finalstate), 3);
-            fn_finalstate := fn_finalstate + '_' + SubModname;
+            SubModel[i].fn_finalstate := extractfilename(GlobMod.fControlFileFn);
+            delete(SubModel[i].fn_finalstate, pos('.', fn_finalstate), 3);
+            SubModel[i].fn_finalstate := fn_finalstate + '_' + SubModname;
           {$IFDEF LINUX}
-            dir := GlobMod.FOutputPath + '/finalstate/';
+            dir := GM_OutputPath + '/finalstate/';
           {$ELSE}
-            dir := GlobMod.FOutputPath + '\finalstate\';
+            dir := GM_OutputPath + '\finalstate\';
           {$ENDIF}
            if SysUtils.ForceDirectories(dir) then
-           fn_finalstate := dir + fn_finalstate + '_dat.csv'
+           SubModel[i].fn_finalstate := dir + SubModel[i].fn_finalstate + '_dat.csv';
+           SubModel[i].WriteFinalStateName(SubModel[i].fn_finalstate );
           end else
-           fn_finalstate := fn_finalstate + '_dat.csv';
+           SubModel[i].fn_finalstate := SubModel[i].fn_finalstate + '_dat.csv';
         // writes state names of specific submodel to _dat.csv file
 //        WriteStateName(SubModel[i].ffin_state, 'IniFile');
-        WriteFinalStateName(ffin_state, fn_finalstate, 'IniFile');
       end;
     end;
   end;
@@ -1463,6 +1461,8 @@ end;
 procedure TMod.SaveRates;
 var
   i: Integer;
+  MakeContOutput : boolean;
+
   // subMod: TSubmodel;
 begin
   // for all submodels do...
@@ -1470,7 +1470,8 @@ begin
   begin
     // subMod := TSubmodel(SubModStrList.objects[i]);
     // if submodel is active save rates to _rat.csv output file
-    if (SubModel[i].IsActive) and (SubModel[i].fWriteContinuouslyTofile) then
+    MakeContOutput := (SubModel[i].fWriteContinuouslyTofile or (fContOutput = AllContoutput));
+    if (SubModel[i].IsActive) and (MakeContOutput) then
       SubModel[i].SaveRate(SubModel[i].f_rate);
   end;
 end;
@@ -1484,6 +1485,7 @@ end;
 procedure TMod.SaveStates;
 var
   i: Integer;
+  MakeContOutput : boolean;
   // subMod: TSubmodel;
 begin
   // for all submodels do...
@@ -1491,7 +1493,8 @@ begin
   begin
     // subMod := TSubmodel(SubModStrList.objects[i]);
     // if submodel is active save states to _dat.csv output file
-    if (SubModel[i].IsActive) and (SubModel[i].fWriteContinuouslyTofile) then
+    MakeContOutput := (SubModel[i].fWriteContinuouslyTofile or (fContOutput = AllContoutput));
+    if (SubModel[i].IsActive) and  (MakecontOutput) then
  //     if SubModel[i].f_state <> NIL then
         SubModel[i].SaveState(SubModel[i].f_state);
 
@@ -1590,7 +1593,7 @@ begin
   begin
     // subMod := TSubmodel(SubModStrList.objects[i]);
     // close state and rate output files
-    if SubModel[i].fWriteContinuouslyTofile then
+    if ((SubModel[i].fWriteContinuouslyTofile) or (self.fContOutput=AllContoutput)) then
       SubModel[i].closeOutputfiles;
   end;
 end;
@@ -1616,8 +1619,8 @@ begin
 
       SubModel[i].ffin_state.Flush;
       SubModel[i].ffin_state.Close;
-      SubModel[i].ffin_state.free;
- //     SubModel[i].ffin_state := NIL;
+//      SubModel[i].ffin_state.FreeInstance;
+//      SubModel[i].ffin_state := NIL;
     end;
     // close(SubModel[i].ffin_state);
   end;
@@ -1659,42 +1662,82 @@ var
   i, j: Integer;
   fn, dir: string;
   statFile: textFile; // temporary lists for weather data handling
-  path, globResFN, iniResFN: string; // Name for "result file"
-//  globRes: TStreamWriter;
-    globRes: textfile;
+  path, globResFN, iniResFN,
+  SelectionStr: string; // Name for "result file"
+  globRes: TStreamWriter;
+//    globRes: textfile;
     ActSubMod : TSubModel;
-  // hk: wäre nett, wenn man bei der Neueinführung von Ausgabedateien deren Zweck dokumentiert ...
+    Selndx : integer;
+  // hk: wï¿½re nett, wenn man bei der Neueinfï¿½hrung von Ausgabedateien deren Zweck dokumentiert ...
 begin
   // change directory to output or application path
-  if DirectoryExists(GM_OutPutPath) then
-    chdir(GM_OutPutPath)
-  else
-    chdir(EXE_DIR);
+//  if DirectoryExists(GM_OutPutPath) then
+//    chdir(GM_OutPutPath)
+//  else
+//    chdir(EXE_DIR);
   // clear list of all measurement values
+
+  Get_ControlFileFn();
+  if FPropIniFile = nil then
+    FPropIniFile := TMemInifile.Create('properties.ini');
+  SelectionStr := FPropIniFile.ReadString('ModelSettings', 'ContOutput', 'ContOutput');
+  fContOutput :=  TContOutput(GetEnumValue(System.TypeInfo(TContOutput), SelectionStr));
+
   AllMeasVal.Clear;
   // For every submodel clear data pair series
   ClearAllDataSeries;
-  GM_OutputFileName := stripextension(extractfilename( fControlFileFn))+'_'+ 'GlobalOutput.csv';
-  InitGlobalOutputList;
-  WriteGlobalOutputNames(fFNGlobalOutput);
 {$IFNDEF NONVISUAL}
   Check_GM_OutputPath;
 {$ENDIF}
 {$IFDEF LINUX}
-  dir := GM_OutPutPath + 'statistics/';
+  dir := GM_OutPutPath + '/' + 'statistics/';
 {$ELSE}
-  dir := GM_OutPutPath + 'statistics\';
+  dir := GM_OutPutPath + '\' + 'statistics\';
 {$ENDIF}
   if SysUtils.ForceDirectories(dir) then
     Reg_fn := dir + 'regression.dat'
   else
     Reg_fn := GM_OutPutPath + '\' + 'regression.dat';
 
-  // For all submodels write state names to final output file
-  if FinalOutput then   begin
 
-    WriteAllFinalNames;
-  end;
+
+{$IFDEF LINUX}
+  GM_OutputFileName := GM_OutPutPath + '/' + stripextension(extractfilename( fControlFileFn)) + '_'+ 'GlobalOutput.csv';
+{$ELSE}
+  GM_OutputFileName := GM_OutPutPath + '\' + stripextension(extractfilename( fControlFileFn))+'_'+ 'GlobalOutput.csv';
+{$ENDIF}
+
+
+
+{$IFDEF NONVISUAL}
+
+path :=  ExtractFilePath(ParamStr(0));
+SetLength(path, Length(path) - 1);
+
+{$IFDEF LINUX}
+  path := path + '/';;
+{$ELSE}
+  path := path + '\';
+{$ENDIF}
+      fn := path+'properties.ini';
+//      fn := 'properties.ini';
+      FPropIniFile := TMyIniFile.create(fn,  TEncoding.UTF8);
+//      FPropIniFile.WriteString()
+      for j := 0 to self.SubModStrList.Count - 1 do begin
+        ActSubMod := TSubModel(SubModStrList.objects[j]);
+        with ActSubMod do
+        begin
+          setPropFromIniFile(stateStrList, Name);
+          setPropFromIniFile(VarStrList, Name);
+          setPropFromIniFile(ExternVStrList, Name);
+        end;
+      end;
+{$ENDIF}
+
+   InitGlobalOutputList;
+   WriteGlobalOutputNames(fFNGlobalOutput);
+
+//  end;
   // Go through all INI files (listed in *.fn control file)
 //  IsSubModelContOutput;
   // checks if there is anything to write continously for every submodel
@@ -1703,7 +1746,7 @@ begin
   if DirectoryExists(GM_OutPutPath) then
   begin
 {$IFDEF LINUX}
-  dir := GM_OutPutPath + 'statistics/';
+  dir := GM_OutPutPath + '/statistics/';
 {$ELSE}
     dir := GM_OutPutPath + '\statistics\';
 {$ENDIF}
@@ -1713,7 +1756,7 @@ begin
   else
   begin
 {$IFDEF LINUX}
-    dir := EXE_DIR + 'statistics/';
+    dir := EXE_DIR + '/statistics/';
 {$ELSE}
     dir := EXE_DIR + '\statistics\';
 {$ENDIF}
@@ -1741,10 +1784,18 @@ begin
     globResFN := EXE_DIR + '\' + StripExtension
       (extractfilename(fControlFileFn)) + '_res.hrl';
 {$ENDIF}
-//  if globRes = NIL then
-//    globRes := TStreamWriter.Create(globResFN, false, TEncoding.UTF8);
-  assignfile(globRes, globResFN);
-  rewrite(globRes);
+  if (globRes = NIL) and (WriteResIni) then
+    globRes := TStreamWriter.Create(globResFN, false, TEncoding.UTF8);
+//  assignfile(globRes, globResFN);
+//  rewrite(globRes);
+
+    ActIniFile := TMyIniFile(FIniFiles.objects[0]);
+    Init(ActIniFile); // Init for actual initialisation file
+    InitAllSubMods; // Initialize all submodels
+  // For all submodels write state names to final output file
+  //  if FinalOutput then   begin
+    WriteAllFinalNames;
+
   for i := 0 to FIniFiles.count - 1 do
   begin
     // Determine and initialize actual INI file
@@ -1760,6 +1811,11 @@ writeln('Running '+ ExtractFileName(ActIniFile.FileName)+
     // showmessage(ActIniFile.FileName);    // for debugging
 
     Init(ActIniFile); // Init for actual initialisation file
+
+
+
+    if self.WriteResIni then
+    begin
 {$IFDEF LINUX}
     iniResFN := GM_OutPutPath + '/' + StripExtension
       (extractfilename(ActIniFile.Filename)) + '_res.ini';
@@ -1767,41 +1823,17 @@ writeln('Running '+ ExtractFileName(ActIniFile.FileName)+
     iniResFN := GM_OutPutPath + '\' + StripExtension
       (extractfilename(ActIniFile.Filename)) + '_res.ini';
 {$ENDIF}
+	end;
 
     InitAllSubMods; // Initialize all submodels
     InitAllDataSeries;
     InitAllExternV; // Initialize all external variables
 
-
-{$IFDEF NONVISUAL}
-
-//      path :=  ExtractFilePath(ParamStr(0));
-      fn := path+'properties.ini';
-//      fn := 'properties.ini';
-      FPropIniFile := TMyIniFile.create(fn,  TEncoding.UTF8);
-//      FPropIniFile.WriteString()
-      for j := 0 to self.SubModStrList.Count - 1 do begin
-        ActSubMod := TSubModel(SubModStrList.objects[j]);
-        with ActSubMod do
-        begin
-          setPropFromIniFile(stateStrList, Name);
-          setPropFromIniFile(VarStrList, Name);
-          setPropFromIniFile(ExternVStrList, Name);
-        end;
-      end;
-{$ENDIF}
-
-
-
-
-
     // Set weather file pointer to actual time step
-    // #TS#029: infinite loop depending on ModTime.Name
-
     WeatherFile.LocateFor(Time.Name, Time.v);
     // write names, state and rate values (if ContOutput true)
 
-    if self.fContOutput then
+    if fContOutput <> NoContOutput then
     begin
       WriteAllNames;
       SaveStates;
@@ -1827,11 +1859,11 @@ writeln('Running '+ ExtractFileName(ActIniFile.FileName)+
       AddAllSimValuestoDataSeries;
 
       // write state and rate values (if ContOutput)
-      if fContOutput then
+      if fContOutput <> NoContOutput then
       begin
         SaveStates;
         SaveRates;
-        SaveGlobalOutput(ActIniFile.FileName);
+        SaveGlobalOutput(extractfilename(ActIniFile.Filename));
       end;
 {$IFNDEF NONVISUAL}
       UpdateStatusbar;
@@ -1851,30 +1883,39 @@ writeln('Running '+ ExtractFileName(ActIniFile.FileName)+
 {$ENDIF}
     if fWriteResIni then begin
       writeRes(iniResFN); // write parameters and filenames of simulation run to result file
- //     globRes.WriteLine(iniResFN);
-      writeln(globRes, iniResFN);
+        globRes.WriteLine(iniResFN);
+ //     writeln(globRes, iniResFN);
     end;
-    CalcAndSaveLinearRegressionSimMeas(fn, i);
+    CalcAndSaveLinearRegressionSimMeas(FReg_FN, i);
 
     // showmessage(self.actinifile.filename);
     // close state and rate output files of all submodels
-    if fContOutput then
+    if fContOutput <> NoContOutput then
       CloseAllFiles;
     // write state values to final output file for all submodels
-    if FinalOutput then
+//    if FinalOutput then
       SaveFinalStates;
     { ShowMessage(ActIniFile.FileName); }
 
-    // DeleteFile(FReg_FN);    // für einzelberechnungen entfernen!
-    // ClearAllDataSeries;     // für einzelberechnungen entfernen!
-    // AllMeasVal.Clear;       // für einzelberechnungen entfernen!
+    // DeleteFile(FReg_FN);    // fï¿½r einzelberechnungen entfernen!
+    // ClearAllDataSeries;     // fï¿½r einzelberechnungen entfernen!
+    // AllMeasVal.Clear;       // fï¿½r einzelberechnungen entfernen!
+	ParamInifile.UpdateFile;
+    StateIniFile.UpdateFile;
+    OptionIniFile.updatefile;
 
   end; // End of simulation run
  // globRes.Flush;
  // globRes.Close;
-  CloseFile(globRes);
+if (WriteResIni = true) then  begin
+//  CloseFile(globRes);
+  globRes.Flush;
+  globRes.Close;
+  globRes.Free;
+end;
+
   CalcAllLinearRegressions; // for all submodels calculate linear regression
-  if FinalOutput then
+//  if FinalOutput then
   // close final state and rate output files of all submodels
     CloseAllFinalFiles;
   WriteAll_1_1_Files;
@@ -1882,6 +1923,7 @@ writeln('Running '+ ExtractFileName(ActIniFile.FileName)+
   CalcChiSq; // Calculation of sum of squared differences
   // AllMeasVal.Clear;    // clear list of all measurement values
   f_GlobalOutput.Flush;
+  f_GlobalOutput.close;
   f_GlobalOutput.Free;
   // closefile(f_GlobalOutput);
 
@@ -1910,7 +1952,7 @@ begin
   // For every submodel clear data pair series
   ClearAllDataSeries;
   // For all submodels write state names to final output file
-  if FinalOutput then
+//  if FinalOutput then
     WriteAllFinalNames;
   // initialize actual INI file
   { ActIniFile := TMyIniFile(FIniFiles.objects[ActInifileIndex]); }
@@ -1924,7 +1966,7 @@ begin
   // #TS#029: infinite loop depending on ModTime.Name
   WeatherFile.LocateFor(Time.Name, Time.v);
   // write names, state and rate values (if ContOutput true)
-  if fContOutput then
+  if fContOutput <> NoContOutput then
   begin
     WriteAllNames;
     SaveStates;
@@ -1941,7 +1983,7 @@ begin
     // add simulated values to corresponding measured data for all submodels
     AddAllSimValuestoDataSeries;
     // write state and rate values (if ContOutput)
-    if fContOutput then
+    if fContOutput <> NoContOutput then
     begin
       SaveStates;
       SaveRates;
@@ -1958,14 +2000,14 @@ begin
   until ModelEnd;
   // showmessage(self.actinifile.filename);
   // close state and rate output files of all submodels
-  if fContOutput then
+  if fContOutput <> NoContOutput then
     CloseAllFiles;
   // write state values to final output file for all submodels
-  if FinalOutput then
+//  if FinalOutput then
     SaveFinalStates;
   { ShowMessage(ActIniFile.FileName); }
   // close final state and rate output files of all submodels
-  if FinalOutput then
+//  if FinalOutput then
     CloseAllFinalFiles;
   // Output of simulated/measured data pairs to _1_1.csv files
   WriteAll_1_1_Files;
@@ -2393,7 +2435,7 @@ procedure TMod.writeRes(fn: string);
 var
   f: textFile;
   i, j: Integer;
-  s: TMyFileName;
+  s: string;//TMyFileName;
   subMod: TSubmodel;
   ActPar: TPar;
   ActOpt: TOption;
@@ -2486,6 +2528,7 @@ var
   Success: boolean;
   SubModname: string;
   TempPar: TPar;
+  SaveContOutput: TContOutput;
 begin
   // flag false for first loop, flag true for second and following loops
   // rep := false;
@@ -2527,7 +2570,8 @@ begin
   // second row of output file: write units of selected Parameter
   writeln(SensOpt.Sens_f, '[', SensOpt.SelSenspar.U, ']');
   // for each step of sensitivity analysis do...
-  self.fContOutput := false;
+  SaveContOutput := fContOutput;
+  fContOutput := NoContOutput;
   for Iter := 1 to SensOpt.Steps do
   begin
     run;
@@ -2542,7 +2586,7 @@ begin
     // increase value of sensitivity parameter by stepwidth
     SensOpt.SelSenspar.v := SensOpt.SelSenspar.v + SensOpt.DPar;
   end;
-  fContOutput := true;
+  fContOutput := SaveContOutput;
   SensOpt.SelSenspar.SelForOpt := false;
   // close output file (sens.dat)
   CloseFile(SensOpt.Sens_f);
@@ -2622,7 +2666,11 @@ var
 begin
   // create output file for regression data
   if Reg_fn = '' then
+	{$IFDEF LINUX}
+    Reg_fn := GM_OutPutPath + '/' + 'regression.dat';
+    {$ELSE}
     Reg_fn := GM_OutPutPath + '\' + 'regression.dat';
+    {$ENDIF}
 
   assignfile(FRegFile, Reg_fn);
 
@@ -2716,10 +2764,12 @@ var
   CorMat, Alpha: RealArrayMaByMa;
   Yfit: RealArrayNdata;
   NewChiSq: real;
+  SaveContOutput : TContoutput;
 begin
   // filename for output of optimization data
   // No file output during optimisation
-  fContOutput := false;
+  SaveContOutput := fContOutput;
+  fContOutput := NoContOutput;
   mrq_fit(self, // this TMod instance
     true, // fit?
     true, // flag for output to file / screen
@@ -2729,7 +2779,7 @@ begin
     CorMat, Alpha, // Correlation matrix, alpha
     Yfit); // function results with otpimal parameters
   // Activate file output
-  fContOutput := true;
+  fContOutput := SaveContoutput;
   // Generate new output
   run; // wieso hier run? Das verstellt die actini Datei!
   // Das erneute Aufrufen ist notwendig, damit die Inhalte der der Ausgabedateien mit den
@@ -3004,7 +3054,7 @@ begin
       begin
         actOption := TOption(actSubMod.OptionStrList.objects[l]);
         line := self.IniFileNames[h] + ';' + SubModel[i].Name + ';';
-        line := line + 'Option' + ';' + actOption.Name + ';' + '; NA;' + 'NA' +
+        line := line + 'Option' + ';' + actOption.Name + ';' + ' NA;' + 'NA' +
           ';' + actOption.Option + ';' + actOption.Comment;
         writeln(f2, line);
       end;
@@ -3134,7 +3184,7 @@ begin
    halt;
 {$ELSE}
    writeln('No ControlFile specified');
-   Application.Terminate;
+   //Application.Terminate;
 {$ENDIF}
 
   end;
@@ -3173,21 +3223,28 @@ var
   strlist_act: TStringList;
   strlist: TStringList;
 begin
-  strlist := TStringList.create;
-  strlist.loadFromFile(fn);
-  strlist.add('');
-  strlist.add('');
+ { strlist := TStringList.create;
+  if fileexists(fn) then begin
+    strlist.loadFromFile(fn);
+    strlist.add('');
+    strlist.add('');
+  end;
   strlist.add(FIniFiles[i]);
   strlist.add('');
-  strlist_act := TStringList.create;
+  strlist_act := TStringList.create;  }
   // for all submodels calculate linear regression
   CalcAllLinearRegressions;
-  if FileExists(Reg_fn) then
-    strlist_act.loadFromFile(Reg_fn);
-  strlist.addstrings(strlist_act);
-  strlist.savetofile(fn);
-  strlist.Free;
-  strlist_act.Free;
+
+ { try
+    if FileExists(Reg_fn) then
+      strlist_act.loadFromFile(Reg_fn);
+      strlist.addstrings(strlist_act);
+      strlist.savetofile(fn);
+      strlist.Free;
+     strlist_act.Free;
+  finally
+
+  end;  }
 end;
 
 {$IFNDEF NONVISUAL}
@@ -3395,7 +3452,7 @@ begin
   self.Repaint;
 {$ENDIF}
 {$IFDEF LINUX}
-  dir := GlobMod.FOutputPath + 'rate/';
+  dir := GlobMod.FOutputPath + '/rate/';
 {$ELSE}
   dir := GlobMod.FOutputPath + '\rate\';
 {$ENDIF}
@@ -3403,7 +3460,7 @@ begin
     fn_rate := dir + Name + '_rat.csv'
   else fn_rate := Name + '_rat.csv';
 {$IFDEF LINUX}
-  dir := GlobMod.FOutputPath + 'state/';
+  dir := GlobMod.FOutputPath + '/state/';
 {$ELSE}
   dir := GlobMod.FOutputPath + '\state\';
 {$ENDIF}
@@ -4060,7 +4117,7 @@ begin
   fOptContOutput.Optionlist.add('false');
   self.fWritecontinuouslyToFile := true;
 
-  OptCreate('FinalOutput', 'false', fOptFinalOutput,'Output of final values in seperate file?');
+  OptCreate('FinalOutput', 'false', fOptFinalOutput,'Output of final values in separate file?');
   fOptFinalOutput.Optionlist.Clear;
   fOptFinalOutput.Optionlist.add('true');
   fOptFinalOutput.Optionlist.add('false');
@@ -4205,7 +4262,8 @@ end;
   ****************************************************************** }
 
 //procedure TSubmodel.WriteStateName(var f: TStreamWriter; fn:string; IniFile: string = '');
-procedure TSubmodel.WriteFinalStateName(var f: TStreamwriter; fn:string; IniFile: string = '');
+procedure TSubmodel.WriteFinalStateName(IniFile: string = '');
+
 var
   i: Integer;
   line, outstr, Caption: string;
@@ -4219,14 +4277,14 @@ begin
  // rewrite(f);
   outstr := '';
 
-  if f = NIL then
-     f := TStreamWriter.Create(fn, false, TEncoding.UTF8);
+  if ffin_state = NIL then
+     ffin_state := TStreamWriter.Create(IniFile, false, TEncoding.UTF8, 4096);
 
   line := '';
 
   // first row of output file
   if IniFile <> '' then
-    line := IniFile + GlobMod.Separator;
+    line := 'IniFile' + self.GlobMod.Separator;
 
   // write value of time variable to output file
   with self.GlobTime do
@@ -4236,56 +4294,56 @@ begin
   line := line + Outstr; // write(f, Outstr);
 
   // write values of all state variables to output file
-  for i := 0 to StateStrList.count - 1 do
+  for i := 0 to self.StateStrList.count - 1 do
   begin
-    State := TState(StateStrList.objects[i]);
+    State := TState(self.StateStrList.objects[i]);
     if State.Opt_WriteFinalValue then
     begin
       Outstr := State.Name;
-      line := line + GlobMod.Separator + Outstr;
+      line := line + self.GlobMod.Separator + Outstr;
       // write(f, GlobMod.Separator, Outstr);
     end;
   end;
   // write values of all variabes to output file
-  for i := 0 to VarStrList.count - 1 do
+  for i := 0 to self.VarStrList.count - 1 do
   begin
-    Variable := TPar(VarStrList.objects[i]);
+    Variable := TPar(self.VarStrList.objects[i]);
     if Variable.Opt_WriteFinalValue then
     begin
       Outstr := Variable.Name;
-      line := line + GlobMod.Separator + Outstr;
+      line := line + self.GlobMod.Separator + Outstr;
       // write(f, GlobMod.Separator, Outstr);
     end;
   end;
   // write values of all external variables to output file
   for i := 0 to self.ExternVStrList.count - 1 do
   begin
-    ExValue := TExternV(ExternVStrList.objects[i]);
+    ExValue := TExternV(self.ExternVStrList.objects[i]);
     if ExValue.Opt_WriteFinalValue then
     begin
       Outstr := ExValue.Name;
-      line := line + GlobMod.Separator + Outstr;
+      line := line + self.GlobMod.Separator + Outstr;
       // write(f, GlobMod.Separator, Outstr);
     end;
   end;
   // change to next row
  //writeln(f, line);
  // WriteLn(f);
- f.WriteLine(line);
-  line := 'Ini'+globmod.Separator;
+  ffin_state.WriteLine(line);
+  line := 'Ini'+ self.globmod.Separator;
   // write value of time variable to output file
-  with GlobTime do
+  with self.GlobTime do
     Outstr := U;
     line := line + Outstr; // write(f, Outstr);
 
   // write values of all state variables to output file
-  for i := 0 to StateStrList.count - 1 do
+  for i := 0 to self.StateStrList.count - 1 do
   begin
-    State := TState(StateStrList.objects[i]);
+    State := TState(self.StateStrList.objects[i]);
     if State.Opt_WriteFinalValue then
     begin
       Outstr := State.U;
-      line := line + GlobMod.Separator + Outstr;
+      line := line + self.GlobMod.Separator + Outstr;
       // write(f, GlobMod.Separator, Outstr);
     end;
   end;
@@ -4313,7 +4371,7 @@ begin
   end;
   // change to next row
  // writeln(f, line); // WriteLn(f);
- f.WriteLine(line);
+ ffin_state.WriteLine(line);
 
 end;
 
@@ -4668,69 +4726,71 @@ end;
   ****************************************************************** }
 
 procedure TSubmodel.SaveFinalState(var f: TStreamWriter; IniFile: string);
-//procedure TSubmodel.SaveFinalState(var f: textfile; IniFile: string);
+// procedure TSubmodel.SaveFinalState(var f: textfile; IniFile: string);
 var
   i: Integer;
   State: TState;
   Variable: TPar;
   ExValue: TExternV;
-  Outstr: string;
+  outstr: string;
   line: String;
 begin
-  line := '';
-  if IniFile <> '' then
-    line := IniFile + GlobMod.Separator;
-
-  // write value of time variable to output file
-  with GlobTime do
-    Outstr := FloatToStrf(v - c, ffgeneral, Precision, Digits);
-  // #TS#026  previous version: write(f, OutStr, GlobMod.Separator);
-
-  line := line + Outstr; // write(f, Outstr);
-
-  // write values of all state variables to output file
-  for i := 0 to StateStrList.count - 1 do
+  if self.fWriteFinallyToFile then
   begin
-    State := TState(StateStrList.objects[i]);
-    if State.Opt_WriteFinalValue then
-    begin
-      Outstr := FloatToStrf(State.v, ffgeneral, State.Precision, State.Digits);
-      line := line + GlobMod.Separator + Outstr;
-      // write(f, GlobMod.Separator, Outstr);
-    end;
-  end;
-  // write values of all variabes to output file
-  for i := 0 to VarStrList.count - 1 do
-  begin
-    Variable := TPar(VarStrList.objects[i]);
-    if Variable.Opt_WriteFinalValue then
-    begin
-      Outstr := FloatToStrf(Variable.v, ffgeneral, Variable.Precision,
-        Variable.Digits);
 
-      line := line + GlobMod.Separator + Outstr;
-      // write(f, GlobMod.Separator, Outstr);
-    end;
-  end;
-  // write values of all external variables to output file
-  for i := 0 to self.ExternVStrList.count - 1 do
-  begin
-    ExValue := TExternV(ExternVStrList.objects[i]);
-    if ExValue.Opt_WriteFinalValue then
+    line := '';
+    if IniFile <> '' then
+      line := IniFile + GlobMod.Separator;
+
+    // write value of time variable to output file
+    with GlobTime do
+      outstr := FloatToStrf(v - c, ffgeneral, Precision, Digits);
+    // #TS#026  previous version: write(f, OutStr, GlobMod.Separator);
+
+    line := line + outstr; // write(f, Outstr);
+
+    // write values of all state variables to output file
+    for i := 0 to StateStrList.count - 1 do
     begin
-      Outstr := FloatToStrf(ExValue.v, ffgeneral, 6, 2);
-      line := line + GlobMod.Separator + Outstr;
-      // write(f, GlobMod.Separator, Outstr);
+      State := TState(StateStrList.objects[i]);
+      if State.Opt_WriteFinalValue then
+      begin
+        outstr := FloatToStrf(State.v, ffgeneral, State.Precision,
+          State.Digits);
+        line := line + GlobMod.Separator + outstr;
+        // write(f, GlobMod.Separator, Outstr);
+      end;
     end;
+    // write values of all variabes to output file
+    for i := 0 to VarStrList.count - 1 do
+    begin
+      Variable := TPar(VarStrList.objects[i]);
+      if Variable.Opt_WriteFinalValue then
+      begin
+        outstr := FloatToStrf(Variable.v, ffgeneral, Variable.Precision,
+          Variable.Digits);
+
+        line := line + GlobMod.Separator + outstr;
+        // write(f, GlobMod.Separator, Outstr);
+      end;
+    end;
+    // write values of all external variables to output file
+    for i := 0 to self.ExternVStrList.count - 1 do
+    begin
+      ExValue := TExternV(ExternVStrList.objects[i]);
+      if ExValue.Opt_WriteFinalValue then
+      begin
+        outstr := FloatToStrf(ExValue.v, ffgeneral, 6, 2);
+        line := line + GlobMod.Separator + outstr;
+        // write(f, GlobMod.Separator, Outstr);
+      end;
+    end;
+    // change to next row
+    // if (self.GlobMod.FinalOutput) then
+    f.WriteLine(line);
+    // writeln(f, line); // WriteLn(f);
   end;
-  // change to next row
-  f.WriteLine(line);
-//  writeln(f, line); // WriteLn(f);
 end;
-
-
-
-
 
 procedure TSubmodel.closeOutputfiles;
 begin
@@ -4782,16 +4842,9 @@ var
   line, outstr, Caption: string;
 begin
 
-//  if f = NIL then
-//    f := TStreamWriter.Create(fn, false, TEncoding.UTF8);
-
-//  assignfile(f, fn);
-//  rewrite(f);
   outstr := '';
   line := '';
   f := TStreamWriter.Create(fn, false, TEncoding.UTF8);
- // assignfile(f, fn);
- // rewrite(f);
   // write value of time variable to output file
   with GlobTime do
     Outstr := Name;
@@ -5517,7 +5570,8 @@ begin
 
   defaultname := extractfilename(GlobMod.ActIniFile.Filename);
   delete(defaultname, pos('.', defaultname), 4);
-  defaultname := defaultname + '_' + SubModname;
+//  defaultname := defaultname + '_' + SubModname;
+  defaultname := defaultname + '_' + self.name;
 {$IFDEF LINUX}
   dir := GlobMod.FOutputPath + 'rate/';
 {$ELSE}
@@ -5527,7 +5581,7 @@ begin
     fn_rate := dir + defaultname + '_rat.csv'
   else fn_rate := defaultname + '_rat.csv';
 {$IFDEF LINUX}
-  dir := GlobMod.FOutputPath + 'state/';
+  dir := GlobMod.FOutputPath + '/state/';
 {$ELSE}
   dir := GlobMod.FOutputPath + '\state\';
 {$ENDIF}
@@ -5574,32 +5628,42 @@ var
   Option: TOption;
   i: Integer;
 begin
-  if GlobMod.OptionInifile <> nil then begin
+  if GlobMod.OptionIniFile <> nil then
 
-  // (Re)initialization of all options
-  OptionStrList.Sorted := false;
-  for i := 0 to self.OptionStrList.count - 1 do
+
+
+
   begin
-    Option := TOption(OptionStrList.objects[i]);
-    Option.SubModname := self.Name;
-    Option.Option := '';
-    if Option.ReadFromIniFile then
+
+    // (Re)initialization of all options
+    OptionStrList.Sorted := false;
+    for i := 0 to self.OptionStrList.count - 1 do
     begin
-      Option.Option := GlobMod.OptionIniFile.ReadString(SubModname, Option.Name,
-        Option.Defaultstring);
+      Option := TOption(OptionStrList.objects[i]);
+      Option.submodname := self.Name;
+      Option.Option := '';
+      if Option.ReadFromIniFile then
+      begin
+        Option.Option := GlobMod.OptionIniFile.ReadString(Option.submodname,
+          Option.Name, Option.Defaultstring);
+      end;
     end;
-  end;
-  OptionStrList.Sort;
-  OptionStrList.Sorted := true;
-  for i := 0 to self.OptionStrList.count - 1 do
-  begin
-    Option := TOption(OptionStrList.objects[i]);
-    if Option.Option <> '' then
+
+    OptionStrList.Sort;
+    OptionStrList.Sorted := true;
+    for i := 0 to self.OptionStrList.count - 1 do
+
+
+
     begin
-      GlobMod.OptionIniFile.Writestring(SubModname, Option.Name, Option.Option);
-      GlobMod.OptionIniFile.UpdateFile;
+      Option := TOption(OptionStrList.objects[i]);
+      if Option.Option <> '' then
+      begin
+        GlobMod.OptionIniFile.WriteString(Option.submodname, Option.Name,
+          Option.Option);
+      end;
     end;
-  end;
+    GlobMod.OptionIniFile.UpdateFile;
   end;
 end;
 
@@ -5615,13 +5679,13 @@ begin
   begin
     Variable := Tvar(VarStrList.objects[i]);
     Variable.SubModname := self.Name;
-    VarStrList.Strings[i] := Variable.Name;
+   // VarStrList.Strings[i] := Variable.Name;
     Variable.v := Variable.DefaultValue;
     // TODO Warum sollte man Variablen aus einer Datei lesen wollen?
     if Variable.ReadFromIniFile then
-      if GlobMod.StateIniFile.valueexists(SubModname, Variable.Name) then
+      if GlobMod.StateIniFile.valueexists(Variable.SubModname, Variable.Name) then
       begin
-        Variable.v := GlobMod.StateIniFile.ReadFloat(SubModname, Variable.Name,
+        Variable.v := GlobMod.StateIniFile.ReadFloat(Variable.SubModname, Variable.Name,
           Variable.DefaultValue);
         Variable.wasreadfromfile := true;
       end
@@ -5645,15 +5709,15 @@ begin
   begin
     Param := TPar(ParStrList.objects[i]);
     Param.SubModname := self.Name;
-    ParStrList.Strings[i] := Param.Name;
+ //   ParStrList.Strings[i] := Param.Name;
     // This is necessary because the Name of the parameter may have been
     // altered within the object inspector
     if GlobMod.ParamIniFile <> nil then  begin
     if not Param.SelForOpt and Param.ReadFromIniFile then
-      if GlobMod.ParamInifile.valueexists(SubModname, Param.Name) then
+      if GlobMod.ParamInifile.valueexists(Param.SubModname, Param.Name) then
       begin
         { Read values only if not selected for optimization ! }
-        Param.v := GlobMod.ParamInifile.ReadFloat(SubModname, Param.Name,
+        Param.v := GlobMod.ParamInifile.ReadFloat(Param.SubModname, Param.Name,
           Param.DefaultValue);
         { else showMessage(GlobMod.ParamInifile.Filename+' '+Param.name+' '+FloatToStr(Param.v)) }
       end
@@ -5661,7 +5725,7 @@ begin
       begin
         // if error then begin
         Param.v := Param.DefaultValue;
-        GlobMod.ParamInifile.WriteFloat(SubModname, Param.Name,
+        GlobMod.ParamInifile.WriteFloat(Param.SubModname, Param.Name,
           Param.DefaultValue);
       end;
     { ShowMessage('Error on initialization of parameters'); }
@@ -5682,16 +5746,17 @@ begin
   for i := 0 to self.StateStrList.count - 1 do
   begin
     State := TState(StateStrList.objects[i]);
+    State.SubModname := self.Name;
     StateVar[i].SubModname := self.Name;
-    StateStrList.Strings[i] := State.Name;
+ //   StateStrList.Strings[i] := State.Name;
     State.c := 0;
     // At the beginning the rate of change equals 0 for all state variables
     State.v := State.DefaultValue;
     if State.ReadFromIniFile and (State.Name <> '') then
       if (GlobMod.StateIniFile <> nil) then begin
-        if GlobMod.StateIniFile.valueexists(SubModname, State.Name) then
+        if GlobMod.StateIniFile.valueexists(State.SubModname, State.Name) then
       begin
-        value := GlobMod.StateIniFile.ReadFloat(SubModname, State.Name, 0);
+        value := GlobMod.StateIniFile.ReadFloat(State.SubModname, State.Name, 0);
         State.v := value;
         State.wasreadfromfile := true;
       end
@@ -5701,7 +5766,7 @@ begin
         State.v := 0;
         State.wasreadfromfile := false;
         if GlobMod.StateIniFile <> nil then
-          GlobMod.StateIniFile.WriteFloat(SubModname, State.Name,
+          GlobMod.StateIniFile.WriteFloat(State.SubModname, State.Name,
           State.DefaultValue);
       end;
     State.iv := State.v;
