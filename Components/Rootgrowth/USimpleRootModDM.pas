@@ -1292,7 +1292,7 @@ begin
     if  Texture_ndx <> -1 then begin
       act_Texture_effect := TTextureEffect(fTextureEffectList.Objects[Texture_ndx]);
       Texturefactor := act_Texture_effect.frelWeff;
-    end else Texturefactor := 1;
+    end else Texturefactor := 1;       // default
 
 
   end;
