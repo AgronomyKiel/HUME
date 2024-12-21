@@ -1,0 +1,209 @@
+Main
+define value: Clay  Unconditional  Universal
+%
+Clay = 13.2/100
+variable: fClay  Unconditional  Universal
+fClay = 1-2*min(0.25,Clay)
+define value: Fer_App  Unconditional  Universal
+kg N ha-1
+Fer_App = 360
+variable: fT_C  Unconditional  Universal
+fT_C = (Tsoil+5)^qfT_min*(60-Tsoil)/(((35+5)^qfT_min)*(60-35))
+variable: fVWC_C  Conditional  Universal
+fVWC_C = 
+  0  for  WFP>0.95
+  1.8327-1.4636*WFP  for  WFP<=0.95 and WFP>0.63
+  1  for  WFP<=0.63 and WFP>0.58
+  -0.3775+2.375*WFP  for  WFP<=0.58and WFP>0.4
+  0+1.4242*WFP  for  WFP<=0.4
+  0  by default
+variable: In  Unconditional  Universal
+t ha-1
+In = Fer_App/1000*C_NH4N_ratio
+variable: N_add  Unconditional  Universal
+mg N kg-1
+N_add = Fer_App/bulk_dens
+N_transformation
+flow: ammonia_emission  Conditional
+Flow from NH4 to C1
+ammonia_emission = 
+  0  for  NH4<100
+  0.004*NH4*(1-WFP1)*Tsoil1  by default
+compartment: C1  Unconditional
+kg ha-1
+dC1/dt = +ammonia_emission
+Initial Value = 0.0
+variable: CO2_daily_ex_AIM  Unconditional  Universal
+kg C ha-1 d-1
+CO2_daily_ex_AIM = (F1_CO2+F2_CO2+F3_CO2+F4_CO2)*1000
+variable: CO2_daily_ex_AIM2  Unconditional  Universal
+mg kg-1
+CO2_daily_ex_AIM2 = CO2_daily_ex_AIM/1.37
+variable: DFC  Unconditional
+DFC = (porosity*(1-WFP1))^(10/3)/(porosity^2)
+variable: F_CO2  Unconditional
+F_CO2 = 1*CO2_daily_ex_AIM2^1.3
+flow: F_Den_NO3_N2  Unconditional
+Flow from NO3 to N2_den
+F_Den_NO3_N2 = min(F_CO2,F_NO3)*Fr_WFPS
+flow: F_Nitri_NH4_NO2  Unconditional  Universal
+Flow from NH4 to NO2
+F_Nitri_NH4_NO2 = k_nit*NH4*fT_nit*fVWC_F
+flow: F_Nitri_NO2_NO3  Unconditional
+Flow from NO2 to NO3
+F_Nitri_NO2_NO3 = k_nit*10* NO2*fT_nit*fVWC_F
+variable: F_NO3  Unconditional
+F_NO3 = 1.15*NO3^0.57
+variable: F_WFPS  Conditional
+F_WFPS = 
+  100  for  NO3<10
+  max(0.1,1.5*WFP1-0.32)  by default
+variable: Fr_NO3_CO2_ratio  Unconditional
+Fr_NO3_CO2_ratio = max(0.16*k1,k1*exp(-0.8*NO3_CO2_ratio))
+variable: Fr_WFPS  Unconditional
+Fr_WFPS = max(0.1,1.5*WFP1-0.32)
+variable: fT_den  Unconditional  Global
+fT_den = (Tsoil1+15)^qfT_den*(75-Tsoil1)/((30+15)^qfT_den)/(75-30)
+variable: fT_nit  Unconditional  Global
+fT_nit = (Tsoil1+10)^qfT_nit*(50-Tsoil1)/(((30+10)^qfT_nit)*(50-30))
+variable: fVWC_D  Conditional  Global
+fVWC_D = 
+  1  for  WFP1>=0.9
+  ((WFP1-St)/(1-St ))^w  for  WFP1<0.9 and WFP1>=St
+  0  for  WFP1<St
+  0  by default
+variable: fVWC_F  Conditional  Global
+fVWC_F = 
+  0  for  WFP1>0.8
+  3.8-4.76*WFP1  for  WFP1<=0.8 and WFP1>0.59
+  1  for  WFP1<=0.59and WFP1>0.54
+  -0.19+2.2*WFP1  for  WFP1<=0.54and WFP1>0.087
+  0  for  WFP1<=0.087
+  0  by default
+variable: k1  Unconditional
+k1 = max(1.7,38.4-350*DFC)
+compartment: N2_den  Unconditional
+mg N kg-1
+dN2_den/dt = +F_Den_NO3_N2
+Initial Value = 0.0
+variable: N2O_daily  Unconditional
+kg N ha-1 d-1
+N2O_daily = (N2O_emi_denit+N2O_emi_nit)*bulk_dens
+compartment: N2O_emi  Unconditional
+mg N kg-1 
+dN2O_emi/dt = +N2O_emi_nit
+Initial Value = 0.0
+variable: N2O_emi_denit  Unconditional
+N2O_emi_denit = F_Den_NO3_N2/(1+R_N2_N2O)
+flow: N2O_emi_nit  Unconditional
+Flow from NO2 to N2O_emi
+N2O_emi_nit = Kn*NO2/(1+R_NO)
+compartment: NH4  Unconditional  Universal
+mg N kg-1
+dNH4/dt = +(F1/CN_aom1+F2/CN_aom2+F3/CN_nom)/bulk_dens*1000-F_Nitri_NH4_NO2-ammonia_emission
+Initial Value = 5.6+Fer_App/bulk_dens*0.9
+variable: Nmin  Unconditional
+Nmin = NH4+NO3
+compartment: NO2  Unconditional
+mg N kg-1
+dNO2/dt = -F_Nitri_NO2_NO3-N2O_emi_nit+F_Nitri_NH4_NO2
+Initial Value = 0.0
+compartment: NO3  Unconditional  Universal
+mg N kg-1
+dNO3/dt = +F_Nitri_NO2_NO3*0.9-F_Den_NO3_N2
+Initial Value = 9.33
+variable: NO3_CO2_ratio  Unconditional
+NO3_CO2_ratio = NO3/CO2_daily_ex_AIM2
+variable: qfT_den  Unconditional
+qfT_den = (30+15)/(75-30)
+variable: R_N2_N2O  Unconditional
+R_N2_N2O = Fr_NO3_CO2_ratio*F_WFPS
+variable: R_NO  Unconditional  Universal
+R_NO = 10^(-3.79*WFP1+2.73)
+define value: St  Unconditional  Universal
+St = 0.55
+variable: Tsoil1  Unconditional  Universal
+Tsoil1 = Tsoil
+define value: w  Unconditional  Universal
+w = 2.57
+variable: WFP1  Unconditional  Universal
+WFP1 = WFP
+variable: qfT_min  Unconditional
+qfT_min = (35-(-5))/(60-35)
+SOC_decay
+compartment: AIM  Unconditional
+t ha-1
+dAIM/dt = -F5_CO2
+Initial Value = 0.0
+compartment: AOM1  Unconditional
+t ha-1
+dAOM1/dt = -F1-F1_CO2
+Initial Value = 1.0846
+compartment: AOM2  Unconditional
+t ha-1
+dAOM2/dt = -F2-F2_CO2
+Initial Value = 0.15
+variable: CO2_daily  Unconditional
+kg C ha-1 d-1
+CO2_daily = (F1_CO2+F2_CO2+F3_CO2+F4_CO2+F5_CO2)*1000
+compartment: cumCO2  Unconditional
+t ha-1
+dcumCO2/dt = (+F2_CO2+F1_CO2+F4_CO2+F3_CO2+F5_CO2)*1000
+Initial Value = 0.0
+flow: F1  Unconditional  Universal
+Flow from AOM1 to SMB
+F1 = kaom1*Esmb*AOM1*fT_C*fVWC_C
+flow: F1_CO2  Unconditional  Universal
+Flow from AOM1 to cumCO2
+F1_CO2 = kaom1*(1-Esmb) * AOM1*fT_C*fVWC_C
+flow: F2  Unconditional  Universal
+Flow from AOM2 to SMB
+F2 = kaom2*Esmb* AOM2*fT_C*fVWC_C
+flow: F2_CO2  Unconditional  Universal
+Flow from AOM2 to cumCO2
+F2_CO2 = kaom2*(1-Esmb) * AOM2*fT_C*fVWC_C
+flow: F3  Unconditional  Universal
+Flow from NOM to SMB
+F3 = knom*Esmb* NOM*fT_C*fVWC_C
+flow: F3_CO2  Unconditional  Universal
+Flow from NOM to cumCO2
+F3_CO2 = knom*(1-Esmb)* NOM*fT_C*fVWC_C
+flow: F4  Unconditional
+Flow from SMB to NOM
+F4 = tsmb*rsmb*fClay* SMB*fT_C*fVWC_C
+flow: F4_CO2  Unconditional  Universal
+Flow from SMB to cumCO2
+F4_CO2 = tsmb*(1-rsmb)* fClay*SMB*fT_C*fVWC_C
+flow: F5_CO2  Unconditional  Universal
+Flow from AIM to cumCO2
+F5_CO2 = taim* AIM
+compartment: NOM  Unconditional
+t ha-1
+dNOM/dt = +F4-F3-F3_CO2
+Initial Value = 27.115
+independent event: organicInput  Active  Reset
+Period:  1
+1
+Actions:
+if(t=1)
+{AOM1=AOM1+faom1*In;
+AOM2=AOM2+faom2*In;
+//NOM=NOM+fnom*In;
+AIM=AIM+faim*In}
+else {}
+compartment: SMB  Unconditional
+t ha-1
+dSMB/dt = +F1+F2-F4+F3-F4_CO2
+Initial Value = 0.5423
+lookup table: T1
+t  Control
+T_soil  Controlled by: t
+  Linear interpolation
+S_moi  Controlled by: t
+  Linear interpolation
+variable: Tsoil  Unconditional  Universal
+Tsoil = T_soil
+variable: VWC  Unconditional  Universal
+VWC = Thetas*S_moi/100
+variable: WFP  Unconditional  Universal
+WFP = VWC/porosity

@@ -1,0 +1,16 @@
+Main
+flow: dW_dt  Unconditional
+Flow from Educt to Product
+dW_dt = mue * Educt*Temp*Product
+compartment: Educt  Unconditional
+dEduct/dt = -dW_dt
+Initial Value = 100
+compartment: Product  Unconditional
+dProduct/dt = +dW_dt
+Initial Value = 0.001
+variable: rgr  Unconditional
+rgr = dW_dt/Product
+lookup table: TempData
+t  Control
+Temp  Controlled by: t
+  Linear interpolation

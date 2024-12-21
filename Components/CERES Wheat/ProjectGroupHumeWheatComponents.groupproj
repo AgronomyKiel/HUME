@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{A7D9C55F-5DFB-4E9C-88F1-38245E6A7B31}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="PackageHumeWheat.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="PackageHumeWheat">
+        <MSBuild Projects="PackageHumeWheat.dproj"/>
+    </Target>
+    <Target Name="PackageHumeWheat:Clean">
+        <MSBuild Projects="PackageHumeWheat.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PackageHumeWheat:Make">
+        <MSBuild Projects="PackageHumeWheat.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="PackageHumeWheat"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="PackageHumeWheat:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="PackageHumeWheat:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

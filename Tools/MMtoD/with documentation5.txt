@@ -1,0 +1,265 @@
+Main
+compartment: AIM  Unconditional
+t ha-1
+dAIM/dt = -F5_CO2
+Initial Value = 0.0
+compartment: AOM1  Unconditional
+t ha-1
+dAOM1/dt = -F1-F1_CO2
+Initial Value = 1.0846
+compartment: AOM2  Unconditional
+t ha-1
+dAOM2/dt = -F2-F2_CO2
+Initial Value = 0.15
+define value: Clay  Unconditional  Universal
+%
+Clay = 13.2/100
+variable: CN_aom1  Unconditional  Universal
+CN_aom1 = 20
+variable: CN_aom2  Unconditional  Universal
+CN_aom2 = 7
+variable: CN_nom  Unconditional  Universal
+CN_nom = 11
+variable: CN_smb  Unconditional  Universal
+CN_smb = 7.8
+variable: CO2_daily  Unconditional
+kg C ha-1 d-1
+CO2_daily = (F1_CO2+F2_CO2+F3_CO2+F4_CO2+F5_CO2)*1000
+compartment: cumCO2  Unconditional
+t ha-1
+dcumCO2/dt = (+F2_CO2+F1_CO2+F4_CO2+F3_CO2+F5_CO2)*1000
+Initial Value = 0.0
+flow: D1_N  Unconditional
+Flow from NO3 to NO2_den
+D1_N = k1den*NO3*Rden/Denom*fVWC_D1*fT_den
+flow: D2_N  Unconditional  Universal
+Flow from NO2_den to N2O_den
+D2_N = k2den*NO2_den*Rden/Denom*fVWC_D1*fT_den
+flow: D3_N  Unconditional
+Flow from N2O_den to N2_den
+D3_N = R_N2/(1+R_N2)*(D2_N-0.3650/1500)
+variable: Denom  Unconditional  Global
+Denom = k1den*NO3+k2den*NO2_den+k3den*N2O_den
+flow: F1  Unconditional  Universal
+Flow from AOM1 to SMB
+F1 = kaom1*Esmb*AOM1*fT_C*fVWC_C
+flow: F1_CO2  Unconditional  Universal
+Flow from AOM1 to cumCO2
+F1_CO2 = kaom1*(1-Esmb) * AOM1*fT_C*fVWC_C
+flow: F1_N  Unconditional  Universal
+Flow from NH4 to NO2
+F1_N = k_nit*NH4*fT_nit*fVWC_F1
+flow: F2  Unconditional  Universal
+Flow from AOM2 to SMB
+F2 = kaom2*Esmb* AOM2*fT_C*fVWC_C
+flow: F2_CO2  Unconditional  Universal
+Flow from AOM2 to cumCO2
+F2_CO2 = kaom2*(1-Esmb) * AOM2*fT_C*fVWC_C
+flow: F2_N  Unconditional
+Flow from NO2 to NO3
+F2_N = k_nit*10* NO2*fT_nit*fVWC_F1
+flow: F3  Unconditional  Universal
+Flow from NOM to SMB
+F3 = knom*Esmb* NOM*fT_C*fVWC_C
+flow: F3_CO2  Unconditional  Universal
+Flow from NOM to cumCO2
+F3_CO2 = knom*(1-Esmb)* NOM*fT_C*fVWC_C
+flow: F4  Unconditional
+Flow from SMB to NOM
+F4 = tsmb*rsmb*fClay* SMB*fT_C*fVWC_C
+flow: F4_CO2  Unconditional  Universal
+Flow from SMB to cumCO2
+F4_CO2 = tsmb*(1-rsmb)* fClay*SMB*fT_C*fVWC_C
+flow: F5_CO2  Unconditional  Universal
+Flow from AIM to cumCO2
+F5_CO2 = taim* AIM
+variable: faim  Conditional  Universal
+faim = 
+  0.01  for  value_adjust=2
+  0.01  for  value_adjust=3
+  0.01  for  value_adjust=1
+  0  by default
+variable: faom1  Conditional  Universal
+faom1 = 
+  0.49  for  value_adjust=3
+  0.2  for  value_adjust=2
+  0.2969999  for  value_adjust=1
+  0  by default
+variable: faom2  Conditional  Universal
+faom2 = 
+  0.05  for  value_adjust=3
+  0.05  for  value_adjust=2
+  0.45  for  value_adjust=1
+  0  by default
+variable: fClay  Unconditional  Universal
+fClay = 1-2*min(0.25,Clay)
+define value: Fer_App  Unconditional  Universal
+kg N ha-1
+Fer_App = 360
+variable: fnom  Conditional  Universal
+fnom = 
+  0.46  for  value_adjust=3
+  0.8  for  value_adjust=2
+  0.203  for  value_adjust=1
+  0  by default
+variable: fT_C  Unconditional  Universal
+fT_C = (Tsoil+5)^qfT*(60-Tsoil)/(((35+5)^qfT)*(60-35))
+variable: fT_den  Unconditional  Global
+fT_den = (Tsoil1+15)^qfT_den*(75-Tsoil1)/((30+15)^qfT_den)/(75-30)
+variable: fT_nit  Unconditional  Global
+fT_nit = (Tsoil1+10)^qfT_nit*(50-Tsoil1)/(((30+10)^qfT_nit)*(50-30))
+variable: fVWC_C  Conditional  Universal
+fVWC_C = 
+  0  for  WFP>0.95
+  1.8327-1.4636*WFP  for  WFP<=0.95 and WFP>0.63
+  1  for  WFP<=0.63 and WFP>0.58
+  -0.3775+2.375*WFP  for  WFP<=0.58and WFP>0.4
+  0+1.4242*WFP  for  WFP<=0.4
+  0  by default
+variable: fVWC_D1  Conditional  Global
+fVWC_D1 = 
+  1  for  WFP1>=1
+  ((WFP1-St)/(1-St ))^w  for  WFP1<1 and WFP1>=St
+  0  for  WFP1<St
+  0  by default
+variable: fVWC_F1  Conditional  Global
+fVWC_F1 = 
+  0  for  WFP1>0.8
+  3.8-4.76*WFP1  for  WFP1<=0.8 and WFP1>0.59
+  1  for  WFP1<=0.59and WFP1>0.54
+  -0.19+2.2*WFP1  for  WFP1<=0.54and WFP1>0.087
+  0  for  WFP1<=0.087
+  0  by default
+variable: In  Unconditional  Universal
+t ha-1
+In = Fer_App/1000*8.6
+variable: kaom1  Conditional  Universal
+kaom1 = 
+  0.00031666  for  value_adjust=3
+  0.0012  for  value_adjust=2
+  0.003  for  value_adjust=1
+  0  by default
+variable: kaom2  Conditional  Universal
+kaom2 = 
+  0.00126681  for  value_adjust=3
+  0.10  for  value_adjust=2
+  0.04  for  value_adjust=1
+  0  by default
+variable: knom  Conditional  Universal
+knom = 
+  6.08333333e-08  for  value_adjust=3
+  0.00000148  for  value_adjust=2
+  0.00000146  for  value_adjust=1
+  0  by default
+variable: N_add  Unconditional  Universal
+mg N kg-1
+N_add = Fer_App/1.51
+compartment: N2_den  Unconditional
+mg N kg-1
+dN2_den/dt = +D3_N
+Initial Value = 0.0
+variable: N2O_daily  Unconditional
+kg N ha-1 d-1
+N2O_daily = (N2O_emi_den+N2O_emi_nit)*1.5
+compartment: N2O_den  Unconditional  Universal
+mg N kg-1
+dN2O_den/dt = -D3_N-N2O_emi_den+D2_N
+Initial Value = 0.0
+compartment: N2O_emi  Unconditional
+mg N kg-1 
+dN2O_emi/dt = +N2O_emi_den+N2O_emi_nit
+Initial Value = 0.0
+flow: N2O_emi_den  Unconditional  Universal
+Flow from N2O_den to N2O_emi
+N2O_emi_den = 1/(1+R_N2)*(D2_N-0.3650/1500)
+flow: N2O_emi_nit  Unconditional
+Flow from NO2 to N2O_emi
+N2O_emi_nit = Kn*F1_N/(1+R_NO)
+variable: N2Oair  Unconditional
+mg m-3
+N2Oair = (310*(10^-9)*1*101325)/(8.314*(16.5+273))*14*2*1000
+compartment: NH4  Unconditional  Universal
+mg N kg-1
+dNH4/dt = (F1/CN_aom1+F2/CN_aom2+F3/CN_nom)/1.51*1000-F1_N
+Initial Value = 0
+compartment: NO2  Unconditional
+mg N kg-1
+dNO2/dt = -F2_N+F1_N-N2O_emi_nit
+Initial Value = 0.0
+compartment: NO2_den  Unconditional  Universal
+mg N kg-1
+dNO2_den/dt = +D1_N-D2_N
+Initial Value = 0.0
+compartment: NO3  Unconditional  Universal
+mg N kg-1
+dNO3/dt = +F2_N-D1_N
+Initial Value = 9.33
+compartment: NOM  Unconditional
+t ha-1
+dNOM/dt = +F4-F3-F3_CO2
+Initial Value = 27.115
+variable: Nsum  Unconditional
+mg N kg-1
+Nsum = NO3+NO2_den+N2O_den
+independent event: organicInput  Active  Reset
+Period:  1
+1
+Actions:
+if(t=1)
+{AOM1=AOM1+faom1*In;
+AOM2=AOM2+faom2*In;
+NOM=NOM+fnom*In;
+AIM=AIM+faim*In}
+else {}
+independent event: organischer_Duenger  Universal  Active  Reset
+Non-periodic triggers at:
+0
+Actions:
+GetValue ("manure adjustment: 1=adjust for Schweinegülle, 2=adjust for Gärrest_Monoferment, 3=adjust for Gärrest_Koferment","manure adjustment",value_adjust,value_adjust=1 or value_adjust=2 or value_adjust=3);
+variable: qfT  Unconditional
+qfT = (30-(-5))/(60-30)
+variable: qfT_den  Unconditional
+qfT_den = (30+15)/(75-30)
+variable: qfT_nit  Unconditional
+qfT_nit = (30-(-10))/(50-30)
+variable: R_N2  Unconditional  Universal
+R_N2 = V1/NO3*SF
+variable: R_NO  Unconditional  Universal
+R_NO = 10^(-3.79*WFP1+2.73)
+variable: Rden  Unconditional  Global
+Rden = Nsum/(Km_den+Nsum)*Rmax
+variable: Rmax  Unconditional
+Rmax = 102
+define value: SF  Unconditional  Universal
+SF = 70.19
+compartment: SMB  Unconditional
+t ha-1
+dSMB/dt = +F1+F2-F4+F3-F4_CO2
+Initial Value = 0.5423
+define value: St  Unconditional  Universal
+St = 0.49
+lookup table: T1
+t  Control
+S_moi  Controlled by: t
+  Start value interpolation
+define value: Thetas  Unconditional  Universal
+Thetas = 0.3751
+define value: Tsoil  Unconditional  Universal
+Tsoil = 16.5
+define value: Tsoil1  Unconditional  Universal
+Tsoil1 = 16.5
+variable: V1  Unconditional  Universal
+V1 = (F1_CO2+F2_CO2+F3_CO2+F4_CO2)*1000
+define value: value_adjust  Unconditional  Universal
+value_adjust = 1
+variable: Vden_max  Unconditional
+h-1
+Vden_max = (ln(2)/2-0.005)*24
+variable: VWC  Unconditional  Universal
+VWC = Thetas*S_moi/100
+define value: w  Unconditional  Universal
+w = 1.0
+variable: WFP  Unconditional
+WFP = VWC/porosity
+variable: WFP1  Unconditional  Universal
+WFP1 = VWC/porosity

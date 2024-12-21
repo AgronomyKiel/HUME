@@ -9,7 +9,7 @@ uses
   VCLTee.Chart, VCLTee.Series,
   UTextFileH, UHumeShow, UFormOpt, UFormSelPar, ModLink, UFormChiSquareAnalysis,
   VCLTee.TECanvas, System.UITypes, VclTee.TeeGDIPlus, System.ImageList,
-  Vcl.ImgList; // , JvCsvData;
+  Vcl.ImgList, Vcl.WinXCtrls; // , JvCsvData;
 
 const
   MaxSeries = 1000;
@@ -34,8 +34,6 @@ type
     Timer1: TTimer;
     PageControl: TPageControl;
     TabSheetGlobal: TTabSheet;
-    LabelControlFileDesc: TLabel;
-    LabelWeathFileDesc: TLabel;
     TabSheetParameter: TTabSheet;
     TabSheetState: TTabSheet;
     TabSheetData: TTabSheet;
@@ -44,10 +42,6 @@ type
     AdvStringGridData: TAdvStringGrid;
     TabSheetModelDiagram: TTabSheet;
     TabSheetStat: TTabSheet;
-    LabelTimeStepDesc: TLabel;
-    EditTimeStep: TEdit;
-    EditStartTime: TEdit;
-    EditEndTime: TEdit;
     TabSheetResultTab: TTabSheet;
     AdvStringGridResults: TAdvStringGrid;
     TabSheetGraphResult: TTabSheet;
@@ -71,27 +65,15 @@ type
     PrintDialog1: TPrintDialog;
     ButtonSaveState: TBitBtn;
     ButtonSaveParam: TBitBtn;
-    EditControlFile: TEdit;
     OpenDialog1: TOpenDialog;
     Help1: TMenuItem;
     Info1: TMenuItem;
-    EditWeatherfile: TEdit;
     SensitivityAnalysis: TMenuItem;
     ComboBoxTimeAxisOption: TComboBox;
     LabelTimeSeriesOption: TLabel;
     SelectMeasDataCheckBox: TCheckBox;
-    StartTimePicker: TDateTimePicker;
-    EndTimePicker: TDateTimePicker;
     GroupBoxStarttime: TGroupBox;
-    GroupBoxEndtime: TGroupBox;
-    EditStateIniFileName: TEdit;
-    LabelStateIniFileName: TLabel;
-    EditParamIniFileName: TEdit;
-    LabelParamIniFileName: TLabel;
     SaveDialog1: TSaveDialog;
-    SpeedButtonChangeStateIniFile: TSpeedButton;
-    SpeedButtonChangeWeatherFile: TSpeedButton;
-    SpeedButtonChangeParamIniFile: TSpeedButton;
     SpeedChangeParamIniFile: TSpeedButton;
     BitBtnSaveParamTo: TBitBtn;
     GroupBoxWeatherDates: TGroupBox;
@@ -100,7 +82,6 @@ type
     LabelWeatherDataLatEntry: TLabel;
     LWDLabel: TLabel;
     BitBtnSaveStateTo: TBitBtn;
-    SpeedButtonChangeSTageFileName: TSpeedButton;
     SpeedButtonOpenDataFile: TSpeedButton;
     LabelOutputdatafile: TLabel;
     EditOutputdatafilename: TEdit;
@@ -126,7 +107,7 @@ type
     Statistics1: TMenuItem;
     AdvStringGridStat: TAdvStringGrid;
     ToolBarStatistics: TToolBar;
-    Panel1: TPanel;
+    PanelMainFormHeader: TPanel;
     ComboBoxIniFile: TComboBox;
     ComboBoxSubMod: TComboBox;
     LabelActIniFileDesc: TLabel;
@@ -136,7 +117,6 @@ type
     ToolBarExternals: TToolBar;
     btnAdvStatToClipBoardButton: TSpeedButton;
     btnSaveDataChanges: TSpeedButton;
-    btnButtonChangeControlFile: TSpeedButton;
     il1: TImageList;
     SpeedButtonIncFontSize: TSpeedButton;
     TabSheetDocumentation: TTabSheet;
@@ -146,16 +126,45 @@ type
     EditDokuFilename: TEdit;
     AdvStringGridModelSummary: TAdvStringGrid;
     SpeedButtonMergeData: TSpeedButton;
-    LabelOutputDirectory: TLabel;
+    btnCheckButton1: TSpeedButton;
+    Lmod: TModLink;
+ //   CheckBoxContOutput: TCheckBox;
+    GroupBoxIniFileEdits: TGroupBox;
+    GroupBoxControlFileName: TGroupBox;
+    EditControlFile: TEdit;
+    btnButtonChangeControlFile: TSpeedButton;
+    GroupBoxEndtime: TGroupBox;
+    EditEndTime: TEdit;
+    EndTimePicker: TDateTimePicker;
+    EditStartTime: TEdit;
+    DateTimePickerStart: TDateTimePicker;
+    GroupBoxTimestep: TGroupBox;
+    EditTimeStep: TEdit;
+    GroupBoxStateIniFile: TGroupBox;
+    EditStateIniFileName: TEdit;
+    SpeedButtonChangeStateIniFile: TSpeedButton;
+    GroupBoxPamIniFileName: TGroupBox;
+    EditParamIniFileName: TEdit;
+    SpeedButtonChangeParamIniFile: TSpeedButton;
+    GroupBoxWeatherFile: TGroupBox;
+    EditWeatherfile: TEdit;
+    SpeedButtonChangeWeatherFile: TSpeedButton;
+    GroupBoxOutput: TGroupBox;
+    GroupBoxOutputDirectory: TGroupBox;
     SpeedButtonOutputDirectory: TSpeedButton;
     EditOutputDirectory: TEdit;
-    BitBtnMergeWeatherFN: TBitBtn;
-    btnCheckButton1: TSpeedButton;
+    GroupBoxContinousOutput: TGroupBox;
+    ComboBoxContOutput: TComboBox;
+    GroupBoxSaveIniFileChanges: TGroupBox;
     btnButtonSaveIntegrChanges1: TSpeedButton;
     btnButtonSaveToNewIniFile1: TSpeedButton;
+    BitBtnMergeWeatherFN: TBitBtn;
+    ToggleSwitchVarContOutput: TToggleSwitch;
+    ToggleSwitchStateContOutput: TToggleSwitch;
+    ToggleSwitchExternContOutput: TToggleSwitch;
+    GroupBox1: TGroupBox;
     SpeedButtonNoContOutput: TSpeedButton;
-    Lmod: TModLink;
-    CheckBoxContOutput: TCheckBox;
+    SpeedButtonAllContOutput: TSpeedButton;
 
     procedure RunModel; virtual;
     procedure Menu_RunClick(Sender: TObject); virtual;
@@ -183,6 +192,7 @@ type
     procedure TabSheetResultTabEnter(Sender: TObject);
     // procedure ButtonSaveVarClick(Sender: TObject);
     procedure SaveVar();
+    procedure SaveExterns;
     procedure PrintButtonClick(Sender: TObject);
     procedure PageControlChange(Sender: TObject);
     procedure Info1Click(Sender: TObject);
@@ -283,7 +293,12 @@ type
     procedure SpeedButtonMergeDataClick(Sender: TObject);
     procedure SpeedButtonOutputDirectoryClick(Sender: TObject);
     procedure SpeedButtonNoContOutputClick(Sender: TObject);
-    procedure CheckBoxContOutputClick(Sender: TObject);
+//    procedure CheckBoxContOutputClick(Sender: TObject);
+    procedure ComboBoxContOutputChange(Sender: TObject);
+    procedure SpeedButtonAllContOutputClick(Sender: TObject);
+    procedure ToggleSwitchVarContOutputClick(Sender: TObject);
+    procedure ToggleSwitchStateContOutputClick(Sender: TObject);
+    procedure ToggleSwitchExternContOutputClick(Sender: TObject);
   private
     n_lineSeries, n_PointSeries, nFormGraph: Integer;
     FormGraphArray: array [1 .. 10] of TFormGraph;
@@ -322,7 +337,7 @@ implementation
 
 uses
   UState, UFormShow1_1, UMeasValue, math, UFormShowFinalValues, FormSGA,
-  Vcl.Imaging.pngimage;
+  Vcl.Imaging.pngimage, System.TypInfo;
 {$R *.DFM}
 
 function FileIsEmpty(const FileName: String): Boolean;
@@ -380,9 +395,9 @@ var
 //  CtrlfileLine : string;
 //  CtrlFile : textfile;
 
-
   i: Integer;
   ActSubMod: TSubModel;
+  SelectionStr : string;
 
 begin
  inherited;
@@ -458,18 +473,25 @@ begin
       ComboBoxTimeAxisOption.ItemIndex := 0;
       EditOutputDirectory.Text := Lmod.fModel.GM_OutPutPath;
     end;
-  end;
-  if Lmod.fModel.FPropIniFile = nil then begin
-     prop_path := ExtractFilePath(ParamStr(0));
-     fn := prop_path + 'properties.ini';
-    // fn := 'properties.ini';
-     Lmod.fModel.FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
+  if Lmod.fModel <> nil then
+  begin
+    if Lmod.fModel.FPropIniFile = nil then
+    begin
+      prop_path := ExtractFilePath(ParamStr(0));
+      fn := prop_path + 'properties.ini';
+      // fn := 'properties.ini';
+      Lmod.fModel.FPropIniFile := TMyIniFile.Create(fn, TEncoding.UTF8);
+    end;
   end;
   self.Lmod.fModel.FPropIniFile.ReadInteger('ComboBoxes', ComboBoxSubMod.Name,ComboBoxSubMod.ItemIndex);
   self.Lmod.fModel.FPropIniFile.ReadInteger('ComboBoxes', ComboBoxIniFile.Name,ComboBoxIniFile.ItemIndex);
+  SelectionStr := Lmod.fModel.FPropIniFile.ReadString('ModelSettings', 'ContOutput', 'ContOutput');
+  Lmod.fModel.OptContOutput :=  TContOutput(GetEnumValue(System.TypeInfo(TContOutput), SelectionStr));
+  self.ComboBoxContOutput.ItemIndex := GetEnumValue(System.TypeInfo(TContOutput), SelectionStr);
   // if PropIniFile has already content
   if (ComboBoxSubMod.ItemIndex <>-1) and (ComboBoxIniFile.ItemIndex <> -1) then
     ComboBoxSubMod.OnChange(nil);
+  end;
 
   // StatusBarMain.Panels[2].Style := psOwnerDraw;
   EXE_PATH := ExtractFilePath(application.EXEName);
@@ -482,9 +504,14 @@ begin
   img_savetoall := TBitmap.create();
   il1.GetBitmap(1, img_help);
   il1.GetBitmap(0, img_savetoall);
-  CtrlFileFN := self.Lmod.fModel.FPropIniFile.ReadString('Files', 'ControlFile', '');
-  if CtrlFileFN = '' then CtrlFileFN := Lmod.fModel.GM_ControlFile;
-  EditControlFile.Text := CtrlFileFN;
+  if self.Lmod.fModel <> nil then
+  begin
+   CtrlFileFN := self.Lmod.fModel.FPropIniFile.ReadString('Files',
+      'ControlFile', '');
+    if CtrlFileFN = '' then
+      CtrlFileFN := Lmod.fModel.GM_ControlFile;
+    EditControlFile.Text := CtrlFileFN;
+  end;
  // Lmod.fModel.Set_ControlFileFN(CtrlFileFN);
 //  Lmod.fModel.GM_ControlFile := CtrlFileFN;
   updateForm;
@@ -545,7 +572,7 @@ begin
 
     EditParamFileName.Text := Lmod.fModel.ParamInifile.FileName;
     Clear;
-    Rows[0].commatext := 'Name, Unit, Value, Save_to_all_Inis,';
+    Rows[0].commatext := 'Name, Unit, Value, Save_to_all_Inis, Info';
     RowCount := 2;
     FixedRows := 1;
 
@@ -595,7 +622,7 @@ begin
     EditStateFileName.Text := Lmod.fModel.StateIniFile.FileName;
     Clear;
     Rows[0].commatext :=
-      'Name, Unit, Ini.Value, SaveToAllInis, WriteToFile, Plot, WriteFinalValue, GlobalOutput,';
+      'Name, Unit, Ini.Value, SaveToAllInis, WriteToFile, Plot, WriteFinalValue, GlobalOutput, Ínfo';
     // Description';
     RowCount := 2;
     FixedRows := 1;
@@ -644,7 +671,7 @@ begin
   begin
     BeginUpdate;
     Clear;
-    Rows[0].commatext := 'Name, Unit, Factor, Source, Help, WriteToFile, Plot';
+    Rows[0].commatext := 'Name, Unit, Factor, Source, WriteToFile, Plot, Info';
     RowCount := 2;
     FixedRows := 1;
     actSubModIndex := ComboBoxSubMod.ItemIndex;
@@ -659,14 +686,13 @@ begin
           line := name + ',' + u + ',' + floattoStrF(C_f, ffgeneral, 6, 3) +
             ',' + Source;
         Rows[i + 1].commatext := line;
-        if ExVar.Comment <> '' then
-        begin
-          AddBitButton(4, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
-        end;
+        AddCheckBox(4, i + 1, True, True);
+        SetCheckBoxState(4, i + 1, ExVar.writeToFile);
         AddCheckBox(5, i + 1, True, True);
-        SetCheckBoxState(5, i + 1, ExVar.writeToFile);
-        AddCheckBox(6, i + 1, True, True);
-        SetCheckBoxState(6, i + 1, ExVar.PlotToGraph);
+        SetCheckBoxState(5, i + 1, ExVar.PlotToGraph);
+        if ExVar.Comment <> '' then
+          AddBitButton(6, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
+
       end;
     end;
     AutoSizeColumns(True);
@@ -941,7 +967,7 @@ begin
       Legend.LegendStyle := lsSeries;
     end;
 
-    if SubModel.OptContOutput then begin
+    if (SubModel.OptContOutput) or (Lmod.fModel.OptContOutput = AllContoutput) then begin
       DataFileSim := TTextFileH.create;
       if fileexists(SubModel.fn_state) then begin
         DataFileSim.init(SubModel.fn_state);
@@ -1003,7 +1029,7 @@ begin
 
     SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
 
-    if SubModel.SomethingMeasured then
+      if SubModel.SomethingMeasured then
     begin
       filedata := TStringList.create;
       try
@@ -1080,6 +1106,28 @@ end;
 // ==============================================================================
 // ComboxBox
 // ==============================================================================
+
+procedure TFormMod.ComboBoxContOutputChange(Sender: TObject);
+
+{const
+  ContOutputstr : array of string = ['NoContOutput',
+                'AllContoutput',
+                'SubmodelSpecific'];    }
+
+var
+  Selndx : integer;
+  SelectionStr : string;
+  Selection : TContoutput;
+  Model : TMod;
+
+
+begin
+  Selndx := self.ComboBoxContOutput.ItemIndex;
+  SelectionStr := GetEnumName(System.TypeInfo(TContOutput), Selndx);
+  Model := Lmod.fModel;
+  if Selndx <> -1 then
+    Model.FPropIniFile.WriteString('ModelSettings', 'ContOutput', SelectionStr) ;
+end;
 
 procedure TFormMod.ComboBoxInifileChange(Sender: TObject);
 var
@@ -1388,29 +1436,31 @@ begin
   // UpdateStringGridParam;
 end;
 
-{ procedure TFormMod.SaveExterns;
+ procedure TFormMod.SaveExterns;
 
-  var
-  actSubModIndex, i: Integer;
-  SubModel: TSubModel;
-  ActExVar: TExternV;
-  index: Integer;
-  begin
-  actSubModIndex := ComboBoxSubMod.ItemIndex;
-  SubModel :=
-  TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
-  with self.AdvStringGridExternV do begin
-  for i := 1 to RowCount - 1 do begin
-  index := SubModel.ParStrList.IndexOf(cells[0, i]);
-  if index >= 0 then begin
-  ActExVar := TExternV(SubModel.ExternVStrList.objects[index]);
-  GetCheckBoxState(5, i, ActExVar.PlotToGraph);
-  end;
-  end;
-  end;
-  end; }
+ var
+   actSubModIndex, i: Integer;
+   SubModel: TSubModel;
+   ActExVar: TExternV;
+   index: Integer;
+ begin
+   actSubModIndex := ComboBoxSubMod.ItemIndex;
+   SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+   with self.AdvStringGridExternV do
+   begin
+     for i := 1 to RowCount - 1 do
+     begin
+       index := SubModel.ExternVStrList.indexOf(cells[0, i]);
+       if index >= 0 then
+       begin
+         ActExVar := TExternV(SubModel.ExternVStrList.objects[index]);
+         GetCheckBoxState(5, i, ActExVar.PlotToGraph);
+       end;
+     end;
+   end;
+ end;
 
-procedure TFormMod.SaveVar();
+ procedure TFormMod.SaveVar();
 var
   ActVar: TVar;
   i, actSubModIndex, VarNdx: Integer;
@@ -1923,14 +1973,52 @@ end;
 
 procedure TFormMod.AdvStringGridStateCheckBoxClick(Sender: TObject;
   aCol, aRow: Integer; state: Boolean);
+
+const
+  ColWriteToFile = 4;
+  ColPlot = 5;
+
 begin
+  // if checkbox plot is true, checkbox WriteToFile has also be true
+  if aCol= ColPlot then begin
+     AdvStringGridState.GetCheckBoxState(ColPlot, aRow, state);
+     if state = true then
+       AdvStringGridState.SetCheckBoxState(ColWriteToFile, aRow, state);
+  end;
+
+  // if checkbox write to file is false, checkbox plot has also be false
+  if aCol= ColWriteToFile then begin
+     AdvStringGridState.GetCheckBoxState(ColWriteToFile,aRow, state);
+     if state = false then
+       AdvStringGridState.SetCheckBoxState(ColPlot, aRow, state);
+  end;
+
   ButtonSaveStateClick(Sender);
   AdvStringGridState.GotoCell(aCol, min(aRow+1,  self.AdvStringGridState.RowCount-1));
 end;
 
 procedure TFormMod.AdvStringGridVarCheckBoxClick(Sender: TObject;
   aCol, aRow: Integer; state: Boolean);
-begin
+
+const
+  ColWriteToFile = 2;
+  ColPlot = 3;
+
+  begin
+  // if checkbox plot is true, checkbox WriteToFile has also be true
+  if aCol= ColPlot then begin
+     AdvStringGridVar.GetCheckBoxState(ColPlot, aRow, state);
+     if state = true then
+       AdvStringGridVar.SetCheckBoxState(ColWriteToFile, aRow, state);
+  end;
+
+  // if checkbox write to file is false, checkbox plot has also be false
+  if aCol= ColWriteToFile then begin
+     AdvStringGridVar.GetCheckBoxState(ColWriteToFile,aRow, state);
+     if state = false then
+       AdvStringGridVar.SetCheckBoxState(ColPlot, aRow, state);
+  end;
+
   self.SaveVar();
   AdvStringGridVar.GotoCell(aCol, min(aRow+1,  self.AdvStringGridVar.RowCount-1));
 end;
@@ -2157,17 +2245,23 @@ end;
 // CheckBoxen
 // ==============================================================================
 
-procedure TFormMod.CheckBoxContOutputClick(Sender: TObject);
+{procedure TFormMod.CheckBoxContOutputClick(Sender: TObject);
 var
   i : integer;
   actIniFile: TMemInifile;
   actIniFN, sec_str, topic_str : string;
 
 begin
-  if CheckBoxContOutput.Checked then
+  if CheckBoxContOutput.Checked then begin
     Lmod.fModel.ContOutput := True
-  else
-    Lmod.fModel.ContOutput := false;
+  end
+  else begin
+    Lmod.fModel.ContOutput := false
+  end;
+
+  Lmod.fModel.FPropIniFile.WriteBool('ModelSettings','ContOutput', Lmod.fModel.ContOutput);
+  Lmod.fModel.FPropIniFile.UpdateFile;
+
   for i := 0 to self.Lmod.fModel.FIniFiles.count - 1 do
   begin
     actIniFile := TMyIniFile(Lmod.fModel.FIniFiles.objects[i]);
@@ -2180,7 +2274,7 @@ begin
 //  updateForm;
   Lmod.fModel.Init(Lmod.fModel.ActIniFile);
   UpdateStringGridOptions;
-end;
+end;}
 
 procedure TFormMod.CheckBoxDataDateFormatClick(Sender: TObject);
 var
@@ -2201,9 +2295,29 @@ end;
 
 procedure TFormMod.AdvStringGridExternVCheckBoxClick(Sender: TObject;
   aCol, aRow: Integer; state: Boolean);
-begin
-  // self.SaveExterns;
-  self.ButtonSaveExVarClick(Sender);
+
+
+const
+  ColWriteToFile = 4;
+  ColPlot = 5;
+
+  begin
+  // if checkbox plot is true, checkbox WriteToFile has also be true
+  if aCol= ColPlot then begin
+     AdvStringGridExternV.GetCheckBoxState(ColPlot, aRow, state);
+     if state = true then
+       AdvStringGridExternV.SetCheckBoxState(ColWriteToFile, aRow, state);
+  end;
+
+  // if checkbox write to file is false, checkbox plot has also be false
+  if aCol= ColWriteToFile then begin
+     AdvStringGridExternV.GetCheckBoxState(ColWriteToFile,aRow, state);
+     if state = false then
+       AdvStringGridExternV.SetCheckBoxState(ColPlot, aRow, state);
+  end;
+
+  SaveExterns;
+//  self.ButtonSaveExVarClick(Sender);
    AdvStringGridExternV.GotoCell(aCol, min(aRow+1,  self.AdvStringGridExternV.RowCount-1));
 
 end;
@@ -2632,6 +2746,25 @@ begin
   end;
 end;
 
+
+
+procedure SetToOutput(var strList: TStringList);
+
+var
+  i: Integer;
+  entity: THumeNumEntity;
+begin
+  for i := 0 to strList.count - 1 do
+  begin
+    entity := THumeNumEntity(strList.objects[i]);
+    with entity do
+    begin
+      writeToFile := true;
+      PlotToGraph := true;
+    end;
+  end;
+end;
+
 procedure TFormMod.SpeedButtonNoContOutputClick(Sender: TObject);
 
 var
@@ -2645,11 +2778,40 @@ begin
     with ActSubMod do
     begin
       ActSubMod.OptContOutput := false;
+//      ActSubMod.OptionIniF.WriteString(ActSubMod, 'ContOutput', 'false');
       SetToNoOutput(stateStrList);
       updatePropIniFile(stateStrList, ActSubMod.name);
       SetToNoOutput(VarStrList);
       updatePropIniFile(VarStrList, ActSubMod.name);
       SetToNoOutput(ExternVStrList);
+      updatePropIniFile(ExternVStrList, ActSubMod.name);
+      // SetToNoOutput(ParStrList);
+      // updatePropIniFile(ParStrList, ActSubMod.Name);
+    end;
+  end;
+  self.Lmod.fModel.init(Lmod.fModel.ActIniFile);
+  self.Lmod.fModel.FPropIniFile.UpdateFile;
+  self.UpdateStringGridOptions;
+end;
+
+procedure TFormMod.SpeedButtonAllContOutputClick(Sender: TObject);
+
+var
+  i: Integer;
+  ActSubMod: TSubModel;
+
+begin
+  for i := 0 to Lmod.fModel.SubModStrList.count - 1 do
+  begin
+    ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[i]);
+    with ActSubMod do
+    begin
+      ActSubMod.OptContOutput := true;
+      SetToOutput(stateStrList);
+      updatePropIniFile(stateStrList, ActSubMod.name);
+      SetToOutput(VarStrList);
+      updatePropIniFile(VarStrList, ActSubMod.name);
+      SetToOutput(ExternVStrList);
       updatePropIniFile(ExternVStrList, ActSubMod.name);
       // SetToNoOutput(ParStrList);
       // updatePropIniFile(ParStrList, ActSubMod.Name);
@@ -2828,7 +2990,7 @@ begin
     UpdatePageResultTab;
     UpdatePageGraphResult;
     ComboBoxIniFile.hint := ComboBoxIniFile.Items[ComboBoxIniFile.ItemIndex];
-    SpeedButtonFinalvalues.visible := Lmod.fModel.FinalOutput;
+ //   SpeedButtonFinalvalues.visible := Lmod.fModel.FinalOutput;
   end
   else
   begin
@@ -2957,12 +3119,12 @@ end;
 procedure TFormMod.EditStartTimeChange(Sender: TObject);
 begin
   inherited;
-  if StartTimePicker.date < Lmod.fModel.FirstWeatherData then
+  if DateTimePickerStart.date < Lmod.fModel.FirstWeatherData then
     EditStartTime.font.color := clRed
   else
     EditStartTime.font.color := clBlack;
 
-  StartTimePicker.date := StrToINt(EditStartTime.Text);
+  DateTimePickerStart.date := StrToINt(EditStartTime.Text);
 end;
 
 procedure TFormMod.EditEndTimeChange(Sender: TObject);
@@ -2979,7 +3141,7 @@ end;
 procedure TFormMod.StartTimePickerChange(Sender: TObject);
 begin
   inherited;
-  EditStartTime.Text := FloatToStr(TRUNC(StartTimePicker.date));
+  EditStartTime.Text := FloatToStr(TRUNC(DateTimePickerStart.date));
 end;
 
 procedure TFormMod.EndTimePickerChange(Sender: TObject);
@@ -3201,6 +3363,137 @@ begin
   begin
     showmessage('Kein aktives Submodel gefunden!');
     exit;
+  end;
+end;
+
+
+
+procedure TFormMod.ToggleSwitchExternContOutputClick(Sender: TObject);
+
+var
+  onState : boolean;
+  i, actSubModIndex: Integer;
+  ActSubMod: TSubModel;
+
+begin
+ if ToggleSwitchExternContOutput.state = tssOn then
+  begin
+    ToggleSwitchExternContOutput.ThumbColor := $008000; // clYellowgreen;
+    actSubModIndex := ComboBoxSubMod.ItemIndex;
+    if actSubModIndex <> -1 then
+    begin
+      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      with ActSubMod do
+      begin
+        SetToOutput(ExternVStrList);
+        UpdateStringGridExternV;
+        updatePropIniFile(ExternVStrList, ActSubMod.Name);
+      end;
+    end;
+  end
+  else
+  begin
+    ToggleSwitchExternContOutput.ThumbColor := $0000FF;
+    actSubModIndex := ComboBoxSubMod.ItemIndex;
+    if actSubModIndex <> -1 then
+    begin
+      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      with ActSubMod do
+      begin
+        SetToNoOutput(ExternVStrList);
+        UpdateStringGridExternV;
+        updatePropIniFile(ExternVStrList, ActSubMod.Name);
+      end;
+    end;
+    self.Lmod.fModel.init(Lmod.fModel.actIniFile);
+    self.Lmod.fModel.FPropIniFile.UpdateFile;
+  end;
+
+end;
+
+procedure TFormMod.ToggleSwitchStateContOutputClick(Sender: TObject);
+
+var
+  onState : boolean;
+  i, actSubModIndex: Integer;
+  ActSubMod: TSubModel;
+
+begin
+ if ToggleSwitchStateContOutput.state = tssOn then
+  begin
+    ToggleSwitchStateContOutput.ThumbColor := $008000; // clYellowgreen;
+    actSubModIndex := ComboBoxSubMod.ItemIndex;
+    if actSubModIndex <> -1 then
+    begin
+      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      with ActSubMod do
+      begin
+        SetToOutput(StateStrList);
+        UpdateStringGridState;
+        updatePropIniFile(StateStrList, ActSubMod.Name);
+      end;
+    end;
+  end
+  else
+  begin
+    ToggleSwitchStateContOutput.ThumbColor := $0000FF;
+    actSubModIndex := ComboBoxSubMod.ItemIndex;
+    if actSubModIndex <> -1 then
+    begin
+      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      with ActSubMod do
+      begin
+        SetToNoOutput(StateStrList);
+        UpdateStringGridState;
+        updatePropIniFile(StateStrList, ActSubMod.Name);
+      end;
+    end;
+    self.Lmod.fModel.init(Lmod.fModel.actIniFile);
+    self.Lmod.fModel.FPropIniFile.UpdateFile;
+  end;
+end;
+
+
+
+procedure TFormMod.ToggleSwitchVarContOutputClick(Sender: TObject);
+
+var
+  onState : boolean;
+  i, actSubModIndex: Integer;
+  ActSubMod: TSubModel;
+
+begin
+ if ToggleSwitchVarContOutput.state = tssOn then
+  begin
+    ToggleSwitchVarContOutput.ThumbColor := $008000; // clYellowgreen;
+    actSubModIndex := ComboBoxSubMod.ItemIndex;
+    if actSubModIndex <> -1 then
+    begin
+      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      with ActSubMod do
+      begin
+        SetToOutput(VarStrList);
+        UpdateStringGridVar;
+        updatePropIniFile(VarStrList, ActSubMod.Name);
+      end;
+    end;
+  end
+  else
+  begin
+    ToggleSwitchVarContOutput.ThumbColor := $0000FF;
+    actSubModIndex := ComboBoxSubMod.ItemIndex;
+    if actSubModIndex <> -1 then
+    begin
+      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      with ActSubMod do
+      begin
+        SetToNoOutput(VarStrList);
+        UpdateStringGridVar;
+        updatePropIniFile(VarStrList, ActSubMod.Name);
+      end;
+    end;
+    self.Lmod.fModel.init(Lmod.fModel.actIniFile);
+    self.Lmod.fModel.FPropIniFile.UpdateFile;
   end;
 end;
 

@@ -1,0 +1,3750 @@
+{$A+,B+,C+,D+,E-,F-,G+,H+,I+,J+,K-,L+,M-,N+,O+,P+,Q+,R+,S-,T+,U-,V+,W-,X+,Y-,Z1}
+{$MINSTACKSIZE $00004000}
+{$MAXSTACKSIZE $00100000}
+{$IMAGEBASE $00400000}
+{$APPTYPE GUI}
+unit UMod;
+
+interface
+
+uses
+  SysUtils,            // Delphi Runtime Library
+  Windows,             // Delphi Runtime Library
+  Messages,            // Delphi Runtime Library
+  Classes,             // Delphi VCL
+  Dialogs,             // Delphi VCL
+  Graphics,            // Delphi VCL
+  Controls,            // Delphi VCL
+  DsgnIntf,          // Delphi Open Tools API: instead of References to DsgnIntf in Delphi 5.0
+  IniFilesNew,         // Delphi VCL: Implements TIniFile class, handling INI file text format
+  UState,              // HUME: TVar, TPar, TState and TExternV classes
+  UTextfileH,          // HUME: TTextFileH class, handling tabular ASCII files
+  UMeasValue,          // HUME: MeasValue and TMeasList, handling measurement data
+  UFormSubmodelEditor, // HUME: TF_SubModelEdit, Designtime formular for editing
+                       //       TSubModel instance properties
+  UFormModelEditor,    // HUME: TModelEdit, Designtime formular for editing TMod
+                       //       instance properties
+  UModUtils;           // HUME: string routines and numerical routines
+  
+
+type
+  real = double;
+
+  TShapeType = (stRectangle, stSquare, stRoundRect, stRoundSquare,
+    stEllipse, stCircle);
+
+  {TExValueStrLst = TStringList;}
+
+
+(*-----------------------------------------------------------------
+CLASS     TGMFilenameProperty
+ANCESTOR  TStringProperty
+PURPOSE   Property editor for the TMod Class. Displays an File Open Dialog
+          for the name of the Control file by overriding the function GetAttributes
+------------------------------------------------------------------*)
+
+  TGMFilenameProperty = class(TStringProperty)
+  public
+    procedure Edit; override;
+    function GetAttributes: TPropertyAttributes; override;
+  end;
+
+
+(*-----------------------------------------------------------------
+CLASS     TGMPathProperty
+ANCESTOR  TStringProperty
+PURPOSE   Property editor for the TMod Class. Displays an DirChange Dialog
+          for the changing directory properties by overriding the function GetAttributes
+------------------------------------------------------------------*)
+
+  TGMPathProperty = class(TStringProperty)
+  public
+    procedure Edit; override;
+    function GetAttributes: TPropertyAttributes; override;
+  end;
+
+
+(*-----------------------------------------------------------------
+CLASS     TGMSensOptProperty
+ANCESTOR  TPropertyEditor
+PURPOSE
+COMMENT   Not yet implemented property editor
+------------------------------------------------------------------*)
+
+{  TGMSensOptProperty = Class(TPropertyEditor)
+  public
+    procedure Edit ; override;
+    function GetAttributes : TPropertyAttributes; override;
+  end;}
+
+
+(*-----------------------------------------------------------------
+CLASS     TExLstProperty
+ANCESTOR  TPropertyEditor
+PURPOSE
+COMMENT   Not yet implemented property editor
+------------------------------------------------------------------*)
+
+{  TExLstProperty = class(TPropertyEditor)
+  public
+    procedure Edit; override;
+    function GetAttributes: TPropertyAttributes; override;
+  end;}
+
+
+
+
+  // Options for weighting of data points during optimization
+  TWeightOptions = (OptNoWeight, OptDefaultWeight, OptMeasErrorWeight);
+
+
+(*-----------------------------------------------------------------
+CLASS     TMarquardOptions
+ANCESTOR  TPersistent
+PURPOSE   Options for the Marquard-Method used for parameter estimation
+------------------------------------------------------------------*)
+
+  TMarquardOptions = class(TPersistent)
+
+  private
+    FIniLambda: real;               // Initial value of parameter Lambda
+    FDivisor: real;                 // Value which is needed for numerical
+                                    // approximation of function derivative
+    FWeightOptions: TWeightOptions; // Options for weighting of data points during
+                                    // optimization
+    FDefaultError: real;            // one may use an default error for weighting
+
+  protected
+
+  public
+    constructor create;
+
+  published
+    property IniLambda: real read FIniLambda write FIniLambda;
+    property Divisor: real read Fdivisor write fdivisor;
+    property WeightOptions: TWeightOptions read FWeightOptions write FWeightOptions;
+    property DefaultError: real read FDefaultError write FDefaultError;
+
+  end;
+
+
+(*-----------------------------------------------------------------
+CLASS     TSensitivityOptions
+ANCESTOR  TPersistent
+PURPOSE   Simple class to save options for Sensitivity analysis
+          used within the TMod class
+------------------------------------------------------------------*)
+
+  TSensitivityOptions = class(TPersistent)
+
+  private
+    f_a, f_b: array[0..10] of textFile;  // file variables and names for output
+    fn_a, fn_b: array[0..10] of string;
+    FMaxValue: real;                     // maximum value during sensitivity analysis
+    FMinValue: real;                     // minimum value during sensitivity analysis
+    FSteps: integer;                     // Steps of sensitivity analysis
+    FDPar: real;
+    Sens_f: text;                        // Textfile variable for output
+    FSens_fn: TMyFileName;               // output file name for sensitivity data
+    procedure SetMAxValue(const MaxValue: real);
+    procedure SetMinValue(const MinValue: real);
+    procedure SetSteps(const Steps: integer);
+
+  protected
+
+  public
+    SelSenspar: TPar;        // Parameter selected for sensitivity analysis
+    FOutList: TStringList;   // Variables selected for output
+
+    constructor create;
+
+  published
+    {property SelSensPar: TPar   read FSelSenspar write FSelSensPar;}
+    property MaxValue: real read FMaxValue write SetMaxValue;
+    property MinValue: real read FMinValue write SetMinValue;
+    property Steps: integer read FSteps write SetSteps;
+    property DPar: real read FDPar write FDPar;
+    property OutList: TStringList read Foutlist write FOutlist;
+    property Sens_fn: TMyFileName read fsens_fn write fsens_fn;
+
+  end;
+
+
+(*-----------------------------------------------------------------
+CLASS     TMod
+ANCESTOR  TGraphicControl
+PURPOSE   Basic model integrator and control module:
+          Provides routines for simulation process control,
+          parameter estimation and statistical quality control
+------------------------------------------------------------------*)
+
+  TMod = class(TGraphicControl)
+
+  private
+    FShape: TShapeType;           // Shape of the object on the formular
+    FTitle: string;               // Modeltitle
+    FReg_FN: TMyFileName;         // Name of file were regression results are stored
+    FOutputPath: TPath;           // default directory for output
+    FInputPath: TPath;            // Default directory for input
+    FApplicationPath: TPath;      //
+    FSeparatorChar: Char;         // separator in outputfiles
+    FTimeStep: real;              // Time step for model integration
+    FStartTime: TDateTime;        // Start of simulation
+    FEndTime: TDateTime;          // End of simulation
+    FLMOptions: TMarquardOptions; // Options for optimization
+    FSensOptions: TSensitivityOptions; // Options for sensitivity analysis
+    FContOutput: boolean;         // Toggle choice for file output every time step
+    FFinalOutput: boolean;        // Toggle choice for file output end of simulation
+    FMinLegalValue: real;         // smallest measured value accepted in Optimization
+
+    FStr_SectionName_TimeInit,   // strings for section names in Ini files
+    FStr_SectionNameMeasurementFiles,
+    FStr_SectionNameOutputFiles,
+    FStr_SectionName_FileNames,
+    FStr_SectionTopic_SimStart,
+    FStr_SectionTopic_SimEnd,
+    FStr_SectionTopic_TimeStep,
+    FStr_SectionTopic_StateIniFN,
+    FStr_SectionTopic_ParamIniFN,
+    FStr_SectionTopic_WeatherFileFN
+      : string;
+
+
+    procedure Set_StartTime(const StartTime: TDateTime);
+    procedure Set_EndTime(const EndTime: TDateTime);
+
+    procedure Set_ControlFileFN(const fn: TMyFileName);
+    function  Get_ControlFileFn: TMyFileName;
+    procedure Set_TimeStep(const TimeStep: real);
+
+    procedure SetActIniFileName(const IniFileName: string);
+    function  GetActIniFileName: string;
+    procedure SetActStateFileName(const IniFileName: string);
+    function  GetActStateFileName: string;
+    {procedure SetReg_fn(const RegFn : TMyFileName);}
+    {procedure GetApplicationPath(const Path : TPath);}
+
+    function  get_fnWeatherFile: TMyFileName;
+    procedure Set_fnWeatherFile(Const FN : TMyFileName);
+
+    function  get_fnStateIniFile: TMyFileName;
+    procedure Set_fnStateIniFile(Const FN : TMyFileName);
+
+    function  get_fnParamIniFile: TMyFileName;
+    procedure Set_fnParamIniFile(Const FN : TMyFileName);
+
+    procedure WriteSensNames(Variable: Tvar;
+      var f: text);
+
+    procedure WriteSensValue(Variable: Tvar;
+      Iter: integer;
+      var f_a, f_b: text);
+
+  protected
+    procedure Paint; override;  // Method for showing object on the screen
+    procedure setName(const NewName: TComponentName); override;
+
+  public
+    ControlFile: TextFile;      // ControlFile containing list of Inifiles to be executed
+    ControlFileFn: TMyFileName; // Name for controlfile
+
+    FIniFiles: TStringList;     // List of Inifiles
+    FRegFile: textFile;         // File variable of results of regression analysis
+    Time: TState;               // model time
+    SubModStrList: TStringList; // List of sub-models
+    ModelEnd: boolean;          // End of simulation ?
+    ActIniFile: TMyIniFile;     // actual Ini-File
+    ParamInifile: TMyIniFile;   // Ini-file with parameter values
+    StateIniFile: TMyIniFile;   // Ini-file with state variable initial values
+
+    WeatherFile: TTextFileH;    // Weather data
+    AllMeasVal: TMeasList;      // list of all measurement values
+    SelParList: TStringList;    // adress list of all parameters to be optimized
+
+    FirstWeatherData: Integer;
+    LastWeatherData: Integer;
+
+    constructor Create(AOwner: TComponent); override;
+
+    procedure GetParameter(ParName: string;
+      var Par: TPar;
+      var SubModname: string;
+      var Success: boolean);
+
+    procedure GetStateVar(StateName: string;
+      var State: TState;
+      var SubModName: string;
+      var Success: boolean);
+
+    procedure GetVariable(VarName: string;
+      var Variable: TVar;
+      var SubModName: string;
+      var Success: boolean);
+
+    procedure run; virtual;                       // run method
+    procedure init(IniFile: TMyIniFile); virtual; // Initialisation method
+    procedure InitAllSubMods;                     // call inititalisation methods of sub-models
+    procedure integrateAllSubModels; virtual;     // call integration methods of all sub-models
+    procedure CalcAllRates;                       // call rate calculations of all sum-models
+    procedure WriteAllNames;                      //
+    procedure WriteAllFinalNames;                 //
+    procedure AddAllSimValuestoDataSeries;        //
+    procedure SaveStates;
+    procedure SaveFinalStates;                    // save last values of states in file
+    procedure SaveRates;                          // save last values of rates in file
+    procedure CloseAllFiles;
+    procedure CloseAllFinalFiles;
+    procedure WriteAll_1_1_Files;
+    procedure CalcAllLinearRegressions;
+    procedure InitAllExternV;
+    procedure IsFinished; virtual;                // chech for model termination condition
+    procedure CalcChiSq;                          // calculation of sum of squared differences
+    procedure ClearAllDataSeries;
+    procedure MarquardOptimization;               // Optimization routine
+    procedure CalcSensitivity;                    // Sensitivity analysis
+    procedure DblClick; override;                 // show info during runtime
+
+  published
+    property Name; // Name of Model
+
+    property GM_ControlFile: TMyFileName read Get_ControlFileFn write Set_ControlFileFN;
+    property GM_SubModStrList: TStringlist read SubModStrList {write SubModStrList};
+    property ApplicationPath: TPath read FApplicationPath write FApplicationPath;
+    property GM_OutPutPath: TPath read FOutputPath write FOutputPath;
+    property GM_InPutPath: TPath read FInputPath write FInputPath;
+    property Separator: Char read FSeparatorChar write FSeparatorChar default ',';
+    property TimeStep: real read FTimeStep write Set_TimeStep;
+    property Starttime: TDateTime read FStartTime write Set_StartTime;
+    property Endtime: TDateTime read FEndTime write Set_EndTime;
+    property Visible;
+    property Reg_fn: TMyFileName read fReg_fn write fReg_fn;
+    property ModTime: TState read Time write Time;
+    property LMOptions: TMarquardOptions read FLMOptions write FLMOptions;
+    property SensOpt: TSensitivityOptions read FSensOptions write FSensOptions;
+    property Canvas;
+    property IniFileNames: TStringList read FIniFiles;
+    property Title: string read FTitle write FTitle;
+    property ContOutput: boolean read fContOutput write FContOutput;
+    property FinalOutput: boolean read FFinalOutput write FFinalOutput;
+    property MinLegalValue : real read FMinLegalvalue write FMinLegalValue; // smallest measurement value accepted in optimization
+
+    property Str_SectionName_TimeInit : string  read FStr_SectionName_TimeInit write FStr_SectionName_TimeInit;
+    property Str_SectionName_FileNames : string  read FStr_SectionName_FileNames write FStr_SectionName_FileNames;
+    property Str_SectionName_MeasurementFiles : string read FStr_SectionNameMeasurementFiles write FStr_SectionNameMeasurementFiles;
+    property Str_SectionName_OutPutFiles : string read FStr_SectionNameOutPutFiles write FStr_SectionNameOutPutFiles;
+    property Str_SectionTopic_SimStart : string  read FStr_SectionTopic_SimStart write FStr_SectionTopic_SimStart;
+    property Str_SectionTopic_SimEnd   : string  read FStr_SectionTopic_SimEnd write FStr_SectionTopic_SimEnd;
+    property Str_SectionTopic_TimeStep : string  read FStr_SectionTopic_TimeStep write FStr_SectionTopic_TimeStep;
+
+    property Str_SectionTopic_StateIniFN : string  read FStr_SectionTopic_StateIniFN write FStr_SectionTopic_StateIniFN;
+    property Str_SectionTopic_ParamIniFN : string  read FStr_SectionTopic_ParamIniFN write FStr_SectionTopic_ParamIniFN;
+    property Str_SectionTopic_WeatherFileFN : string  read FStr_SectionTopic_WeatherFileFN write FStr_SectionTopic_WeatherFileFN;
+//    property f_WeatherFile : TTextFileH read WeatherFile write Weatherfile;
+//    property fn_WeatherFile : TMyFileName read get_fnWeatherFile write Set_fnWeatherfile;
+//    property f_StateIniFile : TMyIniFile read StateIniFile write StateInifile;
+//    property fn_StateIniFile : TMyFileName read get_fnStateIniFile write Set_fnStateInifile;
+//    property f_ParamIniFile : TMyIniFile read ParamIniFile write ParamInifile;
+//    property fn_ParamIniFile : TMyFileName read get_fnParamIniFile write Set_fnParamInifile;
+
+    {property ActIniFN : TMyFileName read GetActIniFileName write SetActIniFileName;
+    property ActStateFN : TMyFileName read GetActStatefileName write SetActStateFileName;
+    property DragCursor;  // Drag&Drop properties
+    property DragMode;
+    property OnDragDrop;  // Drag&Drop events
+    property OnDragOver;
+    property OnEndDrag;
+    property OnMouseDown; // mouse events
+    property OnMouseMove;
+    property OnMouseUp;}
+
+  end; // end of Object TMod
+
+
+(*-----------------------------------------------------------------
+CLASS     TSubmodel
+ANCESTOR  TGraphicControl
+PURPOSE   Base class of all sub-models: Provides routines for
+          initialization, input and ouput and integration
+------------------------------------------------------------------*)
+
+  TSubmodel = class(TGraphicControl)
+
+  private
+    FShape: TShapeType;  // shape of object for output on form
+    FCompIndex: integer; // Index of computation order
+    GlobMod: TMod;       // Instance of class Tmod to which sub-model is linked
+
+    procedure RegistrateParameter(Par: Tpar); virtual;
+    procedure RegistrateVariable(Variable: TVar);
+    procedure RegistrateStateVar(State: TState); virtual;
+    procedure RegistrateSubMod(SubModName: string;
+                                var Model: Tmod);
+    procedure Set_ExternVStrList(value: TStringlist);
+    procedure Set_VarStrList(value: TStringlist);
+    procedure Set_ParStrList(value: TStringlist);
+
+    procedure ClearDataSeries;
+
+    function get_fnMeasFile: TMyFileName;
+    procedure set_fnMeasFile(const fn: TMyFileName);
+
+  protected
+    function Get_GlobMod: TMod;
+    procedure Set_GlobMod(Model: TMod); virtual;
+    procedure CreateAll; virtual; // Instantiates all objects
+    procedure Paint; override;    // new Paint procedure
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+
+  public
+    SubModName: string;           // Name of instance
+    StateStrList: TStringList;    // List of state variables
+    ParStrList: TStringList;      // List of parameters
+    VarStrList: TStringList;      // List of variables
+    ConstStrList : TStringList;   // List of constants
+    ExternVStrList: TStringList;  // List of external values
+    ParIniF: TMyIniFile;          // Ini-file with paramters
+    StateIniF: TMyIniFile;        // Ini-file with initial values of state variables
+    f_state,                      // File variable for state output
+    ffin_state,                   // File variable for final state output
+    f_rate: text;                 // File variable for rate output
+    fn_state,                     // File name for state output
+    fn_rate: TMyFileName;         // File name for rate output
+    FMeasValues: TTextFileH;      // file with measured data
+    FMeasValues_2: TTextFileH;    // file with measured data
+    SomethingMeasured: boolean;   // true if measurement data is available
+    DataList: TStringList;        // List of measured data series
+    IsActive: boolean;            // Check for inactivation
+    WriteTofile: Boolean;
+    ShowWarnings: boolean;        // show warnings ?
+    GlobTime: TState;             // global time of simulation model
+
+    constructor Create(AOwner: TComponent); override;
+    destructor destroy; override;
+    procedure setName(const NewName: TComponentName); override;
+
+    procedure ParCreate(ParName: string;   // method for creating and
+                                           // and initialising a TPar variable
+      ParUnits: string;
+      DefaultValue: real;
+      var Par: TPar); virtual;
+
+    procedure VarCreate(VarName: string;   // method for creating and
+      VarUnits: string;                    // and initialising a TVar variable
+      DefaultValue: real;
+      ReadFromFile: boolean;
+      var Variable: TVar);
+
+    procedure StateCreate(StateName: string; // method for creating and
+      StateUnits: string;                    // and initialising a TState variable
+      DefaultValue: real;
+      ReadFromFile: boolean;
+      var State: TState); virtual;
+
+    procedure ExternVcreate(Name, Units: string;  // method for creating and
+      ExV: TexValue;                              // and initialising a TExternV variable
+      var ExternV: TexternV); virtual;
+
+    procedure ExternVinit(Model: Tmod); virtual;  // setting pointers of external variables
+    procedure Init(var GlobMod: Tmod); virtual;   // initialisation method
+
+    procedure CalcRates; virtual;                 // rate calculation
+    procedure Integrate; virtual;                 // integration of state variables
+    procedure WriteStateName(var f: text; fn: string; Time: TState);
+    procedure WriteRateName(var f: text; fn: string; Time: TState);
+    procedure SaveState(var f: text; fn: string; Time: TState); virtual;
+    procedure SaveRate(var f: text; fn: string; Time: TState); virtual;
+    procedure activate; virtual;
+
+    procedure AddSimValueToDataSeries; virtual;   // adding sim values to corresponding
+                                                  // measured data
+    procedure write_1_1_files; virtual;           // output of sim./meas. data pairs
+
+    procedure CalcLinearRegressions;              // calculation of linear regression
+    procedure DblClick; override;
+
+  published
+    property SM_GlobMod: TMod read Get_GlobMod write Set_GlobMod;
+    property SM_ExternVStrList: TStringlist read ExternVStrList { write Set_ExternVStrList};
+    property SM_VarStrList: TStringlist read VarStrList {write  Set_VarStrList};
+    property SM_ConstStrList: TStringlist read ConstStrList {write  Set_VarStrList};
+
+    property SM_ParStrList: TStringlist read ParStrList {write Set_ParStrList};
+    property SM_StateStrList: TStringlist read StateStrList {write Set_ParStrList};
+    property OnDblClick;
+    property Visible;
+    property CompIndex: integer read FCompIndex write FCompIndex;
+    property Canvas;
+    property FN_ratefn: TMyFileName read fn_rate write fn_rate;
+    property FN_Statefn: TMyFileName read fn_state write fn_state;
+    property f_MeasFile : TTextFileH read FMeasValues;
+    property fn_MeasFile : TMyFileName read get_fnMeasFile write set_fnMeasFile;
+
+
+    {property FN_ParIniFile : string read GetpariniFilename;
+
+    property DragCursor;    // Drag&Drop properties
+    property DragMode;
+    property OnDragDrop;    // Drag&Drop events
+    property OnDragOver;
+    property OnEndDrag;
+    property OnMouseDown;   // mouse events
+    property OnMouseMove;
+    property OnMouseUp;}
+
+  end; // end of object TSubModel
+
+
+(*-----------------------------------------------------------------
+CLASS     TModEditor
+ANCESTOR  TComponentEditor
+PURPOSE   Exchanges data with TModelEdit form and
+          starts designtime editing
+------------------------------------------------------------------*)
+
+  TModEditor = class(TComponentEditor)
+    procedure Edit; override;
+  end;
+
+
+(*-----------------------------------------------------------------
+CLASS     TSubModelEditor
+ANCESTOR  TComponentEditor
+PURPOSE   Exchanges data with TF_SubmodelEditor form and
+          starts designtime editing
+------------------------------------------------------------------*)
+
+  TSubModelEditor = class(TComponentEditor)
+    procedure Edit; override;
+  end;
+
+
+procedure Register; // Registers TMod and TSubModel Components for designtime editing
+
+
+
+implementation
+
+
+uses
+  FileCtrl, // Delphi VCL
+  Forms,    // Delphi VCL
+  UMrqMinD; // HUME: routines for parameter estimation (Marquard method)
+
+
+
+(******************************************************************
+CLASS   TMarquardOptions
+METHOD  create
+PURPOSE Creating an TMarquardOptions instance, used for parameter estimation
+*******************************************************************)
+
+constructor TMarquardOptions.create;
+
+begin
+  inherited create;
+  FDivisor := 100;       // Value which is needed for numerical
+                         // approximation of function derivative
+  FIniLambda := 0.001;   // Initial value of parameter Lambda
+  FDefaultError := 0.1;  // one may use an default error for weighting
+end;
+
+
+(******************************************************************
+CLASS   TSensitivityOptions
+METHOD  create
+PURPOSE Create an TSensitivityOptions instance to save options for
+        Sensitivity analysis used within the TMod class
+*******************************************************************)
+
+constructor TSensitivityOptions.create;
+
+begin
+  inherited create;
+  FOutList := TStringList.create; // Variables selected for output
+  FMinValue := 1.0;               // minimum value during sensitivity analysis
+  FMaxValue := 10.0;              // maximum value during sensitivity analysis
+  FSteps := 5;                    // Steps of sensitivity analysis
+  FDPar := 1;
+  FSens_fn := 'Sens.dat'          // output file name for sensitivity data
+end;
+
+
+(******************************************************************
+CLASS   TSensitivityOptions
+METHOD  SetMaxValue
+PURPOSE Sets maximum value during sensitivity analysis
+INPUT   const MAxValue: real
+*******************************************************************)
+
+procedure TSensitivityOptions.SetMaxValue(const MaxValue: real);
+
+begin
+  fMaxValue := MaxValue;
+  FDPar := (FMaxValue - FMinValue) / (FSteps - 1);
+end;
+
+
+(******************************************************************
+CLASS   TSensitivityOptions
+METHOD  SetMinValue
+PURPOSE Sets minimum value during sensitivity analysis
+INPUT   const MinValue: real
+*******************************************************************)
+
+procedure TSensitivityOptions.SetMinValue(const MinValue: real);
+
+begin
+  fMinValue := MinValue;
+  FDPar     := (FMaxValue - FMinValue) / (FSteps - 1);
+end;
+
+
+(******************************************************************
+CLASS   TSensitivityOptions
+METHOD  SetSteps
+PURPOSE Sets number of steps of sensitivity analysis
+INPUT   const Steps: integer
+*******************************************************************)
+
+procedure TSensitivityOptions.SetSteps(const Steps: integer);
+
+begin
+  fSteps := Steps;
+  FDPar  := (FMaxValue - FMinValue) / (FSteps - 1);
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  Paint
+PURPOSE Method for showing object on the screen
+*******************************************************************)
+
+procedure TMod.Paint;
+var
+  x, y, w, h, s,
+    text_left, text_top, text_length: integer;
+  Titel: string;
+begin
+  Titel := Name;
+  with Canvas do
+    begin
+      x := Pen.Width div 2;
+      y := x;
+      w := Width - Pen.Width + 1;
+      h := Height - Pen.Width + 1;
+      if w < h then s := w else s := h;
+      RoundRect(x, y, x + w, y + h, 8, 8);
+      text_length := TextWidth(Titel);
+      text_left := (Width - text_length) div 2;
+      TextOut(text_left, Height div 2 - TextHeight(Titel) div 2, Titel);
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  Get_ControlFileFn
+PURPOSE Gets name of Control file (published for use in object inspector)
+OUTPUT  TMyFileName
+*******************************************************************)
+
+function TMod.Get_ControlFileFn: TMyFileName;
+begin
+  Result := ControlFileFn;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  get_fnStateIniFile
+PURPOSE Gets name of State Ini file (published for use in object inspector)
+OUTPUT  TMyFileName
+*******************************************************************)
+
+function TMod.get_fnStateIniFile: TMyFileName;
+
+begin
+  result := StateIniFile.FileName;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  Set_fnStateIniFile
+PURPOSE Sets name of State Ini file (published for use in object inspector)
+INPUT   const fn: TMyFileName
+OUTPUT
+COMMENT
+*******************************************************************)
+
+procedure TMod.Set_fnStateIniFile(const fn: TMyFileName);
+
+begin
+  If Fileexists(fn) then begin
+    StateIniFile.Init(fn);
+    If ActIniFile <> nil then
+     ActIniFile.WriteString(str_SectionName_FileNames, str_SectionTopic_StateIniFN, fn);
+  end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  get_fnParamIniFile
+PURPOSE PURPOSE Gets name of Parameter Ini file (published for use in object inspector)
+OUTPUT  TMyFileName
+*******************************************************************)
+
+function TMod.get_fnParamIniFile: TMyFileName;
+
+begin
+  result := ParamIniFile.FileName;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  Set_fnParamIniFile
+PURPOSE Sets name of Parameter Ini file (published for use in object inspector)
+INPUT   const fn: TMyFileName
+*******************************************************************)
+
+procedure TMod.Set_fnParamIniFile(const fn: TMyFileName);
+
+begin
+  If Fileexists(fn) then begin
+    ParamIniFile.Init(fn);
+    If ActIniFile <> nil then
+     ActIniFile.WriteString(str_SectionName_FileNames, str_SectionTopic_ParamIniFN, fn);
+  end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  get_fnweatherFile
+PURPOSE Gets name of weather data file (published for use in object inspector)
+OUTPUT  TMyFileName
+*******************************************************************)
+
+function TMod.get_fnweatherFile: TMyFileName;
+
+begin
+  result := WeatherFile.fFileName;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  Set_fnWeatherFile
+PURPOSE Sets name of weather data file (published for use in object inspector)
+INPUT   const fn: TMyFileName
+*******************************************************************)
+
+procedure TMod.Set_fnWeatherFile(const fn: TMyFileName);
+
+begin
+  If Fileexists(fn) then begin
+    WeatherFile.fFileName := fn;
+    WeatherFile.Init(fn);
+    {ActIniFile.WriteString(str_SectionName_FileNames, str_SectionTopic_WeatherFileFN, fn);}
+  end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  Set_ControlFileFN
+PURPOSE Sets name of control Ini file (published for use in object inspector)
+INPUT   const fn: TMyFileName
+COMMENT If no control files are existing they will be created
+*******************************************************************)
+
+procedure TMod.Set_ControlFileFN(const fn: TMyFileName);
+var
+  act_IniFn: string;
+  NewInifile: TMyIniFile;
+  DlgFileOpen: TopenDialog;
+  index: integer;
+  NewFile : boolean;
+
+begin
+
+  //control files have ".fn" file extension
+  ControlFileFN := fn;
+  //start dialog if no control file found on specified path
+  if FileExists(fn) = false then begin
+      DlgFileOpen := TOpenDialog.Create(Application);
+      DlgFileOpen.Title := 'Open Control File';
+      DlgFileOpen.Filename := '*.fn';
+      DlgFileOpen.Filter := 'Controlfiles (*.fn)|*.fn';
+      DlgFileOpen.Options := DlgFileOpen.Options + [ofShowHelp, ofPathMustExist,
+        ofFileMustExist];
+      try
+        if DlgFileOpen.Execute then begin
+          ControlFileFN := DlgFileOpen.Filename;
+          assignfile(ControlFile, DlgFileOpen.Filename);
+        end;
+      finally
+        DlgFileOpen.Free;
+      end;
+  end else begin;
+
+    assignfile(ControlFile, fn);
+  end;
+    reset(ControlFile);
+    FIniFiles := TStringList.Create;
+    index := 0;
+
+  // go through list of all Ini files specified in control file
+  while not eof(ControlFile) do begin
+
+      //open or create next Ini file and add to Ini file list of TMod
+      NewFile := false;
+      readln(ControlFile, Act_IniFn);
+      if FileExists(Act_iniFN) = false then
+        NewFile := true;
+      NewIniFile := TMyIniFile.Create;
+      NewInifile.init(Act_IniFn);
+      {index := FInifiles.AddObject(NewIniFile.Filename, NewIniFile);}
+      FIniFiles.add(NewInifile.FileName);
+      FIniFiles.objects[index] := NewInifile;
+      inc(index);
+      // if Ini file is newly created put some default values in it
+      If Newfile then begin
+        NewInifile.WriteFloat(str_sectionname_timeinit, str_sectiontopic_simStart, 0.0);
+        NewInifile.WriteFloat(str_sectionname_timeinit, str_sectiontopic_simEnd, 100.0);
+        NewInifile.WriteFloat(str_sectionname_timeinit, str_sectiontopic_TimeStep, 1.0);
+
+        NewInifile.Writestring(str_sectionname_FileNames, str_sectiontopic_StateIniFN, GetCurrentDir+'\State.ini');
+        NewInifile.Writestring(str_sectionname_FileNames, str_sectiontopic_ParamIniFN, GetCurrentDir+'\Parameters_x.ini');
+
+      end;
+
+        {MessageDlg('IniFile ' + Act_IniFn + ' does not exist !',
+          mtInformation, [mbOK], 0);
+        end;}
+    end;
+
+  //activate and initialize first of all Ini files specified in control file
+  ActIniFile := TMyIniFile(FInifiles.objects[0]);
+  //f_ParamIniFile.FileName := ActIniFile.ReadString(Str_SectionName_FileNames, Str_SectionTopic_ParamIniFN, '');
+  //f_StateIniFile.FileName := ActIniFile.ReadString(Str_SectionName_FileNames, Str_SectionTopic_StateIniFN, '');
+
+  Init(ActIniFile);
+  CloseFile(ControlFile);
+  //DeleteFile('default.fn');
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  Set_TimeStep
+PURPOSE Set time step for model integration
+INPUT   const TimeStep: real
+*******************************************************************)
+
+procedure TMod.Set_TimeStep(const TimeStep: real);
+begin
+  FTimeStep := TimeStep;
+  Time.c := TimeStep;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  Set_StartTime
+PURPOSE Sets start time of simulation
+INPUT   const StartTime: TDateTime
+*******************************************************************)
+
+procedure TMod.Set_StartTime(const StartTime: TDateTime);
+
+begin
+  FStartTime := StartTime;
+  Time.v := StartTime;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  Set_EndTime
+PURPOSE Sets end time of simulation
+INPUT   const EndTime: TDateTime
+*******************************************************************)
+
+procedure TMod.Set_EndTime(const EndTime: TDateTime);
+
+begin
+  FEndTime := EndTime;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  SetActIniFileName
+PURPOSE Sets file name of actual Ini file
+INPUT   const IniFileName: string
+*******************************************************************)
+
+procedure Tmod.SetActIniFileName(const IniFileName: string);
+
+begin
+  ActIniFile.Init(IniFileName);
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  GetActIniFileName
+PURPOSE Gets file name of actual Ini file
+OUTPUT  string
+*******************************************************************)
+
+function Tmod.GetActIniFileName: string;
+
+begin
+  if ActIniFile <> nil then
+    result := ActIniFile.FileName;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  SetActStateFileName
+PURPOSE Sets file name of actual state file name
+INPUT   const IniFileName: string
+*******************************************************************)
+
+procedure Tmod.SetActStateFileName(const IniFileName: string);
+
+begin
+  StateInifile.Init(IniFileName);
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  GetActStateFileName
+PURPOSE Gets file name of actual state file
+OUTPUT  string
+*******************************************************************)
+
+function Tmod.GetActStateFileName: string;
+
+begin
+  if StateIniFile <> nil then
+    result := StateInifile.FileName;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  SetReg_fn
+PURPOSE
+INPUT   const RegFn : TMyFileName
+COMMENT Not yet implemented
+*******************************************************************)
+
+{procedure Tmod.SetReg_fn(const RegFn : TMyFileName);
+
+var
+  f : textfile;
+
+begin
+  if Fileexists(regfn) then begin
+    assignfile(f, regFN);
+    rewrite(f);
+  end;
+end;}
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  init
+PURPOSE Initialize state, parameter and weather files; init time
+        settings; resort submodels
+*******************************************************************)
+
+procedure TMod.init;
+
+{const
+  SectionName = 'FileNames';}
+
+var
+  StateInifilefn: string;
+  ParamIniFilefn: string;
+  WeatherFilefn: string;
+  SubName: string;
+  f     : TextFile;
+  i, NewIndex, OldIndex: integer;
+  subMod: TSubModel;
+  TimeStep: real;
+  error: boolean;
+  TempString: TStringlist;
+
+begin
+  // change to application directory
+  if self.fApplicationPath <> '' then begin
+    chdir(self.fApplicationPath);
+  end;
+
+  // read state Ini file name and create if not existing
+  StateInifilefn := ActIniFile.ReadString(Str_SectionName_FileNames, Str_SectionTopic_StateIniFN, '');
+  if fileExists(StateInifilefn) = false then begin
+      if StateIniFileFN = '' then begin
+        StateIniFileFN := extractFiledir(application.exename)+'\State.ini';
+        ActIniFile.WriteString(str_sectionName_FileNames, str_sectiontopic_StateIniFN,StateIniFileFN);
+      end;
+      assignfile(f, StateInifilefn);
+      rewrite(f);
+      writeln(f);
+      close(f);
+      {ShowMessage('IniFile ' + StateInifilefn + ' does not exist');
+      ShowMessage('Model initalisation failed !');
+      exit;}
+  end;
+
+  // read parameter Ini file name and create if not existing
+  ParamInifilefn := ActIniFile.ReadString(Str_SectionName_FileNames, Str_SectionTopic_ParamIniFN, '');
+  if fileExists(ParamInifilefn) = false then begin
+      if ParamIniFileFN = '' then begin
+        //ParamIniFileFN := extractFiledir(application.exename)+'\Param.ini';
+        ActIniFile.WriteString(str_sectionName_FileNames, str_sectiontopic_ParamIniFN, ParamIniFileFN);
+      end;
+      assignfile(f,ParamInifilefn);
+      rewrite(f);
+      writeln(f);
+      close(f);
+      {ShowMessage('IniFile ' + ParamInifilefn + ' does not exist');
+      ShowMessage('Model initalisation failed !');
+      exit;}
+    end;
+
+  // read weather file name and create if not existing
+  WeatherFilefn := ActIniFile.ReadString(Str_SectionName_FileNames, Str_SectionTopic_WeatherFileFN, '');
+  if fileExists(WeatherFilefn) = false then begin
+    ShowMessage('WeatherFile ' + WeatherFilefn + ' does not exist');
+    exit;
+  end;
+
+  //init weather data file
+//  if fileExists(WeatherFilefn) then
+//    WeatherFile.Init(WeatherFileFN);
+
+  //init state and parameter ini files
+  StateInifile.init(StateInifileFn);
+  ParamInifile.init(ParamInifileFn);
+
+  //init weather data file again (?)
+  If Fileexists(WeatherFileFN) then begin
+    WeatherFile.init(WeatherFileFN);
+
+    TempString:= TStringList.Create;                        // Treue
+    TempString.CommaText:= WeatherFile.GetFirstLine;        // Treue
+    FirstWeatherData:= StrToInt(TempString.Strings[0]);    // Treue
+    TempString:= TStringList.Create;                        // Treue
+    TempString.CommaText:= WeatherFile.GetLastLine;         // Treue
+    LastWeatherData:= StrToInt(TempString.Strings[0]);     // Treue
+
+    WeatherFile.GoTop;
+  end;
+
+  //init time settings
+  FStartTime := Inifile.ReadFloat(Str_SectionName_TimeInit, Str_SectionTopic_SimStart, 0, error);
+  FEndTime := Inifile.ReadFloat(Str_SectionName_TimeInit, Str_SectionTopic_SimEnd, 365, error);
+  TimeStep := IniFile.ReadFloat(Str_SectionName_TimeInit, Str_SectionTopic_TimeStep, 1, error);
+  if time = nil then
+    Time := TState.create('Time', '[d]', FStartTime, TimeStep)
+  else begin
+      time.v := FStartTime;
+      time.C := Timestep;
+    end;
+  ModelEnd := false;
+
+  // resort string list of submodels
+  SubModStrList.Sort;
+  for i := 0 to SubModStrList.count - 1 do begin
+      SubName := SubModStrList.strings[i];
+      SubMod := TSubModel(SubModStrList.objects[i]);
+      OldIndex := SubModStrList.indexof(SubName);
+      NewIndex := SubMod.CompIndex;
+      if NewIndex <> -1 then
+        SubModStrList.Exchange(OldIndex, NewIndex);
+
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  InitAllsubMods
+PURPOSE Call inititalisation methods of sub-models
+*******************************************************************)
+
+procedure TMod.InitAllsubMods;
+var
+  i: Integer;
+  SubMod: TSubModel;
+begin
+  for I := 0 to SubModStrList.Count - 1 do begin
+      SubMod := TSubModel(SubModStrList.objects[i]);
+      SubMod.Init(self);
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  Create
+PURPOSE Calls inherited TGraphicControl.create and  initializes
+        properties, lists and files
+*******************************************************************)
+
+constructor TMod.Create(AOwner: TComponent);
+
+var
+  i, NewIndex, OldIndex: integer;
+  subMod: TSubModel;
+  SubName: string;
+
+begin
+  // call inherited create contructor (TGraphicControl)
+  inherited create(AOwner);
+
+  // set style properties
+  ControlStyle := ControlStyle + [csReplicatable];
+  Width := 80;
+  Height := 30;
+  Canvas.Pen.Color := CLWhite;
+  Canvas.Pen.Mode := pmCopy;
+  Canvas.Pen.Width := 2;
+  Canvas.Brush.Color := clred;
+  Canvas.Brush.Style := bsSolid;
+  Canvas.Font.Size := 12;
+
+  // initialize several properties, lists and files
+  SubModStrList := TStringList.create;
+  FIniFiles := TStringList.create;
+  AllMeasVal := TMeasList.Create('All', '[-]');
+  SelParList := TStringList.Create;
+  Separator := ',';
+
+  // initialize model time settings
+  Time := TState.create('Time', '[d]', 0.0, 1.0);
+  FTimeStep := 1.0;
+  FStartTime := StrToDateTime('01.01.1999');
+  FEndTime := StrToDateTime('31.12.1999');
+
+  // initialize several properties, lists and files
+  Cursor := CrHandPoint;
+  Reg_fn := 'regression.dat';
+  FLMOptions := TMarquardOptions.create;
+  SensOpt := TSensitivityOptions.create;
+  WeatherFile := TTextfileH.create;
+  ContOutput := true;
+  FinalOutput := false;
+
+  // re-sort list of submodels
+  for i := 0 to SubModStrList.count - 1 do begin
+      SubName := SubModStrList.strings[i];
+      SubMod := TSubModel(SubModStrList.objects[i]);
+      OldIndex := SubModStrList.indexof(SubName);
+      NewIndex := SubMod.CompIndex;
+      if NewIndex <> -1 then
+        SubModStrList.Exchange(OldIndex, NewIndex);
+    end;
+
+  // sets smallest measured value accepted in Optimization
+  FMinLegalValue := 1E-999;
+
+  // set section names (used in ini files)
+  FStr_SectionNameMeasurementFiles  := 'MeasurementFiles';
+  Fstr_SectionNameOutPutFiles       := 'OutPutFiles';
+  FStr_SectionName_FileNames        := 'FileNames';
+  Str_SectionName_TimeInit          := 'TimeInit';
+  Str_SectionTopic_SimStart         := 'Startzeit';
+  Str_SectionTopic_SimEnd           := 'Endzeit';
+  Str_SectionTopic_TimeStep         := 'TimeStep';
+  Str_SectionTopic_ParamIniFN       := 'ParamIniFN';
+  Str_SectionTopic_WeatherFileFN    := 'WeatherFileFN';
+  Str_SectionTopic_StateIniFN       := 'StateIniFN';
+
+
+  {If fileexists(ControlFileFn) = false then begin
+    ControlFileFN := GetCurrentDir+'\default.fn';
+    assignfile(controlfile, controlfileFN);
+    rewrite(ControlFile);
+    writeln(controlFile, GetCurrentDir+'\default.ini');
+    closefile(Controlfile);
+    Set_ControlFileFN(ControlFileFN);
+  end;  }
+
+
+  {name := 'model';}
+
+  // initialize state and parameter files
+  StateIniFile := TMyIniFile.create;
+  ParamIniFile := TMyInifile.create;
+
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  WriteAllNames
+PURPOSE For all submodels write state and rate names to output files
+*******************************************************************)
+
+procedure TMod.WriteAllNames;
+
+var
+  i: integer;
+  SubMod: TSubModel;
+begin
+  // for all submodels do...
+  for i := 0 to SubmodStrlist.Count - 1 do begin
+      SubMod := TSubModel(SubModStrList.objects[i]);
+      if SubMod.WriteTofile then begin
+          //writes state and rate names of specific submodel to _dat.csv / _rat.csv files
+          SubMod.WriteStateName(SubMod.f_state, SubMod.fn_state, Time);
+          SubMod.WriteRateName(SubMod.f_rate, SubMod.fn_rate, Time);
+        end;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  WriteAllFinalNames
+PURPOSE For all submodels write state names to final output file
+*******************************************************************)
+
+procedure TMod.WriteAllFinalNames;
+
+var
+  i: integer;
+  SubMod: TSubModel;
+begin
+  // for all submodels do...
+  for i := 0 to SubmodStrlist.Count - 1 do begin
+      SubMod := TSubModel(SubModStrList.objects[i]);
+      if SubMod.WriteTofile then begin
+          //writes state names of specific submodel to _dat.csv file
+          SubMod.WriteStateName(SubMod.ffin_state, 'Final_' + SubMod.name + '.csv', Time);
+        end;
+    end;
+end;
+
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  AddAllSimValuestoDataSeries
+PURPOSE For each submodel add simulated values to corresponding measured data
+*******************************************************************)
+
+procedure TMod.AddAllSimValuesToDataSeries;
+
+var
+  i: integer;
+  SubMod: TSubModel;
+begin
+  // for all submodels do...
+  for i := 0 to SubmodStrlist.Count - 1 do begin
+      SubMod := TSubModel(SubModStrList.objects[i]);
+      //for each submodel add simulated values to corresponding measured data
+      if Submod.SomethingMeasured then
+        SubMod.AddSimValueToDataSeries;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  CalcAllRates
+PURPOSE For each submodel calculate rates
+*******************************************************************)
+
+procedure TMod.CalcAllRates;
+
+var
+  i: integer;
+  SubMod: TSubModel;
+
+begin
+  // for all submodels do...
+  for i := 0 to SubmodStrlist.Count - 1 do begin
+      SubMod := TSubModel(SubModStrList.objects[i]);
+      // if submodel is active calculate rates
+      if SubMod.IsActive then
+        SubMod.CalcRates;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  SaveRates
+PURPOSE For each submodel save rates to output files
+*******************************************************************)
+
+procedure TMod.SaveRates;
+
+var
+  i: integer;
+  SubMod: TSubModel;
+begin
+  // for all submodels do...
+  for i := 0 to SubmodStrlist.Count - 1 do begin
+      SubMod := TsubModel(SubmodStrlist.objects[i]);
+      // if submodel is active save rates to _rat.csv output file
+      if (SubMod.IsActive) and (SubMod.WriteTofile) then
+        SubMod.SaveRate(SubMod.f_rate, SubMod.fn_rate, Time);
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  SaveStates
+PURPOSE For each submodel save states to output files
+*******************************************************************)
+
+procedure TMod.SaveStates;
+
+var
+  i: integer;
+  SubMod: TSubModel;
+begin
+  // for all submodels do...
+  for i := 0 to SubmodStrlist.Count - 1 do begin
+      SubMod := TsubModel(SubmodStrlist.objects[i]);
+      // if submodel is active save states to _dat.csv output file
+      if (SubMod.IsActive) and (SubMod.WriteTofile) then
+        SubMod.SaveState(SubMod.f_state, SubMod.fn_state, Time);
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  SaveFinalStates
+PURPOSE For all submodels write state values to final output file
+*******************************************************************)
+
+procedure TMod.SaveFinalStates;
+
+var
+  i: integer;
+  SubMod: TSubModel;
+begin
+  // for all submodels do...
+  for i := 0 to SubmodStrlist.Count - 1 do begin
+      SubMod := TsubModel(SubmodStrlist.objects[i]);
+      // if submodel is active save final state values to _dat.csv output file
+      if (SubMod.IsActive) and (SubMod.WriteTofile) then
+        SubMod.SaveState(SubMod.ffin_state, 'Final_' + SubMod.name + '.csv', Time);
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  IntegrateAllSubModels
+PURPOSE For each submodel do integration
+*******************************************************************)
+
+procedure TMod.IntegrateAllSubModels;
+
+var
+  i, j: integer;
+  SubMod: TSubModel;
+begin
+  //next time step
+  Time.v := Time.v + Time.C;
+
+  // for all submodels do...
+  for I := 0 to SubModStrList.Count - 1 do begin
+      SubMod := TsubModel(SubModStrList.Objects[i]);
+      // if submodel is active call its integration routine
+      if SubMod.IsActive then
+        SubMod.Integrate;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  InitAllExternV
+PURPOSE For each submodel initialize external variables (setting their pointers)
+*******************************************************************)
+
+procedure TMod.InitAllExternV;
+
+var
+  i: integer;
+  SubMod: TSubModel;
+
+begin
+  // for all submodels do...
+  for I := 0 to SubModStrList.Count - 1 do begin
+      SubMod := TsubModel(SubModStrList.Objects[i]);
+      // if external values exist initialize them (setting their pointers)
+      if subMod.ExternVStrList.Count > 0 then
+        SubMod.ExternVinit(self);
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  CloseAllFiles
+PURPOSE For each submodel close state and rate output file (_dat.csv/_rat.csv)
+*******************************************************************)
+
+procedure TMod.CloseAllFiles;
+
+var
+  i: integer;
+  SubMod: TSubModel;
+begin
+  // for all submodels do...
+  for i := 0 to SubmodStrlist.Count - 1 do begin
+      SubMod := TsubModel(SubmodStrlist.objects[i]);
+      //close state and rate output files
+      close(SubMod.f_State);
+      close(SubMod.f_rate);
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  CloseAllFinalFiles
+PURPOSE For each submodel close final state output files
+*******************************************************************)
+
+procedure Tmod.CloseAllFinalFiles;
+
+var
+  i: integer;
+  SubMod: TSubModel;
+begin
+  // for all submodels do...
+  for i := 0 to SubmodStrlist.Count - 1 do begin
+      SubMod := TsubModel(SubmodStrlist.objects[i]);
+      // close final state output file
+      close(SubMod.ffin_State);
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  Run
+PURPOSE Run method
+INPUT
+OUTPUT
+COMMENT
+*******************************************************************)
+
+procedure TMod.Run;
+
+var
+  i: integer;
+
+begin
+  //change directory to application path
+  chdir(ExtractFiledir(application.ExeName));
+
+  //clear list of all measurement values
+  AllMeasVal.Clear;
+
+  //For every submodel clear data pair series
+  ClearAllDataSeries;
+
+  //For all submodels write state names to final output file
+  if FinalOutput then
+    writeAllFinalNames;
+
+  // Go through all INI files (listed in *.fn control file)
+  for I := 0 to FInifiles.count - 1 do begin
+
+      // Determine and initialize actual INI file
+      ActIniFile := TMyIniFile(FIniFiles.objects[i]);
+      init(ActIniFile);
+
+      // Initialize all external variables
+      InitAllExternV;
+
+      // Initialize all submodels
+      InitAllSubMods;
+
+      // Set weather file pointer to actual time step
+      //#TS#029: infinite loop depending on ModTime.Name
+      WeatherFile.LocateFor(Time.Name, Time.v);
+
+      // write names, state and rate values (if ContOutput true)
+      if ContOutput then begin
+        writeAllNames;
+        SaveStates;
+        SaveRates;
+      end;
+
+      // central loop of TMod.Run
+      repeat
+        //rate calculation for all submodels
+        CalcAllRates;
+
+        //integration for all submodels
+        IntegrateAllSubModels;
+
+        //add simulated values to corresponding measured data for all submodels
+        AddAllSimValuestoDataSeries;
+
+        // write state and rate values (if ContOutput)
+        if ContOutput then begin
+          SaveStates;
+          SaveRates;
+        end;
+
+        // Sets TMod.ModelEnd to true if time counter passed endtime of model
+        IsFinished;
+
+        // step forward in weather file
+        if Time.V >= weatherfile.getIndexValue(0) then begin
+          WeatherFile.NextLine;
+          weatherFile.CalcValues;
+        end;
+
+      // exit central loop if TMod.ModelEnd was flagged by IsFinished (see above)
+      until ModelEnd;
+      //showmessage(self.actinifile.filename);
+
+
+      // close state and rate output files of all submodels
+      if ContOutput then
+        CloseAllFiles;
+
+      // write state values to final output file for all submodels
+      if FinalOutput then
+        SaveFinalStates;
+
+      {ShowMessage(ActIniFile.FileName);}
+
+    end; // End of simulation run
+
+  // close final state and rate output files of all submodels
+  if FinalOutput then
+    CloseAllFinalFiles;
+
+  // Output of simulated/measured data pairs to _1_1.csv files
+  WriteAll_1_1_Files;
+
+  // for all submodels calculate linear regression
+  CalcAllLinearRegressions;
+
+  //clear list of all measurement values
+  AllMeasVal.Clear;
+
+  // Calculation of sum of squared differences
+  CalcChiSq;
+
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  CalcSensitivity
+PURPOSE Sensitivity analysis
+COMMENT Note partial code similarities (resp. redundancies) to TMod.Run
+*******************************************************************)
+
+procedure TMod.CalcSensitivity;
+
+var
+  i, j, iter: integer;
+  ActParameterValue : real;
+  OldParameterValue : real;
+  ActVar: TVar;
+  rep,
+    success: boolean;
+  line: string;
+  submodname : string;
+  TempPar : TPar;
+
+begin
+  // flag false for first loop, flag true for second and following loops
+  rep := false;
+  //GetParameter(
+  GetParameter(SensOpt.SelSenspar.name, TempPar, Submodname, success);
+
+  OldParameterValue := FSensOptions.SelSenspar.V;
+
+  chdir(ExtractFiledir(application.ExeName));
+
+  //start with minimal value as actual value
+  ActparameterValue := SensOpt.MinValue;
+  ParamInifile.WriteFloat(Submodname, SensOpt.SelSensPar.name, ActParameterValue);
+
+  //open output file for sensitivity analysis data (sens.dat)
+  assignFile(sensOpt.sens_f, SensOPt.sens_fn);
+  rewrite(sensOpt.sens_f);
+
+  //first row of output file: write name of selected sensitivity parameter
+  write(sensOpt.sens_f, SensOpt.SelSensPar.name, separator);
+
+  //first row of output file: write names of selected variables
+  for i := 0 to SensOpt.FOutList.count - 1 do begin
+      ActVar := TVar(SensOpt.FOutList.objects[i]);
+      write(sensOpt.sens_f, ActVar.name, separator);
+    end;
+  writeln(SensOPt.sens_f);
+
+  //second row of output file: write units of selected sensitivity parameter
+  write(sensOpt.sens_f, SensOpt.SelSensPar.Units, separator);
+
+  //second row of output file: write units of selected variables
+  for i := 0 to SensOpt.FOutList.count - 1 do begin
+      ActVar := TVar(SensOpt.FOutList.objects[i]);
+      write(sensOpt.sens_f, ActVar.Units, separator);
+    end;
+  writeln(SensOPt.sens_f);
+
+  // assign output files for selected variables (_sens_a.csv / _sens_b.csv)
+  for i := 0 to SensOpt.FOutList.count - 1 do begin
+    ActVar := TVar(SensOpt.FOutList.objects[i]);
+    SensOpt.fn_a[i] := ActVar.name + '_sens_a.csv';
+    SensOpt.fn_b[i] := ActVar.name + '_sens_b.csv';
+    assignfile(SensOpt.f_a[i], SensOpt.fn_a[i]);
+    assignfile(SensOpt.f_b[i], SensOpt.fn_b[i]);
+  end;
+
+  // for each step of sensitivity analysis do...
+  for iter := 1 to SensOpt.steps do begin
+
+      // for all selected variables create _sens_a.csv file
+      // and write variable names into first row
+      for i := 0 to SensOpt.FOutList.count - 1 do begin
+        rewrite(SensOpt.f_a[i]);
+        ActVar := TVar(SensOpt.FOutList.objects[i]);
+        WriteSensNames(ActVar, SensOpt.f_a[i]);
+      end;
+
+      // if second step or later the reset _sens_b.csv files
+      if rep = true then begin
+        for i := 0 to SensOpt.FOutList.count - 1 do begin
+          reset(SensOpt.f_b[i]);
+        end;
+      end;
+
+      // prepare for simulation run, regarding the actual "step" of the
+      // chosen sensitivity parameter
+      ActIniFile := TMyIniFile(FIniFiles.objects[0]);
+      init(ActIniFile);
+      InitAllExternV;
+      InitAllSubMods;
+
+      //set parameter value according to step respectively loop count
+      //first loop (see above): ActparameterValue := SensOpt.MinValue;
+      //others (see below): ActParameterValue := ActParameterValue + SensOpt.DPar;
+      SensOpt.SelSensPar.v := ActParameterValue;
+      //InitAllSubMods;
+      //does that really make sense...
+      ActParameterValue := SensOpt.selSensPar.v;
+
+      // Set weather file pointer to actual time step
+      WeatherFile.LocateFor(Time.Name, Time.v);
+
+      {writeAllSensNames;}
+
+      // doing the actual simulation (from start to end of model time)
+      // for the actual "step" of the chosen sensitivity parameter
+      repeat
+        //calculate rates, integrate, go to next time step
+        CalcAllRates;
+        IntegrateAllSubModels;
+
+        // write variable values to output files
+        for i := 0 to SensOpt.FOutList.count - 1 do begin
+          ActVar := TVar(SensOpt.FOutList.objects[i]);
+          WriteSensValue(ActVar, Iter, SensOpt.f_a[i], SensOpt.f_b[i]);
+        end;
+        IsFinished;
+
+        // step forward in weather file
+        if Time.V >= weatherfile.getIndexValue(0) then begin
+          WeatherFile.NextLine;
+          weatherFile.CalcValues;
+        end;
+      until ModelEnd;
+
+      // write parameter and variable values to output
+      write(SensOpt.sens_f, floatToStrF(ActParameterValue, ffgeneral, 8, 4), separator);
+      for i := 0 to SensOpt.FOutList.count - 1 do begin
+        ActVar := TVar(SensOpt.FOutList.objects[i]);
+        write(SensOpt.sens_f, floattoStrF(ActVar.v, ffgeneral, 8, 4), separator);
+      end;
+      writeln(SensOpt.Sens_f);
+
+      //increase value of sensitivity parameter by stepwidth
+      ActParameterValue := ActParameterValue + SensOpt.DPar;
+      ParamInifile.WriteFloat(Submodname, SensOpt.SelSensPar.name, ActParameterValue);
+
+      //first loop has been done
+      rep := true;
+
+      // output file action: shift lines from sens_a_.csv to _sens_b_.csv
+      for i := 0 to SensOpt.FOutList.count - 1 do begin
+          reset(SensOpt.f_a[i]);
+          readln(SensOpt.f_a[i]);
+          readln(SensOpt.f_a[i]);
+          rewrite(SensOpt.f_b[i]);
+          while not eof(SensOpt.f_a[i]) do begin
+              readln(SensOpt.f_a[i], line);
+              writeln(SensOpt.f_b[i], line);
+            end;
+          close(SensOpt.f_a[i]);
+          close(SensOpt.f_b[i]);
+        end;
+
+        {SaveFinalValues;
+        CopyAllSensFiles;}
+    end;
+
+  // close output file (sens.dat)
+  close(SensOpt.Sens_f);
+  ParamInifile.WriteFloat(Submodname, SensOpt.SelSensPar.name, OldParameterValue);
+
+  // This TMod.CalcSensitivity method was called by the procedure
+  // TFormSensOpt.ButtonRunSensClick from the unit UFormSelPar.
+  // There, to present the sensitivity results, the string grid will
+  // now be actualized and displayed
+
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  ClearAllDataSeries
+PURPOSE For each submodel clear data pair series
+*******************************************************************)
+
+procedure TMod.ClearAllDataSeries;
+
+var
+  i: integer;
+  SubMod: TSubModel;
+
+begin
+  // for all submodels do...
+  for i := 0 to SubmodStrlist.Count - 1 do begin
+      SubMod := TsubModel(SubmodStrlist.objects[i]);
+      //clear submodel's data pair series
+      SubMod.ClearDataSeries;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  WriteAll_1_1_Files
+PURPOSE Output of simulated/measured data pairs to _1_1.csv files for all submodells
+*******************************************************************)
+
+procedure TMod.WriteAll_1_1_Files;
+
+var
+  i: integer;
+  SubMod: TSubModel;
+begin
+  // for all submodels do...
+  for i := 0 to SubmodStrlist.Count - 1 do begin
+      SubMod := TsubModel(SubmodStrlist.objects[i]);
+      // Output of simulated/measured data pairs to _1_1.csv files
+      if SubMod.SomethingMeasured then
+        SubMod.Write_1_1_Files;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  CalcAllLinearRegressions
+PURPOSE For all submodels calculate linear regression statistics
+COMMENT Called by TMod.Run
+*******************************************************************)
+
+procedure TMod.CalcAllLinearRegressions;
+
+var
+  i, j: integer;
+  SubMod: TSubModel;
+  DataSeries: TMeasList;
+
+begin
+  //create output file for regression data
+  If Reg_fn = '' then reg_fn := 'regression.dat';
+  assignFile(Fregfile, reg_fn);
+  rewrite(fregfile);
+  writeln(fregfile, 'SubModel Parameter slope intercept r2 n RMSE EF CD');
+
+  // for all submodels do...
+  for i := 0 to SubmodStrlist.Count - 1 do begin
+      SubMod := TsubModel(SubmodStrlist.objects[i]);
+      if SubMod.SomethingMeasured then begin
+          // calculate linear regression of submodel
+          SubMod.CalcLinearRegressions;
+          // write regression data of submodel to output file
+          for j := 0 to SubMod.DataList.count - 1 do begin
+              DataSeries := TMeasList(SubMod.DataList.objects[j]);
+              writeln(fregfile, subModStrList.strings[i], Separator, DataSeries.name, Separator,
+                DataSeries.slope: 6: 4, Separator, DataSeries.intercept: 6: 4, Separator, dataSeries.r2: 6: 4, Separator,
+                DataSeries.actPos: 6, Separator, DataSeries.rmse: 6: 4,
+                Separator, DataSeries.ModellingEfficiency: 6: 4,
+                Separator, DataSeries.cd: 6: 4);
+            end;
+        end;
+    end;
+
+  //close output file for regression data
+  closeFile(fregfile);
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  CalcChiSq
+PURPOSE Calculation of sum of squared differences
+INPUT
+OUTPUT
+COMMENT
+*******************************************************************)
+
+procedure TMod.CalcChiSq;
+
+
+var
+  i, j, k: integer;
+  SubMod: TSubModel;
+  DataSeries: TMeasList;
+  MeasRec: TmeasValue;
+begin
+  // for all submodels do...
+  for i := 0 to SubmodStrlist.Count - 1 do begin
+      SubMod := TsubModel(SubmodStrlist.objects[i]);
+      if SubMod.SomethingMeasured then begin
+          for j := 0 to SubMod.DataList.count - 1 do begin
+              DataSeries := TMeasList(SubMod.DataList.objects[j]);
+              if DataSeries.SelForOpt then begin
+                  {ChiSqr := ChiSqr+DataSeries.SumSqr;}
+                  for k := 0 to DataSeries.actPOs - 1 do begin
+                      MeasRec := TMeasValue(DataSeries.Items[k]);
+                      if (MeasRec.meas > MinLegalValue) and (MeasRec.sim > MinLegalValue) then begin
+                          // add measurement data points
+                          AllMeasVal.Add(MeasRec);
+                        end;
+                    end;
+                end;
+            end;
+        end;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  MarquardOptimization
+PURPOSE Optimization routine
+COMMENT Called by TFormOpt.StartBtnClick (unit UFormOpt)
+*******************************************************************)
+
+procedure TMod.MarquardOptimization;
+
+
+var
+  NewPar, ErrPar: RealArrayMa;
+  CorMat, Alpha: RealArrayMaByMa;
+  Yfit: RealArrayNdata;
+  NewChiSq: real;
+  fn: string;
+
+begin
+  //filename for output of optimization data
+  fn := stripextension(self.ControlFileFN) + '_opt.dat';
+
+  // No file output during optimisation
+  ContOutput := false;
+
+  mrq_fit(
+    self,             // this TMod instance
+    true,             // fit?
+    true,             // flag for output to file / screen
+    fn,               // output file name
+    NewPar, ErrPar,   // new parameter values and asymptotic error values
+    NewChiSq,         // Chi square value
+    CorMat, Alpha,    // Correlation matrix, alpha
+    Yfit);            // function results with otpimal parameters
+
+  // Activate file output
+  ContOutput := true;
+
+  // Generate new output
+  run;
+
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  GetParameter
+PURPOSE Delivers values of parameter "ParName"
+INPUT   ParName: string;
+        var Par: TPar;
+        var SubModName: string;
+        var Success: boolean
+*******************************************************************)
+
+procedure TMod.GetParameter(ParName: string;
+  var Par: TPar;
+  var SubModName: string;
+  var Success: boolean);
+
+var
+  subMod: TSubModel;
+  i, index: integer;
+
+begin
+  success := false;
+
+  // for all submodels do...
+  for i := 0 to SubModStrList.count - 1 do begin
+      subMod := TSubModel(SubModStrList.Objects[i]);
+      SubModName := SubModStrList.Strings[i];
+      index := SubMod.ParStrList.IndexOf(ParName);
+
+      //found parameter ParName
+      if index <> -1 then begin
+          Par := TPar(SubMod.ParStrList.objects[index]);
+          success := true;
+
+          // get out of here
+          exit;
+        end;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  GetVariable
+PURPOSE Delivers values of variable "VarName"
+INPUT   VarName: string;
+        var Variable: TVar;
+        var SubModName: string;
+        var Success: boolean
+*******************************************************************)
+
+procedure Tmod.GetVariable(VarName: string;
+  var Variable: TVar;
+  var SubModName: string;
+  var Success: boolean);
+
+var
+  subMod: TSubModel;
+  i, index: integer;
+
+begin
+  success := false;
+
+  // for all submodels do...
+  for i := 0 to SubModStrList.count - 1 do begin
+      subMod := TSubModel(SubModStrList.Objects[i]);
+      SubModName := SubModStrList.Strings[i];
+      index := SubMod.VarStrList.IndexOf(VarName);
+
+      //found variable VarName
+      if index <> -1 then begin
+          Variable := TVar(SubMod.VarStrList.objects[index]);
+          success := true;
+
+          // get out of here
+          exit;
+        end;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  GetStateVar
+PURPOSE Delivers values of state variable "StateName"
+INPUT   StateName: string;
+        var State: TState;
+        var SubModName: string;
+        var Success: boolean
+*******************************************************************)
+
+procedure Tmod.GetStateVar(StateName: string;
+  var State: TState;
+  var SubModName: string;
+  var Success: boolean);
+
+var
+  subMod: TSubModel;
+  i, index: integer;
+
+begin
+  success := false;
+
+  // for all submodels do...
+  for i := 0 to SubModStrList.count - 1 do begin
+      subMod := TSubModel(SubModStrList.Objects[i]);
+      SubModName := SubModStrList.Strings[i];
+      index := SubMod.StateStrList.IndexOf(StateName);
+
+      //found state variable StateName
+      if index <> -1 then begin
+          State := TState(SubMod.StateStrList.objects[index]);
+          success := true;
+
+          // get out of here
+          exit;
+        end;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  IsFinished
+PURPOSE Sets TMod.ModelEnd to true if time counter passed endtime of model
+*******************************************************************)
+
+procedure TMod.IsFinished;
+
+begin
+  if Time.V >= FEndTime then
+    Modelend := true;
+
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  setName
+PURPOSE Sets the value of the Name property (inherited from TComponent).
+INPUT   const NewName: TComponentName
+*******************************************************************)
+
+procedure TMod.setName(const NewName: TComponentName);
+
+begin
+  inherited setName(NewName);
+  paint;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  RegistrateSubMod
+PURPOSE Adds submodel to TMod's Submodel-String-List
+INPUT   SubModName: string;
+        var Model: Tmod
+*******************************************************************)
+
+procedure TSubmodel.RegistrateSubMod(SubModName: string;
+  var Model: Tmod);
+
+begin
+  with model.SubModStrList do begin
+      Add(SubModName);
+      Objects[indexof(SubModName)] := self;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  setName
+PURPOSE Sets the value of the Name property (inherited from TComponent).
+INPUT   const NewName: TComponentName
+*******************************************************************)
+
+procedure TSubModel.setName(const NewName: TComponentName);
+
+begin
+  inherited setName(NewName);
+  paint;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  get_fnMeasFile
+PURPOSE Gets name of measurements file (used for publishing in object inspector)
+OUTPUT  TMyFileName
+*******************************************************************)
+
+function TSubModel.get_fnMeasFile: TMyFileName;
+
+begin
+  result := f_MeasFile.fFileName;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  set_fnMeasFile
+PURPOSE Sets name of measurement file (used for publishing in object inspector),
+        initiates and registers within the model Ini-File
+INPUT   const fn: TMyFileName
+*******************************************************************)
+
+procedure TSubModel.set_fnMeasFile(const fn: TMyFileName);
+
+begin
+  If fileexists(fn) then begin
+    f_Measfile.init(fn);
+    If GlobMod <> nil then begin
+      If GlobMod.actInifile <> nil then
+        Globmod.actIniFile.WriteString(GlobMod.Str_SectionName_MeasurementFiles, name, fn);
+    end;
+  end;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  Set_GlobMod
+PURPOSE Initiates submodel according to "global" model (TMod instance)
+INPUT   Model: TMod
+*******************************************************************)
+
+procedure TSubModel.Set_GlobMod(Model: TMod);
+var
+  SubModIndex: integer;
+begin
+  {if value <> nil then
+  begin}
+
+  SubModName := Name;
+  GlobMod := Model;
+  fn_rate := Globmod.FOutputPath +'\'+ Name + '_rat.csv';
+  fn_state := Globmod.FOutputPath +'\'+ Name + '_dat.csv';
+
+  ParIniF := Globmod.ParamInifile;
+  StateIniF := Globmod.StateIniFile;
+  GlobTime := GlobMod.Time;
+
+  RegistrateSubMod(SubModName, GlobMod);
+  SubModIndex := GlobMod.SubModStrList.IndexOf(Name);
+  if compIndex = -1 then
+    CompIndex := SubModIndex;
+
+  {end
+  else
+  GlobMod:= nil; }
+
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  Get_GlobMod
+PURPOSE Delivers reference to "global" model (TMod instance9 where
+        submodel is registered
+OUTPUT  TMod
+*******************************************************************)
+
+function TSubModel.Get_GlobMod: TMod;
+begin
+  result := GlobMod;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  Set_ExternVStrList
+PURPOSE Sets string list of external values TExternV
+INPUT   value: TStringlist
+*******************************************************************)
+
+procedure TSubModel.Set_ExternVStrList(value: TStringlist);
+begin
+  ExternVStrList.Assign(value);
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  Set_VarStrList
+PURPOSE Sets string list of variables TVar
+INPUT   value: TStringlist
+*******************************************************************)
+
+procedure TSubModel.Set_VarStrList(value: TStringlist);
+begin
+  VarStrList.Assign(value);
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  Set_ParStrList
+PURPOSE Sets string list of Parameters TPar
+INPUT   value: TStringlist
+*******************************************************************)
+
+procedure TSubModel.Set_ParStrList(value: TStringlist);
+begin
+  ParStrList.Assign(value);
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  Create
+PURPOSE Creates TSubModel according to TComponent.create
+INPUT   AOwner: TComponent
+COMMENT The TSubmodel class is derived from the TGraphicControl class
+*******************************************************************)
+
+constructor TSubModel.Create(AOwner: TComponent);
+var
+  actseries: TMeasList;
+  Date, x: real;
+  MeasValue: TMeasValue;
+begin
+  //calls inherited TGraphicControl.create
+  inherited create(AOwner);
+
+  //sets TGraphicControl style properties
+  Canvas.brush.Color := ClGreen;
+  Canvas.Font.Size := 12;
+  ControlStyle := ControlStyle + [csReplicatable];
+  Width := 100;
+  Height := 50;
+  Canvas.Pen.Color := clblack;
+  Canvas.Pen.Mode := pmCopy;
+  Canvas.Pen.Width := 2;
+  Canvas.Brush.Style := bsSolid;
+  Canvas.Font.Color := clWhite;
+
+  //Initiates lists for state variables, parameters, external values and measured data series
+  WriteTofile := true;
+  StateSTrList := TStringList.create;
+  StateSTrList.Sorted := true;
+  StateStrlist.Duplicates := dupignore;
+  ParStrList := TstringList.create;
+  ParStrList.Sorted := true;
+  ParStrList.Duplicates := dupignore; // adding duplicates to the sorted list will trigger an LListError exception
+  ExternVStrList := TstringList.create;
+  ExternVStrList.sorted := true;
+  ExternVStrList.Duplicates := dupignore;
+  VarStrList := TstringList.create;
+  VarStrList.Sorted := true;
+  VarStrList.Duplicates := dupignore;
+  ConstStrList := TStringList.create;
+  ConstStrList.Sorted := true;
+  ConstStrList.Duplicates := dupignore;
+  DataList := TStringList.Create; // List of measured data series
+
+  //calls TGraphicControl.activate (virtual)
+  Activate;
+
+  Cursor := CrHandPoint;
+  compindex := -1;
+  FMeasValues := TTextFileH.create;
+  CreateAll;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  Init
+PURPOSE Initialisation method for TSubmodem
+INPUT   var GlobMod: TMod
+COMMENT Is being called on creation of application form and on run of simulation
+*******************************************************************)
+
+procedure TSubModel.Init(var GlobMod: TMod);
+
+var
+  i, j, line: integer;
+  State: TState;
+  Param: Tpar;
+  variable: TVar;
+  NewSeries, series: TMeasList;
+  error: boolean;
+  fn_meas, fn_meas_2, Namestr, Unitstr: string;
+  ActDataList: TStringList;
+  ActMeas: TMeasValue;
+  ActSeries: TMeasList;
+  value: real;
+  Date, x: real;
+  MeasValue: TMeasValue;
+  defaultname : string;
+
+begin
+  ParIniF := Globmod.ParamInifile;
+  StateIniF := Globmod.StateIniFile;
+  GlobTime := GlobMod.Time;
+
+  // (Re)initialization of all state variables
+  StateSTrList.Sorted := false;
+  for I := 0 to self.StateStrList.Count - 1 do begin
+      State := TState(StateStrList.Objects[i]);
+      StateStrList.Strings[i] := State.name;
+      State.c := 0.0; //  At the beginning the rate of change equals 0 for all state variables
+      if State.ReadFromFile and (State.name <> '') then begin
+          value := GlobMod.StateIniFile.ReadFloat(SubModName, State.name, 0.0, error);
+          State.v := value;
+        end;
+      if error then begin
+          GlobMod.StateIniFile.WriteFloat(SubModName, State.name, State.DefaultValue);
+          {ShowMessage('Error on initialization of state variables');}
+        end;
+    end;
+  StateStrList.Sort;
+  StateSTrList.Sorted := true;
+
+  // (Re)initialization of all parameters
+  ParStrList.Sorted := false;
+  for I := 0 to ParStrList.Count - 1 do begin
+      Param := TPar(ParStrList.Objects[i]);
+      ParStrList.Strings[i] := Param.Name;
+      if Param.SelForOpt = false then { Read values only if not selected for optimization ! }
+        Param.v := GlobMod.ParamIniFile.ReadFloat(SubModName, Param.name, Param.DefaultValue, error)
+        {else showMessage(GlobMod.ParamInifile.Filename+Separator+Param.n+Separator+FloatToStr(Param.v))};
+      if error then begin
+          GlobMod.ParamIniFile.WriteFloat(SubModName, Param.name, Param.DefaultValue);
+          {ShowMessage('Error on initialization of parameters');}
+        end;
+    end;
+  ParStrList.sort;
+  ParStrList.sorted := true;
+
+  // (Re)initialization of all variables
+  VarStrList.sorted := false;
+  for I := 0 to self.VarStrList.Count - 1 do begin
+      Variable := TVar(VarStrList.Objects[i]);
+      VarStrList.strings[i] := Variable.Name;
+      if Variable.ReadFromFile then begin
+          Variable.v := GlobMod.StateIniFile.ReadFloat(SubModName, Variable.name, Variable.DefaultValue, error)
+          {else showMessage(GlobMod.ParamInifile.Filename+Separator+Param.n+Separator+FloatToStr(Param.v))};
+          if error then begin
+              GlobMod.ParamIniFile.WriteFloat(SubModName, Variable.name, Variable.DefaultValue);
+            end;
+          {ShowMessage('Error on initialization of variables');}
+        end else begin
+          Variable.v := 0.0;
+        end;
+    end;
+  VarStrLIst.sort;
+  VarStrList.sorted := true;
+
+  //reads filenames of measurement and output files from main Ini-file
+  fn_meas := GlobMod.ActIniFile.ReadString(GlobMod.Str_SectionName_MeasurementFiles, SubModName, '');
+//  fn_meas_2 := GlobMod.ActIniFile.ReadString(GlobMod.str_SectionName_MeasurementFiles, SubModName + '_2', '');
+
+  defaultName :=  ExtractFileName(globmod.ActIniFile.FileName);
+  delete(defaultname, pos('.', defaultname),4);
+  defaultname := GlobMod.FOutputPath+'\'+defaultname+'_'+SubModname; 
+  fn_state := GlobMod.ActIniFile.ReadString(GlobMod.str_SectionName_OutputFiles, SubModName, Defaultname) + '_dat.csv';
+  fn_rate := GlobMod.ActIniFile.ReadString(GlobMod.str_SectionName_OutputFiles, SubModName, Defaultname) + '_rat.csv';
+
+  //opens measurement data files and put data into list of data series
+  //#TS#034# redundancy with following section
+  if FileExists(fn_meas) then begin
+      if FmeasValues = nil then
+        FMeasValues := TTextFileH.create
+      else begin
+        FMeasValues.init(fn_meas);
+      end;
+      SomethingMeasured := true;
+      with FMeasValues do begin
+          for i := 1 to FirstLine.Count - 1 do begin
+              Namestr := FirstLine.Strings[i];
+              Unitstr := UnitLine.strings[i];
+              if DataList.IndexOf(NameStr) = -1 then begin
+                  NewSeries := TMeasList.Create(Namestr, Unitstr);
+                  DataList.AddObject(NameStr, NewSeries);
+                end;
+            end;
+          for i := 0 to DataList.Count - 1 do begin
+              ActSeries := TMeasList(DataList.objects[i]);
+              Actseries.Lastdate := GlobMod.Time.v;
+              ActSeries.SumSqr := 0.0;
+              ActSeries.slope := 0.0;
+              ActSeries.intercept := 0.0;
+              ActSeries.r2 := 0.0;
+            end;
+
+          GoTop;
+          for line := 1 to FMeasValues.n_Line do begin
+              NextLine;
+              for i := 0 to DataList.Count - 1 do begin
+                  date := FmeasValues.getIndexValue(0);
+                  x := FmeasValues.getValue(TMeasList(DataList.objects[i]).Name);
+                  if (x > GlobMod.MinLegalValue) and (Date >= GlobMod.FStartTime) and (Date <= GlobMod.FEndTime) then begin
+                  //if (x > GlobMod.MinLegalValue) and (Date < GlobMod.FEndTime) then begin
+                      MeasValue := TMeasValue.create(Date, x, GlobMod.MinLegalValue);
+                      TMeasList(DataList.Objects[i]).Add(MeasValue);
+                    end;
+                end;
+            end;
+        end;
+    end else begin
+      SomethingMeasured := false;
+
+      if FileExists(fn_meas) and (fn_meas <> '') then
+        ShowMessage('Measurementfile ' + fn_meas + 'of ' + self.name + ' is specified but does not exist')
+    end;
+
+  //opens measurement data files and put data into list of data series
+  //#TS#034# redundancy with previous section
+  if FileExists(fn_meas_2) then begin
+      somethingmeasured := true;
+      if FmeasValues_2 = nil then
+        FMeasValues_2 := TTextFileH.create
+      else begin
+        FMeasValues_2.init(fn_meas_2);
+      end;
+      SomethingMeasured := true;
+      with FMeasValues_2 do begin
+          for i := 1 to FirstLine.Count - 1 do begin
+              Namestr := FirstLine.Strings[i];
+              Unitstr := UnitLine.strings[i];
+              if DataList.IndexOf(NameStr) = -1 then begin
+                  NewSeries := TMeasList.Create(Namestr, Unitstr);
+                  DataList.AddObject(NameStr, NewSeries);
+                end;
+            end;
+          for i := 0 to DataList.Count - 1 do begin
+              ActSeries := TMeasList(DataList.objects[i]);
+              Actseries.Lastdate := GlobMod.Time.v;
+              ActSeries.SumSqr := 0.0;
+              ActSeries.slope := 0.0;
+              ActSeries.intercept := 0.0;
+              ActSeries.r2 := 0.0;
+            end;
+
+          GoTop;
+          for line := 1 to FMeasValues_2.n_Line do begin
+              NextLine;
+              for i := 0 to DataList.Count - 1 do begin
+                  date := FmeasValues_2.getIndexValue(0);
+                                if (x > GlobMod.MinLegalValue) and (Date >= GlobMod.FStartTime) and (Date <= GlobMod.FEndTime) then begin
+                  x := FmeasValues_2.getValue(TMeasList(DataList.objects[i]).Name);
+                  //if (x > GlobMod.MinLegalValue) and (Date < GlobMod.FEndTime) then begin
+                      MeasValue := TMeasValue.create(Date, x, GlobMod.MinLegalValue);
+                      TMeasList(DataList.Objects[i]).Add(MeasValue);
+                    end;
+                end;
+            end;
+        end;
+    end else begin
+
+      if FileExists(fn_meas_2) and (fn_meas_2 <> '') then
+        ShowMessage('Measurementfile ' + fn_meas_2 + 'of ' + self.name + ' is specified but does not exist')
+    end;
+
+  //calls TGraphicControl.activate (virtual)
+  Activate;
+
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  CreateAll
+PURPOSE Instantiates all objects
+COMMENT Is that routine for any use? Where?
+*******************************************************************)
+
+procedure TSubModel.CreateAll;
+
+begin
+//  ShowMessage('In Create All SubModel' + self.Name);
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  ParCreate
+PURPOSE Method for creating and and initialising a TPar variable
+INPUT   ParName: string;
+        ParUnits: string;
+        DefaultValue: real;
+        var Par: TPar
+*******************************************************************)
+
+procedure TSubModel.ParCreate(ParName: string;
+  ParUnits: string;
+  DefaultValue: real;
+  var Par: TPar);
+
+var
+  value: real;
+  error: boolean;
+
+begin
+  if self.GlobMod <> nil then begin
+      value := ParInif.ReadFloat(uppercase(SubModName), uppercase(parName), DefaultValue, error);
+      if error then
+        ParInif.WriteString(uppercase(SubModName), uppercase(ParName), FloatToStr(DefaultValue));
+      value := defaultvalue;
+    end;
+  if self.GlobMod = nil then value := defaultvalue;
+  if par = nil then begin
+      Par := Tpar.create(parName, ParUnits, Defaultvalue, 0.0);
+      Registrateparameter(par);
+    end;
+  {ShowMessage(ParStrlist.CommaText);}
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  VarCreate
+PURPOSE Method for creating and and initialising a TVar variable
+INPUT   VarName: string;
+        VarUnits: string;
+        DefaultValue: real;
+        ReadFromFile: boolean;
+        var Variable: TVar
+*******************************************************************)
+
+procedure TSubModel.VarCreate(VarName: string;
+  VarUnits: string;
+  DefaultValue: real;
+  ReadFromFile: boolean;
+  var Variable: TVar);
+
+var
+  value: real;
+  error: boolean;
+
+begin
+  //get value from Ini file of global model
+  if self.GlobMod <> nil then begin
+      if readFromFile then begin
+          value := StateInif.ReadFloat(uppercase(SubModName), uppercase(VarName), DefaultValue, error);
+          if error then begin
+              StateInif.WriteString(uppercase(SubModName),
+                uppercase(VarName), FloatToStr(DefaultValue));
+              value := defaultValue;
+            end;
+
+        end else begin
+          value := defaultvalue;
+        end;
+    end;
+
+  //if no global model then use default value
+  if self.GlobMod = nil then value := defaultvalue;
+
+  //if TVar instance is not existing then create and register
+  if Variable = nil then begin
+      Variable := Tvar.create(VarName, VarUnits, Value);
+      RegistrateVariable(Variable);
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  StateCreate
+PURPOSE Method for creating and and initialising a TState variable
+INPUT   StateName: string;
+        StateUnits: string;
+        DefaultValue: real;
+        ReadFromfile: boolean;
+        var State: TState
+*******************************************************************)
+
+procedure TSubModel.StateCreate(StateName: string;
+  StateUnits: string;
+  DefaultValue: real;
+  ReadFromfile: boolean;
+  var State: TState);
+
+var
+  value: real;
+  error: boolean;
+begin
+  //get value from Ini file of global model
+  if self.GlobMod <> nil then begin
+      if ReadFromfile then begin
+          try
+            value := StateInif.ReadFloat(uppercase(SubModName), uppercase(StateName), DefaultValue, error);
+          except
+            if error then begin
+                StateInif.WriteString(uppercase(SubModName),
+                  uppercase(StateName), FloatToStr(DefaultValue));
+                value := defaultvalue;
+              end;
+          end;
+        end else begin
+
+          value := defaultvalue;
+        end;
+    end;
+
+  //if no global model then use default value
+  if self.GlobMod = nil then value := defaultvalue;
+
+  //if TState instance is not existing then create and register
+  if state = nil then begin
+      State := Tstate.create(StateName, StateUnits, value, 0.0);
+      RegistrateStateVar(state);
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  RegistrateParameter
+PURPOSE Registers parameter (TPar instance) in parameter list of submodel
+INPUT   Par: TPar
+*******************************************************************)
+
+procedure TSubmodel.RegistrateParameter(Par: TPar);
+
+begin
+  ParStrList.Add(Par.name);
+  ParStrList.Objects[ParStrList.indexof(par.name)] := Par;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  RegistrateVariable
+PURPOSE Registers variable (TVar instance) in variable list of submodel
+INPUT   Variable: TVar
+*******************************************************************)
+
+procedure TSubmodel.RegistrateVariable(Variable: TVar);
+
+begin
+  VarStrList.Add(Variable.name);
+  VarStrList.Objects[varStrList.indexof(Variable.name)] := Variable;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  RegistrateStateVar
+PURPOSE Registers state variable (TState instance) in state variable list of submodel
+INPUT   State: TState
+*******************************************************************)
+
+procedure TSubmodel.RegistrateStateVar(State: TState);
+
+begin
+  StateStrList.Add(State.name);
+  StateStrList.Objects[StateStrList.indexof(State.name)] := State;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  WriteStateName
+PURPOSE Write names and units of all variables to output file (_dat.csv)
+INPUT   var f: text;
+        fn: string;
+        Time: TState
+*******************************************************************)
+
+procedure TSubModel.WriteStateName(var f: text; fn: string; Time: TState);
+
+var
+  i: integer;
+  Caption: string;
+  State: Tstate;
+  Variable: TPar;
+  ExValue: TExternV;
+
+begin
+
+  //rewrite output file _dat.csv
+  assignfile(f, fn);
+  rewrite(f);
+
+  //first row of output file
+
+  //write name of time variable to output
+  write(f, time.name, GlobMod.Separator);
+
+  //write names of all state variables to output
+  for i := 0 to StateStrList.Count - 1 do begin
+      State := TState(StateStrList.objects[i]);
+      if state.WriteToFile then begin
+          Caption := state.name;
+          write(f, Caption, GlobMod.Separator);
+        end;
+    end;
+
+  //write names of all  variables to output
+  for i := 0 to VarStrList.Count - 1 do begin
+      Variable := Tpar(VarStrList.objects[i]);
+      if Variable.WriteToFile then begin
+          Caption := Variable.name;
+          write(f, Caption, GlobMod.Separator);
+        end;
+    end;
+
+ //write names of all external variables to output
+   for i := 0 to self.ExternVStrList.count - 1 do begin
+      ExValue := TExternV(ExternVStrList.objects[i]);
+      if ExValue.opt_WriteToFile then begin
+          Caption := ExValue.name;
+          write(f, Caption, GlobMod.Separator);
+        end;
+    end;
+
+  //go to second row of output file
+  writeln(f);
+
+  //write units of time variable to output
+  write(f, time.u, GlobMod.Separator);
+
+  //write units of all state variables to output
+  for i := 0 to stateStrList.count - 1 do begin
+      state := Tstate(stateStrList.objects[i]);
+      if state.WriteToFile then begin
+          caption := state.U;
+          write(f, Caption, GlobMod.Separator);
+        end;
+    end;
+
+  //write units of all  variables to output
+  for i := 0 to VarStrList.count - 1 do begin
+      Variable := TPar(VarStrList.objects[i]);
+      if Variable.WriteToFile then begin
+          caption := Variable.U;
+          write(f, Caption, GlobMod.Separator);
+        end;
+    end;
+
+  //write units of all external variables to output
+  for i := 0 to self.ExternVStrList.count - 1 do begin
+      ExValue := TExternV(ExternVStrList.objects[i]);
+      if ExValue.opt_WriteToFile then begin
+          Caption := ExValue.Units;
+          write(f, Caption, GlobMod.Separator);
+        end;
+    end;
+
+  //go to third row of output file - ready for values...
+  writeln(f);
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  WriteSensNames
+PURPOSE Write names and units of all sensitivity steps to output file (_dat.csv)
+INPUT   Variable: Tvar;
+        var f: text
+*******************************************************************)
+
+procedure TMod.WriteSensNames(Variable: Tvar;
+  var f: text);
+
+var
+  i: integer;
+  Caption: string;
+
+begin
+  //output file already opened: _sens_a.csv files
+  {rewrite(f);}
+
+  //first row of output file
+
+  //write name of time variable to output
+  write(f, Time.name, Separator);
+
+  //write names of all steps of sensitivity analysis to output
+  for i := 1 to sensOpt.Steps do begin
+      Caption := Variable.name + '_' + IntToStr(i);
+      write(f, Caption, Separator);
+    end;
+
+  //go to second row of output file
+  writeln(f);
+
+  //write units of time variable to output
+  write(f, Time.U, Separator);
+
+  //write units of all steps of sensitivity analysis to output
+  for i := 0 to sensOpt.Steps do begin
+      caption := Variable.U;
+      write(f, Caption, Separator);
+    end;
+
+  //go to third row of output file - ready to write values...
+  writeln(f);
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  WriteSensValue
+PURPOSE Writes values from sensitivity analysis to sens_ output files
+INPUT   Variable: Tvar;
+        Iter: integer;
+        var f_a, f_b: text
+*******************************************************************)
+
+procedure TMod.WriteSensValue(Variable: Tvar;
+  Iter: integer;
+  var f_a, f_b: text);
+
+var
+  i: integer;
+  line: string;
+begin
+  if iter > 1 then begin
+      readln(f_b, line);
+      writeln(f_a, line + FloatToStrF(Variable.v, ffgeneral, Variable.Precision, Variable.Digits), separator);
+    end else
+    writeln(f_a, FloatToStrF(Time.v, ffgeneral, Time.Precision, Time.Digits), separator,
+      FloatToStrF(Variable.v, ffgeneral, Variable.Precision, Variable.Digits), separator);
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  Integrate
+PURPOSE Integration of state variables (Euler method)
+*******************************************************************)
+
+procedure TSubModel.Integrate;
+
+var
+  j: integer;
+  state: TState;
+begin
+  //for all state variables do...
+  for j := 0 to StateStrList.count - 1 do begin
+      State := TState(stateStrList.objects[j]);
+      state.V := state.V + state.C * GlobTime.c;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  SaveState
+PURPOSE Writes values of state, parameter and external variables to output files
+INPUT   var f: text;
+        fn: string;
+        Time: TState
+COMMENT #TS#026 code modified due to problems with separator
+*******************************************************************)
+
+procedure TSubModel.SaveState(var f: text; fn: string; Time: TState);
+
+var
+  i: integer;
+  state: TState;
+  Variable: TPar;
+  ExValue: TExternV;
+  Outstr: string;
+  
+begin
+
+  //write value of time variable to output file
+  OutStr := FloatToStrF(Time.v, ffgeneral, Time.Precision, Time.Digits);
+  //#TS#026  previous version: write(f, OutStr, GlobMod.Separator);
+  write(f, OutStr);
+
+  //write values of all state variables to output file
+  for i := 0 to StateStrList.count - 1 do begin
+      State := Tstate(StateStrList.objects[i]);
+      if State.WriteToFile then begin
+          OutStr := FloatToStrF(state.v, ffgeneral, State.Precision, State.Digits);
+          //#TS#026  previous version: write(f, OutStr, GlobMod.Separator);
+          write(f, GlobMod.Separator, OutStr);
+        end;
+    end;
+
+  //write values of all variabes to output file
+  for i := 0 to VarStrList.count - 1 do begin
+      Variable := TPar(VarStrList.objects[i]);
+      if Variable.WriteToFile then begin
+          outStr := FloatToStrF(Variable.v, ffgeneral, Variable.Precision, Variable.Digits);
+          //#TS#026  previous version: write(f, OutStr, GlobMod.Separator);
+          write(f, GlobMod.Separator, OutStr);
+        end;
+    end;
+
+  //write values of all external variables to output file
+  for i := 0 to self.ExternVStrList.count - 1 do begin
+      ExValue := TExternV(ExternVStrList.objects[i]);
+      if ExValue.opt_WriteToFile then begin
+          outStr := FloatToStrF(ExValue.v, ffgeneral, 6, 2);
+          //#TS#026  previous version: write(f, OutStr, GlobMod.Separator);
+          write(f, GlobMod.Separator, OutStr);
+        end;
+    end;
+
+  //change to next row
+  writeln(f);
+
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  WriteRateName
+PURPOSE Write names and units of all rate variables to output file (_dat.csv)
+INPUT   var f: text;
+        fn: string;
+        Time: Tstate
+*******************************************************************)
+
+procedure TSubModel.WriteRateName(var f: text; fn: string; Time: Tstate);
+
+var
+  i: integer;
+  state: Tstate;
+  Caption: string;
+
+begin
+  // rewrite output file _rat.csv
+  assignfile(f, fn);
+  rewrite(f);
+
+  //now in first row
+
+  // write name of time variable
+  write(f, time.name, GlobMod.Separator);
+
+  // write names of all rate variables
+  for i := 0 to StateStrList.count - 1 do begin
+      State := TState(StateStrList.Objects[i]);
+      if state.WriteToFile then
+        write(f, StateStrList.strings[i], GlobMod.Separator);
+    end;
+
+  //change to second row
+  writeln(f);
+
+  // write units of time variable
+  write(f, time.u, GlobMod.Separator);
+
+  // write units of all rate variables
+  for i := 0 to stateStrList.count - 1 do begin
+      state := Tstate(stateStrList.objects[i]);
+      if state.WriteToFile then begin
+          caption := state.U;
+          write(f, Caption, GlobMod.Separator);
+        end;
+    end;
+
+  //change to third row, now ready for writing rate values...
+  writeln(f);
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  SaveRate
+PURPOSE Writes values of rate variables to output files
+INPUT   var f: text;
+        fn: string;
+        Time: Tstate
+*******************************************************************)
+
+procedure TSubModel.SaveRate(var f: text; fn: string; Time: Tstate);
+
+var
+  i: integer;
+  state: TState;
+  OutStr: string;
+begin
+  //write value of time variable to output file
+  OutStr := FloatToStrF(Time.v, ffgeneral, Time.Precision, Time.Digits);
+  write(f, OutStr, globMod.Separator);
+
+  //write values of all rate variables to output file
+  for i := 0 to StateStrList.count - 1 do begin
+      State := Tstate(StateStrList.objects[i]);
+      if State.WriteToFile then begin
+          OutStr := FloatToStrF(State.c, ffGeneral, Time.Precision, Time.Digits);
+          write(f, OutStr, GlobMod.Separator);
+        end;
+    end;
+  writeln(f);
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  CalcRates
+PURPOSE Rate calculation (to be overwritten by derived classes)
+*******************************************************************)
+
+procedure TSubModel.CalcRates;
+
+begin
+//  Beep;
+  ShowMessage(' Error !  You should not see this Message ! ');
+  ShowMessage(' You did not overwrite Method CalcRates ');
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  Activate
+PURPOSE Set isActive flag
+*******************************************************************)
+
+procedure TSubModel.Activate;
+
+begin
+  IsActive := true;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  ExternVCreate
+PURPOSE Method for creating and and initialising a TExternV variable
+INPUT   Name, Units: string;
+        ExV: TexValue;
+        var ExternV: TexternV
+*******************************************************************)
+
+procedure TSubModel.ExternVCreate(Name, Units: string; ExV: TexValue;
+  var ExternV: TexternV);
+
+begin
+  if ExternV = nil then begin
+      ExternV := TexternV.create(name, Units, ExV);
+      ExternVStrList.Add(name);
+      ExternVStrList.objects[ExternVStrList.indexof(name)] := externV;
+    end;
+  {showmessage(externVStrList.commatext);}
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  ExternVInit
+PURPOSE Setting pointers of external variables
+INPUT   model: Tmod
+*******************************************************************)
+
+procedure TSubModel.ExternVInit(model: Tmod);
+
+var
+  i, j, index: Integer;
+  SubMod: TSubModel;
+  State: TState;
+  Variable: TPar;
+  ExternV: TExternV;
+  par: TPar;
+  success: boolean;
+
+begin
+  //for all external variables of the submodel do...
+  for i := 0 to ExternVStrlist.Count - 1 do begin
+      success := false;
+      ExternV := TExternV(ExternVStrlist.objects[i]);
+      {showmessage(model.weatherfile.FirstLine.commatext);}
+
+      //is external variable stored within weather file?
+      index := model.weatherfile.FirstLine.IndexOf(ExternV.name);
+
+      //yes, external variable is stored in weather file
+      if (index <> -1) then begin
+          par := Tpar(model.weatherfile.firstline.objects[index]);
+          ExternV.SetPointer(@par.v);
+          ExternV.Source := model.weatherfile.filename;
+          success := true;
+        end
+      //no, external variable is not stored in weather file
+      else begin
+          for j := 0 to model.SubModStrList.Count - 1 do begin
+              // check all submodels except the calling submodel itself
+              if j <> model.SubModStrList.IndexOf(self.SubModName) then begin
+                  SubMod := TSubModel(model.SubModStrList.objects[j]);
+
+                  //is external variable stored in state variables list?
+                  index := subMOd.StateStrList.IndexOf(ExternV.Name);
+                  if (index <> -1) then begin
+                      State := Tstate(subMOd.StateStrList.objects[index]);
+                      if ExternV.Ex = stateField then
+                        ExternV.SetPointer(@State.v)
+                      else
+                        ExternV.SetPointer(@state.c);
+                      ExternV.source := SubMod.name;
+                      success := true;
+                    end;
+
+                  //if not successful, try searching variables list
+                  if not success then begin
+                      index := subMod.VarStrList.IndexOf(ExternV.Name);
+                      if (index <> -1) then begin
+                          Variable := TPar(subMOd.VarStrList.objects[index]);
+                          ExternV.SetPointer(@Variable.v);
+                          ExternV.source := SubMod.name;
+                          success := true;
+                        end;
+                    end;
+
+                  //if not successful, try searching parameters list
+                  if not success then begin
+                      index := subMod.ParStrList.IndexOf(ExternV.Name);
+                      if (index <> -1) then begin
+                          Variable := TPar(subMOd.ParStrList.objects[index]);
+                          ExternV.SetPointer(@Variable.v);
+                          ExternV.source := SubMod.name;
+                          success := true;
+                        end;
+                    end;
+                end;
+            end;
+        end;
+
+      //no success at all
+      if Success = false then begin
+          ExternV.Source := 'not found';
+          ShowMessage('Error on initialisation of interface, Parameter: ' + ExternV.Name + '  SubModel:'+self.name);
+        end;
+    end;
+
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  AddSimValueToDataSeries
+PURPOSE Adding simulated values to corresponding measured data
+*******************************************************************)
+
+procedure TSubModel.AddSimValueToDataSeries;
+
+var
+  i, ListPos: integer;
+  ActSeries: TMeasList;
+  ActMeas: TMeasValue;
+  ActState: TState;
+  ActVar: TVar;
+
+begin
+  for I := 0 to DataList.Count - 1 do begin
+      ActSeries := TMeasList(DataList.objects[i]);
+      if ActSeries.ActPos <= ActSeries.count - 1 then begin
+          ActMeas := TmeasValue(ActSeries.items[ActSeries.ActPos]);
+          if (ActMeas.date <= GlobTime.v) and
+            (ActMeas.date > ActSeries.LastDate) then begin
+              ActSeries.LastDate := GlobTime.v;
+              if ActSeries.actPos < ActSeries.count then
+                inc(ActSeries.actPos);
+              ListPos := StateStrList.indexof(ActSeries.name);
+              if ListPos <> -1 then begin
+                  ActState := Tstate(StateStrList.objects[ListPos]);
+                  ActMeas.sim := ActState.V;
+                  ActSEries.SumSqr := ActSEries.SumSqr + sqr(ActMeas.sim - ActMeas.meas);
+                end else begin
+                  ListPos := VarStrList.indexof(ActSeries.name);
+                  if ListPos <> -1 then begin
+                      ActVar := TVar(VarStrList.objects[ListPos]);
+                      ActMeas.sim := ActVar.V;
+                      ActSEries.SumSqr := ActSEries.SumSqr + sqr(ActMeas.sim - ActMeas.meas);
+                    end;
+                end;
+            end;
+        end;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  write_1_1_files
+PURPOSE Output of simulated/measured data pairs to _1_1.csv files
+*******************************************************************)
+
+procedure TSubmodel.write_1_1_files;
+
+var
+  i: integer;
+  ActSeries: TMeasList;
+
+begin
+  //for all data pairs do...
+  for I := 0 to DataList.Count - 1 do begin
+      ActSeries := TMeasList(DataList.objects[i]);
+      ActSeries.WriteToFile(GlobMod.FOutputPath + '/' + ActSeries.name + '_1_1.csv');
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  CalcLinearRegressions
+PURPOSE Calculation of linear regression
+*******************************************************************)
+
+procedure TSubmodel.CalcLinearRegressions;
+
+var
+  i: integer;
+  ActSeries: TMeasList;
+
+begin
+  //for all data pairs do...
+  for I := 0 to DataList.Count - 1 do begin
+      ActSeries := TMeasList(DataList.objects[i]);
+      ActSeries.LeastSquares;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  ClearDataSeries
+PURPOSE Clears data pair series
+*******************************************************************)
+
+procedure TSubModel.ClearDataSeries;
+
+var
+  i: integer;
+  ActSeries: TMeasList;
+  IsSelforOpt: boolean;
+begin
+  //for all data pairs do...
+  for i := 0 to DataList.Count - 1 do begin
+      ActSeries := TMeasList(DataList.objects[i]);
+      IsSelForOpt := ActSeries.selForOpt;
+      //Clears data pair series
+      ActSeries.clear;
+      ActSeries.SelForOpt := IsSelForOpt;
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  Paint
+PURPOSE New Paint procedure for TSubmodel (which is derived from TGraphicControl)
+*******************************************************************)
+
+procedure TSubModel.Paint;
+var
+  x, y, w, h, s,
+    text_left, text_high, text_top, text_length: integer;
+  Titel: string;
+begin
+  Titel := Name;
+  with Canvas do
+    begin
+      x := Pen.Width div 2;
+      y := x;
+      w := Width - Pen.Width + 1;
+      h := Height - Pen.Width + 1;
+      if w < h then s := w else s := h;
+      ellipse(x, y, x + w, y + h);
+      text_length := TextWidth(Titel);
+      text_left := (Width - text_length) div 2;
+      TextOut(text_left, Height div 2 - TextHeight(Titel) div 2, Titel);
+    end;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  Destroy
+PURPOSE Remove submodel entry from global TMod instance and call inherited
+        destroy method
+*******************************************************************)
+
+destructor TSubmodel.Destroy;
+
+var
+  index: integer;
+
+begin
+  if self.SM_GlobMod <> nil then begin
+      index := sm_globMod.SubModStrList.IndexOf(self.name);
+      sm_globMod.SubModStrList.Delete(index);
+    end;
+
+  inherited destroy;
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  DblClick
+PURPOSE Show Message after doubleclick on TSubmodel during Runtime
+*******************************************************************)
+
+procedure TSubModel.DblClick;
+//var
+//HumeForm : TFormHumeShow;
+begin
+  ShowMessage('Sub-model created using HUME');
+  {HumeForm := THumeForm.create;
+  HumeForm.showmodal;
+  HumeForm.clear;}
+end;
+
+
+(******************************************************************
+CLASS   TSubmodel
+METHOD  MouseDown
+PURPOSE Captures MouseDown event on TSubModel component
+COMMENT Not yet implemented
+*******************************************************************)
+
+procedure TSubModel.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+//const
+//  SC_DRAGMOVE = $F012;
+begin
+// ReleaseCapture;
+// Perform(WM_SYSCOMMAND, {SC_DRAGMOVE}SC_MOVE, 0);
+ inherited;
+end;
+
+
+(******************************************************************
+CLASS   TMod
+METHOD  DblClick
+PURPOSE Shows Message after doubleclick on TMod during Run-time
+*******************************************************************)
+
+procedure TMod.DblClick;
+//var
+//HumeForm : TFormHumeShow;
+begin
+  ShowMessage('Model created using HUME');
+  {HumeForm := THumeForm.create;
+  HumeForm.showmodal;
+  HumeForm.clear;}
+end;
+
+
+(******************************************************************
+CLASS   TModEditor
+METHOD  Edit
+PURPOSE Exchanges data with TModelEdit form and starts designtime editing
+*******************************************************************)
+
+procedure TModEditor.Edit;
+
+var
+  FormModelEditor: TModelEdit;
+  i, OldIndex, NewIndex: integer;
+  SubMod: TSubModel;
+  Name: string;
+  f: textFile;
+
+begin
+  if Tmod(component).gm_ControlFile = '' then begin
+      showmessage('No Controlfile specified');
+      exit;
+    end;
+
+  //creates model editor form
+  FormModelEditor := TModelEdit.create(nil);
+
+  // copies values from TMod properties to editor form
+  FormModelEditor.TimeInit := Tmod(component).str_SectionName_TimeInit;
+  FormModelEditor.FileNames := Tmod(component).str_SectionName_FileNames;
+  FormModelEditor.StartZeit := Tmod(component).str_SectionTopic_SimStart;
+  FormModelEditor.endZeit   := Tmod(component).str_SectionTopic_SimEnd;
+  FormModelEditor.TimeStep  := Tmod(component).str_SectionTopic_TimeStep;
+  FormModelEditor.StateIniFN := Tmod(component).str_SectionTopic_StateIniFN;
+  FormModelEditor.ParamIniFN := Tmod(component).str_SectionTopic_ParamIniFN;
+  FormModelEditor.WeatherFileFN := Tmod(component).str_sectionTopic_WeatherFileFN;
+
+  if TMod(component).SubModStrList.count > 0 then begin
+      for i := 0 to TMod(component).SubModStrList.count - 1 do
+        FormModelEditor.ListBoxSubModels.items.Add(TMod(component).SubModStrList.strings[i]);
+    end;
+
+  FormModelEditor.Edit_ModelName.text := Tmod(Component).Name;
+  FormModelEditor.ComboBox_Separator.Text := Tmod(Component).Separator;
+  FormModelEditor.DateTimePicker_MT_Starttime.Date := Tmod(Component).starttime;
+  FormModelEditor.DateTimePicker_MT_Endtime.Date := Tmod(Component).Endtime;
+  FormModelEditor.Edit_MT_Name.text := Tmod(Component).ModTime.name;
+  FormModelEditor.Edit_MT_Unit.Text := Tmod(Component).ModTime.units;
+  FormModelEditor.Edit_MT_Value.Text := FloatToStr(Tmod(Component).ModTime.value);
+  FormModelEditor.Edit_MT_Digits.Text := IntToStr(Tmod(Component).ModTime.digits);
+  FormModelEditor.Edit_MT_Precision.Text := IntToStr(Tmod(Component).ModTime.precision);
+  FormModelEditor.CheckBox_MT_WriteToFile.Checked := Tmod(Component).ModTime.WriteToFile;
+
+  FormModelEditor.Edit_MP_Inputpath.Text := Tmod(Component).GM_InPutPath;
+  FormModelEditor.Edit_MP_Outputpath.Text := Tmod(Component).GM_OutPutPath;
+  FormModelEditor.Edit_MP_Controlfilepath.Text := Tmod(Component).GM_ControlFile;
+  FormModelEditor.Edit_MP_Regressionfilepath.Text := Tmod(Component).Reg_fn;
+
+  FormModelEditor.Edit_MO_DefaultError.Text := floattostr(Tmod(Component).LMOptions.FDefaultError);
+  FormModelEditor.Edit_MO_Divisor.text := floattostr(Tmod(Component).LMOptions.Divisor);
+  FormModelEditor.Edit_MO_IniLambda.text := floattostr(Tmod(Component).LMOptions.FIniLambda);
+
+  if Tmod(Component).LMOptions.WeightOptions = OptNoWeight
+    then FormModelEditor.ComboBox_MO_WeightOptions.Text := 'OptNoWeight';
+  if Tmod(Component).LMOptions.WeightOptions = OptDefaultWeight
+    then FormModelEditor.ComboBox_MO_WeightOptions.Text := 'OptDefaultWeight';
+  if Tmod(Component).LMOptions.WeightOptions = OptMeasErrorWeight
+    then FormModelEditor.ComboBox_MO_WeightOptions.Text := 'OptMeasErrorWeight';
+
+  FormModelEditor.ListBoxControlFileStrings.Items := Tmod(Component).FInifiles;
+  FormModelEditor.EditNameControlFile.Text := Tmod(Component).ControlFileFN;
+
+
+  //shows Editor
+  FormModelEditor.ShowModal;
+
+
+  // stores modified values from editor form to properties
+
+{  if FormModelEditor.Save_Status then
+    ShowMessage('Save = true') else
+    ShowMessage('Save = false');}
+
+  if FormModelEditor.Save_Status then
+    begin
+    //ShowMessage('hello - FormModelEditor.Save_Status');
+      Tmod(Component).Name := FormModelEditor.Edit_ModelName.text;
+      Tmod(Component).Separator := FormModelEditor.ComboBox_Separator.Text[1];
+      Tmod(Component).starttime := FormModelEditor.DateTimePicker_MT_Starttime.Date;
+      Tmod(Component).Endtime := FormModelEditor.DateTimePicker_MT_Endtime.Date;
+      Tmod(Component).ModTime.name := FormModelEditor.Edit_MT_Name.text;
+      Tmod(Component).ModTime.units := FormModelEditor.Edit_MT_Unit.Text;
+      Tmod(Component).ModTime.value := strtofloat(FormModelEditor.Edit_MT_Value.Text);
+      Tmod(Component).ModTime.digits := strtoint(FormModelEditor.Edit_MT_Digits.Text);
+      Tmod(Component).ModTime.precision := strtoint(FormModelEditor.Edit_MT_Precision.Text);
+      Tmod(Component).ModTime.WriteToFile := FormModelEditor.CheckBox_MT_WriteToFile.Checked;
+      Tmod(Component).GM_InPutPath := FormModelEditor.Edit_MP_Inputpath.Text;
+      Tmod(Component).GM_OutPutPath := FormModelEditor.Edit_MP_Outputpath.Text;
+      Tmod(Component).GM_ControlFile := FormModelEditor.Edit_MP_Controlfilepath.Text;
+      Tmod(Component).Reg_fn := FormModelEditor.Edit_MP_Regressionfilepath.Text;
+      Tmod(Component).LMOptions.FDefaultError := strtofloat(FormModelEditor.Edit_MO_DefaultError.Text);
+      Tmod(Component).LMOptions.Divisor := strtofloat(FormModelEditor.Edit_MO_Divisor.text);
+      Tmod(Component).LMOptions.FIniLambda := strtofloat(FormModelEditor.Edit_MO_IniLambda.text);
+
+      if FormModelEditor.ComboBox_MO_WeightOptions.Text = 'OptNoWeight'
+        then Tmod(Component).LMOptions.WeightOptions := OptNoWeight;
+
+      if FormModelEditor.ComboBox_MO_WeightOptions.Text = 'OptDefaultWeight'
+        then Tmod(Component).LMOptions.WeightOptions := OptDefaultWeight;
+
+      if FormModelEditor.ComboBox_MO_WeightOptions.Text = 'OptMeasErrorWeight'
+        then Tmod(Component).LMOptions.WeightOptions := OptMeasErrorWeight;
+
+      for i := 0 to TMod(Component).SubModStrList.count - 1 do begin
+          Name := TMod(Component).SubModStrList.strings[i];
+          TMod(Component).SubModStrList.sort;
+          OldIndex := TMod(Component).SubModStrList.indexof(Name);
+          NewIndex := FormModelEditor.ListBoxSubmodels.items.indexof(Name);
+          SubMod := TsubModel(TMod(Component).SubModStrList.objects[OldIndex]);
+          SubMod.CompIndex := NewIndex;
+        end;
+    end;
+
+  FormModelEditor.Free;
+  FormModelEditor := nil;
+end;
+
+
+(******************************************************************
+CLASS   TSubModelEditor
+METHOD  Edit
+PURPOSE Exchanges data with TF_SubmodelEditor form and starts designtime editing
+*******************************************************************)
+
+procedure TSubModelEditor.Edit;
+var
+  FormSubModelEditor: TF_SubmodelEditor;
+  params: TPar;
+  variables: TVar;
+  states: TState;
+  externs: TExternV;
+  i: integer;
+  test: string;
+
+begin
+  //creates submodel editor form
+  FormSubModelEditor := TF_SubmodelEditor.create(nil);
+  FormSubModelEditor.caption := 'Editing ' + TSubmodel(Component).name;
+  FormSubModelEditor.ADV_Par.EditorMode := true;
+
+  //displays TPar
+  if TSubmodel(component).parStrList.count > 0 then
+    FormSubModelEditor.adv_par.rowcount := TSubmodel(component).parStrList.count + 1
+  else FormSubModelEditor.adv_par.rowcount := 2;
+  FormSubModelEditor.adv_par.colcount := 9;
+  FormSubModelEditor.adv_par.rows[0].CommaText := 'Name,Unit,Value,Digits, Precision,ReadFromFile,WriteToFile,Optimization,PlotToGraph';
+  for i := 0 to TSubmodel(component).parStrList.count - 1 do
+    begin
+      params := Tpar(TSubmodel(component).parStrList.objects[i]);
+      FormSubModelEditor.adv_par.Cells[0, i + 1] := params.name;
+      FormSubModelEditor.adv_par.Cells[1, i + 1] := params.Units;
+      FormSubModelEditor.adv_par.cells[2, i + 1] := floattostrF(params.value, ffgeneral, 6, 3);
+      FormSubModelEditor.adv_par.Cells[3, i + 1] := inttostr(params.Digits);
+      FormSubModelEditor.adv_par.Cells[4, i + 1] := inttostr(params.Precision);
+      FormSubModelEditor.adv_par.AddCheckBox(5, i + 1, true, true);
+      FormSubModelEditor.adv_par.SetCheckBoxState(5, i + 1, params.ReadFromFile);
+      FormSubModelEditor.adv_par.AddCheckBox(6, i + 1, true, true);
+      FormSubModelEditor.adv_par.SetCheckBoxState(6, i + 1, params.WriteToFile);
+      FormSubModelEditor.adv_par.AddCheckBox(7, i + 1, true, true);
+      FormSubModelEditor.adv_par.SetCheckBoxState(7, i + 1, params.SelForOpt);
+      FormSubModelEditor.adv_par.AddCheckBox(8, i + 1, true, true);
+      FormSubModelEditor.adv_par.SetCheckBoxState(8, i + 1, params.PlotTograpH);
+    end;
+
+  //displays TVar
+  if TSubmodel(component).varStrList.count > 0 then
+    FormSubModelEditor.adv_var.rowcount := TSubmodel(component).varStrList.count + 1
+  else FormSubModelEditor.adv_var.rowcount := 2;
+  FormSubModelEditor.adv_var.colcount := 8;
+  FormSubModelEditor.adv_var.rows[0].CommaText := 'Name,Unit,Value,Digits, Precision,ReadFromFile,WriteToFile,PlotToGraph';
+  for i := 0 to TSubmodel(component).varStrList.count - 1 do
+    begin
+      variables := Tvar(TSubmodel(component).varStrList.objects[i]);
+      FormSubModelEditor.adv_var.Cells[0, i + 1] := variables.name;
+      FormSubModelEditor.adv_var.Cells[1, i + 1] := variables.Units;
+      FormSubModelEditor.adv_var.cells[2, i + 1] := floattostrF(variables.value, ffgeneral, 6, 3);
+      FormSubModelEditor.adv_var.Cells[3, i + 1] := inttostr(variables.Digits);
+      FormSubModelEditor.adv_var.Cells[4, i + 1] := inttostr(variables.Precision);
+      FormSubModelEditor.adv_var.AddCheckBox(5, i + 1, true, true);
+      FormSubModelEditor.adv_var.SetCheckBoxState(5, i + 1, variables.ReadFromFile);
+      FormSubModelEditor.adv_var.AddCheckBox(6, i + 1, true, true);
+      FormSubModelEditor.adv_var.SetCheckBoxState(6, i + 1, variables.WriteToFile);
+      FormSubModelEditor.adv_var.AddCheckBox(7, i + 1, true, true);
+      FormSubModelEditor.adv_var.SetCheckBoxState(7, i + 1, variables.PlotTograpH);
+    end;
+
+  //displays TState
+  if TSubmodel(component).stateStrList.count > 0 then
+    FormSubModelEditor.adv_state.rowcount := TSubmodel(component).stateStrList.count + 1
+  else FormSubModelEditor.adv_state.rowcount := 2;
+  FormSubModelEditor.adv_state.colcount := 8;
+  FormSubModelEditor.adv_state.rows[0].CommaText := 'Name,Unit,Value,Digits, Precision,ReadFromFile,WriteToFile,PlotToGraph';
+  for i := 0 to TSubmodel(component).stateStrList.count - 1 do
+    begin
+      states := Tstate(TSubmodel(component).stateStrList.objects[i]);
+      FormSubModelEditor.adv_state.Cells[0, i + 1] := states.name;
+      FormSubModelEditor.adv_state.Cells[1, i + 1] := states.Units;
+      FormSubModelEditor.adv_state.cells[2, i + 1] := floattostrF(states.value, ffgeneral, 6, 3);
+      FormSubModelEditor.adv_state.Cells[3, i + 1] := inttostr(states.Digits);
+      FormSubModelEditor.adv_state.Cells[4, i + 1] := inttostr(states.Precision);
+      FormSubModelEditor.adv_state.AddCheckBox(5, i + 1, true, true);
+      FormSubModelEditor.adv_state.SetCheckBoxState(5, i + 1, states.ReadFromFile);
+      FormSubModelEditor.adv_state.AddCheckBox(6, i + 1, true, true);
+      FormSubModelEditor.adv_state.SetCheckBoxState(6, i + 1, states.WriteToFile);
+      FormSubModelEditor.adv_state.AddCheckBox(7, i + 1, true, true);
+      FormSubModelEditor.adv_state.SetCheckBoxState(7, i + 1, states.PlotTograpH);
+    end;
+
+  //displays TExternValue
+  if TSubmodel(component).externVStrList.count > 0 then
+    FormSubModelEditor.ADV_ExternV.rowcount := TSubmodel(component).externVStrList.count + 1
+  else FormSubModelEditor.ADV_ExternV.rowcount := 2;
+  FormSubModelEditor.ADV_ExternV.colcount := 3;
+  FormSubModelEditor.ADV_ExternV.rows[0].CommaText := 'Name,Unit,C_F';
+  for i := 0 to TSubmodel(component).externVStrList.count - 1 do
+    begin
+      externs := Texternv(TSubmodel(component).externVStrList.objects[i]);
+      FormSubModelEditor.ADV_ExternV.Cells[0, i + 1] := externs.name;
+      FormSubModelEditor.ADV_ExternV.Cells[1, i + 1] := externs.U;
+      FormSubModelEditor.ADV_ExternV.cells[2, i + 1] := floattostrF(externs.C_f, ffgeneral, 6, 3);
+    end;
+
+  FormSubModelEditor.adv_par.autosizecolumns(true, 0);
+  FormSubModelEditor.adv_var.autosizecolumns(true, 0);
+  FormSubModelEditor.adv_state.autosizecolumns(true, 0);
+  FormSubModelEditor.adv_externv.autosizecolumns(true, 0);
+
+  //shows Editor
+  FormSubModelEditor.showmodal;
+
+
+  // stores modified values to properties
+
+  if FormSubModelEditor.save_Status then
+    begin
+
+      //stores TPar
+      for i := 0 to TSubmodel(component).parStrList.count - 1 do
+        begin
+          params := Tpar(TSubmodel(component).parStrList.objects[i]);
+          params.Units := FormSubModelEditor.adv_par.Cells[1, i + 1];
+          params.value := strtofloat(FormSubModelEditor.adv_par.cells[2, i + 1]);
+          params.Digits := strtoint(FormSubModelEditor.adv_par.Cells[3, i + 1]);
+          params.Precision := strtoint(FormSubModelEditor.adv_par.Cells[4, i + 1]);
+          FormSubModelEditor.adv_par.GetCheckboxState(5, i + 1, params.ReadFromFile);
+          FormSubModelEditor.adv_par.GetCheckBoxState(6, i + 1, params.WriteToFile);
+          FormSubModelEditor.adv_par.GetCheckBoxState(7, i + 1, params.SelForOpt);
+          FormSubModelEditor.adv_par.GetCheckBoxState(8, i + 1, params.PlotTograpH);
+        end;
+
+      //stores TVar
+      for i := 0 to TSubmodel(component).varStrList.count - 1 do
+        begin
+          variables := Tvar(TSubmodel(component).varStrList.objects[i]);
+          variables.Units := FormSubModelEditor.adv_var.Cells[1, i + 1];
+          variables.value := strtofloat(FormSubModelEditor.adv_var.cells[2, i + 1]);
+          variables.Digits := strtoint(FormSubModelEditor.adv_var.Cells[3, i + 1]);
+          variables.Precision := strtoint(FormSubModelEditor.adv_var.Cells[4, i + 1]);
+          FormSubModelEditor.adv_var.GetCheckBoxState(5, i + 1, variables.ReadFromFile);
+          FormSubModelEditor.adv_var.GetCheckBoxState(6, i + 1, variables.WriteToFile);
+          FormSubModelEditor.adv_var.GetCheckBoxState(7, i + 1, variables.PlotTograpH);
+        end;
+
+      //stores TState
+      for i := 0 to TSubmodel(component).stateStrList.count - 1 do
+        begin
+          states := Tstate(TSubmodel(component).stateStrList.objects[i]);
+          states.Units := FormSubModelEditor.adv_state.Cells[1, i + 1];
+          states.value := strtofloat(FormSubModelEditor.adv_state.cells[2, i + 1]);
+          states.Digits := strtoint(FormSubModelEditor.adv_state.Cells[3, i + 1]);
+          states.Precision := strtoint(FormSubModelEditor.adv_state.Cells[4, i + 1]);
+          FormSubModelEditor.adv_state.GetCheckBoxState(5, i + 1, states.ReadFromFile);
+          FormSubModelEditor.adv_state.GetCheckBoxState(6, i + 1, states.WriteToFile);
+          FormSubModelEditor.adv_state.GetCheckBoxState(7, i + 1, states.PlotTograpH);
+        end;
+
+
+      //stores TExternValue
+      for i := 0 to TSubmodel(component).externVStrList.count - 1 do
+        begin
+          externs := Texternv(TSubmodel(component).externVStrList.objects[i]);
+          externs.name := FormSubModelEditor.ADV_ExternV.Cells[0, i + 1];
+          externs.U    := FormSubModelEditor.ADV_ExternV.Cells[1, i + 1];
+          externs.C_f := strtofloat(FormSubModelEditor.ADV_ExternV.cells[2, i + 1]);
+        end;
+    end;
+
+  FormSubModelEditor.free;
+  FormSubModelEditor := nil;
+
+end;
+
+
+(******************************************************************
+CLASS   TExLstProperty
+METHOD  Edit
+PURPOSE
+COMMENT Not yet implemented property editor
+*******************************************************************)
+
+{procedure TExLstProperty.Edit;
+
+var
+  ExForm: TFormExValEdit;
+
+begin
+  ExForm := TFormExValEdit.Create(Application);
+  self.GetPropInfo
+  ExForm.SetExVList(GetValue);
+end;}
+
+
+(******************************************************************
+CLASS   TGMFilenameProperty
+METHOD  Edit
+PURPOSE Property editor for the TMod Class. Displays an File Open Dialog
+        for the name of the Control file (resp. all TMyFileName properties)
+*******************************************************************)
+
+procedure TGMFilenameProperty.Edit;
+var
+  MPFileOpen: TOpenDialog;
+begin
+  MPFileOpen := TOpenDialog.Create(Application);
+  MPFileOpen.Filename := GetValue;
+ {MPFileOpen.Filter := 'ControlFile (*.fn) | *.fn';}
+ {MPFileOpen.HelpContext := hcDMediaPlayerOpen;}
+  MPFileOpen.Options := MPFileOpen.Options + [ofShowHelp, ofPathMustExist,
+    ofFileMustExist];
+  try
+    if MPFileOpen.Execute then SetValue(MPFileOpen.Filename);
+  finally
+    MPFileOpen.Free;
+  end;
+end;
+
+
+(******************************************************************
+CLASS   TGMFilenameProperty
+METHOD  GetAttributes
+PURPOSE Describes the property so the Object Inspector provides the appropriate controls.
+*******************************************************************)
+
+function TGMFilenameProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog, paRevertable];
+end;
+
+
+(******************************************************************
+CLASS   TGMPathProperty
+METHOD  Edit
+PURPOSE Property editor for the TMod Class. Displays an DirChange Dialog
+        for the changing directory properties (resp. all TPath properties)
+*******************************************************************)
+
+procedure TGMPathProperty.Edit;
+var
+  Dir: string;
+  i: integer;
+
+begin
+  getDir(0, Dir);
+  if SelectDirectory(Dir, [sdAllowCreate, sdPerformCreate, sdPrompt], 0) then
+    SetValue(Dir);
+end;
+
+
+(******************************************************************
+CLASS   TGMPathProperty
+METHOD  GetAttributes
+PURPOSE Describes the property so the Object Inspector provides the appropriate controls.
+*******************************************************************)
+
+function TGMPathProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog, paRevertable];
+end;
+
+
+(******************************************************************
+CLASS   -
+METHOD  Register
+PURPOSE Registers TMod and TSubModel Components for designtime editing
+*******************************************************************)
+
+procedure Register;
+begin
+  // Registers PropertyEditors for use in Object inspector
+  RegisterPropertyEditor(TypeInfo(TMyFileName), nil{TMod}, '', TGMFilenameProperty);
+  RegisterPropertyEditor(TypeInfo(TPath), TMod, '', TGMPathProperty);
+
+  // Registers designtime Editors for TMod and TSubModel
+  RegisterComponentEditor(TMod, TModEditor);
+  RegisterComponentEditor(TSubModel, TSubModelEditor);
+
+  // Registers TMod and TSubModel on HUME Component palette
+  RegisterComponents('HUME', [TSubModel,  TMod]);
+end;
+
+
+
+end.
+
+
+
+

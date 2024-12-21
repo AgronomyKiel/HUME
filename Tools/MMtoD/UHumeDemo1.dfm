@@ -1,0 +1,129 @@
+inherited FormMod2: TFormMod2
+  Left = 128
+  Top = 63
+  Caption = 'FormMod2'
+  Position = poScreenCenter
+  PixelsPerInch = 96
+  TextHeight = 13
+  inherited PageControl: TPageControl
+    ActivePage = TabSheetModelDiagram
+    inherited TabSheetData: TTabSheet
+      inherited AdvStringGridData: TAdvStringGrid
+        Height = 378
+      end
+    end
+    inherited TabSheetModelDiagram: TTabSheet
+      object Model: TMod
+        Left = 304
+        Top = 161
+        Width = 89
+        Height = 56
+        Cursor = crHandPoint
+        GM_ControlFile = 'D:\User\Delphi5\SimPackage\Demo\default.fn'
+        GM_OutPutPath = 'D:\User\Delphi5\SimPackage\Demo'
+        GM_InPutPath = 'D:\User\Delphi5\SimPackage\Demo'
+        TimeStep = 1
+        Starttime = 1
+        Endtime = 100
+        Reg_fn = 'regression.dat'
+        ModTime.Name = 'Time'
+        ModTime.Units = '[d]'
+        ModTime.Opt_writetoFile = True
+        ModTime.Opt_PlotToGraph = False
+        ModTime.Digits = 2
+        ModTime.Precision = 6
+        ModTime.Value = 1
+        LMOptions.IniLambda = 0.001
+        LMOptions.Divisor = 100
+        LMOptions.WeightOptions = OptNoWeight
+        LMOptions.DefaultError = 0.1
+        SensOpt.MaxValue = 10
+        SensOpt.MinValue = 1
+        SensOpt.Steps = 5
+        SensOpt.DPar = 1
+        SensOpt.Sens_fn = 'Sens.dat'
+        ContOutput = True
+        FinalOutput = False
+        Str_SectionName_TimeInit = 'TimeInit'
+        Str_SectionName_FileNames = 'FileNames'
+        Str_SectionName_MeasurementFiles = 'MeasurementFiles'
+        Str_SectionName_OutPutFiles = 'OutPutFiles'
+        Str_SectionTopic_SimStart = 'Startzeit'
+        Str_SectionTopic_SimEnd = 'Endzeit'
+        Str_SectionTopic_TimeStep = 'TimeStep'
+        Str_SectionTopic_StateIniFN = 'StateIniFN'
+        Str_SectionTopic_ParamIniFN = 'ParamIniFN'
+        Str_SectionTopic_WeatherFileFN = 'WeatherFileFN'
+        fn_WeatherFile = 'D:\User\Delphi5\SimPackage\Demo\Temp.csv'
+        fn_StateIniFile = 'D:\USER\DELPHI5\SIMPACKAGE\DEMO\State.ini'
+        fn_ParamIniFile = 'D:\USER\DELPHI5\SIMPACKAGE\DEMO\Parameters.ini'
+      end
+      object LogistGrowth1: TLogistGrowth
+        Left = 440
+        Top = 232
+        Width = 129
+        Height = 73
+        Cursor = crHandPoint
+        SM_GlobMod = Model
+        CompIndex = 0
+        FN_ratefn = 'D:\User\Delphi5\SimPackage\DemoLogistGrowth1_rat.csv'
+        FN_Statefn = 'D:\User\Delphi5\SimPackage\DemoLogistGrowth1_dat.csv'
+        St_Educt.Name = 'Educt'
+        St_Educt.Units = '[g]'
+        St_Educt.Opt_writetoFile = True
+        St_Educt.Opt_PlotToGraph = False
+        St_Educt.Digits = 2
+        St_Educt.Precision = 6
+        St_Educt.Value = 100
+        St_Product.Name = 'Product'
+        St_Product.Units = '[g]'
+        St_Product.Opt_writetoFile = True
+        St_Product.Opt_PlotToGraph = False
+        St_Product.Digits = 2
+        St_Product.Precision = 6
+        St_Product.Value = 0.1
+        Par_gr.Name = 'gr'
+        Par_gr.Units = '[d-1]'
+        Par_gr.Opt_writetoFile = True
+        Par_gr.Opt_PlotToGraph = False
+        Par_gr.Digits = 2
+        Par_gr.Precision = 6
+        Par_gr.Value = 0.02
+        Var_rgr.Name = 'rgr'
+        Var_rgr.Units = '[d-1]'
+        Var_rgr.Opt_writetoFile = True
+        Var_rgr.Opt_PlotToGraph = False
+        Var_rgr.Digits = 2
+        Var_rgr.Precision = 6
+        Ex_Temp.Name = 'Temp'
+        Ex_Temp.Opt_writetoFile = True
+        Ex_Temp.Opt_PlotToGraph = False
+        Ex_Temp.Digits = 0
+        Ex_Temp.Precision = 0
+        Ex_Temp.Ex = StateField
+        Ex_Temp.C_f = 1
+      end
+    end
+  end
+  inherited MainMenu1: TMainMenu
+    Left = 728
+    Top = 496
+  end
+  inherited Timer1: TTimer
+    Left = 784
+    Top = 496
+  end
+  inherited PrintDialog1: TPrintDialog
+    Left = 676
+    Top = 496
+  end
+  inherited OpenDialog1: TOpenDialog
+    Left = 612
+    Top = 496
+  end
+  inherited LMod: TModLink
+    LinkedModel = Model
+    Left = 548
+    Top = 496
+  end
+end

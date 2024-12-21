@@ -1,0 +1,84 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{61EF4C24-39A3-4FB5-9ECC-1502A481898E}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="OSR.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\Soil\SoilWaterPackage.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\..\Hume1.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\ISIP_Components\ISIP_Components.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\CERES Wheat\CeresSubModels.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="OSR">
+        <MSBuild Projects="OSR.dproj"/>
+    </Target>
+    <Target Name="OSR:Clean">
+        <MSBuild Projects="OSR.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OSR:Make">
+        <MSBuild Projects="OSR.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SoilWaterPackage">
+        <MSBuild Projects="..\Soil\SoilWaterPackage.dproj"/>
+    </Target>
+    <Target Name="SoilWaterPackage:Clean">
+        <MSBuild Projects="..\Soil\SoilWaterPackage.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SoilWaterPackage:Make">
+        <MSBuild Projects="..\Soil\SoilWaterPackage.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Hume1">
+        <MSBuild Projects="..\..\Hume1.dproj"/>
+    </Target>
+    <Target Name="Hume1:Clean">
+        <MSBuild Projects="..\..\Hume1.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Hume1:Make">
+        <MSBuild Projects="..\..\Hume1.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ISIP_Components">
+        <MSBuild Projects="..\ISIP_Components\ISIP_Components.dproj"/>
+    </Target>
+    <Target Name="ISIP_Components:Clean">
+        <MSBuild Projects="..\ISIP_Components\ISIP_Components.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ISIP_Components:Make">
+        <MSBuild Projects="..\ISIP_Components\ISIP_Components.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="CeresSubModels">
+        <MSBuild Projects="..\CERES Wheat\CeresSubModels.dproj"/>
+    </Target>
+    <Target Name="CeresSubModels:Clean">
+        <MSBuild Projects="..\CERES Wheat\CeresSubModels.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="CeresSubModels:Make">
+        <MSBuild Projects="..\CERES Wheat\CeresSubModels.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="OSR;SoilWaterPackage;Hume1;ISIP_Components;CeresSubModels"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="OSR:Clean;SoilWaterPackage:Clean;Hume1:Clean;ISIP_Components:Clean;CeresSubModels:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="OSR:Make;SoilWaterPackage:Make;Hume1:Make;ISIP_Components:Make;CeresSubModels:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

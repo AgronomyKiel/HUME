@@ -1,0 +1,54 @@
+SubDryMatter
+variable: CARBO  Conditional  Universal
+The daily biomass production - g/plant 
+CARBO = 
+  max(0.001,CarboRed*PCARB*MIN(SWDF1, NDEF1)*prft)/plants  for  (ISTAGE>=5)and(ISTAGE<6)
+  max(0.001,PCARB*MIN(SWDF1, NDEF1)*prft)/plants  for  (ISTAGE>=1)and(ISTAGE<5)
+  0  by default
+variable: CARBOred  Conditional
+CARBOred = 
+  max(0,(1.-(1.2-0.8*SWMIN/stmwt)*(sumdtt5+100.0)/((430+p5*20)+100.0)))  for  (ISTAGE>=5)and(ISTAGE<6)and(stmwt>0)
+  1  by default
+variable: IPAR  Unconditional
+intercepted photosynthetically active radiation 
+IPAR = PAR*(1 - EXP(-0.85 * LAI))
+variable: LUE  Conditional
+LUE = 
+  PCARB/IPAR  for  IPAR>0
+  0  by default
+variable: PAR  Unconditional
+PAR = 0.5*GlobRad
+variable: PCARB  Conditional  Universal
+potential biomass production in grams/m2 /d
+PCARB = 
+  7.5*IPAR^0.6  for  ipar>0
+  0  by default
+variable: PRFT  Conditional
+Photosynthetic reduction factor for low and high temperatures 
+PRFT =
+  max(0,1 - 0.0025 * (TEMPM - 16)^2)  by default
+variable: SWDF1  Unconditional  Universal
+Soil Water Deficit Factor
+SWDF1 = 1
+variable: TestCarbo  Conditional
+TestCarbo = 
+  1.-(1.2-0.8*swmin/stmwt)  for  stmwt>0
+  1  by default
+variable: TestCarbo2  Unconditional
+TestCarbo2 = 1-(sumdtt5+100.0)/((430+p5*20)+100.0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

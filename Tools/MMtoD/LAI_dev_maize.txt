@@ -1,0 +1,21 @@
+LAI_develop
+variable: dLAIe  Conditional
+dLAIe =
+  dW*100*(-0.02)*0.0016  for  TSumLAI>Tsum1+Tsum2+Tsum3+Tsum4
+  dW*100*(-0.009)*0.0016  for  TSumLAI>Tsum1+Tsum2+Tsum3 and TsumLAI<Tsum1+Tsum2+Tsum3+Tsum4
+  dW*100*(-0.002)*0.0016  for  TSumLAI>Tsum2+Tsum1 and TsumLAI<Tsum1+Tsum2+Tsum3
+  dW*100*0.04*0.0018  for  TSumLAI>Tsum1 and TsumLAI<Tsum2+Tsum1
+  dW*100*0.01*0.0035  for  t>aussaattermin and TSumLAI<Tsum1
+  0.0  by default
+compartment: LAIe  Unconditional  Universal
+dLAIe/dt = dLaie
+Initial Value = 0.0
+compartment: TsumLai  Conditional
+dTsumLai/dt =
+  max(TempL-ST,0)  for  t>aussaattermin
+  0  by default
+Initial Value = 0.0
+variable: Luftfeuchte  Unconditional
+Luftfeuchte = LF
+variable: Rain  Unconditional
+Rain = Rainfall

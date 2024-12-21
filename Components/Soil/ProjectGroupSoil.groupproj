@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{3B527958-A6BD-4AB1-8064-C621152B54A9}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="SoilWaterPackage.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Q:\Kohl\BarleySubmodPackage\BarleyPack.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="SoilWaterPackage">
+        <MSBuild Projects="SoilWaterPackage.dproj"/>
+    </Target>
+    <Target Name="SoilWaterPackage:Clean">
+        <MSBuild Projects="SoilWaterPackage.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SoilWaterPackage:Make">
+        <MSBuild Projects="SoilWaterPackage.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="BarleyPack">
+        <MSBuild Projects="Q:\Kohl\BarleySubmodPackage\BarleyPack.dproj"/>
+    </Target>
+    <Target Name="BarleyPack:Clean">
+        <MSBuild Projects="Q:\Kohl\BarleySubmodPackage\BarleyPack.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="BarleyPack:Make">
+        <MSBuild Projects="Q:\Kohl\BarleySubmodPackage\BarleyPack.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="SoilWaterPackage;BarleyPack"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="SoilWaterPackage:Clean;BarleyPack:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="SoilWaterPackage:Make;BarleyPack:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

@@ -1,0 +1,246 @@
+Mod$P$V$phint        <- phint
+  Mod$P$V$p9           <- p9
+  Mod$P$V$TSumInternode<-TSumInternode 
+  Mod$P$V$Ph39 <- Ph39
+  Mod$P$V$plastochron <- plastochron
+  Mod$P$V$p1d <- p1d
+  Mod$P$V$p1v <- p1v
+  Mod$P$V$xstage_fin_leaf_prim <- xstage_fin_leaf_prim
+  # Preallocate Timesteps
+  nTimesteps <- SimEnd - SimStart + 1
+  Mod$St$V <- Mod$St$V[c(rep(1, times = nTimesteps)), ]
+  rownames(Mod$St$V) <- NULL
+  Mod$V$V <- Mod$V$V[c(rep(1, times = nTimesteps)), ]
+  rownames(Mod$V$V) <- NULL
+  
+  # Values for vernalisation function
+  VernTabx <- c(-30, Mod$P$V$VernMinTemp, Mod$P$V$VernOptTemp1, Mod$P$V$VernOptTemp2, Mod$P$V$VernMaxTemp, 35)
+  VernTaby <- c(0, 0, 1, 1, 0, 0)
+  
+  # Initialize variables
+  # states variables, all vectors initialized to NA
+  # Mod$P$V$phint <- phint
+  
+  ## Sowing Date as Day of Year
+  Sowingdate_DOY <-  as.Date(Sowingdate, origin="1899-12-30")
+  #from that day of year
+  Sowingdate_DOY <- as.numeric(strftime(Sowingdate_DOY, format = "%j"))
+  Mod$P$V$sowingdate <- Sowingdate_DOY
+
+  # Initialize state variables when sowing on day "sdate"
+  StNvec <- names(Mod$St$V)
+  Mod$St$V[1, StNvec] <- Mod$St$Ini 
+  Mod$St$V$Time[1] <- SimStart
+
+  # some constants  
+  # c.v := p1d.V*0.002;            // photoperiodical factor unscaled
+  Mod$Con$V$c <- Mod$P$V$p1d/500
+  # k_v.v := (p1v.v+0.55)/183;     // vernalisation factor unscaled
+  Mod$Con$V$k_v <- (Mod$P$V$p1v + 0.55)/183
+  #RADi <- pi/180
+  fLN <- 0	      # temporal variable to store the number of not emerged leaves at start of booting
+  # calculation of change rates
+  nTimesteps <- SimEnd - SimStart + 1
+  
+  DAYofYear_first <- as.numeric(strftime(as.Date(Mod$St$V$Time[1], origin="1899-12-30"), format = "%j")) # DOY
+  
+  # Simulation loop
+
+    for(day in 1:nTimesteps)  #nTimesteps
+      {
+      # calculation of actual date
+      # Time in both data frames for vars and states
+      Mod$St$c$Time <- 1
+      Mod$V$V$Time[day] <- Mod$St$V$Time[day]  
+      #from that day of year
+      Mod$V$V$DayofYear[day] <- ifelse((DAYofYear_first + day -1) > 365, 
+                            (DAYofYear_first + day -1) -365 ,
+                              DAYofYear_first + day -1) # DOY
+      
+      TempAir.v <- weather[weather$Time == Mod$St$V$Time[day], "Temp"]
+      Teff <- max(0, TempAir.v - Mod$P$V$tBase)
+      # temperature sum since sowing
+      #if (dayofyear.v<dayofyearsowingdate.V)and(tsums.v<=0)
+      if  ((Mod$V$V$DayofYear[day] < Mod$P$V$sowingdate) & (Mod$St$V$tsums[day]<=0)){
+        Mod$St$c$tsums  <-  0
+      } else{
+        Mod$St$c$tsums  <-  Teff
+        } 
+      
+      
+      Mod$V$V$Daylengthp[day] <- weather[weather$Time == Mod$St$V$Time[day], "Daylengthp"]
+
+      
+      Mod$V$V$rdr_p[day] <-  1 -    Mod$Con$V$c*(Mod$P$V$MaxPhotoperiod-Mod$V$V$Daylengthp[day])^2
+      
+      # calculation of vernalisation rate per day
+      vern <- approxfun(x = VernTabx, y = VernTaby, method = "linear")
+      VernWirk <- vern(TempAir.v)
+      # if (cumvern.v < MaxVernDays.v)and(tsums.v > tempsumemergence.v) then begin
+      if((Mod$St$V$cumvern[day] < Mod$P$V$MaxVernDays) & (Mod$St$V$tsums[day] > Mod$P$V$p9)){
+        Mod$St$c$cumvern <-  VernWirk
+        }else{
+        Mod$St$c$cumvern <-  0
+        }  
+      
+      # relative effect of vernalisation on development rate
+	    #          rdr_v.v := min(1,max(0,1-k_v.v*(MaxVernDays.v-cumvern.v)));
+      Mod$V$V$rdr_v[day] <- min(1,max(0,1-Mod$Con$V$k_v*(Mod$P$V$MaxVernDays- Mod$St$V$cumvern[day])))
+
+  	
+      
+      # change of initiated leaf number
+      if(Mod$St$V$xstage[day] >= Mod$P$V$xstage_fin_leaf_prim){
+        Mod$St$c$inl_MS <- 0
+        }else{
+        if(Mod$St$V$xstage[day] >= 1){
+          Mod$St$c$inl_MS <- Teff/Mod$P$V$plastochron
+          }else{
+          Mod$St$c$inl_MS <- 0
+          }
+        }
+      
+      # change of leaf number
+      if(Mod$St$V$nl_MS[day] >= Mod$St$V$inl_MS[day]){
+        Mod$St$c$nl_MS <-   0
+        }else{
+        if  (Mod$St$V$xstage[day] > 1){
+          Mod$St$c$nl_MS <- Teff/Mod$P$V$phint 
+          }else{
+          Mod$St$c$nl_MS <- 0
+          }
+        }    # number of leaves on the mainstem
+      
+  
+      # change of xstage
+      if((Mod$V$V$DayofYear[day] < Mod$P$V$sowingdate) & (Mod$St$V$xstage[day] <= 0)){
+        Mod$St$c$xstage <- 0
+        }else{
+        if (Mod$St$V$xstage[day] >= 6){
+          Mod$St$c$xstage <- max(0, Teff)/(250)
+          }else{
+          if(Mod$St$V$xstage[day] >= 5){
+            Mod$St$c$xstage <- max(0, Teff)/((Mod$P$V$p5 + 21.5)/0.05)
+            }else{
+            if(Mod$St$V$xstage[day] >= 4){
+              Mod$St$c$xstage <- Teff/(200)
+              }else{
+              if  (Mod$St$V$xstage[day] >= 3){
+                Mod$St$c$xstage <- Teff/(2*Mod$P$V$phint)
+                }else{
+                if  (Mod$St$V$xstage[day] >= 2){
+                  Mod$St$c$xstage <- Teff/(Mod$V$V$inl_MS_xstage2[day]*Mod$P$V$phint + Mod$P$V$Ph39)
+                  }else{
+                  if  (Mod$St$V$xstage[day] >= 1){
+                    Mod$St$c$xstage <- Teff*min(Mod$V$V$rdr_v[day], Mod$V$V$rdr_p[day])/(400*Mod$P$V$phint/95)
+                    }else{
+                    if(Mod$St$V$xstage[day]<1){
+                      Mod$St$c$xstage <- Teff/Mod$P$V$p9
+                      }else{
+                      Mod$St$c$xstage <- 0}  
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      # change of EC (BBCH)-stage 
+      if((Mod$V$V$DayofYear[day] <= Mod$P$V$sowingdate) & (Mod$St$V$ec[day] <= 0)){
+        Mod$St$c$ec <-  0
+        }else{
+        if(Mod$St$V$ec[day] >= 90){
+          Mod$St$c$ec <- (9 + (Mod$St$V$xstage[day] - 6))*10 - Mod$St$V$ec[day]
+          }else{
+          if(Mod$St$V$ec[day] >= 71){
+            Mod$St$c$ec <- (7.1 + 1.9*(Mod$St$V$xstage[day] - 5))*10-Mod$St$V$ec[day]
+            }else{
+            if(Mod$St$V$ec[day] >= 57){
+              Mod$St$c$ec <- (5.7 + 1.4*(Mod$St$V$xstage[day] - 4))*10 - Mod$St$V$ec[day]
+              }else{
+              if((Mod$St$V$xstage[day] >= 3) & (Mod$St$V$xstage[day] < 4) & (Mod$St$V$ec[day] > 40)){
+                Mod$St$c$ec <- (4 + 1.7*(Mod$St$V$xstage[day] - 3))*10 - Mod$St$V$ec[day]
+                }else{
+                if((Mod$St$V$ec[day] >= 37) & (Mod$St$V$ec[day] < 40)){
+                  Mod$St$c$ec <- min(2*Teff/Mod$P$V$Ph39, 40 - Mod$St$V$ec[day])
+                  }else{
+                  if((Mod$St$V$xstage[day] > 2) & (Mod$St$V$ec[day] < 37)){
+                    Mod$St$c$ec <- Teff/Mod$P$V$TSumInternode
+                    }else{
+                    if(Mod$St$V$ec[day] <= 10){
+                      Mod$St$c$ec <- Teff/Mod$P$V$p9*10
+                      }else{
+                      if(Mod$St$V$ec[day] > 10){
+                        Mod$St$c$ec <- Teff/Mod$P$V$phint
+                        }else{
+                        Mod$St$c$ec <- 0}  
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      # Update state variables 
+      Mod$St$V[day + 1, StNvec] <- Mod$St$V[day, StNvec] + Mod$St$c[StNvec]
+     #Mod$St$V[day + 1,] <- Mod$St$V[day,] + Mod$c$V[names(Mod$St$V)]
+      Mod$St$c[StNvec] <- 0
+      
+      # some "events"
+      # Tillering starts after 4. leaf appears, EC is added 7.5 stages to become >= 21
+      if((Mod$St$V$ec[day + 1] >= 13.5) & (Mod$St$V$ec[day + 1] < 20)){
+        Mod$St$V$ec[day + 1] <- Mod$St$V$ec[day + 1] + 7.5}                     # EC = 21 when first tiller emerged
+      
+      # if GS equals 2, stem elongation begins and EC is switched to 30
+      if((Mod$St$V$xstage[day + 1] >= 2) & (Mod$St$V$ec[day] < 30)){
+        Mod$St$V$ec[day + 1] <- 30}                        
+      
+      # if the number of visible leaves reaches the number of initialised leaves (minus 2, for collar and ?)
+      # the flag leaves appears and we have EC-Stage 37!!
+      if(Mod$St$V$nl_MS[day + 1] >= (Mod$St$V$inl_MS[day + 1] - 2) & Mod$St$V$ec[day + 1] < 37 & Mod$St$V$ec[day + 1] >= 33) #//and  (Mod$St$V$ec[day]>=33)
+      {Mod$St$V$ec[day + 1] <- 37 + min(2*(Mod$St$V$nl_MS[day + 1] - (Mod$St$V$inl_MS[day + 1] - 2))*Mod$P$V$phint/Mod$P$V$Ph39, 40 - Mod$St$V$ec[day + 1])}
+      
+
+      if(Mod$St$V$ec[day+1] >= 40 & Mod$St$V$xstage[day + 1] < 3){
+        Mod$St$V$xstage[day + 1] <- 3}  # Damit Xstage wieder EC Stand entspricht
+      
+      if((day > 1) & (day < nTimesteps)){
+        if ((Mod$St$V$xstage[day] >= 2) & (Mod$V$V$inl_MS_xstage2[day] <= 0)){
+          Mod$V$V$inl_MS_xstage2[day:nTimesteps] <- max(0, Mod$St$V$inl_MS[day] - 2 - Mod$St$V$nl_MS[day])
+        }
+      }
+      
+      if(Mod$St$V$ec[day] > 99){
+        Mod$St$V$ec[day] <- 99}
+   }# End simulation loop
+     
+  # if(!ParamMod ){
+     merge.data.frame(Mod$St$V[1:nTimesteps,], Mod$V$V[1:nTimesteps,], by = "Time" )
+    #data.frame(Mod$St$V[1:nTimesteps,])
+     #data.frame(AllVars)
+  # }else{
+  #   ec<-round(Mod$St$V$ec)
+  #   Date<-Mod$St$V$Time
+  #   i=1
+  #   for(i in 1:length(meas[,1]) ){
+  #     BBCH_obs <- meas[i,]$BBCH
+  #     if(BBCH_obs %in% ec ){
+  #       meas[i,]$sim_Time <- Date[ec == BBCH_obs][1] 
+  #     }else{
+  #       if (max(Mod$St$V$ec) > BBCH_obs){
+  #         diff<-(Mod$St$V$ec - BBCH_obs)^2
+  #         min_diff<-min(diff)
+  #         Mod$St$V$Time[diff == min_diff][1]
+  #       }else{
+  #         meas[i,]$sim_Time <- meas$Time + 30  
+  #         }
+  #       }
+  #     }
+  #     meas
+  #   }
+  }
+
+

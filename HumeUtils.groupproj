@@ -1,0 +1,72 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{930C42CA-8EB7-478C-9F3B-80151CA6BE2C}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="..\ADV_STRGRD\asgd_Rio.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\..\NumEdit\NumEditPack.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="TMathImage\Math_Overlay.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="TMathImage\Math_MathImage.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="asgd_Rio">
+        <MSBuild Projects="..\ADV_STRGRD\asgd_Rio.dproj"/>
+    </Target>
+    <Target Name="asgd_Rio:Clean">
+        <MSBuild Projects="..\ADV_STRGRD\asgd_Rio.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="asgd_Rio:Make">
+        <MSBuild Projects="..\ADV_STRGRD\asgd_Rio.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="NumEditPack">
+        <MSBuild Projects="..\..\NumEdit\NumEditPack.dproj"/>
+    </Target>
+    <Target Name="NumEditPack:Clean">
+        <MSBuild Projects="..\..\NumEdit\NumEditPack.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="NumEditPack:Make">
+        <MSBuild Projects="..\..\NumEdit\NumEditPack.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Math_Overlay">
+        <MSBuild Projects="TMathImage\Math_Overlay.dproj"/>
+    </Target>
+    <Target Name="Math_Overlay:Clean">
+        <MSBuild Projects="TMathImage\Math_Overlay.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Math_Overlay:Make">
+        <MSBuild Projects="TMathImage\Math_Overlay.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Math_MathImage">
+        <MSBuild Projects="TMathImage\Math_MathImage.dproj"/>
+    </Target>
+    <Target Name="Math_MathImage:Clean">
+        <MSBuild Projects="TMathImage\Math_MathImage.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Math_MathImage:Make">
+        <MSBuild Projects="TMathImage\Math_MathImage.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="asgd_Rio;NumEditPack;Math_Overlay;Math_MathImage"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="asgd_Rio:Clean;NumEditPack:Clean;Math_Overlay:Clean;Math_MathImage:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="asgd_Rio:Make;NumEditPack:Make;Math_Overlay:Make;Math_MathImage:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

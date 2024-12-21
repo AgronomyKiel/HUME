@@ -1,0 +1,131 @@
+Main
+compartment: BBCH  Unconditional
+dBBCH/dt = dBBCH_dt
+Initial Value = 0.0
+define value: C  Unconditional
+C = P1D/500
+variable: d_inL_MS_dt  Conditional
+d_inL_MS_dt = 
+  0  for  GS>=GS_fl_prim
+  max(0, TempAir-Tb)/Plastochron  for  GS>=1
+  0  by default
+compartment: DayOfYear  Unconditional  Universal
+dDayOfYear/dt = 1
+Initial Value = 1
+variable: dBBCH_dt  Conditional
+dBBCH_dt = 
+  0  for  t<SowingDate
+  (9+(GS-6))*10-BBCH  for  BBCH>=90
+  (7.1+1.9*(GS-5))*10-BBCH  for  BBCH>=71
+  (5.7+1.4*(GS-4))*10-BBCH  for  BBCH>=57
+  max(0,(4+1.7*(GS-3))*10-BBCH)  for  BBCH>=40
+  min(2*max(0, TempAir-Tb)/Ph39, 40-BBCH)  for  BBCH>=37
+  max(0,TempAir-Tb)/TSumInternode  for  BBCH>=30
+  max(0,TempAir-Tb)/Phyllochron  for  BBCH>=10
+  10*max(0,TempAir-Tb)/P9_TempSumEmergence  for  t>=SowingDate
+  0  by default
+variable: dGS_dt  Conditional
+dGS_dt = 
+  0  for  t<SowingDate
+  max(0, TempAir-Tb-1)/(250)  for  GS>=6
+  max(0, TempAir-Tb)/((P5+21.5)/0.05)  for  GS>=5
+  max(TempAir-Tb,0)/(200)  for  GS>=4
+  max(TempAir-Tb,0)/(2*Phyllochron)  for  GS>=3
+  max(TempAir-Tb,0)/(f_L*Phyllochron+Ph39)  for  GS>=2
+  max(TempAir-Tb,0)*f_P*f_V/(MinTempSumVegToGen*Phyllochron/95)  for  GS>=1
+  max(0,TempAir-Tb)/P9_TempSumEmergence  for  t>=SowingDate
+  0  by default
+variable: dnL_MS  Conditional
+Blattzahl am Haupttrieb [n]
+dnL_MS = 
+  0  for  nL_MS>inL_MS-2
+  max(0, TempAir-Tb)/Phyllochron  for  GS>=1
+  0  by default
+component event: Ev_Schossbeginn  Active  Not Reset
+GS>=2
+Tolerance = 0.001
+Actions:
+BBCH=30;
+f_L=inL_MS-nL_MS-2;
+component event: EvBestockung  Active  Not Reset
+BBCH>=13.5
+Tolerance = 0.001
+Actions:
+BBCH=BBCH+7.5;
+component event: EvFinalLeafEmergence  Active  Not Reset
+nL_MS>=inL_MS-2
+Tolerance = 0.001
+Actions:
+BBCH=37;
+independent event: EvNewYear  Active  Reset
+Period:  364
+1
+Actions:
+DayofYear=1;
+compartment: f_L  Unconditional  Global
+df_L/dt = 0
+Initial Value = 0.0
+variable: f_P  Unconditional
+f_P = 1-C*(20-DayLengthP2)^2
+variable: f_V  Unconditional
+f_V = max(0, 1-k_*(MaxVernDays-VernSum))
+variable: GlobRad  Unconditional
+Strahlungssumme 
+GlobRad = GRad
+compartment: GS  Unconditional
+Growth stage nach Ritchie
+dGS/dt = dGS_dt
+Initial Value = 0.0
+compartment: inL_MS  Unconditional  Global
+dinL_MS/dt = d_inL_MS_dt
+Initial Value = 4
+define value: k_  Unconditional
+k_ = (P1V+0.55)/183
+compartment: nL_MS  Unconditional  Global
+dnL_MS/dt = dnL_MS
+Initial Value = 0.0
+SubDayLength
+lookup table: VernWirkTab
+TempAir  Control
+VernEff  Controlled by: TempAir
+  Linear interpolation
+lookup table: TableWeather
+t  Control
+Tmin  Controlled by: t
+  Linear interpolation
+Tmax  Controlled by: t
+  Linear interpolation
+GRad  Controlled by: t
+  Linear interpolation
+Tavg  Controlled by: t
+  Linear interpolation
+variable: TempAir  Unconditional  Universal
+Tagesmitteltemperatur [°C]
+TempAir = Tavg
+variable: TEMPM  Unconditional
+Tagesmitteltemperatur
+TEMPM = Tmin*0.25+Tmax*0.75
+variable: TEMPMN  Unconditional
+Tagesminimaltemperatur 
+TEMPMN = Tmin
+variable: TEMPMX  Unconditional
+Tagesmaximaltemperatur 
+TEMPMX = Tmax
+compartment: TSum  Conditional
+dTSum/dt = 
+  max(TempAir-Tb,0)  for  t>=SowingDate
+  0  by default
+Initial Value = 0.0
+compartment: TSUM_30_39  Conditional
+dTSUM_30_39/dt = 
+  TempAir  for  BBCH >=30 and BBCH <39
+  0  by default
+Initial Value = 0.0
+variable: VernRate  Conditional
+VernRate = 
+  0  for  t<SowingDate
+  0  for  VernSum>50
+  VernEff  by default
+compartment: VernSum  Unconditional
+dVernSum/dt = VernRate
+Initial Value = 0.0

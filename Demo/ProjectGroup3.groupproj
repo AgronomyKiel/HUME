@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{60E2B8C6-0E6D-4ADB-9102-5E72F65A317D}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="ProjHumeDemo3.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\Hume1.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ProjHumeDemo3">
+        <MSBuild Projects="ProjHumeDemo3.dproj"/>
+    </Target>
+    <Target Name="ProjHumeDemo3:Clean">
+        <MSBuild Projects="ProjHumeDemo3.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ProjHumeDemo3:Make">
+        <MSBuild Projects="ProjHumeDemo3.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Hume1">
+        <MSBuild Projects="..\Hume1.dproj"/>
+    </Target>
+    <Target Name="Hume1:Clean">
+        <MSBuild Projects="..\Hume1.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Hume1:Make">
+        <MSBuild Projects="..\Hume1.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ProjHumeDemo3;Hume1"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ProjHumeDemo3:Clean;Hume1:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ProjHumeDemo3:Make;Hume1:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

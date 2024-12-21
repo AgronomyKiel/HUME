@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{D79CD0DE-438C-4E9E-B1AE-A4C980E9A80C}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Soil\SoilWaterPackage.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="CERES Wheat\CeresSubModels.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="SoilWaterPackage">
+        <MSBuild Projects="Soil\SoilWaterPackage.dproj"/>
+    </Target>
+    <Target Name="SoilWaterPackage:Clean">
+        <MSBuild Projects="Soil\SoilWaterPackage.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SoilWaterPackage:Make">
+        <MSBuild Projects="Soil\SoilWaterPackage.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="CeresSubModels">
+        <MSBuild Projects="CERES Wheat\CeresSubModels.dproj"/>
+    </Target>
+    <Target Name="CeresSubModels:Clean">
+        <MSBuild Projects="CERES Wheat\CeresSubModels.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="CeresSubModels:Make">
+        <MSBuild Projects="CERES Wheat\CeresSubModels.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="SoilWaterPackage;CeresSubModels"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="SoilWaterPackage:Clean;CeresSubModels:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="SoilWaterPackage:Make;CeresSubModels:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

@@ -1,0 +1,127 @@
+Main
+define value: C  Unconditional
+de-skalierter photoperiodischer Faktor
+C = P1D/500
+variable: d_inL_MS_dt  Conditional
+d_inL_MS_dt = 
+  0  for  GS>=GS_fl_prim
+  max(0,TempAir-Tb)/Plastochron  for  GS>=1
+  0  by default
+compartment: DayOfYear  Unconditional  Universal
+dDayOfYear/dt = 1
+Initial Value = 1
+variable: dEC_dt  Conditional
+rate of change
+dEC_dt = 
+  0  for  t<=SowingDate
+  (9+(GS-6))*10-EC  for  EC>=90
+  (7.1+1.9*(GS-5))*10-EC  for  EC>=71
+  (5.7+1.4*(GS-4))*10-EC  for  EC>=57
+  (4+1.7*(GS-3))*10-EC  for  GS>=3 and GS<4 and ec>40
+  min(2*max(0, TempAir-Tb)/Ph39,40-EC)  for  EC>=37 and EC<40
+  max(0, TempAir-TB)/TSumInternode  for  GS>2 and EC<37
+  max(TempAir-Tb,0)/P9_TempSumEmergence*10  for  (EC<=10)
+  max(TempAir-Tb,0)/Phyllochron  for  (EC>10)
+  0  by default
+variable: dGS_dt  Conditional
+change rate of growth stage
+dGS_dt = 
+  0  for  t<SowingDate
+  max(0, TempAir-Tb-1)/(250)  for  GS>=6
+  max(0, TempAir-Tb-1)/((P5+21.5)/0.05)  for  GS>=5
+  max(0, TempAir-Tb)/(200)  for  GS>=4
+  max(0, TempAir-Tb)/(2*Phyllochron)  for  GS>=3
+  max(0, TempAir-Tb)/(fL*Phyllochron+Ph39)  for  GS>=2
+  max(0, TempAir-Tb)*min(f_v,f_p)/( MinTempSumVegtoGen*Phyllochron/95)  for  GS>=1
+  max(0, TempAir-Tb)/P9_TempSumEmergence  for  GS<1
+  0  by default
+component event: EvFinalLeafEmergence  Active  Not Reset
+when the number of visible leaves becomes equal to the number of initiated leaves - we have EC 37
+nL_MS > inL_MS-2 and EC< 37
+Tolerance = 0.001
+Actions:
+EC=37;
+component event: EvSchossbeginn  Active  Not Reset
+Start of booting
+GS>=2
+Tolerance = 0.001
+Actions:
+EC=30;
+fL=inL_MS-2- nL_MS;
+component event: EvBestBeginn  Active  Not Reset
+Start of tillering
+EC>=13.5
+Tolerance = 0.001
+Actions:
+EC=EC+7.5;
+compartment: EC  Unconditional
+EC Statium oder BBCH 
+dEC/dt = dEC_dt
+Initial Value = 0.0
+variable: EC_10  Unconditional
+EC_10 = EC/10
+independent event: EvNewYear  Active  Reset
+Period:  364
+1
+Actions:
+DayofYear=1;
+variable: f_P  Unconditional
+Entwicklungsfaktor Photoperiode [0..1]
+f_P = 1-C*(MaxPhotoperiod-DaylengthP)^2
+variable: f_V  Unconditional
+vernalisation effect on development rate [0..1]
+f_V = 1-K_*(MaxVerndays-VernSum)
+compartment: fL  Unconditional  Global
+temporal variable to store the number of not emerged leaves at start of booting
+dfL/dt = 0
+Initial Value = 0.0
+compartment: GS  Unconditional
+Growth stage oder XSTAGE nach Ritchie
+dGS/dt = dGS_dt
+Initial Value = 0.0
+compartment: inL_MS  Unconditional  Global
+dinL_MS/dt = d_inL_MS_dt
+Initial Value = 5
+define value: k_  Unconditional
+de-skalierter Parameter P1V
+k_ = (P1v-0.55)/183
+compartment: nL_MS  Conditional  Global
+number of leaves on the mainstem
+dnL_MS/dt = 
+  0  for  nL_MS>=inL_MS-2
+  max(0, TempAir-Tb)/Phyllochron  for  GS>1
+  0  by default
+Initial Value = 0.0
+SubDayLength
+lookup table: VerwirkTab
+TempAir  Control
+VernWirk  Controlled by: TempAir
+  Linear interpolation
+lookup table: TableWeather
+t  Control
+Tmin  Controlled by: t
+  Linear interpolation
+Tmax  Controlled by: t
+  Linear interpolation
+GRad  Controlled by: t
+  Linear interpolation
+Tavg  Controlled by: t
+  Linear interpolation
+variable: TempAir  Unconditional  Universal
+Tagesmitteltemperatur [°C]
+TempAir = Tavg
+compartment: TempSumSinceSowing  Conditional
+dTempSumSinceSowing/dt = 
+  max(0,TempAir-Tb)  for  t>SowingDate
+  0  by default
+Initial Value = 0.0
+variable: VernRate  Conditional
+Vernalisationrate [d]
+VernRate = 
+  0  for  VernSum>50
+  VernWirk  for  t>SowingDate
+  0  by default
+compartment: VernSum  Unconditional
+Vernalisationssumme [d]
+dVernSum/dt = VernRate
+Initial Value = 0

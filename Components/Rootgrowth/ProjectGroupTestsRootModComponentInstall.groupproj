@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{05285733-ED58-4974-986E-F3E3139D4D49}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="PackageRootGrowthTest.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\Soil\SoilWaterPackageNew.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="PackageRootGrowthTest">
+        <MSBuild Projects="PackageRootGrowthTest.dproj"/>
+    </Target>
+    <Target Name="PackageRootGrowthTest:Clean">
+        <MSBuild Projects="PackageRootGrowthTest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PackageRootGrowthTest:Make">
+        <MSBuild Projects="PackageRootGrowthTest.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SoilWaterPackageNew">
+        <MSBuild Projects="..\Soil\SoilWaterPackageNew.dproj"/>
+    </Target>
+    <Target Name="SoilWaterPackageNew:Clean">
+        <MSBuild Projects="..\Soil\SoilWaterPackageNew.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SoilWaterPackageNew:Make">
+        <MSBuild Projects="..\Soil\SoilWaterPackageNew.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="PackageRootGrowthTest;SoilWaterPackageNew"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="PackageRootGrowthTest:Clean;SoilWaterPackageNew:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="PackageRootGrowthTest:Make;SoilWaterPackageNew:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

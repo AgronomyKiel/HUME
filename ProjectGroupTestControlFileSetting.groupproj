@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{224CAD59-8D37-4D2F-9CBD-C3E30F940BBD}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="ProjecttestControlFilesetting.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Hume1.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ProjecttestControlFilesetting">
+        <MSBuild Projects="ProjecttestControlFilesetting.dproj"/>
+    </Target>
+    <Target Name="ProjecttestControlFilesetting:Clean">
+        <MSBuild Projects="ProjecttestControlFilesetting.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ProjecttestControlFilesetting:Make">
+        <MSBuild Projects="ProjecttestControlFilesetting.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Hume1">
+        <MSBuild Projects="Hume1.dproj"/>
+    </Target>
+    <Target Name="Hume1:Clean">
+        <MSBuild Projects="Hume1.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Hume1:Make">
+        <MSBuild Projects="Hume1.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ProjecttestControlFilesetting;Hume1"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ProjecttestControlFilesetting:Clean;Hume1:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ProjecttestControlFilesetting:Make;Hume1:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

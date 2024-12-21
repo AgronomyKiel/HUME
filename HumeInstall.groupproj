@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{930C42CA-8EB7-478C-9F3B-80151CA6BE2C}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Hume1.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\ADV_STRGRD\asgd_Rio.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Q:\NumEdit\NumEditPack.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Hume1">
+        <MSBuild Projects="Hume1.dproj"/>
+    </Target>
+    <Target Name="Hume1:Clean">
+        <MSBuild Projects="Hume1.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Hume1:Make">
+        <MSBuild Projects="Hume1.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="asgd_Rio">
+        <MSBuild Projects="..\ADV_STRGRD\asgd_Rio.dproj"/>
+    </Target>
+    <Target Name="asgd_Rio:Clean">
+        <MSBuild Projects="..\ADV_STRGRD\asgd_Rio.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="asgd_Rio:Make">
+        <MSBuild Projects="..\ADV_STRGRD\asgd_Rio.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="NumEditPack">
+        <MSBuild Projects="Q:\NumEdit\NumEditPack.dproj"/>
+    </Target>
+    <Target Name="NumEditPack:Clean">
+        <MSBuild Projects="Q:\NumEdit\NumEditPack.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="NumEditPack:Make">
+        <MSBuild Projects="Q:\NumEdit\NumEditPack.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Hume1;asgd_Rio;NumEditPack"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Hume1:Clean;asgd_Rio:Clean;NumEditPack:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Hume1:Make;asgd_Rio:Make;NumEditPack:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

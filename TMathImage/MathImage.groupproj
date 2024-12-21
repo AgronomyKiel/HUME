@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{5B860B2E-8F73-41EB-B871-34172FB4736E}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Math_Overlay.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Math_MathImage.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Math_Overlay">
+        <MSBuild Projects="Math_Overlay.dproj"/>
+    </Target>
+    <Target Name="Math_Overlay:Clean">
+        <MSBuild Projects="Math_Overlay.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Math_Overlay:Make">
+        <MSBuild Projects="Math_Overlay.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Math_MathImage">
+        <MSBuild Projects="Math_MathImage.dproj"/>
+    </Target>
+    <Target Name="Math_MathImage:Clean">
+        <MSBuild Projects="Math_MathImage.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Math_MathImage:Make">
+        <MSBuild Projects="Math_MathImage.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Math_Overlay;Math_MathImage"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Math_Overlay:Clean;Math_MathImage:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Math_Overlay:Make;Math_MathImage:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

@@ -1,0 +1,60 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{9991E9AA-2679-40F4-B463-130D547A2A82}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="..\..\Hume1.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="MMTOD.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="PackagedemoLogGrowth.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="Hume1">
+			<MSBuild Projects="..\..\Hume1.dproj"/>
+		</Target>
+		<Target Name="Hume1:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Hume1.dproj"/>
+		</Target>
+		<Target Name="Hume1:Make">
+			<MSBuild Targets="Make" Projects="..\..\Hume1.dproj"/>
+		</Target>
+		<Target Name="MMTOD">
+			<MSBuild Projects="MMTOD.dproj"/>
+		</Target>
+		<Target Name="MMTOD:Clean">
+			<MSBuild Targets="Clean" Projects="MMTOD.dproj"/>
+		</Target>
+		<Target Name="MMTOD:Make">
+			<MSBuild Targets="Make" Projects="MMTOD.dproj"/>
+		</Target>
+		<Target Name="PackagedemoLogGrowth">
+			<MSBuild Projects="PackagedemoLogGrowth.dproj"/>
+		</Target>
+		<Target Name="PackagedemoLogGrowth:Clean">
+			<MSBuild Targets="Clean" Projects="PackagedemoLogGrowth.dproj"/>
+		</Target>
+		<Target Name="PackagedemoLogGrowth:Make">
+			<MSBuild Targets="Make" Projects="PackagedemoLogGrowth.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="Hume1;MMTOD;PackagedemoLogGrowth"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="Hume1:Clean;MMTOD:Clean;PackagedemoLogGrowth:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="Hume1:Make;MMTOD:Make;PackagedemoLogGrowth:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

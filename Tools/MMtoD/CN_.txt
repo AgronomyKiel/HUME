@@ -1,0 +1,73 @@
+SubMain
+compartment: BIOM  Unconditional
+dBIOM/dt = +F_DPM_BIOM+FRPM_BIOM-FBIOM_SOM+FSOM_BIOM
+Initial Value = 0.001*Ctoti
+variable: C_ER  Unconditional  Global
+C_ER = 1500
+variable: CN_SOM  Unconditional  Global
+CN_SOM = Ctoti/Ntoti
+compartment: CO2  Unconditional
+dCO2/dt = +DPM_CO2+RPM_CO2+SOM_CO2
+Initial Value = 0.0
+compartment: DPM  Unconditional  Global
+dDPM/dt = -F_DPM_BIOM-DPM_CO2
+Initial Value = 10
+flow: DPM_CO2  Unconditional
+Flow from DPM to CO2
+DPM_CO2 = E_DPM * DPM*Fabiot*(1-E_DPM)
+variable: F_DPM  Unconditional
+F_DPM = (-N_ER*CN_DPM*CN_RPM/C_ER+CN_DPM)/(-CN_RPM+CN_DPM)
+flow: F_DPM_BIOM  Unconditional  Global
+Flow from DPM to BIOM
+F_DPM_BIOM = kDPM_BIOM * DPM*Fabiot*E_DPM
+variable: Fabiot  Unconditional  Global
+Fabiot = 2^((temp-20)/10)
+flow: FBIOM_SOM  Unconditional  Global
+Flow from BIOM to SOM
+FBIOM_SOM = kBIOM_SOM * BIOM*Fabiot
+flow: FRPM_BIOM  Unconditional  Global
+Flow from RPM to BIOM
+FRPM_BIOM = kRPM_BIOM * RPM*Fabiot*E_RPM
+flow: FSOM_BIOM  Unconditional  Global
+Flow from SOM to BIOM
+FSOM_BIOM = kSOM_BIOM*SOM*Fabiot*E_SOM
+variable: N_DPM  Unconditional
+N_DPM = 1/CN_DPM*DPM
+variable: N_ER  Unconditional  Global
+N_ER = 100
+variable: N_RPM  Unconditional
+N_RPM = 1/CN_RPM*RPM
+compartment: NBod  Unconditional
+dNBod/dt = -Netmineralisation
+Initial Value = 0.0
+variable: NetMinBiom  Unconditional  Global
+NetMinBiom = FBIOM_SOM*(1/CN_Biom-1/CN_SOM)
+variable: NetMinDPM  Unconditional  Global
+NetMinDPM = F_DPM_BIOM*(1/CN_DPM-E_DPM/CN_Biom)
+flow: Netmineralisation  Unconditional
+Flow from NBod to Nmin
+Netmineralisation = NetMinBiom+NetMinDPM+NetMinRPM+NetMinSOM
+variable: NetMinRPM  Unconditional  Global
+NetMinRPM = FRPM_BIOM*(1/CN_RPM-E_RPM/CN_Biom)
+variable: NetMinSOM  Unconditional  Global
+NetMinSOM = FSOM_BIOM*(1/CN_SOM-E_SOM/CN_Biom)
+compartment: Nmin  Unconditional
+dNmin/dt = -PlantNUptake+Netmineralisation
+Initial Value = 0
+compartment: NPfl  Unconditional  Global
+dNPfl/dt = +PlantNUptake
+Initial Value = 4
+variable: PAR  Unconditional  Global
+PAR = AvgStr+StrAmp*SIN(((Tag-8)+0.75*365)*2*3.14/365)
+compartment: RPM  Unconditional  Global
+dRPM/dt = -FRPM_BIOM-RPM_CO2
+Initial Value = 1000
+flow: RPM_CO2  Unconditional
+Flow from RPM to CO2
+RPM_CO2 = kRPM_BIOM * RPM*Fabiot*(1-E_RPM)
+compartment: SOM  Unconditional
+dSOM/dt = +FBIOM_SOM-SOM_CO2-FSOM_BIOM
+Initial Value = 0.999
+flow: SOM_CO2  Unconditional
+Flow from SOM to CO2
+SOM_CO2 = kSOM_BIOM * SOM*Fabiot*(1-E_SOM)

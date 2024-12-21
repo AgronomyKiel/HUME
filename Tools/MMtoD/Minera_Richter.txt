@@ -1,0 +1,28 @@
+Main
+flow: F_dpm_nh4  Unconditional
+Flow from Ndpm to NH4
+F_dpm_nh4 = kdpm * Ndpm
+flow: F_rpm_nh4  Unconditional
+Flow from Nrpm to NH4
+F_rpm_nh4 = krpm* Nrpm
+variable: kdpm  Unconditional
+kdpm = 5.6*10^12*exp(-9800/(Temp+273))
+variable: krpm  Unconditional
+krpm = 4.0*10^9*exp(-8400/(Temp+273))
+compartment: Ndpm  Unconditional
+dNdpm/dt = -F_dpm_nh4
+Initial Value = 0.0
+compartment: NH4  Unconditional
+dNH4/dt = +F_dpm_nh4+F_rpm_nh4-Nitrification
+Initial Value = 0.0
+flow: Nitrification  Unconditional
+Flow from NH4 to NO3
+Nitrification = knit * NH4
+compartment: NO3  Unconditional
+dNO3/dt = +Nitrification
+Initial Value = 0.0
+compartment: Nrpm  Unconditional
+dNrpm/dt = -F_rpm_nh4
+Initial Value = 0.0
+define value: Temp  Unconditional  Global
+Temp = 15

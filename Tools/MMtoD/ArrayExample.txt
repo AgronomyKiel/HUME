@@ -1,0 +1,12 @@
+Main
+compartment: Comp[1..10]  Unconditional
+dComp[1..10]/dt = -Flow[i]
+Initial Value = 0.0
+flow: Flow[1..10]  Unconditional
+Flow from Comp[1..10] to Prod[1..10]
+Flow[1..10] = k1[1..10] * Comp[1..10]
+define value: maxComp  Unconditional  Universal
+maxComp = 10
+compartment: Prod[1..10]  Unconditional
+dProd[1..10]/dt = +Flow[i]
+Initial Value = 0.0

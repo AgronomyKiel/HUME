@@ -1,0 +1,415 @@
+                        MathImage Version 6.0 (beta)
+
+
+Renate Schaaf
+
+Internet: renates@xmission.com   schaaf@math.usu.edu
+CompuServe: 71031,2774
+
+TMathImage is a component derived from TGraphicControl that I wrote for 
+my own purposes as a basis for interactive math applications.
+It facilitates the display of mathematical graphs in 2D and 3D.
+This is version 6.0 (beta, May 2000), major parts rewritten. The
+interface hasn't changed (except for an aspect of TFloatpointList
+which I hope hasn't been used very much), but the inner workings have.
+For example, the world coordinate scaling has been moved to a different
+object TWorldDrawing, which can also be used standalone to draw on any
+canvas you like, provided you give it the screen and the world dimensions.
+(And know what you are doing, it's harder to use.)
+TMathImage itself is now derived from an inbetween TGraphicControl
+descendent called TOverlayImage. It's specialty is a "second
+canvas" for relatively fast overlayed drawings like zoom rectangles
+or helper shapes, even sprites. For more details see "What's new" below.
+Also check out the included demos.
+
+
+Source code is included. I'm happy about any feedback, in particular 
+about things that do not quite work. Since this is a major change, I'm 
+expecting to have some  bugs built in right now. I am relying on user
+feedback on this, so this is a beta version. The thing I am
+most concerned about is performance under Windows 98, as I've seen problems
+there. Hope after the last changes they are gone, though.
+There will be more things added in the near future,
+like drawings of "3D shape collections" (prisms, cubes).
+
+
+*Delphi version:
+
+Developed under and for Delphi 5. Should be possible to get it to run
+under Delphi4, too. I'm not officially
+supporting earlier versions anymore, because the testing is so time consuming.
+For earlier Delphi versions, use TMathImage 5.0.
+
+*What is does:
+
+2-d-graphing in world-coordinates
+
+3-d-graphing in world-coordinates, with variable world bounds, view distance,
+view (opening) angle, and view point rotation. This is the cheapest 
+3-D rendering, there's no 'tilting' the view camera and change of at-point, 
+but its enough for (my) math-graph requirements.
+
+Graphing of wired or filled surfaces, invisible parts hidden.
+Filled surfaces with a background light source and a focussed light source 
+originating at the viewpoint.
+
+You have the option to record a metafile while drawing which can be 
+saved.
+
+Run the included demo to get an idea.
+
+*Usage:
+
+You have to register the components before you can use them or any of the demos.
+Install the packages Math_Overlay.dpk and Math_MathImage.dpk. TOverlayImage
+can be used as a standalone component, too.
+
+*Distribution/Pricing:
+
+This component is free for noncommercial or educational use. 
+The final version will be MPL open source.
+
+The home of this component is to be found at
+
+  http://www.xmission.com/~renates/delphi.html
+
+New versions (and other stuff) can be found there.
+
+*Disclaimer:
+
+********************************
+This software is to be used as is. 
+The author is not responsible for 
+any damage which is directly 
+or indirectly caused by its use, 
+installation or lack of performance.
+********************************
+
+*Copyright:
+
+*********************************************                     
+I retain the copyright for this component and its
+sourcecode.
+If you use it in an application or as a base for an 
+improved component, you have to refer to the source.
+I do not allow anybody to directly or
+indirectly charge money for this component or 
+modifications or descendants of it or its distribution 
+without my consent, nor do I want it to be contained
+in shareware or freeware libraries without my consent. 
+********************************************
+
+****Thanks:
+
+To everybody at the Delphi-Forums/Newgroups, especially the TeamB members who
+helped me a lot over the years: Kurt Barthelmess, Ralph Friedman, Steve Schafer,
+Peter Below, Rick Rogers.
+
+For hints concerning published float properties:
+Joe Herb and an improvement from Ray Lischner (Delphi in a Nutshell).
+
+For the program MemProof (free!) to Atanas Stoyanov.
+
+I discovered ways to improve the speed of this component
+using
+  GpProfile (Primoz Gabrijelcic, free too!) and QTime (not so free, but good:)
+
+To Robert Lee for floating point specific tips for speed improvement.
+
+To Piero Valagussa for his free help creator utility.
+
+To graphics cracks Earl F. Glynn, Robert Rossmair, K.H. Brenner, Sergey Prilutski
+and Rene Tschaggeler for helpful tips.
+Make sure you put www.efg2.com into your bookmarks folder if you are interested in
+graphics/math etc. applications.
+
+To Egbert van Nes for the excellent free source formatter DelForExp. I think
+everybody reading my source now will be grateful...
+
+
+
+*Documentation:
+
+MathImage6.0.hlp is a component help file, which can be integrated into Delphi
+help. Also, the interface of the unit 'MathImge.pas' explains the properties and
+methods.
+I said previously, you wouldn't catch me writing a help file for this component.
+Thanks to Piero, I could do it rather easily now. Help still needs to be
+improved, though. But I don't know when I'll have time for it. Hope this gets
+you started.
+MathDemo is a Notebook application that demonstrates some of the component's
+uses. See filelist below to see what belongs to the demo.
+
+
+Have Fun!
+
+     Renate
+
+
+Filelist:
+
+  MathImage.txt     (this)
+  MathImge.pas    (MathImage component)
+  WorldDrawing.pas (WorldDrawing object)
+  OverlayImage.pas  (Overlayimage component)
+  MathImge.dcr  (Component resource)
+  OverlayImage.dcr
+  Math_Overlay.dpk  (Package)
+  Math_MathImage.dpk
+  MathImage6.0.hlp  (Component help file)
+
+
+  MathDemo.Dpr    (Project file for demo)
+  MDemo1.Pas/Dfm  (Units/Formfiles for Demo)
+  Plane.Pas/Dfm   (         "              )
+  Surface.Pas/Dfm (         "              )
+  Ani1.Pas/Dfm    (         "              )
+  SpCurv.Pas/Dfm  (         "              )
+  DataPlot.Pas/Dfm(         "              )
+  Light.Pas/Dfm   (         "              )
+  Contours.pas/dfm (        "              )
+
+What's new:  (Advice: Read backwards)
+
+1.0 to 1.1:
+  1) Properties are not published any more, you have to set them at run time.
+     This is because I discovered an unexpected behavior with respect to setting
+     defaults of published float properties (with Kurt's help): If you specify
+     a nonzero value as the constructor default, you can never set that property
+     to a value 0 at design time. As a result, in version 1.0, no world bound
+     could be set to 0. On the other hand, setting all world bounds to a default
+     of 0 does not make any sense. So the easy solution was to make them all run
+     time. This way, they are somewhat obsolete, because you can code things
+     shorter using 'setworld' and 'd3setworld'. I've kept them in there to get
+     somewhat of a backwards compatability.
+
+  2) The previous version leaked memory, because of a misinformation
+     (I'm convinced, but it's not official) in the manual and on line help.
+     See the 'clear' procedure. The memory it leaks now, it only leaks in the
+     official VCL components and can't lead to anything disturbing.
+
+  3) The DrawAxes routine for plane graphs has been much refined. It now sets
+     ticks automatically and puts in number text at intervals. Ticks are always
+     set in distances of powers of 10 and at multiples of that power. I found
+     it working just fine in any circumstances.
+
+  4) If the Axes property is set to true, all line drawing is now really clipped
+     to the window within the axes.
+
+  5) For 3-D drawing, the picture now always shows the true aspect ratio of the
+     D3-world block. Before, things would get distorted depending on the size of
+     the image. But you have to be careful now when using different orders of
+     magnitude for the range of the 3 variables.
+
+  6) The routine to call when the picture gets resized is now 'reset' rather
+     than 'resetworld' or 'd3resetworld'. Reset adjusts the world-to-pixel
+     scales and also resizes the image's bitmap.
+
+Versions 1.1-2.0:
+
+  1) Fixed a error in the scaling that would show up if you'd set world equal
+     to screen coordinates (miscounted the pixels...).
+
+  2) Cleaned up code so it compiles under both Delphi 1 and 2.
+
+  3) Prevented the little bitmap to be loaded at design time and into the .exe.
+     Shrinks .exe-size. Don't know why I thought I had to have it in the
+     constructor before...
+
+  4) Axes now always (so far) display at the optimal spot.
+
+  5) Made the clipping region (hregion) a public component field, so you can
+     refer to it, and also several simultanous instances now don't steal each
+     other's regions.
+
+  4) Added routines 'DrawPolyLine' ('DrawPolyPolyLine') which speed up graphing
+     *a lot*. To (at least for my prefences) easily maintain a list of points
+     to be graphed, two new objects 'TFloatPointList' and 'TFloatPointListList'
+     have been introduced. **You need to construct and free these objects as
+     you need them!** (see Demo)
+
+  5) Surface drawing has been much facilitated. There is an object 'TSurface'
+     that you have to construct and fill with world-grid-points, then you
+     can pass it to 'D3DrawSurface' (see Demo), free it when not needed
+     anymore.
+     It finally dawned on me how to display filled surfaces right the easy
+     and fast way. (I should have read more, other people have discovered it 
+     long before me, of course.) DrawBack, the points on the displayed surface      
+     don't know anymore whether they are visible of not. So what.
+
+  6) There are lots more pointers in this version. I have not got a
+     Memory Watcher yet for Delphi 2, but I ran the Delphi1-version of the
+     demo through MemMonD. I could not test everything, because its buffer
+     did overflow, but partial testings reveal all (my) pointers freed. Also
+     glad for any 'pointers' on this subject.
+
+2.0 to 2.1:
+
+  1) Added DrawPolygon, D3Polyline, D3PolyPolyline. Stupid to not have had them
+     in there before.
+
+2.1 to 3.0:
+
+  1) Found a way (thanks, Joe Herb) to publish all the properties defining
+     the D2 and D3 worlds. So they can be set at design time now.
+
+  2) Added procedures D3StartRotatingleft, -right, -up, -down etc. and events
+     OnRotating, OnMoving, OnRotateStop, etc. See explanations in
+     the interface part of Mathimge.pas. I found this to decrease the
+     amount of repeated code to write in applications.
+
+  3) D3-axes now get some ticks and number labels. I think the D2-axes
+     display a little better now, too.
+
+  4) The component now raises an exception EMathImageError whenever the
+     world settings cause an EMathError in the scaling procedures.
+     Whenever the exception is raised while setting new world bounds, the old
+     ones are restored. (See Plane.pas for an example of error handling.)
+     Another exception, ESurfaceError, is raised whenever the construction or
+     drawing of a surface fails. (See Surface.pas for an example for handling
+     this exception.) I hope to have trapped all FInvalidOp, Overflow,           
+     ZeroDivide etc. errors this way. But I'm a bit pessimistic. 
+     You might still get errors due to the world being too large or too small... 
+     I hope all sources for GPF's and AV's are eliminated.
+     I do not want to set minimal or maximal bounds for either the worldsize
+     or the scalings, I'd rather leave that up to you.
+     A thing you should be aware of if you zoom way into a graph:
+     The virtual picture is restricted to a pixel rectangle
+     (-16000,-16000,16000,16000). (This is necessary in Delphi1, because the
+     canvas can really only handle integers, not longint.) Once the to-pixel-
+     scalings of your graph get beyond that, line drawing will be screwed up.
+
+  5) You now have the choice of displaying the true aspect ratio of the
+     D3-world or to just see everything scaled to a square box. See
+     property D3AspectRatio.
+
+  6) The routine D3SetWorld now *only* has the variables x1,y1,z1,x2,y2,z2.
+     Specify the rest of the world settings using the properties
+     D3Viewdist, D3ViewAngle, D3Yrotation, D3Zrotation, D3Aspectratio.
+     There were so many arguments in D3setworld that I could never
+     memorize their order. I thought you'd have the same problem.
+
+  7) The behavior of the image when it is being resized has changed:
+     Except when Autosize is set true, whenever the image bounds change,
+     the bounds of the underlying bitmap change to the same. Flickered
+     drawing is thus avoided. Also, the pixel to world scalings are
+     reset, thus all new drawings are scaled to fit the new image size.
+     An event 'OnResize' fires when this happens, so you can update your
+     previous drawing to the new image size, or just plain erase it.
+     The old routine 'reset' has thus become obsolete, except you
+     have set autosize to true because you want to draw on a loaded bitmap.
+
+  8) You can now set pen, brush and font of the drawing as properties
+     of TMathimage instead of of its canvas. They can be set at design time.
+     I redefined the images's canvas property in order to achieve this without
+     a bitmap being stored in form- or exe- files.
+
+  9) Thanks to MemProof (Atanas Stoyanov) which came out just in time,
+     I discovered that I had left region-resources dangling around.
+     This is now fixed, and I don't think the component leaks more
+     memory than necessary.
+
+3.0 to 3.1
+
+Thanks to feedback from users I changed the following:
+
+  1) The PolyPolylines didn't scale right in windows-32bit. I still don't
+     know what I did wrong, but it works now due to avoiding use of the
+     Win32-Api function PolyPolyline.
+
+  2) If D3AspectRatio is true, you can now use scaling factors D3Xscale,
+     D3Yscale, D3Zscale to get a nicer display of data. See new demo
+     part D3-data-plot.
+
+  3) The routine D3DrawAxes has 6 more parameters.
+     xticks,yticks,zticks specify the number of ticks on the axes. Each
+     can be set to 0.
+     xpos,ypos,zpos specifies the position of the axis. These parameters
+     can have the values MinMin(=0), MinMax(=1) or MaxMax(=2).
+     A position MinMin places the axis at the minimum of both of the
+     remaining variables. MinMax places it at the minimum/maximum of
+     the other variables (alphabetical order), etc.
+     Example: If your D3-World is (-1,-1,-1,1,1,1) then
+     D3DrawAxes('x','y','z',4,4,4,MinMin,MaxMin,MinMin) draws axes with
+     (about) 4 ticks. The x-axis is displayed along the line y=z=-1,
+     the y-axis along x=1,z=-1, and the z-axis along x=y=-1.
+     D3DrawAxes(xlabel,ylabel,zlabel,4,4,4,0,0,0) gives the axes according
+     to the previous version.
+     I'm still not very happy with the drawing of tick marks and the
+     label positioning. 
+
+3.1 to 4.0
+There were some inbetween versions, fixing bugs. Main new features:
+
+   1) The published properties to set the world-bounds are now called
+      D2WorldX1, D2WorldXW, etc., where .....1 is the lower bound and ....W
+      is the w i d t h  of the corresponding interval. Why? Because under 
+      the old way, having ...X1>=...X2 temporarily, while resetting the bounds, 
+      caused an unnecessary exception, and I finally got tired of that 
+      "feature", and just couldn't think of any other way to resolve it. 
+      The properties D2WorldX2, D2WorldY2 etc. are still available as public 
+      read-only properties, so I think not too much existing code 
+      needs to be changed. For setting bounds at runtime, always use SetWorld or
+      D3SetWorld, because it's faster. (Those routines have not changed, they 
+      still use the upper and lower bounds.)
+
+   2) Surfaces can now be drawn without their wireframe, with the fillcolor changing due
+      to a simple light source at the viewpoint. See procedure D3DrawLitSurface.
+      Since I've decided not to mess around with palettes anymore, this feature only works
+      decently in True- or High- color mode. 
+
+4.0 to 4.1
+
+   1) Surfaces with light source are now triangulated for better display.
+
+   2) Under 32 bit Delphi you can record a metafile while drawing on the canvas. 
+      Just set the "RecordMetafile" property to true. With "SaveAsMetafile" you 
+      can then save it. Advantage of metafiles: They resize better than bitmaps,
+      straight lines stay straight, and they print better. To even further 
+      enhance the quality, the metafile is recorded at twice the scale of the 
+      image size. Recording a metafile slows drawing down a little bit. 
+      
+4.1 to 5.0
+
+   1) Overall speed improvement by deriving it from TGraphicControl instead
+      of TImage, and locking update to the screen on compound graphics
+      commands.
+
+   2) Users can use this feature by surrounding compound statements with
+      MyMathimage.LockUpdate and MyMathimage.UnlockUpdate.
+
+   3) Picture property no longer available, but you can use MyMathimage.bitmap
+      as a substitute for MyMathimage.picture.graphic.
+
+   4) Now comes with help.
+
+5.0 to 6.0
+
+   1) Rewrite of the inner workings. All point lists for example are now
+      dynamic array based. The scaling and projection engine is now
+      contained in a standalone object TWorldDrawing. This can be used
+      standalone too, to draw on any canvas. It is harder to use though,
+      and has no exception handling.
+
+   2) Added routines for level curves of TSurfaces and filled level
+      curves for TLevelSurfaces.
+
+   3) Added TColorSurface and TLevelSurface object. The d3DrawSurface
+      and d3DrawLitSurface methods can be used to display all those new
+      surfaces, too.
+
+   4) Set up the logic to support drawing of collections of 3d items.
+      Procedures still to come.
+
+   5) Added THeightMap object and procedures for drawing a collection of
+      3D height cubes. (For "landscapes". It's not quite working though,
+      need to read up on "true" hidden line removal.)
+
+   6) Methods of TOverlayImage can be used for temporary overlayed drawings
+      like zoom rectangles or helper shapes, even sprites. No need to XOR
+      anything.
+
+ 
+                                                
+                                              (May 2000)
+

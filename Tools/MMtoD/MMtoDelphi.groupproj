@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{8A455873-8791-4FDE-B378-E427CD657230}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="MMTOD.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Q:\OSR\PhaenoTest\ProjPhaenoTest.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="MMTOD">
+			<MSBuild Projects="MMTOD.dproj"/>
+		</Target>
+		<Target Name="MMTOD:Clean">
+			<MSBuild Targets="Clean" Projects="MMTOD.dproj"/>
+		</Target>
+		<Target Name="MMTOD:Make">
+			<MSBuild Targets="Make" Projects="MMTOD.dproj"/>
+		</Target>
+		<Target Name="ProjPhaenoTest">
+			<MSBuild Projects="Q:\OSR\PhaenoTest\ProjPhaenoTest.dproj"/>
+		</Target>
+		<Target Name="ProjPhaenoTest:Clean">
+			<MSBuild Targets="Clean" Projects="Q:\OSR\PhaenoTest\ProjPhaenoTest.dproj"/>
+		</Target>
+		<Target Name="ProjPhaenoTest:Make">
+			<MSBuild Targets="Make" Projects="Q:\OSR\PhaenoTest\ProjPhaenoTest.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="MMTOD;ProjPhaenoTest"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="MMTOD:Clean;ProjPhaenoTest:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="MMTOD:Make;ProjPhaenoTest:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

@@ -1,0 +1,62 @@
+inherited FormMod2: TFormMod2
+  Left = 290
+  Top = 115
+  Caption = 'FormMod2'
+  PixelsPerInch = 96
+  TextHeight = 13
+  inherited PageControl: TPageControl
+    ActivePage = TabSheetModelDiagram
+    inherited TabSheetData: TTabSheet
+      inherited AdvStringGridData: TAdvStringGrid
+        Height = 500
+      end
+    end
+    inherited TabSheetModelDiagram: TTabSheet
+      object Mod1: TMod [0]
+        Left = 320
+        Top = 184
+        Width = 97
+        Height = 57
+        Cursor = crHandPoint
+        GM_ControlFile = 'M:\Ceres Wheat\Neth_all_n3_save.fn'
+        TimeStep = 1
+        Starttime = 30244
+        Endtime = 30516
+        Reg_fn = 'regression.dat'
+        ModTime.Name = 'Time'
+        ModTime.Opt_writetoFile = True
+        ModTime.Opt_PlotToGraph = False
+        ModTime.Opt_WriteFinalValue = False
+        ModTime.Digits = 2
+        ModTime.Precision = 6
+        ModTime.v = 30244
+        LMOptions.IniLambda = 0.001
+        LMOptions.Divisor = 100
+        LMOptions.WeightOptions = OptNoWeight
+        LMOptions.DefaultError = 0.1
+        SensOpt.MaxValue = 10
+        SensOpt.MinValue = 1
+        SensOpt.Steps = 5
+        SensOpt.DPar = 1
+        SensOpt.Sens_fn = 'Sens.dat'
+        ContOutput = True
+        FinalOutput = False
+        StatusBar = StatusBarMain
+        Str_SectionName_TimeInit = 'TimeInit'
+        Str_SectionName_FileNames = 'FileNames'
+        Str_SectionName_MeasurementFiles = 'MeasurementFiles'
+        Str_SectionName_OutPutFiles = 'OutPutFiles'
+        Str_SectionTopic_SimStart = 'Startzeit'
+        Str_SectionTopic_SimEnd = 'Endzeit'
+        Str_SectionTopic_TimeStep = 'TimeStep'
+        Str_SectionTopic_StateIniFN = 'StateIniFN'
+        Str_SectionTopic_ParamIniFN = 'ParamIniFN'
+        Str_SectionTopic_WeatherFileFN = 'WeatherFileFN'
+        Str_SectionTopic_OptionIniFN = 'OptionsIniFN'
+      end
+    end
+  end
+  inherited LMod: TModLink
+    LinkedModel = Mod1
+  end
+end

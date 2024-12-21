@@ -1,0 +1,146 @@
+SubPlantN
+variable: DROOTN  Conditional
+DROOTN = 
+  RNDEM/NDEM * TRNU - (1.0 - PTF) * TRNLOS/(PLANTS * 10.0)  for  NDEM>0
+  0  by default
+variable: DTOPSN  Conditional
+DTOPSN = 
+  TNDEM/NDEM * TRNU - PTF * TRNLOS/(PLANTS * 10.0)  for  NDEM>0
+  0  by default
+variable: GNP  Conditional
+GNP = 
+  GRAINN/GRNWT  for  GRNWT>0
+  0  by default
+compartment: GRAINN  Unconditional
+  Grain N content (g N/plant)  
+dGRAINN/dt = +NSINK
+Initial Value = 0.0
+variable: NDEF1  Conditional  Universal
+Zero to unity N deficiency factor for photosynthetic rate 
+NDEF1 = 
+  min(0,max(0.10 + 2.0 *NFAC ,1))  for  ISTAGE>9
+  1  by default
+variable: NDEF2  Unconditional  Universal
+Zero to unity N deficiency factor for expansion growth 
+NDEF2 = max(0,min(1,NFAC))
+variable: NDEF3  Unconditional  Universal
+Zero to unity N deficiency factor for tiller number 
+NDEF3 = NFAC*NFAC
+variable: NDEF4  Unconditional  Universal
+fourth factor used to modify the rate of grain N accumulation (NDEF4
+NDEF4 = max(1.5,min(9,NFAC * NFAC ))
+variable: NDEM  Unconditional
+NDEM = TNDEM+RNDEM
+variable: NFAC  Conditional
+Zero to unity factor based on actual and critical N concentrations 
+NFAC = 
+  1.0 - (TCNP - TANC)/(TCNP - TMNC)  for  ISTAGE>9
+  1.0  by default
+variable: NPOOL  Unconditional
+  Total plant N available for translocation to grain (g/plant)  
+NPOOL = NPOOL1+NPOOL2
+variable: NPOOL1  Unconditional  Global
+Tops N available for translocation to grain (g/plant) 
+NPOOL1 = max(0,TOPWT*(VANC-VMNC))
+variable: NPOOL2  Unconditional
+  Root N available for translocation to grain (g/plant)  
+NPOOL2 = max(0,RTWT*(RANC-RMNC))
+variable: NSDR  Conditional
+Plant N supply/demand ratio used to modify grain N content 
+NSDR = 
+  NPOOL/NSINKOLD  for  NSINKOLD>0
+  0  by default
+variable: NSINK  Conditional
+Demand for N associated with grain filling (g/plant/day) 
+NSINK = 
+  rgnfil*gpp*1.E-6  for  (ISTAGE>=5)and(ISTAGE<6)and(NSDR>=1.0)
+  rgnfil*gpp*1.E-6*nsdr  for  (ISTAGE>=5)and(ISTAGE<6)and(NSDR<1.0)
+  0  by default
+delay: NSINKOld
+Delay = 1
+Initial Value = 0
+Maximum Delay = 10
+variable: RANC  Conditional
+Root actual nitrogen concentration (g N/g root dry weight) 
+RANC = 
+  ROOTN/(RTWT - 0.01 * RTWT)  for  RTWT>0
+  0  by default
+variable: RCNP  Unconditional
+ Root critical nitrogen concentration (g N/g root dry weight)  
+RCNP = 2.10 - 0.14 * SQRT(ZSTAGE) 
+variable: RGNFIL  Conditional
+Rate of grain fill - mg N /day 
+RGNFIL = 
+  0.49*tempm  for  (ISTAGE>=5)and(ISTAGE<6)and(tempm>10)
+  4.829666-3.2488*dtt+0.2503*(tempmx-tempmn)+4.3067*tempm  for  (ISTAGE>=5)and(ISTAGE<6)and(tempm<10)
+  0  by default
+variable: RMNC  Unconditional
+ Root minimum nitrogen concentration (g N/g root dry weight)  
+RMNC = 0.75*RCNP
+variable: RNDEM  Unconditional
+Plant root demand for nitrogen (g/plant) 
+RNDEM = RTWT * (RCNP-RANC) 
+variable: RNLAB  Unconditional
+RNLAB = XNF * NPOOL2
+variable: RNOUT  Unconditional
+RNOUT = nsink-tnlab
+compartment: ROOTN  Unconditional
+dROOTN/dt = DROOTN-rnout
+Initial Value = 0.0
+variable: TANC  Conditional
+TANC = 
+  TOPSN/TOPWT  for  TOPWT>0.0
+  0  by default
+variable: TCNP  Conditional
+Tops critical N concentration (g N/g dry weight) 
+TCNP = 
+  4.3  for  zstage<2
+  -5.0112-6.3507 * ZSTAGE+14.9578*SQRT(ZSTAGE)+0.2238*(ZSTAGE*ZSTAGE)  by default
+variable: TMNC  Unconditional
+Plant tops minimum nitrogen concentration (g N/g dry weight) 
+TMNC = 2.97 - 0.455 * XSTAGE
+variable: TNDEM  Unconditional
+Plant tops demand for nitrogen (g N/plant) 
+TNDEM = TOPWT * (TCNP - TANC) 
+variable: TNLAB  Unconditional
+Labile (translocatable) N Pool in Tops
+TNLAB = XNF*npool1
+compartment: TOPSN  Unconditional  Global
+dTOPSN/dt = DTOPSN- TNLAB
+Initial Value = 0.0
+variable: TRNLOS  Unconditional
+Total plant N lost by root exudation (g N/plant) 
+TRNLOS = 0
+variable: TRNU  Unconditional
+Total potential root nitrogen uptake from the soil (kg N/ha) 
+TRNU = 100
+variable: VANC  Conditional
+Plant vegetative actual N concentration (g N/plant) 
+VANC = 
+  TOPSN/TOPWT  for  TOPWT>0
+  0  by default
+variable: VMNC  Unconditional
+Plant vegetative minimum N concentration (g N/g dry weight) 
+VMNC = 0.03
+variable: XNF  Unconditional
+XNF = 0.15+0.2*ndef2
+lookup table: Tableweather
+t  Control
+Tmin  Controlled by: t
+  Linear interpolation
+Tmax  Controlled by: t
+  Linear interpolation
+GRad  Controlled by: t
+  Linear interpolation
+Tavg  Controlled by: t
+  Linear interpolation
+variable: TempAir  Unconditional  Universal
+Lufttemperatur [°C]
+TempAir = Tavg
+variable: TEMPM  Unconditional  Universal
+weighted daytime temperature 
+TEMPM = Tmin*0.25+Tmax*0.75
+variable: TEMPMN  Unconditional  Universal
+TEMPMN = Tmin
+variable: Tempmx  Unconditional  Universal
+Tempmx = Tmax

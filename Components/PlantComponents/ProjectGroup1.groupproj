@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{50CD93A4-C2DF-4BD4-B27C-BF4023B89A0E}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="PlantCompPackage.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\Soil\SoilWaterPackage.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="PlantCompPackage">
+			<MSBuild Projects="PlantCompPackage.dproj"/>
+		</Target>
+		<Target Name="PlantCompPackage:Clean">
+			<MSBuild Targets="Clean" Projects="PlantCompPackage.dproj"/>
+		</Target>
+		<Target Name="PlantCompPackage:Make">
+			<MSBuild Targets="Make" Projects="PlantCompPackage.dproj"/>
+		</Target>
+		<Target Name="SoilWaterPackage">
+			<MSBuild Projects="..\Soil\SoilWaterPackage.dproj"/>
+		</Target>
+		<Target Name="SoilWaterPackage:Clean">
+			<MSBuild Targets="Clean" Projects="..\Soil\SoilWaterPackage.dproj"/>
+		</Target>
+		<Target Name="SoilWaterPackage:Make">
+			<MSBuild Targets="Make" Projects="..\Soil\SoilWaterPackage.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="PlantCompPackage;SoilWaterPackage"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="PlantCompPackage:Clean;SoilWaterPackage:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="PlantCompPackage:Make;SoilWaterPackage:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

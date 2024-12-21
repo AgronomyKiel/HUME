@@ -1,0 +1,111 @@
+unit Umain;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, UMod, UState;
+
+Type
+
+Tmain = class(TSubmodel)
+
+private
+
+protected
+
+public
+  dW_dt : TVar;   // 
+  rgr : TVar;   // 
+
+
+  // Constant Variables
+
+  Educt : TState;   // 
+  Product : TState;   // 
+
+             // Parameters
+
+             // External Variables
+  mue : TExternV;   // 
+  Temp : TExternV;   // 
+
+
+  procedure createAll; override; 
+  procedure Init(var GlobMod: TMod); override; 
+  procedure CalcRates; override; 
+
+
+published
+  Property Var_dW_dt : TVar read dW_dt write dW_dt;
+  Property Var_rgr : TVar read rgr write rgr;
+
+  Property St_Educt : TState read Educt write Educt;
+  Property St_Product : TState read Product write Product;
+
+
+         // Parameters
+
+         // Properties External Variables
+  Property Ex_mue : TExternV read mue write mue;
+  Property Ex_Temp : TExternV read Temp write Temp;
+
+
+end;  // SubmodelName
+
+procedure Register;
+
+implementation
+
+procedure Tmain.createAll;
+
+begin
+  inherited createAll;
+  VarCreate('dW_dt', '',0, true, dW_dt);  
+  VarCreate('rgr', '',0, true, rgr);  
+
+
+  StateCreate('Educt', '',100, true,Educt);
+  StateCreate('Product', '',0.001, true,Product);
+
+
+  // Parameters
+
+         // External Variable
+  ExternVCreate('mue', '',statefield, mue);
+  ExternVCreate('Temp', '',statefield, Temp);
+end;
+
+
+procedure Tmain.init(var GlobMod: TMod);
+
+begin
+  inherited init(GlobMod);
+  Educt.v := 100;
+  Product.v := 0.001;
+
+
+end;
+
+
+procedure Tmain.CalcRates;
+
+begin
+
+   dW_dt.v :=  mue.v * Educt.v*Temp.v*Product.v;
+   rgr.v :=  dW_dt.v/Product.v;
+
+   Educt.c :=  -dW_dt.v;
+   Product.c :=  +dW_dt.v;
+
+end;
+
+
+
+end;
+
+procedure Register;
+begin
+  RegisterComponents('Ceres Wheat', [Tmain]);
+end;
+
+end.

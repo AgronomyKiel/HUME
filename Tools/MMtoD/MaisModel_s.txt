@@ -1,0 +1,89 @@
+Main
+Daylength
+compartment: DayofYear  Unconditional  Universal
+dDayofYear/dt = 1
+Initial Value = 1
+independent event: EvNewYear  Active  Reset
+Period:  364
+1
+Actions:
+DayofYear=1;
+variable: GlobStr  Unconditional
+GlobStr = GlobRad*86400/1e6
+variable: Haude  Unconditional
+Haude =  Series1
+LAI_develop
+variable: Luftfeuchte  Unconditional
+Luftfeuchte = LF
+variable: Rain  Unconditional
+Rain = Rainfall
+SubGrowth
+variable: AGE  Unconditional
+AGE = 1 / (1 + (LAI/LAI50)^ak)
+variable: aussaattermin  Unconditional  Universal
+aussaattermin = aussaat
+variable: cai  Conditional
+cai = 
+  (1-exp(-cank*(LAI-lail)/laih))/(1-exp(-cank))  for  lail=1
+  1  by default
+variable: dW  Unconditional  Universal
+dW = W*rs*AGE*GI
+variable: GI  Conditional
+GI = 
+  TI * RI * WI_a  by default
+variable: LAI  Conditional
+LAI = 
+  W  for  agesw=4
+  blai*W + clai*W^2  for  agesw=2
+  sqrt(W/clai)  by default
+variable: radiation  Unconditional
+radiation = globalrad*0.01/86400*1e6
+variable: RI  Conditional
+RI = 
+  1  for  radiation>rmxp
+  min(1,1-exp(-rk*radiation/rmax)) /(1-exp(-rk))  by default
+variable: rmax  Unconditional
+rmax =  rmlo + CAI*(rmxp - rmlo)
+compartment: SW  Unconditional
+dSW/dt = Rainfall-ActEvap
+Initial Value = 0.0
+variable: SW1  Unconditional
+SW1 = max(0,min(SW+swact,swmax))
+variable: TI  Conditional
+TI = 
+  min(1,1.0 / (1.0+exp(tk2*TempL*log((TempL-topt)/ (topt-tthr)))))  for  tempsw=2 and TempL<tpmax and TempL>topt
+  min(1,1.0 - exp(tk1*TempL*log((TempL-topt) / (tthr-topt))))  for  tempsw=2 and tempL<topt
+  min(1,max(0,min( 1.0 - ((2*abs(TempL-topt)/(topt-tthr))^tk1)*0.5,1)))  by default
+compartment: W  Conditional  Universal
+dW/dt = 
+  0  for  t<aussaat
+  w0  for  t=aussaat
+  dW  by default
+Initial Value = 10
+variable: WI_2  Unconditional
+WI_2 = min(1.0, SW1 / (swthr*swmax))
+variable: WI_a  Conditional
+WI_a = 
+  1  for  Tpot=0
+  min(1,Tact/Tpot)  by default
+SubQuality
+SubSoilWater
+SubVerdunstung
+lookup table: Wetterdaten
+t  Control
+TempL  Controlled by: t  Global
+  Linear interpolation
+LF  Controlled by: t
+  Linear interpolation
+Windspeed  Controlled by: t
+  Linear interpolation
+Rainfall  Controlled by: t  Global
+  Linear interpolation
+GlobRad  Controlled by: t
+  Linear interpolation
+Series1  Controlled by: t
+  Linear interpolation
+variable: TempAir  Unconditional  Universal
+TempAir = TempL
+variable: Wind  Unconditional
+Wind = Windspeed

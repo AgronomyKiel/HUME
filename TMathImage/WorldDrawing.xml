@@ -1,0 +1,1225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="WorldDrawing">
+  <const name="nkPrincipal" type="TNormalKind">
+    <value>
+      nkPrincipal
+    </value>
+  </const>
+  <const name="nkSecondary" type="TNormalKind">
+    <value>
+      nkSecondary
+    </value>
+  </const>
+  <type name="MathFloat" type="Double" />
+  <pointer name="PFloatPoint" type="TFloatpoint" indircnt="1" />
+  <struct name="TFloatpoint">
+    <field name="x" type="Double" visibility="public" />
+    <field name="y" type="Double" visibility="public" />
+  </struct>
+  <array name="TFloatPointArray">
+    <element type="TFloatpoint" />
+  </array>
+  <pointer name="PD3FloatPoint" type="TD3FloatPoint" indircnt="1" />
+  <struct name="TD3FloatPoint">
+    <field name="x" type="Double" visibility="public" />
+    <field name="y" type="Double" visibility="public" />
+    <field name="z" type="Double" visibility="public" />
+  </struct>
+  <pointer name="POldFloatPoint" type="TOldFloatpoint" indircnt="1" />
+  <struct name="TOldFloatpoint">
+    <field name="x" type="Double" visibility="public" />
+    <field name="y" type="Double" visibility="public" />
+    <field name="Next" type="POldFloatPoint" visibility="public" />
+  </struct>
+  <pointer name="POldD3FloatPoint" type="TOldD3FloatPoint" indircnt="1" />
+  <struct name="TOldD3FloatPoint">
+    <field name="x" type="Double" visibility="public" />
+    <field name="y" type="Double" visibility="public" />
+    <field name="z" type="Double" visibility="public" />
+    <field name="Next" type="POldD3FloatPoint" visibility="public" />
+  </struct>
+  <array name="Td3FloatPointArray">
+    <element type="TD3FloatPoint" />
+  </array>
+  <array name="TColorArray">
+    <element type="TColor" />
+  </array>
+  <array name="TFloatarray">
+    <element type="Double" />
+  </array>
+  <struct name="TD3FloatPointers">
+    <field name="px" visibility="public">
+      <pointer name="px" type="Double" indircnt="1" />
+    </field>
+    <field name="py" visibility="public">
+      <pointer name="py" type="Double" indircnt="1" />
+    </field>
+    <field name="pz" visibility="public">
+      <pointer name="pz" type="Double" indircnt="1" />
+    </field>
+  </struct>
+  <struct name="TD3Triangle">
+    <field name="p" type="PD3FloatPoint" visibility="public" />
+    <field name="q" type="PD3FloatPoint" visibility="public" />
+    <field name="r" type="PD3FloatPoint" visibility="public" />
+    <field name="n" type="TD3FloatPoint" visibility="public" />
+    <field name="FillColor" visibility="public">
+      <pointer name="FillColor" type="TColor" indircnt="1" />
+    </field>
+    <field name="WireColor" visibility="public">
+      <pointer name="WireColor" type="TColor" indircnt="1" />
+    </field>
+  </struct>
+  <array name="TD3TriangleArray">
+    <element type="TD3Triangle" />
+  </array>
+  <struct name="TD3SurfaceCell">
+    <field name="p" type="PD3FloatPoint" visibility="public" />
+    <field name="q" type="PD3FloatPoint" visibility="public" />
+    <field name="r" type="PD3FloatPoint" visibility="public" />
+    <field name="s" type="PD3FloatPoint" visibility="public" />
+    <field name="FillColor" visibility="public">
+      <pointer name="FillColor" type="TColor" indircnt="1" />
+    </field>
+    <field name="WireColor" visibility="public">
+      <pointer name="WireColor" type="TColor" indircnt="1" />
+    </field>
+  </struct>
+  <struct name="TCube">
+    <field name="x1" type="Double" visibility="public" />
+    <field name="y1" type="Double" visibility="public" />
+    <field name="z1" type="Double" visibility="public" />
+    <field name="x2" type="Double" visibility="public" />
+    <field name="y2" type="Double" visibility="public" />
+    <field name="z2" type="Double" visibility="public" />
+    <field name="p1" type="TD3FloatPoint" visibility="public" />
+    <field name="p2" type="TD3FloatPoint" visibility="public" />
+    <field name="p3" type="TD3FloatPoint" visibility="public" />
+    <field name="p4" type="TD3FloatPoint" visibility="public" />
+    <field name="p5" type="TD3FloatPoint" visibility="public" />
+    <field name="p6" type="TD3FloatPoint" visibility="public" />
+    <field name="p7" type="TD3FloatPoint" visibility="public" />
+    <field name="p8" type="TD3FloatPoint" visibility="public" />
+    <field name="FillColor" type="TColor" visibility="public" />
+    <field name="WireColor" type="TColor" visibility="public" />
+  </struct>
+  <array name="Td3FloatPointerArray">
+    <element type="TD3FloatPointers" />
+  </array>
+  <pointer name="P4Cell" type="T4Cell" indircnt="1" />
+  <struct name="T4Cell">
+    <field name="Vertex" visibility="public">
+      <array name="Vertex" visibility="public" low="0" high="3">
+        <element type="TPoint" />
+      </array>
+    </field>
+    <field name="dist" type="Double" visibility="public" />
+    <field name="FillColor" type="TColor" visibility="public" />
+    <field name="WireColor" type="TColor" visibility="public" />
+  </struct>
+  <pointer name="P3Cell" type="T3Cell" indircnt="1" />
+  <struct name="T3Cell">
+    <field name="Vertex" visibility="public">
+      <array name="Vertex" visibility="public" low="0" high="2">
+        <element type="TPoint" />
+      </array>
+    </field>
+    <field name="dist" type="Double" visibility="public" />
+    <field name="BDiff" type="Double" visibility="public" />
+    <field name="BSpec" type="Double" visibility="public" />
+    <field name="FillColor" type="TColor" visibility="public" />
+    <field name="WireColor" type="TColor" visibility="public" />
+  </struct>
+  <array name="TPointArray">
+    <element type="TPoint" />
+  </array>
+  <struct name="Td3LineSegment">
+    <field name="p" type="PD3FloatPoint" visibility="public" />
+    <field name="q" type="PD3FloatPoint" visibility="public" />
+    <field name="N1" type="TD3FloatPoint" visibility="public" />
+    <field name="N2" type="TD3FloatPoint" visibility="public" />
+    <field name="dist" type="Double" visibility="public" />
+    <field name="Color" type="TColor" visibility="public" />
+    <field name="Width" type="Double" visibility="public" />
+  </struct>
+  <array name="Td3LineSegmentArray">
+    <element type="Td3LineSegment" />
+  </array>
+  <enum name="TNormalKind">
+    <element name="nkPrincipal" />
+    <element name="nkSecondary" />
+  </enum>
+  <class name="TLightSource">
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+    </ancestor>
+    <members>
+      <field name="fSourcePoint" type="TD3FloatPoint" visibility="private" />
+      <field name="fViewAngles" type="TFloatpoint" visibility="private" />
+      <field name="fyrot" type="Double" visibility="private" />
+      <field name="fzrot" type="Double" visibility="private" />
+      <field name="fdist" type="Double" visibility="private" />
+      <field name="fFixed" type="Boolean" visibility="private" />
+      <procedure name="SetYRot" visibility="private">
+        <parameters>
+          <parameter name="Value" type="Integer" />
+        </parameters>
+      </procedure>
+      <procedure name="SetZRot" visibility="private">
+        <parameters>
+          <parameter name="Value" type="Integer" />
+        </parameters>
+      </procedure>
+      <function name="GetYRot" visibility="private">
+        <parameters>
+          <retval type="Integer" />
+        </parameters>
+      </function>
+      <function name="GetZRot" visibility="private">
+        <parameters>
+          <retval type="Integer" />
+        </parameters>
+      </function>
+      <procedure name="SetDist" visibility="private">
+        <parameters>
+          <parameter name="Value" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="SetViewAngles" visibility="private">
+        <parameters>
+          <parameter name="Value" type="TFloatpoint" />
+        </parameters>
+      </procedure>
+      <procedure name="InitSourcePoint" visibility="private">
+      </procedure>
+      <property name="YRotation" visibility="public" read="GetYRot" write="SetYRot" type="Integer" />
+      <property name="ZRotation" visibility="public" read="GetZRot" write="SetZRot" type="Integer" />
+      <property name="dist" visibility="public" read="fdist" write="SetDist" type="Double" />
+      <property name="fixed" visibility="public" read="fFixed" write="fFixed" type="Boolean" />
+      <property name="ViewAngles" visibility="public" read="fViewAngles" write="SetViewAngles" type="TFloatpoint" />
+      <property name="SourcePoint" visibility="public" read="fSourcePoint" type="TD3FloatPoint" />
+    </members>
+  </class>
+  <class name="TWorldDrawing">
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+    </ancestor>
+    <members>
+      <field name="fwidth" type="Integer" visibility="private" />
+      <field name="fHeight" type="Integer" visibility="private" />
+      <field name="fd2x1" type="Double" visibility="private" />
+      <field name="fd2xw" type="Double" visibility="private" />
+      <field name="fd2y1" type="Double" visibility="private" />
+      <field name="fd2yw" type="Double" visibility="private" />
+      <field name="fd2Axes" type="Boolean" visibility="private" />
+      <field name="fmaxxtw" type="Integer" visibility="private" />
+      <field name="fmaxytw" type="Integer" visibility="private" />
+      <field name="fmaxth" type="Integer" visibility="private" />
+      <field name="fd3ar" type="Boolean" visibility="private" />
+      <field name="fd3x1" type="Double" visibility="private" />
+      <field name="fd3xw" type="Double" visibility="private" />
+      <field name="fd3y1" type="Double" visibility="private" />
+      <field name="fd3yw" type="Double" visibility="private" />
+      <field name="fd3z1" type="Double" visibility="private" />
+      <field name="fd3zw" type="Double" visibility="private" />
+      <field name="fd3alpha" type="Double" visibility="private" />
+      <field name="fd3vd" type="Double" visibility="private" />
+      <field name="fd3vdinv" type="Double" visibility="private" />
+      <field name="fd3zr" type="Double" visibility="private" />
+      <field name="fd3yr" type="Double" visibility="private" />
+      <field name="fd3ViewPoint" type="TD3FloatPoint" visibility="private" />
+      <field name="fd3ViewAngles" type="TFloatpoint" visibility="private" />
+      <field name="fd3L1" type="TLightSource" visibility="private" />
+      <field name="fd3L2" type="TLightSource" visibility="private" />
+      <field name="fd3xScale" type="Double" visibility="private" />
+      <field name="fd3yScale" type="Double" visibility="private" />
+      <field name="fd3zScale" type="Double" visibility="private" />
+      <field name="fClipRect" type="TRect" visibility="private" />
+      <field name="ax" type="Double" visibility="private" />
+      <field name="bx" type="Double" visibility="private" />
+      <field name="ay" type="Double" visibility="private" />
+      <field name="by" type="Double" visibility="private" />
+      <field name="axinv" type="Double" visibility="private" />
+      <field name="ayinv" type="Double" visibility="private" />
+      <field name="x1Snap" type="Double" visibility="private" />
+      <field name="x2Snap" type="Double" visibility="private" />
+      <field name="y1Snap" type="Double" visibility="private" />
+      <field name="y2Snap" type="Double" visibility="private" />
+      <field name="basex" type="Double" visibility="private" />
+      <field name="basey" type="Double" visibility="private" />
+      <field name="basez" type="Double" visibility="private" />
+      <field name="frontx" type="Double" visibility="private" />
+      <field name="fronty" type="Double" visibility="private" />
+      <field name="frontz" type="Double" visibility="private" />
+      <field name="arad" type="Double" visibility="private" />
+      <field name="tana" type="Double" visibility="private" />
+      <field name="thetaz" type="Double" visibility="private" />
+      <field name="thetay" type="Double" visibility="private" />
+      <field name="sinz" type="Double" visibility="private" />
+      <field name="siny" type="Double" visibility="private" />
+      <field name="cosz" type="Double" visibility="private" />
+      <field name="cosy" type="Double" visibility="private" />
+      <field name="coszinv" type="Double" visibility="private" />
+      <field name="sinyinv" type="Double" visibility="private" />
+      <field name="cosyinv" type="Double" visibility="private" />
+      <field name="axd3" type="Double" visibility="private" />
+      <field name="ayd3" type="Double" visibility="private" />
+      <field name="azd3" type="Double" visibility="private" />
+      <field name="axd3Inv" type="Double" visibility="private" />
+      <field name="ayd3Inv" type="Double" visibility="private" />
+      <field name="azd3Inv" type="Double" visibility="private" />
+      <field name="bxd3" type="Double" visibility="private" />
+      <field name="byd3" type="Double" visibility="private" />
+      <field name="bzd3" type="Double" visibility="private" />
+      <field name="ap" type="Double" visibility="private" />
+      <field name="bxp" type="Double" visibility="private" />
+      <field name="byp" type="Double" visibility="private" />
+      <field name="rightz" type="Double" visibility="private" />
+      <field name="righty" type="Double" visibility="private" />
+      <field name="fDefaultFillColor" type="TColor" visibility="private" />
+      <field name="fDefaultWireColor" type="TColor" visibility="private" />
+      <procedure name="scalar" visibility="private">
+        <parameters>
+          <parameter name="xb" type="Double" />
+          <parameter name="yb" type="Double" />
+          <parameter name="zb" type="Double" />
+          <parameter name="r" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="Project" visibility="private">
+        <parameters>
+          <parameter name="xb" type="Double" />
+          <parameter name="yb" type="Double" />
+          <parameter name="zb" type="Double" />
+          <parameter name="u" type="Double" paramflags="var" />
+          <parameter name="v" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="MakeScalings" visibility="private">
+      </procedure>
+      <procedure name="dist" visibility="private">
+        <parameters>
+          <parameter name="xb" type="Double" />
+          <parameter name="yb" type="Double" />
+          <parameter name="zb" type="Double" />
+          <parameter name="r" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="FindBase" visibility="private">
+        <parameters>
+          <parameter name="i1" type="Integer" paramflags="var" />
+          <parameter name="i2" type="Integer" paramflags="var" />
+          <parameter name="i3" type="Integer" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="InitWorld" visibility="private">
+      </procedure>
+      <procedure name="DrawOneAxis" visibility="private">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="z1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+          <parameter name="z2" type="Double" />
+          <parameter name="Arrows" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="Block" visibility="private">
+        <parameters>
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="z" type="Double" />
+          <parameter name="xb" type="Double" paramflags="var" />
+          <parameter name="yb" type="Double" paramflags="var" />
+          <parameter name="zb" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="ScaleNormal" visibility="private">
+        <parameters>
+          <parameter name="v" type="TD3FloatPoint" paramflags="const" />
+          <parameter name="w" type="TD3FloatPoint" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawBaseAxes" visibility="private">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="xLabel" type="string" />
+          <parameter name="yLabel" type="string" />
+          <parameter name="zLabel" type="string" />
+          <parameter name="xTicks" type="Byte" />
+          <parameter name="yTicks" type="Byte" />
+          <parameter name="zTicks" type="Byte" />
+          <parameter name="yx" type="Double" />
+          <parameter name="zx" type="Double" />
+          <parameter name="xy" type="Double" />
+          <parameter name="zy" type="Double" />
+          <parameter name="xz" type="Double" />
+          <parameter name="yz" type="Double" />
+          <parameter name="Arrows" type="Boolean">
+            <value>
+              True
+            </value>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3ResetWorld" visibility="protected">
+      </procedure>
+      <procedure name="GetBrightness" visibility="protected">
+        <parameters>
+          <parameter name="p" type="TD3FloatPoint" paramflags="const" />
+          <parameter name="n" type="TD3FloatPoint" paramflags="const" />
+          <parameter name="BDiff" type="Double" paramflags="var" />
+          <parameter name="BSpec" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="Draw4Cells" visibility="protected">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Cells" paramflags="const">
+            <array name="Cells">
+              <element type="T4Cell" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawTriangles" visibility="protected">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Triangles" paramflags="const">
+            <array name="Triangles">
+              <element type="TD3Triangle" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawSurfaceCells" visibility="protected">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfaceCells" paramflags="const">
+            <array name="SurfaceCells">
+              <element type="TD3SurfaceCell" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLitTriangles" visibility="protected">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Triangles" paramflags="const">
+            <array name="Triangles">
+              <element type="TD3Triangle" />
+            </array>
+          </parameter>
+          <parameter name="diffuse" type="Double" />
+          <parameter name="focussed" type="Double" />
+        </parameters>
+      </procedure>
+      <function name="DoorInDoorOut" visibility="protected">
+        <parameters>
+          <parameter name="c" type="Double" />
+          <parameter name="xp" type="Double" />
+          <parameter name="yp" type="Double" />
+          <parameter name="xq" type="Double" />
+          <parameter name="yq" type="Double" />
+          <parameter name="xr" type="Double" />
+          <parameter name="yr" type="Double" />
+          <parameter name="p" type="Double" />
+          <parameter name="q" type="Double" />
+          <parameter name="r" type="Double" />
+          <parameter name="x1" type="Double" paramflags="var" />
+          <parameter name="y1" type="Double" paramflags="var" />
+          <parameter name="x2" type="Double" paramflags="var" />
+          <parameter name="y2" type="Double" paramflags="var" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <procedure name="DrawLevelLines" visibility="protected">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Triangles" paramflags="const">
+            <array name="Triangles">
+              <element type="TD3Triangle" />
+            </array>
+          </parameter>
+          <parameter name="Level" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawLevelLine" visibility="protected">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Triangle" type="TD3Triangle" />
+          <parameter name="Level" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawProjection" visibility="protected">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Triangle" type="TD3Triangle" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawProjections" visibility="protected">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Triangles" paramflags="const">
+            <array name="Triangles">
+              <element type="TD3Triangle" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="GetIlluminatedLinesegments" visibility="protected">
+        <parameters>
+          <parameter name="AColor" type="TColor" />
+          <parameter name="diffuse" type="Double" />
+          <parameter name="focussed" type="Double" />
+          <parameter name="RightIntensity" type="Double" />
+          <parameter name="z1" type="Integer" />
+          <parameter name="z2" type="Integer" />
+          <parameter name="y1" type="Integer" />
+          <parameter name="y2" type="Integer" />
+          <parameter name="d1" type="Double" />
+          <parameter name="d2" type="Double" />
+          <parameter name="fixed" type="Boolean" />
+          <parameter name="l" type="Td3LineSegmentArray" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawLineSegments" visibility="protected">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="l" type="Td3LineSegmentArray" />
+        </parameters>
+      </procedure>
+      <property name="AxesClipRect" visibility="public" read="fClipRect" type="TRect" />
+      <constructor name="Create" visibility="public">
+        <parameters>
+        </parameters>
+      </constructor>
+      <procedure name="SetScreen" visibility="public">
+        <parameters>
+          <parameter name="AWidth" type="Integer" />
+          <parameter name="AHeight" type="Integer" />
+        </parameters>
+      </procedure>
+      <procedure name="SetWorld" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="ResetWorld" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+        </parameters>
+      </procedure>
+      <procedure name="Setd2Axes" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Value" type="Boolean" />
+        </parameters>
+      </procedure>
+      <function name="Windowx" visibility="public">
+        <parameters>
+          <parameter name="x" type="Double" />
+          <retval type="Integer" />
+        </parameters>
+      </function>
+      <function name="Windowy" visibility="public">
+        <parameters>
+          <parameter name="y" type="Double" />
+          <retval type="Integer" />
+        </parameters>
+      </function>
+      <procedure name="WorldToScreen" visibility="public">
+        <parameters>
+          <parameter name="x" type="Double" paramflags="const" />
+          <parameter name="y" type="Double" paramflags="const" />
+          <parameter name="xs" type="Integer" paramflags="var" />
+          <parameter name="Ys" type="Integer" paramflags="var" />
+        </parameters>
+      </procedure>
+      <function name="WorldX" visibility="public">
+        <parameters>
+          <parameter name="xs" type="Integer" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <function name="WorldY" visibility="public">
+        <parameters>
+          <parameter name="Ys" type="Integer" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <procedure name="Convert" visibility="public">
+        <parameters>
+          <parameter name="src" type="TFloatpoint" paramflags="const" />
+          <parameter name="dest" type="TPoint" paramflags="var" />
+        </parameters>
+      </procedure>
+      <function name="Norm" visibility="public">
+        <parameters>
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <procedure name="DrawPoint" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="MoveToPoint" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawLine" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawLineTo" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawEllipse" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawCircle" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="xCenter" type="Double" />
+          <parameter name="yCenter" type="Double" />
+          <parameter name="PixRadius" type="Integer" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawRectangle" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawAxes" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="xLabel" type="string" />
+          <parameter name="yLabel" type="string" />
+          <parameter name="AxesColor" type="TColor" />
+          <parameter name="Arrows" type="Boolean">
+            <value>
+              True
+            </value>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="DrawZeroLines" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="AColor" type="TColor" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawVector" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="A" type="Double" />
+          <parameter name="b" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawPolyline" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="FloatPointArray" paramflags="const">
+            <array name="FloatPointArray">
+              <element type="TFloatpoint" />
+            </array>
+          </parameter>
+          <parameter name="PointCount" type="Integer" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawPolygon" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="FloatPointArray" paramflags="const">
+            <array name="FloatPointArray">
+              <element type="TFloatpoint" />
+            </array>
+          </parameter>
+          <parameter name="PointCount" type="Integer" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawPolyPolyline" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="GraphList" paramflags="const">
+            <array name="GraphList">
+              <element type="TFloatPointArray" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3SetWorld" visibility="public">
+        <parameters>
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="z1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+          <parameter name="z2" type="Double" />
+          <parameter name="AspectRatio" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="d3SetViewPoint" visibility="public">
+        <parameters>
+          <parameter name="vd" type="Double" />
+          <parameter name="alpha" type="Double" />
+          <parameter name="yr" type="Double" />
+          <parameter name="zr" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3SetScales" visibility="public">
+        <parameters>
+          <parameter name="xScale" type="Double" />
+          <parameter name="yScale" type="Double" />
+          <parameter name="zScale" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3Window" visibility="public">
+        <parameters>
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="z" type="Double" />
+          <parameter name="xs" type="Integer" paramflags="var" />
+          <parameter name="Ys" type="Integer" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="PseudoD3World" visibility="public">
+        <parameters>
+          <parameter name="xs" type="Integer" />
+          <parameter name="Ys" type="Integer" />
+          <parameter name="x" type="Double" paramflags="var" />
+          <parameter name="y" type="Double" paramflags="var" />
+          <parameter name="z" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="d3Moveto" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="z" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawPoint" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="z" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLine" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="z1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+          <parameter name="z2" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLineto" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="z" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawAxes" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="xLabel" type="string" />
+          <parameter name="yLabel" type="string" />
+          <parameter name="zLabel" type="string" />
+          <parameter name="xTicks" type="Byte" />
+          <parameter name="yTicks" type="Byte" />
+          <parameter name="zTicks" type="Byte" />
+          <parameter name="xPos" type="Byte" />
+          <parameter name="yPos" type="Byte" />
+          <parameter name="zPos" type="Byte" />
+          <parameter name="Arrows" type="Boolean">
+            <value>
+              True
+            </value>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawBestAxes" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="xLabel" type="string" />
+          <parameter name="yLabel" type="string" />
+          <parameter name="zLabel" type="string" />
+          <parameter name="xTicks" type="Byte" />
+          <parameter name="yTicks" type="Byte" />
+          <parameter name="zTicks" type="Byte" />
+          <parameter name="Arrows" type="Boolean">
+            <value>
+              True
+            </value>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawCustomAxes" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="xmin" type="Double" />
+          <parameter name="ymin" type="Double" />
+          <parameter name="zmin" type="Double" />
+          <parameter name="xmax" type="Double" />
+          <parameter name="ymax" type="Double" />
+          <parameter name="zmax" type="Double" />
+          <parameter name="xLabel" type="string" />
+          <parameter name="yLabel" type="string" />
+          <parameter name="zLabel" type="string" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawWorldbox" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawBox" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="z1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+          <parameter name="z2" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawFullWorldBox" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+        </parameters>
+      </procedure>
+      <procedure name="d3drawZeroCross" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+        </parameters>
+      </procedure>
+      <procedure name="d3Polyline" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="FloatPointArray" paramflags="const">
+            <array name="FloatPointArray">
+              <element type="TD3FloatPoint" />
+            </array>
+          </parameter>
+          <parameter name="PointCount" type="Integer" />
+        </parameters>
+      </procedure>
+      <procedure name="d3LitPolyLine" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="FloatPointArray" paramflags="const">
+            <array name="FloatPointArray">
+              <element type="TD3FloatPoint" />
+            </array>
+          </parameter>
+          <parameter name="PointCount" type="Integer" />
+          <parameter name="NormalKind" type="TNormalKind" />
+          <parameter name="ambient" type="Double" />
+          <parameter name="directed" type="Double" />
+          <parameter name="zrot1" type="Integer" />
+          <parameter name="zrot2" type="Integer" />
+          <parameter name="yrot1" type="Integer" />
+          <parameter name="yrot2" type="Integer" />
+          <parameter name="dist1" type="Double" />
+          <parameter name="dist2" type="Double" />
+          <parameter name="fixed" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="d3PolyPolyline" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="GraphList" paramflags="const">
+            <array name="GraphList">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DistanceToViewer" visibility="public">
+        <parameters>
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="z" type="Double" />
+          <parameter name="r" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawSurface" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfArray" paramflags="const">
+            <array name="SurfArray">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+          <parameter name="fill" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLitSurface" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfArray" paramflags="const">
+            <array name="SurfArray">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+          <parameter name="diffuse" type="Double" />
+          <parameter name="focussed" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawColorSurface" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfArray" paramflags="const">
+            <array name="SurfArray">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+          <parameter name="Colors">
+            <array name="Colors">
+              <element type="TColorArray" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawHeightCubes" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="HeightArray" paramflags="const">
+            <array name="HeightArray">
+              <element type="TFloatarray" />
+            </array>
+          </parameter>
+          <parameter name="Colors" paramflags="const">
+            <array name="Colors">
+              <element type="TColorArray" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLitHeightCubes" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="HeightArray" paramflags="const">
+            <array name="HeightArray">
+              <element type="TFloatarray" />
+            </array>
+          </parameter>
+          <parameter name="Colors" paramflags="const">
+            <array name="Colors">
+              <element type="TColorArray" />
+            </array>
+          </parameter>
+          <parameter name="diffuse" type="Double" />
+          <parameter name="focussed" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLitLevelSurface" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfArray" paramflags="const">
+            <array name="SurfArray">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+          <parameter name="Levels" paramflags="const">
+            <array name="Levels">
+              <element type="Double" />
+            </array>
+          </parameter>
+          <parameter name="Colors" paramflags="const">
+            <array name="Colors">
+              <element type="TColor" />
+            </array>
+          </parameter>
+          <parameter name="diffuse" type="Double" />
+          <parameter name="focussed" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawCubes" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Cubes" paramflags="const">
+            <array name="Cubes">
+              <element type="TCube" />
+            </array>
+          </parameter>
+          <parameter name="fill" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLitCubes" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Cubes" paramflags="const">
+            <array name="Cubes">
+              <element type="TCube" />
+            </array>
+          </parameter>
+          <parameter name="diffuse" type="Double" />
+          <parameter name="focussed" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawLevelCurves" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfArray" paramflags="const">
+            <array name="SurfArray">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+          <parameter name="Level" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawFilledLevelCurves" visibility="public">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfArray" paramflags="const">
+            <array name="SurfArray">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+          <parameter name="Levels" paramflags="const">
+            <array name="Levels">
+              <element type="Double" />
+            </array>
+          </parameter>
+          <parameter name="Colors" paramflags="const">
+            <array name="Colors">
+              <element type="TColor" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <property name="d2x1" visibility="public" read="fd2x1" type="Double" />
+      <property name="d2y1" visibility="public" read="fd2y1" type="Double" />
+      <property name="d2xw" visibility="public" read="fd2xw" type="Double" />
+      <property name="d2yw" visibility="public" read="fd2yw" type="Double" />
+      <property name="d2Axes" visibility="public" read="fd2Axes" type="Boolean" />
+      <property name="d2x1Snap" visibility="public" read="x1Snap" type="Double" />
+      <property name="d2x2Snap" visibility="public" read="x2Snap" type="Double" />
+      <property name="d2y1Snap" visibility="public" read="y1Snap" type="Double" />
+      <property name="d2y2Snap" visibility="public" read="y2Snap" type="Double" />
+      <property name="d3ar" visibility="public" read="fd3ar" type="Boolean" />
+      <property name="d3x1" visibility="public" read="fd3x1" type="Double" />
+      <property name="d3xw" visibility="public" read="fd3xw" type="Double" />
+      <property name="d3y1" visibility="public" read="fd3y1" type="Double" />
+      <property name="d3yw" visibility="public" read="fd3yw" type="Double" />
+      <property name="d3z1" visibility="public" read="fd3z1" type="Double" />
+      <property name="d3zw" visibility="public" read="fd3zw" type="Double" />
+      <property name="d3alpha" visibility="public" read="fd3alpha" type="Double" />
+      <property name="d3vd" visibility="public" read="fd3vd" type="Double" />
+      <property name="d3zr" visibility="public" read="fd3zr" type="Double" />
+      <property name="d3yr" visibility="public" read="fd3yr" type="Double" />
+      <property name="d3Xscale" visibility="public" read="fd3xScale" type="Double" />
+      <property name="d3Yscale" visibility="public" read="fd3yScale" type="Double" />
+      <property name="d3Zscale" visibility="public" read="fd3zScale" type="Double" />
+      <property name="LightSource1" visibility="public" read="fd3L1" type="TLightSource" />
+      <property name="LightSource2" visibility="public" read="fd3L1" type="TLightSource" />
+    </members>
+  </class>
+  <procedure name="D3FloatPoint" visibility="public">
+    <parameters>
+      <parameter name="x" type="Double" />
+      <parameter name="y" type="Double" />
+      <parameter name="z" type="Double" />
+      <parameter name="p" type="TD3FloatPoint" paramflags="var" />
+    </parameters>
+  </procedure>
+  <procedure name="FloatPoint" visibility="public">
+    <parameters>
+      <parameter name="x" type="Double" />
+      <parameter name="y" type="Double" />
+      <parameter name="r" type="TFloatpoint" paramflags="var" />
+    </parameters>
+  </procedure>
+  <procedure name="GetLineSegments" visibility="public">
+    <parameters>
+      <parameter name="f" paramflags="const">
+        <array name="f">
+          <element type="TD3FloatPoint" />
+        </array>
+      </parameter>
+      <parameter name="aCount" type="Integer" />
+      <parameter name="NormalKind" type="TNormalKind" />
+      <parameter name="l" type="Td3LineSegmentArray" paramflags="var" />
+    </parameters>
+  </procedure>
+  <procedure name="CrossProduct" visibility="public">
+    <parameters>
+      <parameter name="x1" type="Double" />
+      <parameter name="y1" type="Double" />
+      <parameter name="z1" type="Double" />
+      <parameter name="x2" type="Double" />
+      <parameter name="y2" type="Double" />
+      <parameter name="z2" type="Double" />
+      <parameter name="u1" type="Double" paramflags="var" />
+      <parameter name="u2" type="Double" paramflags="var" />
+      <parameter name="u3" type="Double" paramflags="var" />
+    </parameters>
+  </procedure>
+</namespace>

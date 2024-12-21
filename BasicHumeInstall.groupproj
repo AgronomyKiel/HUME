@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{7EBB9245-BBB0-42BA-8EDC-C64EC199D0C3}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Q:\ADV_STRGRD\asgd_Rio.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Hume1.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="asgd_Rio">
+        <MSBuild Projects="Q:\ADV_STRGRD\asgd_Rio.dproj"/>
+    </Target>
+    <Target Name="asgd_Rio:Clean">
+        <MSBuild Projects="Q:\ADV_STRGRD\asgd_Rio.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="asgd_Rio:Make">
+        <MSBuild Projects="Q:\ADV_STRGRD\asgd_Rio.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Hume1">
+        <MSBuild Projects="Hume1.dproj"/>
+    </Target>
+    <Target Name="Hume1:Clean">
+        <MSBuild Projects="Hume1.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Hume1:Make">
+        <MSBuild Projects="Hume1.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="asgd_Rio;Hume1"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="asgd_Rio:Clean;Hume1:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="asgd_Rio:Make;Hume1:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

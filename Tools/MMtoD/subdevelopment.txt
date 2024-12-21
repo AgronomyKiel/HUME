@@ -1,0 +1,96 @@
+SubDevelopment
+define value: c  Unconditional
+c = P1D*0.002
+compartment: CumVern  Conditional
+dCumVern/dt = 
+  Vernf  for  (CumVern<50)and(TsumS>TempSumEmergence)
+  0  by default
+Initial Value = 0.0
+variable: DevRateS1  Conditional
+DevRateS1 = 
+  TSumInc*min(RDR_p, RDR_v)/(400*95/Phint)  for  (ISTAGE>=1)and(ISTAGE<2)
+  0  by default
+variable: DevRateS2  Unconditional
+DevRateS2 = TSumInc/(3*Phint)
+variable: DevRateS3  Unconditional
+DevRateS3 = TSumInc/(2*Phint)
+variable: DevRateS4  Unconditional
+DevRateS4 = TSumInc/(200)
+variable: DevRateS5  Unconditional  Global
+DevRateS5 = (max(0,TSumInc-1))/((P5+21.5)/0.05)
+variable: DevRateS6  Unconditional
+DevRateS6 = TSumInc/250
+variable: DevRateS9  Unconditional
+DevRateS9 = TSUMinc/P9
+variable: DVS10  Unconditional
+DVS10 = ZSTAGE*10
+compartment: EC  Conditional
+dEC/dt = 
+  DevRateS6*(93-90)  for  (ISTAGE>=5)and(ISTAGE<6)
+  DevRateS5*(90-70)  for  (ISTAGE>=4)and(ISTAGE<5)
+  DevRateS4*(69-52)  for  (ISTAGE>=3)and(ISTAGE<4)
+  DevRateS3*(51-38)  for  (ISTAGE>=2)and(ISTAGE<3)
+  DevRateS2*(37-31)  for  (ISTAGE>=1)and(ISTAGE<2)
+  DevRateS9*(10)  for  (ISTAGE>=0)and(ISTAGE<=1)
+  DevRateS1*(30-10)  for  (ISTAGE>=1)and(ISTAGE<=2)
+  0  by default
+Initial Value = 0
+variable: ISTAGE  Unconditional  Universal
+Non-integer growth stage indicator ranging from zero to six 
+ISTAGE = trunc(XSTAGE)
+define value: k_v  Unconditional
+k_v = (P1V+0.55)/183
+define value: P9  Unconditional
+duration of Stage 9
+P9 = (40 + 10.2 * SDEPTH)
+variable: RDR_P  Unconditional
+RDR_P = min(1,max(0,1-C*(20-InDayLengthP)^2))
+variable: RDR_V  Unconditional
+RDR_V = min(1,max(0,1-k_v*(50-CumVern)))
+lookup table: T1
+TAir  Control
+Vernf  Controlled by: TAir
+  Linear interpolation
+variable: TAir  Unconditional
+TAir = TempAir
+variable: TDIF  Unconditional
+TDIF = 0
+compartment: TDU  Unconditional  Universal
+thermal development units
+dTDU/dt = TSumInc*min(RDR_p, RDR_v)
+Initial Value = 0.0
+define value: TempSumEmergence  Unconditional  Global
+(P9)
+TempSumEmergence = 40+10.2*SDepth
+variable: TSumInc  Conditional  Universal
+TSumInc = 
+  0  for  (DayOfYear<SowingDate)and(TSumS<=0)
+  max(0,TAir-Tbase)  by default
+compartment: TSumS  Unconditional  Global
+dTSumS/dt = TSumInc
+Initial Value = 0.0
+compartment: XSTAGE  Conditional  Universal
+Phenological stage
+dXSTAGE/dt = 
+  DevRateS6  for  (ISTAGE<7)and(ISTAGE>=6)
+  DevRateS5  for  (ISTAGE<6)and(ISTAGE>=5)
+  DevRateS4  for  (ISTAGE<5)and(ISTAGE>=4)
+  DevRateS3  for  (ISTAGE<4)and(ISTAGE>=3)
+  DevRateS2  for  (ISTAGE<3)and(ISTAGE>=2)
+  DevRateS9  for  (ISTAGE<1)
+  DevRateS1  for  (ISTAGE>=1)and(TsumS>TempSumEmergence)
+  0  by default
+Initial Value = 0
+variable: ZSTAGE  Conditional  Universal
+Development according to Zadok's Scale
+ZSTAGE = 
+  6.02 + 1.86*(XSTAGE-4.4)  for  (xSTAGE>=4.4)and(xSTAGE<6)
+  5.7 + 0.8*(XSTAGE-4.0)  for  (XSTAGE>=4)and(XSTAGE<4.4)
+  4.0 + 1.7*(XSTAGE-3.0)  for  (XSTAGE>=3)and(XSTAGE<4)
+  2.0 + 2.0*(XSTAGE-2.0)  for  (XSTAGE>=2)and(XSTAGE<3)
+  XSTAGE  for  (XSTAGE>0)and(XSTAGE<2)
+  0  by default
+
+
+
+

@@ -101,7 +101,7 @@ var
   Name: string;
 
 begin
-  if Tmod(component).gm_ControlFile = '' then
+  if Tmod(component).GM_ControlFile = '' then
   begin
     showmessage('No Controlfile specified');
   //  exit;
@@ -144,8 +144,7 @@ begin
 
   FormModelEditor.Edit_MP_Inputpath.text := Tmod(component).GM_InPutPath;
   FormModelEditor.Edit_MP_Outputpath.text := Tmod(component).GM_OutPutPath;
-  FormModelEditor.Edit_MP_Controlfilepath.text := Tmod(component)
-    .gm_ControlFile;
+  FormModelEditor.Edit_MP_Controlfilepath.text := Tmod(component).GM_ControlFile;
   FormModelEditor.Edit_MP_Regressionfilepath.text := Tmod(component).Reg_fn;
 
   FormModelEditor.Edit_MO_DefaultError.text :=
@@ -194,8 +193,7 @@ begin
       FormModelEditor.CheckBox_MT_WriteToFile.Checked;
     Tmod(component).GM_InPutPath := FormModelEditor.Edit_MP_Inputpath.text;
     Tmod(component).GM_OutPutPath := FormModelEditor.Edit_MP_Outputpath.text;
-    Tmod(component).gm_ControlFile :=
-      FormModelEditor.Edit_MP_Controlfilepath.text;
+    Tmod(component).GM_ControlFile := FormModelEditor.Edit_MP_Controlfilepath.text;
     Tmod(component).Reg_fn := FormModelEditor.Edit_MP_Regressionfilepath.text;
     Tmod(component).LMOptions.FDefaultError :=
       strtofloat(FormModelEditor.Edit_MO_DefaultError.text);

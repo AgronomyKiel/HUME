@@ -1,0 +1,266 @@
+SubPartitioning
+variable: AWR  Conditional
+Assimilate area to weight ratio (square cm/g) 
+AWR = 
+  150-0.075*TDU  for  (ISTAGE>1)and(ISTAGE<=2)
+  150  by default
+variable: CLG  Unconditional
+CLG = 7.5
+compartment: CUMPH  Conditional  Universal
+cumulative phyllochrons since emergence
+dCUMPH/dt = 
+  TI  for  ISTAGE<2
+  0  by default
+Initial Value = 0.0
+variable: DLFWT  Unconditional
+DLFWT = (EXLFW-LFWT)*PLANTS
+variable: DTN  Conditional
+DTN = 
+  (TNOLD-TILN)  for  ((TNOLD-TILN)>0.)and(ISTAGE>=1)and(istage<3)
+  0  by default
+variable: DTT  Unconditional  Universal
+Daily thermal time - degree C days 
+DTT = TEMPM
+variable: EGFT  Unconditional
+EGFT = max(0,min(1,1.2-0.0042*(TEMPM-17.)^2))
+delay: EXLFW
+Delay = 1
+Initial Value = 0
+Maximum Delay = 2
+variable: GPLA  Unconditional  Global
+GPLA is the plant green leaf area (PLA - SENLA)
+GPLA = (PLA - SENLA)
+variable: GPP  Unconditional  Universal
+  Number of grains per plant  
+GPP = STMWT*G2
+compartment: GRNWT  Unconditional  Universal
+Weight of grains - g 
+dGRNWT/dt = GROGRN
+Initial Value = 0.0
+variable: GRNWT_m2  Unconditional  Global
+GRNWT_m2 = GRNWT*Plants
+variable: GROGRN  Conditional  Global
+Daily growth of the grain - g 
+GROGRN = 
+  CARBO*PTF  for  (ISTAGE>=5)and(ISTAGE<6)and(CARBO*PTF<RGFILL*GPP*G2*0.001)
+  RGFILL*GPP*G2*0.001  for  (ISTAGE>=5)and(ISTAGE<6)
+  0  by default
+variable: GROLF  Conditional  Global
+Daily leaf growth - g 
+GROLF = 
+  min((PLAGMS*(0.3+0.7*TILN))/AWR, CARBO*0.65)  for  (ISTAGE>=1)and(ISTAGE<2)
+  CARBO-GRORT-GROSTM  for  (ISTAGE>=2)and(ISTAGE<3)
+  0  for  (ISTAGE>=6)
+  0  by default
+variable: GRORT  Conditional  Global
+Daily root growth - g / pl
+GRORT = 
+  (1-PTF)*CARBO  for  (ISTAGE>=2)and(ISTAGE<6)
+  max(CARBO*0.35, CARBO-GROLF)  for  (ISTAGE>=1)and(ISTAGE<2)
+  0  by default
+variable: GROSTM  Conditional  Global
+Daily stem growth - g 
+GROSTM = 
+  (.15+0.12*SUMDTT2/PHINT)*CARBO*PTF  for  (ISTAGE>=2)and(ISTAGE<3)
+  CARBO*PTF  for  (ISTAGE>=3)and(ISTAGE<5)
+  CARBO*PTF-GROGRN  for  (ISTAGE>=5)and(ISTAGE<6)and(CARBO*PTF>GROGRN)
+  0  by default
+compartment: LAI  Unconditional
+dLAI/dt = (PLAG-PLALR)*plants/1e4
+Initial Value = 0.0
+compartment: LFWT  Conditional  Global
+Leaf weight of all leaves on a plant - g 
+dLFWT/dt = 
+  GROLF-LFWT*0.000267*DTT*(1.-SENLA/PLA)  for  (PLA>0)and(ISTAGE<6)and(ISTAGE>=1)
+  0  by default
+Initial Value = 0.0
+variable: LFWT_m2  Unconditional  Global
+LFWT_m2 = LFWT*Plants
+variable: LN_  Unconditional
+Leaf number of the primary tiller 
+LN_ = trunc(min(25,CUMPH+2))
+define value: P2  Unconditional
+P2 = PHINT*3
+define value: P3  Unconditional
+P3 = PHINT*2
+define value: P4  Unconditional
+P4 = 200
+component event: Phase_Init_St1  Active  Not Reset
+(ISTAGE>=1)
+Tolerance = 0.001
+Actions:
+LAI=PLANTS*4.E-6;
+PLA=.04;
+// message("Init S1","Message");
+LFWT=0.00034;
+SEEDRV=0.012;
+// TOPWT=SEEDRV*0.5;
+// RTWT=SEEDRV*0.5;
+// BIOMAS=0.;
+TILSW=0.01;
+TILN=1.;
+//      TBASE=0.
+// tpsm=plants;
+//      CSD1=0.
+//      CSD2=0.
+//      CNSD1=0.0
+//      CNSD2=0.0
+//      CUMDEP=0.
+//      plsc(1)=0.
+component event: Phase_Init_St4  Active  Not Reset
+(ISTAGE>=4)
+Tolerance = 0.001
+Actions:
+SWMIN=STMWT;
+component event: Phase_Init_St5  Active  Not Reset
+(ISTAGE>=5)
+Tolerance = 0.001
+Actions:
+grnwt=0.0035*gpp;
+// Message("Init S5", "");
+compartment: PLA  Unconditional  Global
+Plant leaf area - sq.cm 
+dPLA/dt = GROLF*115
+Initial Value = 0.0
+variable: PLAG  Conditional  Global
+The rate of expansion of leaf area on one plant - cm2/day 
+PLAG = 
+  GROLF*AWR  for  (ISTAGE>=1)and(ISTAGE<2)and(SEEDRV<=0)
+  PLAGMS*900./PLANTS  for  (TPSM>900.)
+  PLAGMS*(0.3+0.7*TILN)  by default
+variable: PLAGMS  Unconditional
+plant leaf area growth rate on the main stem (PLAGMS) 
+PLAGMS = CLG*(CUMPH^.5)*MIN(SWDF1,EGFT,ndef2)*TI
+variable: PLALR  Conditional
+Plant leaf area loss rate
+PLALR = 
+  (PLSC[LN_-4]-PLSC[LN_-5])*TI  for  (ISTAGE>=1) and (Istage<2) and (CUMPH>4.)
+  0  for  (ISTAGE>=1) and (Istage<2) and (pla>0)and(SENLA/PLA>0.4) AND (LAI<6.0)
+  0.0003*DTT*GPLA  for  (ISTAGE>=3) and (Istage<4)
+  GPLA*2.*SUMDTT5*DTT/(P5_*P5_)*0  for  (ISTAGE>=5)and(ISTAGE<6)
+  0  by default
+compartment: PLSC[1..25]  Conditional
+dPLSC[1..25]/dt = 
+  plscgr[i]  by default
+Initial Value = 0.0
+variable: PLSCGR[1..25]  Conditional
+PLSCGR[1..25] = 
+  GROLF*115  for  i=trunc(ln_)
+  0  by default
+variable: PTF  Conditional  Universal
+Fraction of photosynthesis partitioned to above ground plant parts
+PTF = 
+  min(1,SWMIN/STMWT*0.35+0.65)  for  (ISTAGE<6)and (ISTAGE>=5) and (stmwt>0.)
+  0.8+0.1*min(swdf1,ndef2)  for  (ISTAGE<5)and (ISTAGE>=4)
+  0.75+0.1*min(swdf1,ndef2)  for  (ISTAGE<4)and (ISTAGE>=3)
+  0.70+0.1*min(swdf1,ndef2)  for  (ISTAGE<3)and (ISTAGE>=2)
+  0.5  for  (ISTAGE<2)and(ISTAGE>=1)
+  0.0  by default
+variable: RGFILL  Conditional
+Rate of grain fill - mg/day 
+RGFILL = 
+  0.065*TEMPM  for  (TEMPM<10)and(ISTAGE>=5)and(ISTAGE<6)
+  0.65+(0.0787-0.00328*(tempmx-tempmn))*(tempm-10.0)^0.8  for  (ISTAGE>=5)and(ISTAGE<6)
+  0  by default
+variable: RTSW  Conditional
+Weight of an average stem plus ear relative to a potential stem plus ear 
+RTSW = 
+  (STMWT+GROSTM)/TILSW/TILN  for  (TILSW>0)and(TILN>0)
+  0  by default
+compartment: RTWT  Conditional  Universal
+  Root weight - g/plant  
+dRTWT/dt = 
+  0.6*GRORT-SENRT  by default
+Initial Value = 0.0
+variable: RTWT_m2  Unconditional  Global
+RTWT_m2 = RTWT*plants
+compartment: SEEDRV  Conditional  Universal
+Reserve carbohydrates in seed for use by plant in seedling stage - g 
+dSEEDRV/dt = 
+  CARBO-GROLF-GRORT  for  (ISTAGE>=0.99)and(ISTAGE<2)and(SEEDRV>0)
+  0  by default
+Initial Value = 0.0
+compartment: SENLA  Unconditional  Global
+ Area of leaf that senesces from a tiller on a given day - sq.cm  
+dSENLA/dt = -PLALR
+Initial Value = 0.0
+compartment: SENLF  Conditional
+dSENLF/dt = 
+  -DLFWT  for  -dlfwt>0
+  0  by default
+Initial Value = 0.0
+variable: SENRT  Unconditional
+SENRT = 0.005*RTWT
+variable: SENSTM  Conditional
+SENSTM = 
+  STMWT*0.000267*DTT  for  (ISTAGE>=1)and(ISTAGE<6)
+  0  by default
+compartment: SENTIL  Unconditional
+dSENTIL/dt = +DTN
+Initial Value = 0.0
+variable: sn1  Unconditional
+sn1 = 1-0*(1.4*NDEF3-0.4)
+compartment: STMWT  Unconditional  Universal
+ Stem weight of an average tiller after terminal spikelet - g  
+dSTMWT/dt = GROSTM-SENSTM
+Initial Value = 0.0
+variable: STMWT_m2  Unconditional  Global
+STMWT_m2 = STMWT*Plants
+compartment: SUMDTT2  Conditional  Global
+The sum of daily thermal time (DTT) for various phenological stages - degree days 
+dSUMDTT2/dt = 
+  DTT  for  (ISTAGE>=2)and(ISTAGE<3)
+  0  by default
+Initial Value = 0.0
+compartment: SUMDTT5  Conditional  Universal
+The sum of daily thermal time (DTT) for various phenological stages - degree days 
+dSUMDTT5/dt = 
+  DTT  for  (ISTAGE>=5)and(ISTAGE<6)
+  0  by default
+Initial Value = 0.0
+compartment: SWMIN  Unconditional  Universal
+ Minimum stem weight of a plant after anthesis, used to calculate amount of reserves that can be used to fill grain - g  
+dSWMIN/dt = 0
+Initial Value = 0.0
+variable: TC1  Conditional
+total potential rate of tiller formation 
+TC1 = 
+  -2.5+CUMPH  for  CUMPH>=2.5
+  0  by default
+variable: TC2  Conditional
+Rate of tiller formation based on the competition limitations of tillers per square meter 
+TC2 = 
+  0  for  TPSM=3000
+  2.50E-7*(3000-tpsm)^3  by default
+variable: TI  Conditional  Global
+Fraction of a phyllochron interval which occurred as a fraction of today's daily thermal time 
+TI = 
+  TSumInc/PHINT  for  (Istage>=1)and(ISTAGE<2)
+  0  by default
+compartment: TILN  Conditional  Global
+Time delayed reduced tiller number
+dTILN/dt = 
+  min(1000/plants, TILN*DTT*0.005*(RTSW-1.))  for  (ISTAGE>=2)and(ISTAGE<4)
+  TI*min(w1,sn1)*MIN(TC1,TC2)  for  (ISTAGE>=1)and(Istage<2)
+  0  by default
+Initial Value = 0.0
+compartment: TILSW  Conditional
+weight of a single tiller
+dTILSW/dt = 
+  G3*0.0889*DTT*min(ndef2,SWDF1)*SUMDTT2/PHINT^2  for  (ISTAGE>=2)and(ISTAGE<3)
+  G3*DTT*0.25/PHINT*min(SWDF1,ndef2)  for  (ISTAGE>=3)and(ISTAGE<4)
+  0  by default
+Initial Value = 0.0
+delay: TNOLD
+Delay = 1
+Initial Value = 0
+Maximum Delay = 2
+variable: TOPWT  Unconditional  Universal
+TOPWT = LFWT+STMWT+SEEDRV
+variable: TOPWT_m2  Unconditional
+TOPWT_m2 = GRNWT_m2+LFWT_m2+STMWT_m2
+variable: TPSM  Unconditional  Global
+number of tillers per square meter (TPSM)
+TPSM = TILN*PLANTS
+variable: w1  Unconditional
+w1 = 1.4*swdf1-0.4

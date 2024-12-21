@@ -1,0 +1,10 @@
+Main
+variable: Km  Unconditional
+Km = exp(b02+bsoiltype2*soiltype+btemp2*temp+bwind2*wind+bslurrytype2*pig+bdrymatter2*drymatter+bntan2*ntan+btrailingshoe2*trailingshoe+bmanurerate2*manurerate+bincorporation2*incorporation+bmassbalance2*massbalance)
+compartment: LossPig  Unconditional
+dLossPig/dt = Lossrate
+Initial Value = 0.0
+variable: Lossrate  Unconditional
+Lossrate = Nmax*Km/(t+Km)^2*100
+variable: Nmax  Unconditional
+Nmax = exp(b01+bsoiltype1*soiltype+btemp1*temp+bwind1*wind+bslurrytype1*pig+bdrymatter1*drymatter+bntan1*ntan+btrailingshoe1*trailingshoe+bmanurerate1*manurerate+bincorporation1*incorporation+bmassbalance1*massbalance)

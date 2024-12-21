@@ -1,0 +1,82 @@
+Main
+compartment: NH4  Unconditional  Universal
+mg N kg-1
+dNH4/dt = (F1/CN_aom1+F2/CN_aom2+F3/CN_nom)/1.51*1000-F1_N
+Initial Value = 5.6+Fer_App/1.51
+compartment: NO2  Unconditional
+mg N kg-1
+dNO2/dt = -F2_N+F1_N-N2O_emi_nit
+Initial Value = 0.0
+compartment: NO2_den  Unconditional  Universal
+mg N kg-1
+dNO2_den/dt = +D1_N-D2_N
+Initial Value = 0.0
+compartment: NO3  Unconditional  Universal
+mg N kg-1
+dNO3/dt = +F2_N-D1_N
+Initial Value = 9.33
+compartment: NOM  Unconditional
+t ha-1
+dNOM/dt = +F4-F3-F3_CO2
+Initial Value = 27.115
+variable: Nsum  Unconditional
+mg N kg-1
+Nsum = NO3+NO2_den+N2O_den
+independent event: organicInput  Active  Reset
+Period:  1
+1
+Actions:
+if(t=1)
+{AOM1=AOM1+faom1*In;
+AOM2=AOM2+faom2*In;
+NOM=NOM+fnom*In;
+AIM=AIM+faim*In}
+else {}
+independent event: organischer_Duenger  Universal  Active  Reset
+Non-periodic triggers at:
+0
+Actions:
+GetValue ("manure adjustment: 1=adjust for Schweinegülle, 2=adjust for Gärrest_Monoferment, 3=adjust for Gärrest_Koferment","manure adjustment",value_adjust,value_adjust=1 or value_adjust=2 or value_adjust=3);
+variable: qfT  Unconditional
+qfT = (30-(-5))/(60-30)
+variable: qfT_den  Unconditional
+qfT_den = (30+15)/(75-30)
+variable: qfT_nit  Unconditional
+qfT_nit = (30-(-10))/(50-30)
+variable: R_N2  Unconditional  Universal
+R_N2 = V1/NO3*SF
+variable: R_NO  Unconditional  Universal
+R_NO = 10^(-3.79*WFP1+2.73)
+variable: Rden  Unconditional  Global
+Rden = Nsum/(Km_den+Nsum)*Rmax
+variable: Rmax  Unconditional
+Rmax = 102
+define value: SF  Unconditional  Universal
+SF = 70.19
+compartment: SMB  Unconditional
+t ha-1
+dSMB/dt = +F1+F2-F4+F3-F4_CO2
+Initial Value = 0.5423
+define value: St  Unconditional  Universal
+St = 0.49
+define value: Thetas  Unconditional  Universal
+Thetas = 0.3751
+define value: Tsoil  Unconditional  Universal
+Tsoil = 16.5
+define value: Tsoil1  Unconditional  Universal
+Tsoil1 = 16.5
+variable: V1  Unconditional  Universal
+V1 = (F1_CO2+F2_CO2+F3_CO2+F4_CO2)*1000
+define value: value_adjust  Unconditional  Universal
+value_adjust = 1
+variable: Vden_max  Unconditional
+h-1
+Vden_max = (ln(2)/2-0.005)*24
+variable: VWC  Unconditional  Universal
+VWC = Thetas*S_moi/100
+define value: w  Unconditional  Universal
+w = 1.0
+variable: WFP  Unconditional
+WFP = VWC/porosity
+variable: WFP1  Unconditional  Universal
+WFP1 = VWC/porosity

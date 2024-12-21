@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{C3F318CF-3A63-4431-9AF8-601815683BA1}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="Hume1.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="Components\Soil\SoilWaterPackage.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="Hume1">
+			<MSBuild Projects="Hume1.dproj"/>
+		</Target>
+		<Target Name="Hume1:Clean">
+			<MSBuild Targets="Clean" Projects="Hume1.dproj"/>
+		</Target>
+		<Target Name="Hume1:Make">
+			<MSBuild Targets="Make" Projects="Hume1.dproj"/>
+		</Target>
+		<Target Name="SoilWaterPackage">
+			<MSBuild Projects="Components\Soil\SoilWaterPackage.dproj"/>
+		</Target>
+		<Target Name="SoilWaterPackage:Clean">
+			<MSBuild Targets="Clean" Projects="Components\Soil\SoilWaterPackage.dproj"/>
+		</Target>
+		<Target Name="SoilWaterPackage:Make">
+			<MSBuild Targets="Make" Projects="Components\Soil\SoilWaterPackage.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="Hume1;SoilWaterPackage"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="Hume1:Clean;SoilWaterPackage:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="Hume1:Make;SoilWaterPackage:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

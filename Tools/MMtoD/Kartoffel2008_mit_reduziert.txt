@@ -1,0 +1,539 @@
+Main
+variable: DAE  Unconditional
+DAE = t-EmergenceDay
+compartment: EmergenceDay  Unconditional  Universal
+dEmergenceDay/dt = 0
+Initial Value = 0.0
+component event: EvEmergence  Active  Not Reset
+Tsum_planting>=TsumToEmergence
+Tolerance = 0.001
+Actions:
+EmergenceDay=t;
+variable: Globalstrahlung_Watt  Unconditional
+Globalstrahlung_Watt = Globwatt
+variable: Irrigation  Unconditional
+Irrigation = irri
+variable: Luftfeuchte  Unconditional
+Luftfeuchte = LF
+variable: PAR_RAD  Unconditional
+PAR_RAD = ParRad
+Partitioning
+delay: A1
+Delay = 1
+Initial Value = 0
+Maximum Delay = 150
+variable: Act_N_up  Unconditional
+Act_N_up = Nactup*NactNpot
+variable: ActNconc  Conditional
+ActNconc = 
+  0  for  W_Pot<=0
+  min(nmaxshoot,((cum_Nup/10)/((TotalDM)/100)))  by default
+variable: ActNconc1  Conditional
+ActNconc1 = 
+  0  for  W_Pot<=0
+  min(nmaxshoot,((Nnetto/10)/((TotalDM)/100)))  by default
+compartment: cum_DeadLeafDM  Unconditional
+dcum_DeadLeafDM/dt = LeafDMdeadrate
+Initial Value = 0.0
+compartment: cum_Nup  Conditional
+N-Aufnahme kg/ha
+dcum_Nup/dt = 
+  0  for  t<=EmergenceDay
+  Act_N_up  by default
+Initial Value = 0.0
+compartment: Dead_LeafDry_Matter  Unconditional
+dDead_LeafDry_Matter/dt = +F1
+Initial Value = 0.0
+variable: Dl_Dt  Conditional
+Blattanteil
+Dl_Dt = 
+  0  for  LeafDM<0 and t>EmergenceDay
+  (1/(1+exp(dlh)*dlb*LeafDM^(dlb-1)))  by default
+variable: dLAI  Conditional
+dLAI = 
+  (Leafgrowth*(slaffix*fwl))  by default
+variable: dLAID_dt  Conditional
+tote Blattfläche
+dLAID_dt = 
+  min(laifsla,Laifsla*(1-exp(-R)))  by default
+variable: DMShoot  Unconditional  Global
+DMShoot = W_Pot
+variable: Early_Leafarea_Development1  Conditional
+Early_Leafarea_Development1 = 
+  0  for  t<=EmergenceDay
+  (0.0006*tsum^1.2305)*fwt  by default
+variable: ELAIrate  Unconditional
+ELAIrate = Early_Leafarea_Development1-A1
+flow: F1  Unconditional
+Flow from LeafDM to Dead_LeafDry_Matter
+F1 = (1-exp(-R)) * LeafDM
+variable: ftubern  Conditional
+ftubern = 
+  0  for  tuberinitiation<0
+  a*exp(-exp(-(temptuber-X0)/b))  by default
+variable: ftubini  Unconditional
+Knollenansatz
+ftubini = 1/(ftia+ftib*mart)
+variable: fwl  Unconditional
+SLA Reduktion durch Wasserstress
+fwl = 1-0.4*(1-fwt)
+compartment: Haulm  Unconditional  Universal
+dHaulm/dt = stemgrowth+(leafgrowth-LeafDMdeadrate)
+Initial Value = 0.0
+variable: Haulmgrowth  Unconditional  Universal
+Haulmgrowth = max(0,(Plantgrowth-TuberGR))
+compartment: Haulmred  Unconditional  Global
+dHaulmred/dt = ret
+Initial Value = 0.0
+variable: Hi2  Conditional  Universal
+Hi2 = 
+  0  for  W_Pot<=0
+  (TuberDM/W_Pot)  by default
+variable: L_S  Conditional
+Blatt-/ Stengeltrockenmasse- Verhältnis
+L_S = 
+  0  for  stemdm<=0
+  LeafDM/StemDm  by default
+compartment: LAIfsla  Conditional  Universal
+Greenleafareaindex
+dLAIfsla/dt = 
+  ELAIrate  for  LAIfsla<=LAIcrit and tuberinitiation<=0
+  DLAi-dLAID_dt  by default
+Initial Value = 0.0
+compartment: LeafDM  Conditional  Universal
+Blatttrockenmasse
+dLeafDM/dt = 
+  Leafgrowth-F1  by default
+Initial Value = 0
+variable: LeafDMdeadrate  Unconditional
+LeafDMdeadrate = dLAID_dt/SLAffix
+variable: Leafgrowth  Unconditional  Universal
+Leafgrowth = ((Haulmgrowth*Dl_Dt)*nni)-LeafDMdeadrate
+variable: N_kg_ha  Unconditional
+N_kg_ha = Ntot
+variable: N_loss  Unconditional
+N Verluste durch Seneszenz
+N_loss = cum_DeadLeafDM*ActNconc
+variable: NcShoot  Conditional
+%N Stengel
+NcShoot = 
+  0  for  W_pot<=0
+  min(Nmaxshoot,(NShoot/(W_pot/100)))  by default
+define value: NmaxShoot  Unconditional
+max N-Konz. [%]
+NmaxShoot = vf2*(DMshootcrit)^vf1
+variable: Nnetto  Unconditional
+Nnetto = cum_Nup-N_loss
+variable: NNI  Conditional  Universal
+NNI = 
+  1  for  Laifsla<=laicrit and tuberinitiation<=0
+  max(0,min(1,ActNconc/NoptShoot))  by default
+variable: NoptShoot  Conditional
+N-Konz.aus Verdünnungsfunktion [%]
+NoptShoot = 
+  0  for  W_pot<=0
+  min(NmaxShoot,(vf2*W_Pot^vf1))  by default
+compartment: NShoot  Unconditional  Global
+N-Menge [g/m²]
+dNShoot/dt = NShootGr
+Initial Value = 0.0
+variable: NShootGr  Conditional  Global
+N-Aufnahme [g/m²]
+NShootGr = 
+  NmaxShoot/100*Plantgrowth  for  W_Pot<=DMshootcrit
+  0  for  W_Pot<=0
+  Plantgrowth*(NoptShoot+(W_Pot*vf2*vf1)*(w_pot^(vf1-1)))/100  for  W_Pot>DMshootcrit
+  0  by default
+variable: Ntot  Unconditional
+Ntot = NShoot*10
+variable: NtotGR  Unconditional
+N Aufnahmerate
+NtotGR = NShootGr
+variable: Nuptrate1  Conditional  Universal
+[kg/ha]
+Nuptrate1 = 
+  NtotGR*10  by default
+variable: Plantgrowth  Unconditional  Global
+Plantgrowth = W_inj
+variable: ret  Unconditional  Universal
+ret = min(0,Plantgrowth-tubergr)
+compartment: StemDm  Unconditional
+dStemDm/dt = stemgrowth
+Initial Value = 0.0
+variable: Stemgrowth  Conditional
+Stemgrowth = 
+  0  for  leafgrowth<=0
+  Haulmgrowth-Leafgrowth  by default
+variable: Tempf  Unconditional
+Tempf = TEMP
+compartment: tempsTB  Conditional
+dtempsTB/dt = 
+  0  for  t<EmergenceDay
+  max(0,min(temp,11))  by default
+Initial Value = 0.0
+compartment: temptuber  Conditional
+dtemptuber/dt = 
+  0  for  tuberinitiation<0
+  max(tbase,Temp)  by default
+Initial Value = 0.0
+lookup table: TfTable
+Tempf  Control
+Tempfact  Controlled by: Tempf
+  Linear interpolation
+compartment: To  Unconditional
+Kann Man nicht löschen!!
+dTo/dt = 0
+Initial Value = 0.0
+variable: Total_DM  Unconditional  Global
+Total_DM = Haulm+TuberDM
+compartment: TotalDM  Unconditional  Universal
+dTotalDM/dt = stemgrowth+(leafgrowth-LeafDMdeadrate)+tubergr
+Initial Value = 0.0
+variable: Tuber_Fm  Conditional
+Tuber_Fm = 
+  0  for  tuberdm_content<=0
+  ((TuberDm*100)/(TuberDm_content*100))/10  by default
+compartment: TuberDm  Unconditional  Universal
+dTuberDm/dt = Tubergr
+Initial Value = 0.0
+variable: TuberDM_content  Conditional  Universal
+Tm-Gehalt Knollen 
+TuberDM_content = 
+  0  for  hi2<=0
+  min(0.28,0.1453+(-0.117*hi2)+0.2136*hi2^2)  by default
+variable: TuberGR  Conditional  Global
+TuberGR = 
+  0  for  tuberinitiation<=0
+  ftubern*plantgrowth  by default
+variable: tuberinitiation  Unconditional  Universal
+tuberinitiation = tempsTB-ftubini
+compartment: W_Pot  Unconditional  Global
+dW_Pot/dt = Plantgrowth
+Initial Value = 0.0
+variable: Rain  Unconditional
+Rain = Rainfall
+Seness
+variable: DEATHRATE  Unconditional
+DEATHRATE = (1-exp(-R))
+variable: dTsn_dt  Conditional
+Änderung der Temperatursumme nach der Zeit
+dTsn_dt = 
+  max(8,Temp_in-2)  by default
+variable: R  Conditional  Universal
+R = 
+  Rdv1+max(Shading,RW)  by default
+variable: Rdv1  Conditional  Universal
+Rdv1 = 
+  (dtsn_dt)*exp(rdva+rdvb*mart)*exp((Tsn-rdvec)*(rdvc-rdvd*mart))  by default
+define value: rdvec  Unconditional
+rdvec = 22.461*mart^2-406.2*mart+2551.5
+variable: RW  Conditional
+RW = 
+  0  for  t<=EmergenceDay
+  0.03*(1-max(0,Waterstress_in))  by default
+variable: Shading  Conditional
+Beschattung
+Shading = 
+  max(0,(0.01*(((Lai_in)-5.2)/5.2)))  by default
+compartment: Tsn  Conditional
+dTsn/dt = 
+  0  for  t<EmergenceDay
+  max(Tbase,Temp)  by default
+Initial Value = 0.0
+SoilNitrogen
+variable: ActNuptake[1..6]  Unconditional  Global
+ActNuptake[1..6] = potNitrateUptake[1..6]*fNfact[1..6]
+variable: Bilanz_N  Unconditional
+Bilanz_N = kumAusw+Nmin0_90
+variable: Duengefaktor  Conditional
+Duengefaktor = 
+  0  for  t<=DuengT
+  1  for  Nmin0_30<N_soilcrit
+  0  by default
+compartment: Duengermenge  Unconditional
+dDuengermenge/dt = -F1
+Initial Value = DuengMeng
+independent event: ECALCSUMNUPTAKE  Active  Reset
+Period:  1
+0
+Actions:
+Nactup=0;
+NactNpot=0;
+for (i=1;i<7;i=i+1)
+ Nactup=Nactup+ActNuptake[I];
+if(Nuptrate1>0)
+NactNpot=Nactup/Nuptrate1;
+variable: EffDispKoeff[1..6]  Unconditional
+EffDispKoeff[1..6] = Dispersivitaet*(Drainagerate[i]/10)/watercontent[i]
+flow: F1  Conditional
+Flow from C1 to SoilNitrate[1..6]
+F1 = 
+  Duengefaktor* Duengermenge  by default
+flow: F2  Unconditional
+Flow from Nfast to SoilNitrate[1..6]
+F2 = Ker*Nfast*TempF
+variable: fNfact[1..6]  Conditional
+fNfact[1..6] = 
+  1  for  t<=EmergenceDay
+  0  for  SoilNitrate[i]<Nminmin
+  min(1,max(0,(soilnitrate[i]-Nminmin)/(Nmincrit-Nminmin)))  for  SoilNitrate[i]>=Nminmin
+  1  for  SoilNitrate[i]>=Nmincrit
+  0  by default
+define value: Krumengewicht  Unconditional
+Krumengewicht = Krumentiefe*10000*1000*1.3
+compartment: kumAusw  Unconditional
+dkumAusw/dt = SoilNitrateFlow[6]
+Initial Value = 0.0
+compartment: NactNpot  Unconditional  Universal
+dNactNpot/dt = 0
+Initial Value = 0.0
+compartment: Nactup  Unconditional  Universal
+dNactup/dt = 0
+Initial Value = 0.0
+compartment: Nfast  Unconditional
+dNfast/dt = -F2
+Initial Value = TM_ER*NG_ER
+define value: NG_ER  Conditional
+NG_ER = 
+  0.06  by default
+define value: NgehSoil  Unconditional
+NgehSoil = (HG*0.58)/CNH
+variable: Nmin0_30  Unconditional
+Nmin0_30 = SoilNitrate[1]+Soilnitrate[2]+Soilnitrate[3]
+variable: Nmin0_90  Unconditional  Global
+Nmin0_90 = Nmin0_30+Nmin30_60
+variable: Nmin30_60  Unconditional
+Nmin30_60 = SoilNitrate[4]+Soilnitrate[5]+Soilnitrate[6]
+compartment: Nslow  Unconditional
+dNslow/dt = -SOM_Nmin
+Initial Value = (Krumengewicht*NgehSoil)
+variable: potNitrateUptake[1..6]  Conditional
+potNitrateUptake[1..6] = 
+  Nuptrate1/NRootComp  for  i<=NRootComp
+  0  by default
+compartment: SoilNitrate[1..6]  Unconditional  Global
+dSoilNitrate[1..6]/dt = SoilNitrateFlowDiff[1..6]-actNUptake[1..6]+SOM_Nmin/3+F1/3+F2/3
+Initial Value = IniNitrateCont[1..6]
+variable: SoilNitrateConcentr[1..6]  Unconditional
+Nitratkonzentration (kg N/l Wasser)
+SoilNitrateConcentr[1..6] = (SoilNitrate[i])/(SoilWater[i])
+variable: SoilNitrateConvFlow[1..6]  Conditional  Global
+SoilNitrateConvFlow[1..6] = 
+  Drainagerate[6]*SoilNitrateConcentr[6]  for  i=9
+  Drainagerate[i]*SoilNitrateConcentr[i]  by default
+variable: SoilNitrateDispFlow[1..6]  Conditional  Global
+SoilNitrateDispFlow[1..6] = 
+  0  for  i=6
+  effDispkoeff[i]*((SoilNitrateConcentr[i]-SoilNitrateConcentr[i+1])/dz)  by default
+variable: SoilNitrateFlow[1..6]  Unconditional  Global
+SoilNitrateFlow[1..6] = SoilNitrateConvFlow[1..6]+SoilNitrateDispFlow[1..6]
+variable: SoilNitrateFlowDiff[1..6]  Conditional
+SoilNitrateFlowDiff[1..6] = 
+  -SoilNitrateFlow[1]  for  i=1
+  -SoilNitrateFlow[i]+SoilNitrateFlow[i-1]  by default
+flow: Som_Nmin  Unconditional
+Flow from Nslow to SoilNitrate[1..6]
+Som_Nmin = ksom*Nslow*TempF
+variable: TempF  Unconditional
+TempF = TEMP
+define value: TM_ER  Unconditional
+TM_ER = 2200
+SubLightInt_Growth
+compartment: cumQ  Unconditional
+dcumQ/dt = Q
+Initial Value = 0.0
+compartment: DMpot  Unconditional
+dDMpot/dt = +F1
+Initial Value = 0.0
+variable: dW  Unconditional
+dW = (Q*LUE)*fwt
+flow: F1  Unconditional
+Flow from cumQ to DMpot
+F1 = LUE * cumQ
+variable: fInt  Conditional
+Anteil aufgenommene Strahlung
+fInt = 
+  1-exp(-k_*eLai)  for  eLai<=LAIcrit
+  1-exp(-k_*Lai__in)  by default
+variable: fwt  Conditional  Universal
+Reduzierung der Gesamtwachstumsrate durch Wasserstress
+fwt = 
+  1  for  Lai__in<=Laicrit
+  (max(0,min(1,TactTpot)))  by default
+variable: I_  Unconditional
+I_ = I_in
+variable: Q  Unconditional
+aufgenommene Strahlung [MJ/m²]
+Q = fInt*I_
+compartment: W_POT  Unconditional
+Assimilatpot
+dW_POT/dt = (dW)
+Initial Value = 0.0
+SubSoilWater
+variable: a_  Unconditional
+a_ = -ln(ratio)/zr_cm
+variable: ActEvap  Unconditional
+aktuelle Evaporationsrate [mm/d]
+ActEvap = InEp*EvapRed
+variable: ActWaterUptake[1..12]  Unconditional
+ActWaterUptake[1..12] = potWaterUptake[i]*UptakeRed[1..12]
+compartment: CumRain  Unconditional
+dCumRain/dt = InRain
+Initial Value = 0.0
+variable: DrainageRate[1..12]  Conditional  Universal
+DrainageRate[1..12] = 
+  (WaterContent[i]-FK[i])*dz  for  WaterContent[i]>FK[i]
+  0  by default
+define value: dz  Unconditional  Global
+dz = 100
+independent event: E1  Active  Reset
+Period:  1
+0
+Actions:
+Tact=0;
+TactTpot=0;
+for (i=1;i<12;i=i+1)
+ Tact=Tact+ActWaterUptake[i];
+if (InTP>0)
+ TactTPot=Tact/InTP;
+variable: EvapRed  Conditional
+EvapRed = 
+  RelWCont[1]/WGCritEvap  for  RelWCont[1]<WGCritEvap
+  1  by default
+variable: nFK[1..12]  Unconditional
+nutzbare Feldkapazität
+nFK[1..12] = FK[i]-ResSoilWater[i]
+variable: nFK0_30  Unconditional
+nFK0_30 = (RelWCont[1]+RelWCont[2]+RelWCont[3])/3
+variable: nFk30_60  Unconditional
+nFk30_60 = (RelWCont[4]+RelWCont[5]+RelWCont[6])/3
+variable: NRootComp  Conditional  Universal
+NRootComp = 
+  min(6,zr div dz)  by default
+variable: potWaterUptake[1..12]  Conditional
+potWaterUptake[1..12] = 
+  InTp/NRootComp  for  i<=NRootComp
+  0  by default
+variable: RelWCont[1..12]  Unconditional
+RelWCont[1..12] = (WaterContent[i]-ResSoilWater[i])/nFK[i]
+compartment: SoilWater[1..12]  Unconditional  Universal
+Bodenwassermenge [mm]
+dSoilWater[1..12]/dt = -SoilWaterChange[1..12]
+Initial Value = dz*FK[1..12]*IniWaterContFraction
+variable: SoilWaterChange[1..12]  Conditional
+SoilWaterChange[1..12] = 
+  ActWaterUptake[i]+DrainageRate[i]+ActEvap-InRain-in2  for  i=1
+  ActWaterUptake[i]+DrainageRate[i]-DrainageRate[i-1]  by default
+variable: SRL  Unconditional
+SRL = SRLmax-(SRLmax-SRL0)*exp(-kL*Tsum)
+compartment: Tact  Unconditional
+dTact/dt = 0
+Initial Value = 0.0
+compartment: TactTpot  Unconditional  Universal
+dTactTpot/dt = 0
+Initial Value = 0.0
+variable: Tiefe[0..12]  Unconditional  Global
+Tiefe der Schichtgrenzen in cm!
+Tiefe[0..12] = dz*i/10
+variable: UptakeRed[1..12]  Conditional
+UptakeRed[1..12] = 
+  RelWCont[1..12]/WGcritUpt  for  RelWCont[i]<WGcritUpt
+  1  by default
+variable: WaterContent[1..12]  Unconditional  Universal
+WaterContent[1..12] = SoilWater[i]/dz
+variable: WaterContent_0_30  Unconditional
+Wassergehalt 0-30 cm in %
+WaterContent_0_30 = (WaterContent[1]+WaterContent[2]+WaterContent[3])/3*100
+variable: WaterContent_30_60  Unconditional
+WaterContent_30_60 = (WaterContent[4]+WaterContent[5]+WaterContent[6])/3*100
+variable: WaterContent_60_90  Unconditional
+WaterContent_60_90 = (WaterContent[7]+WaterContent[8]+WaterContent[9])/3*100
+variable: WLD[1..12]  Unconditional
+WLD[1..12] = wld0*(exp(-a_*Tiefe[i-1])-exp(-a_*Tiefe[i]))/(a_*(Tiefe[i]-Tiefe[i-1]))
+variable: WLD0  Unconditional
+WLD0 = (SRL*a_)/(1-exp(-a_*zr_cm))
+variable: WLfraction[1..12]  Unconditional
+WLfraction[1..12] = WLD[i]*dz/10/SRL
+variable: WM_0_50  Unconditional
+WM_0_50 = SoilWater[1]+SoilWater[2]+SoilWater[3]+SoilWater[4]+SoilWater[5]
+compartment: zr  Conditional  Global
+dzr/dt = 
+  0  for  zr>zrmax
+  (max(0,Temp*kz))  by default
+Initial Value = 101
+variable: zr_cm  Unconditional  Global
+zr_cm = zr/10
+SubVerdunstung
+variable: Bhoehe  Unconditional
+Bestandeshöhe [m]
+Bhoehe = 0.45
+variable: Cp  Unconditional
+Wärmekapazität [J/kg/K]
+Cp = 1013*exp((-0.034*50)/(InTemp+273))
+variable: delta  Unconditional
+Steigung der Sättigungsdampfdruck-Temperatur-Kurve [kPa/K]
+delta = (239*17.4*es)/((InTemp+239)^2)
+variable: ea  Unconditional
+aktueller Wasserdampfdruck [mbar]
+ea = inLF/100*es
+variable: es  Unconditional
+es = 6.1078*exp((17.2694*InTemp)/(InTemp+238.3))
+variable: ETp  Unconditional
+potenzielle Evapotranspiration [l/m²/d]
+ETp = ((delta*Rn+rho*Cp*(es-ea)/ra)/(delta+Psychro*(1+rc/ra)))/Lambda*86400
+variable: Evpot  Unconditional
+Evpot = ETp-Tpot
+define value: kk  Unconditional
+kk = 0.41
+define value: Lambda  Unconditional
+Verdunstungswärme von Wasser [J/kg]
+Lambda = 2.477*1e6
+variable: Psychro  Unconditional
+Psychro = 0.000662*Cp
+variable: ra  Unconditional
+ra = 1/(kk^2*InWind)*ln(z/z0)*ln(z/(0.2*z0))
+variable: rc  Unconditional
+rc = 50
+variable: rho  Unconditional
+Dichte der Luft [kg/m³]
+rho = 1.2917-0.00434*InTemp
+variable: Rn  Unconditional
+Nettostrahlung [W/m2]
+Rn = max(0,0.6494*Globalst-18.417)
+variable: Tpot  Unconditional
+potenzielle Transpiration [mm/d]
+Tpot = ETp*(1-exp(-exkg*InLAI))
+define value: z  Unconditional
+z = 2.5
+variable: z0  Unconditional
+z0 = 0.13*Bhoehe
+variable: TEMP  Unconditional  Universal
+TEMP = TempL
+compartment: Tsum  Conditional  Universal
+dTsum/dt = 
+  0  for  t<EmergenceDay
+  max(Tbase,Temp)  by default
+Initial Value = 0.0
+compartment: Tsum_planting  Conditional
+dTsum_planting/dt = 
+  max(0,Temp-6)  for  t>=PlantingDay
+  0  by default
+Initial Value = 0.0
+lookup table: Wetterdaten2
+t  Control
+TempL  Controlled by: t
+  Linear interpolation
+LF  Controlled by: t
+  Linear interpolation
+Windspeed  Controlled by: t
+  Linear interpolation
+Rainfall  Controlled by: t  Global
+  Linear interpolation
+ParRad  Controlled by: t
+  Linear interpolation
+irri  Controlled by: t
+  Linear interpolation
+Globwatt  Controlled by: t
+  Linear interpolation
+variable: Wind  Unconditional
+Wind = Windspeed
