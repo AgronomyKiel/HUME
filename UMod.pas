@@ -53,7 +53,7 @@ type
   /// <summary> Use TMemIniFile for Inifiles </summary>
   TMyIniFile   = TMemIniFile;
   
-  /// <summary> redifined floating point type </summary>
+  /// <summary> redefined floating point type </summary>
   real = double;
   
   TShapeType = (stRectangle, stSquare, stRoundRect, stRoundSquare, stEllipse,
@@ -65,24 +65,34 @@ type
   /// <summary> Options for parameter Optimization </summary>
   TOptOption = (optAllInis, optAllInisSeperate, optOnlyActIni);
 
+/// <summary> Options for continous output,
+/// NoContOuput: No Outputfile is written, even if Option ContOutput of submodel is true,
+/// AllContOutput: Outputfile is written, even if Option ContOuput of submodel is false
+/// SubmodelSpecific: Outputfile is written, according to Option ContOutpus of submodel </summary>
   TContOutput  = (NoContOutput,
                 AllContoutput,
-                SubmodelSpecific); /// Options for continous output
+                SubmodelSpecific); 
 
 const
+  
+  /// <summary> strings for Model element names </summary>
   ModelElementNames: TModelElementNames = ('State Variables', 'Variables',
     'Parameters', 'Exernal Values', 'Constants');
 
+  {$IFDEF LINUX}
   Path_sep =  '/';
+  {$ELSE}
+  Path_sep =  '\';
+  {$ENDIF}
 
 
-  /// strings for Model element names
 
 type
 
-
+/// <summary> abstract base type for the main model control component 
+/// all submodels have to be connected to this component via their property gm_submodel </summary>
   TMod = class;
-  /// abstract base type for a model component
+  
 
   { * -----------------------------------------------------------------
     CLASS     TMarquardOptions
