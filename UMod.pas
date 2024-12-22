@@ -37,25 +37,33 @@ uses
 
 type
 
+  /// <summary> enumeration type for model Elements </summary>
   TModelElements = (States, Vars, Params, Externals, Consts);
-  /// enumeration type for model Elements
+  
+  /// <summary> enumeration type strings for model Elements </summary>
   TModelElementNames = array [TModelElements] of string;
-  /// enumeration type strings for model Elements
 
+  /// <summary> type for numbers of Model Elements in each submodel </summary>
   TNumbersOf = array [TModelElements] of Integer;
-  /// type for numbers of Model Elements in each submodel
+  
+  /// <summary> type for list of stringlists of Model Elements in each submodel </summary>
   TListsOf = array [TModelElements] of TStringList;
-  /// type for list of stringlists of Model Elements in each submodel
+  
+  
+  /// <summary> Use TMemIniFile for Inifiles </summary>
   TMyIniFile   = TMemIniFile;
-  /// Use TMemIniFile for Inifiles
+  
+  /// <summary> redifined floating point type </summary>
   real = double;
-  /// redifined floating point type
+  
   TShapeType = (stRectangle, stSquare, stRoundRect, stRoundSquare, stEllipse,
     stCircle);
+  
+  /// <summary> Options for weighting of data points during optimization </summary>
   TWeightOptions = (OptNoWeight, OptDefaultWeight, OptMeasErrorWeight);
-  /// Options for weighting of data points during optimization
+  
+  /// <summary> Options for parameter Optimization </summary>
   TOptOption = (optAllInis, optAllInisSeperate, optOnlyActIni);
-  /// Options for parameter Optimization
 
   TContOutput  = (NoContOutput,
                 AllContoutput,
