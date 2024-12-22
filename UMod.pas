@@ -100,7 +100,9 @@ type
     PURPOSE   Options for the Marquard-Method used for parameter estimation
     ------------------------------------------------------------------ }
 
-
+/// <summary> Options for the Marquard-Method used for parameter estimation </summary>
+{$IFDEF NONVISUAL}
+  TMarquardOptions = class(TObject)
 
 {$IFDEF NONVISUAL}
 
@@ -111,22 +113,33 @@ type
   private
   protected
   public
+    /// <PublicField> Initial value of parameter Lambda </PublicField>
     FIniLambda: real;
-    /// Initial value of parameter Lambda
+    /// <PublicField> Value which is needed for numerical approximation of function derivative </PublicField>
     FDivisor: real;
-    /// Value which is needed for numerical approximation of function derivative
+    
+    /// <PublicField> Options for weighting of data points during optimization </PublicField>
     FWeightOptions: TWeightOptions;
-    /// Options for weighting of data points during optimization
+    
+    /// <PublicField> Default error for weighting of data points </PublicField>
     FDefaultError: real;
-    /// one may use an default error for weighting
+    
+    /// <PublicField> Options for parameter Optimization </PublicField>
     FOptOption: TOptOption;
+    
     constructor create;
   published
+    /// <summary> Initial value of parameter Lambda </summary>
     property IniLambda: real read FIniLambda write FIniLambda;
+    /// <summary> Value which is needed for numerical approximation of function derivative </summary>
     property Divisor: real read FDivisor write FDivisor;
+    /// <summary> Options for weighting of data points during optimization </summary>
     property WeightOptions: TWeightOptions read FWeightOptions
       write FWeightOptions;
+    /// <summary> Default error for weighting of data points </summary>
     property DefaultError: real read FDefaultError write FDefaultError;
+    
+    /// <summary> Options for parameter Optimization </summary>
     property OptOption: TOptOption read FOptOption write FOptOption;
   end;
 
@@ -137,42 +150,61 @@ type
     used within the TMod class
     ------------------------------------------------------------------ }
 
+/// <summary> Simple class to save options for Sensitivity analysis </summary>
 {$IFDEF NONVISUAL}
-
+  TSensitivityOptions = class(TObject)
+{$ELSE}
+  TSensitivityOptions = class(TPersistent
+{$IFDEF NONVISUAL}
   TSensitivityOptions = class(TObject)
 {$ELSE}
   TSensitivityOptions = class(TPersistent)
 {$ENDIF}
   private
+/// <summary> The ModelComponenent </summary>    
     fMod: TMod;
+    
+    /// <summary> file variables and names for output of sensitivity analysis </summary>
     f_a, f_b: array [0 .. 30] of textFile;
-    /// file variables and names for output
     fn_a, fn_b: array [0 .. 30] of string;
+    
+    /// <summary> maximum value during sensitivity analysis </summary>
     FMaxValue: real;
-    /// maximum value during sensitivity analysis
+    
+    /// <summary> minimum value during sensitivity analysis </summary>
     FMinValue: real;
-    /// minimum value during sensitivity analysis
+    
+    /// <summary> Steps of sensitivity analysis </summary>
     FSteps: Integer;
-    /// Steps of sensitivity analysis
+    
     FDPar: real;
+    
+    /// <summary> Variables selected for output </summary>
     Sens_f: textFile;
-    /// Textfile variable for output
+    
+    /// <summary> output file name for sensitivity data </summary>
     FSens_fn: string;//TMyFileName;
-    /// output file name for sensitivity data
+    
     // MultSens_f_final, MultSens_f_cont: textFile;
 
+    
+    /// <summary> Parameter selected for sensitivity analysis </summary>
     procedure SetMAxValue(const MaxValue: real); /// Sets maximum value during sensitivity analysis
+    /// <summary> Parameter selected for sensitivity analysis </summary>
     procedure SetMinValue(const MinValue: real); /// Sets minimum value during sensitivity analysis
+    /// <summary> Parameter selected for sensitivity analysis </summary>
     procedure SetSteps(const Steps: Integer);/// Sets number of steps of sensitivity analysis
   protected
   public
+    /// <summary> Parameter selected for sensitivity analysis </summary>
     SelSenspar: TPar;        /// Parameter selected for sensitivity analysis
+    /// <summary> Parameter selected for sensitivity analysis </summary>
     FOutList: TStringList;   /// Variables selected for output
     MultSens_fn_final,
      MultSens_fn_cont: string;//TMyFileName;
     constructor create(Model: TMod);
   published
-    /// properties for sensitivity analysis
+    /// <summary> Maximum value during sensitivity analysis </summary>
     property MaxValue: real read FMaxValue write SetMAxValue;
     property MinValue: real read FMinValue write SetMinValue;
     property Steps: Integer read FSteps write SetSteps;
@@ -181,6 +213,7 @@ type
     property Sens_fn: string read FSens_fn write FSens_fn;
   end;
 
+ /// <summary> Abstract base class for a model component </summary>
   TSubmodel = class; /// abstract base type for a model component
 
   { * -----------------------------------------------------------------
@@ -200,6 +233,26 @@ type
     ------------------------------------------------------------------ }
 // {$UNDEF NONVISUAL}
 {$IFDEF NONVISUAL}
+
+/// abstract base type for a model component
+  TMod = class(TObject) /// from TObject if nonvisual
+{$ELSE}
+  TMod = class(TGraphicControl) //7 from TGraphicControl if visual
+{$ENDIF}
+  private
+    /// <PrivateField> Name of Model </PrivateField>
+    fName : string; /// Name of Model
+    
+    /// <PrivateField> directory where program file is located </PrivateField>
+    EXE_DIR: string; /// directory where program file is located
+    /// directory where program file is located
+    /// <PrivateField> directory where program file is located </PrivateField>
+    FApplicationPath: TPath; /// directory where program file is located
+    /// field for adress of status bar on main model formula
+    
+    /// <PrivateField> Model name </PrivateField>
+    FTitle: string;     /// Modeltitle
+
 /// class for coordinating the simulation of a model
   TMod = class(TObject) /// from TObject if nonvisual
 {$ELSE}
@@ -211,8 +264,9 @@ type
     /// directory where program file is located
     FApplicationPath: TPath; /// directory where program file is located
     ///
-//    fParent: TWinControl;
+
 {$IFNDEF NONVISUAL}
+    /// <PrivateField> status bar in Main Formular Simulation info </PrivateField>
     fStatusBar: TStatusBar; /// status bar in Main Formular Simulation info
 {$ENDIF}
     /// field for adress of status bar on main model formula
@@ -220,24 +274,44 @@ type
     /// Modeltitle
 //    fControlFile: textFile;
     /// ControlFile containing list of Inifiles to be executed
+    
+    
+    /// <PrivateField> Name of controlfile </PrivateField>
     fControlFileFn: string; //TMyFileName; /// Name for controlfile
-    FReg_FN: string;//TMyFileName; /// Name of file where regression results are stored
-    fDocu_FN: string;//TMyFileName;  /// Name of file where Model documentation is stored
-    fDocu_FN2: string; // TMyFileName; /// Name of file where Model documentation 2 is stored
+    
+    /// <PrivateField> Name of file where regression results are stored </PrivateField>
+    FReg_FN: string;  /// Name of file where regression results are stored
+    
+    /// <PrivateField> Name of file where Model documentation is stored </PrivateField>
+    fDocu_FN: string;  /// Name of file where Model documentation is stored
+    fDocu_FN2: string; /// Name of file where Model documentation 2 is stored
+    
+    /// <PrivateField> Name of global output file </PrivateField>
     fFNGlobalOutput: string; /// file name for global Output
 ///
+    /// <PrivateField> Default directory for output </PrivateField>
     FOutputPath: TPath; /// default directory for output
+    
+    /// <PrivateField> flag for reading output path from Ini-file </PrivateField>
     fReadIniOutputPath: boolean; /// flag for
+    
+    /// <PrivateField> Default directory for input </PrivateField>
     FInputPath: TPath;
-    /// Default directory for input
+    
+    /// <PrivateField> separator in outputfiles </PrivateField>
     FSeparatorChar: Char;
     /// separator in outputfiles
+    /// <PrivateField> Time step for model integration </PrivateField>
     FTimeStep: real;
     /// Time step for model integration
-    FStartTime: TDateTime;
-    /// Start of simulation
-    FEndTime: TDateTime;
-    /// End of simulation
+    
+    /// <PrivateField> Start of simulation </PrivateField>
+    FStartTime: TDateTime;  /// Start of simulation
+    
+    /// <PrivateField> End of simulation </PrivateField>
+    FEndTime: TDateTime;   /// End of simulation
+    
+    /// <PrivateField> Options for optimization </PrivateField>
     FSensOptions: TSensitivityOptions;
     /// Options for sensitivity analysis
     FMinLegalValue: real;
