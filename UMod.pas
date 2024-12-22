@@ -74,7 +74,7 @@ type
                 SubmodelSpecific); 
 
 const
-  
+
   /// <summary> strings for Model element names </summary>
   ModelElementNames: TModelElementNames = ('State Variables', 'Variables',
     'Parameters', 'Exernal Values', 'Constants');
@@ -102,10 +102,6 @@ type
 
 /// <summary> Options for the Marquard-Method used for parameter estimation </summary>
 {$IFDEF NONVISUAL}
-  TMarquardOptions = class(TObject)
-
-{$IFDEF NONVISUAL}
-
   TMarquardOptions = class(TObject)
 {$ELSE}
   TMarquardOptions = class(TPersistent)
@@ -151,10 +147,6 @@ type
     ------------------------------------------------------------------ }
 
 /// <summary> Simple class to save options for Sensitivity analysis </summary>
-{$IFDEF NONVISUAL}
-  TSensitivityOptions = class(TObject)
-{$ELSE}
-  TSensitivityOptions = class(TPersistent
 {$IFDEF NONVISUAL}
   TSensitivityOptions = class(TObject)
 {$ELSE}
@@ -232,31 +224,13 @@ type
     parameter estimation and statistical quality control
     ------------------------------------------------------------------ }
 // {$UNDEF NONVISUAL}
-{$IFDEF NONVISUAL}
 
-/// abstract base type for a model component
-  TMod = class(TObject) /// from TObject if nonvisual
-{$ELSE}
-  TMod = class(TGraphicControl) //7 from TGraphicControl if visual
-{$ENDIF}
-  private
-    /// <PrivateField> Name of Model </PrivateField>
-    fName : string; /// Name of Model
-    
-    /// <PrivateField> directory where program file is located </PrivateField>
-    EXE_DIR: string; /// directory where program file is located
-    /// directory where program file is located
-    /// <PrivateField> directory where program file is located </PrivateField>
-    FApplicationPath: TPath; /// directory where program file is located
-    /// field for adress of status bar on main model formula
-    
-    /// <PrivateField> Model name </PrivateField>
-    FTitle: string;     /// Modeltitle
 
 /// class for coordinating the simulation of a model
+{$IFDEF NONVISUAL}
   TMod = class(TObject) /// from TObject if nonvisual
 {$ELSE}
-  TMod = class(TGraphicControl) //7 from TGraphicControl if visual
+  TMod = class(TGraphicControl) /// from TGraphicControl if visual
 {$ENDIF}
   private
     fName : string; /// Name of Model
