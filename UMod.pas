@@ -72,14 +72,17 @@ const
 
 type
 
+
+  TMod = class;
+  /// abstract base type for a model component
+
   { * -----------------------------------------------------------------
     CLASS     TMarquardOptions
     ANCESTOR  TPersistent
     PURPOSE   Options for the Marquard-Method used for parameter estimation
     ------------------------------------------------------------------ }
 
-  TMod = class;
-  /// abstract base type for a model component
+
 
 {$IFDEF NONVISUAL}
 
