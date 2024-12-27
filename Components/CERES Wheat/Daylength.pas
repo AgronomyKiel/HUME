@@ -1,4 +1,4 @@
-unit Daylength;
+ï»¿unit Daylength;
 {$IFDEF LINUX}
 {$DEFINE NONVISUAL}
 {$ENDIF LINUX}
@@ -13,12 +13,14 @@ uses
   Umod, UState,
   Math, DateUtils;
 
+const
+     RADi = PI / 180;
 type
+/// <summary> TDaylength: class for calculating day length and photoperiodic day length </summary>
   TDaylength = class(TSubmodel)
   private
     { Private-Deklarationen }
   protected
-    RADi, DEC, AOB, SINLD, COSLD: Extended;
     { Protected-Deklarationen }
   public
     { Public-Deklarationen }
@@ -28,6 +30,7 @@ type
 
     procedure CreateAll; override;
     procedure Init(var GlobMod: TMod); override;
+    procedure CalcVars; override;
     procedure CalcRates; override;
 //    procedure Integrate; override;
 
@@ -49,14 +52,17 @@ begin
   inherited CreateAll;
   Varcreate('Daylength', '[h]', 0, true, daylength);
   Varcreate('Daylengthp', '[h]', 0, true, daylengthp);
-  Parcreate('Latitude', '[°]', 51, Latitude);
+  Parcreate('Latitude', '[ï¿½]', 51, Latitude);
   StateCreate('DayofYear', '[n]', 1, true, DayofYear);
 end;
 
 
-procedure TDayLength.CalcRates;
+procedure TDayLength.CalcVars;
+
+var
+    DEC, AOB, SINLD, COSLD: real;
+
 begin
-  RADi:= PI / 180;
   DayofYear.v := DayofTheYear(GlobTime.v);
   DEC:= -ARCSIN(SIN(23.45 * RADi) * COS(2* PI * (DayOfYear.v + 10) / 365));
   SINLD:= Sin(RADi * Latitude.v) * Sin(Dec);
@@ -65,6 +71,11 @@ begin
   DayLength.v := 12.0 * ( 1 + 2 * ARCSIN(AOB) / PI);
   DayLengthP.v := 12.0 * ( 1 + 2 * ARCSIN((-SIN(-4 * RADi) + SINLD) / COSLD) / PI);
 end;
+
+procedure TDayLength.CalcRates;
+begin
+end;
+
 
 procedure TDayLength.Init(var GlobMod: TMod);
 
