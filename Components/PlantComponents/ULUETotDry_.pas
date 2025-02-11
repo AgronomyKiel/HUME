@@ -2,11 +2,13 @@ unit ULUETotDry;
 
 interface
 
-uses UState, Umod, IniFiles, classes, Math,
+uses UState, Umod, IniFiles, classes,
      UDryMatProdComp;
+
 
 type
   real = double;
+
 
 TLUETotDry = Class(TDrymatterproduction)
 
@@ -21,8 +23,6 @@ public
      cluster_f       : TVar;
      Int_Corr        : boolean;
      TransRatio: TExternV; // Transpiration ratio
-     pfW: TPar;
-     SWDF: TVar;
 
 
 //     RelGroundCov    : TExternV;
@@ -32,8 +32,6 @@ public
 published
      property Par_LUE0   : Tpar read LUE0 write LUE0;
      property Par_LUEdec   : Tpar read LUE_dec write LUE_dec;
-     property Par_pfW   : Tpar read pfW write pfW;
-     property Var_SWDF   : Tvar read SWDF write SWDF;
      property Opt_intCorr : boolean read Int_Corr write Int_Corr;
      property Ex_TransRatio: TExternV Read TransRatio Write TransRatio;
 
@@ -55,8 +53,6 @@ begin
   ParCreate( 'LUE0','[-]', 5, LUE0);
   ParCreate( 'LUE_dec','[-]', 0.2, LUE_dec);
   VarCreate( 'Cluster_f','[-]', 1.0, false, Cluster_f);
-  ParCreate( 'pfW','[-]', 1, pfW);
-  VarCreate( 'SWDF','[-]', 1.0, false, SWDF);
   ExternVCreate('TransRatio', '[-]', StateField, TransRatio);
 
 //  ExternVCreate('RelGroundCov', '[-]', StateField, RelGroundCov);
@@ -81,9 +77,7 @@ begin
   LUE.v := Temp_f.v*(LUE0.v-LUE_dec.v*Par.v);
 
   If Lue.v < 0.1 then LUe.v := 0.1;
-
-  SWDF.v := 1-power((1-Transratio.v), pfW.v);
-  Assiflow.v := par_abs.v*LUE.v*SWDF.v;
+  Assiflow.v := par_abs.v*LUE.v*Transratio.v;
 
 end;
 
@@ -96,10 +90,7 @@ end;
 procedure Register;
 
 begin
-{$IFNDEF NONVISUAL}
   RegisterComponents('Simulation', [TLUETotDry]);
-{$ENDIF}
-
 end;
 
 

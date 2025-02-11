@@ -89,6 +89,7 @@ fName_WL : string; /// the name prefix for the variables
 
 
 fTextureEffectList : TStringlist; /// a list of texture effects filled at creation of the component
+fRootGrowthAfterEmergence : boolean; ///
 
 /// set the prefix name
 Procedure set_Name_WL(const Name_WL: string);
@@ -174,11 +175,13 @@ public
   DMFineRoot,         /// Dry matter of fine roots (g/m2)
 
   DMroot_inc : TExternV;    /// Daily DM growth rate of fine roots [g/m2/d]
+  EmergenceDay : TExternV;   ///
 
   SowingDate,
   HarvestDate : TPar;
 
   TextureEffect: TOption; /// option for texture effect on root growth
+  RootGrowthAfterEmergence: TOption; /// If true root growth starts not earlier than after emergence
 
 
 
@@ -210,6 +213,7 @@ property Par_sp_WL   : TPar read sp_RL write sp_RL;
 property Par_ActiveDuration : Tpar read ActiveDuration write ActiveDuration;
 
 property Ex_Temp : TExternV read Temp write Temp;
+property Ex_EmergenceDay : TExternV read EmergenceDay write EmergenceDay;
 property Ex_DMFineRoot : TExternV read DMFineRoot write DMFineRoot;
 property Ex_DMRoot_inc : TExternV read DMRoot_inc write DMRoot_inc;
 property Opt_RootDepthInc : Trootingdepthincrease read RootDepthinc write Rootdepthinc;
@@ -438,6 +442,9 @@ begin
   ExternVcreate('DMFineRoot', '[g.m-2]', stateField, DMFineRoot, 'fine root mass');
   DMFineRoot.Search := true;
   ExternVCreate('DMFineRoot', '[g.m-2.d-1]',ratefield, DMroot_inc, 'daily increase in fine root mass');
+  ExternVcreate('EmergenceDay', '[-]', stateField, EmergenceDay, 'day of emergence taken from potato growth module');
+
+
   DMroot_inc.Search := true;
   for i := 1 to trunc(n_Rootcomp.v) do begin
     VarCreate(fName_WL+'WLD_'+ndx_Str(i), '[cm.cm-3]', 0.0, false,WLD_arr[i]);
@@ -449,6 +456,13 @@ begin
   OptCreate('TextureEffect', 'none', TextureEffect, 'Effect of texture on velocity of rooting depth growth relative to Weff of KA5 texture class at LD3');
   TextureEffect.OptionList.Add('none');
   TextureEffect.OptionList.Add('true');
+
+  OptCreate('RootGrowthAfterEmergence', 'false', RootGrowthAfterEmergence,
+            'If yes root growth starts not ealier than after emergence');
+  RootGrowthAfterEmergence.OptionList.Add('false');
+  RootGrowthAfterEmergence.OptionList.Add('true');
+
+
 
   for i := 0 to trunc(n_Rootcomp.v) do
       ExternVCreate('Tiefe'+ndx_Str(i),'[cm]', StateField, Tiefe[i]);
@@ -1218,6 +1232,15 @@ begin
     RootDepthInc := linear;
   if uppercase(depthgrowthoptstr.Option) = uppercase('expolinear') then
     RootDepthInc := expolinear;
+
+  if uppercase(RootGrowthAfterEmergence.Option) = uppercase('true') then
+    begin
+      fRootGrowthAfterEmergence := true;
+      EmergenceDay.Search := false;
+    end else
+    fRootGrowthAfterEmergence := false;
+
+
   If PlantModel <> nil then begin
     SowingDate := PlantModel.SowingDate;
     HarvestDate := PlantModel.HarvestDate;
@@ -1258,6 +1281,8 @@ var
 
 
 begin
+
+
   If (sowingdate = nil) or (Globtime.v >= SowingDate.v) then begin
     if root_matrix[1,1] <= 0.0 then begin
       SRL.v := DMFineRoot.v*sp_RL.v/1e4; /// sum of root length in cm/cm2
@@ -1325,9 +1350,11 @@ begin
 
   OldDMFineRoot := DMFineRoot.v;
 
-
-    If Temp.v>TempSumRootBaseTemp.v then
-      TempSumR.C := (Temp.v-TempSumRootBaseTemp.V)
+    if (fRootGrowthAfterEmergence = true) then
+      if (Temp.v>TempSumRootBaseTemp.v) and (EmergenceDay.v > 0) then
+        TempSumR.C := (Temp.v-TempSumRootBaseTemp.V) else
+      if Temp.v>TempSumRootBaseTemp.v then
+        TempSumR.C := (Temp.v-TempSumRootBaseTemp.V)
     else TempSumr.c := 0.0;
     inc(N_age_cl);
     SRL_eff.v  := 0.0;

@@ -147,7 +147,7 @@ procedure TDryMatterProduction.integrate;
 
 begin
   if Par_abs.v > 0.0 then
-    LUE.v := TotalDrymatterGr.v/Par_abs.v
+    LUE.v := LUE.v//TotalDrymatterGr.v/Par_abs.v
   else LUE.v := 0.0;
   inherited integrate;
 end;
@@ -169,7 +169,9 @@ end;
 procedure Register;
 
 begin
+{$IFNDEF NONVISUAL}
   RegisterComponents('Simulation', [TDryMatterProduction]);
+{$ENDIF}
 end;
 
 
