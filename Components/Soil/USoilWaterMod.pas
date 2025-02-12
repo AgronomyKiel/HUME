@@ -1067,23 +1067,41 @@ begin
       WPar[i].l_par := l_par3.v;
       WPar[i].Ks := Ks3.v;
     end;
-    for i := round(HoriNdx3.v) + 1 to n_comp + 1 do
+    for i := round(HoriNdx3.v) + 1 to round(HoriNdx4.v) do
     begin
-      WPar[i].b_sat := b_sat4.v * bsat_scaling.v;
-      WPar[i].b_rest := b_rest4.v;
-      WPar[i].alpha := alpha4.v * alpha_scaling.v;
-      WPar[i].n_par := n_par4.v;
+      WPar[i].b_sat := b_sat5.v * bsat_scaling.v;
+      WPar[i].b_rest := b_rest5.v;
+      WPar[i].alpha := alpha5.v * alpha_scaling.v;
+      WPar[i].n_par := n_par5.v;
       case m_model of
         Mualem:
-          WPar[i].m_par := 1 - 1 / n_par4.v;
+          WPar[i].m_par := 1 - 1 / n_par5.v;
         Burdine:
-          WPar[i].m_par := 1 - 2 / n_par4.v;
+          WPar[i].m_par := 1 - 2 / n_par5.v;
         Vereecken:
           WPar[i].m_par := 1;
       end;
-      WPar[i].l_par := l_par4.v;
-      WPar[i].Ks := Ks4.v;
+      WPar[i].l_par := l_par5.v;
+      WPar[i].Ks := Ks5.v;
     end;
+    for i := round(HoriNdx5.v) + 1 to n_comp + 1 do
+    begin
+      WPar[i].b_sat := b_sat6.v * bsat_scaling.v;
+      WPar[i].b_rest := b_rest6.v;
+      WPar[i].alpha := alpha6.v * alpha_scaling.v;
+      WPar[i].n_par := n_par6.v;
+      case m_model of
+        Mualem:
+          WPar[i].m_par := 1 - 1 / n_par6.v;
+        Burdine:
+          WPar[i].m_par := 1 - 2 / n_par6.v;
+        Vereecken:
+          WPar[i].m_par := 1;
+      end;
+      WPar[i].l_par := l_par6.v;
+      WPar[i].Ks := Ks6.v;
+    end;
+
   end;
   if FKsFromTexture = FromTexture then
   begin
@@ -1489,7 +1507,8 @@ begin
   OptUntere_Randb.OptionList.Add('FreeFlow');
   
   OptCreate('IniMethod', 'Parameter', OptIniMethod,
-    'Option for initialisation method, Watercontents: inital water content data are provided; Potentials: intial soil water matrix potential is provided, Parameter: initial soil water content is calculated from a matrix potential in the first layer.No license found');
+    'Option for initialisation method, Watercontents: inital water' +
+    'content data are provided; Potentials: intial soil water matrix potential is provided, Parameter: initial soil water content is calculated from a matrix potential in the first layer.No license found');
   OptIniMethod.OptionList.Clear;
   OptIniMethod.OptionList.Add('Watercontents');
   OptIniMethod.OptionList.Add('Potentials');
@@ -1566,6 +1585,8 @@ begin
   ParCreate('l_par2', '[-]', 0.5, l_par2, 'Van-Genuchten-Parameter l for 2nd horizon');
   ParCreate('l_par3', '[-]', 0.5, l_par3, 'Van-Genuchten-Parameter l for 3rd horizon');
   ParCreate('l_par4', '[-]', 0.5, l_par4, 'Van-Genuchten-Parameter l for 4th horizon');
+  ParCreate('l_par5', '[-]', 0.5, l_par5, 'Van-Genuchten-Parameter l for 5th horizon');
+  ParCreate('l_par6', '[-]', 0.5, l_par6, 'Van-Genuchten-Parameter l for 6th horizon');
   ParCreate('Ks_1', '[-]', 50, Ks1, 'Van Genuchten Parameter K_sat');
   ParCreate('FK_1', '[cm3/cm3]', 0.35, FK1, 'field capacity');
   ParCreate('nFK_1', '[cm3/cm3]', 0.25, nFK1, 'plant available soil water content');
