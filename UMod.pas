@@ -3142,7 +3142,8 @@ procedure TMod.write_documentation;
 
 var
   fn, fn2, path: string;
-  f, f2: textFile;
+//  f, f2: textFile;
+  f, f2: TStreamwriter;
   h, i, j, level: Integer;
   ClassRef: TClass;
   tab: Char;
@@ -3152,6 +3153,7 @@ var
   NumbersOf: TNumbersOf;
   actSubMod: TSubmodel;
   actState: TState;
+  actExtern: TExternV;
   ActVar: Tvar;
   ActPar: TPar;
   actOption: TOption;
@@ -3160,6 +3162,8 @@ var
 
 begin
   InitAllExternV;
+
+
   tab := chr(9);
   path := ExtractFilePath(fControlFileFn);
   fn := extractfilename(fControlFileFn);
@@ -3170,20 +3174,23 @@ begin
   self.fDocu_FN := fn;
   fDocu_FN2 := fn2;
 
-  assignfile(f, fn);
-  assignfile(f2, fn2);
-  rewrite(f);
-  rewrite(f2);
+  f := TStreamWriter.Create(fn, false, TEncoding.UTF8);
+  f2 := TStreamWriter.Create(fn2, false, TEncoding.UTF8);
 
-  writeln(f, 'Documentation of ' + fControlFileFn);
-  writeln(f);
-  writeln(f, 'The model consists of ', self.SubModStrList.count, ' SubModels');
-  writeln(f, 'Name', tab, tab, tab, tab, 'Class', tab, 'ParentClasses');
+  f.Flush;
+  f2.Flush;
+//  rewrite(f);
+//  rewrite(f2);
+
+  f.writeline('Documentation of ' + fControlFileFn);
+  f.writeline('');
+  f.writeline('The model consists of '+ floattostr(self.SubModStrList.count) + ' SubModels');
+  f.writeline('Name'+ tab+ tab+ tab+ tab+ 'Class'+ tab+ 'ParentClasses');
   for i := 0 to SubModStrList.count - 1 do
   begin
     SubModel[i].ClassParent;
     ClassRef := SubModel[i].ClassType;
-    writeln(f, self.SubModel[i].Name);
+    f.writeline( self.SubModel[i].Name);
     // while ClassRef.ClassName <> 'TSubmodel' do begin
     level := length(SubModel[i].Name);
 
@@ -3191,22 +3198,22 @@ begin
     while ClassRef <> TGraphicControl do
     begin
       for j := 1 to level do
-        write(f, ' ');
-      writeln(f, '|____', ClassRef.ClassName);
+        f.write(' ');
+      f.writeline( '|____'+ ClassRef.ClassName);
       level := level + length(ClassRef.ClassName) + 5;
       ClassRef := ClassRef.ClassParent;
     end;
-    writeln(f);
+    f.writeline('');
 {$ELSE}
     while ClassRef <> TObject do
     begin
       for j := 1 to level do
-        write(f, ' ');
-      writeln(f, '|____', ClassRef.ClassName);
+        f.write(' ');
+      f.writeline( '|____' + ClassRef.ClassName);
       level := level + length(ClassRef.ClassName) + 5;
       ClassRef := ClassRef.ClassParent;
     end;
-    writeln(f);
+    f.writeline('');
 {$ENDIF}
   end;
 
@@ -3221,31 +3228,30 @@ begin
         .fModelElementLists[ModelElements].count;
     end;
   end;
-  writeln(f, 'The Model has in total ', NumbersOf[States], ' State Variables');
-  writeln(f, '                       ', NumbersOf[Vars], ' Variables');
-  writeln(f, '                       ', NumbersOf[Params], ' Parameters');
-  writeln(f, '                       ', NumbersOf[Consts], ' Constants');
+  f.writeline('The Model has in total '+ floattostr(NumbersOf[States])+ ' State Variables');
+  f.writeline('                       '+ floattostr(NumbersOf[Vars])+ ' Variables');
+  f.writeline('                       '+ floattostr(NumbersOf[Params])+ ' Parameters');
+  f.writeline( '                       '+ floattostr(NumbersOf[Consts])+ ' Constants');
 
-  writeln(f);
-  writeln(f);
+  f.writeline('');
+  f.writeline('');
 
   for i := 0 to SubModStrList.count - 1 do
   begin
     for ModelElements := low(TModelElements) to high(TModelElements) do
     begin
-      writeln(f, 'The Submodel ', SubModel[i].Name, ' has in total ',
-        SubModel[i].fModelElementLists[ModelElements].count, ' ',
+      f.writeline('The Submodel '+ SubModel[i].Name+ ' has in total '+
+        floattostr(SubModel[i].fModelElementLists[ModelElements].count)+ ' '+
         ModelElementNames[ModelElements]);
 
     end;
-    writeln(f);
+    f.writeline('');
   end;
 
-  writeln(f);
+  f.writeline('');
 
   // write csv file with all modell entities ...
-  writeln(f2,
-    'IniFile;Submodel;EntityType;EntityName;Units;Value;Option;Comment');
+  f2.writeline('IniFile;Submodel;EntityType;EntityName;Units;Value;Option;Comment');
   for h := 0 to self.IniFileNames.count - 1 do
   begin
 
@@ -3266,7 +3272,7 @@ begin
         line := self.IniFileNames[h] + ';' + SubModel[i].Name + ';';
         line := line + 'State' + ';' + actState.Name + ';' + actState.U + ';' +
           FloatToStr(actState.v) + ';' + 'NA' + ';' + actState.Comment;
-        writeln(f2, line);
+        f2.writeline(line);
       end;
       for j := 0 to actSubMod.VarStrList.count - 1 do
       begin
@@ -3274,7 +3280,7 @@ begin
         line := self.IniFileNames[h] + ';' + SubModel[i].Name + ';';
         line := line + 'Variable' + ';' + ActVar.Name + ';' + ActVar.U + ';' +
           FloatToStr(ActVar.v) + ';' + 'NA' + ';' + ActVar.Comment;
-        writeln(f2, line);
+        f2.writeline( line);
       end;
       for k := 0 to actSubMod.ParStrList.count - 1 do
       begin
@@ -3282,7 +3288,15 @@ begin
         line := self.IniFileNames[h] + ';' + SubModel[i].Name + ';';
         line := line + 'Parameter' + ';' + ActPar.Name + ';' + ActPar.U + ';' +
           FloatToStr(ActPar.v) + ';' + 'NA' + ';' + ActPar.Comment;
-        writeln(f2, line);
+        f2.writeline(line);
+      end;
+      for m := 0 to actSubMod.ExternVStrList.count - 1 do
+      begin
+        actExtern := TExternV(actSubMod.ExternVStrList.objects[m]);
+        line := self.IniFileNames[h] + ';' + SubModel[i].Name + ';';
+        line := line + 'ExternalValue' + ';' + ActExtern.Name + ';' + ActExtern.U + ';' +
+          'NA' + ';' + ActExtern.Source + ';' + ActExtern.Comment;
+        f2.writeline(line);
       end;
       for l := 0 to actSubMod.OptionStrList.count - 1 do
       begin
@@ -3290,7 +3304,7 @@ begin
         line := self.IniFileNames[h] + ';' + SubModel[i].Name + ';';
         line := line + 'Option' + ';' + actOption.Name + ';' + ' NA;' + 'NA' +
           ';' + actOption.Option + ';' + actOption.Comment;
-        writeln(f2, line);
+        f2.writeline(line);
       end;
     end;
     // fModelElementLists[Element].objects[Entity].;
@@ -3302,10 +3316,14 @@ begin
   // Writeln(f, SubModel[i].name, ';',
   // ModelElementNames[ModelElements],';',
   // SubModel[i].fModelElementLists[ModelElements].ClassName,';')
-  writeln(f);
+  f.writeline('');
 
-  CloseFile(f);
-  CloseFile(f2);
+  f.Flush;
+  f.Close;
+  f2.Flush;
+  f2.Close;
+//  CloseFile(f);
+//  CloseFile(f2);
 end;
 
 {$IFNDEF NONVISUAL}

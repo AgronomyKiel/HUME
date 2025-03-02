@@ -5,44 +5,42 @@ inherited FormMod_Demo: TFormMod_Demo
   inherited PageControl: TPageControl
     ActivePage = TabSheetModelDiagram
     inherited TabSheetGlobal: TTabSheet
-      inherited LabelControlFileDesc: TLabel
-        StyleElements = [seFont, seClient, seBorder]
+      inherited GroupBoxIniFileEdits: TGroupBox
+        inherited GroupBoxControlFileName: TGroupBox
+          inherited EditControlFile: TEdit
+            StyleElements = [seFont, seClient, seBorder]
+          end
+        end
+        inherited GroupBoxEndtime: TGroupBox
+          inherited EditEndTime: TEdit
+            StyleElements = [seFont, seClient, seBorder]
+          end
+        end
+        inherited GroupBoxTimestep: TGroupBox
+          inherited EditTimeStep: TEdit
+            StyleElements = [seFont, seClient, seBorder]
+          end
+        end
+        inherited GroupBoxStateIniFile: TGroupBox
+          inherited EditStateIniFileName: TEdit
+            StyleElements = [seFont, seClient, seBorder]
+          end
+        end
+        inherited GroupBoxPamIniFileName: TGroupBox
+          inherited EditParamIniFileName: TEdit
+            StyleElements = [seFont, seClient, seBorder]
+          end
+        end
+        inherited GroupBoxWeatherFile: TGroupBox
+          inherited EditWeatherfile: TEdit
+            StyleElements = [seFont, seClient, seBorder]
+          end
+        end
       end
-      inherited LabelWeathFileDesc: TLabel
-        StyleElements = [seFont, seClient, seBorder]
-      end
-      inherited LabelTimeStepDesc: TLabel
-        StyleElements = [seFont, seClient, seBorder]
-      end
-      inherited LabelStateIniFileName: TLabel
-        StyleElements = [seFont, seClient, seBorder]
-      end
-      inherited LabelParamIniFileName: TLabel
-        StyleElements = [seFont, seClient, seBorder]
-      end
-      inherited LabelOutputDirectory: TLabel
-        StyleElements = [seFont, seClient, seBorder]
-      end
-      inherited EditTimeStep: TEdit
-        StyleElements = [seFont, seClient, seBorder]
-      end
-      inherited EditStartTime: TEdit
-        StyleElements = [seFont, seClient, seBorder]
-      end
-      inherited EditEndTime: TEdit
-        StyleElements = [seFont, seClient, seBorder]
-      end
-      inherited EditControlFile: TEdit
-        StyleElements = [seFont, seClient, seBorder]
-      end
-      inherited EditWeatherfile: TEdit
-        StyleElements = [seFont, seClient, seBorder]
-      end
-      inherited EditStateIniFileName: TEdit
-        StyleElements = [seFont, seClient, seBorder]
-      end
-      inherited EditParamIniFileName: TEdit
-        StyleElements = [seFont, seClient, seBorder]
+      inherited GroupBoxStarttime: TGroupBox
+        inherited EditStartTime: TEdit
+          StyleElements = [seFont, seClient, seBorder]
+        end
       end
       inherited GroupBoxWeatherDates: TGroupBox
         inherited LabelWeatherDataFirstEntry: TLabel
@@ -58,14 +56,21 @@ inherited FormMod_Demo: TFormMod_Demo
           StyleElements = [seFont, seClient, seBorder]
         end
       end
-      inherited EditOutputDirectory: TEdit
-        StyleElements = [seFont, seClient, seBorder]
+      inherited GroupBoxOutput: TGroupBox
+        inherited GroupBoxOutputDirectory: TGroupBox
+          inherited EditOutputDirectory: TEdit
+            StyleElements = [seFont, seClient, seBorder]
+          end
+        end
+        inherited GroupBoxContinousOutput: TGroupBox
+          inherited ComboBoxContOutput: TComboBox
+            StyleElements = [seFont, seClient, seBorder]
+          end
+        end
       end
       inherited BitBtnMergeWeatherFN: TBitBtn
         Left = 897
         Top = 672
-        ExplicitLeft = 894
-        ExplicitTop = 669
       end
     end
     inherited TabSheetModelDiagram: TTabSheet
@@ -99,8 +104,7 @@ inherited FormMod_Demo: TFormMod_Demo
         SensOpt.Steps = 5
         SensOpt.DPar = 1.000000000000000000
         SensOpt.Sens_fn = 'sens.dat'
-        ContOutput = True
-        FinalOutput = True
+        OptContOutput = NoContOutput
         Str_SectionName_TimeInit = 'TimeInit'
         Str_SectionName_FileNames = 'FileNames'
         Str_SectionName_SimOptions = 'SimOptions'
@@ -192,6 +196,7 @@ inherited FormMod_Demo: TFormMod_Demo
     inherited TabSheetParameter: TTabSheet
       inherited ToolBarParSheet: TToolBar
         inherited LabelparamFileName: TLabel
+          Height = 15
           StyleElements = [seFont, seClient, seBorder]
         end
         inherited EditParamFileName: TEdit
@@ -202,6 +207,7 @@ inherited FormMod_Demo: TFormMod_Demo
     inherited TabSheetState: TTabSheet
       inherited ToolBarStateSheet: TToolBar
         inherited LabelStateFileName: TLabel
+          Height = 15
           StyleElements = [seFont, seClient, seBorder]
         end
         inherited EditStateFileName: TEdit
@@ -212,6 +218,7 @@ inherited FormMod_Demo: TFormMod_Demo
     inherited TabSheetOptions: TTabSheet
       inherited ToolBarOptions: TToolBar
         inherited LabelOptionsFilename: TLabel
+          Height = 15
           StyleElements = [seFont, seClient, seBorder]
         end
         inherited EditOptionsFileName: TEdit
@@ -222,6 +229,7 @@ inherited FormMod_Demo: TFormMod_Demo
     inherited TabSheetData: TTabSheet
       inherited ToolBarDataPage: TToolBar
         inherited LabelDataFileNameDesc: TLabel
+          Height = 15
           StyleElements = [seFont, seClient, seBorder]
         end
         inherited EditDataFileName: TEdit
@@ -232,6 +240,7 @@ inherited FormMod_Demo: TFormMod_Demo
     inherited TabSheetResultTab: TTabSheet
       inherited ToolBarPageTable: TToolBar
         inherited LabelOutputdatafile: TLabel
+          Height = 13
           StyleElements = [seFont, seClient, seBorder]
         end
         inherited EditOutputdatafilename: TEdit
@@ -260,7 +269,7 @@ inherited FormMod_Demo: TFormMod_Demo
       end
     end
   end
-  inherited Panel1: TPanel
+  inherited PanelMainFormHeader: TPanel
     StyleElements = [seFont, seClient, seBorder]
     inherited LabelActIniFileDesc: TLabel
       StyleElements = [seFont, seClient, seBorder]

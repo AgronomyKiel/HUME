@@ -1,5 +1,7 @@
 ﻿unit USoilWaterMod; { Stand 19.4.09, Grundwasser eingebaut - Ulf Böttcher }
 
+
+
 interface
 
 uses
@@ -13,7 +15,7 @@ uses
   System.SyncObjs;
 
 type
-   TMyIniFile   = TMemIniFile;
+   TMyIniFile   = TMemIniFile;  /// Inifiles redefined to TMemIniFile for using in memory
 
 const
   dWg = 0.0; /// 1E-8;     /// delta for changing water contents

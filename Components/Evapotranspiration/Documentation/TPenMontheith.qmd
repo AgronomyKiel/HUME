@@ -1,0 +1,173 @@
+---
+title: "Class description of TPenMonteith"
+author: "Agronomy and Crop Science Group, Kiel University"
+date: "`r Sys.Date()`"
+bibliography: bibliography.bibtex.bib
+csl: european-journal-of-agronomy.csl
+chunk_output_type: console
+html-math-method: katex
+number-sections: true
+toc: true
+toc-expand: 4
+toc-depth: 4
+toc-location: left
+crossref:
+  eq-prefix: Eq.
+format:
+ html:
+  mermaid:
+    theme: forest
+    mainfont: Helvetica Neue, Helvetica, Arial, sans
+    monofont: Cascadia Mono, Menlo, Consolas, Courier New, Courier
+    mathfont: "TeX Gyre Termes Math"
+---
+
+```{r}
+#| label: SetupLibraries
+#| include: FALSE
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+rm(list = ls(all.names = TRUE))
+
+library(rmarkdown)
+library(bookdown)
+library(soilwater)
+library(pracma)
+library(dplyr)
+library(ggplot2)
+library(extrafont)
+library(gifski)
+library(gganimate)
+library(transformr)
+library(reticulate)
+library(tinytex)
+library(magick)
+library(bibtex)
+library(ggsci)
+library(knitcitations)
+library(kableExtra)
+
+options("citation_format" = "pandoc")
+
+```
+
+
+
+# Introduction
+
+The class TPenMonteith calculates the potential evapotranspiration according to the Penman-Monteith equation. The Penman-Monteith equation is a combination of the Penman equation and the Monteith equation. The Penman equation calculates the evaporation from a free water surface, while the Monteith equation calculates the transpiration from a plant. The Penman-Monteith equation calculates the potential evapotranspiration, which is the sum of the evaporation and the transpiration. The potential evapotranspiration is the evapotranspiration that would occur if there were no water limitation.
+
+
+## Descendence
+
+The class TPenMonteith is derived from TPlantRelatedSubMod, which is derived from TSubmodel which is derived from TObject or TGraphicControl.
+
+TPenMonteith
+           |____TPlantRelatedSubMod
+                                  |____TSubmodel
+
+
+## State variables
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+fn <- "Q:/OSR/INI/ModelLowN/Docu_Docu_ModelLown_talent_N150_Neff.csv"
+df <- read.delim(fn, header = TRUE, sep = ";")
+df.state <- df %>% filter(Submodel == "PenMonteith1", EntityType == "State") %>% dplyr::select(EntityName, Units, Value, Comment)
+names(df.state) <- c("State variable", "Units", "InitialValue", "Description")
+```
+The class TPenMonteith has `r trunc(nrow(df.state))`  following state variable(s).
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.state)
+```
+
+## Parameters
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+
+df.par <- df %>% filter(Submodel == "PenMonteith1", EntityType == "Parameter") %>% dplyr::select(EntityName, Units, Value, Comment)
+names(df.par) <- c("Parameter", "Units", "Value", "Description")
+
+```
+
+The class TPenMonteith has `r trunc(nrow(df.par))`  following parameter(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.par,  escape = FALSE)
+```
+## Variables
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+
+df.var <- df %>% filter(Submodel == "PenMonteith1", EntityType == "Variable") %>% dplyr::select(EntityName, Units, Comment)
+names(df.var) <- c("Variable", "Units", "Description")
+
+```
+
+The class TPenMonteith has `r trunc(nrow(df.var))`  following variable(s).
+
+```{r}
+kable(df.var,  escape = FALSE)
+```
+
+
+
+## External variables
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+
+df.ext <- df %>% filter(Submodel == "PenMonteith1", EntityType == "ExternalValue") %>% dplyr::select(EntityName, Units, Comment, Option)
+names(df.ext) <- c("External variable", "Units", "Description", "Source")
+
+```
+
+The class TPenMonteith has `r trunc(nrow(df.ext))`  following external variable(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.ext,  escape = FALSE)
+```
+
+
+## Options
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+
+df.opt <- df %>% filter(Submodel == "PenMonteith1",EntityType == "Option" ) %>% dplyr::select(EntityName, Units, Comment)
+names(df.opt) <- c("Option", "Units", "Description")
+
+```
+
+The class TPenMonteith has `r trunc(nrow(df.opt))`  following option(s).
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.opt,  escape = FALSE)
+```

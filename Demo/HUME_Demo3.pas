@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, UFORMMOD, VclTee.TeeGDIPlus, ModLink,
   System.ImageList, Vcl.ImgList, Vcl.ExtCtrls, Vcl.Menus, Vcl.StdCtrls,
   VCLTee.TeEngine, VCLTee.TeeProcs, VCLTee.Chart, Vcl.ToolWin, Vcl.ComCtrls,
-  Vcl.Grids, BaseGrid, AdvGrid, Vcl.Buttons, UMod, ULogGrowthDemo;
+  Vcl.Grids, BaseGrid, AdvGrid, Vcl.Buttons, UMod, ULogGrowthDemo, Vcl.WinXCtrls;
 
 type
   TFormMod_Demo = class(TFormMod)
