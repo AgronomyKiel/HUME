@@ -57,7 +57,7 @@ type
 
   TPenMonteith = class(TPlantRelatedSubMod)
   protected
-    pTI: real;     /// potentielle Transpiration/Interzeption
+    pTI: real;     /// potential transpiration/interception
 
     // function getLAI: real; //THumeNumEntity; //override;
     // function getCropHeight: real;//THumeNumEntity; //override;
@@ -90,7 +90,7 @@ type
     Elev: TPar; /// height avove sea level [m]               }
     rc0: TPar; /// Stomatawiderstand bei "guter Wasserversorgung"
     exk_GlobRad: TPar; /// Exktinktionskoeffizient für Globalstrahlung [-]
-    sic: TPar; /// spezifische Interzeptionskapazität pro Einheit BFI [mm/BFI] }
+    sic: TPar; /// spezific interzeption capazity per unit LAI [mm/LAI] }
     CiThreshold: TPar; /// Schwellwert für CO2 Partialdruck [ppm]
     relRc0Inc_CO2: TPar;  /// relative Erhöhung des rc0 durch CO2 [1/ppm]
     measure_height: TPar; /// measurement height of meteorological parameters [m]
@@ -113,7 +113,7 @@ type
     pot_trans_ambient: TVar; /// potentielle Transpiration [mm.d-1]
     pot_Evapo: TVar; /// potentielle Evaporation
     pot_Evapo_ambient: TVar; /// potentielle Evaporation
-    interzeption: TVar; /// Interzeptionsverdunstung
+    interception: TVar; /// Interzeptionsverdunstung
     net_rain: TVar; /// Niederschlag-Interzeption
     netRad: TVar; /// Nettostrahlung
     k_GlobRad: TVar; /// extinction coefficient for GlobRad
@@ -156,7 +156,7 @@ type
 
     Property Var_PotTrans: TVar read pot_trans write pot_trans; /// potentielle Transpiration [mm.d-1]
     Property Var_PotEvap: TVar read pot_Evapo write pot_Evapo;   /// potentielle Evaporation
-    Property Var_interzeption: TVar read interzeption write interzeption; /// Interzeptionsverdunstung
+    Property Var_interzeption: TVar read interception write interception; /// Interzeptionsverdunstung
     Property Var_NetRain: TVar read net_rain write net_rain; /// Niederschlag-Interzeption
     Property Var_ra: TVar read ra write ra; /// aerodynamic resistance [s.m-1]
     Property Var_NetRad: TVar read netRad write netRad; /// net radiation [W.m-2]
@@ -445,12 +445,12 @@ begin
   If pTI * GlobTime.c > int_stor.v then
   begin
     pTI := pTI - int_stor.v / GlobTime.c;
-    interzeption.v := int_stor.v / GlobTime.c;
+    interception.v := int_stor.v / GlobTime.c;
     int_stor.v := 0.0;
   end
   else
   begin
-    interzeption.v := pTI;
+    interception.v := pTI;
     int_stor.v := int_stor.v - pTI * GlobTime.c;
   end;
 
@@ -697,20 +697,20 @@ end;
 procedure TPenMonteith.Calc_potTrans;
 begin
   if pETP.v > 0 then
-    pot_trans.v := (pETP.v - pot_Evapo.v - interzeption.v)
+    pot_trans.v := (pETP.v - pot_Evapo.v - interception.v)
   else
     pot_trans.v := 0;
   if pot_trans.v <= 1E-10 then
     pot_trans.v := 0;
   if pETP_ambient.v > 0 then
-    pot_trans_ambient.v := (pETP_ambient.v - pot_Evapo_ambient.v - interzeption.v)
+    pot_trans_ambient.v := (pETP_ambient.v - pot_Evapo_ambient.v - interception.v)
   else
     pot_trans_ambient.v := 0;
   if pot_trans_ambient.v <= 1E-10 then
     pot_trans_ambient.v := 0;
-   CO2TransDiff.v:= (pot_trans.v+interzeption.v)- (pot_trans_ambient.v+interzeption.v);
+   CO2TransDiff.v:= (pot_trans.v+interception.v)- (pot_trans_ambient.v+interception.v);
    if pot_trans.v>0 then
-    relCO2TransDiff.v:=CO2TransDiff.v/(pot_trans.v+interzeption.v)
+    relCO2TransDiff.v:=CO2TransDiff.v/(pot_trans.v+interception.v)
     else relCO2TransDiff.v:=0;
 
 
@@ -786,7 +786,7 @@ begin
   // Niederschlag [mm/d]
   VarCreate('VapPress', '[mbar]', 0, false, VapPress, 'saturated vapour pressure');
   // Wasserdampfdruck [mbar]
-  VarCreate('P', '[mbar]', 0, false, P);
+  VarCreate('P', '[mbar]', 0, false, P, 'air pressure');
   // Standardluftdruck [mbar] berechnet aus Temperatur und H�he
   VarCreate('pETP', '[]', 0, false, pETP, 'potential evporation');
   // potentielle Evapotranspiration [mm.d-1]
@@ -795,16 +795,16 @@ begin
   VarCreate('pETP_ambient', '[]', 0, false, pETP_ambient, 'potentielle Evapotranspiration ohne CO2 Einfluss');
   // potentielle Evapotranspiration [mm.d-1]
   VarCreate('PotTrans', '[mm/d]', 0, false, pot_trans, 'potential plant transpiration');
-  VarCreate('potTrans_ambient', '[mm/d]', 0, false, pot_trans_ambient); // potentielle Transpiration [mm.d-1]
-  VarCreate('PotEvap', '[mm/d]', 0, false, pot_Evapo); // potentielle Evaporation
+  VarCreate('potTrans_ambient', '[mm/d]', 0, false, pot_trans_ambient, 'potential transpiration under ambient CO2'); // potentielle Transpiration [mm.d-1]
+  VarCreate('PotEvap', '[mm/d]', 0, false, pot_Evapo, 'potential soil evaporation rate'); // potentielle Evaporation
   VarCreate('pot_Evapo_ambient', '[mm/d]', 0, false, pot_Evapo_ambient);  // potentielle Evaporation
-  VarCreate('interzeption', '[]', 0, false, interzeption);  // Interzeptionsverdunstung
+  VarCreate('interzeption', '[mm/d]', 0, false, interception, 'daily interception rate');  // Interzeptionsverdunstung
   VarCreate('NetRain', '[mm/d]', 0, false, net_rain, 'rain - interception'); // Niederschlag-Interzeption
   VarCreate('ra', '[s/m]', 0, false, ra, 'aerodynamic resistance');
   VarCreate('rc', '[s/m]', 0, false, rc, 'canopy resistance');
-  VarCreate('rc_ambient', '[s/m]', 0, false, rc_ambient);
+  VarCreate('rc_ambient', '[s/m]', 0, false, rc_ambient, 'canopy resistance under abient CO2');
   VarCreate('NetRad', '[W.m-2]', 0, false, netRad, 'net radiation'); // Nettostrahlung [W.m-2]
-  VarCreate('k_GlobRad', '[-]', 0, false, k_GlobRad);  // extinction coefficient for GlobRad
+  VarCreate('k_GlobRad', '[-]', 0, false, k_GlobRad, 'actual extinction coefficient for global radiation, can be from parameter or from external crop model');  // extinction coefficient for GlobRad
   VarCreate('rc0_Var', '[s.m-1]', 0, false, rc0_Var, 'rc0 value as used for calculation (from parameter or plant model)');
   VarCreate('rc0_ambient', '[s.m-1]', 0, false, rc0_ambient, 'rc0 value without CO2 effect');
   VarCreate('CO2TransDiff', '[mm/d]', 0, false, CO2TransDiff, 'CO2 induced reduction of pot_trans');
@@ -825,10 +825,10 @@ end;
 procedure TPenMonteith.CreateOptions;
 begin
   // Interzeptionsspeicher [mm]
-  OptCreate('ra_Option', 'PenmanMonteith', f_ra_Option, 'Option for ra(u,CropHeight)-function');
+  OptCreate('ra_Option', 'PenmanMonteith', f_ra_Option, 'Option for ra(u, CropHeight)-function');
   f_ra_Option.OptionList.Add('PenmanMonteith');
   f_ra_Option.OptionList.Add('ThomOliver');
-  OptCreate('optCO2', 'NoCO2Effect', OptWithCO2);
+  OptCreate('optCO2', 'NoCO2Effect', OptWithCO2, 'Option for including effects of elevated CO2 in calculations');
   OptWithCO2.OptionList.Clear;
   OptWithCO2.OptionList.Add('NoCO2Effect');
   OptWithCO2.OptionList.Add('WithCO2Effect');
