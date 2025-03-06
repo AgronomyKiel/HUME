@@ -1236,9 +1236,11 @@ begin
   if uppercase(RootGrowthAfterEmergence.Option) = uppercase('true') then
     begin
       fRootGrowthAfterEmergence := true;
+      EmergenceDay.Search := true;
+    end else begin
+      fRootGrowthAfterEmergence := false;
       EmergenceDay.Search := false;
-    end else
-    fRootGrowthAfterEmergence := false;
+    end;
 
 
   If PlantModel <> nil then begin

@@ -297,8 +297,8 @@ type
     bil_nr: TPar;        /// Index of Layer where lower boundary fluxes are calculated
     Weff: TPar;          /// effective rooting deph [cm]
     psi_critEvap: TPar;     /// Wasserspannung ab der Evaporation abnimmt [hPa]
-    NetRain: TExternV;    /// NetRain = Niederschlag - Interzeption
-    // THumeNumEntity;              ///  NetRain = Niederschlag - Interzeption
+    NetRain: TExternV;    /// NetRain = Niederschlag - Interception
+    // THumeNumEntity;              ///  NetRain = Niederschlag - Interception
     CumNetRain: TState;     /// kumulativer Niederschlag [mm]
     Pot_Evap: THumeNumEntity;  /// potentielle Evaporationsrate
 

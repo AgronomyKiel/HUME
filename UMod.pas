@@ -5932,7 +5932,7 @@ begin
   begin
     Variable := Tvar(VarStrList.objects[i]);
     Variable.SubModname := self.Name;
-   // VarStrList.Strings[i] := Variable.Name;
+    VarStrList.Strings[i] := Variable.Name;
     Variable.v := Variable.DefaultValue;
     // TODO Warum sollte man Variablen aus einer Datei lesen wollen?
     if Variable.ReadFromIniFile then
@@ -5962,7 +5962,7 @@ begin
   begin
     Param := TPar(ParStrList.objects[i]);
     Param.SubModname := self.Name;
- //   ParStrList.Strings[i] := Param.Name;
+    ParStrList.Strings[i] := Param.Name;
     // This is necessary because the Name of the parameter may have been
     // altered within the object inspector
     if GlobMod.ParamIniFile <> nil then  begin
@@ -6001,7 +6001,7 @@ begin
     State := TState(StateStrList.objects[i]);
     State.SubModname := self.Name;
     StateVar[i].SubModname := self.Name;
- //   StateStrList.Strings[i] := State.Name;
+    StateStrList.Strings[i] := State.Name;
     State.c := 0;
     // At the beginning the rate of change equals 0 for all state variables
     State.v := State.DefaultValue;

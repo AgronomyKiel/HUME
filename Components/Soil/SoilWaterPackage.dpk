@@ -12,15 +12,15 @@ package SoilWaterPackage;
 {$LOCALSYMBOLS ON}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
-{$OPTIMIZATION ON}
-{$OVERFLOWCHECKS OFF}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS ON}
 {$RANGECHECKS ON}
 {$REFERENCEINFO ON}
 {$SAFEDIVIDE OFF}
-{$STACKFRAMES OFF}
+{$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
-{$WRITEABLECONST ON}
+{$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
@@ -28,20 +28,66 @@ package SoilWaterPackage;
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
-  vclx,
   rtl,
-  vclactnband,
-  designide,
-  VclSmp,
-  Hume1,
+  vcl,
+  vclimg,
+  vclx,
+  Tee,
   Jcl,
-  xmlrtl,
-  SoilWaterPackageNew;
+  asgd_Rio,
+  Hume1,
+  designide,
+  vclactnband,
+  xmlrtl;
 
 contains
-  URootedSoil_zr in 'URootedSoil_zr.pas',
-  Usubpartitioning_Maize_Roots in '..\Maize\Usubpartitioning_Maize_Roots.pas';
+  Concentration_Niko in 'Concentration_Niko.pas',
+  UAbstractSoilHeat in 'UAbstractSoilHeat.pas',
+  UAbstractSoilMin in 'UAbstractSoilMin.pas',
+  UFormDebugSoil in 'UFormDebugSoil.pas' {FormDebugSoil},
+  UGenucht in 'UGenucht.pas',
+  UlayeredSoil in 'UlayeredSoil.pas',
+  URootedSoil in 'URootedSoil.pas',
+  USimpleSoilHeat in 'USimpleSoilHeat.pas',
+  USoilMineralisation in 'USoilMineralisation.pas',
+  USoilMineralisationNH4 in 'USoilMineralisationNH4.pas',
+  USoilNitrogen in 'USoilNitrogen.pas',
+  USoilNitrogenUp in 'USoilNitrogenUp.pas',
+  USoilTexture in 'USoilTexture.pas',
+  USoilWaterMod in 'USoilWaterMod.pas',
+  WFlowFunctions in 'WFlowFunctions.pas',
+  URootedSoilET in 'URootedSoilET.pas',
+  UMinMod2Pool in 'UMinMod2Pool.pas',
+  UDueng in '..\CropManagement\UDueng.pas',
+  UDueng_NH3 in '..\CropManagement\UDueng_NH3.pas',
+  UDueng_Par in '..\CropManagement\UDueng_Par.pas',
+  UFertilization in '..\CropManagement\UFertilization.pas',
+  UInput in '..\CropManagement\UInput.pas',
+  UIrrigate in '..\CropManagement\UIrrigate.pas',
+  UTillage in '..\CropManagement\UTillage.pas',
+  UDailyCropSurfaceTemperatures in '..\Evapotranspiration\UDailyCropSurfaceTemperatures.pas',
+  UHaude in '..\Evapotranspiration\UHaude.pas',
+  UPenMonteith in '..\Evapotranspiration\UPenMonteith.pas',
+  UPenMonteith_Hybrid in '..\Evapotranspiration\UPenMonteith_Hybrid.pas',
+  FFResultsSubmod in '..\PlantComponents\FFResultsSubmod.pas',
+  PlantIntegrator in '..\PlantComponents\PlantIntegrator.pas',
+  UDryMatProdComp in '..\PlantComponents\UDryMatProdComp.pas',
+  UGrowthCurve in '..\PlantComponents\UGrowthCurve.pas',
+  UGrowthCurvePlant in '..\PlantComponents\UGrowthCurvePlant.pas',
+  UGrowthCurvePlantRoots in '..\PlantComponents\UGrowthCurvePlantRoots.pas',
+  ULUETotDry in '..\PlantComponents\ULUETotDry.pas',
+  UMultiGrowthCurvePlant in '..\PlantComponents\UMultiGrowthCurvePlant.pas',
+  UMultiGrowthCurvePlantRoots in '..\PlantComponents\UMultiGrowthCurvePlantRoots.pas',
+  USimplePlant in '..\PlantComponents\USimplePlant.pas',
+  USimplePlantWW_R in '..\PlantComponents\USimplePlantWW_R.pas',
+  USucros in '..\PlantComponents\USucros.pas',
+  USoilMinN2O in 'Q:\N2O\Project\USoilMinN2O.pas',
+  USimpleRootModDM in '..\Rootgrowth\USimpleRootModDM.pas',
+  USimplePlantWW_old_R in '..\PlantComponents\USimplePlantWW_old_R.pas',
+  Daylength in '..\CERES Wheat\Daylength.pas',
+  UHumeWheatPartitioning in '..\CERES Wheat\UHumeWheatPartitioning.pas',
+  UHumeWheatDryMatter in '..\CERES Wheat\UHumeWheatDryMatter.pas',
+  UHumeWheatLeafArea in '..\CERES Wheat\UHumeWheatLeafArea.pas',
+  Development in '..\CERES Wheat\Development.pas';
 
-// UHaude in '..\Evapotranspiration\UHaude.pas';
 end.

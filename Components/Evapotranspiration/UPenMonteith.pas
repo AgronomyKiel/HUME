@@ -12,8 +12,8 @@
   Water Resour.Res. (1966) 2, 455-467
 
   Duynisveld, W.H.M. (1983)
-  Entwicklung von Simulationsmodellen f�r den Transport von
-  gel�sten Stoffen in wasserunges�ttigten B�den and
+  Entwicklung von Simulationsmodellen fuer den Transport von
+  geloesten Stoffen in wasserungesaettigten Boeden and
   Lockersedimenten
   Texte Umweltbunofamt (1983) 17, 197 Seiten
 
@@ -26,10 +26,10 @@
   and soil
   Simulation Reports CABO-TT, Wageningen 1987
 
-  L�bmeier, F.J. (1983)
+  Loebmeier, F.J. (1983)
   Agrarmeteorologisches Model zur calcuation der aktuellen
   Verdunstung (AMBAV)
-  Beitr�ge zur Agrarmeteorologie Nr. 7/83
+  Beitraege zur Agrarmeteorologie Nr. 7/83
 
   Tag der ersten Bearbeitung  : 6.10.89
   Tag der letzten Bearbeitung : 16.1.95
@@ -359,12 +359,12 @@ function TPenMonteith.Penman(Temp, Sat_def, Net_beam, delta, gamma,
   Temp             Lufttemperatur                  [�C]         I
   Sat_def          Sättigungsdefizit der Luft      [mbar]       I
   Net_beam         net radiation                  [J/m2*s]     I
-  delta            Steigung der S�ttigungs-
+  delta            Steigung der Saettigungs-
   dampfdruckkurve                 [mbar/K]     I
   gamma            Psychrometerkonstante           [mbar/K]     I
-  l_h_v_water      latente Verdunstungsw�rme
+  l_h_v_water      latente Verdunstungswaerme
   von Wasser bei 10�C             [J/Kg]       I
-  ra               Grenzfl�chenwiderstand          [s/m]        I
+  ra               Grenzflaechenwiderstand          [s/m]        I
   rc               bulk-Stomatawiderstand          [s/m]        I
 
   Penman           potential evapotranspiration  [kg/(m2*d)]  O
@@ -654,6 +654,13 @@ begin
     sat_def.v     := es-ea; }
 
   delta := delta_f(es, Temp.v);
+
+//???
+//@title: Calculation of pETPambient
+//@Var: pETP_ambient
+//@Description: The calculation of the pETP_ambient value is based on the canopy resistance under
+//@.. non elevated CO2
+//???
 
   pETP_ambient.v := Penman(Temp.v, Sat_def.v, netRad.v, delta, gamma, l_h_v_water,
     ra.v, rc_ambient.v);

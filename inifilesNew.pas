@@ -48,7 +48,7 @@ type
 
 implementation
 
-uses SysUtils, Consts;
+uses SysUtils, vcl.Consts;
 
 
 function StrToFloatDef (ValueStr : string; DefaultValue : real; var Error:boolean):real;

@@ -1,4 +1,4 @@
-unit UState;
+﻿unit UState;
 {$IFDEF LINUX}
 {$DEFINE NONVISUAL}
 {$ENDIF LINUX}

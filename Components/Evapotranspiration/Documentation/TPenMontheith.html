@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Agronomy and Crop Science Group, Kiel University">
-<meta name="dcterms.date" content="2025-03-02">
+<meta name="dcterms.date" content="2025-03-05">
 
 <title>Class description of TPenMonteith</title>
 <style>
@@ -70,6 +70,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="TPenMontheith_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="TPenMontheith_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -83,12 +126,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a>
   <ul>
-  <li><a href="#descendence" id="toc-descendence" class="nav-link" data-scroll-target="#descendence"><span class="header-section-number">1.1</span> Descendence</a></li>
-  <li><a href="#state-variables" id="toc-state-variables" class="nav-link" data-scroll-target="#state-variables"><span class="header-section-number">1.2</span> State variables</a></li>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters"><span class="header-section-number">1.3</span> Parameters</a></li>
-  <li><a href="#variables" id="toc-variables" class="nav-link" data-scroll-target="#variables"><span class="header-section-number">1.4</span> Variables</a></li>
-  <li><a href="#external-variables" id="toc-external-variables" class="nav-link" data-scroll-target="#external-variables"><span class="header-section-number">1.5</span> External variables</a></li>
-  <li><a href="#options" id="toc-options" class="nav-link" data-scroll-target="#options"><span class="header-section-number">1.6</span> Options</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background"><span class="header-section-number">1.1</span> Background</a>
+  <ul class="collapse">
+  <li><a href="#aerodynamic-resistance" id="toc-aerodynamic-resistance" class="nav-link" data-scroll-target="#aerodynamic-resistance"><span class="header-section-number">1.1.1</span> Aerodynamic resistance</a></li>
+  <li><a href="#canopy-resistance" id="toc-canopy-resistance" class="nav-link" data-scroll-target="#canopy-resistance"><span class="header-section-number">1.1.2</span> Canopy resistance</a></li>
+  </ul></li>
+  <li><a href="#descendence" id="toc-descendence" class="nav-link" data-scroll-target="#descendence"><span class="header-section-number">1.2</span> Descendence</a></li>
+  <li><a href="#state-variables" id="toc-state-variables" class="nav-link" data-scroll-target="#state-variables"><span class="header-section-number">1.3</span> State variables</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters"><span class="header-section-number">1.4</span> Parameters</a></li>
+  <li><a href="#variables" id="toc-variables" class="nav-link" data-scroll-target="#variables"><span class="header-section-number">1.5</span> Variables</a></li>
+  <li><a href="#external-variables" id="toc-external-variables" class="nav-link" data-scroll-target="#external-variables"><span class="header-section-number">1.6</span> External variables</a></li>
+  <li><a href="#options" id="toc-options" class="nav-link" data-scroll-target="#options"><span class="header-section-number">1.7</span> Options</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -116,7 +164,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 2, 2025</p>
+      <p class="date">March 5, 2025</p>
     </div>
   </div>
   
@@ -128,16 +176,80 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>fn_source <span class="ot">&lt;-</span> <span class="st">"Q:/HUME/HUME/Components/Evapotranspiration/UPenMonteith.pas"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>fn_xml <span class="ot">&lt;-</span> <span class="st">"Q:/OSR/Project/OSRGrowth/xml_docu/UPenMonteith.xml"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>xml_docu <span class="ot">&lt;-</span> <span class="fu">read_xml</span>(fn_xml)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <section id="introduction" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
 <p>The class TPenMonteith calculates the potential evapotranspiration according to the Penman-Monteith equation. The Penman-Monteith equation is a combination of the Penman equation and the Monteith equation. The Penman equation calculates the evaporation from a free water surface, while the Monteith equation calculates the transpiration from a plant. The Penman-Monteith equation calculates the potential evapotranspiration, which is the sum of the evaporation and the transpiration. The potential evapotranspiration is the evapotranspiration that would occur if there were no water limitation.</p>
-<section id="descendence" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="descendence"><span class="header-section-number">1.1</span> Descendence</h2>
+<section id="background" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="background"><span class="header-section-number">1.1</span> Background</h2>
+<p>Evaporation of a plant canopy depends like dry matter production on the amount of intercepted radiant energy but also on the vapour pressure deficit of the ambient air. One of the most fundamental methods to calculate the evaporation rate of a closed plant canopy is the Penman-Monteith equation (Monteith, 1973):</p>
+<p><span id="eq-PM"><span class="math display">\lambda E=\frac{s{{R}_{n}}+{{\rho }_{a}}{{c}_{p}}\frac{{{e}_{s}}-{{e}_{a}}}{{{r}_{a}}}}{s+\gamma \left( 1+\frac{{{r}_{c}}}{{{r}_{a}}} \right)} \tag{1}</span></span> with evaporation E (kg.m-2.s-1), latent heat of vaporisation of water <span class="math inline">\lambda</span> (J.kg-1), net radiation <span class="math inline">R_n</span> (W.m-2), total resistance of the pathway between the evaporating sites and the bulk air ra (s.m-1), the canopy resistance <span class="math inline">r_c</span> (s.m-1), the vapour pressure deficit between the evaporating sites and the bulk air es-ea (hPa), the slope of the vapour saturation curve s (hPa.K-1), the volumetric heat capacity of dry air <span class="math inline">c_p</span> (J.kg-1), the density of dry air <span class="math inline">\rho_a</span> (kg.m-3) and the psychrometer constant <span class="math inline">\gamma</span> (hPa.K-1).</p>
+<p>The net radiation <span class="math inline">R_n</span> is by default computed from the global radiation, GR, using an empirical regression equation derived from measurements of global and net radiation over grass at the experimental field ‘Ruthe’:</p>
+<p><span id="eq-NetRad"><span class="math display">{{R}_{n}}=0.6494\cdot GR-18.417 \tag{2}</span></span></p>
+<p>Potential evaporation is the sum potential transpiration, Tp, potential evaporation, Ep, and of interception evaporation, I:</p>
+<p><span id="eq-ETp"><span class="math display">E{{T}_{p}}={{T}_{p}}+{{E}_{p}}+I \tag{3}</span></span> Interception evaporation kg.m-2.d-1 is assumed to take place from a storage pool, IP, (kg.m-2) situated on the surface of the canopy. The capacity of this storage pool, CIP, kg.m-2 is calculated from a specific interception capacity, SIC, (kg.m².m-2) and the leaf area index LAI m².m-2.</p>
+<p><span id="eq-CIP"><span class="math display">CIP=SIC\cdot LAI \tag{4}</span></span></p>
+<p>Interception is the minimum of the sum of the maximum possible change of the interception pool and the precipitation rate, Pr, kg.m-2.d-1 and the potential Evapotranspiration:</p>
+<p><span id="eq-Interceptionrate"><span class="math display">I=\min \left( {}^{IP}/{}_{dt}+\min \left( \Pr ,\,CIP-IP \right),\,\,E{{T}_{p}} \right) \tag{5}</span></span> The change of the storage pool is calculated from the minimum of the precipitation rate and the actual unused capacity of the precipitation pool, CIP-IP:</p>
+<p><span id="eq-dIPdt"><span class="math display">\frac{dIP}{dt}=\min \left( \Pr ,\,CIP-IP \right)-I \tag{6}</span></span></p>
+<p>The potential evaporation rate is determined by the fraction of radiation energy which is reaching the soil surface, Rns. This fraction can be calculated using a analogue of the Lambert-Beer law:</p>
+<p><span id="eq-Netradabsorbed"><span class="math display">{{R}_{ns}}={{R}_{n}}\cdot {{e}^{-{{k}_{G}}\cdot LAI}} \tag{7}</span></span></p>
+<p>Were k<sub>G</sub> is the extinction coefficient for global radiation, which has a default value of 0.5. The potential evaporation then gets:</p>
+<p><span id="eq-Ep"><span class="math display">{{E}_{p}}=\left( E{{T}_{p}}-I \right)\cdot \frac{{{R}_{ns}}}{{{R}_{n}}} \tag{8}</span></span></p>
+<p>Actual evaporation was determined from an empirical function using potential evaporation and the water potential in 10 cm depth as input parameters ((Beese et al., 1978)). The potential transpiration is calculated as the remaining part of the potential evapo-transpiration after subtracting potential evaporation and interception and taking also into account an empirical crop resistance.</p>
+<section id="aerodynamic-resistance" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="aerodynamic-resistance"><span class="header-section-number">1.1.1</span> Aerodynamic resistance</h3>
+<p>The aerodynamic resistance depends on wind speed and the height of the vegetation. Under so called stable conditions (canopy temperature equals air temperature) a logarithmic wind profile can be found, i.e.&nbsp;wind speed is linearly related to the logarithm of the height. From the measurement height (z) the wind speed (u) decreases down to zero at a height <span class="math inline">z_0</span> which can be found by linear extrapolation on the semi-logarithmic plot of height vs wind speed. The term <span class="math inline">z_0</span> is also called the aerodynamic roughness length. It can be approximated by 0.13*h, where h is the crop height [m].<br>
+Moneith &amp; Unsworth () are giving the following equation for <span class="math inline">r_a</span></p>
+<p><span id="eq-ra"><span class="math display">{{r}_{a}}=\frac{1}{{{k}^{2}}u}\left( \ln {{\left( \frac{z}{{{z}_{0}}} \right)}^{2}} \right) \tag{9}</span></span></p>
+<p>where <span class="math inline">k</span> is the von Karman constant (0.41) and <span class="math inline">u</span> is the wind speed at height <span class="math inline">z</span>.</p>
+<p>This equation, however, has the problem that when wind speed get very low, values of <span class="math inline">r_a</span> get unrealistically high. In fact as <span class="math inline">U \rightarrow 0</span>, <span class="math inline">r_a \rightarrow \infty</span> and <span class="math inline">(T_c - T_a) \rightarrow \infty</span>, an unrealistic result. Windspeeds &lt; 1 m s- 1 frequently occur during the course of canopy temperature measurements, a fact that must be accounted for in the calculation of r,. A further complication becomes evident at the lower windspeeds when the measurement of windspeed is considered. The stall speed of many anemometers is relatively large (i.e., 0.5 m s-I), which means that a value of U=0 can be recorded although the air may be moving above the canopy. Even without measurable horizontal wind, air movement takes place within the canopy because free convective conditions exist which results in buoyancy driven, energy containing eddies. Thom &amp; Oliver (1977) suggested a semi-empirical approach for overcoming this problem:</p>
+<p><span id="eq-ra2"><span class="math display">{{\text{r}}_{\text{a}}}\text{=}\frac{\text{4.72 ln}{{\left( \frac{\text{z-d}}{{{\text{z}}_{\text{0}}}} \right)}^{\text{2}}}}{\text{1 + 0.54u}} \tag{10}</span></span></p>
+<p>where d is the zero plane displacement height, i.e.&nbsp;the height to which plant canopies increase the plane of zero wind speed. The displacement height is according to Monteith 0.63*h, were h is the crop height [m].</p>
+<p>The term d thereby is the zero plane displacement height, i.e.&nbsp;the height to which plant canopies increase the plane of zero wind speed. The displacement height is according to Monteith 0.63*h, were h is the crop height [m].</p>
+</section>
+<section id="canopy-resistance" class="level3" data-number="1.1.2">
+<h3 data-number="1.1.2" class="anchored" data-anchor-id="canopy-resistance"><span class="header-section-number">1.1.2</span> Canopy resistance</h3>
+<p>The second resistance considered in the Penman-Monteith equation is the canopy resistance. The canopy resistance <span class="math inline">r_c</span> is in principle the value of the stomatal resistance <span class="math inline">r_s</span> divided by the “active” leaf area index, assuming that the leaves act independently as emitters of water vapour:</p>
+<p><span id="eq-rc"><span class="math display">{{r}_{c}}\approx \frac{r_s}{LAI};\,LAI&lt;&lt; \tag{11}</span></span></p>
+<p>For higher values of leaf area index, however, additional leaves do not decrease the canopy resistance as the first leaves do, i.e.&nbsp;local increase of the vapour pressure of the air by existing leaves reduces the additional transpiration rate of additional leaves.</p>
+<p><span id="eq-rc2"><span class="math display">
+rc =
+\begin{cases}
+    rc_0, &amp; \text{if } LAI &lt; 1.0 \\[8pt]
+    \frac{rc_0}{LAI}, &amp; \text{if } 1.0 \leq LAI &lt; 2.0 \\[8pt]
+    \frac{rc_0}{2} - \left(\frac{rc_0}{2} - \frac{rc_0}{3}\right) \cdot \frac{LAI - 2}{4}, &amp; \text{if } 2.0 \leq LAI &lt; 6.0 \\[8pt]
+    \frac{rc_0}{3}, &amp; \text{if } rc \text{ remains undefined} \\[8pt]
+\end{cases}
+\tag{12}</span></span></p>
+<p>For a well watered crop the value of <span class="math inline">r_s</span> is at around 50 <span class="math inline">[s.m^{-1}]</span>. The resulting values of <span class="math inline">r_c</span> plotted against LAI look like shown in <a href="#fig-rc_f" class="quarto-xref">Figure&nbsp;1</a>.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-rc_f" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center" data-fig-pos="h">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rc_f-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="TPenMontheith_files/figure-html/fig-rc_f-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" data-fig-pos="h" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rc_f-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Canopy resistance rc as a function of leaf area index according to the empirical model of Stockle
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="descendence" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="descendence"><span class="header-section-number">1.2</span> Descendence</h2>
 <p>The class TPenMonteith is derived from TPlantRelatedSubMod, which is derived from TSubmodel which is derived from TObject or TGraphicControl.</p>
 <p>TPenMonteith |____TPlantRelatedSubMod |____TSubmodel</p>
 </section>
-<section id="state-variables" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="state-variables"><span class="header-section-number">1.2</span> State variables</h2>
+<section id="state-variables" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="state-variables"><span class="header-section-number">1.3</span> State variables</h2>
 <p>The class TPenMonteith has 1 following state variable(s).</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -162,8 +274,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="parameters" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="parameters"><span class="header-section-number">1.3</span> Parameters</h2>
+<section id="parameters" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="parameters"><span class="header-section-number">1.4</span> Parameters</h2>
 <p>The class TPenMonteith has 7 following parameter(s).</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -230,17 +342,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="variables" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="variables"><span class="header-section-number">1.4</span> Variables</h2>
+<section id="variables" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="variables"><span class="header-section-number">1.5</span> Variables</h2>
 <p>The class TPenMonteith has 20 following variable(s).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(df.var,  <span class="at">escape =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(df.var,  <span class="at">escape =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <colgroup>
-<col style="width: 19%">
-<col style="width: 8%">
-<col style="width: 71%">
+<col style="width: 14%">
+<col style="width: 6%">
+<col style="width: 79%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -262,13 +374,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: left;">interzeption</td>
-<td style="text-align: left;">[]</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">[mm/d]</td>
+<td style="text-align: left;">daily interception rate</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">k_GlobRad</td>
 <td style="text-align: left;">[-]</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">actual extinction coefficient for global radiation, can be from parameter or from external crop model</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">NetRad</td>
@@ -283,7 +395,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td style="text-align: left;">P</td>
 <td style="text-align: left;">[mbar]</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">air pressure</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">pETP</td>
@@ -293,7 +405,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td style="text-align: left;">pETP_ambient</td>
 <td style="text-align: left;">[]</td>
-<td style="text-align: left;">potentielle Evapotranspiration ohne CO2 Einfluss</td>
+<td style="text-align: left;">potential evapotranspiration ohne CO2 Einfluss</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">pot_Evapo_ambient</td>
@@ -303,7 +415,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td style="text-align: left;">PotEvap</td>
 <td style="text-align: left;">[mm/d]</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">potential soil evaporation rate</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">PotTrans</td>
@@ -313,7 +425,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td style="text-align: left;">potTrans_ambient</td>
 <td style="text-align: left;">[mm/d]</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">potential transpiration under ambient CO2</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">ra</td>
@@ -328,7 +440,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="even">
 <td style="text-align: left;">rc_ambient</td>
 <td style="text-align: left;">[s/m]</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">canopy resistance under abient CO2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">rc0_ambient</td>
@@ -355,8 +467,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="external-variables" class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="external-variables"><span class="header-section-number">1.5</span> External variables</h2>
+<section id="external-variables" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="external-variables"><span class="header-section-number">1.6</span> External variables</h2>
 <p>The class TPenMonteith has 8 following external variable(s).</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -429,12 +541,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="options" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="options"><span class="header-section-number">1.6</span> Options</h2>
+<section id="options" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="options"><span class="header-section-number">1.7</span> Options</h2>
 <p>The class TPenMonteith has 4 following option(s).</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 7%">
+<col style="width: 77%">
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;">Option</th>
@@ -456,12 +573,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td style="text-align: left;">optCO2</td>
 <td style="text-align: left;">NA</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">Option for including effects of elevated CO2 in calculations</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">ra_Option</td>
 <td style="text-align: left;">NA</td>
-<td style="text-align: left;">Option for ra(u,CropHeight)-function</td>
+<td style="text-align: left;">Option for ra(u, CropHeight)-function</td>
 </tr>
 </tbody>
 </table>
