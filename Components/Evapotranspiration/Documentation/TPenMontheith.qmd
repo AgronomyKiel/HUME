@@ -26,7 +26,7 @@ format:
 #| label: SetupLibraries
 #| include: FALSE
 
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center", fig.width = 12, fig.height = 6, fig.pos = "h", fig.cap = TRUE)
 rm(list = ls(all.names = TRUE))
 
 library(rmarkdown)
@@ -48,14 +48,17 @@ library(knitcitations)
 library(kableExtra)
 library(Weatherfunctions)
 library(xml2)
+library(ggpmisc)
+library(tidyr)
 options("citation_format" = "pandoc")
 
 ```
 
 ```{r}
+#| include: false
 fn_source <- "Q:/HUME/HUME/Components/Evapotranspiration/UPenMonteith.pas"
-fn_xml <- "Q:/OSR/Project/OSRGrowth/xml_docu/UPenMonteith.xml"
-xml_docu <- read_xml(fn_xml)
+#fn_xml <- "Q:/OSR/Project/OSRGrowth/xml_docu/UPenMonteith.xml"
+#xml_docu <- read_xml(fn_xml)
 
 ```
 
@@ -65,58 +68,302 @@ xml_docu <- read_xml(fn_xml)
 The class TPenMonteith calculates the potential evapotranspiration according to the Penman-Monteith equation. The Penman-Monteith equation is a combination of the Penman equation and the Monteith equation. The Penman equation calculates the evaporation from a free water surface, while the Monteith equation calculates the transpiration from a plant. The Penman-Monteith equation calculates the potential evapotranspiration, which is the sum of the evaporation and the transpiration. The potential evapotranspiration is the evapotranspiration that would occur if there were no water limitation.
 
 ## Background
-Evaporation of a plant canopy depends like dry matter production on the amount of intercepted radiant energy but also on the vapour pressure deficit of the ambient air. One of the most fundamental methods to calculate the evaporation rate of a closed plant canopy is the Penman-Monteith equation (Monteith, 1973):
+Evaporation of a plant canopy depends like dry matter production on the amount of intercepted radiant energy but also on the vapour pressure deficit of the ambient air. One of the most fundamental methods to calculate the evaporation rate of a closed plant canopy is the Penman-Monteith equation [@Monteith1973]:
 
 $$\lambda E=\frac{s{{R}_{n}}+{{\rho }_{a}}{{c}_{p}}\frac{{{e}_{s}}-{{e}_{a}}}{{{r}_{a}}}}{s+\gamma \left( 1+\frac{{{r}_{c}}}{{{r}_{a}}} \right)}$$ {#eq-PM}
-with evaporation E (kg.m-2.s-1), latent heat of vaporisation of water $\lambda$ (J.kg-1), net radiation $R_n$ (W.m-2), total resistance of the pathway between the evaporating sites and the bulk air ra (s.m-1), the canopy resistance $r_c$ (s.m-1), the vapour pressure deficit between the evaporating sites and the bulk air es-ea (hPa), the slope of the vapour saturation curve s (hPa.K-1), the volumetric heat capacity of dry air $c_p$ (J.kg-1), the density of dry air $\rho_a$ (kg.m-3) and the psychrometer constant $\gamma$ (hPa.K-1). 
+with evaporation E (kg^.^m^-2.^s^-1^), latent heat of vaporisation of water $\lambda$ (J^.^kg^-1^), net radiation $R_n$ (W^.^m^-2^), total resistance of the pathway between the evaporating sites and the bulk air r~a~ (s^.^m^-1^), the canopy resistance $r_c$ (s^.^m^-1^), the vapour pressure deficit between the evaporating sites and the bulk air e~s~-e~a~ (hPa), the slope of the vapour saturation curve s (hPa^.^K^-1^), the volumetric heat capacity of dry air $c_p$ (J^.^kg^-1^), the density of dry air $\rho_a$ (kg^.^m^-3^) and the psychrometer constant $\gamma$ (hPa^.^K^-1^). 
 
-The net radiation $R_n$ is by default computed from the global radiation, GR, using an empirical regression equation derived from measurements of global and net radiation over grass at the experimental field 'Ruthe':
+In order to calculate the evaporation rate, the Penman-Monteith equation requires the net radiation, the vapor pressure deficit, the canopy resistance, the aerodynamic resistance.
+
+The net radiation is the difference between the incoming shortwave radiation and the reflected shortwave radiation plus the incoming longwave radiation minus the outgoing longwave radiation and the soil heat flux. The vapour pressure deficit is the difference between the saturation vapour pressure and the actual vapour pressure. The canopy resistance is the resistance to water vapour transfer from the crop surface to the atmosphere. The aerodynamic resistance is the resistance to water vapour transfer from the leaf surface to the atmosphere. 
+
+
+### Net radiation
+
+The net radiation R~n~ [W^.^m^-2^] is computed from the global radiation, GR [W^.^m^-2^], using an empirical regression equation derived from measurements of global and net radiation over grass at the experimental field 'Ruthe' (@fig-NetRadhourly):
 
 $${{R}_{n}}=0.6494\cdot GR-18.417$$ {#eq-NetRad}
 
-Potential evaporation is the sum potential transpiration, Tp, potential evaporation, Ep, and of interception evaporation, I:
+The FAO-56 method calculates the net radiation as the difference between the incoming shortwave radiation and the reflected shortwave radiation plus the incoming longwave radiation minus the outgoing longwave radiation and the soil heat flux (@Carmona2017, @AllenRGPereiraLSRaesDSmithM1998):
 
-$$E{{T}_{p}}={{T}_{p}}+{{E}_{p}}+I$$ {#eq-ETp}
-Interception evaporation kg.m-2.d-1 is assumed to take place from a storage pool, IP, (kg.m-2) situated on the surface of the canopy. The capacity of this storage pool, CIP, kg.m-2 is calculated from a specific interception capacity, SIC, (kg.m².m-2) and the leaf area index LAI m².m-2.
+$$R_n = (1 - \alpha) \cdot R_s + R_l - G$$ {#eq-NetRadFAO56}
 
-$$CIP=SIC\cdot LAI$$ {#eq-CIP}
-
-Interception is the minimum of the sum of the maximum possible change of the interception pool and the precipitation rate, Pr, kg.m-2.d-1 and the potential Evapotranspiration:
-
-$$I=\min \left( {}^{IP}/{}_{dt}+\min \left( \Pr ,\,CIP-IP \right),\,\,E{{T}_{p}} \right)$$ {#eq-Interceptionrate}
-The change of the storage pool is calculated from the minimum of the precipitation rate and the actual unused capacity of the precipitation pool, CIP-IP:
-
-$$\frac{dIP}{dt}=\min \left( \Pr ,\,CIP-IP \right)-I$$ {#eq-dIPdt}
+where $\alpha$ is the albedo, $R_s$ is the incoming shortwave radiation, $R_l$ is the incoming longwave radiation and $G$ is the soil heat flux. The albedo is the fraction of the incoming shortwave radiation that is reflected by the surface. The soil heat flux is the heat flux from the soil to the atmosphere. The soil heat flux is usually small compared to the other components of the net radiation and is often neglected.
 
 
-The potential evaporation rate is determined by the fraction of radiation energy which is reaching the soil surface, Rns. This fraction can be calculated using a analogue of the Lambert-Beer law:
 
-$${{R}_{ns}}={{R}_{n}}\cdot {{e}^{-{{k}_{G}}\cdot LAI}}$$ {#eq-Netradabsorbed}
+The net energy flux leaving the earth's surface is, however, less than that emitted and given by the Stefan-Boltzmann law due to the absorption and downward radiation from the sky. Water vapour, clouds, carbon dioxide and dust are absorbers and emitters of longwave radiation. Their concentrations should be known when assessing the net outgoing flux. As humidity and cloudiness play an important role, the Stefan-Boltzmann law is corrected by these two factors when estimating - the net outgoing flux of longwave radiation. It is thereby assumed that the concentrations of the other absorbers are constant. 
 
-Were k~G~ is the extinction coefficient for global radiation, which has a default value of 0.5.
-The potential evaporation then gets:
+The equation for estimating net radiation in the FAO Penman-Monteith method (daily time resolution"), $R_{nrefcrop}$, is expressed as:
 
-$${{E}_{p}}=\left( E{{T}_{p}}-I \right)\cdot \frac{{{R}_{ns}}}{{{R}_{n}}}$$ {#eq-Ep}
 
-Actual evaporation was determined from an empirical function using potential evaporation and the water potential in 10 cm depth as input parameters ((Beese et al., 1978)). The potential transpiration is calculated as the remaining part of the potential evapo-transpiration after subtracting potential evaporation and interception and taking also into account an empirical crop resistance.
 
+$$
+\begin{aligned}
+& R_{nrefcrop}=R_{ns}+R_{nl}=R_s\downarrow \left(1-\alpha \right )+R_{nl}=R_{ns}+R_{nl}
+\\
+& =R_s\downarrow \left(1-\alpha \right )+\left( {R}_{l\downarrow 0}-{R}_{l\uparrow}\right)
+\end{aligned}
+$$ {#eq-Rnrefcrop}  
+
+The FAO-56 method suggests a semi empirical approach for the calculation of the net radiation for a reference crop surface:
+
+$$R_{nl}=-\sigma\left[\frac{T^4_{max,K}+T^4_{min,K}}{2} \right] \left( a_1+b_1\sqrt{e_a} \right) \left( a_c \frac{R_s\downarrow}{R_{s0}\downarrow}+b_c \right)$$ {#eq-Rnl}
+
+where α = 0.23 is the surface albedo, σ is the Stefan-Boltzmann constant (5.67 × 10^−8^ W m^−2^ K^−4^) or 4.903 10^-9^ [MJ m^-2^ K^-4^] , T~max,K~ and T~min,K~ are the daily maximum and minimum air temperatures [°K] at screen height (2 m), respectively, e~a~ is the water vapor pressure (kPa), $R_{s \downarrow 0}$ is clear-sky solar radiation [MJ m^−2^ d^-1^], and a~1~, b~1~, a~c~, and b~c~ are calibration coefficients (dimensionless). 
+An average of the maximum air temperature to the fourth power and the minimum air temperature to the fourth power is commonly used in the Stefan-Boltzmann equation for 24-hour time steps.The term $(a_l + b_l\cdot\sqrt{e_a})$ expresses the correction for air humidity, and will be smaller if the humidity increases. The effect of cloudiness is expressed by $(a_c\cdot (R_s↓/R_{s0}↓) + b_c)$. The term becomes smaller if the cloudiness increases and hence $R_s↓$ decreases (@AllenRGPereiraLSRaesDSmithM1998). 
+For the application of the FAO Penman--Monteith method, values of a~1~ = 0.34, b~1~ = −0.14, a~c~ = 1.35, and b~c~ = −0.35 have been recommended (@AllenRGPereiraLSRaesDSmithM1998), using data from an arid climate for its calibration (Wright and Jensen 1972). However, if measurements of incoming and outgoing short and longwave radiation are available, calibration of these coefficients should be carried out for each climatic condition. For example, @JensenMEBurmanRDAllenRG1990 found the best results with a~c~ and b~c~ values of [1.2, −0.2], [1.1, −0.1], and [1.0, 0.0] for arid, semiarid, and humid areas, respectively (@Kjaersgaard2009).
+
+The clear sky shortwave radiation is the shortwave radiation that would be received if the sky were clear. The clear sky shortwave radiation can be calculated from the solar constant, the solar declination, the solar hour angle and the extraterrestrial radiation. 
+
+
+```{r}
+#| label: fig-NetRadhourly
+#| echo: FALSE
+#| message: FALSE
+#| warning: FALSE
+#| fig.cap: Net radiation as a function of global radiation from hourly measurements at the experimental station Ruthe in 1995
+
+formula <- y ~ poly(x,1, raw = TRUE)
+
+
+df <- read.csv(file = "WetterRuthe1995.csv", header = T, sep = ";")
+
+df$date <- as.Date(df$Datum, "%d.%m.%Y")
+
+df$rn_0 <- pmax(0,df$Rn)
+df$Datum <- as.factor(df$Datum)
+
+
+#### hourly data ###########
+
+
+p <- ggplot(data=df, aes( x=GLOBRAD, y=Rn))
+p <- p + geom_point( size=2, alpha=0.3)
+p <- p + geom_abline(slope = 1, intercept = 0, lty=2)
+p <- p + geom_smooth(method="lm", color="red")
+p <- p + stat_poly_eq(formula = formula, parse=T, aes(label = paste(after_stat(eq.label), ..rr.label.., sep = "~~~")))
+p <- p + xlab("Global radiation [W/m²]")
+p <- p + ylab("Net radiation  [W/m²]")
+p <- set_theme(p,20)
+p
+
+
+
+```
+
+The comparison of daily measured global radiation, and empirical regression equation derived from measurements of global and net radiation over grass at the experimental field 'Ruthe' together with the net radiation calculated by Eq. @eq-Rnl is shown in @fig-NetRadDaily. It is obvious that Eq. @eq-Rnl overestimates net radiation which is in line with the findings of @Kjaersgaard2009 for a site in Denmark.
+
+For sake of simpplicity, the empirical regression equation derived from measurements of global and net radiation over grass at the experimental field 'Ruthe' is used in the class TPenMonteith.
+
+```{r}
+#| label: fig-NetRadDaily
+#| echo: FALSE
+#| message: FALSE
+#| warning: FALSE
+#| fig-cap: Net radiation as a function of global radiation from daily measurements at the experimental station Ruthe in 1995
+
+#### daily data ###########
+
+dfd <- df %>% group_by(Datum, TAG) %>% dplyr::summarise(mRain = sum(RAIN),
+                                                   Rn = mean(Rn)*86400/1e6,
+                                                   rn_0 = mean(rn_0)*86400/1e6,
+                                                   GLOBRAD =mean(GLOBRAD)*86400/1e6, TMPM = mean(Tempera),
+                                                   TMPMN = min(Tempera), TMPMX = max(Tempera),
+                                                   LFrel = mean(LFrel), Wind=mean(U),
+                                                   pEPT=sum(pmax(0,pETP)))
+dfd <- dfd %>% filter(!is.na(Rn))
+
+
+Latitude <- 52 # Latitude of the location
+albedo <- 0.23 # Albedo of the surface (0.23 for grass) [-]
+
+
+RadWeather <- calcsolar(dfd$TAG, Latitude) 
+dfd$Rs0 <- RadWeather$angot.value
+dfd$es <- sat_vap_press_f(dfd$TMPM)
+dfd$ea <- dfd$LFrel / 100 * dfd$es
+
+
+# note the conversion of ea from hPa to kPa
+dfd$Rnl <- pmax(0, R_nl(dfd$TMPMX+Kelvin0, dfd$TMPMN+Kelvin0, dfd$ea/10, dfd$GLOBRAD, dfd$Rs0, sigma))
+
+#test <- R_nl(298.3, 19.1+Kelvin0, 2.1, 14.5, 18.5)
+
+# rn.mod <- lm(formula = rn_0 ~ 0+ GLOBRAD, data = dfd)
+# summary(rn.mod)
+
+
+dfd$Rn_mod <- dfd$GLOBRAD*(1-albedo) - dfd$Rnl
+
+#rn.mod2 <- lm(formula = rn_0 ~ Rn_mod, data = dfd)
+#summary(rn.mod2)
+
+
+
+
+
+p <- ggplot(data=dfd)
+p <- p + geom_point( aes( x=GLOBRAD, y=Rn), size=2, alpha=0.3, color="red")
+p <- p + geom_abline(slope = 1, intercept = 0, lty=2)
+p <- p + geom_smooth(aes( x=GLOBRAD, y=Rn),method="lm", color="red")
+p <- p + stat_poly_eq(formula = formula, parse=T, aes(x=GLOBRAD, y=Rn,label = paste(after_stat(eq.label), ..rr.label.., sep = "~~~")), color="red")
+p <- p + geom_smooth(aes( x=GLOBRAD, y=Rn_mod),method="lm", color="blue")
+
+p <- p + geom_point( aes( x=GLOBRAD, y=Rn_mod), size=2, alpha=0.3, color="blue")
+p <- p + xlab("Global radiation [MJ/m²/d]")
+p <- p + ylab("Net radiation  [MJ/m²/d]")
+p <- set_theme(p,18)
+p
+
+
+```
+
+
+
+
+### Vapour pressure deficit
+
+The vapour pressure deficit is the difference between the saturation vapour pressure and the actual vapour pressure. The saturation vapour pressure is the maximum amount of water vapour that the air can hold at a given temperature. The actual vapour pressure can be calculated from the relative humidity and the saturation vapour pressure. The relative humidity is the ratio of the actual vapour pressure to the saturation vapour pressure. The vapour pressure deficit is the difference between the saturation vapour pressure and the actual vapour pressure. The vapour pressure deficit is a measure of the drying power of the air. The greater the vapour pressure deficit, the greater the drying power of the air.
+
+The saturation vapour pressure e~s~ in [hPa] can be calculated from the temperature [°C] using the Tetens-equation:
+
+$$e_s = 6.1078 \cdot 10^{ \frac{7.5 \cdot T }{T + 237.3 } }$$ {#eq-esT}
+
+Please note the units used for e~s~ in TPenMonteith are for historical reasons in [hPa]. 
+
+The saturation deficit [hPa] then is calculated from the relative humidity as:
+
+$$e_{s}-e_{a} = e_s - \frac{RH}{100} \cdot e_s$$ {#eq-esRH}
+
+```{r}
+#| label: fig-VapourPressureDeficit
+#| echo: FALSE
+#| message: FALSE
+#| warning: FALSE
+#| fig-cap: Vapour pressure values for 100 and 60% relative humidity and vapour pressure deficit as a function of temperature from the Tetens-equation
+#| fig-width: 12
+#| fig-height: 6
+
+
+df100 <- expand.grid(T = seq(-10, 40, 1))
+df60 <- df100
+df_es_ea <- df100
+
+df100$e <- sat_vap_press_f(df100$T)
+df100$RH <- "100%"
+df60$e <- 0.6*df100$e
+df60$RH <- "60%"
+df_es_ea$e <- df100$e - 0.6*df100$e
+df_es_ea$RH <- "es-ea"
+df <- rbind(df100, df60, df_es_ea)
+
+
+illu <- df# %>% filter(VapourPressure != "es_ea")
+p <- ggplot(data=illu, aes(x=T, y=e,color=RH))
+p <- p + geom_line(size=1)
+p <- p + ylab ("Vapour pressure [hPa]") + xlab("Temperature [°C]")
+p <- p + scale_color_brewer(palette = "Set1")
+p <- p + theme_bw(base_size = 20)
+p
+
+
+
+```
+
+### Slope of saturation vapour pressure curve
+
+
+The slope of the saturation vapour pressure curve s [hPa^.^K^-1^] is calculated as the derivative of the saturation vapour pressure with respect to temperature:
+
+$$s = 239.0 \cdot 17.4 \cdot \frac{e_s} {(Temp + 239.0)^2}$$ {#eq-s}  
+
+### Air pressure
+
+The pressure of the air [hPa] can be calculated from the elevation [m] and the temperature [°C] using the barometric formula:
+
+$$P = 1013.0 \cdot e^{\left(\frac{-0.034 \cdot Elev } {Temp + 273}\right)}$$ {#eq-P}
+
+Note that the class TPenMonteith uses the pressure in [hPa] for historical reasons.
+
+### Density of dry air
+
+The density of dry air $\rho_a$ [kg^.^m^-3^] can be calculated from the pressure of the air [hPa], the temperature [°C] and the gas constant for dry air [J^.^kg^-1.^K^-1^] using the ideal gas law:
+
+$$\rho_a = 1.2917 - 0.00434 \cdot T$$ {#eq-rhoa}
+
+where $T$ is the temperature [°C].
+
+### Psychrometer constant
+
+$$ \gamma =\frac{ \left( c_p \right)_{air} *  P }{ \lambda_v * MW_{ratio} }$$ {#eq-gamma}
+
+where $c_p$ is the specific heat of air at constant pressure [J^.^kg^-1^.^K^-1], $P$ is the pressure of the air [hPa], $\lambda$ is the latent heat of vaporisation of water [J^.^kg^-1^] and $MW_{ratio}$ is the ratio of the molecular weight of water to the molecular weight of dry air.
+
+```{r}
+#| label: CalcGamma
+#| echo: FALSE
+#| message: FALSE
+#| warning: FALSE
+
+c_p <- 1005 # specific heat of air at constant pressure [J/kg/K]
+lambda_v <- 2.477 * 1E6 # latent heat of vaporisation of water [J/kg]
+MW_ratio <- 0.622 # ratio of the molecular weight of water to the molecular weight of dry air
+
+
+
+gamma <- function(P, Temp){
+  return(c_p * P / (lambda_v * MW_ratio))
+}
+
+gamma_value <- gamma(1013, 10)
+
+```
+At an air pressure of 1013 hPa and a temperature of 10°C the psychrometer constant is `r round(gamma_value, 3)` [hPa K^-1^].
 
 ### Aerodynamic resistance
 
-The aerodynamic resistance depends on wind speed and the height of the vegetation. Under so called stable conditions (canopy temperature equals air temperature) a logarithmic wind profile can be found, i.e. wind speed is linearly related to the logarithm of the height. From the measurement height (z) the wind speed (u) decreases down to zero at a height $z_0$ which can be found by linear extrapolation on the semi-logarithmic plot of height vs wind speed. The term $z_0$ is also called the aerodynamic roughness length. It can be approximated by 0.13\*h, where h is the crop height \[m\].\
-Moneith & Unsworth () are giving the following equation for $r_a$
+The aerodynamic resistance depends on wind speed and the height of the vegetation. Under so called stable conditions (canopy temperature equals air temperature) a logarithmic wind profile can be found, i.e. wind speed is linearly related to the logarithm of the height. From the measurement height (z) the wind speed (u) decreases down to zero at a height z~0~ which can be found by linear extrapolation on the semi-logarithmic plot of height vs wind speed. The term z~0~ is also called the aerodynamic roughness length. It can be approximated by 0.13^.^h, where h is the crop height [m].
+
+@Monteith1990 are giving the following equation for r~a~ [s^.^m^-1^]:
 
 $${{r}_{a}}=\frac{1}{{{k}^{2}}u}\left( \ln {{\left( \frac{z}{{{z}_{0}}} \right)}^{2}} \right)$$ {#eq-ra}
 
-where $k$ is the von Karman constant (0.41) and $u$ is the wind speed at height $z$.
+where $k$ is the von Karman constant (0.41) and u is the wind speed at height z.
 
-This equation, however, has the problem that when wind speed get very low, values of $r_a$ get unrealistically high. In fact as $U \rightarrow 0$, $r_a \rightarrow \infty$ and $(T_c - T_a) \rightarrow \infty$, an unrealistic result. Windspeeds \< 1 m s- 1 frequently occur during the course of canopy temperature measurements, a fact that must be accounted for in the calculation of r,. A further complication becomes evident at the lower windspeeds when the measurement of windspeed is considered. The stall speed of many anemometers is relatively large (i.e., 0.5 m s-I), which means that a value of U=0 can be recorded although the air may be moving above the canopy. Even without measurable horizontal wind, air movement takes place within the canopy because free convective conditions exist which results in buoyancy driven, energy containing eddies. Thom & Oliver (1977) suggested a semi-empirical approach for overcoming this problem:
+It is always important to consider the measurement height of the wind speed. Wind speed is measured at different heights above ground even within a specific network. 
+
+This equation, however, has the problem that when wind speed gets very low, values of r~a~ get unrealistically high. In fact as $U \rightarrow 0$, $r_a \rightarrow \infty$ and $(T_c - T_a) \rightarrow \infty$, an unrealistic result. Windspeeds < 1 m s^-1^ frequently occur during the course of canopy temperature measurements, a fact that must be accounted for in the calculation of r. A further complication becomes evident at the lower windspeeds when the measurement of windspeed is considered. The stall speed of many anemometers is relatively large (i.e., 0.5 m s^-1^), which means that a value of U=0 can be recorded although the air may be moving above the canopy. Even without measurable horizontal wind, air movement takes place within the canopy because free convective conditions exist which results in buoyancy driven, energy containing eddies. 
+
+@Thom1977 suggested a semi-empirical approach for overcoming this problem:
 
 $${{\text{r}}_{\text{a}}}\text{=}\frac{\text{4.72 ln}{{\left( \frac{\text{z-d}}{{{\text{z}}_{\text{0}}}} \right)}^{\text{2}}}}{\text{1 + 0.54u}}$$ {#eq-ra2}
 
-where d is the zero plane displacement height, i.e. the height to which plant canopies increase the plane of zero wind speed. The displacement height is according to Monteith 0.63\*h, were h is the crop height \[m\].
+where d is the zero plane displacement height, i.e. the height to which plant canopies increase the plane of zero wind speed. The displacement height is according to @Monteith1973 0.63^.^h, were h is the crop height [m].
 
-The term d thereby is the zero plane displacement height, i.e. the height to which plant canopies increase the plane of zero wind speed. The displacement height is according to Monteith 0.63\*h, were h is the crop height \[m\].
+Within the TPenMoneith class there is an option to calculate the aerodynamic resistance using either the Penman-Monteith equation or the Thom-Oliver equation.
+
+
+#### FAO-56 method for aerodynamic resistance
+
+The FAO-56 method differs in some details from the above approach. 
+
+For a wide range of crops the zero plane displacement height, d [m], and the roughness length governing momentum transfer, z~om~ [m], can be estimated from the crop height h [m] by the following equations:
+
+$$d = \frac{2}{3} h$$ {#eq-dFAO56}
+
+$$z_{om} = 0.123 h$$ {#eq-zomFAO56}
+
+The roughness length governing transfer of heat and vapour, zoh [m], can be approximated by:
+
+$$z_{oh} = 0.1 z_{om}$$ {#eq-zohFAO56}
+
+
+Assuming a constant crop height of 0.12 m and a standardized height for wind speed, temperature and humidity at 2 m (z~m~ = z~h~ = 2 m), the aerodynamic resistance r~a~ [s m^-1^] for the grass reference surface becomes 
+
+$$r_a = \frac{4.72 \ln \left(\frac{2-0.12}{0.123 \cdot 0.12}\right)^2}{1+0.54 \cdot 1} \approx 70 [s \cdot m^{-1}]$$ {#eq-raFAO56}
+
+
 
 ### Canopy resistance
 
@@ -124,7 +371,12 @@ The second resistance considered in the Penman-Monteith equation is the canopy r
 
 $${{r}_{c}}\approx \frac{r_s}{LAI};\,LAI<<$$ {#eq-rc}
 
-For higher values of leaf area index, however, additional leaves do not decrease the canopy resistance as the first leaves do, i.e. local increase of the vapour pressure of the air by existing leaves reduces the additional transpiration rate of additional leaves.
+For higher values of leaf area index, however, additional leaves do not decrease the canopy resistance as the first leaves do, i.e. local increase of the vapour pressure of the air by existing leaves reduces the additional transpiration rate of additional leaves. 
+
+
+The canopy resistance is then calculated as:
+
+We use an equation proposed by Stockle (personal communication) for the canopy resistance:
 
 $$
 rc =
@@ -138,6 +390,42 @@ $$ {#eq-rc2}
 
 For a well watered crop the value of $r_s$ is at around 50 $[s.m^{-1}]$. The resulting values of $r_c$ plotted against LAI look like shown in @fig-rc_f.
 
+#### FAO-56 method for canopy resistance
+
+The FAO reference evapotranspiration model (FAO-56, https://www.fao.org/4/x0490e/x0490e06.htm) suggests a simple empirical model for the canopy resistance as a function of the leaf area index.
+
+$$r_{surf}=\frac{r_s}{LAI_{active}}$$ {#eq-rc1}
+
+where $r_{surf}$ is the surface resistance, $r_s$ is the stomatal resistance and $LAI_{active}$ is the active leaf area index. The active leaf area index is the leaf area index that is actually transpiring. This value is for the FAO-56 model calculated as 0.5 times the total leaf area index.
+
+THE FAO-56 method further assumes a stomatal resistance, r~s~, of a single leaf of 100 s m^-1^ under well-watered conditions and  postulates for clipped grass a general equation for LAI:
+
+$$LAI = 24 \cdot h$$ {#eq-LAI_FAO56}
+  
+
+where h is the crop height [m].
+
+By assuming a crop height of 0.12 m, the surface resistance, r~c~ [s^.^m-1^^], for the grass reference surface becomes @eq-rc_FAO56:
+
+$$ r_c = \frac{100}{0.5 \cdot 24 \cdot 0.12} \approx 70 [s \cdot m^{-1}]$$ {#eq-rc_FAO56}
+
+
+
+#### CO2-effect on canopy resistance
+
+
+The relative difference of the CO2 concentration in the sub stomatal cavity, CO~2~pp, to the CO~2~ concentration in the ambient air, CO~2~a, is calculated as:
+
+
+$$rel \Delta C_i = \frac{(CO_2pp- C_iThreshold)}{C_ithreshold}$$ {#eq-relDeltaCi}
+
+The canopy resistance is then calculated as:
+ 
+ 
+$$rc_0 = Plant_rc0 \cdot \left(1+rel \Delta C_i \dot relR_{c0_{IncCO2}} \right )$$ {#eq-rc0Var}
+
+
+
 ```{r}
 #| label: fig-rc_f
 #| echo: FALSE
@@ -150,21 +438,79 @@ For a well watered crop the value of $r_s$ is at around 50 $[s.m^{-1}]$. The res
 #| fig-pos: h
 
 
+relRc0Inc_CO2 <- 0.25
+CiThreshold <- 380
+
 LAI <- seq(0, 6, 0.1)
-rc0 <- length(LAI)
-rc0 <- 50
-rcs <- Vectorize(FUN =  rc_f) (rc0, LAI)
-df <- data.frame(LAI, rcs)
+
+df <- expand.grid(LAI = LAI, CO2pp = seq(350, 500, 50))
+
+df$rc0 <- 50
+
+
+relDeltaCi <- function(CO2pp, CiThreshold){
+  return((CO2pp - CiThreshold)/CiThreshold)
+}
+
+
+rc_0 <- function (Plant_rc0, relDeltaCi, relRc0Inc_CO2){
+  return(Plant_rc0*(1+relDeltaCi*relRc0Inc_CO2))
+}
+
+
+
+df$relDeltaCi <- Vectorize(FUN = relDeltaCi) (df$CO2pp, CiThreshold)
+df$rc0 <- Vectorize(FUN = rc_0) (50, df$relDeltaCi, relRc0Inc_CO2)
+df$rcs <- Vectorize(FUN =  rc_f) (df$rc0, df$LAI)
+illu <- df
+illu$CO2pp <- as.factor(illu$CO2pp)
 
 m <- NULL
-m <-ggplot(data=df, aes(x=LAI, y=rcs))
-m <- m + geom_line(color="red", size=1)
+m <-ggplot(data=illu, aes(x=LAI, y=rcs, color=CO2pp))
+m <- m + geom_line(size=1)
 m <- m + ylab ("rc [s/m]") + xlab("LAI [-]")
+m <- m + scale_color_brewer(palette = "set1")
 m <- m + theme_bw(base_size = 18)
 m
 
 ```
 
+The component offers the option to import the r~c0~ value from a connected plant component. This is controlled by the option 'frc0Opt', which has to be set to 'fromPlantModel' in order to do so.
+
+
+
+where Plant~rc0~ is the canopy resistance of the plant model, relR_c0Inc_{CO2} is the relative increase of the canopy resistance per unit increase of the CO~2~ concentration in the sub stomatal cavity and C~i~Threshold is the CO~2~ concentration in the sub stomatal cavity at which the canopy resistance is increased by 50%.
+
+
+## Dividing potential Evapotranspiration into components
+
+Potential evaporation is the sum potential transpiration, T~p~, potential evaporation, E~p~, and of interception evaporation, I:
+
+$$E{{T}_{p}}={{T}_{p}}+{{E}_{p}}+I$$ {#eq-ETp}
+Interception evaporation kg.m-2.d-1 is assumed to take place from a storage pool, IP, (kg^.^m^-2^) situated on the surface of the canopy. The capacity of this storage pool, CIP, kg^.^m^-2^ is calculated from a specific interception capacity, SIC, (kg^.^m^2.^m^-2^) and the leaf area index LAI m^2.^m^-2^.
+
+$$CIP=SIC\cdot LAI$$ {#eq-CIP}
+
+Interception is the minimum of the sum of the maximum possible change of the interception pool and the precipitation rate, Pr, kg^.^m^-2.^d^-1^ and the potential Evapotranspiration:
+
+$$I=\min \left( {}^{IP}/{}_{dt}+\min \left( \Pr ,\,CIP-IP \right),\,\,E{{T}_{p}} \right)$$ {#eq-Interceptionrate}
+
+The change of the storage pool is calculated from the minimum of the precipitation rate and the actual unused capacity of the precipitation pool, CIP-IP:
+
+$$\frac{dIP}{dt}=\min \left( \Pr ,\,CIP-IP \right)-I$$ {#eq-dIPdt}
+
+
+The potential evaporation rate is determined by the fraction of radiation energy which is reaching the soil surface, R~ns~. This fraction can be calculated using a analogue of the Lambert-Beer law:
+
+$${{R}_{ns}}={{R}_{n}}\cdot {{e}^{-{{k}_{G}}\cdot LAI}}$$ {#eq-Netradabsorbed}
+
+Were k~G~ is the extinction coefficient for global radiation, which has a default value of 0.5. It can be estimated from the extinction coefficient for photosynthetic active radiation by dividint it by 1.35.
+
+The potential evaporation then gets:
+
+$${{E}_{p}}=\left( E{{T}_{p}}-I \right)\cdot \frac{{{R}_{ns}}}{{{R}_{n}}}$$ {#eq-Ep}
+
+Actual evaporation was determined from an empirical function using potential evaporation and the water potential in 10 cm depth as input parameters (@Beese1978). The potential transpiration is calculated as the remaining part of the potential evapo-transpiration after subtracting potential evaporation and interception and taking also into account an empirical crop resistance.
 
 ## Descendence
 

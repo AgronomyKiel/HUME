@@ -199,6 +199,45 @@ uses
   end; }
 
 { ----------------------------------------------------------------------- }
+
+
+procedure CalcAngot(lat: real; day: real; var DEC: real; var dayl: real; var ANGOT: real);
+
+const
+  RAD = Pi()/180;
+
+var
+  X: real;
+  AOB: real;
+  dsinb: real;
+  sc: real;
+  SINLD:real;
+  COSLD:real;
+  DSINBE:real;
+begin
+  { Deklination der Sonne als Funktion der Jahreszeit (DAY) }
+  X := arcsin(SIN(23.45 * RAD) * COS(2. * PI * (DAY + 10) / 365));
+  DEC := X * -1;
+  { Zwischenwerte SINLD, COSLD und AOB }
+  SINLD := SIN(RAD * LAT) * SIN(DEC);
+  COSLD := COS(RAD * LAT) * COS(DEC);
+  AOB := SINLD / COSLD;
+  {Tageslaenge (DAYL) und photoperiodische Tageslaenge (DAYLP) }
+  X := ARCSIN(AOB);
+  DAYL := 12.0 * (1 + 2 * X / PI);
+  //   X:=arcsin((-SIN(-4*RAD)+SINLD)/COSLD);
+  //   DAYLP:=12.0*(1+2*X/PI);
+  { Sonnenwinkel - Integration }
+  DSINB := 3600 * (DAYL * SINLD + 24 * COSLD * SQRT(1 - AOB * AOB) / PI);
+  DSINBE := 3600 * (DAYL * (SINLD + 0.4 * (SINLD * SINLD + COSLD * COSLD * 0.5)) + 12.0 * COSLD * (2.0 + 3.0 * 0.4 * SINLD) * SQRT(1 - AOB * AOB) / PI);
+  { Solarkonstante (SC) und taegliche extraterrestrische Strahlung (ANGOT) }
+  SC := 1370 * (1 + 0.033 * COS(2 * PI * DAY / 365));
+  ANGOT := SC * DSINB;
+end;
+
+
+
+
 { ----------------------------------------------------------------------- }
 /// <summary>
 /// calcuation of standard air pressures
@@ -258,16 +297,16 @@ var
   { ********************************************************************** }
   begin
     if crop_height < 0.05 then
-      crop_height := 0.05; // Minoftheight von 5 cm
+      crop_height := 0.05; // Min of the height of 5 cm
     roughness_f := 0.13 * crop_height;
   end;
- 
- 
- /// <summary>
-  /// calculation of zero plane displacement height
-  /// </summary>
-  /// <param name="crop_height">Plant height [m]</param>
-  /// <returns>zero plane displacement height [m]</returns>
+
+
+/// <summary>
+/// calculation of zero plane displacement height
+/// </summary>
+/// <param name="crop_height">Plant height [m]</param>
+/// <returns>zero plane displacement height [m]</returns>
 
   function displacement_height ( crop_height : real ) : real;
   begin
@@ -281,7 +320,7 @@ begin
   z0 := roughness_f(crop_height);
   d := displacement_height(crop_height);
   case f_ra_funct of
-    PenmanMonteith:   {Original-Penman-Monteith f�r near-neutral conditions}
+    PenmanMonteith:   {Original-Penman-Monteith for near-neutral conditions}
         ra_f := (ln(measure_height.v/z0)*ln(measure_height.v/(0.2*z0)))/(sqr(Karman_const)*wind_speed);
     ThomOliver: {Formulierung zur Einbeziehung von Konvektion nach Thom and Oliver (1977)
                  zitiert in Jackson et al. 1988}
@@ -547,7 +586,7 @@ function TPenMonteith.sat_vap_press_f(Temp: real): real;
 
   Name             Inhalt                          Einheit      Typ
 
-  Temp             air temperature                      [�C]         I
+  Temp             air temperature                      [°C]         I
 
 
   sat_vap_press_f  saturated water vapour pressure    [mbar]       O }
@@ -625,7 +664,7 @@ procedure TPenMonteith.CalcVars;
 
 var
   gamma,
-  es, // S�ttigungsdampfdruck [mbar]
+  es, // Saturation deficit [mbar]
   delta,
   GlobRad_w_m2: real;
 

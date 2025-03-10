@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Agronomy and Crop Science Group, Kiel University">
-<meta name="dcterms.date" content="2025-03-05">
+<meta name="dcterms.date" content="2025-03-10">
 
 <title>Class description of TPenMonteith</title>
 <style>
@@ -56,7 +56,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="TPenMontheith_files/libs/clipboard/clipboard.min.js"></script>
@@ -128,15 +148,29 @@ window.Quarto = {
   <ul>
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background"><span class="header-section-number">1.1</span> Background</a>
   <ul class="collapse">
-  <li><a href="#aerodynamic-resistance" id="toc-aerodynamic-resistance" class="nav-link" data-scroll-target="#aerodynamic-resistance"><span class="header-section-number">1.1.1</span> Aerodynamic resistance</a></li>
-  <li><a href="#canopy-resistance" id="toc-canopy-resistance" class="nav-link" data-scroll-target="#canopy-resistance"><span class="header-section-number">1.1.2</span> Canopy resistance</a></li>
+  <li><a href="#net-radiation" id="toc-net-radiation" class="nav-link" data-scroll-target="#net-radiation"><span class="header-section-number">1.1.1</span> Net radiation</a></li>
+  <li><a href="#vapour-pressure-deficit" id="toc-vapour-pressure-deficit" class="nav-link" data-scroll-target="#vapour-pressure-deficit"><span class="header-section-number">1.1.2</span> Vapour pressure deficit</a></li>
+  <li><a href="#slope-of-saturation-vapour-pressure-curve" id="toc-slope-of-saturation-vapour-pressure-curve" class="nav-link" data-scroll-target="#slope-of-saturation-vapour-pressure-curve"><span class="header-section-number">1.1.3</span> Slope of saturation vapour pressure curve</a></li>
+  <li><a href="#air-pressure" id="toc-air-pressure" class="nav-link" data-scroll-target="#air-pressure"><span class="header-section-number">1.1.4</span> Air pressure</a></li>
+  <li><a href="#density-of-dry-air" id="toc-density-of-dry-air" class="nav-link" data-scroll-target="#density-of-dry-air"><span class="header-section-number">1.1.5</span> Density of dry air</a></li>
+  <li><a href="#psychrometer-constant" id="toc-psychrometer-constant" class="nav-link" data-scroll-target="#psychrometer-constant"><span class="header-section-number">1.1.6</span> Psychrometer constant</a></li>
+  <li><a href="#aerodynamic-resistance" id="toc-aerodynamic-resistance" class="nav-link" data-scroll-target="#aerodynamic-resistance"><span class="header-section-number">1.1.7</span> Aerodynamic resistance</a>
+  <ul class="collapse">
+  <li><a href="#fao-56-method-for-aerodynamic-resistance" id="toc-fao-56-method-for-aerodynamic-resistance" class="nav-link" data-scroll-target="#fao-56-method-for-aerodynamic-resistance"><span class="header-section-number">1.1.7.1</span> FAO-56 method for aerodynamic resistance</a></li>
   </ul></li>
-  <li><a href="#descendence" id="toc-descendence" class="nav-link" data-scroll-target="#descendence"><span class="header-section-number">1.2</span> Descendence</a></li>
-  <li><a href="#state-variables" id="toc-state-variables" class="nav-link" data-scroll-target="#state-variables"><span class="header-section-number">1.3</span> State variables</a></li>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters"><span class="header-section-number">1.4</span> Parameters</a></li>
-  <li><a href="#variables" id="toc-variables" class="nav-link" data-scroll-target="#variables"><span class="header-section-number">1.5</span> Variables</a></li>
-  <li><a href="#external-variables" id="toc-external-variables" class="nav-link" data-scroll-target="#external-variables"><span class="header-section-number">1.6</span> External variables</a></li>
-  <li><a href="#options" id="toc-options" class="nav-link" data-scroll-target="#options"><span class="header-section-number">1.7</span> Options</a></li>
+  <li><a href="#canopy-resistance" id="toc-canopy-resistance" class="nav-link" data-scroll-target="#canopy-resistance"><span class="header-section-number">1.1.8</span> Canopy resistance</a>
+  <ul class="collapse">
+  <li><a href="#fao-56-method-for-canopy-resistance" id="toc-fao-56-method-for-canopy-resistance" class="nav-link" data-scroll-target="#fao-56-method-for-canopy-resistance"><span class="header-section-number">1.1.8.1</span> FAO-56 method for canopy resistance</a></li>
+  <li><a href="#co2-effect-on-canopy-resistance" id="toc-co2-effect-on-canopy-resistance" class="nav-link" data-scroll-target="#co2-effect-on-canopy-resistance"><span class="header-section-number">1.1.8.2</span> CO2-effect on canopy resistance</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#dividing-potential-evapotranspiration-into-components" id="toc-dividing-potential-evapotranspiration-into-components" class="nav-link" data-scroll-target="#dividing-potential-evapotranspiration-into-components"><span class="header-section-number">1.2</span> Dividing potential Evapotranspiration into components</a></li>
+  <li><a href="#descendence" id="toc-descendence" class="nav-link" data-scroll-target="#descendence"><span class="header-section-number">1.3</span> Descendence</a></li>
+  <li><a href="#state-variables" id="toc-state-variables" class="nav-link" data-scroll-target="#state-variables"><span class="header-section-number">1.4</span> State variables</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters"><span class="header-section-number">1.5</span> Parameters</a></li>
+  <li><a href="#variables" id="toc-variables" class="nav-link" data-scroll-target="#variables"><span class="header-section-number">1.6</span> Variables</a></li>
+  <li><a href="#external-variables" id="toc-external-variables" class="nav-link" data-scroll-target="#external-variables"><span class="header-section-number">1.7</span> External variables</a></li>
+  <li><a href="#options" id="toc-options" class="nav-link" data-scroll-target="#options"><span class="header-section-number">1.8</span> Options</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -164,7 +198,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 5, 2025</p>
+      <p class="date">March 10, 2025</p>
     </div>
   </div>
   
@@ -176,47 +210,143 @@ window.Quarto = {
 </header>
 
 
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>fn_source <span class="ot">&lt;-</span> <span class="st">"Q:/HUME/HUME/Components/Evapotranspiration/UPenMonteith.pas"</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>fn_xml <span class="ot">&lt;-</span> <span class="st">"Q:/OSR/Project/OSRGrowth/xml_docu/UPenMonteith.xml"</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>xml_docu <span class="ot">&lt;-</span> <span class="fu">read_xml</span>(fn_xml)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
 <section id="introduction" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
 <p>The class TPenMonteith calculates the potential evapotranspiration according to the Penman-Monteith equation. The Penman-Monteith equation is a combination of the Penman equation and the Monteith equation. The Penman equation calculates the evaporation from a free water surface, while the Monteith equation calculates the transpiration from a plant. The Penman-Monteith equation calculates the potential evapotranspiration, which is the sum of the evaporation and the transpiration. The potential evapotranspiration is the evapotranspiration that would occur if there were no water limitation.</p>
 <section id="background" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="background"><span class="header-section-number">1.1</span> Background</h2>
-<p>Evaporation of a plant canopy depends like dry matter production on the amount of intercepted radiant energy but also on the vapour pressure deficit of the ambient air. One of the most fundamental methods to calculate the evaporation rate of a closed plant canopy is the Penman-Monteith equation (Monteith, 1973):</p>
-<p><span id="eq-PM"><span class="math display">\lambda E=\frac{s{{R}_{n}}+{{\rho }_{a}}{{c}_{p}}\frac{{{e}_{s}}-{{e}_{a}}}{{{r}_{a}}}}{s+\gamma \left( 1+\frac{{{r}_{c}}}{{{r}_{a}}} \right)} \tag{1}</span></span> with evaporation E (kg.m-2.s-1), latent heat of vaporisation of water <span class="math inline">\lambda</span> (J.kg-1), net radiation <span class="math inline">R_n</span> (W.m-2), total resistance of the pathway between the evaporating sites and the bulk air ra (s.m-1), the canopy resistance <span class="math inline">r_c</span> (s.m-1), the vapour pressure deficit between the evaporating sites and the bulk air es-ea (hPa), the slope of the vapour saturation curve s (hPa.K-1), the volumetric heat capacity of dry air <span class="math inline">c_p</span> (J.kg-1), the density of dry air <span class="math inline">\rho_a</span> (kg.m-3) and the psychrometer constant <span class="math inline">\gamma</span> (hPa.K-1).</p>
-<p>The net radiation <span class="math inline">R_n</span> is by default computed from the global radiation, GR, using an empirical regression equation derived from measurements of global and net radiation over grass at the experimental field ‘Ruthe’:</p>
+<p>Evaporation of a plant canopy depends like dry matter production on the amount of intercepted radiant energy but also on the vapour pressure deficit of the ambient air. One of the most fundamental methods to calculate the evaporation rate of a closed plant canopy is the Penman-Monteith equation <span class="citation" data-cites="Monteith1973">(<a href="#ref-Monteith1973" role="doc-biblioref">Monteith, 1973</a>)</span>:</p>
+<p><span id="eq-PM"><span class="math display">\lambda E=\frac{s{{R}_{n}}+{{\rho }_{a}}{{c}_{p}}\frac{{{e}_{s}}-{{e}_{a}}}{{{r}_{a}}}}{s+\gamma \left( 1+\frac{{{r}_{c}}}{{{r}_{a}}} \right)} \tag{1}</span></span> with evaporation E (kg<sup>.</sup>m<sup>-2.</sup>s<sup>-1</sup>), latent heat of vaporisation of water <span class="math inline">\lambda</span> (J<sup>.</sup>kg<sup>-1</sup>), net radiation <span class="math inline">R_n</span> (W<sup>.</sup>m<sup>-2</sup>), total resistance of the pathway between the evaporating sites and the bulk air r<sub>a</sub> (s<sup>.</sup>m<sup>-1</sup>), the canopy resistance <span class="math inline">r_c</span> (s<sup>.</sup>m<sup>-1</sup>), the vapour pressure deficit between the evaporating sites and the bulk air e<sub>s</sub>-e<sub>a</sub> (hPa), the slope of the vapour saturation curve s (hPa<sup>.</sup>K<sup>-1</sup>), the volumetric heat capacity of dry air <span class="math inline">c_p</span> (J<sup>.</sup>kg<sup>-1</sup>), the density of dry air <span class="math inline">\rho_a</span> (kg<sup>.</sup>m<sup>-3</sup>) and the psychrometer constant <span class="math inline">\gamma</span> (hPa<sup>.</sup>K<sup>-1</sup>).</p>
+<p>In order to calculate the evaporation rate, the Penman-Monteith equation requires the net radiation, the vapor pressure deficit, the canopy resistance, the aerodynamic resistance.</p>
+<p>The net radiation is the difference between the incoming shortwave radiation and the reflected shortwave radiation plus the incoming longwave radiation minus the outgoing longwave radiation and the soil heat flux. The vapour pressure deficit is the difference between the saturation vapour pressure and the actual vapour pressure. The canopy resistance is the resistance to water vapour transfer from the crop surface to the atmosphere. The aerodynamic resistance is the resistance to water vapour transfer from the leaf surface to the atmosphere.</p>
+<section id="net-radiation" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="net-radiation"><span class="header-section-number">1.1.1</span> Net radiation</h3>
+<p>The net radiation R<sub>n</sub> [W<sup>.</sup>m<sup>-2</sup>] is computed from the global radiation, GR [W<sup>.</sup>m<sup>-2</sup>], using an empirical regression equation derived from measurements of global and net radiation over grass at the experimental field ‘Ruthe’ (<a href="#fig-NetRadhourly" class="quarto-xref">Figure&nbsp;1</a>):</p>
 <p><span id="eq-NetRad"><span class="math display">{{R}_{n}}=0.6494\cdot GR-18.417 \tag{2}</span></span></p>
-<p>Potential evaporation is the sum potential transpiration, Tp, potential evaporation, Ep, and of interception evaporation, I:</p>
-<p><span id="eq-ETp"><span class="math display">E{{T}_{p}}={{T}_{p}}+{{E}_{p}}+I \tag{3}</span></span> Interception evaporation kg.m-2.d-1 is assumed to take place from a storage pool, IP, (kg.m-2) situated on the surface of the canopy. The capacity of this storage pool, CIP, kg.m-2 is calculated from a specific interception capacity, SIC, (kg.m².m-2) and the leaf area index LAI m².m-2.</p>
-<p><span id="eq-CIP"><span class="math display">CIP=SIC\cdot LAI \tag{4}</span></span></p>
-<p>Interception is the minimum of the sum of the maximum possible change of the interception pool and the precipitation rate, Pr, kg.m-2.d-1 and the potential Evapotranspiration:</p>
-<p><span id="eq-Interceptionrate"><span class="math display">I=\min \left( {}^{IP}/{}_{dt}+\min \left( \Pr ,\,CIP-IP \right),\,\,E{{T}_{p}} \right) \tag{5}</span></span> The change of the storage pool is calculated from the minimum of the precipitation rate and the actual unused capacity of the precipitation pool, CIP-IP:</p>
-<p><span id="eq-dIPdt"><span class="math display">\frac{dIP}{dt}=\min \left( \Pr ,\,CIP-IP \right)-I \tag{6}</span></span></p>
-<p>The potential evaporation rate is determined by the fraction of radiation energy which is reaching the soil surface, Rns. This fraction can be calculated using a analogue of the Lambert-Beer law:</p>
-<p><span id="eq-Netradabsorbed"><span class="math display">{{R}_{ns}}={{R}_{n}}\cdot {{e}^{-{{k}_{G}}\cdot LAI}} \tag{7}</span></span></p>
-<p>Were k<sub>G</sub> is the extinction coefficient for global radiation, which has a default value of 0.5. The potential evaporation then gets:</p>
-<p><span id="eq-Ep"><span class="math display">{{E}_{p}}=\left( E{{T}_{p}}-I \right)\cdot \frac{{{R}_{ns}}}{{{R}_{n}}} \tag{8}</span></span></p>
-<p>Actual evaporation was determined from an empirical function using potential evaporation and the water potential in 10 cm depth as input parameters ((Beese et al., 1978)). The potential transpiration is calculated as the remaining part of the potential evapo-transpiration after subtracting potential evaporation and interception and taking also into account an empirical crop resistance.</p>
-<section id="aerodynamic-resistance" class="level3" data-number="1.1.1">
-<h3 data-number="1.1.1" class="anchored" data-anchor-id="aerodynamic-resistance"><span class="header-section-number">1.1.1</span> Aerodynamic resistance</h3>
-<p>The aerodynamic resistance depends on wind speed and the height of the vegetation. Under so called stable conditions (canopy temperature equals air temperature) a logarithmic wind profile can be found, i.e.&nbsp;wind speed is linearly related to the logarithm of the height. From the measurement height (z) the wind speed (u) decreases down to zero at a height <span class="math inline">z_0</span> which can be found by linear extrapolation on the semi-logarithmic plot of height vs wind speed. The term <span class="math inline">z_0</span> is also called the aerodynamic roughness length. It can be approximated by 0.13*h, where h is the crop height [m].<br>
-Moneith &amp; Unsworth () are giving the following equation for <span class="math inline">r_a</span></p>
-<p><span id="eq-ra"><span class="math display">{{r}_{a}}=\frac{1}{{{k}^{2}}u}\left( \ln {{\left( \frac{z}{{{z}_{0}}} \right)}^{2}} \right) \tag{9}</span></span></p>
-<p>where <span class="math inline">k</span> is the von Karman constant (0.41) and <span class="math inline">u</span> is the wind speed at height <span class="math inline">z</span>.</p>
-<p>This equation, however, has the problem that when wind speed get very low, values of <span class="math inline">r_a</span> get unrealistically high. In fact as <span class="math inline">U \rightarrow 0</span>, <span class="math inline">r_a \rightarrow \infty</span> and <span class="math inline">(T_c - T_a) \rightarrow \infty</span>, an unrealistic result. Windspeeds &lt; 1 m s- 1 frequently occur during the course of canopy temperature measurements, a fact that must be accounted for in the calculation of r,. A further complication becomes evident at the lower windspeeds when the measurement of windspeed is considered. The stall speed of many anemometers is relatively large (i.e., 0.5 m s-I), which means that a value of U=0 can be recorded although the air may be moving above the canopy. Even without measurable horizontal wind, air movement takes place within the canopy because free convective conditions exist which results in buoyancy driven, energy containing eddies. Thom &amp; Oliver (1977) suggested a semi-empirical approach for overcoming this problem:</p>
-<p><span id="eq-ra2"><span class="math display">{{\text{r}}_{\text{a}}}\text{=}\frac{\text{4.72 ln}{{\left( \frac{\text{z-d}}{{{\text{z}}_{\text{0}}}} \right)}^{\text{2}}}}{\text{1 + 0.54u}} \tag{10}</span></span></p>
-<p>where d is the zero plane displacement height, i.e.&nbsp;the height to which plant canopies increase the plane of zero wind speed. The displacement height is according to Monteith 0.63*h, were h is the crop height [m].</p>
-<p>The term d thereby is the zero plane displacement height, i.e.&nbsp;the height to which plant canopies increase the plane of zero wind speed. The displacement height is according to Monteith 0.63*h, were h is the crop height [m].</p>
+<p>The FAO-56 method calculates the net radiation as the difference between the incoming shortwave radiation and the reflected shortwave radiation plus the incoming longwave radiation minus the outgoing longwave radiation and the soil heat flux (<span class="citation" data-cites="Carmona2017">Carmona et al. (<a href="#ref-Carmona2017" role="doc-biblioref">2017</a>)</span>, <span class="citation" data-cites="AllenRGPereiraLSRaesDSmithM1998">Allen RG, Pereira LS, Raes D, Smith M (<a href="#ref-AllenRGPereiraLSRaesDSmithM1998" role="doc-biblioref">1998</a>)</span>):</p>
+<p><span id="eq-NetRadFAO56"><span class="math display">R_n = (1 - \alpha) \cdot R_s + R_l - G \tag{3}</span></span></p>
+<p>where <span class="math inline">\alpha</span> is the albedo, <span class="math inline">R_s</span> is the incoming shortwave radiation, <span class="math inline">R_l</span> is the incoming longwave radiation and <span class="math inline">G</span> is the soil heat flux. The albedo is the fraction of the incoming shortwave radiation that is reflected by the surface. The soil heat flux is the heat flux from the soil to the atmosphere. The soil heat flux is usually small compared to the other components of the net radiation and is often neglected.</p>
+<p>The net energy flux leaving the earth’s surface is, however, less than that emitted and given by the Stefan-Boltzmann law due to the absorption and downward radiation from the sky. Water vapour, clouds, carbon dioxide and dust are absorbers and emitters of longwave radiation. Their concentrations should be known when assessing the net outgoing flux. As humidity and cloudiness play an important role, the Stefan-Boltzmann law is corrected by these two factors when estimating - the net outgoing flux of longwave radiation. It is thereby assumed that the concentrations of the other absorbers are constant.</p>
+<p>The equation for estimating net radiation in the FAO Penman-Monteith method (daily time resolution”), <span class="math inline">R_{nrefcrop}</span>, is expressed as:</p>
+<p><span class="math display">
+\begin{aligned}
+&amp; R_{nrefcrop}=R_{ns}+R_{nl}=R_s\downarrow \left(1-\alpha \right )+R_{nl}=R_{ns}+R_{nl}
+\\
+&amp; =R_s\downarrow \left(1-\alpha \right )+\left( {R}_{l\downarrow 0}-{R}_{l\uparrow}\right)
+\end{aligned}
+</span> {#eq-Rnrefcrop}.</p>
+<p>The FAO-56 method suggests a semi empirical approach for the calculation of the net radiation for a reference crop surface:</p>
+<p><span id="eq-Rnl"><span class="math display">R_{nl}=-\sigma\left[\frac{T^4_{max,K}+T^4_{min,K}}{2} \right] \left( a_1+b_1\sqrt{e_a} \right) \left( a_c \frac{R_s\downarrow}{R_{s0}\downarrow}+b_c \right) \tag{4}</span></span></p>
+<p>where α = 0.23 is the surface albedo, σ is the Stefan-Boltzmann constant (5.67 × 10<sup>−8</sup> W m<sup>−2</sup> K<sup>−4</sup>) or 4.903 10<sup>-9</sup> [MJ m<sup>-2</sup> K<sup>-4</sup>] , T<sub>max,K</sub> and T<sub>min,K</sub> are the daily maximum and minimum air temperatures [°K] at screen height (2 m), respectively, e<sub>a</sub> is the water vapor pressure (kPa), <span class="math inline">R_{s \downarrow 0}</span> is clear-sky solar radiation [MJ m<sup>−2</sup> d<sup>-1</sup>], and a<sub>1</sub>, b<sub>1</sub>, a<sub>c</sub>, and b<sub>c</sub> are calibration coefficients (dimensionless). An average of the maximum air temperature to the fourth power and the minimum air temperature to the fourth power is commonly used in the Stefan-Boltzmann equation for 24-hour time steps.The term <span class="math inline">(a_l + b_l\cdot\sqrt{e_a})</span> expresses the correction for air humidity, and will be smaller if the humidity increases. The effect of cloudiness is expressed by <span class="math inline">(a_c\cdot (R_s↓/R_{s0}↓) + b_c)</span>. The term becomes smaller if the cloudiness increases and hence <span class="math inline">R_s↓</span> decreases (<span class="citation" data-cites="AllenRGPereiraLSRaesDSmithM1998">Allen RG, Pereira LS, Raes D, Smith M (<a href="#ref-AllenRGPereiraLSRaesDSmithM1998" role="doc-biblioref">1998</a>)</span>). For the application of the FAO Penman–Monteith method, values of a<sub>1</sub> = 0.34, b<sub>1</sub> = −0.14, a<sub>c</sub> = 1.35, and b<sub>c</sub> = −0.35 have been recommended (<span class="citation" data-cites="AllenRGPereiraLSRaesDSmithM1998">Allen RG, Pereira LS, Raes D, Smith M (<a href="#ref-AllenRGPereiraLSRaesDSmithM1998" role="doc-biblioref">1998</a>)</span>), using data from an arid climate for its calibration (Wright and Jensen 1972). However, if measurements of incoming and outgoing short and longwave radiation are available, calibration of these coefficients should be carried out for each climatic condition. For example, <span class="citation" data-cites="JensenMEBurmanRDAllenRG1990">Jensen, ME, Burman RD, Allen RG (<a href="#ref-JensenMEBurmanRDAllenRG1990" role="doc-biblioref">1990</a>)</span> found the best results with a<sub>c</sub> and b<sub>c</sub> values of [1.2, −0.2], [1.1, −0.1], and [1.0, 0.0] for arid, semiarid, and humid areas, respectively (<span class="citation" data-cites="Kjaersgaard2009">Kjaersgaard et al. (<a href="#ref-Kjaersgaard2009" role="doc-biblioref">2009</a>)</span>).</p>
+<p>The clear sky shortwave radiation is the shortwave radiation that would be received if the sky were clear. The clear sky shortwave radiation can be calculated from the solar constant, the solar declination, the solar hour angle and the extraterrestrial radiation.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-NetRadhourly" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-pos="h" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-NetRadhourly-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="TPenMontheith_files/figure-html/fig-NetRadhourly-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" data-fig-pos="h" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-NetRadhourly-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Net radiation as a function of global radiation from hourly measurements at the experimental station Ruthe in 1995
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The comparison of daily measured global radiation, and empirical regression equation derived from measurements of global and net radiation over grass at the experimental field ‘Ruthe’ together with the net radiation calculated by Eq. <a href="#eq-Rnl" class="quarto-xref">Eq.&nbsp;4</a> is shown in <a href="#fig-NetRadDaily" class="quarto-xref">Figure&nbsp;2</a>. It is obvious that Eq. <a href="#eq-Rnl" class="quarto-xref">Eq.&nbsp;4</a> overestimates net radiation which is in line with the findings of <span class="citation" data-cites="Kjaersgaard2009">Kjaersgaard et al. (<a href="#ref-Kjaersgaard2009" role="doc-biblioref">2009</a>)</span> for a site in Denmark.</p>
+<p>For sake of simpplicity, the empirical regression equation derived from measurements of global and net radiation over grass at the experimental field ‘Ruthe’ is used in the class TPenMonteith.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-NetRadDaily" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-pos="h" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-NetRadDaily-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="TPenMontheith_files/figure-html/fig-NetRadDaily-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" data-fig-pos="h" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-NetRadDaily-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Net radiation as a function of global radiation from daily measurements at the experimental station Ruthe in 1995
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 </section>
-<section id="canopy-resistance" class="level3" data-number="1.1.2">
-<h3 data-number="1.1.2" class="anchored" data-anchor-id="canopy-resistance"><span class="header-section-number">1.1.2</span> Canopy resistance</h3>
+<section id="vapour-pressure-deficit" class="level3" data-number="1.1.2">
+<h3 data-number="1.1.2" class="anchored" data-anchor-id="vapour-pressure-deficit"><span class="header-section-number">1.1.2</span> Vapour pressure deficit</h3>
+<p>The vapour pressure deficit is the difference between the saturation vapour pressure and the actual vapour pressure. The saturation vapour pressure is the maximum amount of water vapour that the air can hold at a given temperature. The actual vapour pressure can be calculated from the relative humidity and the saturation vapour pressure. The relative humidity is the ratio of the actual vapour pressure to the saturation vapour pressure. The vapour pressure deficit is the difference between the saturation vapour pressure and the actual vapour pressure. The vapour pressure deficit is a measure of the drying power of the air. The greater the vapour pressure deficit, the greater the drying power of the air.</p>
+<p>The saturation vapour pressure e<sub>s</sub> in [hPa] can be calculated from the temperature [°C] using the Tetens-equation:</p>
+<p><span id="eq-esT"><span class="math display">e_s = 6.1078 \cdot 10^{ \frac{7.5 \cdot T }{T + 237.3 } } \tag{5}</span></span></p>
+<p>Please note the units used for e<sub>s</sub> in TPenMonteith are for historical reasons in [hPa].</p>
+<p>The saturation deficit [hPa] then is calculated from the relative humidity as:</p>
+<p><span id="eq-esRH"><span class="math display">e_{s}-e_{a} = e_s - \frac{RH}{100} \cdot e_s \tag{6}</span></span></p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-VapourPressureDeficit" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-pos="h" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-VapourPressureDeficit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="TPenMontheith_files/figure-html/fig-VapourPressureDeficit-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" data-fig-pos="h" width="1152">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-VapourPressureDeficit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Vapour pressure values for 100 and 60% relative humidity and vapour pressure deficit as a function of temperature from the Tetens-equation
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="slope-of-saturation-vapour-pressure-curve" class="level3" data-number="1.1.3">
+<h3 data-number="1.1.3" class="anchored" data-anchor-id="slope-of-saturation-vapour-pressure-curve"><span class="header-section-number">1.1.3</span> Slope of saturation vapour pressure curve</h3>
+<p>The slope of the saturation vapour pressure curve s [hPa<sup>.</sup>K<sup>-1</sup>] is calculated as the derivative of the saturation vapour pressure with respect to temperature:</p>
+<p><span id="eq-s"><span class="math display">s = 239.0 \cdot 17.4 \cdot \frac{e_s} {(Temp + 239.0)^2} \tag{7}</span></span></p>
+</section>
+<section id="air-pressure" class="level3" data-number="1.1.4">
+<h3 data-number="1.1.4" class="anchored" data-anchor-id="air-pressure"><span class="header-section-number">1.1.4</span> Air pressure</h3>
+<p>The pressure of the air [hPa] can be calculated from the elevation [m] and the temperature [°C] using the barometric formula:</p>
+<p><span id="eq-P"><span class="math display">P = 1013.0 \cdot e^{\left(\frac{-0.034 \cdot Elev } {Temp + 273}\right)} \tag{8}</span></span></p>
+<p>Note that the class TPenMonteith uses the pressure in [hPa] for historical reasons.</p>
+</section>
+<section id="density-of-dry-air" class="level3" data-number="1.1.5">
+<h3 data-number="1.1.5" class="anchored" data-anchor-id="density-of-dry-air"><span class="header-section-number">1.1.5</span> Density of dry air</h3>
+<p>The density of dry air <span class="math inline">\rho_a</span> [kg<sup>.</sup>m<sup>-3</sup>] can be calculated from the pressure of the air [hPa], the temperature [°C] and the gas constant for dry air [J<sup>.</sup>kg<sup>-1</sup>.<sup>K</sup>-1^] using the ideal gas law:</p>
+<p><span id="eq-rhoa"><span class="math display">\rho_a = 1.2917 - 0.00434 \cdot T \tag{9}</span></span></p>
+<p>where <span class="math inline">T</span> is the temperature [°C].</p>
+</section>
+<section id="psychrometer-constant" class="level3" data-number="1.1.6">
+<h3 data-number="1.1.6" class="anchored" data-anchor-id="psychrometer-constant"><span class="header-section-number">1.1.6</span> Psychrometer constant</h3>
+<p><span id="eq-gamma"><span class="math display"> \gamma =\frac{ \left( c_p \right)_{air} *  P }{ \lambda_v * MW_{ratio} } \tag{10}</span></span></p>
+<p>where <span class="math inline">c_p</span> is the specific heat of air at constant pressure [J<sup>.</sup>kg<sup>-1</sup>.<sup>K</sup>-1], <span class="math inline">P</span> is the pressure of the air [hPa], <span class="math inline">\lambda</span> is the latent heat of vaporisation of water [J<sup>.</sup>kg<sup>-1</sup>] and <span class="math inline">MW_{ratio}</span> is the ratio of the molecular weight of water to the molecular weight of dry air.</p>
+<p>At an air pressure of 1013 hPa and a temperature of 10°C the psychrometer constant is 0.661 [hPa K<sup>-1</sup>].</p>
+</section>
+<section id="aerodynamic-resistance" class="level3" data-number="1.1.7">
+<h3 data-number="1.1.7" class="anchored" data-anchor-id="aerodynamic-resistance"><span class="header-section-number">1.1.7</span> Aerodynamic resistance</h3>
+<p>The aerodynamic resistance depends on wind speed and the height of the vegetation. Under so called stable conditions (canopy temperature equals air temperature) a logarithmic wind profile can be found, i.e.&nbsp;wind speed is linearly related to the logarithm of the height. From the measurement height (z) the wind speed (u) decreases down to zero at a height z<sub>0</sub> which can be found by linear extrapolation on the semi-logarithmic plot of height vs wind speed. The term z<sub>0</sub> is also called the aerodynamic roughness length. It can be approximated by 0.13<sup>.</sup>h, where h is the crop height [m].</p>
+<p><span class="citation" data-cites="Monteith1990">Monteith and Unsworth (<a href="#ref-Monteith1990" role="doc-biblioref">1990</a>)</span> are giving the following equation for r<sub>a</sub> [s<sup>.</sup>m<sup>-1</sup>]:</p>
+<p><span id="eq-ra"><span class="math display">{{r}_{a}}=\frac{1}{{{k}^{2}}u}\left( \ln {{\left( \frac{z}{{{z}_{0}}} \right)}^{2}} \right) \tag{11}</span></span></p>
+<p>where <span class="math inline">k</span> is the von Karman constant (0.41) and u is the wind speed at height z.</p>
+<p>It is always important to consider the measurement height of the wind speed. Wind speed is measured at different heights above ground even within a specific network.</p>
+<p>This equation, however, has the problem that when wind speed gets very low, values of r<sub>a</sub> get unrealistically high. In fact as <span class="math inline">U \rightarrow 0</span>, <span class="math inline">r_a \rightarrow \infty</span> and <span class="math inline">(T_c - T_a) \rightarrow \infty</span>, an unrealistic result. Windspeeds &lt; 1 m s<sup>-1</sup> frequently occur during the course of canopy temperature measurements, a fact that must be accounted for in the calculation of r. A further complication becomes evident at the lower windspeeds when the measurement of windspeed is considered. The stall speed of many anemometers is relatively large (i.e., 0.5 m s<sup>-1</sup>), which means that a value of U=0 can be recorded although the air may be moving above the canopy. Even without measurable horizontal wind, air movement takes place within the canopy because free convective conditions exist which results in buoyancy driven, energy containing eddies.</p>
+<p><span class="citation" data-cites="Thom1977">Thom and Oliver (<a href="#ref-Thom1977" role="doc-biblioref">1977</a>)</span> suggested a semi-empirical approach for overcoming this problem:</p>
+<p><span id="eq-ra2"><span class="math display">{{\text{r}}_{\text{a}}}\text{=}\frac{\text{4.72 ln}{{\left( \frac{\text{z-d}}{{{\text{z}}_{\text{0}}}} \right)}^{\text{2}}}}{\text{1 + 0.54u}} \tag{12}</span></span></p>
+<p>where d is the zero plane displacement height, i.e.&nbsp;the height to which plant canopies increase the plane of zero wind speed. The displacement height is according to <span class="citation" data-cites="Monteith1973">Monteith (<a href="#ref-Monteith1973" role="doc-biblioref">1973</a>)</span> 0.63<sup>.</sup>h, were h is the crop height [m].</p>
+<p>Within the TPenMoneith class there is an option to calculate the aerodynamic resistance using either the Penman-Monteith equation or the Thom-Oliver equation.</p>
+<section id="fao-56-method-for-aerodynamic-resistance" class="level4" data-number="1.1.7.1">
+<h4 data-number="1.1.7.1" class="anchored" data-anchor-id="fao-56-method-for-aerodynamic-resistance"><span class="header-section-number">1.1.7.1</span> FAO-56 method for aerodynamic resistance</h4>
+<p>The FAO-56 method differs in some details from the above approach.</p>
+<p>For a wide range of crops the zero plane displacement height, d [m], and the roughness length governing momentum transfer, z<sub>om</sub> [m], can be estimated from the crop height h [m] by the following equations:</p>
+<p><span id="eq-dFAO56"><span class="math display">d = \frac{2}{3} h \tag{13}</span></span></p>
+<p><span id="eq-zomFAO56"><span class="math display">z_{om} = 0.123 h \tag{14}</span></span></p>
+<p>The roughness length governing transfer of heat and vapour, zoh [m], can be approximated by:</p>
+<p><span id="eq-zohFAO56"><span class="math display">z_{oh} = 0.1 z_{om} \tag{15}</span></span></p>
+<p>Assuming a constant crop height of 0.12 m and a standardized height for wind speed, temperature and humidity at 2 m (z<sub>m</sub> = z<sub>h</sub> = 2 m), the aerodynamic resistance r<sub>a</sub> [s m<sup>-1</sup>] for the grass reference surface becomes</p>
+<p><span id="eq-raFAO56"><span class="math display">r_a = \frac{4.72 \ln \left(\frac{2-0.12}{0.123 \cdot 0.12}\right)^2}{1+0.54 \cdot 1} \approx 70 [s \cdot m^{-1}] \tag{16}</span></span></p>
+</section>
+</section>
+<section id="canopy-resistance" class="level3" data-number="1.1.8">
+<h3 data-number="1.1.8" class="anchored" data-anchor-id="canopy-resistance"><span class="header-section-number">1.1.8</span> Canopy resistance</h3>
 <p>The second resistance considered in the Penman-Monteith equation is the canopy resistance. The canopy resistance <span class="math inline">r_c</span> is in principle the value of the stomatal resistance <span class="math inline">r_s</span> divided by the “active” leaf area index, assuming that the leaves act independently as emitters of water vapour:</p>
-<p><span id="eq-rc"><span class="math display">{{r}_{c}}\approx \frac{r_s}{LAI};\,LAI&lt;&lt; \tag{11}</span></span></p>
+<p><span id="eq-rc"><span class="math display">{{r}_{c}}\approx \frac{r_s}{LAI};\,LAI&lt;&lt; \tag{17}</span></span></p>
 <p>For higher values of leaf area index, however, additional leaves do not decrease the canopy resistance as the first leaves do, i.e.&nbsp;local increase of the vapour pressure of the air by existing leaves reduces the additional transpiration rate of additional leaves.</p>
+<p>The canopy resistance is then calculated as:</p>
+<p>We use an equation proposed by Stockle (personal communication) for the canopy resistance:</p>
 <p><span id="eq-rc2"><span class="math display">
 rc =
 \begin{cases}
@@ -225,33 +355,69 @@ rc =
     \frac{rc_0}{2} - \left(\frac{rc_0}{2} - \frac{rc_0}{3}\right) \cdot \frac{LAI - 2}{4}, &amp; \text{if } 2.0 \leq LAI &lt; 6.0 \\[8pt]
     \frac{rc_0}{3}, &amp; \text{if } rc \text{ remains undefined} \\[8pt]
 \end{cases}
-\tag{12}</span></span></p>
-<p>For a well watered crop the value of <span class="math inline">r_s</span> is at around 50 <span class="math inline">[s.m^{-1}]</span>. The resulting values of <span class="math inline">r_c</span> plotted against LAI look like shown in <a href="#fig-rc_f" class="quarto-xref">Figure&nbsp;1</a>.</p>
+\tag{18}</span></span></p>
+<p>For a well watered crop the value of <span class="math inline">r_s</span> is at around 50 <span class="math inline">[s.m^{-1}]</span>. The resulting values of <span class="math inline">r_c</span> plotted against LAI look like shown in <a href="#fig-rc_f" class="quarto-xref">Figure&nbsp;4</a>.</p>
+<section id="fao-56-method-for-canopy-resistance" class="level4" data-number="1.1.8.1">
+<h4 data-number="1.1.8.1" class="anchored" data-anchor-id="fao-56-method-for-canopy-resistance"><span class="header-section-number">1.1.8.1</span> FAO-56 method for canopy resistance</h4>
+<p>The FAO reference evapotranspiration model (FAO-56, https://www.fao.org/4/x0490e/x0490e06.htm) suggests a simple empirical model for the canopy resistance as a function of the leaf area index.</p>
+<p><span id="eq-rc1"><span class="math display">r_{surf}=\frac{r_s}{LAI_{active}} \tag{19}</span></span></p>
+<p>where <span class="math inline">r_{surf}</span> is the surface resistance, <span class="math inline">r_s</span> is the stomatal resistance and <span class="math inline">LAI_{active}</span> is the active leaf area index. The active leaf area index is the leaf area index that is actually transpiring. This value is for the FAO-56 model calculated as 0.5 times the total leaf area index.</p>
+<p>THE FAO-56 method further assumes a stomatal resistance, r<sub>s</sub>, of a single leaf of 100 s m<sup>-1</sup> under well-watered conditions and postulates for clipped grass a general equation for LAI:</p>
+<p><span id="eq-LAI_FAO56"><span class="math display">LAI = 24 \cdot h \tag{20}</span></span></p>
+<p>where h is the crop height [m].</p>
+<p>By assuming a crop height of 0.12 m, the surface resistance, r<sub>c</sub> [s<sup>.</sup>m-1^^], for the grass reference surface becomes <a href="#eq-rc_FAO56" class="quarto-xref">Eq.&nbsp;21</a>:</p>
+<p><span id="eq-rc_FAO56"><span class="math display"> r_c = \frac{100}{0.5 \cdot 24 \cdot 0.12} \approx 70 [s \cdot m^{-1}] \tag{21}</span></span></p>
+</section>
+<section id="co2-effect-on-canopy-resistance" class="level4" data-number="1.1.8.2">
+<h4 data-number="1.1.8.2" class="anchored" data-anchor-id="co2-effect-on-canopy-resistance"><span class="header-section-number">1.1.8.2</span> CO2-effect on canopy resistance</h4>
+<p>The relative difference of the CO2 concentration in the sub stomatal cavity, CO<sub>2</sub>pp, to the CO<sub>2</sub> concentration in the ambient air, CO<sub>2</sub>a, is calculated as:</p>
+<p><span id="eq-relDeltaCi"><span class="math display">rel \Delta C_i = \frac{(CO_2pp- C_iThreshold)}{C_ithreshold} \tag{22}</span></span></p>
+<p>The canopy resistance is then calculated as:</p>
+<p><span id="eq-rc0Var"><span class="math display">rc_0 = Plant_rc0 \cdot \left(1+rel \Delta C_i \dot relR_{c0_{IncCO2}} \right ) \tag{23}</span></span></p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-rc_f" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center" data-fig-pos="h">
+<div id="fig-rc_f" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-pos="h" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rc_f-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="TPenMontheith_files/figure-html/fig-rc_f-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" data-fig-pos="h" width="1152">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rc_f-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Canopy resistance rc as a function of leaf area index according to the empirical model of Stockle
+Figure&nbsp;4: Canopy resistance rc as a function of leaf area index according to the empirical model of Stockle
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
+<p>The component offers the option to import the r<sub>c0</sub> value from a connected plant component. This is controlled by the option ‘frc0Opt’, which has to be set to ‘fromPlantModel’ in order to do so.</p>
+<p>where Plant<sub>rc0</sub> is the canopy resistance of the plant model, relR_c0Inc_{CO2} is the relative increase of the canopy resistance per unit increase of the CO<sub>2</sub> concentration in the sub stomatal cavity and C<sub>i</sub>Threshold is the CO<sub>2</sub> concentration in the sub stomatal cavity at which the canopy resistance is increased by 50%.</p>
 </section>
 </section>
-<section id="descendence" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="descendence"><span class="header-section-number">1.2</span> Descendence</h2>
+</section>
+<section id="dividing-potential-evapotranspiration-into-components" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="dividing-potential-evapotranspiration-into-components"><span class="header-section-number">1.2</span> Dividing potential Evapotranspiration into components</h2>
+<p>Potential evaporation is the sum potential transpiration, T<sub>p</sub>, potential evaporation, E<sub>p</sub>, and of interception evaporation, I:</p>
+<p><span id="eq-ETp"><span class="math display">E{{T}_{p}}={{T}_{p}}+{{E}_{p}}+I \tag{24}</span></span> Interception evaporation kg.m-2.d-1 is assumed to take place from a storage pool, IP, (kg<sup>.</sup>m<sup>-2</sup>) situated on the surface of the canopy. The capacity of this storage pool, CIP, kg<sup>.</sup>m<sup>-2</sup> is calculated from a specific interception capacity, SIC, (kg<sup>.</sup>m<sup>2.</sup>m<sup>-2</sup>) and the leaf area index LAI m<sup>2.</sup>m<sup>-2</sup>.</p>
+<p><span id="eq-CIP"><span class="math display">CIP=SIC\cdot LAI \tag{25}</span></span></p>
+<p>Interception is the minimum of the sum of the maximum possible change of the interception pool and the precipitation rate, Pr, kg<sup>.</sup>m<sup>-2.</sup>d<sup>-1</sup> and the potential Evapotranspiration:</p>
+<p><span id="eq-Interceptionrate"><span class="math display">I=\min \left( {}^{IP}/{}_{dt}+\min \left( \Pr ,\,CIP-IP \right),\,\,E{{T}_{p}} \right) \tag{26}</span></span></p>
+<p>The change of the storage pool is calculated from the minimum of the precipitation rate and the actual unused capacity of the precipitation pool, CIP-IP:</p>
+<p><span id="eq-dIPdt"><span class="math display">\frac{dIP}{dt}=\min \left( \Pr ,\,CIP-IP \right)-I \tag{27}</span></span></p>
+<p>The potential evaporation rate is determined by the fraction of radiation energy which is reaching the soil surface, R<sub>ns</sub>. This fraction can be calculated using a analogue of the Lambert-Beer law:</p>
+<p><span id="eq-Netradabsorbed"><span class="math display">{{R}_{ns}}={{R}_{n}}\cdot {{e}^{-{{k}_{G}}\cdot LAI}} \tag{28}</span></span></p>
+<p>Were k<sub>G</sub> is the extinction coefficient for global radiation, which has a default value of 0.5. It can be estimated from the extinction coefficient for photosynthetic active radiation by dividint it by 1.35.</p>
+<p>The potential evaporation then gets:</p>
+<p><span id="eq-Ep"><span class="math display">{{E}_{p}}=\left( E{{T}_{p}}-I \right)\cdot \frac{{{R}_{ns}}}{{{R}_{n}}} \tag{29}</span></span></p>
+<p>Actual evaporation was determined from an empirical function using potential evaporation and the water potential in 10 cm depth as input parameters (<span class="citation" data-cites="Beese1978">Beese et al. (<a href="#ref-Beese1978" role="doc-biblioref">1978</a>)</span>). The potential transpiration is calculated as the remaining part of the potential evapo-transpiration after subtracting potential evaporation and interception and taking also into account an empirical crop resistance.</p>
+</section>
+<section id="descendence" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="descendence"><span class="header-section-number">1.3</span> Descendence</h2>
 <p>The class TPenMonteith is derived from TPlantRelatedSubMod, which is derived from TSubmodel which is derived from TObject or TGraphicControl.</p>
 <p>TPenMonteith |____TPlantRelatedSubMod |____TSubmodel</p>
 </section>
-<section id="state-variables" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="state-variables"><span class="header-section-number">1.3</span> State variables</h2>
+<section id="state-variables" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="state-variables"><span class="header-section-number">1.4</span> State variables</h2>
 <p>The class TPenMonteith has 1 following state variable(s).</p>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -271,13 +437,14 @@ Figure&nbsp;1: Canopy resistance rc as a function of leaf area index according t
 </tr>
 </tbody>
 </table>
+<p>TRUE</p>
 </div>
 </div>
 </section>
-<section id="parameters" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="parameters"><span class="header-section-number">1.4</span> Parameters</h2>
+<section id="parameters" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="parameters"><span class="header-section-number">1.5</span> Parameters</h2>
 <p>The class TPenMonteith has 7 following parameter(s).</p>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <colgroup>
@@ -339,14 +506,15 @@ Figure&nbsp;1: Canopy resistance rc as a function of leaf area index according t
 </tr>
 </tbody>
 </table>
+<p>TRUE</p>
 </div>
 </div>
 </section>
-<section id="variables" class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="variables"><span class="header-section-number">1.5</span> Variables</h2>
+<section id="variables" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="variables"><span class="header-section-number">1.6</span> Variables</h2>
 <p>The class TPenMonteith has 20 following variable(s).</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(df.var,  <span class="at">escape =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(df.var,  <span class="at">escape =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <colgroup>
@@ -464,13 +632,14 @@ Figure&nbsp;1: Canopy resistance rc as a function of leaf area index according t
 </tr>
 </tbody>
 </table>
+<p>TRUE</p>
 </div>
 </div>
 </section>
-<section id="external-variables" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="external-variables"><span class="header-section-number">1.6</span> External variables</h2>
+<section id="external-variables" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="external-variables"><span class="header-section-number">1.7</span> External variables</h2>
 <p>The class TPenMonteith has 8 following external variable(s).</p>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <colgroup>
@@ -538,13 +707,14 @@ Figure&nbsp;1: Canopy resistance rc as a function of leaf area index according t
 </tr>
 </tbody>
 </table>
+<p>TRUE</p>
 </div>
 </div>
 </section>
-<section id="options" class="level2" data-number="1.7">
-<h2 data-number="1.7" class="anchored" data-anchor-id="options"><span class="header-section-number">1.7</span> Options</h2>
+<section id="options" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="options"><span class="header-section-number">1.8</span> Options</h2>
 <p>The class TPenMonteith has 4 following option(s).</p>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <colgroup>
@@ -582,12 +752,39 @@ Figure&nbsp;1: Canopy resistance rc as a function of leaf area index according t
 </tr>
 </tbody>
 </table>
+<p>TRUE</p>
 </div>
 </div>
+
 </section>
 </section>
 
-</main>
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-AllenRGPereiraLSRaesDSmithM1998" class="csl-entry" role="listitem">
+Allen RG, Pereira LS, Raes D, Smith M, 1998. <a href="https://www.fao.org/4/x0490e/x0490e00.htm#Contents">Crop evapotranspiration</a>, Irrigation and drainage paper. FAO, Rome.
+</div>
+<div id="ref-Beese1978" class="csl-entry" role="listitem">
+Beese, F., R.R. Van Der Ploeg, Richter, W., 1978. Der wasserhaushalt einer l<span>ö</span><span>ß</span>-parabraunerde unter winterweizen und brache. Computermodelle und ihre experimentelle verifizierung. Z. Acker und Pflanzenbau 146, 1–19.
+</div>
+<div id="ref-Carmona2017" class="csl-entry" role="listitem">
+Carmona, F., Rivas, R., Kruse, E., 2017. Estimating daily net radiation in the FAO penman–monteith method. Theoretical and Applied Climatology 129, 89–95. <a href="https://doi.org/10.1007/s00704-016-1761-6">https://doi.org/10.1007/s00704-016-1761-6</a>
+</div>
+<div id="ref-JensenMEBurmanRDAllenRG1990" class="csl-entry" role="listitem">
+Jensen, ME, Burman RD, Allen RG, 1990. Evapotranspiration and irrigation water requirements, ASCE manual. <span>American Society of Civil Engineers</span>, New York.
+</div>
+<div id="ref-Kjaersgaard2009" class="csl-entry" role="listitem">
+Kjaersgaard, J.H., Cuenca, R.H., Martínez-Cob, A., Gavilán, P., Plauborg, F., Mollerup, M., Hansen, S., 2009. Comparison of the performance of net radiation calculation models. Theoretical and Applied Climatology 98, 57–66. <a href="https://doi.org/10.1007/s00704-008-0091-8">https://doi.org/10.1007/s00704-008-0091-8</a>
+</div>
+<div id="ref-Monteith1973" class="csl-entry" role="listitem">
+Monteith, J.L., 1973. Principles of environmental physics. Edward Arnold, London pp.241.
+</div>
+<div id="ref-Monteith1990" class="csl-entry" role="listitem">
+Monteith, J.L., Unsworth, M.H., 1990. Principles of environmental physics. <span>Edward Arnold</span>, London.
+</div>
+<div id="ref-Thom1977" class="csl-entry" role="listitem">
+Thom, A.S., Oliver, H.R., 1977. On penman’s equation for estimating regional evaporation. Journal of the Royal Meteorological Society 103, 345–357.
+</div>
+</div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
