@@ -13,13 +13,9 @@ toc-depth: 4
 toc-location: left
 crossref:
   eq-prefix: Eq.
-format:
- html:
-  mermaid:
-    theme: forest
-    mainfont: Helvetica Neue, Helvetica, Arial, sans
-    monofont: Cascadia Mono, Menlo, Consolas, Courier New, Courier
-    mathfont: "TeX Gyre Termes Math"
+format: 
+  html:
+    embed-resources: true 
 ---
 
 ```{r}
@@ -59,6 +55,9 @@ options("citation_format" = "pandoc")
 fn_source <- "Q:/HUME/HUME/Components/Evapotranspiration/UPenMonteith.pas"
 #fn_xml <- "Q:/OSR/Project/OSRGrowth/xml_docu/UPenMonteith.xml"
 #xml_docu <- read_xml(fn_xml)
+Kelvin0 <- 273.15 # Kelvin 0
+sigma <- 4.903e-9 # Stefan-Boltzmann-Constant in [MJ m-2 d-1 K-4]
+
 
 ```
 
@@ -145,7 +144,7 @@ p <- p + geom_smooth(method="lm", color="red")
 p <- p + stat_poly_eq(formula = formula, parse=T, aes(label = paste(after_stat(eq.label), ..rr.label.., sep = "~~~")))
 p <- p + xlab("Global radiation [W/m²]")
 p <- p + ylab("Net radiation  [W/m²]")
-p <- set_theme(p,20)
+p <- p + theme_bw(base_size = 20)
 p
 
 
@@ -213,7 +212,7 @@ p <- p + geom_smooth(aes( x=GLOBRAD, y=Rn_mod),method="lm", color="blue")
 p <- p + geom_point( aes( x=GLOBRAD, y=Rn_mod), size=2, alpha=0.3, color="blue")
 p <- p + xlab("Global radiation [MJ/m²/d]")
 p <- p + ylab("Net radiation  [MJ/m²/d]")
-p <- set_theme(p,18)
+p <- p + theme_bw(base_size = 20)
 p
 
 

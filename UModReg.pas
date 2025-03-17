@@ -6,9 +6,9 @@ uses
   DesignIntf, DesignEditors, VCLEditors,
   UFormSubmodelEditor, // HUME: TF_SubModelEdit, Designtime formular for editing
   // TSubModel instance properties
-  UFormModelEditor // HUME: TModelEdit, Designtime formular for editing TMod
+  UFormModelEditor, // HUME: TModelEdit, Designtime formular for editing TMod
   // instance properties
-    ;
+   toolsAPI ;
 
 type
   (* -----------------------------------------------------------------
@@ -118,8 +118,7 @@ begin
   FormModelEditor.TimeStep := Tmod(component).str_SectionTopic_TimeStep;
   FormModelEditor.StateIniFN := Tmod(component).str_SectionTopic_StateIniFN;
   FormModelEditor.ParamIniFN := Tmod(component).str_SectionTopic_ParamIniFN;
-  FormModelEditor.WeatherFileFN := Tmod(component)
-    .str_sectionTopic_WeatherFileFN;
+  FormModelEditor.WeatherFileFN := Tmod(component).str_sectionTopic_WeatherFileFN;
 
   if Tmod(component).SubModStrList.count > 0 then
   begin
@@ -253,10 +252,22 @@ var
   variables: TVar;
   states: TState;
   externs: TExternV;
-  i: integer;
+  h,i,j,k: integer;
+  f: TStreamwriter;
+  actState: TState;
+  actPar : TPar;
+  userdir, line : string;
+
 
 begin
+
+  userdir := (BorlandIDEServices as IOTAModuleServices).GetActiveProject.FileName;
+  userdir := extractfilepath(userdir);
+//  userdir := extractFilePath( getActiveProject.fileName ) ;
   // creates submodel editor form
+  f := TStreamWriter.Create(userdir+TSubModel(component).name+'.csv', false, TEncoding.UTF8);
+  line := 'SuModelName;EntityType;EntityName;Units;Value;Option;Comment';
+  f.writeline(line);
   FormSubModelEditor := TF_SubmodelEditor.create(nil);
   FormSubModelEditor.caption := 'Editing ' + TSubModel(component).Name;
   FormSubModelEditor.ADV_Par.EditorMode := true;
@@ -436,6 +447,25 @@ begin
     end;
   end;
 
+  for j := 0 to TSubModel(component).StateStrList.count - 1 do
+      begin
+        actState := TState(TSubModel(component).StateStrList.objects[j]);
+        line := TSubModel(component).Name + ';';
+        line := line + 'State' + ';' + actState.Name + ';' + actState.U + ';' +
+          FloatToStr(actState.v) + ';' + 'NA' + ';' + actState.Comment;
+        f.writeline(line);
+      end;
+      for k := 0 to TSubModel(component).ParStrList.count - 1 do
+      begin
+        ActPar := TPar(TSubModel(component).ParStrList.objects[k]);
+        line := TSubModel(component).Name + ';';
+        line := line + 'Parameter' + ';' + ActPar.Name + ';' + ActPar.U + ';' +
+          FloatToStr(ActPar.v) + ';' + 'NA' + ';' + ActPar.Comment;
+        f.writeline(line);
+      end;
+  f.Flush;
+  f.close;
+  f.free;
   FormSubModelEditor.Free;
 end;
 

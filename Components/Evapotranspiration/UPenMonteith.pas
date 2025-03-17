@@ -47,8 +47,10 @@ uses
   UMod, UState, classes, UAbstractPlant, Math;
 
 const
-  l_h_v_water = 2.477 * 1E6; /// latent heat for water evaporation at 10 �C in [J/Kg] }
-  Psycro = 0.000662; /// Psychrometer constant [1/°K] }
+  l_h_v_water = 2.477 * 1E6; /// latent heat for water evaporation at 10 °C in [J/Kg] }
+///  Psycro = 0.000662; /// Psychrometer constant [1/°K] }
+  MW_ratio = 0.622;  /// ratio of the molecular weight of water to the molecular weight of dry air
+  c_p = 1005;        /// specific heat of air at constant pressure [J/kg/K]
 
 type
 
@@ -71,6 +73,7 @@ type
     function ra_f(wind_speed, crop_height: real): real;
     function Penman(Temp, Sat_def, Net_beam, delta, gamma, l_h_v_water, ra,
       rc: real): real;
+//    function Calc_psychro(P, Temp:real):real;
   private
     fExkOpt: TSource; /// Source of extinction coefficient
     frc0Opt: TSource; /// Source of rc0
@@ -83,6 +86,7 @@ type
     procedure Calc_rc0(Plant_rc0, CO2pp, CiThreshold, relRc0Inc_CO2:real;
                                CO2effect: boolean);
     function Calc_rc(rc0, LAI: real): real;
+    function Calc_psychro(P, Temp:real): real;
     procedure Calc_ra;
     procedure Calc_potTrans;
 
@@ -624,7 +628,7 @@ function TPenMonteith.delta_f(sat_vap_press, Temp: real): real;
   sat_vap_press    saturated water vapour pressure    [mbar]       I
 
   delta_f          Steigung der Wasserdampdruck-
-  kurve                            [mbar/�K]   O }
+  kurve                            [mbar/°K]   O }
 { ********************************************************************** }
 
 begin
@@ -632,6 +636,15 @@ begin
 end;
 { ----------------------------------------------------------------------- }
 { ----------------------------------------------------------------------- }
+
+
+function TPenMonteith.Calc_psychro(P, Temp:real):real;
+
+begin
+  result := (c_p * P / (L_H_V_water * MW_ratio));
+end;
+
+
 
 procedure TPenMonteith.CreateAll;
 
@@ -677,14 +690,14 @@ begin
             fCO2effect);
   rc.v := Calc_rc(rc0_Var.v, ExLAI.v);
   Calc_ra;
-  // calcuation der net radiation nach empirischer Funktion
+  // calcuation of net radiation using empirical function
   // gefitted aus Tagesdaten gemessener net radiation (W/m2) zu Globalstahlung (W/m2)
  // GlobRad_w_m2 := GlobRad.v*1e6/86400;
 //  netRad.v := max(0, 0.6494 * (GlobRad_w_m2) - 18.417);
   netRad.v := max(0, 0.6494 * (GlobRad.v) - 18.417);
-  P.v := pressure_f(Elev.v, Temp.v);
-  gamma := P.v * Psycro;
-  es := sat_vap_press_f(Temp.v);
+  P.v   := pressure_f(Elev.v, Temp.v);
+  gamma :=  Calc_psychro(P.v, Temp.v); //P.v * Psycro;
+  es    := sat_vap_press_f(Temp.v);
   VapPress.v := es - Sat_def.v;
   { if relFeu.v > 100.0 then
     ea            := 99.0*es/100
