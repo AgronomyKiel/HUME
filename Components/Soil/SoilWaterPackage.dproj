@@ -113,13 +113,13 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_UsePackage>vcl;rtl;vclimg;vclx;Tee;Jcl;asgd_Rio;Hume1;xmlrtl;vclactnband;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>vcl;rtl;vclimg;vclx;Tee;Jcl;asgd_Rio;Hume1;xmlrtl;vclactnband;VclSmp;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
-        <DCC_UsePackage>vcl;rtl;vclimg;vclx;Tee;xmlrtl;vclactnband;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>vcl;rtl;vclimg;vclx;Tee;xmlrtl;vclactnband;VclSmp;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64x)'!=''">
-        <DCC_UsePackage>vcl;rtl;vclimg;vclx;xmlrtl;vclactnband;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>vcl;rtl;vclimg;vclx;xmlrtl;vclactnband;VclSmp;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -146,68 +146,48 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="vcl.dcp"/>
-        <DCCReference Include="vclimg.dcp"/>
         <DCCReference Include="vclx.dcp"/>
-        <DCCReference Include="Tee.dcp"/>
-        <DCCReference Include="Jcl.dcp"/>
-        <DCCReference Include="asgd_Rio.dcp"/>
-        <DCCReference Include="Hume1.dcp"/>
-        <DCCReference Include="designide.dcp"/>
+        <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="vclactnband.dcp"/>
-        <DCCReference Include="xmlrtl.dcp"/>
+        <DCCReference Include="designide.dcp"/>
+        <DCCReference Include="VclSmp.dcp"/>
+        <DCCReference Include="Hume1.dcp"/>
+        <DCCReference Include="USoilNitrogen.pas"/>
+        <DCCReference Include="USoilNitrogenUp.pas"/>
+        <DCCReference Include="USoilMineralisation.pas"/>
+        <DCCReference Include="USimpleSoilHeat.pas"/>
+        <DCCReference Include="..\CropManagement\UTillage.pas"/>
+        <DCCReference Include="..\PlantComponents\PlantIntegrator.pas"/>
+        <DCCReference Include="..\CropManagement\UIrrigate.pas"/>
+        <DCCReference Include="..\CropManagement\UDueng.pas"/>
+        <DCCReference Include="..\Rootgrowth\USimpleRootModNew.pas"/>
+        <DCCReference Include="..\PlantComponents\UGrowthCurvePlant.pas"/>
+        <DCCReference Include="..\PlantComponents\UGrowthCurvePlantRoots.pas"/>
+        <DCCReference Include="..\PlantComponents\USucros.pas"/>
         <DCCReference Include="Concentration_Niko.pas"/>
-        <DCCReference Include="UAbstractSoilHeat.pas"/>
-        <DCCReference Include="UAbstractSoilMin.pas"/>
+        <DCCReference Include="..\Evapotranspiration\UPenMonteith.pas"/>
+        <DCCReference Include="UGenucht.pas"/>
+        <DCCReference Include="UlayeredSoil.pas"/>
+        <DCCReference Include="URootedSoil.pas"/>
+        <DCCReference Include="URootedSoil_zr.pas"/>
+        <DCCReference Include="USoilWaterMod.pas"/>
+        <DCCReference Include="..\PlantComponents\UDryMatProdComp.pas"/>
+        <DCCReference Include="..\PlantComponents\UMultiGrowthCurvePlant.pas"/>
+        <DCCReference Include="..\PlantComponents\UMultiGrowthCurvePlantRoots.pas"/>
+        <DCCReference Include="UMinMod2Pool.pas"/>
+        <DCCReference Include="..\PlantComponents\UGrowthCurve.pas"/>
+        <DCCReference Include="..\CropManagement\UDueng_Par.pas"/>
+        <DCCReference Include="..\CropManagement\UFertilization.pas"/>
+        <DCCReference Include="URootedSoilET.pas"/>
+        <DCCReference Include="Usnowpack.pas"/>
+        <DCCReference Include="..\Evapotranspiration\UDailyCropSurfaceTemperatures.pas"/>
+        <DCCReference Include="USoilMineralisationNH4.pas"/>
         <DCCReference Include="UFormDebugSoil.pas">
             <Form>FormDebugSoil</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="UGenucht.pas"/>
-        <DCCReference Include="UlayeredSoil.pas"/>
-        <DCCReference Include="URootedSoil.pas"/>
-        <DCCReference Include="USimpleSoilHeat.pas"/>
-        <DCCReference Include="USoilMineralisation.pas"/>
-        <DCCReference Include="USoilMineralisationNH4.pas"/>
-        <DCCReference Include="USoilNitrogen.pas"/>
-        <DCCReference Include="USoilNitrogenUp.pas"/>
-        <DCCReference Include="USoilTexture.pas"/>
-        <DCCReference Include="USoilWaterMod.pas"/>
-        <DCCReference Include="WFlowFunctions.pas"/>
-        <DCCReference Include="URootedSoilET.pas"/>
-        <DCCReference Include="UMinMod2Pool.pas"/>
-        <DCCReference Include="..\CropManagement\UDueng.pas"/>
-        <DCCReference Include="..\CropManagement\UDueng_NH3.pas"/>
-        <DCCReference Include="..\CropManagement\UDueng_Par.pas"/>
-        <DCCReference Include="..\CropManagement\UFertilization.pas"/>
-        <DCCReference Include="..\CropManagement\UInput.pas"/>
-        <DCCReference Include="..\CropManagement\UIrrigate.pas"/>
-        <DCCReference Include="..\CropManagement\UTillage.pas"/>
-        <DCCReference Include="..\Evapotranspiration\UDailyCropSurfaceTemperatures.pas"/>
-        <DCCReference Include="..\Evapotranspiration\UHaude.pas"/>
-        <DCCReference Include="..\Evapotranspiration\UPenMonteith.pas"/>
-        <DCCReference Include="..\Evapotranspiration\UPenMonteith_Hybrid.pas"/>
-        <DCCReference Include="..\PlantComponents\FFResultsSubmod.pas"/>
-        <DCCReference Include="..\PlantComponents\PlantIntegrator.pas"/>
-        <DCCReference Include="..\PlantComponents\UDryMatProdComp.pas"/>
-        <DCCReference Include="..\PlantComponents\UGrowthCurve.pas"/>
-        <DCCReference Include="..\PlantComponents\UGrowthCurvePlant.pas"/>
-        <DCCReference Include="..\PlantComponents\UGrowthCurvePlantRoots.pas"/>
         <DCCReference Include="..\PlantComponents\ULUETotDry.pas"/>
-        <DCCReference Include="..\PlantComponents\UMultiGrowthCurvePlant.pas"/>
-        <DCCReference Include="..\PlantComponents\UMultiGrowthCurvePlantRoots.pas"/>
-        <DCCReference Include="..\PlantComponents\USimplePlant.pas"/>
-        <DCCReference Include="..\PlantComponents\USimplePlantWW_R.pas"/>
-        <DCCReference Include="..\PlantComponents\USucros.pas"/>
-        <DCCReference Include="Q:\N2O\Project\USoilMinN2O.pas"/>
-        <DCCReference Include="..\Rootgrowth\USimpleRootModDM.pas"/>
-        <DCCReference Include="..\PlantComponents\USimplePlantWW_old_R.pas"/>
-        <DCCReference Include="..\CERES Wheat\Daylength.pas"/>
-        <DCCReference Include="..\CERES Wheat\UHumeWheatPartitioning.pas"/>
-        <DCCReference Include="..\CERES Wheat\UHumeWheatDryMatter.pas"/>
-        <DCCReference Include="..\CERES Wheat\UHumeWheatLeafArea.pas"/>
-        <DCCReference Include="..\CERES Wheat\Development.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{09C3D387-3352-450B-8A1D-A0223783947F}</ProjectGuid>
+        <ProjectGuid>{B57EB88E-906D-4D0A-8BD0-440CBF0E8ECC}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
         <Projects Include="Hume1.dproj">
@@ -10,18 +10,6 @@
             <Dependencies/>
         </Projects>
         <Projects Include="Components\CERES Wheat\CeresSubModels.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="Components\OilseedRape\OSR.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="Components\Maize\Maize.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="Components\ISIP_Components\ISIP_Components.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="Q:\N2O\Project\nitri_pac.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -59,50 +47,14 @@
     <Target Name="CeresSubModels:Make">
         <MSBuild Projects="Components\CERES Wheat\CeresSubModels.dproj" Targets="Make"/>
     </Target>
-    <Target Name="OSR">
-        <MSBuild Projects="Components\OilseedRape\OSR.dproj"/>
-    </Target>
-    <Target Name="OSR:Clean">
-        <MSBuild Projects="Components\OilseedRape\OSR.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="OSR:Make">
-        <MSBuild Projects="Components\OilseedRape\OSR.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="Maize">
-        <MSBuild Projects="Components\Maize\Maize.dproj"/>
-    </Target>
-    <Target Name="Maize:Clean">
-        <MSBuild Projects="Components\Maize\Maize.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="Maize:Make">
-        <MSBuild Projects="Components\Maize\Maize.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="ISIP_Components">
-        <MSBuild Projects="Components\ISIP_Components\ISIP_Components.dproj"/>
-    </Target>
-    <Target Name="ISIP_Components:Clean">
-        <MSBuild Projects="Components\ISIP_Components\ISIP_Components.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="ISIP_Components:Make">
-        <MSBuild Projects="Components\ISIP_Components\ISIP_Components.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="nitri_pac">
-        <MSBuild Projects="Q:\N2O\Project\nitri_pac.dproj"/>
-    </Target>
-    <Target Name="nitri_pac:Clean">
-        <MSBuild Projects="Q:\N2O\Project\nitri_pac.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="nitri_pac:Make">
-        <MSBuild Projects="Q:\N2O\Project\nitri_pac.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Build">
-        <CallTarget Targets="Hume1;SoilWaterPackage;CeresSubModels;OSR;Maize;ISIP_Components;nitri_pac"/>
+        <CallTarget Targets="Hume1;SoilWaterPackage;CeresSubModels"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Hume1:Clean;SoilWaterPackage:Clean;CeresSubModels:Clean;OSR:Clean;Maize:Clean;ISIP_Components:Clean;nitri_pac:Clean"/>
+        <CallTarget Targets="Hume1:Clean;SoilWaterPackage:Clean;CeresSubModels:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Hume1:Make;SoilWaterPackage:Make;CeresSubModels:Make;OSR:Make;Maize:Make;ISIP_Components:Make;nitri_pac:Make"/>
+        <CallTarget Targets="Hume1:Make;SoilWaterPackage:Make;CeresSubModels:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
