@@ -233,7 +233,7 @@ begin
 
 
   ExternVcreate('PotTrans', '[mm.d-1]', stateField, PotTrans, 'potential transpiration rate');
-  ExternVcreate('Interzeption', '[mm.d-1]', stateField, Interzeption, 'interception rate');
+  ExternVcreate('Interception', '[mm.d-1]', stateField, Interzeption, 'interception rate');
 
   VarCreate('ActTrans', '[mm.d-1]',0.0, false, ActTrans, 'Actual transpiration rate');
   VarCreate('TransRatio', '[-]',0.0, false, TransRatio, 'relation between actual and potential transpiration');

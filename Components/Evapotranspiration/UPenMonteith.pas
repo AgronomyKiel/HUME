@@ -882,7 +882,7 @@ end;
 procedure TPenMonteith.CreatePars;
 begin
   ParCreate('Elev', '[m]', 50, Elev, 'Heigt above sea level');
-  ParCreate('rc0', '[s.m-1]', 50, rc0, 'canopy resistance at "good water supply"'); // Stomatawiderstand bei "guter Wasserversorgung"
+  ParCreate('rc0', '[s.m-1]', 50, rc0, 'canopy resistance at "good water supply", note that if a plant component is coupled to TPenMonteith this value is used'); // Stomatawiderstand bei "guter Wasserversorgung"
   ParCreate('exk_GlobRad', '[-]', 0.5, exk_GlobRad, 'extinction coefficient for global radiation');
   ParCreate('SIC', '[mm.m-2.m-2]', 0.15, sic, 'specific interception capacity');
   ParCreate('measure_height', '[m]', 2, measure_height, 'Measurement height of meteorological variables [m]');
