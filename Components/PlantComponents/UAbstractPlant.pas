@@ -42,7 +42,6 @@ type
 
   TAbstractPlant = class(TSubModel)     /// base class for plant components interacting with soil components
   private
-    fwithRoots: boolean;
     fNextCrop: TAbstractPlant;
     fRotationlength: byte;
     fSetNewDates: boolean;
@@ -53,6 +52,7 @@ type
     fDMprodModel: TPlantRelatedSubmod;
 
   protected
+    fwithRoots: boolean;  // moved to protected hk 2025/03/20
 
     procedure setNextCrop(NextCrop: TAbstractplant); virtual;
     function  GetLAI: THumeNumEntity; virtual; abstract;
@@ -90,6 +90,7 @@ type
     Par_ExtCoeffPAR: TPar;  /// Extinction coefficient for PAR (only valid if EvapotranspirationModel uses Option Opt_Exk_Glob = fromPlantModel)}
     Par_Weff: TPar;   /// Effective rooting depth [cm] (only valid if SoilWaterModel uses Option Opt_Weff=fromPlantModel)}
     pWLD_arr: array[1..max_comp] of ^real;   /// Pointer array to root length density data
+    OptWithRoots : TOption; ///  Option added HK 2025/03/20
     procedure SetSowingDate(NewSowingDate: real); virtual;
 
     procedure Integrate; override;
@@ -163,6 +164,11 @@ begin
   ParCreate('Par_ExtCoeffPAR', '[-]', 0.675, Par_ExtCoeffPAR,
     'Extinction coefficient for PAR (only valid if EvapotranspirationModel uses Option Opt_Exk_Glob = fromPlantModel)');
   ParCreate('Par_Weff', '[cm]', 100, Par_Weff, 'effective rooting depth');
+  OptCreate('WithRoots', 'false', OptWithRoots, 'Option to flag that root growth is calculated within the component');
+  OptWithRoots.OptionList.add('true');
+  OptWithRoots.OptionList.add('false');
+
+
 end;
 
 procedure TAbstractPlant.Integrate;
@@ -237,6 +243,12 @@ var
   day, month, year : integer;
 begin
   inherited;
+  if lowercase(OptWithRoots.Option) = 'true' then begin
+    self.fwithRoots := true;
+  end else begin
+    self.fWithRoots := false;
+  end;
+
   DoHarvest := false;
   Harvested := false;
 //  OptContOutput := true;

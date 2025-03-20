@@ -226,7 +226,8 @@ begin
   VarCreate('zr', '[cm]', 0, true, zr);
   Varcreate('SRL', '[cm.cm-2]', 0.0, false, SRL);
   Varcreate('SRL_eff', '[cm.cm-2]', 0.0, false, SRL_eff);
-
+  fwithRoots := true;
+  OptWithRoots.Option := 'true';
   OptCreate('Rootdepthgrowth', 'Monomolecular', depthgrowthoptstr);
   depthgrowthoptstr.optionlist.Clear;
   depthgrowthoptstr.optionlist.Add('linear');
