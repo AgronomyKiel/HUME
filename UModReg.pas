@@ -256,7 +256,10 @@ var
   f: TStreamwriter;
   actState: TState;
   actPar : TPar;
+  actExVar : TExternV;
+  actVar, actConst : TVar;
   userdir, line : string;
+  l,m,n: Integer;
 
 
 begin
@@ -461,6 +464,30 @@ begin
         line := TSubModel(component).Name + ';';
         line := line + 'Parameter' + ';' + ActPar.Name + ';' + ActPar.U + ';' +
           FloatToStr(ActPar.v) + ';' + 'NA' + ';' + ActPar.Comment;
+        f.writeline(line);
+      end;
+      for l := 0 to TSubModel(component).ExternVStrList.count-1 do
+      begin
+        ActExVar := TExternV(TSubModel(component).ExternVStrList.objects[l]);
+        line := TSubModel(component).Name + ';';
+        line := line + 'ExtVar' + ';' + ActExVar.Name + ';' + ActExVar.U + ';' +
+          FloatToStr(ActExVar.v) + ';' + 'NA' + ';' + ActExVar.Comment;
+        f.writeline(line);
+      end;
+      for m := 0 to TSubModel(component).VarStrList.count-1 do
+      begin
+        ActVar := TVar(TSubModel(component).VarStrList.objects[m]);
+        line := TSubModel(component).Name + ';';
+        line := line + 'Variable' + ';' + ActVar.Name + ';' + ActVar.U + ';' +
+          FloatToStr(ActVar.v) + ';' + 'NA' + ';' + ActVar.Comment;
+        f.writeline(line);
+      end;
+      for n := 0 to TSubModel(component).ConstStrList.count-1 do
+      begin
+        ActConst := TVar(TSubModel(component).ConstStrList.objects[n]);
+        line := TSubModel(component).Name + ';';
+        line := line + 'Constant' + ';' + ActConst.Name + ';' + ActConst.U + ';' +
+          FloatToStr(ActConst.v) + ';' + 'NA' + ';' + ActConst.Comment;
         f.writeline(line);
       end;
   f.Flush;

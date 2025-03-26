@@ -103,7 +103,7 @@ type
     property ExtCoeffGlobRad: real read getExtCoeffGlobRad; ///Extinction coefficient for global radiation}
     property rc0: real read getrc0;    /// Canopy resistance at potential transpiration}
     property Psi2: real read getPsi2;  /// Water potential at which water uptake by the plant starts to decrease}
-    property Weff: real read getWeff; /// Effective rooting depth [cm]}
+    property Weff: real read getWeff; /// Effective rooting depth [cm]
 
     property p_WLD[Index: Integer]: THumeNumEntity read getWLD; /// write setWLD;
     property p_SumRootLength: THumeNumEntity read getSumRootLength;
