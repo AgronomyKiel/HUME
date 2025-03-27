@@ -47,7 +47,11 @@ procedure Register;
 
 implementation
 uses
-  SysUtils, vcl.Dialogs;
+  SysUtils
+{$IFNDEF NONVISUAL}
+  , vcl.Dialogs
+{$ENDIF}
+  ;
 
 constructor TDuengungen.create;
 begin

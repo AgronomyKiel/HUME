@@ -258,8 +258,9 @@ var
   actPar : TPar;
   actExVar : TExternV;
   actVar, actConst : TVar;
+  actOption: TOption;
   userdir, line : string;
-  l,m,n: Integer;
+  l,m,n,o: Integer;
 
 
 begin
@@ -269,7 +270,7 @@ begin
 //  userdir := extractFilePath( getActiveProject.fileName ) ;
   // creates submodel editor form
   f := TStreamWriter.Create(userdir+TSubModel(component).name+'.csv', false, TEncoding.UTF8);
-  line := 'SuModelName;EntityType;EntityName;Units;Value;Option;Comment';
+  line := 'SubModel;EntityType;EntityName;Units;Value;Option;Comment';
   f.writeline(line);
   FormSubModelEditor := TF_SubmodelEditor.create(nil);
   FormSubModelEditor.caption := 'Editing ' + TSubModel(component).Name;
@@ -490,6 +491,15 @@ begin
           FloatToStr(ActConst.v) + ';' + 'NA' + ';' + ActConst.Comment;
         f.writeline(line);
       end;
+      for o := 0 to TSubModel(component).OptionStrList.count-1 do
+      begin
+        ActOption := TOption(TSubModel(component).OptionStrList.objects[o]);
+        line := TSubModel(component).Name + ';';
+        line := line + 'Option' + ';' + ActOption.Name + ';' + 'NA' + ';' +
+          ActOption.Option + ';' + 'NA' + ';' + ActOption.Comment;
+        f.writeline(line);
+      end;
+
   f.Flush;
   f.close;
   f.free;

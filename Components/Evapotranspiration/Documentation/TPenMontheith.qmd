@@ -457,7 +457,6 @@ rc_0 <- function (Plant_rc0, relDeltaCi, relRc0Inc_CO2){
 }
 
 
-
 df$relDeltaCi <- Vectorize(FUN = relDeltaCi) (df$CO2pp, CiThreshold)
 df$rc0 <- Vectorize(FUN = rc_0) (50, df$relDeltaCi, relRc0Inc_CO2)
 df$rcs <- Vectorize(FUN =  rc_f) (df$rc0, df$LAI)
@@ -527,9 +526,9 @@ TPenMonteith
 #| message: false
 #| warning: false
 #| include: false
-fn <- "Q:/OSR/INI/ModelLowN/Docu_Docu_ModelLown_talent_N150_Neff.csv"
+fn <- "Q:/SimProject/project/PenMonteith1.csv"
 df <- read.delim(fn, header = TRUE, sep = ";")
-df.state <- df %>% filter(Submodel == "PenMonteith1", EntityType == "State") %>% dplyr::select(EntityName, Units, Value, Comment)
+df.state <- df %>% filter(SubModel == "PenMonteith1", EntityType == "State") %>% dplyr::select(EntityName, Units, Value, Comment)
 names(df.state) <- c("State variable", "Units", "InitialValue", "Description")
 ```
 The class TPenMonteith has `r trunc(nrow(df.state))`  following state variable(s).
@@ -549,7 +548,7 @@ kable(df.state)
 #| warning: false
 #| include: false
 
-df.par <- df %>% filter(Submodel == "PenMonteith1", EntityType == "Parameter") %>% dplyr::select(EntityName, Units, Value, Comment)
+df.par <- df %>% filter(SubModel == "PenMonteith1", EntityType == "Parameter") %>% dplyr::select(EntityName, Units, Value, Comment)
 names(df.par) <- c("Parameter", "Units", "Value", "Description")
 
 ```
@@ -569,7 +568,7 @@ kable(df.par,  escape = FALSE)
 #| warning: false
 #| include: false
 
-df.var <- df %>% filter(Submodel == "PenMonteith1", EntityType == "Variable") %>% dplyr::select(EntityName, Units, Comment)
+df.var <- df %>% filter(SubModel == "PenMonteith1", EntityType == "Variable") %>% dplyr::select(EntityName, Units, Comment)
 names(df.var) <- c("Variable", "Units", "Description")
 
 ```
@@ -589,7 +588,7 @@ kable(df.var,  escape = FALSE)
 #| warning: false
 #| include: false
 
-df.ext <- df %>% filter(Submodel == "PenMonteith1", EntityType == "ExternalValue") %>% dplyr::select(EntityName, Units, Comment, Option)
+df.ext <- df %>% filter(SubModel == "PenMonteith1", EntityType == "ExtVar") %>% dplyr::select(EntityName, Units, Comment, Option)
 names(df.ext) <- c("External variable", "Units", "Description", "Source")
 
 ```
@@ -611,7 +610,7 @@ kable(df.ext,  escape = FALSE)
 #| warning: false
 #| include: false
 
-df.opt <- df %>% filter(Submodel == "PenMonteith1",EntityType == "Option" ) %>% dplyr::select(EntityName, Units, Comment)
+df.opt <- df %>% filter(SubModel == "PenMonteith1",EntityType == "Option" ) %>% dplyr::select(EntityName, Units, Comment)
 names(df.opt) <- c("Option", "Units", "Description")
 
 ```
