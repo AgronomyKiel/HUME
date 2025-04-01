@@ -442,7 +442,7 @@ type
     property Par_PWP4: TPar read PWP4 write PWP4;  /// permanenter Welkepunkt
     property Par_nFK4: TPar read nFK4;              /// nutzbare Feldkapazit�t
 
-{    property Par_b_sat5: TPar read b_sat5 write b_sat5;
+    property Par_b_sat5: TPar read b_sat5 write b_sat5;
     property Par_b_rest5: TPar read b_rest5 write b_rest5;
     property Par_b_KS5: TPar read Ks5 write Ks5;
     property Par_n5: TPar read n_par5 write n_par5;
@@ -460,7 +460,7 @@ type
     property Par_alpha6: TPar read alpha6 write alpha6;
     property Par_FK6: TPar read FK6 write FK6;     /// Feldkapazit�t [cm3/cm3]
     property Par_PWP6: TPar read PWP6 write PWP6;  /// permanenter Welkepunkt
-    property Par_nFK6: TPar read nFK6;              /// nutzbare Feldkapazit�t      }
+    property Par_nFK6: TPar read nFK6;              /// nutzbare Feldkapazit�t
 
 
     property Par_PsiStart1: TPar read PsiStart1 write PsiStart1;
@@ -998,13 +998,45 @@ begin
           WPar[i].m_par := 1;
       end;
     end;
-    for i := round(HoriNdx3.v) + 1 to n_comp + 1 do
+    for i := round(HoriNdx3.v) + 1 to round(HoriNdx4.v) do
     begin
       if uppercase(Texture_versionOption.Option) = 'RR' then
         VanGenuchtenFromTextureClass_RR(WPar[i], FTextureClass4)
       else
         VanGenuchtenFromTextureClass_KA(WPar[i], FTextureClass4);
       WPar[i].Ks := Ks4.v;
+      case m_model of
+        Mualem:
+          WPar[i].m_par := 1 - 1 / WPar[i].n_par;
+        Burdine:
+          WPar[i].m_par := 1 - 2 / WPar[i].n_par;
+        Vereecken:
+          WPar[i].m_par := 1;
+      end;
+    end;
+    for i := round(HoriNdx4.v) + 1 to round(HoriNdx5.v) do
+    begin
+      if uppercase(Texture_versionOption.Option) = 'RR' then
+        VanGenuchtenFromTextureClass_RR(WPar[i], FTextureClass5)
+      else
+        VanGenuchtenFromTextureClass_KA(WPar[i], FTextureClass5);
+      WPar[i].Ks := Ks5.v;
+      case m_model of
+        Mualem:
+          WPar[i].m_par := 1 - 1 / WPar[i].n_par;
+        Burdine:
+          WPar[i].m_par := 1 - 2 / WPar[i].n_par;
+        Vereecken:
+          WPar[i].m_par := 1;
+      end;
+    end;
+    for i := round(HoriNdx5.v) + 1 to n_comp + 1 do
+    begin
+      if uppercase(Texture_versionOption.Option) = 'RR' then
+        VanGenuchtenFromTextureClass_RR(WPar[i], FTextureClass6)
+      else
+        VanGenuchtenFromTextureClass_KA(WPar[i], FTextureClass6);
+      WPar[i].Ks := Ks6.v;
       case m_model of
         Mualem:
           WPar[i].m_par := 1 - 1 / WPar[i].n_par;
@@ -1122,11 +1154,21 @@ begin
         WPar[i].Ks := KSFromTextureClass_RR(FTextureClass3)
       else
         WPar[i].Ks := KSFromTextureClass_KA(FTextureClass3);
-    for i := round(HoriNdx3.v) + 1 to n_comp + 1 do
+    for i := round(HoriNdx3.v) + 1 to round(HoriNdx4.v) do
       if uppercase(Texture_versionOption.Option) = 'RR' then
         WPar[i].Ks := KSFromTextureClass_RR(FTextureClass4)
       else
         WPar[i].Ks := KSFromTextureClass_KA(FTextureClass4);
+    for i := round(HoriNdx4.v) + 1 to round(HoriNdx5.v) do
+      if uppercase(Texture_versionOption.Option) = 'RR' then
+        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass5)
+      else
+        WPar[i].Ks := KSFromTextureClass_KA(FTextureClass5);
+    for i := round(HoriNdx5.v) + 1 to n_comp + 1 do
+      if uppercase(Texture_versionOption.Option) = 'RR' then
+        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass6)
+      else
+        WPar[i].Ks := KSFromTextureClass_KA(FTextureClass6);
   end;
 
 
@@ -1135,26 +1177,38 @@ begin
     ParIniF.WriteFloat(Name, Par_b_sat2.Name, WPar[trunc(Horindx2.v)].b_sat);
     ParIniF.WriteFloat(Name, Par_b_sat3.Name, WPar[trunc(Horindx3.v)].b_sat);
     ParIniF.WriteFloat(Name, Par_b_sat4.Name, WPar[trunc(Horindx4.v)].b_sat);
+    ParIniF.WriteFloat(Name, Par_b_sat5.Name, WPar[trunc(Horindx5.v)].b_sat);
+    ParIniF.WriteFloat(Name, Par_b_sat6.Name, WPar[trunc(Horindx6.v)].b_sat);
     ParIniF.WriteFloat(Name, Par_b_rest1.Name, WPar[trunc(Horindx1.v)].b_rest);
     ParIniF.WriteFloat(Name, Par_b_rest2.Name, WPar[trunc(Horindx2.v)].b_rest);
     ParIniF.WriteFloat(Name, Par_b_rest3.Name, WPar[trunc(Horindx3.v)].b_rest);
     ParIniF.WriteFloat(Name, Par_b_rest4.Name, WPar[trunc(Horindx4.v)].b_rest);
+    ParIniF.WriteFloat(Name, Par_b_rest5.Name, WPar[trunc(Horindx5.v)].b_rest);
+    ParIniF.WriteFloat(Name, Par_b_rest6.Name, WPar[trunc(Horindx6.v)].b_rest);
     ParIniF.WriteFloat(Name, Par_alpha1.Name, WPar[trunc(Horindx1.v)].alpha);
     ParIniF.WriteFloat(Name, Par_alpha2.Name, WPar[trunc(Horindx2.v)].alpha);
     ParIniF.WriteFloat(Name, Par_alpha3.Name, WPar[trunc(Horindx3.v)].alpha);
     ParIniF.WriteFloat(Name, Par_alpha4.Name, WPar[trunc(Horindx4.v)].alpha);
+    ParIniF.WriteFloat(Name, Par_alpha5.Name, WPar[trunc(Horindx5.v)].alpha);
+    ParIniF.WriteFloat(Name, Par_alpha6.Name, WPar[trunc(Horindx6.v)].alpha);
     ParIniF.WriteFloat(Name, Par_n1.Name, WPar[trunc(Horindx1.v)].n_par);
     ParIniF.WriteFloat(Name, Par_n2.Name, WPar[trunc(Horindx2.v)].n_par);
     ParIniF.WriteFloat(Name, Par_n3.Name, WPar[trunc(Horindx3.v)].n_par);
     ParIniF.WriteFloat(Name, Par_n4.Name, WPar[trunc(Horindx4.v)].n_par);
+    ParIniF.WriteFloat(Name, Par_n5.Name, WPar[trunc(Horindx5.v)].n_par);
+    ParIniF.WriteFloat(Name, Par_n6.Name, WPar[trunc(Horindx6.v)].n_par);
     ParIniF.WriteFloat(Name, Par_lpar1.Name, WPar[trunc(Horindx1.v)].l_par);
     ParIniF.WriteFloat(Name, Par_lpar2.Name, WPar[trunc(Horindx2.v)].l_par);
     ParIniF.WriteFloat(Name, Par_lpar3.Name, WPar[trunc(Horindx3.v)].l_par);
     ParIniF.WriteFloat(Name, Par_lpar4.Name, WPar[trunc(Horindx4.v)].l_par);
+    ParIniF.WriteFloat(Name, Par_lpar5.Name, WPar[trunc(Horindx5.v)].l_par);
+    ParIniF.WriteFloat(Name, Par_lpar6.Name, WPar[trunc(Horindx6.v)].l_par);
     ParIniF.WriteFloat(Name, Par_b_Ks1.Name, WPar[trunc(Horindx1.v)].Ks);
     ParIniF.WriteFloat(Name, Par_b_Ks2.Name, WPar[trunc(Horindx2.v)].Ks);
     ParIniF.WriteFloat(Name, Par_b_Ks3.Name, WPar[trunc(Horindx3.v)].Ks);
     ParIniF.WriteFloat(Name, Par_b_Ks4.Name, WPar[trunc(Horindx4.v)].Ks);
+    ParIniF.WriteFloat(Name, Par_b_Ks5.Name, WPar[trunc(Horindx5.v)].Ks);
+    ParIniF.WriteFloat(Name, Par_b_Ks6.Name, WPar[trunc(Horindx6.v)].Ks);
   end;
   if ParIniF <> nil then
     ParIniF.UpdateFile;
