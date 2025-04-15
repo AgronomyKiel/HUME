@@ -408,25 +408,29 @@ begin
     OutDir := ParamStr(2);
     if Lmod.fModel <> nil then
     begin
-      if OutDir <> '' then Lmod.fModel.GM_OutPutPath := OutDir;
+      if OutDir <> '' then
+      begin
+        Lmod.fModel.GM_OutPutPath := OutDir;
+        Lmod.fModel.ReadIniOutputpath := false;
+      end;
       LMod.fModel.Set_ControlFileFN(CtrlFileFN);
       Lmod.fModel.init(Lmod.fModel.actIniFile);
       Lmod.fModel.InitAllSubMods;
 
       // gespeicherte Properties aus *ini Datei einlesen
-  {    path :=  ExtractFilePath(ParamStr(0));
+      path :=  ExtractFilePath(ParamStr(0));
       fn := path+ 'properties.ini';
-      FPropIniFile := TMyIniFile.create(fn);
+      Lmod.fModel.FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
       for i := 0 to Lmod.fModel.SubModStrList.count - 1 do
       begin
         ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[i]);
         with ActSubMod do
         begin
-          setPropFromIniFile(stateStrList, Name);
-          setPropFromIniFile(VarStrList, Name);
-          setPropFromIniFile(ExternVStrList, Name);
+          Lmod.fModel.setPropFromIniFile(stateStrList, Name);
+          Lmod.fModel.setPropFromIniFile(VarStrList, Name);
+          Lmod.fModel.setPropFromIniFile(ExternVStrList, Name);
         end;
-      end;     }
+      end;
 
       Lmod.fModel.run;
     end;
