@@ -15,12 +15,15 @@ uses
   UAbstractPlant,
   WFlowFunctions;
 
+const
+  Max_Root_Index = 20;
+
 type
   real = double;
 
   TSinkTermMethod = (nFK_crit, Psicrit, Psicrit_corr, Feddes, MFP);
 //  TAutoIrri = (no, yes); depracted is now an Option
-  TAutoirriMethod = (amTransRatio, amProznFKWe);
+  TAutoirriMethod = (amTransRatio, amProznFKWe, amProznFKActRootedComps);
   T_Sqrwl_Funct = (ReductionFactor, NoReductionFactor);
 //  TSource = (fromParameter, fromPlantModel); // Source of Psi2 value
 
@@ -30,6 +33,7 @@ private
   f_Sqrwl_funct: T_Sqrwl_Funct;
   Sum_Sink        : real;    /// internal variable for summing up all sink terms
   FWithRoots      : boolean;  /// Option for calculation with/without roots
+  fAutoirri       : boolean;
   fAutoirriMethod : TAutoirriMethod;
   fPsi2Opt : TSource;   /// Source of Psi2 value
   FSinkTermMethod : TSinkTermMethod;
@@ -52,7 +56,7 @@ public
   WriteMFPTable : Toption;  /// Option for output of MFP-table functions as txt file
   WcontDiff_arr: TSoilvarArray;  /// Wassergehaltsdifferenzen Wurzeloberfl�che/Bodenraum [cm3/cm3]
   PsiRootDiff_arr: TSoilvarArray;  /// Wasserspannungsdifferenzen Wurzeloberfl�che/Bodenraum [cm3/cm3]
-
+  ProzNFK_arr: TSoilVarArray;
 
   ExWld_arr : TSoilExtArray;  /// Wurzell�ngendichten [cm.cm-3]
   WLges   : TVar;           /// GesamtWurzell�nge [cm]
@@ -69,6 +73,7 @@ public
   feddes_a:  TPar;
   feddes_b:  TPar;
   feddes_c : TPar;
+  ProznFK_act_rooted_comps: TVar;
 
   nFKcrit: TPar;
 
@@ -80,9 +85,8 @@ public
   Eact_ETP: TVar;          /// Ration of act. evaporation to pot. evapotranspiration
   Psi2: TVar;              /// water potential at which water uptake by the plant starts to decrease [hPa]
   act_rooted_comps : TVar;  /// actual number of rooted compartiments
+  EmergenceDay : TExternV;   ///used for Autoirrigation
 
-  ///
-  ///
   CumAutoIrrigation : TState; /// cum. Amount of  Irrigation
   CumTrans : TState;       /// kumulative Transpiration [mm]
   CumET: TState;           /// cumulative actual Evapotranspiration
@@ -110,6 +114,7 @@ procedure CalcRates; override;
 published
   property Ex_PotTrans : TexternV read PotTrans write PotTrans;
   property Ex_Interzeption: TexternV read Interzeption write Interzeption;
+  property Ex_EmergenceDay : TExternV read EmergenceDay write EmergenceDay;
   property Par_Psi_2 : TPar read psi_2 write psi_2;
   property Par_psi_3 : TPar read psi_3 write psi_3;
   property Comp_fact : Tpar read CompFactor write CompFactor;
@@ -117,6 +122,7 @@ published
   property St_CumTrans : TState read CumTrans write CumTrans;
   property Var_ActTrans : TVar read ActTrans write ActTrans;
   property Var_TransRatio : TVar read TransRatio write Transratio;
+  property Var_ProznFK_act_rooted_comps: TVar read ProznFK_act_rooted_comps write ProznFK_act_rooted_comps;
   property Var_TransIntRatio : TVar read TransIntRatio write TransIntratio;
   property Psi_Root : TVar read psiRoot write psiRoot;
 //  property AutoIrrigate: TAutoIrri read fAutoIrrigate write fAutoIrrigate;
@@ -125,7 +131,6 @@ published
   property OptSinkTermMethod: TSinkTermMethod read FSinkTermMethod write FSinkTermMethod;
   property Opt_Psi2: TSource read fPsi2Opt write fPsi2Opt; // Source of Psi2 value
   property OptWriteMFPtable:boolean read fWriteMFPTable write fWriteMFPTable;
-
 
 end;
 
@@ -234,6 +239,7 @@ begin
 
   ExternVcreate('PotTrans', '[mm.d-1]', stateField, PotTrans, 'potential transpiration rate');
   ExternVcreate('Interception', '[mm.d-1]', stateField, Interzeption, 'interception rate');
+  ExternVcreate('EmergenceDay', '[-]', stateField, EmergenceDay, 'day of emergence taken from plant growth module');
 
   VarCreate('ActTrans', '[mm.d-1]',0.0, false, ActTrans, 'Actual transpiration rate');
   VarCreate('TransRatio', '[-]',0.0, false, TransRatio, 'relation between actual and potential transpiration');
@@ -242,12 +248,18 @@ begin
   VarCreate('psiRoot', '[pF]',0.0, false, psiRoot, 'root length weighted soil water tension (log scale)');
   VarCreate('Psi2', '[cm]', 0.0, false, psi2, '');
   VarCreate('act_rooted_comps', '[n]',  0, true, act_rooted_comps, 'number of actual rooted soil compartments');
+  VarCreate('ProznFK_act_rooted_comps', '[%]', 0.0, false, ProznFK_act_rooted_comps, '');
 
   StateCreate('CumAutoIrrigation', '[mm]', 0, true, CumAutoIrrigation);
   StateCreate('CumTrans', '[mm]', 0, true, CumTrans, 'cumulative transpiration');
   StateCreate('CumET','[mm]',0,true,CumET, 'cumulative actual evapotranspiration');
   StateCreate('CumETpot','[mm]',0,true,CumETpot, 'cumulative potential evapotranspiration');
   StateCreate('CumTranspot', '[mm]',0,true, CumTranspot, 'cumulative potential transpiration');
+
+
+  for i := 1 to Max_Root_Index do begin
+    VarCreate('ProzNFK_arr' + ndx_str(i), '[%]', 0.0, false, ProzNFK_arr[i]);
+  end;
 
   for i := 1 to n_comp do begin
       VarCreate('WcontDiff_arr'+ndx_str(i), '[cm3.cm-3]', 0.0, false, WcontDiff_arr[i], 'Difference in water content soil root surface');
@@ -302,9 +314,26 @@ begin
   if uppercase(SinkTermMethodOptStr.Option) = uppercase('MFP') then
     OptSinkTermMethod := MFP;
 
+  if uppercase(AutoIrriMethodOptStr.Option) = uppercase('amTransRatio') then
+    AutoIrriMethod := amTransRatio;
+  if uppercase(AutoIrriMethodOptStr.Option) = uppercase('amProznFKWe') then
+    AutoIrriMethod := amProznFKWe;
+  if uppercase(AutoIrriMethodOptStr.Option) = uppercase('amProznFKActRootedComps') then
+    AutoIrriMethod := amProznFKActRootedComps;
+
+
   if lowercase(WriteMFPTable.Option) = 'false' then
     fWriteMFPTable := false else
     fWriteMFPTable := true;
+
+    if uppercase(AutoIrriOptStr.Option) = uppercase('yes') then
+    begin
+      fAutoIrri := true;
+      EmergenceDay.Search := true;
+    end else begin
+      fAutoIrri := false;
+      EmergenceDay.Search := false;
+    end;
 
 
   ActTrans.v := 0.0;
@@ -543,29 +572,57 @@ end;
 
 procedure TSoilWaterModelR.CalcRatesAndIntegrate;
 
+var
+Sum_ProzNFK: real;
+i: byte;
+
 begin
   if FwithRoots = true then
     Calcsink_red_f;
 //  CalcSinks;
+  Sum_ProzNFK   := 0.0;
 
   inherited CalcRatesAndIntegrate;
+  if Exwld_arr[1].v > 0.0 then begin // Sind Wurzeln da ?
+    for i := 1 to Max_Root_Index do begin
+     if Exwld_arr[i].v > 0.0 then
+      ProzNFK_arr[i].v := ((theta_arr[i].v - PWP_arr[i]) / nFK_arr[i]) *100;
+    end;
+
+    for i := 1 to Max_Root_Index do begin
+      Sum_ProzNFK := Sum_ProzNFK + ProzNFK_arr[i].v;
+    end;
+  end;
+
+  if Exwld_arr[1].v <= 0.0 then
+    ProznFK_act_rooted_comps.v := 100
+  else
+    ProznFK_act_rooted_comps.v := Sum_ProzNFK/act_rooted_comps.v;
+
   if Autoirrioptstr.Option = 'yes' then begin
-     if AutoirriMethodoptstr.Option = 'amTransRatio' then begin
+     if AutoirriMethod = amTransRatio then begin
        if (self.TransRatio.v < 0.99) then begin
          WAmount[1].v := WAmount[1].v + self.IrriAmount.v/10*dt.v;
          CumAutoIrrigation.c := CumAutoIrrigation.c + self.IrriAmount.v*dt.v;
        end;
-       end else begin
-       if self.ProzNFK0_Weff.v < Autoirri_nFKcrit.v then begin
+    end;
+     if AutoirriMethod = amProznFKWe then begin
+       if (self.ProznFK0_Weff.v < Autoirri_nFKcrit.v) then begin
          WAmount[1].v := WAmount[1].v + self.IrriAmount.v/10*dt.v;
          CumAutoIrrigation.c := CumAutoIrrigation.c + self.IrriAmount.v*dt.v;
        end;
     end;
-  end;
+    if AutoirriMethod = amProznFKActRootedComps then begin
+       if (self.ProznFK_act_rooted_comps.v < Autoirri_nFKcrit.v) and (EmergenceDay.v > 0) then begin
+         WAmount[1].v := WAmount[1].v + self.IrriAmount.v/10*dt.v;
+         CumAutoIrrigation.c := CumAutoIrrigation.c + self.IrriAmount.v*dt.v;
+       end;
+    end;
+ end;
+
   ActTrans.v := ActTrans.v+sum_sink*10.0*dt.v;    //[mm]
   CumTrans.c := ActTrans.v; //cumTrans.c+sum_sink*10.0*dt.v;
 end;
-
 
 procedure TSoilWaterModelR.CalcRates;
 begin
@@ -604,11 +661,11 @@ end;
 procedure TSoilWaterModelR.CreateOptionsRootedSoil;
 begin
   //  fAutoIrrigate := no;
-  // option for 
+  // option for
   OptCreate('SqrWl_Sink_ReductionFactor', 'NoReductionFactor', f_SqrWl_Option, 'Option for sink reduction (Sqr_wl_arr calculation), non linear/linear distribution of sink according to relative root length');
   f_SqrWl_Option.OptionList.Add('ReductionFactor');
   f_SqrWl_Option.OptionList.Add('NoReductionFactor');
-  
+
   OptCreate('AutoIrri', 'no', AutoIrriOptStr);
   AutoIrriOptStr.optionlist.Clear;
   AutoIrriOptStr.optionlist.Add('no');
@@ -618,7 +675,8 @@ begin
   AutoIrriMethodOptStr.optionlist.Clear;
   AutoIrriMethodOptStr.optionlist.Add('amProznFKWe');
   AutoIrriMethodOptStr.OptionList.Add('amTransRatio');
-  
+  AutoIrriMethodOptStr.OptionList.Add('amProznFKActRootedComps');
+
   OptCreate('SinkTermMethod', 'Feddes', SinkTermMethodOptStr);
   SinkTermMethodOptStr.optionlist.Clear;
   SinkTermMethodOptStr.optionlist.Add('Psicrit');
