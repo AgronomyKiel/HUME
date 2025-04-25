@@ -1218,9 +1218,9 @@ begin
    //fn := path+ 'properties.ini';
    //fn := 'properties.ini';
    fn := self.FPropIniFile.FileName;
-   FPropIniFile := TMyIniFile.create(fn,  TEncoding.UTF8);
-
-  FPropIniFile.UpdateFile;
+   if (FPropIniFile = nil) then
+     FPropIniFile := TMyIniFile.create(fn,  TEncoding.UTF8);
+//  FPropIniFile.UpdateFile;
   for i := 0 to strList.count - 1 do
   begin
     entity := THumeNumEntity(strList.objects[i]);
@@ -1237,7 +1237,7 @@ begin
         entity.SelForSensOut);
     end;
   end;
- // FPropIniFile.UpdateFile;
+//  FPropIniFile.UpdateFile;
 end;
 
 procedure TMod.setSubModel(index: Integer; const SubModel: TSubmodel);
@@ -1967,7 +1967,7 @@ SetLength(path, Length(path) - 1);
         end;
       end;
 {$ENDIF}
-
+   FPropInifile.UpdateFile;
    InitGlobalOutputList;
    WriteGlobalOutputNames(fFNGlobalOutput);
 
@@ -2137,6 +2137,7 @@ writeln('Running '+ ExtractFileName(ActIniFile.FileName)+
 	ParamInifile.UpdateFile;
     StateIniFile.UpdateFile;
     OptionIniFile.updatefile;
+    FPropIniFile.UpdateFile
 
   end; // End of simulation run
  // globRes.Flush;

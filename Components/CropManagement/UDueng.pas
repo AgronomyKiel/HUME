@@ -101,6 +101,8 @@ function isDate ( const DateString: string ): boolean;
 var
   dt: TDateTime;
 begin
+  FormatSettings.shortdateformat := 'dd.mm.yyyy';
+  FormatSettings.dateseparator := '.';
   result := TryStrToDate(DateString,dt);
 end;
 
@@ -131,8 +133,8 @@ begin
 
   if stateIniF <> nil then
   begin
-
     stateIniF.ReadSection(SubModName, DuengTermine);
+//    writeln('Es wurden ', IntToStr(DuengTermine.count), ' Düngetermine eingelesen');
     ndx := 0;
     if DuengTermine.Count > 0 then
       repeat
@@ -145,6 +147,7 @@ begin
     For i := 0 to DuengTermine.Count - 1 do
     begin
       name := DuengTermine[i];
+//      writeln('Duengetermin: ', name);
       Menge := stateIniF.ReadFloat(SubModName, DuengTermine[i], 0.0);
       if (f_ExtFertSens.Source <> '') then
         Menge := Menge * f_ExtFertSens.v; // Adjust during Sensitivity analysis
@@ -153,6 +156,7 @@ begin
       Duengungen[i].v := Menge;
     end;
   end;
+//  writeln(DuengTermine.Strings[1]);
 end;
 
 procedure TDueng.calcrates;
@@ -162,9 +166,30 @@ var
   FertState : TState;
   DateString : String;
   ActDate : TDateTime;
+  ActDay, ActMonth, ActYear : word;
+  ActDayStr, ActMonthStr, ActYearStr : string;
+
+
 begin
   ActDate := GlobTime.v;
-  DateSTring := DateToStr(ActDate);
+  DateString :=  DateToStr(ActDate);
+//  Writeln('Maschinendatumsformat: '+DateString);
+  {$IFDEF LINUX}
+   SysUtils.DecodeDate(GlobTime.v, ActYear, ActMonth, ActDay);
+   ActDayStr := IntToStr(ActDay);
+   if Length(ActDayStr) = 1 then
+     ActDayStr := '0'+ActDayStr;
+   ActMonthStr := IntToStr(ActMonth);
+   if Length(ActMonthStr) = 1 then
+     ActMonthStr := '0'+ActMonthStr;
+   ActYearStr := IntToStr(ActYear);
+
+
+   DateString := ActDayStr+'.'+ActMonthStr+'.'+ ActYearStr;
+//   writeln('Nach Konvertierung: ' + DateString);
+  {$ENDIF}
+
+
   index := DuengTermine.IndexOf(DateSTring);
   If Index <> -1 then begin
     FertState := Duengungen[index];

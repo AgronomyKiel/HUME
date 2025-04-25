@@ -969,6 +969,7 @@ object FormMod: TFormMod
         MouseActions.CaretPositioning = True
         MouseActions.ColSelect = True
         MouseActions.RowSelect = True
+        MouseActions.WheelAction = waMoveSelection
         Navigation.AllowDeleteRow = True
         Navigation.AdvanceAutoEdit = False
         Navigation.AdvanceDirection = adTopBottom
@@ -1249,7 +1250,7 @@ object FormMod: TFormMod
         FixedFont.Style = []
         FloatFormat = '%.2f'
         MouseActions.WheelIncrement = 1
-        MouseActions.WheelAction = waScroll
+        MouseActions.WheelAction = waMoveSelection
         Navigation.AdvanceAutoEdit = False
         Navigation.AdvanceDirection = adTopBottom
         Navigation.AllowClipboardShortCuts = True
@@ -1515,6 +1516,7 @@ object FormMod: TFormMod
         FixedFont.Name = 'MS Sans Serif'
         FixedFont.Style = []
         FloatFormat = '%.2f'
+        MouseActions.WheelAction = waMoveSelection
         Navigation.AdvanceAutoEdit = False
         Navigation.AdvanceDirection = adTopBottom
         Navigation.AllowClipboardShortCuts = True
@@ -1668,6 +1670,7 @@ object FormMod: TFormMod
         FixedFont.Name = 'MS Sans Serif'
         FixedFont.Style = []
         FloatFormat = '%.2f'
+        MouseActions.WheelAction = waMoveSelection
         Navigation.AdvanceAutoEdit = False
         PrintSettings.DateFormat = 'dd/mm/yyyy'
         PrintSettings.Font.Charset = DEFAULT_CHARSET
@@ -1973,6 +1976,7 @@ object FormMod: TFormMod
         MouseActions.CaretPositioning = True
         MouseActions.ColSelect = True
         MouseActions.RowSelect = True
+        MouseActions.WheelAction = waMoveSelection
         Navigation.AllowDeleteRow = True
         Navigation.AdvanceAutoEdit = False
         Navigation.AllowClipboardShortCuts = True
@@ -2105,6 +2109,7 @@ object FormMod: TFormMod
         MouseActions.ColSelect = True
         MouseActions.DisjunctRowSelect = True
         MouseActions.RowSelect = True
+        MouseActions.WheelAction = waMoveSelection
         Navigation.AllowDeleteRow = True
         Navigation.AdvanceOnEnter = True
         Navigation.AllowClipboardShortCuts = True
@@ -2393,6 +2398,7 @@ object FormMod: TFormMod
         FixedFont.Name = 'Tahoma'
         FixedFont.Style = [fsBold]
         FloatFormat = '%.2f'
+        MouseActions.WheelAction = waMoveSelection
         PrintSettings.DateFormat = 'dd/mm/yyyy'
         PrintSettings.Font.Charset = DEFAULT_CHARSET
         PrintSettings.Font.Color = clWindowText
@@ -2572,6 +2578,7 @@ object FormMod: TFormMod
         MouseActions.ColSelect = True
         MouseActions.DisjunctRowSelect = True
         MouseActions.RowSelect = True
+        MouseActions.WheelAction = waMoveSelection
         Multilinecells = True
         Navigation.AllowInsertRow = True
         Navigation.AllowDeleteRow = True
@@ -3021,6 +3028,7 @@ object FormMod: TFormMod
         FixedFont.Style = [fsBold]
         FloatFormat = '%.2f'
         Look = glWin7
+        MouseActions.WheelAction = waMoveSelection
         PrintSettings.DateFormat = 'dd/mm/yyyy'
         PrintSettings.Font.Charset = DEFAULT_CHARSET
         PrintSettings.Font.Color = clWindowText
