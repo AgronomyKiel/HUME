@@ -56,7 +56,7 @@ type
     procedure CalcDroughtDependentLeafSenescence(var PLALR_d: real);
     procedure Calc_rc(exLAI: real; var ro: Extended; Temp_: real; var rc: Extended);
     procedure Calc_pETP(ro: Extended; rc: Extended; var pETP_: Extended; Net_beam_: real; Sat_def_: real; ra_: real; delta_: real; gamma_: real);
-    procedure CalcInterception(int_stor_: Extended; exLAI: real; PTI: Extended; var Interzeption_: Extended);
+    procedure CalcInterception(int_stor_: Extended; exLAI: real; PTI: Extended; var interception_: Extended);
     procedure CalcEvenTransIntRatio;
     procedure CalcRadiationAverage;
   protected
@@ -170,7 +170,7 @@ type
     PotTrans: TExternV;
     LFWT_m2:  TExternV;
     LFWT_pl:  TExternV;
-    interzeption: TExternV;
+    interception: TExternV;
     ActTrans: TExternV;
     GlobRad:  TExternV;
     exk_GlobRad: TExternV;
@@ -241,7 +241,7 @@ type
     property Ex_TransIntRatio: TExternV Read TransIntRatio Write TransIntRatio;
     property Ex_exk_GlobRad: TExternV Read exk_GlobRad Write exk_GlobRad;
     property Ex_ActTrans: TExternV Read ActTrans Write ActTrans;
-    property Ex_interzeption: TExternV Read interzeption Write interzeption;
+    property Ex_interception: TExternV Read interception Write interception;
     property Ex_PotTrans: TExternV Read PotTrans Write PotTrans;
   end;
 
@@ -387,7 +387,7 @@ begin
   ExternVcreate('LFWT_pl', '[g/pl]', stateField, LFWT_pl, 'Leaf DM per plant');
   ExternVcreate('PotTrans', '[mm.d-1]', stateField, PotTrans, 'Potential transpiration');
   ExternVcreate('ActTrans', '[mm.d-1]', stateField, ActTrans, 'Actual transpiration');
-  ExternVcreate('interzeption', '[-]', stateField, interzeption, 'Interception');
+  ExternVcreate('interception', '[-]', stateField, interception, 'Interception');
   ExternVCreate('GlobRad', '[W.m-2]', StateField, GlobRad, 'Global radiation');
   ExternVcreate('exk_GlobRad', '[-]', stateField, exk_GlobRad, 'Extinction coefficient of global radiation');
   ExternVcreate('SIC', '[mm.m2.m2]', stateField, SIC, 'Specific interception capacity');
@@ -570,15 +570,15 @@ var
   Pot_Evapo_:Extended;
   pot_trans_, delta2, //Iterationsschrittweite
   a, F, exLAI_, b, // Steigung (Ableitung)
-  rc, actTransInt, potTransInt, PTI, Interzeption_: Extended;
-  // Summe von Interzeption und potentieller Transpirationsrate
+  rc, actTransInt, potTransInt, PTI, interception_: Extended;
+  // Summe von interception und potentieller Transpirationsrate
   steps: integer;
 begin
   b:=0;
   steps := 0;
   int_stor_ := int_stor.v;
-  potTransInt := PotTrans.v + interzeption.v;
-  actTransInt := actTrans_ + interzeption.v;
+  potTransInt := PotTrans.v + interception.v;
+  actTransInt := actTrans_ + interception.v;
 
   // the function to evaluate, i.e. to minimize
   F := potTransInt * TRcrit.v - actTransInt;
@@ -635,16 +635,16 @@ begin
     PTI := pETP_ - Pot_Evapo_;
 
     // calculate interception
-    CalcInterception(int_stor_, exLAI, PTI, Interzeption_); // End Interzeption
+    CalcInterception(int_stor_, exLAI, PTI, interception_); // End interception
 
     // calculate potential Transpiration+Interception
     if pETP_ > 0.0 then
-      pot_trans_ := (pETP_ - Pot_Evapo_ - Interzeption_)
+      pot_trans_ := (pETP_ - Pot_Evapo_ - interception_)
     else
       pot_trans_ := 0.0;
     if pot_trans_ < 0.0 then
       pot_trans_ := 0.0;
-    potTransInt := pot_trans_ + Interzeption_;
+    potTransInt := pot_trans_ + interception_;
     // End potTrans
 
     a := F; // save old function value
@@ -1042,12 +1042,12 @@ begin
   evenTransIntRatio.v := SUM_avTIR / 10;
 end;
 
-procedure THumeWheatLeafArea.CalcInterception(int_stor_: Extended; exLAI: real; PTI: Extended; var Interzeption_: Extended);
+procedure THumeWheatLeafArea.CalcInterception(int_stor_: Extended; exLAI: real; PTI: Extended; var interception_: Extended);
 var
   max_int_cap: Extended;
   int_cap: Extended;
 begin
-  // Interzeption:
+  // interception:
   max_int_cap := exLAI * sic.v;
   int_cap := max_int_cap - int_stor_;
   if int_cap > 0.0 then
@@ -1062,12 +1062,12 @@ begin
   if PTI * GlobTime.c > int_stor_ then
   begin
     PTI := PTI - int_stor_ / GlobTime.c;
-    Interzeption_ := int_stor_ / GlobTime.c;
+    interception_ := int_stor_ / GlobTime.c;
     int_stor_ := 0.0;
   end
   else
   begin
-    Interzeption_ := PTI;
+    interception_ := PTI;
     int_stor_ := int_stor_ - PTI * GlobTime.c;
   end;
 end;

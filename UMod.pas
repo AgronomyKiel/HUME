@@ -1953,10 +1953,6 @@ SetLength(path, Length(path) - 1);
 {$ELSE}
   path := path + '\';
 {$ENDIF}
-      fn := path+'properties.ini';
-//      fn := 'properties.ini';
-      FPropIniFile := TMyIniFile.create(fn,  TEncoding.UTF8);
-//      FPropIniFile.WriteString()
       for j := 0 to self.SubModStrList.Count - 1 do begin
         ActSubMod := TSubModel(SubModStrList.objects[j]);
         with ActSubMod do
@@ -1968,6 +1964,7 @@ SetLength(path, Length(path) - 1);
       end;
 {$ENDIF}
    FPropInifile.UpdateFile;
+
    InitGlobalOutputList;
    WriteGlobalOutputNames(fFNGlobalOutput);
 
@@ -5350,6 +5347,9 @@ begin
         ExternV.Source := 'not found';
 {$IFNDEF NONVISUAL}
         ShowMessage('Error on initialisation of interface, Parameter: ' +
+          ExternV.Name + '  SubModel:' + self.Name);
+{$ELSE}
+        writeln('Error on initialisation of interface, Parameter: ' +
           ExternV.Name + '  SubModel:' + self.Name);
 {$ENDIF}
         Result := false;
