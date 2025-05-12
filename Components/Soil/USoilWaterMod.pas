@@ -530,7 +530,7 @@ begin
   WG30_40.v := theta_arr[4].v;
 
   WG0_20.v := (theta_arr[1].v + theta_arr[2].v) / 2;
-  WG20_40.v := (theta_arr[2].v + theta_arr[4].v) / 2;
+  WG20_40.v := (theta_arr[3].v + theta_arr[4].v) / 2;
   WG10_30.v := (theta_arr[2].v + theta_arr[3].v) / 2;
   WG30_50.v := (theta_arr[4].v + theta_arr[5].v) / 2;
   WG40_60.v := (theta_arr[5].v + theta_arr[6].v) / 2;
