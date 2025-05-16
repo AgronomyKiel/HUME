@@ -1458,10 +1458,18 @@ end;
        if index >= 0 then
        begin
          ActExVar := TExternV(SubModel.ExternVStrList.objects[index]);
+         GetCheckBoxState(4, i, ActExVar.WriteToFile);
          GetCheckBoxState(5, i, ActExVar.PlotToGraph);
        end;
      end;
    end;
+  updatePropIniFile(SubModel.ExternVStrList, SubModel.name);
+  self.UpdateStringGridExternV;
+  Lmod.fModel.init(Lmod.fModel.actIniFile);
+  Lmod.fModel.InitAllSubMods;
+
+
+
  end;
 
  procedure TFormMod.SaveVar();
@@ -2972,12 +2980,9 @@ begin
     for i := 0 to Lmod.fModel.SubModStrList.count - 1 do
     begin
       ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[i]);
-      with ActSubMod do
-      begin
-        Lmod.fModel.setPropFromIniFile(stateStrList, Name);
-        Lmod.fModel.setPropFromIniFile(VarStrList, Name);
-        Lmod.fModel.setPropFromIniFile(ExternVStrList, Name);
-      end;
+      Lmod.fModel.setPropFromIniFile(ActSubMod.stateStrList, ActSubMod.Name);
+      Lmod.fModel.setPropFromIniFile(ActSubMod.VarStrList, ActSubMod.Name);
+      Lmod.fModel.setPropFromIniFile(ActSubMod.ExternVStrList, ActSubMod.Name);
     end;
 
     UpdateStringGridParam;
