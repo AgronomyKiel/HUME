@@ -30,8 +30,8 @@ uses
 type
  // Options for drought impact
   TDroughtImpact = (DroughtImpact, NoDroughtImpact);
-  
-  
+
+
   TCarboRed = (CWT3, Concentration, noCarboRed);
 
 
@@ -51,32 +51,6 @@ type
 /// -> Wang-Engel (WE)	temperature (0-1) function
 /// -> Empirical approach for CO2 impact (2016)    Wo kommt der nur her?? keine Quellangabe
 /// </remarks>
-/// <example>
-/// </example>
-/// <todo>
-/// </todo>
-/// <bug>
-/// </bug>
-/// <history>
-/// </history>
-/// <unit> HumeWheatDryMatter </unit>
-/// <version> 1.0 </version>
-/// <created> 01.12.2008 </created>
-/// <modified> 01.12.2008 </modified>
-/// <modifiedby> J. Hume </modifiedby>
-/// <modifications> </modifications>
-/// <unit> HumeWheatDryMatter </unit>
-/// <version> 1.0 </version>
-/// <created> 01.12.2008 </created>
-/// <modified> 01.12.2008 </modified>
-/// <modifiedby> J. Hume </modifiedby>
-/// <modifications> </modifications>
-/// <unit> HumeWheatDryMatter </unit>
-/// <version> 1.0 </version>
-/// <created> 01.12.2008 </created>
-/// <modified> 01.12.2008 </modified>
-/// <modifiedby> J. Hume </modifiedby>
-/// <modifications
 
 
 
@@ -91,6 +65,7 @@ type
 
   fSoilWaterModel : TSoilWaterModelR;
   fDroughtImpact : TDroughtImpact;
+  fNImpact : boolean;
 
   function fT_WE(T,Tmin,Tmax,Topt: real): real;
   public
@@ -149,12 +124,18 @@ type
     TransIntRatio:  TExternV;  /// ratio of actual to potential transpiration+interception
     CO2pp:    TExternV;        /// external atmospheric CO2-concentration
     optSLN: TExternV;          ///  optimum specific leaf nitrogen concentration
+    SWMIN_pl : TExternV;   /// minimum stem weight for calculation of translocation and senescence
+    STMWT_pl : TExternV;   /// stem weight per plant
+    SUMDTT5 : TExternV;    /// temperature sum 5 starting from stage
+    P5 : TExternV;         /// development parameter for stage 5 from CERES Wheat
+    ///
     SUMGRHI: real;
     k_ : real; // intermediate value for technical reason
     SUMTEMPHI: real;
 
 
     OptDroughtimpact : Toption;
+    OptNimpact: TOption;
     OptWithCO2: TOption;
     procedure createAll; override;
     procedure Init(var GlobMod: TMod); override;
@@ -176,6 +157,10 @@ type
     property Ex_TMPMX: TExternV read  TMPMX write  TMPMX;
     property Ex_TMPMN: TExternV read  TMPMN write  TMPMN;
     property Ex_optSLN: TExternV read  optSLN write  optSLN;
+    property Ex_SWMIN_pl : TExternV read SWMIN_pl write SWMIN_pl;
+    property Ex_STMWT_pl : TExternV read STMWT_pl write STMWT_pl;
+    property Ex_SUMDTT5 : TExternV read SUMDTT5 write SUMDTT5;
+    property Ex_P5 : TExternV read P5 write P5;
 
     property opt_DroughtImpact : TDroughtImpact read fDroughtImpact write fDroughtImpact;
     property SoilWaterModel : TSoilWaterModelR read fSoilWaterModel write SetSoilWaterMod;
@@ -274,11 +259,21 @@ begin
   ExternVCreate('TMPMX', '[°C]', Statefield, TMPMX, 'maximum daily temperature');
   ExternVCreate('TMPMN', '[°C]', Statefield, TMPMN,   'minimum daily temperature');
 
+  ExternVCreate('SWMIN_pl', '[g/pl]', Statefield, SWMIN_pl,   'minimum stem weight at stage 37, used for calculation of senescence');
+  ExternVCreate('STMWT_pl', '[g/pl]', Statefield, STMWT_pl,   'weight per plant');
+  ExternVCreate('SUMDTT5', '[°Cd]', Statefield, SUMDTT5,   'temperature sum from stage 5 on');
+  ExternVCreate('P5', '[-]', Statefield, P5,   'Development paramter for stage 5 of CERES Wheat');
+
 
   OptCreate('optDroughtimpact', 'DroughtImpact', optDroughtimpact);
 	optDroughtimpact.OptionList.Clear;
   optDroughtimpact.OptionList.Add('DroughtImpact');
   optDroughtimpact.OptionList.Add('NoDroughtImpact');
+
+  OptCreate('optNimpact', 'NoNImpact', OptNimpact);
+	OptNimpact.OptionList.Clear;
+	OptNimpact.OptionList.Add('NImpact');
+	OptNimpact.OptionList.Add('NoNImpact');
 
 
 
@@ -306,6 +301,18 @@ begin
     fdroughtimpact := noDroughtImpact;
     TransIntratio.Search := false;
   end;
+
+  if OptNimpact.option = 'NImpact' then begin
+    fNImpact := true;
+    Ex_Ncleaf.Search := true;
+
+  end else begin
+    fNImpact := false;
+    Ex_Ncleaf.Search := false;
+
+  end;
+
+
   if OptWithCO2.option = 'withco2effect' then
     CO2pp.Search := true
     else
@@ -362,15 +369,22 @@ procedure THumeWheatDryMatter.CalcRates;
 // calculation of SLN based N nutrition index
     SLNI.v:= min(1, SLN.v / SLN_crit.v);
 // CarboRed is in CERES Wheat the variable for the reduction of assimilation during ripening
-// it is now used for the reduction of assimilation due to low SLN as well    
-    CarboRed.v := min(1, max(0, SLNI_a.v+ SLNI_b.v*SLNI.v+ SLNI_c.v*power(SLNI.v,2)));
+// it is now used for the reduction of assimilation due to low SLN as well
+    if fNimpact then
+      CarboRed.v := min(1, max(0, SLNI_a.v+ SLNI_b.v*SLNI.v+ SLNI_c.v*power(SLNI.v,2)))
+    else begin
+      if EC.v >= 62 then
+       CarboRed.v := 1.0//  max(0,(1.-(1.2-0.8*SWMIN_pl.v/stmwt_pl.v)*(sumdtt5.v+100.0)/((430+ p5.v*20)+100.0)))
+      else
+        CarboRed.v := 1.0;
+    end;
 
     if ipar.v > 0 then
     begin
      //Tempf.v := trapez_f(tmpm.v, Tmin.v, Topt1.v, Topt2.v, Tmax.v, 0, 1);
  // calculation of the temperature effect according to the Wang-Engel equation
      Tempf.v := fT_WE(tmpm.v,Tmin.v,Tmax.v,Topt_WE.v);
- // in case the 
+ // in case the
      if(tmpm.v < DryMatterTemp.v) then begin
       Tempf_surface.v := fT_WE(DryMatterTemp.v,Tmin.v,Tmax.v,Topt_WE.v);
       PCARB.v := pLUE.v * PAR.v * fint.v * min(Tempf.v,Tempf_surface.v);

@@ -307,7 +307,7 @@ begin
   ParCreate('maxSLA', '[cm2/g]', 250 ,maxSLA, 'start values of SLA after emgergence');
   ParCreate('PSENLeaf1', '[-]',0.0003, PSENLeaf1, 'Parameter for leaf senescence');
   ParCreate('PSENLeaf2', '[-]',0.0006,PSENLeaf2, 'Parameter for leaf senescence');
-  ParCreate('Icrit', '[MJ/(m2*d)]', 0.8, Icrit, 'critical radiation value for leaf area index');
+  ParCreate('Icrit', '[MJ/(m2*d)]', 0.2, Icrit, 'critical radiation value for leaf area index');
   ParCreate('f1_SLA', '[-]', -1.1237, f1_SLA, 'parameter for SLA calculation, change of ');
   ParCreate('f2_SLA', '[-]', 0.3, f2_SLA, 'parameter for SLA calculation');
   ParCreate('kTransPAR', '[-]', 0.7, kTransPAR, 'PAR transmission coefficient');
@@ -673,7 +673,8 @@ var
   NLAL_,
   MLAL_s,
   LAL_s,
-  senrate: real;
+  senrate,
+  tmp: real;
 
 
 begin
@@ -685,7 +686,7 @@ begin
 
 
   if fUseAgeDependentLeafSenescence then
-   CalcCERESAgeDependenLeafSenescence(senrate) else
+    CalcCERESAgeDependenLeafSenescence(senrate) else
   senrate := 0.0;
   PLALR_a.v := senrate;
 
@@ -720,8 +721,15 @@ begin
   // set plant leaf area loss rate
   //
   if LAI.v > 0 then
-    PLALR.v:= min((LAI.v*1E4)/plants.v, max(max(PLALR_a.v,PLALR_d.v),
-                    max(PLALR_n.v, PLALR_l.v)))
+  begin
+ //   PLALR.v:= min((LAI.v*1E4)/plants.v, max(max(PLALR_a.v,PLALR_d.v),
+ //                   max(PLALR_n.v, PLALR_l.v)))
+
+    tmp := max( PLALR_a.v, PLALR_d.v );
+    tmp := max(tmp, PLALR_n.v);
+    tmp := max(tmp,  PLALR_l.v);
+    PLALR.v:= min((LAI.v*1E4)/plants.v, tmp) ;
+  end
   else
     PLALR.v:= 0;
 
@@ -791,7 +799,7 @@ begin
   else
   begin
     (*
-      during grain filling the leaf-layer developement
+      during grain filling the leaf-layer development
       is ruled by the N dynamic
     *)
     if sumLAL.v > 0 then
@@ -1136,10 +1144,12 @@ procedure THumeWheatLeafArea.CalcLightDependendLeafSenescence(var PLALR_l: real)
     //LAIs = (ln(I)-ln(I0))/-k || I = Icrit
 
 // calculate a light dependend sustainable leaf area index
-    LAIs := (ln(Icrit.v) - ln(avIcrop.v)) / -kPAR.v;
+//    LAIs := (ln(Icrit.v) - ln(avIcrop.v)) / -kPAR.v;
+    LAIs := (ln(Icrit.v / avIcrop.v)) / -kPAR.v;        // changed HK 2025-05-22
+
     if LAI.v > 0 then
-      PLALR_l := max(0, min((((LAI.v - LAIs) / 10) * 1E4) / plants.v, // shading only limits net increase of LAI (in contrast to Meinke 1998)
-      pla.c));
+      PLALR_l := max(0, min((((LAI.v - LAIs) / 20) * 1E4) / plants.v, // shading only limits net increase of LAI (in contrast to Meinke 1998)
+                     pla.c));
   end;
 end;
 

@@ -1,4 +1,8 @@
-﻿unit UState;
+﻿/// <summary> UState is a unit that defines classes for model entities such as variables, parameters, state variables, and external values in a simulation framework.
+/// This concept is basically based on the approach of Forrester. 
+/// </summary>
+
+unit UState;
 {$IFDEF LINUX}
 {$DEFINE NONVISUAL}
 {$ENDIF LINUX}
@@ -16,9 +20,11 @@ uses
   sysutils;
 
 type
-  real = double;     /// setting all floating points to double as a standard
+ /// setting all floating points to double as a standard  
+  real = double;    
 
-  TExValue = (RateField, StateField); /// enumeration type to for pointer
+/// enumeration type to for pointer, imortan for external state variables and external values, where the name of a state variable can mean either the state or the rate of change
+ TExValue = (RateField, StateField); 
 
   {* -----------------------------------------------------------------
     CLASS     THumeEntity
@@ -29,46 +35,80 @@ type
     ------------------------------------------------------------------ }
 
   {$IFDEF NONVISUAL}
-  // if the destination is a console app ...
   THumeEntity = class(TObject)
   {$ELSE}
- // if it is used for compilation of a vcl app
-  THumeEntity = class(TPersistent)
+
+ /// <summary> THumeEntity is the base class for all objects representing either numerical values (states, variables, parameters, constants) or Options.
+ /// If the destination is a console app it is derived from TObject.
+ /// For the use of within the IDE/GUI applications it is derived from the TPersistent class. </summary>
+   THumeEntity = class(TPersistent)
   {$ENDIF}
 
   private
-    N { ame }: string;  /// Name field
-    FComment: string;   /// Field for comments/explanation
-    fSubmod: string;    /// field submodel to which the Entity belongs
+    /// Name field
+    N { ame }: string;
+    /// Field for comments/explanation
+    FComment: string;
+    /// field submodel to which the Entity belongs
+    fSubmod: string;
   public
+    /// units of the entity
+    U { nits }: string;
+    /// indicates if the entity is indexed (array)
     Indexed: boolean;
-    lowerbound, upperbound: integer;
-    U { nits }: string;    /// units of values
-    ReadFromIniFile: boolean; /// flag for initialisation from file
-    WriteToFile: boolean;  /// flag for output to text file
-    WriteToIniFile: boolean;  /// flag for output to Ini file
-    SelForSensOut : boolean;  /// flag for selection for output
-    WasReadFromFile: boolean; /// flag for initialisation from file, false indicates need for alternative initialisation
+    /// lower bound for indexed entities
+    lowerbound: integer;
+    /// upper bound for indexed entities
+    upperbound: integer;
+    /// flag for initialisation from file
+    ReadFromIniFile: boolean;
+    /// flag for output to text file
+    WriteToFile: boolean;
+    /// flag for output to Ini file
+    WriteToIniFile: boolean;
+    /// flag for selection for output
+    SelForSensOut : boolean;
+    /// flag for initialisation from file, false indicates need for alternative initialisation
+    WasReadFromFile: boolean;
   published
-    property Name: string read N write N;    /// name property
-    property SubModName: string read fSubmod write fSubmod;  /// name of submod
-    property Comment: string read FComment write FComment;  /// comment
-    property Opt_writetoFile: boolean read WriteToFile write WriteToFile;
-    property Opt_SelForSensOut : boolean read SelForSensOut write SelForSensOut;
-    property Units: string read U write U;
+    /// Name of the object
+    property Name: string read N write N;  
+    /// Name of the submodule
+    property SubModName: string read fSubmod write fSubmod; 
+    /// Comment or description
+    property Comment: string read FComment write FComment; 
+    /// Flag indicating whether to write output to a text file
+    property Opt_writetoFile: boolean read WriteToFile write WriteToFile; 
+    /// Flag indicating selection for sensitivity analysis output
+    property Opt_SelForSensOut : boolean read SelForSensOut write SelForSensOut; 
+    /// Units associated with the object
+    property Units: string read U write U; 
   end;
 
+/// <summary> TOption is a class representing an option with a string value and a list of possible options. </summary>
   TOption = class(THumeEntity)
   private
+    /// the private field for the option string
     fOption: string;
+    
+    /// getter for the option string
     function getOption: string;
+
+    /// setter for the option string
     procedure setOption(const Option: string);
   public
+    
+    /// default string/option for the option
     DefaultString: string;
+    /// a list of possible options
     OptionList: TStringList;
+    
+    /// the constructor initializes the option with a name, default value, and comment
     constructor create(name: string; Default: string; c: string);
     destructor Destroy; override;
   published
+
+    /// property to access the option string
     property Option: string read getOption write setOption;
 
   end;
@@ -81,34 +121,62 @@ type
     state variables) and external "driving forces"
     ------------------------------------------------------------------ }
 
+/// <summary> THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.
+/// It extends THumeEntity with properties for numerical values, units, and flags for plotting and output. </summary>
   THumeNumEntity = class(THumeEntity)
 
   private
-    FDigits: integer;      /// number of digits
-    FPrecision: integer;   /// number of after comma digits
+    /// number of digits
+    FDigits: integer;
+    /// number of after comma digits
+    FPrecision: integer;
+    /// getter for the numerical value
     function get_value: real; virtual;
+    /// setter for the numerical value
     procedure set_value(value: real); virtual;
   public
+    /// private field with numerical value of the entity
     fv: real;
+    /// units of the numerical value
     U { nits }: string;
 
-    DefaultValue: real;    /// default value for parameters, states (Ini value)
-    PlotToGraph: boolean;  /// flag for graphical output
-    fGlobalOutput:boolean; /// flag for selection to global output file
-    WriteFinalValue: boolean;  /// flag for extra output of final values in file
-    IsMeasured: boolean;      ///  flag if measured data are available
+    /// default value for parameters, states (Ini value)
+    DefaultValue: real;
+    /// flag for graphical output
+    PlotToGraph: boolean;
+    /// flag for selection to global output file
+    fGlobalOutput:boolean;
+    /// flag for extra output of final values in file
+    WriteFinalValue: boolean;
+    /// flag if measured data are available
+    IsMeasured: boolean;
+    /// writes the declaration code for entity into source code file
     procedure write_declaration(var f: textfile);
+    /// writes the property code for entity into source code file
     procedure write_property(var f: textfile);
+    /// writes the creation code for entity into source code file
     procedure write_Create(var f: textfile); virtual;
 
   published
     constructor create;
+    /// property for optional plotting to graph
     property Opt_PlotToGraph: boolean read PlotTograpH write PlotTograpH;
+    
+    /// property for the optional output of final values
     property Opt_WriteFinalValue
       : boolean read WriteFinalValue write WriteFinalValue;
+    
+    /// property for the digits used in output
+    /// (default is 2 digits)
     property Digits: integer read FDigits write FDigits;
+    
+    /// property for the precision of the numerical value
     property Precision: integer read FPrecision write FPrecision;
+
+    /// property for the flag indicating if the entity is written to a global output file
     property GlobalOutput: boolean read fGlobalOutput write fGlobalOutput;
+    
+    /// property for the numerical value of the entity
     property v: real read get_value write set_value;
 
   end;
@@ -120,20 +188,25 @@ type
     Basic class for TPar and TState.
     ------------------------------------------------------------------ }
 
+/// <summary> TVar is a class representing a variable, i.e. a value that can be calculated for each time step in the model from other variables, state variables or parameters.
+/// It extends THumeNumEntity and provides methods for self writing of source code for its initialization, rate calculation. </summary>
   TVar = class(THumeNumEntity)
   private
     function get_value: real; override;
     procedure set_value(value: real); override;
 
   public
-    RateSTring: string; /// String containing source code for rate calculation
-    IniString: String;  /// String containing source code for intialisation
+    /// String containing source code for rate calculation
+    RateSTring: string;
+    /// String containing source code for intialisation
+    IniString: String;
     procedure write_Create(var f: textfile); override;
     procedure write_Init(var f: textfile);
     procedure write_Rate(var f: textfile);
     procedure write_RInit(var f: textfile);
     procedure write_RRate(var f: textfile);
   published
+  /// constructor procedure to create a variable with name, units, value and comment
     constructor create(na, un: string; va: real; c: string);
   end;
 
@@ -144,19 +217,34 @@ type
     and an option flag for optimization.
     ------------------------------------------------------------------ }
 
+/// <summary> TPar is a class representing a parameter variable in the model, which can be selected for optimization or sensitivity analysis.
+/// It extends TVar and adds properties for maximum and minimum expected values, error, and selection flags. </summary>
+
   TPar = class(TVar)
   private
-    fmax: real; /// maximum exptected value added 12.01.05 for GA optimisation   hk
-    fmin: real; /// minimum expected value
+    /// maximum expected value added 12.01.05 for GA optimisation   hk
+    fmax: real;
+    /// minimum expected value
+    fmin: real;
+
+    public
+    
+    /// selected for optimization?
+    SelForOpt: boolean;
+    
+    /// selected for sensitivity analysis?
+    SelForSens: boolean;
+    
+    /// uncertainty value
+    error: real;
 
   public
-    SelForOpt: boolean;    /// selected for optimization?
-    SelForSens: boolean;   /// selected for sensitivity analysis?
-    error: real;           /// uncertainty value
-
-  public
+    
+    /// constructor procedure to create a parameter with name, units, value, error and comment
     constructor create(na, un: string; va, error: real; c: string);
   published
+
+  /// property for selectgion for sensitivity analysis
     property opt_SelForSens: boolean read SelForSens write SelForSens;
     property max:real read fmax write fmax;
     property min:real read fmin write fmax;
@@ -169,18 +257,19 @@ type
     PURPOSE   State variable, therefore enhanced by "rate of change" element
     ------------------------------------------------------------------ }
 
+/// <summary> TState is a class representing a state variable in the model, which has an initial value and a rate of change.
+/// It extends TVar and provides a constructor for creating state variables with initial value, change rate, and comment. </summary>
   TState = class(TVar)
 
   public
-    iv : real; /// initial value
-    c { hange }: real;    /// change rate of state variable
-    constructor create(na,  //name
-     un: // unit
-     string;
-      va, // value
-       cr: real;
-        comm // comment
-        : string);
+    /// initial value
+    iv : real;
+    /// change rate of state variable
+    c { hange }: real;
+
+
+    /// constructor procedure to create a state variable with name, units, initial value, change rate and comment
+    constructor create(na, un: string; va, cr: real; comm  : string);
 
   end;
 
@@ -190,20 +279,32 @@ type
     PURPOSE
     ------------------------------------------------------------------ }
 
+/// <summary> TExternV is a class representing an external variable in the model. Values of model elements outside a submodel are called "external variables". They can be made accessible by adressing a pointer for that value.
+/// The default method for setting the link to the external variable is to search for it in the model by its name.
+/// It extends THumeNumEntity and provides methods for getting and setting the value, as well as creating the external variable with a name, units, and an external value type. </summary>
   TExternV = class(THumeNumEntity)
 
   private
+  /// private field indicating if the external variable is searched for in the model
+  /// if not, it is assumed to be set by connecting two submodels by a direct link
     fSearch: boolean;
+
+ /// private field external value   
     f_Ex: TExValue;
+
+ /// private field for conversion factor   
     Conversion_f: real;
+
+/// <summary> private field for the source of the external variable, e.g. a file or a submodel </summary>    
     fSource: string;
 
+/// getter for the numerical value of the external variable
     function get_value: real; override;
+/// setter for the numerical value of the external variable    
     procedure set_value(value: real); override;
 
   public
     F_N: string;
-    Units: string;
     f_v: ^real;
 
     constructor create(Nname, NUnits: string; ExV: TExValue; c: string);
@@ -219,8 +320,6 @@ type
 
   end;
 
-  Struct1 = record
-  end;
 
 implementation
 

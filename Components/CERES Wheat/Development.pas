@@ -21,10 +21,12 @@ type   //Typdekleration des Formularobjektes (enthält alle Komponenten,
 //Prozeduren)
 
   TDataInitMethod = (EC_Date, Days_to_EC);  // Varianten für Dateninput
+  TOptTSumInternode = (constant, daylength);
 
   TDevelopment = class(TSubmodel)
   private
     fReCalcSowingDate : boolean;
+    fTSumInternode : TOptTSumInternode;
     { Private-Deklarationen }
     EC25MeasDate,
     EC37MeasDate,
@@ -70,15 +72,15 @@ type   //Typdekleration des Formularobjektes (enthält alle Komponenten,
     istage: TVar;       /// integer value of dev stage
 
     //   Phenologicalstages in integer values
-    // 1 Emergence to terminal spikelet(TS),
-    // 2 TS to endof vegetative growth
-    // 3 end of vegetative growth to beginning of pre-anthesis ear growth
-    // 4 Pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase)
-    // 5 Beginning of grain fill to physiological maturity
-    // 6 Physiological maturity to fallow (harvest)
+    // 1 Emergence to terminal spikelet(TS), BBCH 10-30
+    // 2 TS to end of vegetative growth, BBCH 30-39
+    // 3 End of vegetative growth and beginning ear growth to end of pre-anthesis ear growth, BBCH 40-57
+    // 4 End of pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase), BBCH 57-71
+    // 5 Beginning of grain filling to physiological maturity, BBCH 71-90
+    // 6 Physiological maturity to fallow (harvest), BBCH 90-99
     // 7 Fallow to sowing
     // 8 Sowing to germination
-    // 9 germination to emergence
+    // 9 Germination to emergence
 
     rdr_p: TVar;   /// relative development rate of photoperiod
     rdr_v: TVar;   /// relative development rate of vernalization
@@ -97,6 +99,8 @@ type   //Typdekleration des Formularobjektes (enthält alle Komponenten,
     TSEC65: Tvar;
     TSEC69: Tvar;
     TSEC71: Tvar;
+    Ph39_opt: Tvar;
+    TSumInternode_opt: TVar;
     c: TVar;                   /// variable photoperiodic influence factor (0..1)
     k_v: TVar;                 /// vernalisation variable
     tempsumemergence: TVar;
@@ -141,6 +145,7 @@ type   //Typdekleration des Formularobjektes (enthält alle Komponenten,
     p1v: TPar;         /// genetic specific parameter of vernalisation sensitivity
     sdepth: TPar;      /// sowing depth (cm): TPar;  not actual in use
     phint: TPar;       /// the phyllochron interval: TPar;  the interval in thermal time (degree days) between successive leaf and tiller appearances
+    p3: TPar;        /// End of leaf growth and beginning of ear growth to end of pre-anthesis ear growth
     p4: TPar;          /// thermal time between Pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase)in°Cd
     p5: TPar;          /// thermal time between beginning of grain fill and maturity in°Cd
     p9: TPar;          /// thermal timen from germination to seedling emergence in °Cd
@@ -159,11 +164,13 @@ type   //Typdekleration des Formularobjektes (enthält alle Komponenten,
     VernOptTemp1: TPar;    /// temperature where vernalisation is starting to be optimal
     VernOptTemp2: TPar;    /// temperature where vernalisation is ending to be optimal
     VernMaxTemp: TPar;     /// temperature where vernalisation is getting zero
+    fdl              /// weighting factor for daylength influence
+    : TPar;
 
 
     DataInitMethod: Toption;
     ReCalcSowingDate : Toption;
-
+    OptTSumInternode: Toption;
     procedure createAll; override;//erweitern, existiert schon
     procedure Init(var GlobMod: TMod); override;
     procedure CalcRates; override;
@@ -225,7 +232,7 @@ type   //Typdekleration des Formularobjektes (enthält alle Komponenten,
    property Par_plastochron : TPar read plastochron write plastochron;
    property Par_phint : TPar read phint write phint;
    property Par_Ini_inLMS : TPar read Ini_inLMS write Ini_inLMS;
-   property Par_TsumInternode : TPar read TsumInternode write TsumInternode;
+ //  property Par_TsumInternode : TPar read TsumInternode write TsumInternode;
    property PAR_sowingdate: TPar read sowingdate write sowingdate;
    property PAR_MaxVernDays: TPar read MaxVernDays write MaxVernDays;
    property PAR_MaxPhotoperiod: TPar read MaxPhotoperiod write MaxPhotoperiod;
@@ -288,6 +295,11 @@ begin
 
   If opt_ReCalcSowingDate = true then
     sowingdate.v := trunc(tempsowdate);
+   if OptTSumInternode.option = 'constant' then
+    fTSumInternode := constant
+  else
+    fTSumInternode := daylength;
+
 
 
 end;
@@ -295,6 +307,13 @@ end;
 procedure TDevelopment.CalcRates;
 
 begin
+  if(fTSumInternode = daylength) then begin
+    TSumInternode_opt.v:= phint.v + fdl.v*daylengthp.v*daylengthp.v;
+    ph39_opt.v:=TSumInternode_opt.v;
+  end else begin
+    TSumInternode_opt.v:= TSumInternode.v;
+    ph39_opt.v:= ph39.v;
+  end;
 
   if (EC30MeasDate > 0)  and (GlobMod.Time.v > EC30MeasDate) and (ec.v>11) then
     TSumEC30.c := max(0, TMPM.v-tbase.v)
@@ -374,7 +393,7 @@ if (xstage.v>=0)and(xstage.v<2) then
     ec.c := 0;
   end;
 
-  if (xstage.v>=2) and (inl_MS_xstage2.v=0)then   // if double ridge stage is not yet reaches
+  if (xstage.v>=2) and (inl_MS_xstage2.v=0)then   // if double ridge stage is not yet reached
     inl_MS_xstage2.v := max(0,inl_MS.v-2-nl_MS.v); // number of leaves which have to emerge
 // inl_MS_xstage2.v := max(0, inl_MS.v-{2-}nl_MS.v);     // two leaves will never emerge ...
 
@@ -383,12 +402,12 @@ if (xstage.v>=0)and(xstage.v<2) then
 
      zstage.v := 2.0+2.0*(XSTAGE.v-2.0);
      ZStage.v := zSTage.v*10;
-     xstage.c := Teff.v*(1/(inl_MS_xstage2.v*Phint.v+Ph39.v));// denumerator: thermal time from xstage 2 to BBCH 39
-     //EC.c := zstage.v - EC.v;
+//     xstage.c := Teff.v*(1/(inl_MS_xstage2.v*Phint.v+Ph39.v));// denumerator: thermal time from xstage 2 to BBCH 39
+     xstage.c := teff.v*(1/(inl_MS_xstage2.v* TSumInternode_opt.v +Ph39_opt.v));     //EC.c := zstage.v - EC.v;
      If EC.v < 37 then
-         EC.c     := Teff.v/TSumInternode.v   // EC stage change according to the inverse of the temperature sum between the appearance of two internodes
-      else
-         EC.c := min(2*Teff.v/Ph39.v,40-EC.v);// 40-EC.v beschränkt das Entw.rate auf über 40 springt  min(tsuminc.v/Phint.v,40-EC.v)
+       EC.c     := teff.v/TSumInternode_opt.v // EC stage change according to the inverse of the temperature sum between the appearance of two internodes
+    else
+       EC.c := min(2*teff.v/Ph39_opt.v,40-EC.v);// 40-EC.v beschränkt, dass Entw.rate auf über 40 springt  min(tsuminc.v/Phint.v,40-EC.v);
      (* If (EC.v+EC.c*Globtime.c<39) and (xstage.v+Devrates2.v*globtime.c>3) then
        devrates2.v :=0;*)     //WENN DIESE BEDINGUNG ENTFÄLLT WIRD XSTAGE NICHT ANGEHALTEN WENN ec 39 NOCH NICHT ERRREICHT WURDE UND SOMIT LÄUFT EC BERECHNUNG MIT NÄCHSTER DEVRATE WEITER
     (*If (EC.v >= 37) and (xstage.v<2) then
@@ -402,7 +421,8 @@ if (xstage.v>=0)and(xstage.v<2) then
 
  if (xstage.v>=3)and(xstage.v<4) {and (ec.v>=39)} then
   begin
-    devrates3.v := Teff.v/(2*phint.v);     // 2 phyllochron intervals from stage 2 to 3
+    devrates3.v := teff.v/p3.v;
+								  
     zstage.v := 4 + 1.7*(xstage.v-3.0);       // EC 57 nach Berechnung, 39-61 nach
                                               // Beschreibung
     ZStage.v := zSTage.v*10;
@@ -454,6 +474,13 @@ begin
   istage.V := trunc(xstage.V);
   dvs10.v := Istage.v*10;    // dvs10 = scaled variable for plotting
 
+																	  if (d10.V <=0) and (ec.v >=10) then    // calculation of day of emergence
+   d10.V := dayssow.v;
+   // d10.v := dayofyear.v;
+  if (d29.V <=0) and (ec.v >=29) then
+    d29.v := dayssow.v;
+    //d29.v := dayofyear.v;
+	   
 
   Eca.v := EC.v;
   If Ec.v> 15 then ECa.V := EC.v-7.5;
@@ -472,7 +499,9 @@ begin
    // the flag leaves appears and we have EC-Stage 37!!
   If (nL_MS.v >= (inL_MS.v-2)) and (EC.v<37) //and  (EC.v>=33)
   then begin
-    Ec.v := 37+min(2*(nL_MS.v-(inL_MS.v-2))*phint.v/Ph39.v,40-EC.v);
+ //   Ec.v := 37+min(2*(nL_MS.v-(inL_MS.v-2))*phint.v/Ph39.v,40-EC.v);
+    // impact of exceeding leaf number (fraction) on EC progress
+    Ec.v := 37+min(2*(nL_MS.v-(inL_MS.v-2))*TSumInternode_opt.v/Ph39_opt.v,40-EC.v);
     //XStage.v := 2+(37-29)/(40-29);
   end;
 
@@ -716,7 +745,7 @@ begin
   // calculate rate of leaf initiation until apical meristeme is not generative
   if (Istage.v >= 1) and (xstage.v < xstage_fin_leaf_prim.v) then
     // (xstage.v< xstage_fin_leaf_prim.v)
-    inL_MS.c := 1 / plastochron.v * Teff.v
+    inL_MS.c := Teff.v / plastochron.v 
   else
     inL_MS.c := 0;
 end;
@@ -726,15 +755,17 @@ begin
   {  If (Dayofyear.v-3>sowingdate.v)and(tsums.v<=0)
     then showmessage('SimStart later than sowing !');  }
   // calculate rate of leaf apperance until visible number of leaves is smaller than initiated number
-  if (Istage.v >= 1) and (nl_ms.v < inL_MS.v) then
+  If (Istage.v >=1) and (nl_ms.v<inL_MS.v) then
   begin
     if phint.v > 0 then
-      nl_MS.c := Teff.v / phint.v;
+      if (xstage.v < 2) then
+        nl_MS.c := Teff.v/phint.v
+      else
+        nl_MS.c := Teff.v/TSumInternode_opt.v;  // number of leaves on main stem.change
   end
   else
-  // number of leaves on main stem.change
   begin
-    nl_MS.c := 0;
+    nl_MS.c := 0.0;
   end;
 end;
 
@@ -853,6 +884,7 @@ begin
   VernOptTemp1.comment := 'temperature where vernalisation is starting to be optimal';
   VernOptTemp2.comment := 'temperature where vernalisation is ending to be optimal';
   VernMaxTemp.comment := 'temperature where vernalisation is getting zero';
+
 end;
 
 procedure TDevelopment.CreateOptions;
@@ -863,6 +895,10 @@ begin
   OptCreate('RecalcSowingDate', 'True', RecalcSowingDate);
   RecalcSowingDate.OptionList.Add('True');
   RecalcSowingDate.OptionList.Add('False');
+  OptCreate('optTSumInternode', 'constant', OptTSumInternode);
+   OptTSumInternode.OptionList.Add('constant');
+   OptTSumInternode.OptionList.Add('daylength');
+
 end;
 
 procedure TDevelopment.CreateExterns;
@@ -884,6 +920,9 @@ begin
   //aktualisiert nach John-Manuskript 29.Jan.09
   Parcreate('tBase', '', 0, tBase);
   Parcreate('sowingdate', 'doy', 300, sowingdate);
+  ParCreate('fdl', '-', 0, fdl);
+  Parcreate('p3', '°Cd', 183.48, p3);
+
   Parcreate('p4', '°Cd', 200, p4);
   Parcreate('p5', '-', 11.67, p5);
   //aktualisiert nach Johnen-Manuskript 29.Jan.09
@@ -955,9 +994,13 @@ begin
   VarCreate('TSEC69', '', 0, true, TSEC69, 'Date of BBCH69 (needed for calibration');
   VarCreate('TSEC71', '', 0, true, TSEC71, 'Date of BBCH71 (needed for calibration');
   VarCreate('tempsumemergence', '', 0, true, tempsumemergence);
+  VarCreate('TSumInternode_opt',    '[°Cd]', 0, true, TSumInternode_opt, 'a function of phint and day length');
+
   // Define Value
   VarCreate('tsuminc', '', 0, true, Teff);
   // 0 = max(0,TMPM-tbase)
+  VarCreate('ph39_opt',    '[°Cd]', 0, true, ph39_opt, 'a function of phint and day length');
+
   VarCreate('zstage', '', 0, true, zstage);
   VarCreate('vernf', '', 0, true, vernf);
   VarCreate('GS_EC25', '', 0, true, GS_EC25);

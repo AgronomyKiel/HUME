@@ -1352,12 +1352,20 @@ begin
 
   OldDMFineRoot := DMFineRoot.v;
 
-    if (fRootGrowthAfterEmergence = true) then
-      if (Temp.v>TempSumRootBaseTemp.v) and (EmergenceDay.v > 0) then
-        TempSumR.C := (Temp.v-TempSumRootBaseTemp.V) else
-      if Temp.v>TempSumRootBaseTemp.v then
-        TempSumR.C := (Temp.v-TempSumRootBaseTemp.V)
-    else TempSumr.c := 0.0;
+    if (fRootGrowthAfterEmergence = true) then begin
+      if (EmergenceDay.v > 0) then begin
+        TempSumR.C := max(0, (Temp.v-TempSumRootBaseTemp.V))
+      end
+    end else
+    begin
+      if GlobTime.v >= self.SowingDate.v then
+        TempSumR.C := max(0, (Temp.v-TempSumRootBaseTemp.V))
+      else
+         TempSumr.c := 0.0;
+     end;
+
+
+
     inc(N_age_cl);
     SRL_eff.v  := 0.0;
     for i := 1 to trunc(n_Rootcomp.v) do begin

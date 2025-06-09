@@ -34,7 +34,7 @@ object FormMod: TFormMod
     Top = 44
     Width = 1090
     Height = 589
-    ActivePage = TabSheetModelDiagram
+    ActivePage = TabSheetDocumentation
     Align = alClient
     HotTrack = True
     TabOrder = 1
@@ -310,7 +310,6 @@ object FormMod: TFormMod
             Width = 750
             Height = 22
             Align = alLeft
-            ReadOnly = True
             TabOrder = 0
             OnMouseMove = EditStateIniFileNameMouseMove
           end
@@ -381,7 +380,6 @@ object FormMod: TFormMod
             Width = 750
             Height = 19
             Align = alLeft
-            ReadOnly = True
             TabOrder = 0
             OnMouseMove = EditParamIniFileNameMouseMove
           end
@@ -449,9 +447,9 @@ object FormMod: TFormMod
             Top = 22
             Width = 750
             Height = 21
+            Hint = 'Actual Weather Data File'
             Align = alLeft
             ParentShowHint = False
-            ReadOnly = True
             ShowHint = True
             TabOrder = 0
             OnMouseMove = EditWeatherfileMouseMove
@@ -3184,6 +3182,7 @@ object FormMod: TFormMod
       Top = 4
       Width = 520
       Height = 22
+      Hint = 'Actual Ini-File'
       Align = alRight
       Style = csOwnerDrawFixed
       TabOrder = 1
@@ -3428,8 +3427,8 @@ object FormMod: TFormMod
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000}
   end
-  object Lmod: TModLink
-    Left = 1016
-    Top = 536
+  object LMod: TModLink
+    Left = 560
+    Top = 552
   end
 end

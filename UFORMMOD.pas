@@ -127,7 +127,6 @@ type
     AdvStringGridModelSummary: TAdvStringGrid;
     SpeedButtonMergeData: TSpeedButton;
     btnCheckButton1: TSpeedButton;
-    Lmod: TModLink;
  //   CheckBoxContOutput: TCheckBox;
     GroupBoxIniFileEdits: TGroupBox;
     GroupBoxControlFileName: TGroupBox;
@@ -165,6 +164,7 @@ type
     GroupBox1: TGroupBox;
     SpeedButtonNoContOutput: TSpeedButton;
     SpeedButtonAllContOutput: TSpeedButton;
+    LMod: TModLink;
 
     procedure RunModel; virtual;
     procedure Menu_RunClick(Sender: TObject); virtual;

@@ -265,6 +265,7 @@ type
     PlantNDemand_rate_limited_m2: Tvar; //< pot. Plant N demand limited by maxNupTake
     actPlantNupTake_m2: Tvar; //< actual N uptake rate
     LAIShoot: TVar;
+    SWMIN_pl : TVar;    // minimum stem weight, used for translocation and senescence calculations, determined at stage 37
 
     DaysEffGF:TVar; //< days from BBCH65 unitil LAI=0;
     TSUMEffGF:TVar;
@@ -529,6 +530,7 @@ procedure THumeWheatPartitioning.setRootModel(AModel: TSimpleRootModDM);
 begin
   fRootModel := AModel;
   withRoots := true;
+  OptWithRoots.Option :=  'true';
   RootModel.DMFineRoot.Search := false;
   RootModel.DMFineRoot.setPointer(@DMFineRoot.fv);
   RootModel.DMFineRoot.Source := '['+Name+']';
@@ -873,13 +875,13 @@ begin
     if i = 3 then
       ParCreate('relLayerN_Int' + IntToStr(i), '[%]', 0.2292, relLayerN_int[i]);
   end;
-  ParCreate('maxNNI', '[-]', 1.5, maxNNI);
+  ParCreate('maxNNI', '[-]', 1.5, maxNNI, 'maximum N nutrition index');
   ParCreate('pNdefAllo', '[-]', 0.63, pNdefAllo, 'fraction of N defizit allocated to the stem');
-  ParCreate('k_SEEDRV', '[-]', 0.15, k_SEEDRV);
+  ParCreate('k_SEEDRV', '[-]', 0.15, k_SEEDRV, 'degradation rate of seed reserves during emergence and early growth');
   // mobilisation constant for seed reserves
-  ParCreate('h', '[-]', -2.13, h);
+  ParCreate('h', '[-]', -2.13, h, 'parameter for allometric leaf/stem partitioning');
   // Meyer-Schatz DBU Endbericht
-  ParCreate('g', '[-]', 1.46, g);
+  ParCreate('g', '[-]', 1.46, g, 'parameter for allometric leaf/stem partitioning');
   // Meyer-Schatz DBU Endbericht
   ParCreate('psi_s', '[1/pF]', 0.2956942, psi_s, 'for calculation of kf (allometric leaf/stem partitioning)');
   ParCreate('psi_crit', '[pF]', 2.24499, psi_crit, 'for calculation of kf (allometric leaf/stem partitioning)');
@@ -910,13 +912,13 @@ begin
   // ParCreate('piniGN', '[mg/1K grains]', 210, piniGN,
   // 'initial grain N of a single grain at the beginning of the endosperm cell division phase');
   // ParCreate('pRGFILL', '[-]', 0.00127, pRGFILL);
-  ParCreate('EC_LGend', '[-]', 39, EC_LGend);
-  ParCreate('NcStemMin', '[%]', 4, NcStemMin);
+  ParCreate('EC_LGend', '[-]', 39, EC_LGend, 'EC stage at which leaf growth ends');
+  ParCreate('NcStemMin', '[%]', 4, NcStemMin, 'minimum N concentration in stem');
   ParCreate('HImin', '[-]', 0.51, HImin);
   ParCreate('NcLeafMin', '[%]', 4.5, NcLeafMin);
   ParCreate('Plants', '[plants/m2]', 350, Plants);
   ParCreate('pDMTrans', '[%]', 25, pDMTrans);
-  ParCreate('maxNcStem', '[/]', 7, maxNcStem);
+  ParCreate('maxNcStem', '[%]', 7, maxNcStem, 'maximum N concentration in stem');
   // Ratjen & Kage submitted 2015
   ParCreate('NcStem_a', '[-]', 0.1475, NcStem_a);
   // aus Daten 950506 N4
@@ -1002,7 +1004,7 @@ procedure THumeWheatPartitioning.CreateAllVars;
 var
   i: Integer;
 begin
-  VarCreate('maxNShoot_m2', '[g/m2]', 0, true, maxNShoot_m2);
+  VarCreate('maxNShoot_m2', '[g/m2]', 0, true, maxNShoot_m2, 'maximum shoot N');
   VarCreate('GPPVAR', '[grains/plant]', 0, true, GPPVAR, 'estimation of grains per plant');
   // VarCreate('NUptakeRate_pot', 'g m-2 d-1', 0, true, NUptakeRate_pot,
   //   'pot. N-Nup rate (g.m-2.d-1)');
@@ -1049,6 +1051,7 @@ begin
   VarCreate('NTrans_pl', '[g/plant]', 0, true, NTrans_pl, 'translocated N per plant');
   VarCreate('NcLeaf_ECLGE', '', 0, true, NcLeaf_ECLGE, 'leaf N concentration at the end of leaf growth');
   VarCreate('STMWT_m2', '[g/m2]', 0, true, STMWT_m2, 'Stem dry weight per m2');
+  VarCreate('SWMIN_pl', '[g/pl]', 0, true, SWMIN_pl, 'minimum stem dry weight per plant, used for translocation calculation and senescence');
   VarCreate('SENWT_m2', '[g/m2]', 0, true, SENWT_m2, 'Senescing dry weight per m2');
   VarCreate('NDemand', '[kg/ha/d]', 0, true, NDemand, 'Nitrogen demand per hectare');
   VarCreate('NStemstruc_pl', '[g/plant]', 0, true, NStemstruc_pl);
@@ -1140,10 +1143,11 @@ begin
   begin
     CalcPotHI;
   end
-  else if (EC.v >= 50) and (Swmin <= 0) and (fRSWT = gf_cwt3) then
-    Swmin := STMWT_pl.v
+//  else if (EC.v >= 50) and (Swmin <= 0) and (fRSWT = gf_cwt3) then
+  else if (EC.v >= 37) and (Swmin_pl.v <= 0) and (fRSWT = gf_cwt3) then
+    Swmin_pl.v := STMWT_pl.v
   else
-    Swmin := 0;
+    Swmin_pl.v := 0;
 
   if (GPSM.v <= 0) and (EC.v >= 40) then
     CalcGPSM;

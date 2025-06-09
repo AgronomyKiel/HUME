@@ -1,0 +1,1493 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="UHumeWheatDryMatter" platform="Win32">
+  <const name="DroughtImpact" type="TDroughtImpact" file="UHumeWheatDryMatter.pas" line="32">
+    <value>
+      DroughtImpact
+    </value>
+  </const>
+  <const name="NoDroughtImpact" type="TDroughtImpact" file="UHumeWheatDryMatter.pas" line="32">
+    <value>
+      NoDroughtImpact
+    </value>
+  </const>
+  <const name="CWT3" type="TCarboRed" file="UHumeWheatDryMatter.pas" line="35">
+    <value>
+      CWT3
+    </value>
+  </const>
+  <const name="Concentration" type="TCarboRed" file="UHumeWheatDryMatter.pas" line="35">
+    <value>
+      Concentration
+    </value>
+  </const>
+  <const name="noCarboRed" type="TCarboRed" file="UHumeWheatDryMatter.pas" line="35">
+    <value>
+      noCarboRed
+    </value>
+  </const>
+  <enum name="TDroughtImpact" file="UHumeWheatDryMatter.pas" line="32">
+    <element value="0" name="DroughtImpact" file="UHumeWheatDryMatter.pas" line="32" />
+    <element value="1" name="NoDroughtImpact" file="UHumeWheatDryMatter.pas" line="32" />
+  </enum>
+  <enum name="TCarboRed" file="UHumeWheatDryMatter.pas" line="35">
+    <element value="0" name="CWT3" file="UHumeWheatDryMatter.pas" line="35" />
+    <element value="1" name="Concentration" file="UHumeWheatDryMatter.pas" line="35" />
+    <element value="2" name="noCarboRed" file="UHumeWheatDryMatter.pas" line="35" />
+  </enum>
+  <class name="THumeWheatDryMatter" file="UHumeWheatDryMatter.pas" line="58">
+    <devnotes>
+       <summary> Class for the dry matter production submodel of Ceres-Wheat
+       </summary>
+       <baseclass> TSubmodel </baseclass> </baseclass>
+       <created> 01.12.2008
+       <unit> HumeWheatDryMatter </unit>
+       <author> A. Ratjen, H. Kage, A. Luig </author>
+       <version> 0.7 </version>
+       <changes> 01.12.2008 (JH) </changes>
+       <remarks> simplified version of the dry matter production module for parameterisation
+       -&gt;'SWDF' is a none linear funktion of 'tranintsratio' according to (Ferreyra 2003)
+       -&gt;'PCARB' is limited by 'SWDF' or spezific leaf N
+       -&gt;(SLN threshold according to Meinke 1998)
+       -&gt; Wang-Engel (WE)	temperature (0-1) function
+       -&gt; Empirical approach for CO2 impact (2016)    Wo kommt der nur her?? keine Quellangabe
+       </remarks>
+    </devnotes>
+    <ancestor name="TSubmodel" namespace="UMod">
+      <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="RegistrateOption" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="RegistrateVariable" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="RegistrateStateVar" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="RegistrateConstant" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="RegistrateSubMod" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="set_State" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="get_State" visibility="private" />
+      <methodref name="set_Par" visibility="private" />
+      <methodref name="Get_Par" visibility="private" />
+      <methodref name="set_Var" visibility="private" />
+      <methodref name="Get_Var" visibility="private" />
+      <methodref name="set_Const" visibility="private" />
+      <methodref name="get_Const" visibility="private" />
+      <methodref name="set_Option" visibility="private" />
+      <methodref name="get_Option" visibility="private" />
+      <methodref name="set_ExternVar" visibility="private" />
+      <methodref name="get_ExternVar" visibility="private" />
+      <methodref name="InitStates" visibility="private" procflags="virtual" />
+      <methodref name="InitParms" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="InitVars" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="InitOptions" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="InitOutputFileNames" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="InitUpdateFile" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="IsOutput" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="Get_GlobMod" visibility="protected">
+      </methodref>
+      <methodref name="Set_GlobMod" visibility="protected" procflags="virtual" />
+      <methodref name="UpdateValue" visibility="protected" />
+      <methodref name="Paint" visibility="protected" procflags="override" />
+      <methodref name="Create" visibility="public" procflags="constructor override">
+      </methodref>
+      <methodref name="free" visibility="public">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="override" />
+      <methodref name="ParCreate" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="OptCreate" visibility="public">
+      </methodref>
+      <methodref name="VarCreate" visibility="public">
+      </methodref>
+      <methodref name="ConstCreate" visibility="public">
+      </methodref>
+      <methodref name="StateCreate" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ExternVcreate" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ExternVinit" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="CreateAll" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Init" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="CalcRates" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Integrate" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="CalcVars" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="UpdateValues" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="WriteStateName" visibility="public">
+      </methodref>
+      <methodref name="WriteFinalStateName" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="WriteRateName" visibility="public">
+      </methodref>
+      <methodref name="SaveState" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SaveRate" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SaveFinalState" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="closeOutputfiles" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="activate" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="deactivate" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AddDataValueToDataSeries" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AddSimValueToDataSeries" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="write_1_1_files" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="CalcLinearRegressions" visibility="public">
+      </methodref>
+      <propertyref name="StateVar" visibility="public">
+      </propertyref>
+      <propertyref name="ParamVar" visibility="public">
+      </propertyref>
+      <propertyref name="VarVar" visibility="public">
+      </propertyref>
+      <propertyref name="ConstVar" visibility="public">
+      </propertyref>
+      <propertyref name="Option" visibility="public">
+      </propertyref>
+      <propertyref name="ExternVar" visibility="public">
+      </propertyref>
+      <methodref name="DblClick" visibility="public" procflags="override" />
+      <propertyref name="SM_GlobMod" visibility="published">
+      </propertyref>
+      <propertyref name="SM_ExternVStrList" visibility="published">
+      </propertyref>
+      <propertyref name="SM_VarStrList" visibility="published">
+      </propertyref>
+      <propertyref name="SM_ConstStrList" visibility="published">
+      </propertyref>
+      <propertyref name="SM_ParStrList" visibility="published">
+      </propertyref>
+      <propertyref name="SM_StateStrList" visibility="published">
+      </propertyref>
+      <propertyref name="CompIndex" visibility="published">
+      </propertyref>
+      <propertyref name="FN_ratefn" visibility="published">
+      </propertyref>
+      <propertyref name="FN_Statefn" visibility="published">
+      </propertyref>
+      <propertyref name="MeasFile" visibility="published">
+      </propertyref>
+      <propertyref name="AssimilatedSubmodList" visibility="published">
+      </propertyref>
+      <propertyref name="DebugModus" visibility="published">
+      </propertyref>
+      <propertyref name="OptContOutput" visibility="published">
+      </propertyref>
+      <propertyref name="Parent" visibility="published" />
+      <propertyref name="Canvas" visibility="published" />
+      <propertyref name="Visible" visibility="published" />
+      <propertyref name="color" visibility="published" />
+      <propertyref name="DebugForm" visibility="published" />
+      <propertyref name="OnDblClick" visibility="published" />
+      <ancestor name="TGraphicControl" namespace="Vcl.Controls">
+        <methodref name="WMPaint" visibility="private" procflags="message">
+        </methodref>
+        <methodref name="Paint" visibility="protected" procflags="virtual">
+        </methodref>
+        <propertyref name="Canvas" visibility="protected">
+        </propertyref>
+        <methodref name="Create" visibility="public" procflags="constructor override">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor override">
+        </methodref>
+        <ancestor name="TControl" namespace="Vcl.Controls">
+          <methodref name="GetCustomHint" visibility="private">
+          </methodref>
+          <methodref name="CalcDockSizes" visibility="private">
+          </methodref>
+          <methodref name="UpdateRootControl" visibility="private">
+          </methodref>
+          <methodref name="CheckNewSize" visibility="private">
+          </methodref>
+          <methodref name="CreateFloatingDockSite" visibility="private">
+          </methodref>
+          <methodref name="DoActionChange" visibility="private">
+          </methodref>
+          <methodref name="DoCanAutoSize" visibility="private">
+          </methodref>
+          <methodref name="DoCanResize" visibility="private">
+          </methodref>
+          <methodref name="DoConstraintsChange" visibility="private">
+          </methodref>
+          <methodref name="DoConstrainedResize" visibility="private">
+          </methodref>
+          <methodref name="DoDragMsg" visibility="private">
+          </methodref>
+          <methodref name="DoMouseActivate" visibility="private">
+          </methodref>
+          <methodref name="DoMouseDown" visibility="private">
+          </methodref>
+          <methodref name="DoMouseUp" visibility="private">
+          </methodref>
+          <methodref name="DoMarginChange" visibility="private">
+          </methodref>
+          <methodref name="FontChanged" visibility="private">
+          </methodref>
+          <methodref name="GetAlignWithMargins" visibility="private" procflags="inline">
+          </methodref>
+          <methodref name="GetBoundsRect" visibility="private">
+          </methodref>
+          <methodref name="GetClientHeight" visibility="private">
+          </methodref>
+          <methodref name="GetClientWidth" visibility="private">
+          </methodref>
+          <methodref name="GetLRDockWidth" visibility="private">
+          </methodref>
+          <methodref name="GetMouseCapture" visibility="private">
+          </methodref>
+          <methodref name="GetTBDockHeight" visibility="private">
+          </methodref>
+          <methodref name="GetUndockWidth" visibility="private">
+          </methodref>
+          <methodref name="GetUndockHeight" visibility="private">
+          </methodref>
+          <methodref name="InvalidateControl" visibility="private">
+          </methodref>
+          <methodref name="IsAnchorsStored" visibility="private">
+          </methodref>
+          <methodref name="IsBiDiModeStored" visibility="private">
+          </methodref>
+          <methodref name="IsCaptionStored" visibility="private">
+          </methodref>
+          <methodref name="IsColorStored" visibility="private">
+          </methodref>
+          <methodref name="IsEnabledStored" visibility="private">
+          </methodref>
+          <methodref name="IsFontStored" visibility="private">
+          </methodref>
+          <methodref name="IsHintStored" visibility="private">
+          </methodref>
+          <methodref name="IsHelpContextStored" visibility="private">
+          </methodref>
+          <methodref name="IsOnClickStored" visibility="private">
+          </methodref>
+          <methodref name="IsShowHintStored" visibility="private">
+          </methodref>
+          <methodref name="IsVisibleStored" visibility="private">
+          </methodref>
+          <methodref name="ReadIsControl" visibility="private">
+          </methodref>
+          <methodref name="ReadExplicitLeft" visibility="private">
+          </methodref>
+          <methodref name="ReadExplicitTop" visibility="private">
+          </methodref>
+          <methodref name="ReadExplicitWidth" visibility="private">
+          </methodref>
+          <methodref name="ReadExplicitHeight" visibility="private">
+          </methodref>
+          <methodref name="SetAlignWithMargins" visibility="private">
+          </methodref>
+          <methodref name="SetAnchors" visibility="private">
+          </methodref>
+          <methodref name="SetAction" visibility="private">
+          </methodref>
+          <methodref name="SetAlign" visibility="private">
+          </methodref>
+          <methodref name="SetBoundsRect" visibility="private">
+          </methodref>
+          <methodref name="SetClientHeight" visibility="private">
+          </methodref>
+          <methodref name="SetClientSize" visibility="private">
+          </methodref>
+          <methodref name="SetClientWidth" visibility="private">
+          </methodref>
+          <methodref name="SetColor" visibility="private">
+          </methodref>
+          <methodref name="SetCursor" visibility="private">
+          </methodref>
+          <methodref name="SetDesktopFont" visibility="private">
+          </methodref>
+          <methodref name="SetFont" visibility="private">
+          </methodref>
+          <methodref name="SetHeight" visibility="private">
+          </methodref>
+          <methodref name="SetHelpContext" visibility="private">
+          </methodref>
+          <methodref name="SetHelpKeyword" visibility="private">
+          </methodref>
+          <methodref name="SetHostDockSite" visibility="private">
+          </methodref>
+          <methodref name="SetLeft" visibility="private">
+          </methodref>
+          <methodref name="SetMouseCapture" visibility="private">
+          </methodref>
+          <methodref name="SetParentColor" visibility="private">
+          </methodref>
+          <methodref name="SetParentFont" visibility="private">
+          </methodref>
+          <methodref name="SetShowHint" visibility="private">
+          </methodref>
+          <methodref name="SetParentShowHint" visibility="private">
+          </methodref>
+          <methodref name="SetParentCustomHint" visibility="private">
+          </methodref>
+          <methodref name="SetPopupMenu" visibility="private">
+          </methodref>
+          <methodref name="SetTop" visibility="private">
+          </methodref>
+          <methodref name="SetVisible" visibility="private">
+          </methodref>
+          <methodref name="SetWidth" visibility="private">
+          </methodref>
+          <methodref name="SetZOrderPosition" visibility="private">
+          </methodref>
+          <methodref name="UpdateAnchorRules" visibility="private">
+          </methodref>
+          <methodref name="WriteIsControl" visibility="private">
+          </methodref>
+          <methodref name="WriteExplicitLeft" visibility="private">
+          </methodref>
+          <methodref name="WriteExplicitTop" visibility="private">
+          </methodref>
+          <methodref name="WriteExplicitWidth" visibility="private">
+          </methodref>
+          <methodref name="WriteExplicitHeight" visibility="private">
+          </methodref>
+          <methodref name="WMLButtonDown" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMNCLButtonDown" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMRButtonDown" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMMButtonDown" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMLButtonDblClk" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMRButtonDblClk" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMMButtonDblClk" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMMouseMove" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMLButtonUp" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMRButtonUp" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMMButtonUp" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMMouseWheel" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMCancelMode" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMWindowPosChanged" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMVisibleChanged" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMEnabledChanged" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMFontChanged" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMColorChanged" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMMouseActivate" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMParentFontChanged" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMSysFontChanged" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMParentColorChanged" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMParentShowHintChanged" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMHintShow" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMHitTest" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMMouseEnter" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMMouseLeave" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMDesignHitTest" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMBiDiModeChanged" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMParentBiDiModeChanged" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMMouseWheel" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMGesture" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="WMContextMenu" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMParentTabletOptionsChanged" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="CMStyleElementsChanged" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="SetConstraints" visibility="private">
+          </methodref>
+          <methodref name="SetMargins" visibility="private">
+          </methodref>
+          <methodref name="SetTouchManager" visibility="private">
+          </methodref>
+          <methodref name="GetText" visibility="private">
+          </methodref>
+          <methodref name="SetText" visibility="private">
+          </methodref>
+          <methodref name="CMFloat" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="GetDesignDpi" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetParentCurrentDpi" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetCurrentPPI" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetDPIForDesigner" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="AsyncSchedule" visibility="protected" procflags="override">
+          </methodref>
+          <methodref name="ActionChange" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="AdjustSize" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="AssignTo" visibility="protected" procflags="override">
+          </methodref>
+          <methodref name="BeginAutoDrag" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="CanResize" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Changed" visibility="protected">
+          </methodref>
+          <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
+          </methodref>
+          <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
+          </methodref>
+          <methodref name="Click" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="ConstrainedResize" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="CalcCursorPos" visibility="protected">
+          </methodref>
+          <methodref name="CreateTouchManager" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="DblClick" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DefaultDockImage" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DefineProperties" visibility="protected" procflags="override">
+          </methodref>
+          <methodref name="DockTrackNoTarget" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DoContextPopup" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DoEndDock" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DoDock" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DoStartDock" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DoMouseWheel" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DoMouseWheelDown" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DoMouseWheelUp" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DragCanceled" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DragOver" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DoEndDrag" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DoStartDrag" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="DoGesture" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="DoGetGestureOptions" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="DoStyleElementsChanged" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="DrawDragDockImage" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="EraseDragDockImage" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="GetAction" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetActionLinkClass" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="GetClientOrigin" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetClientRect" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetDeviceContext" visibility="protected" procflags="overload virtual">
+          </methodref>
+          <methodref name="GetDockEdge" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="GetEnabled" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetFloating" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetFloatingDockSiteClass" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetPalette" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="GetPopupMenu" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="GetDragMode" visibility="protected">
+          </methodref>
+          <methodref name="IsTouchPropertyStored" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="Loaded" visibility="protected" procflags="override">
+          </methodref>
+          <methodref name="MouseActivate" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="MouseDown" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="MouseMove" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="MouseUp" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="Notification" visibility="protected" procflags="override">
+          </methodref>
+          <methodref name="PositionDockRect" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="PaletteChanged" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="ReadState" visibility="protected" procflags="override">
+          </methodref>
+          <methodref name="RequestAlign" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Resize" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="ScaleConstraints" visibility="protected">
+          </methodref>
+          <methodref name="ScaleMargins" visibility="protected">
+          </methodref>
+          <methodref name="DefaultScalingFlags" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="SendCancelMode" visibility="protected">
+          </methodref>
+          <methodref name="SendDockNotification" visibility="protected">
+          </methodref>
+          <methodref name="SetAutoSize" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="SetDragMode" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="SetEnabled" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="SetName" visibility="protected" procflags="override">
+          </methodref>
+          <methodref name="SetParent" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="SetParentBiDiMode" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="SetBiDiMode" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetStyleElements" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="SetStyleElements" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="SetStyleName" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="SetZOrder" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="SetCustomHint" visibility="protected">
+          </methodref>
+          <methodref name="UpdateExplicitBounds" visibility="protected">
+          </methodref>
+          <methodref name="UpdateBoundsRect" visibility="protected">
+          </methodref>
+          <methodref name="VisibleChanging" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="WndProc" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="UpdateStyleElements" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="DesignWndProc" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="GetDragImages" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetAllocatedWindowHandle" visibility="protected" procflags="virtual">
+          </methodref>
+          <propertyref name="ActionLink" visibility="protected">
+          </propertyref>
+          <propertyref name="AutoSize" visibility="protected">
+          </propertyref>
+          <propertyref name="Caption" visibility="protected">
+          </propertyref>
+          <propertyref name="DesktopFont" visibility="protected">
+          </propertyref>
+          <propertyref name="DragKind" visibility="protected">
+          </propertyref>
+          <propertyref name="DragCursor" visibility="protected">
+          </propertyref>
+          <propertyref name="DragMode" visibility="protected">
+          </propertyref>
+          <propertyref name="IsControl" visibility="protected">
+          </propertyref>
+          <propertyref name="MouseCapture" visibility="protected">
+          </propertyref>
+          <propertyref name="ParentBiDiMode" visibility="protected">
+          </propertyref>
+          <propertyref name="ParentColor" visibility="protected">
+          </propertyref>
+          <propertyref name="ParentFont" visibility="protected">
+          </propertyref>
+          <propertyref name="ParentShowHint" visibility="protected">
+          </propertyref>
+          <propertyref name="PopupMenu" visibility="protected">
+          </propertyref>
+          <propertyref name="ScalingFlags" visibility="protected">
+          </propertyref>
+          <propertyref name="Text" visibility="protected">
+          </propertyref>
+          <propertyref name="WheelAccumulator" visibility="protected">
+          </propertyref>
+          <propertyref name="Color" visibility="protected">
+          </propertyref>
+          <propertyref name="Font" visibility="protected">
+          </propertyref>
+          <propertyref name="IScaling" visibility="protected">
+          </propertyref>
+          <propertyref name="WindowText" visibility="protected">
+          </propertyref>
+          <eventref name="OnCanResize" visibility="protected">
+          </eventref>
+          <eventref name="OnClick" visibility="protected">
+          </eventref>
+          <eventref name="OnConstrainedResize" visibility="protected">
+          </eventref>
+          <eventref name="OnContextPopup" visibility="protected">
+          </eventref>
+          <eventref name="OnDblClick" visibility="protected">
+          </eventref>
+          <eventref name="OnDragDrop" visibility="protected">
+          </eventref>
+          <eventref name="OnDragOver" visibility="protected">
+          </eventref>
+          <eventref name="OnEndDock" visibility="protected">
+          </eventref>
+          <eventref name="OnEndDrag" visibility="protected">
+          </eventref>
+          <eventref name="OnMouseActivate" visibility="protected">
+          </eventref>
+          <eventref name="OnMouseDown" visibility="protected">
+          </eventref>
+          <eventref name="OnMouseEnter" visibility="protected">
+          </eventref>
+          <eventref name="OnMouseLeave" visibility="protected">
+          </eventref>
+          <eventref name="OnMouseMove" visibility="protected">
+          </eventref>
+          <eventref name="OnMouseUp" visibility="protected">
+          </eventref>
+          <eventref name="OnMouseWheel" visibility="protected">
+          </eventref>
+          <eventref name="OnMouseWheelDown" visibility="protected">
+          </eventref>
+          <eventref name="OnMouseWheelUp" visibility="protected">
+          </eventref>
+          <eventref name="OnResize" visibility="protected">
+          </eventref>
+          <eventref name="OnStartDock" visibility="protected">
+          </eventref>
+          <eventref name="OnStartDrag" visibility="protected">
+          </eventref>
+          <methodref name="Create" visibility="public" procflags="constructor override">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="CheckNonMainThreadUsage" visibility="public">
+          </methodref>
+          <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="IsLightStyleColor" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ScaleForPPI" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="BeginDrag" visibility="public">
+          </methodref>
+          <methodref name="BringToFront" visibility="public">
+          </methodref>
+          <methodref name="ClientToScreen" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="ClientToScreen" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="ClientToParent" visibility="public">
+          </methodref>
+          <methodref name="Dock" visibility="public" procflags="dynamic">
+          </methodref>
+          <methodref name="Dragging" visibility="public">
+          </methodref>
+          <methodref name="DragDrop" visibility="public" procflags="dynamic">
+          </methodref>
+          <methodref name="DrawTextBiDiModeFlags" visibility="public">
+          </methodref>
+          <methodref name="DrawTextBiDiModeFlagsReadingOnly" visibility="public">
+          </methodref>
+          <propertyref name="Enabled" visibility="public">
+          </propertyref>
+          <methodref name="EndDrag" visibility="public">
+          </methodref>
+          <methodref name="GetControlsAlignment" visibility="public" procflags="dynamic">
+          </methodref>
+          <methodref name="GetParentComponent" visibility="public" procflags="override">
+          </methodref>
+          <methodref name="HasParent" visibility="public" procflags="override">
+          </methodref>
+          <methodref name="Hide" visibility="public">
+          </methodref>
+          <methodref name="InitiateAction" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Invalidate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="MouseWheelHandler" visibility="public" procflags="dynamic">
+          </methodref>
+          <methodref name="IsRightToLeft" visibility="public">
+          </methodref>
+          <methodref name="ManualDock" visibility="public">
+          </methodref>
+          <methodref name="ManualFloat" visibility="public">
+          </methodref>
+          <methodref name="Perform" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="Refresh" visibility="public">
+          </methodref>
+          <methodref name="Repaint" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ReplaceDockedControl" visibility="public">
+          </methodref>
+          <methodref name="ScreenToClient" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="ScreenToClient" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="ParentToClient" visibility="public">
+          </methodref>
+          <methodref name="SendToBack" visibility="public">
+          </methodref>
+          <methodref name="SetBounds" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="SetDesignVisible" visibility="public" procflags="dynamic">
+          </methodref>
+          <methodref name="SetParentComponent" visibility="public" procflags="override">
+          </methodref>
+          <methodref name="Show" visibility="public">
+          </methodref>
+          <methodref name="Update" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="UseRightToLeftAlignment" visibility="public" procflags="dynamic">
+          </methodref>
+          <methodref name="UseRightToLeftReading" visibility="public">
+          </methodref>
+          <methodref name="UseRightToLeftScrollBar" visibility="public">
+          </methodref>
+          <methodref name="DefaultHandler" visibility="public" procflags="override">
+          </methodref>
+          <methodref name="GetTextBuf" visibility="public">
+          </methodref>
+          <methodref name="GetTextLen" visibility="public">
+          </methodref>
+          <methodref name="Perform" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="Perform" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="SetTextBuf" visibility="public">
+          </methodref>
+          <methodref name="GetSystemMetrics" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="GetStyleName" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="GetInternalStyleElements" visibility="public">
+          </methodref>
+          <methodref name="ScaleValue" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="ScaleValue" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="ScaleValue" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="ScaleValue" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="ScaleValue" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="ScaleRectSize" visibility="public">
+          </methodref>
+          <propertyref name="Action" visibility="public">
+          </propertyref>
+          <propertyref name="Align" visibility="public">
+          </propertyref>
+          <propertyref name="Anchors" visibility="public">
+          </propertyref>
+          <propertyref name="BiDiMode" visibility="public">
+          </propertyref>
+          <propertyref name="BoundsRect" visibility="public">
+          </propertyref>
+          <propertyref name="ClientHeight" visibility="public">
+          </propertyref>
+          <propertyref name="ClientOrigin" visibility="public">
+          </propertyref>
+          <propertyref name="ClientRect" visibility="public">
+          </propertyref>
+          <propertyref name="ClientWidth" visibility="public">
+          </propertyref>
+          <propertyref name="Constraints" visibility="public">
+          </propertyref>
+          <propertyref name="ControlState" visibility="public">
+          </propertyref>
+          <propertyref name="ControlStyle" visibility="public">
+          </propertyref>
+          <propertyref name="CurrentPPI" visibility="public">
+          </propertyref>
+          <propertyref name="DockOrientation" visibility="public">
+          </propertyref>
+          <propertyref name="ExplicitLeft" visibility="public">
+          </propertyref>
+          <propertyref name="ExplicitTop" visibility="public">
+          </propertyref>
+          <propertyref name="ExplicitWidth" visibility="public">
+          </propertyref>
+          <propertyref name="ExplicitHeight" visibility="public">
+          </propertyref>
+          <propertyref name="Floating" visibility="public">
+          </propertyref>
+          <propertyref name="FloatingDockSiteClass" visibility="public">
+          </propertyref>
+          <propertyref name="HostDockSite" visibility="public">
+          </propertyref>
+          <propertyref name="LRDockWidth" visibility="public">
+          </propertyref>
+          <propertyref name="ScaleFactor" visibility="public">
+          </propertyref>
+          <propertyref name="ShowHint" visibility="public">
+          </propertyref>
+          <propertyref name="TBDockHeight" visibility="public">
+          </propertyref>
+          <propertyref name="Touch" visibility="public">
+          </propertyref>
+          <propertyref name="UndockHeight" visibility="public">
+          </propertyref>
+          <propertyref name="UndockWidth" visibility="public">
+          </propertyref>
+          <propertyref name="Visible" visibility="public">
+          </propertyref>
+          <eventref name="WindowProc" visibility="public">
+          </eventref>
+          <propertyref name="Parent" visibility="public">
+          </propertyref>
+          <propertyref name="StyleElements" visibility="public">
+          </propertyref>
+          <propertyref name="StyleName" visibility="public">
+          </propertyref>
+          <eventref name="OnGesture" visibility="public">
+          </eventref>
+          <propertyref name="RaiseOnNonMainThreadUsage" visibility="public">
+          </propertyref>
+          <propertyref name="AlignWithMargins" visibility="published">
+          </propertyref>
+          <propertyref name="Left" visibility="published">
+          </propertyref>
+          <propertyref name="Top" visibility="published">
+          </propertyref>
+          <propertyref name="Width" visibility="published">
+          </propertyref>
+          <propertyref name="Height" visibility="published">
+          </propertyref>
+          <propertyref name="Cursor" visibility="published">
+          </propertyref>
+          <propertyref name="Hint" visibility="published">
+          </propertyref>
+          <propertyref name="HelpType" visibility="published">
+          </propertyref>
+          <propertyref name="HelpKeyword" visibility="published">
+          </propertyref>
+          <propertyref name="HelpContext" visibility="published">
+          </propertyref>
+          <propertyref name="Margins" visibility="published">
+          </propertyref>
+          <propertyref name="CustomHint" visibility="published">
+          </propertyref>
+          <propertyref name="ParentCustomHint" visibility="published">
+          </propertyref>
+          <ancestor name="TComponent" namespace="System.Classes">
+            <interfaces>
+              <implements name="IInterfaceComponentReference" />
+              <implements name="IInterface" />
+            </interfaces>
+            <methodref name="GetComObject" visibility="private">
+            </methodref>
+            <methodref name="GetComponent" visibility="private">
+            </methodref>
+            <methodref name="GetComponentCount" visibility="private">
+            </methodref>
+            <methodref name="GetComponentIndex" visibility="private">
+            </methodref>
+            <methodref name="Insert" visibility="private">
+            </methodref>
+            <methodref name="ReadLeft" visibility="private">
+            </methodref>
+            <methodref name="ReadTop" visibility="private">
+            </methodref>
+            <methodref name="Remove" visibility="private">
+            </methodref>
+            <methodref name="RemoveNotification" visibility="private">
+            </methodref>
+            <methodref name="SetComponentIndex" visibility="private">
+            </methodref>
+            <methodref name="SetReference" visibility="private">
+            </methodref>
+            <methodref name="WriteLeft" visibility="private">
+            </methodref>
+            <methodref name="WriteTop" visibility="private">
+            </methodref>
+            <methodref name="IntfGetComponent" visibility="private">
+            </methodref>
+            <methodref name="DoGetDeltaStreams" visibility="private">
+            </methodref>
+            <methodref name="ReadDeltaStream" visibility="private">
+            </methodref>
+            <methodref name="ReadDeltaState" visibility="private">
+            </methodref>
+            <methodref name="FindSortedComponent" visibility="private">
+            </methodref>
+            <methodref name="AddSortedComponent" visibility="private">
+            </methodref>
+            <methodref name="RemoveSortedComponent" visibility="private" procflags="inline">
+            </methodref>
+            <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+            </methodref>
+            <methodref name="AsyncSchedule" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="ChangeName" visibility="protected">
+            </methodref>
+            <methodref name="DefineProperties" visibility="protected" procflags="override">
+            </methodref>
+            <methodref name="GetChildren" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="GetChildOwner" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="GetChildParent" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="GetOwner" visibility="protected" procflags="override">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Notification" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetDeltaStreams" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="ReadState" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="CanObserve" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="ObserverAdded" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetObservers" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="SetAncestor" visibility="protected">
+            </methodref>
+            <methodref name="SetDesigning" visibility="protected">
+            </methodref>
+            <methodref name="SetInline" visibility="protected">
+            </methodref>
+            <methodref name="SetDesignInstance" visibility="protected">
+            </methodref>
+            <methodref name="SetName" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="SetChildOrder" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="SetParentComponent" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="Updating" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="Updated" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="UpdateRegistry" visibility="protected" procflags="class virtual">
+            </methodref>
+            <methodref name="ValidateRename" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="ValidateContainer" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="ValidateInsert" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="WriteState" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="RemoveFreeNotifications" visibility="protected">
+            </methodref>
+            <methodref name="QueryInterface" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="_AddRef" visibility="protected">
+            </methodref>
+            <methodref name="_Release" visibility="protected">
+            </methodref>
+            <methodref name="GetTypeInfoCount" visibility="protected">
+            </methodref>
+            <methodref name="GetTypeInfo" visibility="protected">
+            </methodref>
+            <methodref name="GetIDsOfNames" visibility="protected">
+            </methodref>
+            <methodref name="Invoke" visibility="protected">
+            </methodref>
+            <eventref name="OnGetDeltaStreams" visibility="protected">
+            </eventref>
+            <methodref name="Create" visibility="public" procflags="constructor virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor override">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="override">
+            </methodref>
+            <methodref name="BeginInvoke" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="BeginInvoke" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="BeginInvoke" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="BeginInvoke" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="BeginInvoke" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="BeginInvoke" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="BeginInvoke" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="BeginInvoke" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="EndInvoke" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="EndInvoke" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="EndFunctionInvoke" visibility="public">
+            </methodref>
+            <methodref name="DestroyComponents" visibility="public">
+            </methodref>
+            <methodref name="Destroying" visibility="public">
+            </methodref>
+            <methodref name="ExecuteAction" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="FindComponent" visibility="public">
+            </methodref>
+            <methodref name="FreeNotification" visibility="public">
+            </methodref>
+            <methodref name="RemoveFreeNotification" visibility="public">
+            </methodref>
+            <methodref name="FreeOnRelease" visibility="public">
+            </methodref>
+            <methodref name="GetEnumerator" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="GetParentComponent" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="GetNamePath" visibility="public" procflags="override">
+            </methodref>
+            <methodref name="HasParent" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="InsertComponent" visibility="public">
+            </methodref>
+            <methodref name="RemoveComponent" visibility="public">
+            </methodref>
+            <methodref name="SetSubComponent" visibility="public">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="override">
+            </methodref>
+            <methodref name="UpdateAction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="IsImplementorOf" visibility="public">
+            </methodref>
+            <methodref name="ReferenceInterface" visibility="public">
+            </methodref>
+            <propertyref name="ComObject" visibility="public">
+            </propertyref>
+            <propertyref name="Components" visibility="public">
+            </propertyref>
+            <propertyref name="ComponentCount" visibility="public">
+            </propertyref>
+            <propertyref name="ComponentIndex" visibility="public">
+            </propertyref>
+            <propertyref name="ComponentState" visibility="public">
+            </propertyref>
+            <propertyref name="ComponentStyle" visibility="public">
+            </propertyref>
+            <propertyref name="DesignInfo" visibility="public">
+            </propertyref>
+            <propertyref name="Owner" visibility="public">
+            </propertyref>
+            <propertyref name="VCLComObject" visibility="public">
+            </propertyref>
+            <propertyref name="Observers" visibility="public">
+            </propertyref>
+            <propertyref name="Name" visibility="published">
+            </propertyref>
+            <propertyref name="Tag" visibility="published">
+            </propertyref>
+            <ancestor name="TPersistent" namespace="System.Classes">
+              <methodref name="AssignError" visibility="private">
+              </methodref>
+              <methodref name="AssignTo" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="Destroy" visibility="public" procflags="destructor override">
+              </methodref>
+              <methodref name="Assign" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+              </methodref>
+              <ancestor name="TObject" namespace="System">
+                <methodref name="Create" visibility="public" procflags="constructor">
+                </methodref>
+                <methodref name="Free" visibility="public">
+                </methodref>
+                <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+                </methodref>
+                <methodref name="InitInstance" visibility="public" procflags="class">
+                </methodref>
+                <methodref name="CleanupInstance" visibility="public">
+                </methodref>
+                <methodref name="ClassType" visibility="public" procflags="inline">
+                </methodref>
+                <methodref name="ClassName" visibility="public" procflags="class">
+                </methodref>
+                <methodref name="ClassNameIs" visibility="public" procflags="class">
+                </methodref>
+                <methodref name="ClassParent" visibility="public" procflags="class inline">
+                </methodref>
+                <methodref name="ClassInfo" visibility="public" procflags="class inline">
+                </methodref>
+                <methodref name="InstanceSize" visibility="public" procflags="class inline">
+                </methodref>
+                <methodref name="InheritsFrom" visibility="public" procflags="class">
+                </methodref>
+                <methodref name="MethodAddress" visibility="public" procflags="class overload">
+                </methodref>
+                <methodref name="MethodAddress" visibility="public" procflags="class overload">
+                </methodref>
+                <methodref name="MethodName" visibility="public" procflags="class">
+                </methodref>
+                <methodref name="QualifiedClassName" visibility="public" procflags="class">
+                </methodref>
+                <methodref name="FieldAddress" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="FieldAddress" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="GetInterface" visibility="public">
+                </methodref>
+                <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+                </methodref>
+                <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+                </methodref>
+                <methodref name="UnitName" visibility="public" procflags="class">
+                </methodref>
+                <methodref name="UnitScope" visibility="public" procflags="class">
+                </methodref>
+                <methodref name="Equals" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="GetHashCode" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="ToString" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="SafeCallException" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="Dispatch" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="NewInstance" visibility="public" procflags="class virtual">
+                </methodref>
+                <methodref name="FreeInstance" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+                </methodref>
+                <methodref name="GetDisposed" visibility="protected" procflags="inline">
+                </methodref>
+                <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+                </methodref>
+                <propertyref name="Disposed" visibility="protected">
+                </propertyref>
+              </ancestor>
+            </ancestor>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <procedure name="SetSoilWaterMod" visibility="private" file="UHumeWheatDryMatter.pas" line="61">
+        <parameters>
+          <parameter name="SoilWaterMod" type="TSoilWaterModelR" />
+        </parameters>
+      </procedure>
+      <procedure name="ReCalcDailyMeanTemperature" visibility="private" file="UHumeWheatDryMatter.pas" line="62">
+      </procedure>
+      <procedure name="CalcDroughtImpact" visibility="private" file="UHumeWheatDryMatter.pas" line="63">
+      </procedure>
+      <field name="fSoilWaterModel" type="TSoilWaterModelR" visibility="protected" size="4" offset="648" file="UHumeWheatDryMatter.pas" line="66" />
+      <field name="fDroughtImpact" type="TDroughtImpact" visibility="protected" size="1" offset="652" file="UHumeWheatDryMatter.pas" line="67" />
+      <field name="fNImpact" type="Boolean" visibility="protected" size="1" offset="653" file="UHumeWheatDryMatter.pas" line="68" />
+      <function name="fT_WE" visibility="protected" file="UHumeWheatDryMatter.pas" line="70">
+        <parameters>
+          <parameter name="T" type="Double" />
+          <parameter name="Tmin" type="Double" />
+          <parameter name="Tmax" type="Double" />
+          <parameter name="Topt" type="Double" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <field name="CumPAR" type="TState" visibility="public" size="4" offset="656" file="UHumeWheatDryMatter.pas" line="72" />
+      <field name="CumCarbo" type="TState" visibility="public" size="4" offset="660" file="UHumeWheatDryMatter.pas" line="73">
+        <devnotes>
+           cumulative PAR uptake [MJ/m2]
+        </devnotes>
+      </field>
+      <field name="pSWDF" type="TPar" visibility="public" size="4" offset="664" file="UHumeWheatDryMatter.pas" line="76">
+        <devnotes>
+           cumulative assimilated production
+        </devnotes>
+      </field>
+      <field name="SLN_crit_int" type="TPar" visibility="public" size="4" offset="668" file="UHumeWheatDryMatter.pas" line="77">
+        <devnotes>
+           parameter for none linear relation between Tansratio and SWDF (Ferreyra 2003)
+        </devnotes>
+      </field>
+      <field name="SLN_crit_inc" type="TPar" visibility="public" size="4" offset="672" file="UHumeWheatDryMatter.pas" line="78" />
+      <field name="SLNI_a" type="TPar" visibility="public" size="4" offset="676" file="UHumeWheatDryMatter.pas" line="79" />
+      <field name="SLNI_b" type="TPar" visibility="public" size="4" offset="680" file="UHumeWheatDryMatter.pas" line="80" />
+      <field name="SLNI_c" type="TPar" visibility="public" size="4" offset="684" file="UHumeWheatDryMatter.pas" line="81" />
+      <field name="k_ini" type="TPar" visibility="public" size="4" offset="688" file="UHumeWheatDryMatter.pas" line="82" />
+      <field name="k_inc" type="TPar" visibility="public" size="4" offset="692" file="UHumeWheatDryMatter.pas" line="83" />
+      <field name="pLUE" type="TPar" visibility="public" size="4" offset="696" file="UHumeWheatDryMatter.pas" line="84" />
+      <field name="Tmin" type="TPar" visibility="public" size="4" offset="700" file="UHumeWheatDryMatter.pas" line="85" />
+      <field name="Topt1" type="TPar" visibility="public" size="4" offset="704" file="UHumeWheatDryMatter.pas" line="86" />
+      <field name="Topt2" type="TPar" visibility="public" size="4" offset="708" file="UHumeWheatDryMatter.pas" line="87" />
+      <field name="Topt_WE" type="TPar" visibility="public" size="4" offset="712" file="UHumeWheatDryMatter.pas" line="88" />
+      <field name="Tmax" type="TPar" visibility="public" size="4" offset="716" file="UHumeWheatDryMatter.pas" line="89" />
+      <field name="kPAR" type="TPar" visibility="public" size="4" offset="720" file="UHumeWheatDryMatter.pas" line="90" />
+      <field name="fCO2_scale" type="TPar" visibility="public" size="4" offset="724" file="UHumeWheatDryMatter.pas" line="91" />
+      <field name="fCO2" type="TPar" visibility="public" size="4" offset="728" file="UHumeWheatDryMatter.pas" line="92" />
+      <field name="fCWSI" type="TPar" visibility="public" size="4" offset="732" file="UHumeWheatDryMatter.pas" line="93" />
+      <field name="CiCompensation" type="TPar" visibility="public" size="4" offset="736" file="UHumeWheatDryMatter.pas" line="94">
+        <devnotes>
+           adjusting CO2-effect for drought stress level
+        </devnotes>
+      </field>
+      <field name="critTempDiff" type="TPar" visibility="public" size="4" offset="740" file="UHumeWheatDryMatter.pas" line="95" />
+      <field name="TmaxweightingF" type="TPar" visibility="public" size="4" offset="744" file="UHumeWheatDryMatter.pas" line="96">
+        <devnotes>
+           critical difference between max. and min. temp. for calculating Tmean
+        </devnotes>
+      </field>
+      <field name="CARBOred" type="TVar" visibility="public" size="4" offset="748" file="UHumeWheatDryMatter.pas" line="98">
+        <devnotes>
+          
+        </devnotes>
+      </field>
+      <field name="PAR" type="TVar" visibility="public" size="4" offset="752" file="UHumeWheatDryMatter.pas" line="99">
+        <devnotes>
+           Reduction factor for assimilation during ripening [0..1]
+        </devnotes>
+      </field>
+      <field name="kPar_eff" type="TVar" visibility="public" size="4" offset="756" file="UHumeWheatDryMatter.pas" line="100">
+        <devnotes>
+           Photosynthetic active radiation [MJ/(m2*d]
+        </devnotes>
+      </field>
+      <field name="fINT" type="TVar" visibility="public" size="4" offset="760" file="UHumeWheatDryMatter.pas" line="101">
+        <devnotes>
+           effective  Extinction coefficient
+        </devnotes>
+      </field>
+      <field name="SWDF" type="TVar" visibility="public" size="4" offset="764" file="UHumeWheatDryMatter.pas" line="102">
+        <devnotes>
+           fractional Interception of PAR
+        </devnotes>
+      </field>
+      <field name="SLNI" type="TVar" visibility="public" size="4" offset="768" file="UHumeWheatDryMatter.pas" line="103">
+        <devnotes>
+           Soil Water Deficit Factor [0..1]
+        </devnotes>
+      </field>
+      <field name="TempF" type="TVar" visibility="public" size="4" offset="772" file="UHumeWheatDryMatter.pas" line="104">
+        <devnotes>
+           SLN based N nutrition index (see Raten &amp; Kage 2015)
+        </devnotes>
+      </field>
+      <field name="Tempf_surface" type="TVar" visibility="public" size="4" offset="776" file="UHumeWheatDryMatter.pas" line="105">
+        <devnotes>
+           Temperature Factor
+        </devnotes>
+      </field>
+      <field name="CARBO" type="TVar" visibility="public" size="4" offset="780" file="UHumeWheatDryMatter.pas" line="107">
+        <devnotes>
+           Temperature Factor
+        </devnotes>
+      </field>
+      <field name="PCARB" type="TVar" visibility="public" size="4" offset="784" file="UHumeWheatDryMatter.pas" line="108">
+        <devnotes>
+           The daily biomass production [g/(plant*d)]
+        </devnotes>
+      </field>
+      <field name="LUE" type="TVar" visibility="public" size="4" offset="788" file="UHumeWheatDryMatter.pas" line="109">
+        <devnotes>
+           Potential biomass production in [g/(m2*d)]
+        </devnotes>
+      </field>
+      <field name="SLN_crit" type="TVar" visibility="public" size="4" offset="792" file="UHumeWheatDryMatter.pas" line="110">
+        <devnotes>
+           Light use efficiency [g/MJ]
+        </devnotes>
+      </field>
+      <field name="CO2_factor" type="TVar" visibility="public" size="4" offset="796" file="UHumeWheatDryMatter.pas" line="111">
+        <devnotes>
+           according to Ratjen &amp; Kage 2015
+        </devnotes>
+      </field>
+      <field name="IPAR" type="TVar" visibility="public" size="4" offset="800" file="UHumeWheatDryMatter.pas" line="112">
+        <devnotes>
+           factor for adjusting LUE for CO2-effect
+        </devnotes>
+      </field>
+      <field name="EC" type="TExternV" visibility="public" size="4" offset="804" file="UHumeWheatDryMatter.pas" line="113">
+        <devnotes>
+           intercepted photosynthetically active radiation [MJ/(m2*d)]
+        </devnotes>
+      </field>
+      <field name="Ncleaf" type="TExternV" visibility="public" size="4" offset="808" file="UHumeWheatDryMatter.pas" line="114" />
+      <field name="SLN" type="TExternV" visibility="public" size="4" offset="812" file="UHumeWheatDryMatter.pas" line="115">
+        <devnotes>
+           actual nitrogen concentration of the leaf fraction [%%]
+        </devnotes>
+      </field>
+      <field name="GAI" type="TExternV" visibility="public" size="4" offset="816" file="UHumeWheatDryMatter.pas" line="116">
+        <devnotes>
+           actual area related nitrogen concentration of the leaf fraction [g/m2]
+        </devnotes>
+      </field>
+      <field name="TMPM" type="TExternV" visibility="public" size="4" offset="820" file="UHumeWheatDryMatter.pas" line="117">
+        <devnotes>
+           green area index [m2/m2]
+        </devnotes>
+      </field>
+      <field name="TMPMX" type="TExternV" visibility="public" size="4" offset="824" file="UHumeWheatDryMatter.pas" line="118">
+        <devnotes>
+           mean daily temperature [°C]
+        </devnotes>
+      </field>
+      <field name="TMPMN" type="TExternV" visibility="public" size="4" offset="828" file="UHumeWheatDryMatter.pas" line="119">
+        <devnotes>
+           maximum daily temperature [°C]
+        </devnotes>
+      </field>
+      <field name="DryMatterTemp" type="TExternV" visibility="public" size="4" offset="832" file="UHumeWheatDryMatter.pas" line="120">
+        <devnotes>
+           miniimum daily temperature [°C]
+        </devnotes>
+      </field>
+      <field name="LAI" type="TExternV" visibility="public" size="4" offset="836" file="UHumeWheatDryMatter.pas" line="121">
+        <devnotes>
+           'weighted surface temp.'
+        </devnotes>
+      </field>
+      <field name="GlobRad" type="TExternV" visibility="public" size="4" offset="840" file="UHumeWheatDryMatter.pas" line="122">
+        <devnotes>
+             leaf area index
+        </devnotes>
+      </field>
+      <field name="Plants" type="TExternV" visibility="public" size="4" offset="844" file="UHumeWheatDryMatter.pas" line="123">
+        <devnotes>
+             global radiation [MJ/m2/d]
+        </devnotes>
+      </field>
+      <field name="TransIntRatio" type="TExternV" visibility="public" size="4" offset="848" file="UHumeWheatDryMatter.pas" line="124">
+        <devnotes>
+                  number of Plants/m2 [1/m²]
+        </devnotes>
+      </field>
+      <field name="CO2pp" type="TExternV" visibility="public" size="4" offset="852" file="UHumeWheatDryMatter.pas" line="125">
+        <devnotes>
+           ratio of actual to potential transpiration+interception
+        </devnotes>
+      </field>
+      <field name="optSLN" type="TExternV" visibility="public" size="4" offset="856" file="UHumeWheatDryMatter.pas" line="126">
+        <devnotes>
+           external atmospheric CO2-concentration
+        </devnotes>
+      </field>
+      <field name="SWMIN_pl" type="TExternV" visibility="public" size="4" offset="860" file="UHumeWheatDryMatter.pas" line="127">
+        <devnotes>
+            optimum specific leaf nitrogen concentration
+        </devnotes>
+      </field>
+      <field name="STMWT_pl" type="TExternV" visibility="public" size="4" offset="864" file="UHumeWheatDryMatter.pas" line="128">
+        <devnotes>
+           minimum stem weight for calculation of translocation and senescence
+        </devnotes>
+      </field>
+      <field name="SUMDTT5" type="TExternV" visibility="public" size="4" offset="868" file="UHumeWheatDryMatter.pas" line="129">
+        <devnotes>
+           stem weight per plant
+        </devnotes>
+      </field>
+      <field name="P5" type="TExternV" visibility="public" size="4" offset="872" file="UHumeWheatDryMatter.pas" line="130">
+        <devnotes>
+           temperature sum 5 starting from stage
+        </devnotes>
+      </field>
+      <field name="SUMGRHI" type="Double" visibility="public" size="8" offset="880" file="UHumeWheatDryMatter.pas" line="132">
+        <devnotes>
+           development parameter for stage 5 from CERES Wheat
+          
+        </devnotes>
+      </field>
+      <field name="k_" type="Double" visibility="public" size="8" offset="888" file="UHumeWheatDryMatter.pas" line="133" />
+      <field name="SUMTEMPHI" type="Double" visibility="public" size="8" offset="896" file="UHumeWheatDryMatter.pas" line="134" />
+      <field name="OptDroughtimpact" type="TOption" visibility="public" size="4" offset="904" file="UHumeWheatDryMatter.pas" line="137" />
+      <field name="OptNimpact" type="TOption" visibility="public" size="4" offset="908" file="UHumeWheatDryMatter.pas" line="138" />
+      <field name="OptWithCO2" type="TOption" visibility="public" size="4" offset="912" file="UHumeWheatDryMatter.pas" line="139" />
+      <procedure name="CreateAll" visibility="public" procflags="override" file="UHumeWheatDryMatter.pas" line="140">
+      </procedure>
+      <procedure name="Init" visibility="public" procflags="override" file="UHumeWheatDryMatter.pas" line="141">
+        <parameters>
+          <parameter name="GlobMod" type="TMod" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="CalcRates" visibility="public" procflags="override" file="UHumeWheatDryMatter.pas" line="142">
+      </procedure>
+      <procedure name="Integrate" visibility="public" procflags="override" file="UHumeWheatDryMatter.pas" line="143">
+      </procedure>
+      <property name="Ex_TMPM" visibility="published" read="TMPM" write="TMPM" type="TExternV" file="UHumeWheatDryMatter.pas" line="146" />
+      <property name="Ex_EC" visibility="published" read="EC" write="EC" type="TExternV" file="UHumeWheatDryMatter.pas" line="147" />
+      <property name="Ex_TransIntRatio" visibility="published" read="TransIntRatio" write="TransIntRatio" type="TExternV" file="UHumeWheatDryMatter.pas" line="148" />
+      <property name="Ex_CO2pp" visibility="published" read="CO2pp" write="CO2pp" type="TExternV" file="UHumeWheatDryMatter.pas" line="149" />
+      <property name="Ex_Ncleaf" visibility="published" read="Ncleaf" write="Ncleaf" type="TExternV" file="UHumeWheatDryMatter.pas" line="150" />
+      <property name="Ex_SLN" visibility="published" read="SLN" write="SLN" type="TExternV" file="UHumeWheatDryMatter.pas" line="151" />
+      <property name="Ex_GAI" visibility="published" read="GAI" write="GAI" type="TExternV" file="UHumeWheatDryMatter.pas" line="152" />
+      <property name="Ex_Plants" visibility="published" read="Plants" write="Plants" type="TExternV" file="UHumeWheatDryMatter.pas" line="153" />
+      <property name="Ex_DryMatterTemp" visibility="published" read="DryMatterTemp" write="DryMatterTemp" type="TExternV" file="UHumeWheatDryMatter.pas" line="154" />
+      <property name="Ex_LAI" visibility="published" read="LAI" write="LAI" type="TExternV" file="UHumeWheatDryMatter.pas" line="155" />
+      <property name="Ex_GlobRad" visibility="published" read="GlobRad" write="GlobRad" type="TExternV" file="UHumeWheatDryMatter.pas" line="156" />
+      <property name="Ex_TMPMX" visibility="published" read="TMPMX" write="TMPMX" type="TExternV" file="UHumeWheatDryMatter.pas" line="157" />
+      <property name="Ex_TMPMN" visibility="published" read="TMPMN" write="TMPMN" type="TExternV" file="UHumeWheatDryMatter.pas" line="158" />
+      <property name="Ex_optSLN" visibility="published" read="optSLN" write="optSLN" type="TExternV" file="UHumeWheatDryMatter.pas" line="159" />
+      <property name="Ex_SWMIN_pl" visibility="published" read="SWMIN_pl" write="SWMIN_pl" type="TExternV" file="UHumeWheatDryMatter.pas" line="160" />
+      <property name="Ex_STMWT_pl" visibility="published" read="STMWT_pl" write="STMWT_pl" type="TExternV" file="UHumeWheatDryMatter.pas" line="161" />
+      <property name="Ex_SUMDTT5" visibility="published" read="SUMDTT5" write="SUMDTT5" type="TExternV" file="UHumeWheatDryMatter.pas" line="162" />
+      <property name="Ex_P5" visibility="published" read="P5" write="P5" type="TExternV" file="UHumeWheatDryMatter.pas" line="163" />
+      <property name="opt_DroughtImpact" visibility="published" read="fDroughtImpact" write="fDroughtImpact" type="TDroughtImpact" file="UHumeWheatDryMatter.pas" line="165" />
+      <property name="SoilWaterModel" visibility="published" read="fSoilWaterModel" write="SetSoilWaterMod" type="TSoilWaterModelR" file="UHumeWheatDryMatter.pas" line="166" />
+    </members>
+  </class>
+  <procedure name="Register" visibility="public" file="UHumeWheatDryMatter.pas" line="450">
+  </procedure>
+</namespace>

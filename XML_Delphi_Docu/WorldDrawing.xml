@@ -1,0 +1,1249 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="WorldDrawing" platform="Win32">
+  <const name="nkPrincipal" type="TNormalKind" file="WorldDrawing.pas" line="108">
+    <value>
+      nkPrincipal
+    </value>
+  </const>
+  <const name="nkSecondary" type="TNormalKind" file="WorldDrawing.pas" line="108">
+    <value>
+      nkSecondary
+    </value>
+  </const>
+  <type name="MathFloat" type="Double" file="System.pas" line="12" />
+  <pointer name="PFloatPoint" type="TFloatpoint" indircnt="1" file="WorldDrawing.pas" line="24" />
+  <struct name="TFloatpoint" size="16" file="WorldDrawing.pas" line="25">
+    <field name="x" type="Double" visibility="public" size="8" offset="0" file="WorldDrawing.pas" line="26" />
+    <field name="y" type="Double" visibility="public" size="8" offset="8" file="WorldDrawing.pas" line="26" />
+  </struct>
+  <array name="TFloatPointArray" file="WorldDrawing.pas" line="29">
+    <element type="TFloatpoint" />
+  </array>
+  <pointer name="PD3FloatPoint" type="TD3FloatPoint" indircnt="1" file="WorldDrawing.pas" line="31" />
+  <struct name="TD3FloatPoint" size="24" file="WorldDrawing.pas" line="32">
+    <field name="x" type="Double" visibility="public" size="8" offset="0" file="WorldDrawing.pas" line="33" />
+    <field name="y" type="Double" visibility="public" size="8" offset="8" file="WorldDrawing.pas" line="33" />
+    <field name="z" type="Double" visibility="public" size="8" offset="16" file="WorldDrawing.pas" line="33" />
+  </struct>
+  <pointer name="POldFloatPoint" type="TOldFloatpoint" indircnt="1" file="WorldDrawing.pas" line="36" />
+  <struct name="TOldFloatpoint" size="24" file="WorldDrawing.pas" line="37">
+    <field name="x" type="Double" visibility="public" size="8" offset="0" file="WorldDrawing.pas" line="38" />
+    <field name="y" type="Double" visibility="public" size="8" offset="8" file="WorldDrawing.pas" line="38" />
+    <field name="Next" type="POldFloatPoint" visibility="public" size="4" offset="16" file="WorldDrawing.pas" line="39" />
+  </struct>
+  <pointer name="POldD3FloatPoint" type="TOldD3FloatPoint" indircnt="1" file="WorldDrawing.pas" line="43" />
+  <struct name="TOldD3FloatPoint" size="32" file="WorldDrawing.pas" line="44">
+    <field name="x" type="Double" visibility="public" size="8" offset="0" file="WorldDrawing.pas" line="45" />
+    <field name="y" type="Double" visibility="public" size="8" offset="8" file="WorldDrawing.pas" line="45" />
+    <field name="z" type="Double" visibility="public" size="8" offset="16" file="WorldDrawing.pas" line="45" />
+    <field name="Next" type="POldD3FloatPoint" visibility="public" size="4" offset="24" file="WorldDrawing.pas" line="46" />
+  </struct>
+  <array name="Td3FloatPointArray" file="WorldDrawing.pas" line="49">
+    <element type="TD3FloatPoint" />
+  </array>
+  <array name="TColorArray" file="WorldDrawing.pas" line="51">
+    <element type="TColor" />
+  </array>
+  <array name="TFloatarray" file="WorldDrawing.pas" line="53">
+    <element type="Double" />
+  </array>
+  <struct name="TD3FloatPointers" size="12" file="WorldDrawing.pas" line="56">
+    <field name="px" visibility="public" size="4" offset="0" file="WorldDrawing.pas" line="57">
+      <pointer name="px" type="Double" indircnt="1" />
+    </field>
+    <field name="py" visibility="public" size="4" offset="4" file="WorldDrawing.pas" line="57">
+      <pointer name="py" type="Double" indircnt="1" />
+    </field>
+    <field name="pz" visibility="public" size="4" offset="8" file="WorldDrawing.pas" line="57">
+      <pointer name="pz" type="Double" indircnt="1" />
+    </field>
+  </struct>
+  <struct name="TD3Triangle" size="48" file="WorldDrawing.pas" line="60">
+    <field name="p" type="PD3FloatPoint" visibility="public" size="4" offset="0" file="WorldDrawing.pas" line="61" />
+    <field name="q" type="PD3FloatPoint" visibility="public" size="4" offset="4" file="WorldDrawing.pas" line="61" />
+    <field name="r" type="PD3FloatPoint" visibility="public" size="4" offset="8" file="WorldDrawing.pas" line="61" />
+    <field name="n" type="TD3FloatPoint" visibility="public" size="24" offset="16" file="WorldDrawing.pas" line="62" />
+    <field name="FillColor" visibility="public" size="4" offset="40" file="WorldDrawing.pas" line="63">
+      <pointer name="FillColor" type="TColor" indircnt="1" />
+    </field>
+    <field name="WireColor" visibility="public" size="4" offset="44" file="WorldDrawing.pas" line="63">
+      <pointer name="WireColor" type="TColor" indircnt="1" />
+    </field>
+  </struct>
+  <array name="TD3TriangleArray" file="WorldDrawing.pas" line="66">
+    <element type="TD3Triangle" />
+  </array>
+  <struct name="TD3SurfaceCell" size="24" file="WorldDrawing.pas" line="68">
+    <field name="p" type="PD3FloatPoint" visibility="public" size="4" offset="0" file="WorldDrawing.pas" line="69" />
+    <field name="q" type="PD3FloatPoint" visibility="public" size="4" offset="4" file="WorldDrawing.pas" line="69" />
+    <field name="r" type="PD3FloatPoint" visibility="public" size="4" offset="8" file="WorldDrawing.pas" line="69" />
+    <field name="s" type="PD3FloatPoint" visibility="public" size="4" offset="12" file="WorldDrawing.pas" line="69" />
+    <field name="FillColor" visibility="public" size="4" offset="16" file="WorldDrawing.pas" line="70">
+      <pointer name="FillColor" type="TColor" indircnt="1" />
+    </field>
+    <field name="WireColor" visibility="public" size="4" offset="20" file="WorldDrawing.pas" line="70">
+      <pointer name="WireColor" type="TColor" indircnt="1" />
+    </field>
+  </struct>
+  <struct name="TCube" size="248" file="WorldDrawing.pas" line="73">
+    <field name="x1" type="Double" visibility="public" size="8" offset="0" file="WorldDrawing.pas" line="75" />
+    <field name="y1" type="Double" visibility="public" size="8" offset="8" file="WorldDrawing.pas" line="75" />
+    <field name="z1" type="Double" visibility="public" size="8" offset="16" file="WorldDrawing.pas" line="75" />
+    <field name="x2" type="Double" visibility="public" size="8" offset="24" file="WorldDrawing.pas" line="75" />
+    <field name="y2" type="Double" visibility="public" size="8" offset="32" file="WorldDrawing.pas" line="75" />
+    <field name="z2" type="Double" visibility="public" size="8" offset="40" file="WorldDrawing.pas" line="75" />
+    <field name="p1" type="TD3FloatPoint" visibility="public" size="24" offset="48" file="WorldDrawing.pas" line="76" />
+    <field name="p2" type="TD3FloatPoint" visibility="public" size="24" offset="72" file="WorldDrawing.pas" line="76" />
+    <field name="p3" type="TD3FloatPoint" visibility="public" size="24" offset="96" file="WorldDrawing.pas" line="76" />
+    <field name="p4" type="TD3FloatPoint" visibility="public" size="24" offset="120" file="WorldDrawing.pas" line="76" />
+    <field name="p5" type="TD3FloatPoint" visibility="public" size="24" offset="144" file="WorldDrawing.pas" line="76" />
+    <field name="p6" type="TD3FloatPoint" visibility="public" size="24" offset="168" file="WorldDrawing.pas" line="76" />
+    <field name="p7" type="TD3FloatPoint" visibility="public" size="24" offset="192" file="WorldDrawing.pas" line="76" />
+    <field name="p8" type="TD3FloatPoint" visibility="public" size="24" offset="216" file="WorldDrawing.pas" line="76" />
+    <field name="FillColor" type="TColor" visibility="public" size="4" offset="240" file="WorldDrawing.pas" line="77" />
+    <field name="WireColor" type="TColor" visibility="public" size="4" offset="244" file="WorldDrawing.pas" line="77" />
+  </struct>
+  <array name="Td3FloatPointerArray" file="WorldDrawing.pas" line="80">
+    <element type="TD3FloatPointers" />
+  </array>
+  <pointer name="P4Cell" type="T4Cell" indircnt="1" file="WorldDrawing.pas" line="82" />
+  <struct name="T4Cell" size="48" file="WorldDrawing.pas" line="83">
+    <field name="Vertex" visibility="public" size="32" offset="0" file="WorldDrawing.pas" line="84">
+      <array name="Vertex" visibility="public" low="0" high="3" file="WorldDrawing.pas" line="84">
+        <element type="TPoint" />
+      </array>
+    </field>
+    <field name="dist" type="Double" visibility="public" size="8" offset="32" file="WorldDrawing.pas" line="85" />
+    <field name="FillColor" type="TColor" visibility="public" size="4" offset="40" file="WorldDrawing.pas" line="86" />
+    <field name="WireColor" type="TColor" visibility="public" size="4" offset="44" file="WorldDrawing.pas" line="86" />
+  </struct>
+  <pointer name="P3Cell" type="T3Cell" indircnt="1" file="WorldDrawing.pas" line="89" />
+  <struct name="T3Cell" size="56" file="WorldDrawing.pas" line="90">
+    <field name="Vertex" visibility="public" size="24" offset="0" file="WorldDrawing.pas" line="91">
+      <array name="Vertex" visibility="public" low="0" high="2" file="WorldDrawing.pas" line="91">
+        <element type="TPoint" />
+      </array>
+    </field>
+    <field name="dist" type="Double" visibility="public" size="8" offset="24" file="WorldDrawing.pas" line="92" />
+    <field name="BDiff" type="Double" visibility="public" size="8" offset="32" file="WorldDrawing.pas" line="92" />
+    <field name="BSpec" type="Double" visibility="public" size="8" offset="40" file="WorldDrawing.pas" line="92" />
+    <field name="FillColor" type="TColor" visibility="public" size="4" offset="48" file="WorldDrawing.pas" line="93" />
+    <field name="WireColor" type="TColor" visibility="public" size="4" offset="52" file="WorldDrawing.pas" line="93" />
+  </struct>
+  <array name="TPointArray" file="WorldDrawing.pas" line="96">
+    <element type="TPoint" />
+  </array>
+  <struct name="Td3LineSegment" size="80" file="WorldDrawing.pas" line="98">
+    <field name="p" type="PD3FloatPoint" visibility="public" size="4" offset="0" file="WorldDrawing.pas" line="99" />
+    <field name="q" type="PD3FloatPoint" visibility="public" size="4" offset="4" file="WorldDrawing.pas" line="99" />
+    <field name="N1" type="TD3FloatPoint" visibility="public" size="24" offset="8" file="WorldDrawing.pas" line="100" />
+    <field name="N2" type="TD3FloatPoint" visibility="public" size="24" offset="32" file="WorldDrawing.pas" line="100" />
+    <field name="dist" type="Double" visibility="public" size="8" offset="56" file="WorldDrawing.pas" line="101" />
+    <field name="Color" type="TColor" visibility="public" size="4" offset="64" file="WorldDrawing.pas" line="102" />
+    <field name="Width" type="Double" visibility="public" size="8" offset="72" file="WorldDrawing.pas" line="103" />
+  </struct>
+  <array name="Td3LineSegmentArray" file="WorldDrawing.pas" line="106">
+    <element type="Td3LineSegment" />
+  </array>
+  <enum name="TNormalKind" file="WorldDrawing.pas" line="108">
+    <element value="0" name="nkPrincipal" file="WorldDrawing.pas" line="108" />
+    <element value="1" name="nkSecondary" file="WorldDrawing.pas" line="108" />
+  </enum>
+  <class name="TLightSource" file="WorldDrawing.pas" line="110">
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public" procflags="inline">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="QualifiedClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitScope" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+      <methodref name="GetDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <propertyref name="Disposed" visibility="protected">
+      </propertyref>
+    </ancestor>
+    <members>
+      <field name="fSourcePoint" type="TD3FloatPoint" visibility="private" size="24" offset="8" file="WorldDrawing.pas" line="112" />
+      <field name="fViewAngles" type="TFloatpoint" visibility="private" size="16" offset="32" file="WorldDrawing.pas" line="113" />
+      <field name="fyrot" type="Double" visibility="private" size="8" offset="48" file="WorldDrawing.pas" line="114" />
+      <field name="fzrot" type="Double" visibility="private" size="8" offset="56" file="WorldDrawing.pas" line="114" />
+      <field name="fdist" type="Double" visibility="private" size="8" offset="64" file="WorldDrawing.pas" line="114" />
+      <field name="fFixed" type="Boolean" visibility="private" size="1" offset="72" file="WorldDrawing.pas" line="115" />
+      <procedure name="SetYRot" visibility="private" file="WorldDrawing.pas" line="116">
+        <parameters>
+          <parameter name="Value" type="Integer" />
+        </parameters>
+      </procedure>
+      <procedure name="SetZRot" visibility="private" file="WorldDrawing.pas" line="117">
+        <parameters>
+          <parameter name="Value" type="Integer" />
+        </parameters>
+      </procedure>
+      <function name="GetYRot" visibility="private" file="WorldDrawing.pas" line="118">
+        <parameters>
+          <retval type="Integer" />
+        </parameters>
+      </function>
+      <function name="GetZRot" visibility="private" file="WorldDrawing.pas" line="119">
+        <parameters>
+          <retval type="Integer" />
+        </parameters>
+      </function>
+      <procedure name="SetDist" visibility="private" file="WorldDrawing.pas" line="120">
+        <parameters>
+          <parameter name="Value" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="SetViewAngles" visibility="private" file="WorldDrawing.pas" line="121">
+        <parameters>
+          <parameter name="Value" type="TFloatpoint" />
+        </parameters>
+      </procedure>
+      <procedure name="InitSourcePoint" visibility="private" file="WorldDrawing.pas" line="122">
+      </procedure>
+      <property name="YRotation" visibility="public" read="GetYRot" write="SetYRot" type="Integer" file="WorldDrawing.pas" line="124" />
+      <property name="ZRotation" visibility="public" read="GetZRot" write="SetZRot" type="Integer" file="WorldDrawing.pas" line="125" />
+      <property name="dist" visibility="public" read="fdist" write="SetDist" type="Double" default="0" file="WorldDrawing.pas" line="126" />
+      <property name="fixed" visibility="public" read="fFixed" write="fFixed" type="Boolean" file="WorldDrawing.pas" line="127" />
+      <property name="ViewAngles" visibility="public" read="fViewAngles" write="SetViewAngles" type="TFloatpoint" file="WorldDrawing.pas" line="128" />
+      <property name="SourcePoint" visibility="public" read="fSourcePoint" type="TD3FloatPoint" file="WorldDrawing.pas" line="129" />
+    </members>
+  </class>
+  <class name="TWorldDrawing" file="WorldDrawing.pas" line="141">
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public" procflags="inline">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="QualifiedClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitScope" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+      <methodref name="GetDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <propertyref name="Disposed" visibility="protected">
+      </propertyref>
+    </ancestor>
+    <members>
+      <field name="fwidth" type="Integer" visibility="private" size="4" offset="4" file="WorldDrawing.pas" line="145" />
+      <field name="fHeight" type="Integer" visibility="private" size="4" offset="8" file="WorldDrawing.pas" line="145" />
+      <field name="fd2x1" type="Double" visibility="private" size="8" offset="16" file="WorldDrawing.pas" line="148" />
+      <field name="fd2xw" type="Double" visibility="private" size="8" offset="24" file="WorldDrawing.pas" line="148" />
+      <field name="fd2y1" type="Double" visibility="private" size="8" offset="32" file="WorldDrawing.pas" line="148" />
+      <field name="fd2yw" type="Double" visibility="private" size="8" offset="40" file="WorldDrawing.pas" line="148" />
+      <field name="fd2Axes" type="Boolean" visibility="private" size="1" offset="48" file="WorldDrawing.pas" line="151" />
+      <field name="fmaxxtw" type="Integer" visibility="private" size="4" offset="52" file="WorldDrawing.pas" line="154" />
+      <field name="fmaxytw" type="Integer" visibility="private" size="4" offset="56" file="WorldDrawing.pas" line="154" />
+      <field name="fmaxth" type="Integer" visibility="private" size="4" offset="60" file="WorldDrawing.pas" line="154" />
+      <field name="fd3ar" type="Boolean" visibility="private" size="1" offset="64" file="WorldDrawing.pas" line="155" />
+      <field name="fd3x1" type="Double" visibility="private" size="8" offset="72" file="WorldDrawing.pas" line="158" />
+      <field name="fd3xw" type="Double" visibility="private" size="8" offset="80" file="WorldDrawing.pas" line="158" />
+      <field name="fd3y1" type="Double" visibility="private" size="8" offset="88" file="WorldDrawing.pas" line="158" />
+      <field name="fd3yw" type="Double" visibility="private" size="8" offset="96" file="WorldDrawing.pas" line="158" />
+      <field name="fd3z1" type="Double" visibility="private" size="8" offset="104" file="WorldDrawing.pas" line="158" />
+      <field name="fd3zw" type="Double" visibility="private" size="8" offset="112" file="WorldDrawing.pas" line="158" />
+      <field name="fd3alpha" type="Double" visibility="private" size="8" offset="120" file="WorldDrawing.pas" line="161" />
+      <field name="fd3vd" type="Double" visibility="private" size="8" offset="128" file="WorldDrawing.pas" line="161" />
+      <field name="fd3vdinv" type="Double" visibility="private" size="8" offset="136" file="WorldDrawing.pas" line="161" />
+      <field name="fd3zr" type="Double" visibility="private" size="8" offset="144" file="WorldDrawing.pas" line="164" />
+      <field name="fd3yr" type="Double" visibility="private" size="8" offset="152" file="WorldDrawing.pas" line="164" />
+      <field name="fd3ViewPoint" type="TD3FloatPoint" visibility="private" size="24" offset="160" file="WorldDrawing.pas" line="167" />
+      <field name="fd3ViewAngles" type="TFloatpoint" visibility="private" size="16" offset="184" file="WorldDrawing.pas" line="170" />
+      <field name="fd3L1" type="TLightSource" visibility="private" size="4" offset="200" file="WorldDrawing.pas" line="172" />
+      <field name="fd3L2" type="TLightSource" visibility="private" size="4" offset="204" file="WorldDrawing.pas" line="172" />
+      <field name="fd3xScale" type="Double" visibility="private" size="8" offset="208" file="WorldDrawing.pas" line="174" />
+      <field name="fd3yScale" type="Double" visibility="private" size="8" offset="216" file="WorldDrawing.pas" line="174" />
+      <field name="fd3zScale" type="Double" visibility="private" size="8" offset="224" file="WorldDrawing.pas" line="174" />
+      <field name="fClipRect" type="TRect" visibility="private" size="16" offset="232" file="WorldDrawing.pas" line="177" />
+      <field name="ax" type="Double" visibility="private" size="8" offset="248" file="WorldDrawing.pas" line="180" />
+      <field name="bx" type="Double" visibility="private" size="8" offset="256" file="WorldDrawing.pas" line="180" />
+      <field name="ay" type="Double" visibility="private" size="8" offset="264" file="WorldDrawing.pas" line="180" />
+      <field name="by" type="Double" visibility="private" size="8" offset="272" file="WorldDrawing.pas" line="180" />
+      <field name="axinv" type="Double" visibility="private" size="8" offset="280" file="WorldDrawing.pas" line="180" />
+      <field name="ayinv" type="Double" visibility="private" size="8" offset="288" file="WorldDrawing.pas" line="180" />
+      <field name="x1Snap" type="Double" visibility="private" size="8" offset="296" file="WorldDrawing.pas" line="180" />
+      <field name="x2Snap" type="Double" visibility="private" size="8" offset="304" file="WorldDrawing.pas" line="180" />
+      <field name="y1Snap" type="Double" visibility="private" size="8" offset="312" file="WorldDrawing.pas" line="180" />
+      <field name="y2Snap" type="Double" visibility="private" size="8" offset="320" file="WorldDrawing.pas" line="180" />
+      <field name="basex" type="Double" visibility="private" size="8" offset="328" file="WorldDrawing.pas" line="181" />
+      <field name="basey" type="Double" visibility="private" size="8" offset="336" file="WorldDrawing.pas" line="181" />
+      <field name="basez" type="Double" visibility="private" size="8" offset="344" file="WorldDrawing.pas" line="181" />
+      <field name="frontx" type="Double" visibility="private" size="8" offset="352" file="WorldDrawing.pas" line="181" />
+      <field name="fronty" type="Double" visibility="private" size="8" offset="360" file="WorldDrawing.pas" line="181" />
+      <field name="frontz" type="Double" visibility="private" size="8" offset="368" file="WorldDrawing.pas" line="181" />
+      <field name="arad" type="Double" visibility="private" size="8" offset="376" file="WorldDrawing.pas" line="182" />
+      <field name="tana" type="Double" visibility="private" size="8" offset="384" file="WorldDrawing.pas" line="182" />
+      <field name="thetaz" type="Double" visibility="private" size="8" offset="392" file="WorldDrawing.pas" line="182" />
+      <field name="thetay" type="Double" visibility="private" size="8" offset="400" file="WorldDrawing.pas" line="182" />
+      <field name="sinz" type="Double" visibility="private" size="8" offset="408" file="WorldDrawing.pas" line="182" />
+      <field name="siny" type="Double" visibility="private" size="8" offset="416" file="WorldDrawing.pas" line="182" />
+      <field name="cosz" type="Double" visibility="private" size="8" offset="424" file="WorldDrawing.pas" line="182" />
+      <field name="cosy" type="Double" visibility="private" size="8" offset="432" file="WorldDrawing.pas" line="182" />
+      <field name="coszinv" type="Double" visibility="private" size="8" offset="440" file="WorldDrawing.pas" line="182" />
+      <field name="sinyinv" type="Double" visibility="private" size="8" offset="448" file="WorldDrawing.pas" line="183" />
+      <field name="cosyinv" type="Double" visibility="private" size="8" offset="456" file="WorldDrawing.pas" line="183" />
+      <field name="axd3" type="Double" visibility="private" size="8" offset="464" file="WorldDrawing.pas" line="184" />
+      <field name="ayd3" type="Double" visibility="private" size="8" offset="472" file="WorldDrawing.pas" line="184" />
+      <field name="azd3" type="Double" visibility="private" size="8" offset="480" file="WorldDrawing.pas" line="184" />
+      <field name="axd3Inv" type="Double" visibility="private" size="8" offset="488" file="WorldDrawing.pas" line="184" />
+      <field name="ayd3Inv" type="Double" visibility="private" size="8" offset="496" file="WorldDrawing.pas" line="184" />
+      <field name="azd3Inv" type="Double" visibility="private" size="8" offset="504" file="WorldDrawing.pas" line="184" />
+      <field name="bxd3" type="Double" visibility="private" size="8" offset="512" file="WorldDrawing.pas" line="184" />
+      <field name="byd3" type="Double" visibility="private" size="8" offset="520" file="WorldDrawing.pas" line="184" />
+      <field name="bzd3" type="Double" visibility="private" size="8" offset="528" file="WorldDrawing.pas" line="184" />
+      <field name="ap" type="Double" visibility="private" size="8" offset="536" file="WorldDrawing.pas" line="184" />
+      <field name="bxp" type="Double" visibility="private" size="8" offset="544" file="WorldDrawing.pas" line="184" />
+      <field name="byp" type="Double" visibility="private" size="8" offset="552" file="WorldDrawing.pas" line="184" />
+      <field name="rightz" type="Double" visibility="private" size="8" offset="560" file="WorldDrawing.pas" line="185" />
+      <field name="righty" type="Double" visibility="private" size="8" offset="568" file="WorldDrawing.pas" line="185" />
+      <field name="fDefaultFillColor" type="TColor" visibility="private" size="4" offset="576" file="WorldDrawing.pas" line="186" />
+      <field name="fDefaultWireColor" type="TColor" visibility="private" size="4" offset="580" file="WorldDrawing.pas" line="186" />
+      <procedure name="scalar" visibility="private" file="WorldDrawing.pas" line="188">
+        <parameters>
+          <parameter name="xb" type="Double" />
+          <parameter name="yb" type="Double" />
+          <parameter name="zb" type="Double" />
+          <parameter name="r" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="Project" visibility="private" file="WorldDrawing.pas" line="189">
+        <parameters>
+          <parameter name="xb" type="Double" />
+          <parameter name="yb" type="Double" />
+          <parameter name="zb" type="Double" />
+          <parameter name="u" type="Double" paramflags="var" />
+          <parameter name="v" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="MakeScalings" visibility="private" file="WorldDrawing.pas" line="190">
+      </procedure>
+      <procedure name="dist" visibility="private" file="WorldDrawing.pas" line="191">
+        <parameters>
+          <parameter name="xb" type="Double" />
+          <parameter name="yb" type="Double" />
+          <parameter name="zb" type="Double" />
+          <parameter name="r" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="FindBase" visibility="private" file="WorldDrawing.pas" line="192">
+        <parameters>
+          <parameter name="i1" type="Integer" paramflags="var" />
+          <parameter name="i2" type="Integer" paramflags="var" />
+          <parameter name="i3" type="Integer" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="InitWorld" visibility="private" file="WorldDrawing.pas" line="193">
+      </procedure>
+      <procedure name="DrawOneAxis" visibility="private" file="WorldDrawing.pas" line="194">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="z1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+          <parameter name="z2" type="Double" />
+          <parameter name="Arrows" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="Block" visibility="private" file="WorldDrawing.pas" line="195">
+        <parameters>
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="z" type="Double" />
+          <parameter name="xb" type="Double" paramflags="var" />
+          <parameter name="yb" type="Double" paramflags="var" />
+          <parameter name="zb" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="ScaleNormal" visibility="private" file="WorldDrawing.pas" line="197">
+        <parameters>
+          <parameter name="v" type="TD3FloatPoint" paramflags="const" />
+          <parameter name="w" type="TD3FloatPoint" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawBaseAxes" visibility="private" file="WorldDrawing.pas" line="198">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="xLabel" type="string" />
+          <parameter name="yLabel" type="string" />
+          <parameter name="zLabel" type="string" />
+          <parameter name="xTicks" type="Byte" />
+          <parameter name="yTicks" type="Byte" />
+          <parameter name="zTicks" type="Byte" />
+          <parameter name="yx" type="Double" />
+          <parameter name="zx" type="Double" />
+          <parameter name="xy" type="Double" />
+          <parameter name="zy" type="Double" />
+          <parameter name="xz" type="Double" />
+          <parameter name="yz" type="Double" />
+          <parameter name="Arrows" type="Boolean">
+            <value>
+              True
+            </value>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3ResetWorld" visibility="protected" file="WorldDrawing.pas" line="204">
+      </procedure>
+      <procedure name="GetBrightness" visibility="protected" file="WorldDrawing.pas" line="205">
+        <parameters>
+          <parameter name="p" type="TD3FloatPoint" paramflags="const" />
+          <parameter name="n" type="TD3FloatPoint" paramflags="const" />
+          <parameter name="BDiff" type="Double" paramflags="var" />
+          <parameter name="BSpec" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="Draw4Cells" visibility="protected" file="WorldDrawing.pas" line="207">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Cells" paramflags="const">
+            <array name="Cells" file="WorldDrawing.pas" line="1828">
+              <element type="T4Cell" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawTriangles" visibility="protected" file="WorldDrawing.pas" line="208">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Triangles" paramflags="const">
+            <array name="Triangles" file="WorldDrawing.pas" line="1791">
+              <element type="TD3Triangle" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawSurfaceCells" visibility="protected" file="WorldDrawing.pas" line="209">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfaceCells" paramflags="const">
+            <array name="SurfaceCells" file="WorldDrawing.pas" line="1851">
+              <element type="TD3SurfaceCell" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLitTriangles" visibility="protected" file="WorldDrawing.pas" line="210">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Triangles" paramflags="const">
+            <array name="Triangles" file="WorldDrawing.pas" line="1696">
+              <element type="TD3Triangle" />
+            </array>
+          </parameter>
+          <parameter name="diffuse" type="Double" />
+          <parameter name="focussed" type="Double" />
+        </parameters>
+      </procedure>
+      <function name="DoorInDoorOut" visibility="protected" file="WorldDrawing.pas" line="211">
+        <parameters>
+          <parameter name="c" type="Double" />
+          <parameter name="xp" type="Double" />
+          <parameter name="yp" type="Double" />
+          <parameter name="xq" type="Double" />
+          <parameter name="yq" type="Double" />
+          <parameter name="xr" type="Double" />
+          <parameter name="yr" type="Double" />
+          <parameter name="p" type="Double" />
+          <parameter name="q" type="Double" />
+          <parameter name="r" type="Double" />
+          <parameter name="x1" type="Double" paramflags="var" />
+          <parameter name="y1" type="Double" paramflags="var" />
+          <parameter name="x2" type="Double" paramflags="var" />
+          <parameter name="y2" type="Double" paramflags="var" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <procedure name="DrawLevelLines" visibility="protected" file="WorldDrawing.pas" line="213">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Triangles" paramflags="const">
+            <array name="Triangles" file="WorldDrawing.pas" line="2805">
+              <element type="TD3Triangle" />
+            </array>
+          </parameter>
+          <parameter name="Level" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawLevelLine" visibility="protected" file="WorldDrawing.pas" line="214">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Triangle" type="TD3Triangle" />
+          <parameter name="Level" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawProjection" visibility="protected" file="WorldDrawing.pas" line="215">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Triangle" type="TD3Triangle" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawProjections" visibility="protected" file="WorldDrawing.pas" line="216">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Triangles" paramflags="const">
+            <array name="Triangles" file="WorldDrawing.pas" line="3022">
+              <element type="TD3Triangle" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="GetIlluminatedLinesegments" visibility="protected" file="WorldDrawing.pas" line="217">
+        <parameters>
+          <parameter name="AColor" type="TColor" />
+          <parameter name="diffuse" type="Double" />
+          <parameter name="focussed" type="Double" />
+          <parameter name="RightIntensity" type="Double" />
+          <parameter name="z1" type="Integer" />
+          <parameter name="z2" type="Integer" />
+          <parameter name="y1" type="Integer" />
+          <parameter name="y2" type="Integer" />
+          <parameter name="d1" type="Double" />
+          <parameter name="d2" type="Double" />
+          <parameter name="fixed" type="Boolean" />
+          <parameter name="l" type="Td3LineSegmentArray" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawLineSegments" visibility="protected" file="WorldDrawing.pas" line="219">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="l" type="Td3LineSegmentArray" />
+        </parameters>
+      </procedure>
+      <property name="AxesClipRect" visibility="public" read="fClipRect" type="TRect" file="WorldDrawing.pas" line="221" />
+      <constructor name="Create" visibility="public" file="WorldDrawing.pas" line="222">
+        <parameters>
+        </parameters>
+      </constructor>
+      <procedure name="SetScreen" visibility="public" file="WorldDrawing.pas" line="228">
+        <parameters>
+          <parameter name="AWidth" type="Integer" />
+          <parameter name="AHeight" type="Integer" />
+        </parameters>
+      </procedure>
+      <procedure name="SetWorld" visibility="public" file="WorldDrawing.pas" line="237">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="ResetWorld" visibility="public" file="WorldDrawing.pas" line="238">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+        </parameters>
+      </procedure>
+      <procedure name="Setd2Axes" visibility="public" file="WorldDrawing.pas" line="239">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Value" type="Boolean" />
+        </parameters>
+      </procedure>
+      <function name="Windowx" visibility="public" file="WorldDrawing.pas" line="240">
+        <parameters>
+          <parameter name="x" type="Double" />
+          <retval type="Integer" />
+        </parameters>
+      </function>
+      <function name="Windowy" visibility="public" file="WorldDrawing.pas" line="241">
+        <parameters>
+          <parameter name="y" type="Double" />
+          <retval type="Integer" />
+        </parameters>
+      </function>
+      <procedure name="WorldToScreen" visibility="public" file="WorldDrawing.pas" line="242">
+        <parameters>
+          <parameter name="x" type="Double" paramflags="const" />
+          <parameter name="y" type="Double" paramflags="const" />
+          <parameter name="xs" type="Integer" paramflags="var" />
+          <parameter name="Ys" type="Integer" paramflags="var" />
+        </parameters>
+      </procedure>
+      <function name="WorldX" visibility="public" file="WorldDrawing.pas" line="243">
+        <parameters>
+          <parameter name="xs" type="Integer" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <function name="WorldY" visibility="public" file="WorldDrawing.pas" line="244">
+        <parameters>
+          <parameter name="Ys" type="Integer" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <procedure name="Convert" visibility="public" file="WorldDrawing.pas" line="245">
+        <parameters>
+          <parameter name="src" type="TFloatpoint" paramflags="const" />
+          <parameter name="dest" type="TPoint" paramflags="var" />
+        </parameters>
+      </procedure>
+      <function name="Norm" visibility="public" file="WorldDrawing.pas" line="246">
+        <parameters>
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <procedure name="DrawPoint" visibility="public" file="WorldDrawing.pas" line="247">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="MoveToPoint" visibility="public" file="WorldDrawing.pas" line="248">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawLine" visibility="public" file="WorldDrawing.pas" line="249">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawLineTo" visibility="public" file="WorldDrawing.pas" line="250">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawEllipse" visibility="public" file="WorldDrawing.pas" line="251">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawCircle" visibility="public" file="WorldDrawing.pas" line="252">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="xCenter" type="Double" />
+          <parameter name="yCenter" type="Double" />
+          <parameter name="PixRadius" type="Integer" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawRectangle" visibility="public" file="WorldDrawing.pas" line="253">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawAxes" visibility="public" file="WorldDrawing.pas" line="254">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="xLabel" type="string" />
+          <parameter name="yLabel" type="string" />
+          <parameter name="AxesColor" type="TColor" />
+          <parameter name="Arrows" type="Boolean">
+            <value>
+              True
+            </value>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="DrawZeroLines" visibility="public" file="WorldDrawing.pas" line="256">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="AColor" type="TColor" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawVector" visibility="public" file="WorldDrawing.pas" line="257">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="A" type="Double" />
+          <parameter name="b" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawPolyline" visibility="public" file="WorldDrawing.pas" line="258">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="FloatPointArray" paramflags="const">
+            <array name="FloatPointArray" file="WorldDrawing.pas" line="2202">
+              <element type="TFloatpoint" />
+            </array>
+          </parameter>
+          <parameter name="PointCount" type="Integer" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawPolygon" visibility="public" file="WorldDrawing.pas" line="259">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="FloatPointArray" paramflags="const">
+            <array name="FloatPointArray" file="WorldDrawing.pas" line="2190">
+              <element type="TFloatpoint" />
+            </array>
+          </parameter>
+          <parameter name="PointCount" type="Integer" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawPolyPolyline" visibility="public" file="WorldDrawing.pas" line="260">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="GraphList" paramflags="const">
+            <array name="GraphList" file="WorldDrawing.pas" line="2216">
+              <element type="TFloatPointArray" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3SetWorld" visibility="public" file="WorldDrawing.pas" line="263">
+        <parameters>
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="z1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+          <parameter name="z2" type="Double" />
+          <parameter name="AspectRatio" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="d3SetViewPoint" visibility="public" file="WorldDrawing.pas" line="264">
+        <parameters>
+          <parameter name="vd" type="Double" />
+          <parameter name="alpha" type="Double" />
+          <parameter name="yr" type="Double" />
+          <parameter name="zr" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3SetScales" visibility="public" file="WorldDrawing.pas" line="265">
+        <parameters>
+          <parameter name="xScale" type="Double" />
+          <parameter name="yScale" type="Double" />
+          <parameter name="zScale" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3Window" visibility="public" file="WorldDrawing.pas" line="266">
+        <parameters>
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="z" type="Double" />
+          <parameter name="xs" type="Integer" paramflags="var" />
+          <parameter name="Ys" type="Integer" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="PseudoD3World" visibility="public" file="WorldDrawing.pas" line="267">
+        <parameters>
+          <parameter name="xs" type="Integer" />
+          <parameter name="Ys" type="Integer" />
+          <parameter name="x" type="Double" paramflags="var" />
+          <parameter name="y" type="Double" paramflags="var" />
+          <parameter name="z" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="d3Moveto" visibility="public" file="WorldDrawing.pas" line="268">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="z" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawPoint" visibility="public" file="WorldDrawing.pas" line="269">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="z" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLine" visibility="public" file="WorldDrawing.pas" line="270">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="z1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+          <parameter name="z2" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLineto" visibility="public" file="WorldDrawing.pas" line="271">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="z" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawAxes" visibility="public" file="WorldDrawing.pas" line="272">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="xLabel" type="string" />
+          <parameter name="yLabel" type="string" />
+          <parameter name="zLabel" type="string" />
+          <parameter name="xTicks" type="Byte" />
+          <parameter name="yTicks" type="Byte" />
+          <parameter name="zTicks" type="Byte" />
+          <parameter name="xPos" type="Byte" />
+          <parameter name="yPos" type="Byte" />
+          <parameter name="zPos" type="Byte" />
+          <parameter name="Arrows" type="Boolean">
+            <value>
+              True
+            </value>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawBestAxes" visibility="public" file="WorldDrawing.pas" line="274">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="xLabel" type="string" />
+          <parameter name="yLabel" type="string" />
+          <parameter name="zLabel" type="string" />
+          <parameter name="xTicks" type="Byte" />
+          <parameter name="yTicks" type="Byte" />
+          <parameter name="zTicks" type="Byte" />
+          <parameter name="Arrows" type="Boolean">
+            <value>
+              True
+            </value>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawCustomAxes" visibility="public" file="WorldDrawing.pas" line="276">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="xmin" type="Double" />
+          <parameter name="ymin" type="Double" />
+          <parameter name="zmin" type="Double" />
+          <parameter name="xmax" type="Double" />
+          <parameter name="ymax" type="Double" />
+          <parameter name="zmax" type="Double" />
+          <parameter name="xLabel" type="string" />
+          <parameter name="yLabel" type="string" />
+          <parameter name="zLabel" type="string" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawWorldbox" visibility="public" file="WorldDrawing.pas" line="279">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawBox" visibility="public" file="WorldDrawing.pas" line="280">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="x1" type="Double" />
+          <parameter name="y1" type="Double" />
+          <parameter name="z1" type="Double" />
+          <parameter name="x2" type="Double" />
+          <parameter name="y2" type="Double" />
+          <parameter name="z2" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawFullWorldBox" visibility="public" file="WorldDrawing.pas" line="282">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+        </parameters>
+      </procedure>
+      <procedure name="d3drawZeroCross" visibility="public" file="WorldDrawing.pas" line="283">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+        </parameters>
+      </procedure>
+      <procedure name="d3Polyline" visibility="public" file="WorldDrawing.pas" line="284">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="FloatPointArray" paramflags="const">
+            <array name="FloatPointArray" file="WorldDrawing.pas" line="885">
+              <element type="TD3FloatPoint" />
+            </array>
+          </parameter>
+          <parameter name="PointCount" type="Integer" />
+        </parameters>
+      </procedure>
+      <procedure name="d3LitPolyLine" visibility="public" file="WorldDrawing.pas" line="285">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="FloatPointArray" paramflags="const">
+            <array name="FloatPointArray" file="WorldDrawing.pas" line="1181">
+              <element type="TD3FloatPoint" />
+            </array>
+          </parameter>
+          <parameter name="PointCount" type="Integer" />
+          <parameter name="NormalKind" type="TNormalKind" />
+          <parameter name="ambient" type="Double" />
+          <parameter name="directed" type="Double" />
+          <parameter name="zrot1" type="Integer" />
+          <parameter name="zrot2" type="Integer" />
+          <parameter name="yrot1" type="Integer" />
+          <parameter name="yrot2" type="Integer" />
+          <parameter name="dist1" type="Double" />
+          <parameter name="dist2" type="Double" />
+          <parameter name="fixed" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="d3PolyPolyline" visibility="public" file="WorldDrawing.pas" line="288">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="GraphList" paramflags="const">
+            <array name="GraphList" file="WorldDrawing.pas" line="1197">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DistanceToViewer" visibility="public" file="WorldDrawing.pas" line="291">
+        <parameters>
+          <parameter name="x" type="Double" />
+          <parameter name="y" type="Double" />
+          <parameter name="z" type="Double" />
+          <parameter name="r" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawSurface" visibility="public" file="WorldDrawing.pas" line="292">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfArray" paramflags="const">
+            <array name="SurfArray" file="WorldDrawing.pas" line="1742">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+          <parameter name="fill" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLitSurface" visibility="public" file="WorldDrawing.pas" line="293">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfArray" paramflags="const">
+            <array name="SurfArray" file="WorldDrawing.pas" line="1682">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+          <parameter name="diffuse" type="Double" />
+          <parameter name="focussed" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawColorSurface" visibility="public" file="WorldDrawing.pas" line="295">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfArray" paramflags="const">
+            <array name="SurfArray" file="WorldDrawing.pas" line="1950">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+          <parameter name="Colors">
+            <array name="Colors" file="WorldDrawing.pas" line="1951">
+              <element type="TColorArray" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawHeightCubes" visibility="public" file="WorldDrawing.pas" line="297">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="HeightArray" paramflags="const">
+            <array name="HeightArray" file="WorldDrawing.pas" line="2521">
+              <element type="TFloatarray" />
+            </array>
+          </parameter>
+          <parameter name="Colors" paramflags="const">
+            <array name="Colors" file="WorldDrawing.pas" line="2521">
+              <element type="TColorArray" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLitHeightCubes" visibility="public" file="WorldDrawing.pas" line="299">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="HeightArray" paramflags="const">
+            <array name="HeightArray" file="WorldDrawing.pas" line="2534">
+              <element type="TFloatarray" />
+            </array>
+          </parameter>
+          <parameter name="Colors" paramflags="const">
+            <array name="Colors" file="WorldDrawing.pas" line="2534">
+              <element type="TColorArray" />
+            </array>
+          </parameter>
+          <parameter name="diffuse" type="Double" />
+          <parameter name="focussed" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLitLevelSurface" visibility="public" file="WorldDrawing.pas" line="301">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfArray" paramflags="const">
+            <array name="SurfArray" file="WorldDrawing.pas" line="2814">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+          <parameter name="Levels" paramflags="const">
+            <array name="Levels" file="WorldDrawing.pas" line="2814">
+              <element type="Double" />
+            </array>
+          </parameter>
+          <parameter name="Colors" paramflags="const">
+            <array name="Colors" file="WorldDrawing.pas" line="2815">
+              <element type="TColor" />
+            </array>
+          </parameter>
+          <parameter name="diffuse" type="Double" />
+          <parameter name="focussed" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawCubes" visibility="public" file="WorldDrawing.pas" line="305">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Cubes" paramflags="const">
+            <array name="Cubes" file="WorldDrawing.pas" line="1884">
+              <element type="TCube" />
+            </array>
+          </parameter>
+          <parameter name="fill" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="d3DrawLitCubes" visibility="public" file="WorldDrawing.pas" line="306">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="Cubes" paramflags="const">
+            <array name="Cubes" file="WorldDrawing.pas" line="2405">
+              <element type="TCube" />
+            </array>
+          </parameter>
+          <parameter name="diffuse" type="Double" />
+          <parameter name="focussed" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawLevelCurves" visibility="public" file="WorldDrawing.pas" line="310">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfArray" paramflags="const">
+            <array name="SurfArray" file="WorldDrawing.pas" line="2123">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+          <parameter name="Level" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="DrawFilledLevelCurves" visibility="public" file="WorldDrawing.pas" line="311">
+        <parameters>
+          <parameter name="ACanvas" type="TCanvas" />
+          <parameter name="SurfArray" paramflags="const">
+            <array name="SurfArray" file="WorldDrawing.pas" line="2923">
+              <element type="Td3FloatPointArray" />
+            </array>
+          </parameter>
+          <parameter name="Levels" paramflags="const">
+            <array name="Levels" file="WorldDrawing.pas" line="2923">
+              <element type="Double" />
+            </array>
+          </parameter>
+          <parameter name="Colors" paramflags="const">
+            <array name="Colors" file="WorldDrawing.pas" line="2924">
+              <element type="TColor" />
+            </array>
+          </parameter>
+        </parameters>
+      </procedure>
+      <property name="d2x1" visibility="public" read="fd2x1" type="Double" default="0" file="WorldDrawing.pas" line="315" />
+      <property name="d2y1" visibility="public" read="fd2y1" type="Double" default="0" file="WorldDrawing.pas" line="316" />
+      <property name="d2xw" visibility="public" read="fd2xw" type="Double" default="0" file="WorldDrawing.pas" line="317" />
+      <property name="d2yw" visibility="public" read="fd2yw" type="Double" default="0" file="WorldDrawing.pas" line="318" />
+      <property name="d2Axes" visibility="public" read="fd2Axes" type="Boolean" file="WorldDrawing.pas" line="319" />
+      <property name="d2x1Snap" visibility="public" read="x1Snap" type="Double" default="0" file="WorldDrawing.pas" line="320" />
+      <property name="d2x2Snap" visibility="public" read="x2Snap" type="Double" default="0" file="WorldDrawing.pas" line="321" />
+      <property name="d2y1Snap" visibility="public" read="y1Snap" type="Double" default="0" file="WorldDrawing.pas" line="322" />
+      <property name="d2y2Snap" visibility="public" read="y2Snap" type="Double" default="0" file="WorldDrawing.pas" line="323" />
+      <property name="d3ar" visibility="public" read="fd3ar" type="Boolean" file="WorldDrawing.pas" line="324" />
+      <property name="d3x1" visibility="public" read="fd3x1" type="Double" default="0" file="WorldDrawing.pas" line="325" />
+      <property name="d3xw" visibility="public" read="fd3xw" type="Double" default="0" file="WorldDrawing.pas" line="326" />
+      <property name="d3y1" visibility="public" read="fd3y1" type="Double" default="0" file="WorldDrawing.pas" line="327" />
+      <property name="d3yw" visibility="public" read="fd3yw" type="Double" default="0" file="WorldDrawing.pas" line="328" />
+      <property name="d3z1" visibility="public" read="fd3z1" type="Double" default="0" file="WorldDrawing.pas" line="329" />
+      <property name="d3zw" visibility="public" read="fd3zw" type="Double" default="0" file="WorldDrawing.pas" line="330" />
+      <property name="d3alpha" visibility="public" read="fd3alpha" type="Double" default="0" file="WorldDrawing.pas" line="331" />
+      <property name="d3vd" visibility="public" read="fd3vd" type="Double" default="0" file="WorldDrawing.pas" line="332" />
+      <property name="d3zr" visibility="public" read="fd3zr" type="Double" default="0" file="WorldDrawing.pas" line="333" />
+      <property name="d3yr" visibility="public" read="fd3yr" type="Double" default="0" file="WorldDrawing.pas" line="334" />
+      <property name="d3Xscale" visibility="public" read="fd3xScale" type="Double" default="0" file="WorldDrawing.pas" line="335" />
+      <property name="d3Yscale" visibility="public" read="fd3yScale" type="Double" default="0" file="WorldDrawing.pas" line="336" />
+      <property name="d3Zscale" visibility="public" read="fd3zScale" type="Double" default="0" file="WorldDrawing.pas" line="337" />
+      <property name="LightSource1" visibility="public" read="fd3L1" type="TLightSource" file="WorldDrawing.pas" line="338" />
+      <property name="LightSource2" visibility="public" read="fd3L1" type="TLightSource" file="WorldDrawing.pas" line="339" />
+    </members>
+  </class>
+  <procedure name="D3FloatPoint" visibility="public" file="WorldDrawing.pas" line="358">
+    <parameters>
+      <parameter name="x" type="Double" />
+      <parameter name="y" type="Double" />
+      <parameter name="z" type="Double" />
+      <parameter name="p" type="TD3FloatPoint" paramflags="var" />
+    </parameters>
+  </procedure>
+  <procedure name="FloatPoint" visibility="public" file="WorldDrawing.pas" line="365">
+    <parameters>
+      <parameter name="x" type="Double" />
+      <parameter name="y" type="Double" />
+      <parameter name="r" type="TFloatpoint" paramflags="var" />
+    </parameters>
+  </procedure>
+  <procedure name="GetLineSegments" visibility="public" file="WorldDrawing.pas" line="933">
+    <parameters>
+      <parameter name="f" paramflags="const">
+        <array name="f" file="WorldDrawing.pas" line="933">
+          <element type="TD3FloatPoint" />
+        </array>
+      </parameter>
+      <parameter name="aCount" type="Integer" />
+      <parameter name="NormalKind" type="TNormalKind" />
+      <parameter name="l" type="Td3LineSegmentArray" paramflags="var" />
+    </parameters>
+  </procedure>
+  <procedure name="CrossProduct" visibility="public" file="WorldDrawing.pas" line="1207">
+    <parameters>
+      <parameter name="x1" type="Double" />
+      <parameter name="y1" type="Double" />
+      <parameter name="z1" type="Double" />
+      <parameter name="x2" type="Double" />
+      <parameter name="y2" type="Double" />
+      <parameter name="z2" type="Double" />
+      <parameter name="u1" type="Double" paramflags="var" />
+      <parameter name="u2" type="Double" paramflags="var" />
+      <parameter name="u3" type="Double" paramflags="var" />
+    </parameters>
+  </procedure>
+</namespace>
