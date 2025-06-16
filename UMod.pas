@@ -1307,7 +1307,7 @@ end;
 /// METHOD  Set_ControlFileFN
 /// PURPOSE Sets name of control Ini file (published for use in object inspector)
 ///         and reads or creates Ini files
-/// <param name="NewCtrlFileFN">Name of control Ini file</param>
+/// <param name="NewCtrlFileFN"> Name of control Ini file </param>
 /// <remarks>
 /// If no control files are existing they will be created
 /// </remarks>

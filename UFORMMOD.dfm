@@ -34,7 +34,7 @@ object FormMod: TFormMod
     Top = 44
     Width = 1090
     Height = 589
-    ActivePage = TabSheetDocumentation
+    ActivePage = TabSheetOptions
     Align = alClient
     HotTrack = True
     TabOrder = 1
@@ -1913,7 +1913,6 @@ object FormMod: TFormMod
         Height = 524
         Cursor = crDefault
         Align = alClient
-        ColCount = 4
         DefaultColWidth = 100
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing]
         ScrollBars = ssBoth
@@ -2029,6 +2028,7 @@ object FormMod: TFormMod
           100
           135
           583
+          100
           100)
       end
     end

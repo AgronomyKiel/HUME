@@ -1032,7 +1032,7 @@ begin
   VarCreate('rc0_ambient', '[s.m-1]', 0, false, rc0_ambient, 'rc0 value without CO2 effect');
   VarCreate('CO2TransDiff', '[mm/d]', 0, false, CO2TransDiff, 'CO2 induced reduction of pot_trans');
   VarCreate('relCO2TransDiff', '[-]', 0, false, relCO2TransDiff, 'rel. CO2 induced reduction of pot_trans');
-  VarCreate('CO2pp', '[ppm]', 400, false, CO2pp, 'external CO2 concentration');
+  VarCreate('CO2pp', '[ppm]', 400, false, CO2pp, 'external CO2 concentration https://agronomykiel.github.io/HUME/Components/Evapotranspiration/Documentation/TPenMonteith.html#co_2-concentration');
 
 end;
 

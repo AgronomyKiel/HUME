@@ -1,21 +1,58 @@
-﻿{Module for leaf area development and senescence)
-@abstract(Module for leaf area development and senescence)
-
-- the module calculates leaf area development and leaf senescence
-- LAI net increase is calculated as a function of leaf dry matter and
-  over all canopy specific leaf area (SLA)
-- SLA is calculated as a function of leaf dry matter
-  (see Chapt. 3 and Appendix Diss. Ratjen)
-- during vegetative growth, leaf senescence forced by aging is similar to
-  the CeresWheat3.0 routines, but accelerated under drought, N limitation
-  or light limitation(according to Meinke 1998).
-- leaf distribution (mass, area) is calculated for specific leaf-layers
-  as a function of LAI(empiric fit exp. 103 2010, see also Appendix Diss. Ratjen)
-- during reproductive stage, senescence is forced by N translocation(SLN threshold
-  according to Meinke 1998)
-  @author  A.M. Ratjen
-  @author  H. Kage <kage@pflanzenbau.uni-kiel.de>
-}
+﻿/// <summary>
+/// Module for leaf area development and senescence
+/// 
+/// ## Purpose
+/// 
+/// - **Simulates wheat leaf area growth and senescence** (aging, drought, nitrogen, and light effects).
+/// - Calculates **Leaf Area Index (LAI)**, **green leaf area**, **senescence rates**, and **distribution of leaf area/mass** across four canopy layers.
+/// - Integrates with other modules (e.g., dry matter, environmental variables).
+/// 
+/// ## Key Components
+/// 
+/// ### 1. **Class Definition**
+/// - `THumeWheatLeafArea = class(TSubmodel)`
+/// - Contains fields for state variables, parameters, external variables, and options.
+/// 
+/// ### 2. **Main Variables**
+/// - **State Variables**: LAI, PLA (plant leaf area), PLSC (single leaf areas), SENLA (senescent area), CUMPH (cumulative phyllochrons), etc.
+/// - **Parameters**: maxPLALR (max senescence rate), aSLA/bSLA (SLA parameters), Icrit (critical radiation), etc.
+/// - **External Variables**: GROLF (leaf growth rate), ISTAGE (growth stage), plants (plant density), TMPM/TMPMN/TMPMX (temperatures), etc.
+/// - **Options**: For drought, senescence type, and whether to use age/light/drought-dependent senescence.
+/// 
+/// ### 3. **Core Methods**
+/// - `createAll`: Initializes all variables, states, parameters, and options.
+/// - `Init`: Sets initial values and options.
+/// - `CalcRates`: Calculates rates of change for all variables.
+/// - `Integrate`: Updates state variables for the next time step.
+/// - **Senescence Calculation**: Multiple methods for different senescence drivers (age, N, light, drought).
+/// - **Leaf Layer Distribution**: Allocates leaf area/mass to four canopy layers.
+/// - **Radiation and Water Calculations**: Computes intercepted PAR, transpiration, and interception.
+/// 
+/// ### 4. **Senescence Logic**
+/// - **Age-dependent**: Based on leaf age and phyllochron.
+/// - **N-dependent**: Based on specific leaf nitrogen (SLN).
+/// - **Light-dependent**: Based on 10-day average radiation.
+/// - **Drought-dependent**: Based on transpiration ratios and sustainable LAI.
+/// 
+/// ### 5. **Leaf Area Growth**
+/// - **Single Leaf Growth**: Only the youngest leaf grows at a time.
+/// - **SLA Calculation**: Specific leaf area changes with LAI and growth stage.
+/// 
+/// ### 6. **Layered Canopy**
+/// - **Four layers**: Top to bottom, with distribution functions for mass and area.
+/// - **PAR Calculation**: Incident PAR on each layer is computed.
+/// 
+/// ## Usage
+/// 
+/// - **Part of a larger crop simulation**: Interacts with other modules (e.g., dry matter, environmental conditions).
+/// - **Highly parameterized**: Many parameters and options for flexibility.
+/// - **Object-oriented**: Designed for reuse and extension.
+/// 
+/// ## Summary
+/// 
+/// This file is a **comprehensive, object-oriented module** for simulating wheat leaf area dynamics, including growth, senescence, and environmental responses, with detailed physiological and environmental modeling. It is suitable for research or advanced crop modeling applications.
+/// 
+/// <remarks>
 
 unit UHumeWheatLeafArea;
 
@@ -33,16 +70,88 @@ const
   MaxLeafNumber = 25;
 
 type
+/// <summary>
+/// Type for senescence type
+/// </summary>
   TSenescence = (cwt3, concentration);
+
+/// <summary>
+/// Type 4 leaf layers
+/// </summary>  
   TnLeafLayer = 1..4;
 
+/// <summary>
+/// Module for leaf area development and senescence
+/// </summary>
+/// <remarks>
+/// 
+/// ## Purpose
+/// 
+/// - **Simulates wheat leaf area growth and senescence** (aging, drought, nitrogen, and light effects).
+/// - Calculates **Leaf Area Index (LAI)**, **green leaf area**, **senescence rates**, and **distribution of leaf area/mass** across four canopy layers.
+/// - Integrates with other modules (e.g., dry matter, environmental variables).
+/// 
+/// ## Key Components
+/// 
+/// ### 1. **Class Definition**
+/// - `THumeWheatLeafArea = class(TSubmodel)`
+/// - Contains fields for state variables, parameters, external variables, and options.
+/// 
+/// ### 2. **Main Variables**
+/// - **State Variables**: LAI, PLA (plant leaf area), PLSC (single leaf areas), SENLA (senescent area), CUMPH (cumulative phyllochrons), etc.
+/// - **Parameters**: maxPLALR (max senescence rate), aSLA/bSLA (SLA parameters), Icrit (critical radiation), etc.
+/// - **External Variables**: GROLF (leaf growth rate), ISTAGE (growth stage), plants (plant density), TMPM/TMPMN/TMPMX (temperatures), etc.
+/// - **Options**: For drought, senescence type, and whether to use age/light/drought-dependent senescence.
+/// 
+/// ### 3. **Core Methods**
+/// - `createAll`: Initializes all variables, states, parameters, and options.
+/// - `Init`: Sets initial values and options.
+/// - `CalcRates`: Calculates rates of change for all variables.
+/// - `Integrate`: Updates state variables for the next time step.
+/// - **Senescence Calculation**: Multiple methods for different senescence drivers (age, N, light, drought).
+/// - **Leaf Layer Distribution**: Allocates leaf area/mass to four canopy layers.
+/// - **Radiation and Water Calculations**: Computes intercepted PAR, transpiration, and interception.
+/// 
+/// ### 4. **Senescence Logic**
+/// - **Age-dependent**: Based on leaf age and phyllochron.
+/// - **N-dependent**: Based on specific leaf nitrogen (SLN).
+/// - **Light-dependent**: Based on 10-day average radiation.
+/// - **Drought-dependent**: Based on transpiration ratios and sustainable LAI.
+/// 
+/// ### 5. **Leaf Area Growth**
+/// - **Single Leaf Growth**: Only the youngest leaf grows at a time.
+/// - **SLA Calculation**: Specific leaf area changes with LAI and growth stage.
+/// 
+/// ### 6. **Layered Canopy**
+/// - **Four layers**: Top to bottom, with distribution functions for mass and area.
+/// - **PAR Calculation**: Incident PAR on each layer is computed.
+/// 
+/// ## Usage
+/// 
+/// - **Part of a larger crop simulation**: Interacts with other modules (e.g., dry matter, environmental conditions).
+/// - **Highly parameterized**: Many parameters and options for flexibility.
+/// - **Object-oriented**: Designed for reuse and extension.
+/// 
+/// ## Summary
+/// 
+/// This file is a **comprehensive, object-oriented module** for simulating wheat leaf area dynamics, including growth, senescence, and environmental responses, with detailed physiological and environmental modeling. It is suitable for research or advanced crop modeling applications.
+/// 
+/// </remarks>
   THumeWheatLeafArea = class(TSubmodel)
   private
     p5_:         real;
-    fSenescence: TSenescence; //< senescence type either cwt3 (Ceres Wheat 3) or concentration
-    avTransIntRatio_arr:  array [1..10] of real; //< array for calculation of average transpiration interception ratio over 10 days
-    fUseAgeDependentLeafSenescence,
-    fUseLightDependentLeafSenescence,
+    /// senescence type either cwt3 (Ceres Wheat 3) or concentration
+    fSenescence: TSenescence; 
+    
+    /// array for calculation of average transpiration interception ratio over 10 days
+    avTransIntRatio_arr:  array [1..10] of real; 
+    /// private field for optional use of age dependent leaf senescence
+    fUseAgeDependentLeafSenescence: boolean;
+
+    /// private field for optional use of light dependent leaf senescence
+    fUseLightDependentLeafSenescence: boolean;
+
+    /// private field for optional use of drought dependent leaf senescence
     fUseDroughtDependentLeafSenescence : boolean;
     procedure SetLaiLayers;
     procedure CalcSingleLeafGrowth;
@@ -72,72 +181,124 @@ type
   public
 
 //--------------------------------------------------------------------
-  senratesLA : array[1..MaxLeafNumber] of real; // senescence rates leaf area of individual leaves
-  senratesDM : array[1..MaxLeafNumber] of real; // senescence rates dry matter of individual leaves
+  /// senescence rates leaf area of individual leaves
+  senratesLA : array[1..MaxLeafNumber] of real; 
 
-  LAImax     : TVar;   //< maximum LAI simulated
-  GPLA       : TVar;   //< GPLA is the plant green leaf area (PLA - SENLA) [cm2/plant]
-  LN_        : TVar;   //< Leaf number of the primary tiller [n]
-  PLAG       : TVar;   //< The rate of expansion of leaf area on one plant [cm2/day]
-  PLAGMS     : TVar;   //< plant leaf area growth rate on the main stem (PLAGMS)
-  PLALR      : TVar;   //< Plant leaf area loss rate [cm2/(plant*d)]
-  PLSCGR     : array [1..MaxLeafNumber] of TVar;   //<  Leaf area growth rate of single leaves
-  V1         : TVar;   //< source limited leaf growth rate
-  V2         : TVar;   //< sink limited leaf growth rate
-  GAI         : TVar;   //< green area index
- // fSLAWR     : TVar;   //< factor for correcting SLA under drought stress
-  potSLA      : TVar;   //< average specific leaf area of canopy [square cm/g]
-  avSLA     : TVar;
-  avIcrop    : TVar; //< Mittlere Einstrahlung im Bestand (I) �ber 10 Tage
+ /// senescence rates dry matter of individual leaves
+  senratesDM : array[1..MaxLeafNumber] of real;
 
-  PLALR_a,       // 'age' induced pot. leaf senescence rate(according to CeresWheat3)
-  PLALR_d,       // drought induced pot. leaf senescence rate
-  PLALR_n,       // pot. leaf senescence rate induced by N limitation (during grain filling)
-  PLALR_l: TVar; // low radiation induced leaf senescence
+  /// maximum LAI simulated
+  LAImax     : TVar;   
+  /// GPLA is the plant green leaf area (PLA - SENLA) [cm2/plant]
+  GPLA       : TVar;   
+  /// Leaf number of the primary tiller [n]
+  LN_        : TVar;   
+  /// The rate of expansion of leaf area on one plant [cm2/day]
+  PLAG       : TVar;   
+  /// plant leaf area growth rate on the main stem (PLAGMS)
+  PLAGMS     : TVar;   
+  /// Plant leaf area loss rate [cm2/(plant*d)]
+  PLALR      : TVar;   
+  ///  Leaf area growth rate of single leaves
+  PLSCGR     : array [1..MaxLeafNumber] of TVar;   
+  
+  /// source limited leaf growth rate
+  V1         : TVar;   
+  
+  /// sink limited leaf growth rate
+  V2         : TVar;   
+  
+  /// green area index
+  GAI         : TVar;   
+  
+  /// average specific leaf area of canopy [square cm/g]
+  potSLA      : TVar;   
+  
+  /// average specific leaf area of canopy [square cm/g]
+  avSLA     : TVar;    
+  
+  /// ten day average irradiation (I) 
+  avIcrop    : TVar; 
 
+  /// age induced pot. leaf senescence rate
+  PLALR_a: TVar;     
+  /// drought induced pot. leaf senescence rate
+  PLALR_d: TVar;     
+  /// pot. leaf senescence rate induced by N limitation (during grain filling)
+  PLALR_n: TVar;     
+  /// low radiation induced leaf senescence
+  PLALR_l: TVar;     
 
-
-  // Constant Variables
-  LAI         : TState;   //< Leaf area index [m2/m2]
-  PLA         : TState;   //< Plant leaf area  [cm2/plant]
-  PLSC        : array[1..MaxLeafNumber] of TState;   //<  Leaf area of single leaves
- // PL_weight   : array[1..MaxLeafNumber] of TState;   //<  Leaf weight of single leaves
-  SENLA       : TState;   //<  Area of leaf that senesces from a tiller on a given day - [cm2/d]
-  CUMPH : TState;   //< cumulative phyllochrons since emergence [-]
-  SUMDTT5 : TState; //< cumulative degree days during istage 5
+  /// Leaf area index [m2/m2]
+  LAI         : TState;   
+  /// Plant leaf area  [cm2/plant]
+  PLA         : TState;   
+  ///  Leaf area of single leaves
+  PLSC        : array[1..MaxLeafNumber] of TState;   
+//  ///  Leaf weight of single leaves
+//  PL_weight   : array[1..MaxLeafNumber] of TState;   
+  ///  Area of leaf that senesces from a tiller on a given day - [cm2/d]
+  SENLA       : TState;   
+  /// cumulative phyllochrons since emergence [-]
+  CUMPH : TState;   
+  /// cumulative degree days during istage 5
+  SUMDTT5 : TState; 
 
   // Parameters
-  maxPLALR    : TPar;   // maximum senescence rate  [cm2/(plant*d)]
-  aSLA         : TPar; //< intercept specific leaf area due to shading [cm2/g]
-  bSLA         : TPar; //< slope specific leaf area due to shading [cm2/(g*LAI)]
-  maxSLA       : TPar; //< initial and maximum SLA [cm2/g]
-  PSENLeaf1    : TPar; //< Parameter for leaf senescence between ISTAGE 2 and 4
-  PSENLeaf2    : TPar; //< Parameter for leaf senescence
+  /// maximum senescence rate  [cm2/(plant*d)]
+  maxPLALR    : TPar;   
+  /// intercept specific leaf area due to shading [cm2/g]
+  aSLA         : TPar; 
+  /// slope specific leaf area due to shading [cm2/(g*LAI)]
+  bSLA         : TPar; 
+  /// initial and maximum SLA [cm2/g]
+  maxSLA       : TPar; 
+  /// Parameter for leaf senescence between ISTAGE 2 and 4
+  PSENLeaf1    : TPar; 
+  /// Parameter for leaf senescence
+  PSENLeaf2    : TPar; 
   fGAI         : TPar;
 
   // External Variables
   SLN    : TExternV;
-  NLeaf_m2    : TExternV;  //< N content of leaves per m2
-  GROLF       : TExternV;   //<  growth rate of leaves (g/pl/d)
-//  GROSTM      : TExternV;   //< Daily stem growth  [g/(plant.d)]
-  ISTAGE      : TExternV;   //<  integer growth stage according to ceres
-  P5          : TExternV;   //< Parameter or length of grain filling period
-  plants      : TExternV;   //< number of plants (1/m2)
-//  SWDF1       : TExternV;   // Soil Water deficit factor (Tact/Tpot)
-//  TDU         : TExternV;   // termal developmental units
-  TMPM        : TExternV;   //< mean day temperature
-  TMPMN       : TExternv;   //< minimum day temperature
-  TMPMX       : TExternV;   //< maximum day temperature
+  /// N content of leaves per m2
+  NLeaf_m2    : TExternV;  
+  ///  growth rate of leaves (g/pl/d)
+  GROLF       : TExternV;   
+//  /// Daily stem growth  [g/(plant.d)]
+//  GROSTM      : TExternV;   
+  ///  integer growth stage according to ceres
+  ISTAGE      : TExternV;   
+  /// Parameter or length of grain filling period
+  P5          : TExternV;   
+  /// number of plants (1/m2)
+  plants      : TExternV;   
+//  // Soil Water deficit factor (Tact/Tpot)
+//  SWDF1       : TExternV;   
+//  // termal developmental units
+//  TDU         : TExternV;   
+  /// mean day temperature
+  TMPM        : TExternV;   
+  /// minimum day temperature
+  TMPMN       : TExternv;   
+  /// maximum day temperature
+  TMPMX       : TExternV;   
   //TI          : TExternV;   // increase of tiller number (1/d)
   //TILN        : TExternV;   // tiller number per plant
   //TPSM        : TExternV;   // tiller number per m2
-  EC          : TExternV;   //< ec stage of crop
-  SENL        : TExternV;   //< Senescence rate of leaf dry matter (total) (g/pl/d)
-  Phint       : TExternV;   //< Phyllochronintervall [�d]
-  TSumInc     : TExternV;   //<Tagestemperatur >=0 zur Basistemperatur
+  /// ec stage of crop
+  EC          : TExternV;   
+  /// Senescence rate of leaf dry matter (total) (g/pl/d)
+  SENL        : TExternV;   
+  /// Phyllochronintervall [�d]
+  Phint       : TExternV;   
+  ///Tagestemperatur >=0 zur Basistemperatur
+  TSumInc     : TExternV;   
   PAR         : TExternV;
-  kPAR        : TExternV; //< k for PAR
-  Icrop: Array [1..10] of real; //< Mittlere Einstrahlung �ber 10 Tage
+  /// k for PAR
+  kPAR        : TExternV; 
+  /// array of average radiation for last 10 days [MJ/m²/d]
+  Icrop: Array [1..10] of real; 
   // Options
   OptDroughtimpact : TOption;
   OptSenescence: TOption;
@@ -145,57 +306,118 @@ type
   UseLightDependentLeafSenescence: TOption;
   UseDroughtDependentLeafSenescence: TOption;
 //--------------------------------------------------------------------
-    Icrit:  TPAR;   //< critical radiation value for leaf area index
-    f1_SLA: TPAR;   ///
-    f2_SLA: TPAR;
-    kTransPAR: TPAR; //< PAR transmission coefficient
-   // critSLN:   TPAR; // APSIM meinke 1998, 107
-    critSLNtot: TPAR; //< Minium observed 95er
+    /// critical radiation value for leaf area index
+    Icrit:  TPAR;   
+    /// parameter for SLA calculation
+    f1_SLA: TPAR;   
+    /// parameter for SLA calculation
+    f2_SLA: TPAR;   
+    /// PAR transmission coefficient
+    kTransPAR: TPAR; 
+    // critSLN:   TPAR; // APSIM meinke 1998, 107
+    /// Minium observed 95er
+    
+    
+    critSLNtot: TPAR; 
+    
+    /// transpiration ratio critical
     TRcrit:    TPAR;
     relLayerM_Int:  array[1..3] of TPAR;
     relLayerA_Int:  array[1..3] of TPAR;
     relLayerM_S  :  array[1..3] of TPAR;
     relLayerA_S  :  array[1..3] of TPAR;
-    GROLA:     TVAR;
+    
     sumLAL:    TVAR;
     sumMLAL:   TVAR;
     fdsen:     TVAR;
-    sumPLsc:      TVAR;   //< sum of single leaf areas
-    MLAL:         array[1..4] of TVAR; //< green leaf mass of layer
-    LAL:          array[1..4] of TVAR;   //<  Leaf area of a lamina i
+    
+    /// sum of single leaf areas
+    sumPLsc:      TVAR;   
+    /// green leaf mass of layer
+    MLAL:         array[1..4] of TVAR; 
+    ///  Leaf area of a lamina i
+    LAL:          array[1..4] of TVAR;   
     DSsen:        TVAR;
     LLsen:        TVAR;
     Nsen:         TVAR;
+    
+    /// smoothed transpiration interception ratio
     evenTransIntRatio: TVar;
+
+    /// potential transpiration [mm/d]
     PotTrans: TExternV;
+
+    /// Leaf dry matter per m2 [g/m2]
     LFWT_m2:  TExternV;
+
+    /// Leaf dry matter per plant [g/plant]
     LFWT_pl:  TExternV;
+
+    /// interception rate [mm/d]
     interception: TExternV;
+    
+    /// Actual transpiration [mm/d]
     ActTrans: TExternV;
+
+    /// Global radiation [MJ/m2/d]
     GlobRad:  TExternV;
+
+    /// extinction coefficient of global radiation [-]
     exk_GlobRad: TExternV;
+
+    /// ratio of actual to potential transpiration [-]
     TransRatio: TExternV;
+
+    /// ratio of actual to potential transpiration interception [-]
     TransIntRatio: TExternV;
+
+    /// net rainfall (rainfall - interception) [-]
     NetRain:  TExternV;
+
+    /// radiation intercepted by the canopy [W/m2]
     Rad_Int:  TExternV;
+
+    /// EC stage at which leaf growth stops
     EC_lgend: TExternV;
 //    NStoragepool_pl: TExternV;
     NcLAL:    array[1..4] of TExternV;
+    
+    /// areodynamic resistance [-]
     ra:       TExternV;
+
+    /// Saturation deficit [-]
     Sat_def:  TExternV;
+
+    /// air pressure [-]
     P:        TExternV;
+
+    /// specific interception capacity [mm/m2]
     sic:      TExternV;
+
+    /// interception storage [-]
     int_stor: TExternV;
+
+    /// precipitation [mm/d]
     rain:     TExternV;
+
+    /// canopy resistance under well watered conditions [-]
     rc0:      TExternV;
 //    Ncmob:    TExternV;
     gamma:    real;
     delta:    real;
     LAIs:     real;
-    PARi:     array[1..4] of TState; //<  amount of PAR incident on the surface of lamina i
+    PARi:     array[1..4] of TState; ///  amount of PAR incident on the surface of lamina i
+    
+    /// method for creating all variables, states and parameters
     procedure createAll; override;
+
+    /// method for initializing the module
     procedure Init(var GlobMod: TMod); override;
+    
+    /// method for calculating all rates
     procedure CalcRates; override;
+
+    /// method for integrating all state variables
     procedure Integrate; override;
 
 
@@ -316,7 +538,7 @@ begin
   ExternVCreate('sln', 'g/m2 leaf', statefield, sln, 'Specific leaf N content');
   ExternVCreate('NLeaf_m2', 'g/m2',statefield, NLeaf_m2, 'N content of leaves per m2 ground');
   ExternVCreate('GROLF', '[g/(pl*d)]',statefield, GROLF, 'growth rate of leaves');
-  ExternVCreate('ISTAGE', '',statefield, ISTAGE, 'integer growth stage according to ceres');
+  ExternVCreate('ISTAGE', '', statefield, ISTAGE, 'integer growth stage according to ceres');
   ExternVCreate('P5', '[-]',statefield, P5, 'Parameter or length of grain filling period');
   ExternVCreate('plants', '',statefield, plants, 'number of plants (1/m2)');
   ExternVCreate('TMPM', '[°C]',statefield, TMPM, 'mean day temperature');

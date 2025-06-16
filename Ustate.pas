@@ -1,7 +1,31 @@
-﻿/// <summary> UState is a unit that defines classes for model entities such as variables, parameters, state variables, and external values in a simulation framework.
-/// This concept is basically based on the approach of Forrester. 
-/// </summary>
-
+﻿///<unit>
+///  <name>UState</name>
+///  <summary>
+///    Defines core data types and classes for representing state variables, parameters, and external variables in a crop simulation model.
+///    Provides a standardized way to handle variables that change over time (states), fixed model parameters, and variables imported from other modules or the environment.
+///  </summary>
+///  <details>
+///    <item>
+///      <desc>TState</desc>
+///      <info>Type or class for state variables (e.g., leaf area, biomass) updated during simulation.</info>
+///    </item>
+///    <item>
+///      <desc>TPar / TPAR</desc>
+///      <info>Types or classes for model parameters (constants or tunable values).</info>
+///    </item>
+///    <item>
+///      <desc>TExternV</desc>
+///      <info>Types or classes for external variables (inputs from other modules, weather, soil, etc.).</info>
+///    </item>
+///    <item>
+///      <desc>TOption</desc>
+///      <info>Type for model options or switches (e.g., to enable/disable certain processes).</info>
+///    </item>
+///    <item>
+///      <desc>TVAR</desc>
+///      <info>General-purpose variable type, often for intermediate or calculated values.</info>
+///    </item>
+///  </details>
 unit UState;
 {$IFDEF LINUX}
 {$DEFINE NONVISUAL}
@@ -49,8 +73,12 @@ type
     N { ame }: string;
     /// Field for comments/explanation
     FComment: string;
+    /// private field for the name of the Entity
+    fName: string;
     /// field submodel to which the Entity belongs
     fSubmod: string;
+    /// field documentation link
+    fDocuWebLink: string;
   public
     /// units of the entity
     U { nits }: string;
@@ -76,9 +104,11 @@ type
     /// Name of the submodule
     property SubModName: string read fSubmod write fSubmod; 
     /// Comment or description
-    property Comment: string read FComment write FComment; 
+    property Comment: string read FComment write FComment;
+    /// DocuWebLink
+    property DocuWebLink: string read fDocuWebLink write fDocuWebLink;
     /// Flag indicating whether to write output to a text file
-    property Opt_writetoFile: boolean read WriteToFile write WriteToFile; 
+    property Opt_writetoFile: boolean read WriteToFile write WriteToFile;
     /// Flag indicating selection for sensitivity analysis output
     property Opt_SelForSensOut : boolean read SelForSensOut write SelForSensOut; 
     /// Units associated with the object

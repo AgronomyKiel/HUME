@@ -1,4 +1,4 @@
-unit UFormMod;
+ï»¿unit UFormMod;
 
 interface
 
@@ -403,7 +403,7 @@ begin
  inherited;
   if ParamCount > 0 then begin
     // Execute HUME with ParameterStrings 1: FN-File and 2; Output-Directory
-    // without showing the GUI   -  Ulf Böttcher 25.8.2021
+    // without showing the GUI   -  Ulf Bï¿½ttcher 25.8.2021
     CtrlFileFN := ParamStr(1);
     OutDir := ParamStr(2);
     if Lmod.fModel <> nil then
@@ -559,7 +559,7 @@ begin
 end;
 
 // ==============================================================================
-// UpdateStringGrid für alle States
+// UpdateStringGrid fï¿½r alle States
 // ==============================================================================
 
 procedure TFormMod.UpdateStringGridParam;
@@ -626,7 +626,7 @@ begin
     EditStateFileName.Text := Lmod.fModel.StateIniFile.FileName;
     Clear;
     Rows[0].commatext :=
-      'Name, Unit, Ini.Value, SaveToAllInis, WriteToFile, Plot, WriteFinalValue, GlobalOutput, Ínfo';
+      'Name, Unit, Ini.Value, SaveToAllInis, WriteToFile, Plot, WriteFinalValue, GlobalOutput, ï¿½nfo';
     // Description';
     RowCount := 2;
     FixedRows := 1;
@@ -722,7 +722,7 @@ begin
 
     EditOptionsFileName.Text := Lmod.fModel.OptionIniFile.FileName;
     Clear;
-    Rows[0].commatext := 'Name, Options, SaveToAllIni, Info';
+    Rows[0].commatext := 'Name, Options, SaveToAllIni, Info, DocuLink';
     RowCount := 2;
     FixedRows := 1;
     actSubModIndex := ComboBoxSubMod.ItemIndex;
@@ -1064,7 +1064,7 @@ begin
       EditDataFileName.hint := SubModel.FMeasValues.FName;
 
       // LoadFromCSV(SubModel.FMeasValues.FileName);
-      // wäre wesentlich einfacher, geht aber nicht,
+      // wï¿½re wesentlich einfacher, geht aber nicht,
       // weil die Daten mit beliebig vielen Leerzeichen getrennt sind
 
       if CheckBoxDataDateFormat.Checked then
@@ -1678,7 +1678,7 @@ begin
 end;
 
 // ==============================================================================
-// AdvStringGrid ButtonClick für alle States
+// AdvStringGrid ButtonClick fï¿½r alle States
 // ==============================================================================
 
 procedure TFormMod.AdvStringGridParamButtonClick(Sender: TObject;
@@ -2539,20 +2539,20 @@ begin
     'HUME: AN OBJECT ORIENTED COMPONENT LIBRARY FOR GENERIC MODULAR MODELLING OF DYNAMIC SYSTEMS '
     + #13 + #10 + '' + #13 + #10 + 'H. Kage' + #13 + #10 + '' + #13 + #10 +
     'Any model based on this library consists of one main model ' + #13 + #10 +
-    'module, implemented in a class called ‘Tmod’ and a number ' + #13 + #10 +
+    'module, implemented in a class called ï¿½Tmodï¿½ and a number ' + #13 + #10 +
     'of sub-models. The main model is responsible for the control ' + #13 + #10
     + 'of the simulation, single or multiple runs, and also implements ' + #13 +
     #10 + 'methods like calculating basic statistics and parameter ' + #13 + #10
     + 'estimation based on the Levenberg-Marquardt method. ' + #13 + #10 +
     'All sub-models have to be derived from the base class ' + #13 + #10 +
-    '‘TsubMod’ which contains dynamic lists of state variables, ' + #13 + #10 +
-    'variables, parameters and ‘external values’, i.e. values ' + #13 + #10 +
+    'ï¿½TsubModï¿½ which contains dynamic lists of state variables, ' + #13 + #10 +
+    'variables, parameters and ï¿½external valuesï¿½, i.e. values ' + #13 + #10 +
     'needed from outside the sub-model. The information' + #13 + #10 +
-    'exchange between the sub-models through ‘external values’ ' + #13 + #10 +
+    'exchange between the sub-models through ï¿½external valuesï¿½ ' + #13 + #10 +
     'is flexible, since it is simply based on string identities between ' + #13
     + #10 + 'the information needed and information located in any other ' + #13
     + #10 + 'submodel or input file. This technique allows exchange of ' + #13 +
-    #10 + 'sub-models through ‘drag and drop’ without any changes in ' + #13 +
+    #10 + 'sub-models through ï¿½drag and dropï¿½ without any changes in ' + #13 +
     #10 + 'the source code even for a changing number and order of ' + #13 + #10
     + 'parameters, as long as the necessary input parameters to the ' + #13 +
     #10 + 'sub-model can be found anywhere else in the model. ' + #13 + #10 +
@@ -2876,7 +2876,7 @@ begin
 end;
 
 // ==============================================================================
-// PageControl Änderungen
+// PageControl ï¿½nderungen
 // ==============================================================================
 
 procedure TFormMod.ViewVariables1Click(Sender: TObject);
@@ -3335,7 +3335,7 @@ begin
     FormGraphArray[nFormGraph].show;
   end
   else
-    showmessage('Mehr als 10 Graph-Fenster geöffnet');
+    showmessage('Mehr als 10 Graph-Fenster geï¿½ffnet');
 end;
 
 procedure TFormMod.OptimizeClick(Sender: TObject);
