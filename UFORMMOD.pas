@@ -710,10 +710,14 @@ var
   SubModel: TSubModel;
   Option: TOption;
   line: string;
+  LinkString: string;
 begin
   with AdvStringGridOptions do
   begin
     BeginUpdate;
+    AdvStringGridOptions.URLFull := false;
+    AdvStringGridOptions.URLShow  := true;
+
     // TODO ActIniFileIndex := ComboBoxIniFile.ItemIndex;
     // TODO Inifile := TMyIniFile(LMod.fModel.FiniFiles.objects[ActIniFileIndex]);
     // TODO LMod.fModel.init(IniFile);
@@ -733,8 +737,22 @@ begin
       for i := 0 to SubModel.OptionStrList.count - 1 do
       begin
         Option := TOption(SubModel.OptionStrList.objects[i]);
-        line := Option.name + ',' + Option.Option;
-        Rows[i + 1].commatext := line;
+//        line := Option.name + ',' + Option.Option;
+        AdvStringGridOptions.cells[0, i+1] := Option.name;
+        AdvStringGridOptions.cells[1, i+1] := Option.Option;
+
+        if Option.DocuWebLink <> '' then begin
+          LinkString := ' <A href="' + Option.DocuWebLink + '"title="'+Option.DocuWebLink+'>Explanation</A>';
+//          LinkString := Option.DocuWebLink;
+  //        line := line + ','','',' + LinkString ;
+ //       AdvStringGridOptions.cells[4, i+1] := Option.DocuWebLink;
+        AdvStringGridOptions.cells[4, i+1] := LinkString;
+//        AdvStringGridOptions.Hyperlinks.add(4, i+1, LinkString);
+
+        end;
+//        else
+//          line := line + ',' + Option.Option;
+//        Rows[i + 1].commatext := line;
         AddBitButton(2, i + 1, 20, 20, '', img_savetoall, haCenter, vaCenter);
         if Option.Comment <> '' then
           AddBitButton(3, i + 1, 20, 20, '', img_help, haCenter, vaCenter);

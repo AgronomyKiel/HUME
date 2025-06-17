@@ -1927,11 +1927,13 @@ object FormMod: TFormMod
         ActiveCellFont.Height = -11
         ActiveCellFont.Name = 'Tahoma'
         ActiveCellFont.Style = [fsBold]
-        ActiveCellColor = 15387318
+        ActiveCellColor = 9758459
+        ActiveCellColorTo = 1414638
         AutoNumAlign = True
+        AutoThemeAdapt = True
         CellNode.NodeType = cnFlat
         ControlLook.FixedGradientFrom = clWhite
-        ControlLook.FixedGradientTo = clBtnFace
+        ControlLook.FixedGradientTo = clWhite
         ControlLook.FixedGradientHoverFrom = 13619409
         ControlLook.FixedGradientHoverTo = 12502728
         ControlLook.FixedGradientHoverMirrorFrom = 12502728
@@ -2003,7 +2005,8 @@ object FormMod: TFormMod
         PrintSettings.PagePrefix = 'page'
         PrintSettings.PageNumSep = '/'
         ScrollWidth = 18
-        SearchFooter.ColorTo = 13160660
+        SearchFooter.Color = 15524577
+        SearchFooter.ColorTo = 11769496
         SearchFooter.FindNextCaption = 'Find &next'
         SearchFooter.FindPrevCaption = 'Find &previous'
         SearchFooter.Font.Charset = DEFAULT_CHARSET
@@ -2021,7 +2024,10 @@ object FormMod: TFormMod
         SortSettings.HeaderColorTo = 16579058
         SortSettings.HeaderMirrorColor = 16380385
         SortSettings.HeaderMirrorColorTo = 16182488
-        URLColor = clBlack
+        URLColor = clSalmon
+        URLShow = True
+        URLFull = True
+        URLEdit = True
         Version = '5.0.3.1'
         WordWrap = False
         ColWidths = (

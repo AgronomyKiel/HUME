@@ -1064,7 +1064,8 @@ begin
   OptCreate('optTSumInternode', 'constant', OptTSumInternode);
    OptTSumInternode.OptionList.Add('constant');
    OptTSumInternode.OptionList.Add('daylength');
-
+   optTSumInternode.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/TDevelopment.html#day-length-effects'
+//  optTSumInternode.DocuWebLink := 'Doku <a href="https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/TDevelopment.html#day-length-effects" title="Hume-Doku">hyperlink</a>';
 end;
 
 procedure TDevelopment.CreateExterns;
