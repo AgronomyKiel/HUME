@@ -1,74 +1,89 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="UHumeWheatPartitioning" platform="Win32">
-  <const name="gf_cwt3" type="TRSWT" file="UHumeWheatPartitioning.pas" line="52">
+  <devnotes>
+     <summary>
+     Module for carbon and nitrogen partitioning at the organ level (root, stem, leaves, grains) in wheat.
+     </summary>
+     <remarks>
+     Implements C translocation to grains based on experimental results (see Appendix, Ratjen Diss. 2012).
+     N concentrations in organs during vegetative growth are adapted from TSubPartitioningVegNew (U. Böttcher, Meyer-Schatz), with modifications for drought stress according to 2010 experimental results (see Ratjen Diss. Appendix).
+     Leaf N distribution is calculated for specific leaf layers at anthesis, based on 2010 experimental results (see Ratjen Diss. Appendix).
+     N dynamics are modeled similarly to Bertheloot 2008 (see Ratjen Diss. Appendix).
+     Implements sigmoid grain filling (October 2015).
+     Partitioning of N deficit follows Ratjen &amp; Kage 2016 (JACS).
+     Main authors: A.M. Ratjen, U. Böttcher, H. Kage et al.
+     Restructured and commented by H. Kage, 2024.
+     </remarks>
+  </devnotes>
+  <const name="gf_cwt3" type="TRSWT" file="UHumeWheatPartitioning.pas" line="43">
     <value>
       gf_cwt3
     </value>
   </const>
-  <const name="gf_pothi" type="TRSWT" file="UHumeWheatPartitioning.pas" line="52">
+  <const name="gf_pothi" type="TRSWT" file="UHumeWheatPartitioning.pas" line="43">
     <value>
       gf_pothi
     </value>
   </const>
-  <const name="DroughtImpact" type="TDroughtImpact" file="UHumeWheatPartitioning.pas" line="55">
+  <const name="DroughtImpact" type="TDroughtImpact" file="UHumeWheatPartitioning.pas" line="46">
     <value>
       DroughtImpact
     </value>
   </const>
-  <const name="NoDroughtImpact" type="TDroughtImpact" file="UHumeWheatPartitioning.pas" line="55">
+  <const name="NoDroughtImpact" type="TDroughtImpact" file="UHumeWheatPartitioning.pas" line="46">
     <value>
       NoDroughtImpact
     </value>
   </const>
-  <const name="NImpact" type="TNImpact" file="UHumeWheatPartitioning.pas" line="58">
+  <const name="NImpact" type="TNImpact" file="UHumeWheatPartitioning.pas" line="49">
     <value>
       NImpact
     </value>
   </const>
-  <const name="NoNImpact" type="TNImpact" file="UHumeWheatPartitioning.pas" line="58">
+  <const name="NoNImpact" type="TNImpact" file="UHumeWheatPartitioning.pas" line="49">
     <value>
       NoNImpact
     </value>
   </const>
-  <const name="PTF_CERES" type="TPTF_version" file="UHumeWheatPartitioning.pas" line="61">
+  <const name="PTF_CERES" type="TPTF_version" file="UHumeWheatPartitioning.pas" line="52">
     <value>
       PTF_CERES
     </value>
   </const>
-  <const name="PTF_Kage" type="TPTF_version" file="UHumeWheatPartitioning.pas" line="61">
+  <const name="PTF_Kage" type="TPTF_version" file="UHumeWheatPartitioning.pas" line="52">
     <value>
       PTF_Kage
     </value>
   </const>
-  <enum name="TRSWT" file="UHumeWheatPartitioning.pas" line="52">
+  <enum name="TRSWT" file="UHumeWheatPartitioning.pas" line="43">
     <devnotes>
        <summary> Type of grain filling algorithm, cwt3: according to ceres wheat 3, pothi: potential harvest index </summary>
     </devnotes>
-    <element value="0" name="gf_cwt3" file="UHumeWheatPartitioning.pas" line="52" />
-    <element value="1" name="gf_pothi" file="UHumeWheatPartitioning.pas" line="52" />
+    <element value="0" name="gf_cwt3" file="UHumeWheatPartitioning.pas" line="43" />
+    <element value="1" name="gf_pothi" file="UHumeWheatPartitioning.pas" line="43" />
   </enum>
-  <enum name="TDroughtImpact" file="UHumeWheatPartitioning.pas" line="55">
+  <enum name="TDroughtImpact" file="UHumeWheatPartitioning.pas" line="46">
     <devnotes>
        <summary> option for drought impact, with or whithout drough stress </summary>
     </devnotes>
-    <element value="0" name="DroughtImpact" file="UHumeWheatPartitioning.pas" line="55" />
-    <element value="1" name="NoDroughtImpact" file="UHumeWheatPartitioning.pas" line="55" />
+    <element value="0" name="DroughtImpact" file="UHumeWheatPartitioning.pas" line="46" />
+    <element value="1" name="NoDroughtImpact" file="UHumeWheatPartitioning.pas" line="46" />
   </enum>
-  <enum name="TNImpact" file="UHumeWheatPartitioning.pas" line="58">
+  <enum name="TNImpact" file="UHumeWheatPartitioning.pas" line="49">
     <devnotes>
        <summary> option for nitrogen impact </summary>
     </devnotes>
-    <element value="0" name="NImpact" file="UHumeWheatPartitioning.pas" line="58" />
-    <element value="1" name="NoNImpact" file="UHumeWheatPartitioning.pas" line="58" />
+    <element value="0" name="NImpact" file="UHumeWheatPartitioning.pas" line="49" />
+    <element value="1" name="NoNImpact" file="UHumeWheatPartitioning.pas" line="49" />
   </enum>
-  <enum name="TPTF_version" file="UHumeWheatPartitioning.pas" line="61">
+  <enum name="TPTF_version" file="UHumeWheatPartitioning.pas" line="52">
     <devnotes>
        <summary> two options for partitioning of shoot/root according to Ceres Wheat or Kage 2000 </summary>
     </devnotes>
-    <element value="0" name="PTF_CERES" file="UHumeWheatPartitioning.pas" line="61" />
-    <element value="1" name="PTF_Kage" file="UHumeWheatPartitioning.pas" line="61" />
+    <element value="0" name="PTF_CERES" file="UHumeWheatPartitioning.pas" line="52" />
+    <element value="1" name="PTF_Kage" file="UHumeWheatPartitioning.pas" line="52" />
   </enum>
-  <class name="THumeWheatPartitioning" file="UHumeWheatPartitioning.pas" line="66">
+  <class name="THumeWheatPartitioning" file="UHumeWheatPartitioning.pas" line="57">
     <devnotes>
        <summary> <summary> </summary>
        <summary> Represents the partitioning of resources in a wheat plant. </summary>
@@ -1307,128 +1322,117 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fRSWT" type="TRSWT" visibility="private" size="1" offset="928" file="UHumeWheatPartitioning.pas" line="69">
+      <field name="fRSWT" type="TRSWT" visibility="private" size="1" offset="928" file="UHumeWheatPartitioning.pas" line="60">
         <devnotes>
            <summary> Type of grain filling algorithm </summary>
         </devnotes>
       </field>
-      <field name="dNSP_l" type="Double" visibility="private" size="8" offset="936" file="UHumeWheatPartitioning.pas" line="71">
+      <field name="dNSP_l" type="Double" visibility="private" size="8" offset="936" file="UHumeWheatPartitioning.pas" line="62">
         <devnotes>
            <summary> change rate of N-storage pool leaf </summary>
         </devnotes>
       </field>
-      <field name="dNSP_s" type="Double" visibility="private" size="8" offset="944" file="UHumeWheatPartitioning.pas" line="73">
+      <field name="dNSP_s" type="Double" visibility="private" size="8" offset="944" file="UHumeWheatPartitioning.pas" line="64">
         <devnotes>
            <summary> change rate of N-storage pool stem </summary>
         </devnotes>
       </field>
-      <field name="NLStruc_m2" type="Double" visibility="private" size="8" offset="952" file="UHumeWheatPartitioning.pas" line="75">
+      <field name="NLStruc_m2" type="Double" visibility="private" size="8" offset="952" file="UHumeWheatPartitioning.pas" line="66">
         <devnotes>
            <summary> structural leaf N per square meter </summary>
         </devnotes>
       </field>
-      <field name="PAR_arr" visibility="private" size="360" offset="960" file="UHumeWheatPartitioning.pas" line="77">
+      <field name="PAR_arr" visibility="private" size="360" offset="960" file="UHumeWheatPartitioning.pas" line="68">
         <devnotes>
            <summary> CumPAR for Q45 </summary>
         </devnotes>
-        <array name="PAR_arr" visibility="private" low="1" high="45" file="UHumeWheatPartitioning.pas" line="77">
+        <array name="PAR_arr" visibility="private" low="1" high="45" file="UHumeWheatPartitioning.pas" line="68">
           <element type="Double" />
         </array>
       </field>
-      <field name="MTEMP_arr" visibility="private" size="360" offset="1320" file="UHumeWheatPartitioning.pas" line="79">
+      <field name="MTEMP_arr" visibility="private" size="360" offset="1320" file="UHumeWheatPartitioning.pas" line="70">
         <devnotes>
            <summary> CumMTemp for Q45 </summary>
         </devnotes>
-        <array name="MTEMP_arr" visibility="private" low="1" high="45" file="UHumeWheatPartitioning.pas" line="79">
+        <array name="MTEMP_arr" visibility="private" low="1" high="45" file="UHumeWheatPartitioning.pas" line="70">
           <element type="Double" />
         </array>
       </field>
-      <field name="Nph_c" type="Double" visibility="private" size="8" offset="1680" file="UHumeWheatPartitioning.pas" line="80" />
-      <field name="NDeg" type="Double" visibility="private" size="8" offset="1688" file="UHumeWheatPartitioning.pas" line="81" />
-      <field name="NSyn" type="Double" visibility="private" size="8" offset="1696" file="UHumeWheatPartitioning.pas" line="82" />
-      <field name="Np2" type="Double" visibility="private" size="8" offset="1704" file="UHumeWheatPartitioning.pas" line="83" />
-      <field name="nc_" type="Double" visibility="private" size="8" offset="1712" file="UHumeWheatPartitioning.pas" line="83" />
-      <field name="Swmin" type="Double" visibility="private" size="8" offset="1720" file="UHumeWheatPartitioning.pas" line="84" />
-      <field name="SumGRHI" type="Double" visibility="private" size="8" offset="1728" file="UHumeWheatPartitioning.pas" line="85" />
-      <field name="SumTempHI" type="Double" visibility="private" size="8" offset="1736" file="UHumeWheatPartitioning.pas" line="86" />
-      <field name="Ndsen" type="Double" visibility="private" size="8" offset="1744" file="UHumeWheatPartitioning.pas" line="87" />
-      <procedure name="CreateAllVars" visibility="private" file="UHumeWheatPartitioning.pas" line="88">
+      <field name="Nph_c" type="Double" visibility="private" size="8" offset="1680" file="UHumeWheatPartitioning.pas" line="71" />
+      <field name="NDeg" type="Double" visibility="private" size="8" offset="1688" file="UHumeWheatPartitioning.pas" line="72" />
+      <field name="NSyn" type="Double" visibility="private" size="8" offset="1696" file="UHumeWheatPartitioning.pas" line="73" />
+      <field name="Np2" type="Double" visibility="private" size="8" offset="1704" file="UHumeWheatPartitioning.pas" line="74" />
+      <field name="nc_" type="Double" visibility="private" size="8" offset="1712" file="UHumeWheatPartitioning.pas" line="74" />
+      <field name="Swmin" type="Double" visibility="private" size="8" offset="1720" file="UHumeWheatPartitioning.pas" line="75" />
+      <field name="SumGRHI" type="Double" visibility="private" size="8" offset="1728" file="UHumeWheatPartitioning.pas" line="76" />
+      <field name="SumTempHI" type="Double" visibility="private" size="8" offset="1736" file="UHumeWheatPartitioning.pas" line="77" />
+      <field name="Ndsen" type="Double" visibility="private" size="8" offset="1744" file="UHumeWheatPartitioning.pas" line="78" />
+      <procedure name="CreateAllVars" visibility="private" file="UHumeWheatPartitioning.pas" line="79">
       </procedure>
-      <procedure name="CreateAllStates" visibility="private" file="UHumeWheatPartitioning.pas" line="89">
+      <procedure name="CreateAllStates" visibility="private" file="UHumeWheatPartitioning.pas" line="80">
       </procedure>
-      <procedure name="CreateAllExternV" visibility="private" file="UHumeWheatPartitioning.pas" line="90">
+      <procedure name="CreateAllExternV" visibility="private" file="UHumeWheatPartitioning.pas" line="81">
       </procedure>
-      <procedure name="CreateAllPars" visibility="private" file="UHumeWheatPartitioning.pas" line="91">
+      <procedure name="CreateAllPars" visibility="private" file="UHumeWheatPartitioning.pas" line="82">
       </procedure>
-      <procedure name="CreateAllOptions" visibility="private" file="UHumeWheatPartitioning.pas" line="92">
+      <procedure name="CreateAllOptions" visibility="private" file="UHumeWheatPartitioning.pas" line="83">
       </procedure>
-      <procedure name="CalcSeedReserveChange" visibility="private" file="UHumeWheatPartitioning.pas" line="93">
+      <procedure name="CalcSeedReserveChange" visibility="private" file="UHumeWheatPartitioning.pas" line="84">
         <devnotes>
            <summary> Calculates the change in seed reserve for the Hume Wheat Partitioning component. </summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcLeafNChange" visibility="private" file="UHumeWheatPartitioning.pas" line="94">
+      <procedure name="CalcLeafNChange" visibility="private" file="UHumeWheatPartitioning.pas" line="85">
       </procedure>
-      <procedure name="InitStatesAfterEmergence" visibility="private" file="UHumeWheatPartitioning.pas" line="95">
+      <procedure name="InitStatesAfterEmergence" visibility="private" file="UHumeWheatPartitioning.pas" line="86">
         <devnotes>
            <summary> Initializes the states after emergence. </summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcNStem" visibility="private" file="UHumeWheatPartitioning.pas" line="96">
+      <procedure name="CalcNStem" visibility="private" file="UHumeWheatPartitioning.pas" line="87">
       </procedure>
-      <procedure name="CalcSenescenceAndTranslocation" visibility="private" file="UHumeWheatPartitioning.pas" line="97">
+      <procedure name="CalcSenescenceAndTranslocation" visibility="private" file="UHumeWheatPartitioning.pas" line="88">
       </procedure>
-      <procedure name="TransferToSenescentPools" visibility="private" file="UHumeWheatPartitioning.pas" line="98">
+      <procedure name="TransferToSenescentPools" visibility="private" file="UHumeWheatPartitioning.pas" line="89">
       </procedure>
-      <procedure name="CalcQHI" visibility="private" file="UHumeWheatPartitioning.pas" line="99">
+      <procedure name="CalcQHI" visibility="private" file="UHumeWheatPartitioning.pas" line="90">
         <devnotes>
            <summary> C:/Users/h_kage/Documents/R_Statistik/HumeWheatDoku/HUMEWheatDocu.html#potential-harvest-index </summary>
            <summary> Calculates the QHI (Harvest Index) for the wheat partitioning. </summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcPotHI" visibility="private" file="UHumeWheatPartitioning.pas" line="101">
+      <procedure name="CalcPotHI" visibility="private" file="UHumeWheatPartitioning.pas" line="92">
         <devnotes>
-           <summary> <summary> </summary>
            <summary> Calculates the potential harvest index (HI) for wheat. </summary>
-           <summary> </summary> </summary>
-           <summary>  </summary>
-           <summary> <remarks> </summary>
-           <summary> <para> </summary>
-           <summary> This procedure is part of the THumeWheatPartitioning class. </summary>
-           <summary> </para> </summary>
-           <summary> <para> </summary>
-           <summary> The calculated potential HI is stored in a class variable for later use. </summary>
-           <summary> </para> </summary>
-           <summary> </remarks> </summary>
         </devnotes>
       </procedure>
-      <field name="fDroughtImpact" type="TDroughtImpact" visibility="protected" size="1" offset="1752" file="UHumeWheatPartitioning.pas" line="105" />
-      <field name="fNImpact" type="TNImpact" visibility="protected" size="1" offset="1753" file="UHumeWheatPartitioning.pas" line="106" />
-      <field name="fDevelopmentModel" type="TDevelopment" visibility="protected" size="4" offset="1756" file="UHumeWheatPartitioning.pas" line="107" />
-      <field name="fDrymatterModel" type="THumeWheatDryMatter" visibility="protected" size="4" offset="1760" file="UHumeWheatPartitioning.pas" line="108" />
-      <field name="fLeafAreaModel" type="THumeWheatLeafArea" visibility="protected" size="4" offset="1764" file="UHumeWheatPartitioning.pas" line="109" />
-      <field name="fRootModel" type="TSimpleRootModDM" visibility="protected" size="4" offset="1768" file="UHumeWheatPartitioning.pas" line="110" />
-      <procedure name="setDevelopmentModel" visibility="protected" file="UHumeWheatPartitioning.pas" line="111">
+      <field name="fDroughtImpact" type="TDroughtImpact" visibility="protected" size="1" offset="1752" file="UHumeWheatPartitioning.pas" line="96" />
+      <field name="fNImpact" type="TNImpact" visibility="protected" size="1" offset="1753" file="UHumeWheatPartitioning.pas" line="97" />
+      <field name="fDevelopmentModel" type="TDevelopment" visibility="protected" size="4" offset="1756" file="UHumeWheatPartitioning.pas" line="98" />
+      <field name="fDrymatterModel" type="THumeWheatDryMatter" visibility="protected" size="4" offset="1760" file="UHumeWheatPartitioning.pas" line="99" />
+      <field name="fLeafAreaModel" type="THumeWheatLeafArea" visibility="protected" size="4" offset="1764" file="UHumeWheatPartitioning.pas" line="100" />
+      <field name="fRootModel" type="TSimpleRootModDM" visibility="protected" size="4" offset="1768" file="UHumeWheatPartitioning.pas" line="101" />
+      <procedure name="setDevelopmentModel" visibility="protected" file="UHumeWheatPartitioning.pas" line="102">
         <parameters>
           <parameter name="AModel" type="TDevelopment" />
         </parameters>
       </procedure>
-      <procedure name="setDrymatterModel" visibility="protected" file="UHumeWheatPartitioning.pas" line="112">
+      <procedure name="setDrymatterModel" visibility="protected" file="UHumeWheatPartitioning.pas" line="103">
         <parameters>
           <parameter name="AModel" type="THumeWheatDryMatter" />
         </parameters>
       </procedure>
-      <procedure name="setLeafAreaModel" visibility="protected" file="UHumeWheatPartitioning.pas" line="113">
+      <procedure name="setLeafAreaModel" visibility="protected" file="UHumeWheatPartitioning.pas" line="104">
         <parameters>
           <parameter name="AModel" type="THumeWheatLeafArea" />
         </parameters>
       </procedure>
-      <procedure name="SetLai" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="114">
+      <procedure name="SetLai" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="105">
         <parameters>
           <parameter name="NewLAI" type="THumeNumEntity" />
         </parameters>
       </procedure>
-      <function name="GetLAI" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="115">
+      <function name="GetLAI" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="106">
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
@@ -1438,7 +1442,7 @@
           </retval>
         </parameters>
       </function>
-      <function name="GetWLD" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="116">
+      <function name="GetWLD" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="107">
         <parameters>
           <parameter name="Index" type="Integer" />
           <retval type="THumeNumEntity">
@@ -1449,7 +1453,7 @@
           </retval>
         </parameters>
       </function>
-      <function name="GetSumRootLength" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="117">
+      <function name="GetSumRootLength" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="108">
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
@@ -1459,7 +1463,7 @@
           </retval>
         </parameters>
       </function>
-      <function name="GetSumRootLength_eff" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="118">
+      <function name="GetSumRootLength_eff" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="109">
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
@@ -1469,7 +1473,7 @@
           </retval>
         </parameters>
       </function>
-      <function name="GetCropHeight" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="119">
+      <function name="GetCropHeight" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="110">
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
@@ -1479,7 +1483,7 @@
           </retval>
         </parameters>
       </function>
-      <function name="GetNUptakeRate" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="120">
+      <function name="GetNUptakeRate" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="111">
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
@@ -1489,653 +1493,653 @@
           </retval>
         </parameters>
       </function>
-      <procedure name="SetCropHeight" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="121">
+      <procedure name="SetCropHeight" visibility="protected" procflags="override" file="UHumeWheatPartitioning.pas" line="112">
         <parameters>
           <parameter name="NewCropHeight" type="THumeNumEntity" />
         </parameters>
       </procedure>
-      <function name="getExtCoeffPAR" visibility="protected" file="UHumeWheatPartitioning.pas" line="122">
+      <function name="getExtCoeffPAR" visibility="protected" file="UHumeWheatPartitioning.pas" line="113">
         <parameters>
           <retval type="Double" />
         </parameters>
       </function>
-      <field name="NNIcrit" type="TPar" visibility="public" size="4" offset="1772" file="UHumeWheatPartitioning.pas" line="126">
+      <field name="NNIcrit" type="TPar" visibility="public" size="4" offset="1772" file="UHumeWheatPartitioning.pas" line="117">
         <devnotes>
            <summary> parameter for leaf stem DM partitioning under N limitation Ratjen &amp; Kage 2015 (2016?) </summary>
         </devnotes>
       </field>
-      <field name="NNIinc" type="TPar" visibility="public" size="4" offset="1776" file="UHumeWheatPartitioning.pas" line="128">
+      <field name="NNIinc" type="TPar" visibility="public" size="4" offset="1776" file="UHumeWheatPartitioning.pas" line="119">
         <devnotes>
            <summary> parameter for  leaf stem DM partitioning under N limitation Ratjen &amp; Kage 2015 (2016?) </summary>
         </devnotes>
       </field>
-      <field name="pNdefAllo" type="TPar" visibility="public" size="4" offset="1780" file="UHumeWheatPartitioning.pas" line="129" />
-      <field name="maxNNI" type="TPar" visibility="public" size="4" offset="1784" file="UHumeWheatPartitioning.pas" line="130" />
-      <field name="QHI_INT" type="TPar" visibility="public" size="4" offset="1788" file="UHumeWheatPartitioning.pas" line="131" />
-      <field name="QHI_INC" type="TPar" visibility="public" size="4" offset="1792" file="UHumeWheatPartitioning.pas" line="132" />
-      <field name="fRootN_ini" type="TPar" visibility="public" size="4" offset="1796" file="UHumeWheatPartitioning.pas" line="134">
+      <field name="pNdefAllo" type="TPar" visibility="public" size="4" offset="1780" file="UHumeWheatPartitioning.pas" line="120" />
+      <field name="maxNNI" type="TPar" visibility="public" size="4" offset="1784" file="UHumeWheatPartitioning.pas" line="121" />
+      <field name="QHI_INT" type="TPar" visibility="public" size="4" offset="1788" file="UHumeWheatPartitioning.pas" line="122" />
+      <field name="QHI_INC" type="TPar" visibility="public" size="4" offset="1792" file="UHumeWheatPartitioning.pas" line="123" />
+      <field name="fRootN_ini" type="TPar" visibility="public" size="4" offset="1796" file="UHumeWheatPartitioning.pas" line="125">
         <devnotes>
            <summary> initial ratio of RootN/ShootN </summary>
         </devnotes>
       </field>
-      <field name="fRootN_min" type="TPar" visibility="public" size="4" offset="1800" file="UHumeWheatPartitioning.pas" line="136">
+      <field name="fRootN_min" type="TPar" visibility="public" size="4" offset="1800" file="UHumeWheatPartitioning.pas" line="127">
         <devnotes>
            <summary> minimum ratio of RootN/ShootN </summary>
         </devnotes>
       </field>
-      <field name="TTfRootN" type="TPar" visibility="public" size="4" offset="1804" file="UHumeWheatPartitioning.pas" line="138">
+      <field name="TTfRootN" type="TPar" visibility="public" size="4" offset="1804" file="UHumeWheatPartitioning.pas" line="129">
         <devnotes>
            <summary> TSUM of min rootN </summary>
         </devnotes>
       </field>
-      <field name="EC_LGend" type="TPar" visibility="public" size="4" offset="1808" file="UHumeWheatPartitioning.pas" line="140">
+      <field name="EC_LGend" type="TPar" visibility="public" size="4" offset="1808" file="UHumeWheatPartitioning.pas" line="131">
         <devnotes>
            <summary> end EC for leaf growth </summary>
         </devnotes>
       </field>
-      <field name="maxNcStem" type="TPar" visibility="public" size="4" offset="1812" file="UHumeWheatPartitioning.pas" line="141" />
-      <field name="RND" type="TPar" visibility="public" size="4" offset="1816" file="UHumeWheatPartitioning.pas" line="142" />
-      <field name="k_SEEDRV" type="TPar" visibility="public" size="4" offset="1820" file="UHumeWheatPartitioning.pas" line="144">
+      <field name="maxNcStem" type="TPar" visibility="public" size="4" offset="1812" file="UHumeWheatPartitioning.pas" line="132" />
+      <field name="RND" type="TPar" visibility="public" size="4" offset="1816" file="UHumeWheatPartitioning.pas" line="133" />
+      <field name="k_SEEDRV" type="TPar" visibility="public" size="4" offset="1820" file="UHumeWheatPartitioning.pas" line="135">
         <devnotes>
            <summary> mobilisation constant for seed reseves </summary>
         </devnotes>
       </field>
-      <field name="psi_crit" type="TPar" visibility="public" size="4" offset="1824" file="UHumeWheatPartitioning.pas" line="145" />
-      <field name="psi_s" type="TPar" visibility="public" size="4" offset="1828" file="UHumeWheatPartitioning.pas" line="146" />
-      <field name="PsiSen1" type="TPar" visibility="public" size="4" offset="1832" file="UHumeWheatPartitioning.pas" line="147" />
-      <field name="PsiSen2" type="TPar" visibility="public" size="4" offset="1836" file="UHumeWheatPartitioning.pas" line="148" />
-      <field name="RNS" type="TPar" visibility="public" size="4" offset="1840" file="UHumeWheatPartitioning.pas" line="149" />
-      <field name="K1" type="TPar" visibility="public" size="4" offset="1844" file="UHumeWheatPartitioning.pas" line="150" />
-      <field name="K2" type="TPar" visibility="public" size="4" offset="1848" file="UHumeWheatPartitioning.pas" line="151" />
-      <field name="pDMTrans" type="TPar" visibility="public" size="4" offset="1852" file="UHumeWheatPartitioning.pas" line="153">
+      <field name="psi_crit" type="TPar" visibility="public" size="4" offset="1824" file="UHumeWheatPartitioning.pas" line="136" />
+      <field name="psi_s" type="TPar" visibility="public" size="4" offset="1828" file="UHumeWheatPartitioning.pas" line="137" />
+      <field name="PsiSen1" type="TPar" visibility="public" size="4" offset="1832" file="UHumeWheatPartitioning.pas" line="138" />
+      <field name="PsiSen2" type="TPar" visibility="public" size="4" offset="1836" file="UHumeWheatPartitioning.pas" line="139" />
+      <field name="RNS" type="TPar" visibility="public" size="4" offset="1840" file="UHumeWheatPartitioning.pas" line="140" />
+      <field name="K1" type="TPar" visibility="public" size="4" offset="1844" file="UHumeWheatPartitioning.pas" line="141" />
+      <field name="K2" type="TPar" visibility="public" size="4" offset="1848" file="UHumeWheatPartitioning.pas" line="142" />
+      <field name="pDMTrans" type="TPar" visibility="public" size="4" offset="1852" file="UHumeWheatPartitioning.pas" line="144">
         <devnotes>
            <summary> translozierbarer Anteil der seneszenten Trockenmasse (%%) </summary>
         </devnotes>
       </field>
-      <field name="NcStemMin" type="TPar" visibility="public" size="4" offset="1856" file="UHumeWheatPartitioning.pas" line="155">
+      <field name="NcStemMin" type="TPar" visibility="public" size="4" offset="1856" file="UHumeWheatPartitioning.pas" line="146">
         <devnotes>
            <summary> lowest stem N-concentration (%%) </summary>
         </devnotes>
       </field>
-      <field name="NcStem_a" type="TPar" visibility="public" size="4" offset="1860" file="UHumeWheatPartitioning.pas" line="157">
+      <field name="NcStem_a" type="TPar" visibility="public" size="4" offset="1860" file="UHumeWheatPartitioning.pas" line="148">
         <devnotes>
            <summary> Parameter für stem N-Verdünnungsfunktion </summary>
         </devnotes>
       </field>
-      <field name="NcStem_b" type="TPar" visibility="public" size="4" offset="1864" file="UHumeWheatPartitioning.pas" line="159">
+      <field name="NcStem_b" type="TPar" visibility="public" size="4" offset="1864" file="UHumeWheatPartitioning.pas" line="150">
         <devnotes>
            <summary> Parameter für Stüngel N-Verdünnungsfunktion </summary>
         </devnotes>
       </field>
-      <field name="rgr_NcLeafWinter" type="TPar" visibility="public" size="4" offset="1868" file="UHumeWheatPartitioning.pas" line="161">
+      <field name="rgr_NcLeafWinter" type="TPar" visibility="public" size="4" offset="1868" file="UHumeWheatPartitioning.pas" line="152">
         <devnotes>
            <summary> Zuwachsrate für die leaf N-concentration im Winter </summary>
         </devnotes>
       </field>
-      <field name="rgr_NcStemWinter" type="TPar" visibility="public" size="4" offset="1872" file="UHumeWheatPartitioning.pas" line="163">
+      <field name="rgr_NcStemWinter" type="TPar" visibility="public" size="4" offset="1872" file="UHumeWheatPartitioning.pas" line="154">
         <devnotes>
            <summary> Zuwachsrate für die stem N-concentration im Winter </summary>
         </devnotes>
       </field>
-      <field name="NcLeafMin" type="TPar" visibility="public" size="4" offset="1876" file="UHumeWheatPartitioning.pas" line="165">
+      <field name="NcLeafMin" type="TPar" visibility="public" size="4" offset="1876" file="UHumeWheatPartitioning.pas" line="156">
         <devnotes>
            <summary> niedrigste leaf N-concentration bis Frühjahr (%%) </summary>
         </devnotes>
       </field>
-      <field name="ECcritNcLeaf" type="TPar" visibility="public" size="4" offset="1880" file="UHumeWheatPartitioning.pas" line="167">
+      <field name="ECcritNcLeaf" type="TPar" visibility="public" size="4" offset="1880" file="UHumeWheatPartitioning.pas" line="158">
         <devnotes>
            <summary> kritisches EC-Stadium bis zu dem N-Konz.= NcLeafWinter </summary>
         </devnotes>
       </field>
-      <field name="fFineRoot0" type="TPar" visibility="public" size="4" offset="1884" file="UHumeWheatPartitioning.pas" line="168" />
-      <field name="FFineRootDec" type="TPar" visibility="public" size="4" offset="1888" file="UHumeWheatPartitioning.pas" line="169" />
-      <field name="Plants" type="TPar" visibility="public" size="4" offset="1892" file="UHumeWheatPartitioning.pas" line="171">
+      <field name="fFineRoot0" type="TPar" visibility="public" size="4" offset="1884" file="UHumeWheatPartitioning.pas" line="159" />
+      <field name="FFineRootDec" type="TPar" visibility="public" size="4" offset="1888" file="UHumeWheatPartitioning.pas" line="160" />
+      <field name="Plants" type="TPar" visibility="public" size="4" offset="1892" file="UHumeWheatPartitioning.pas" line="162">
         <devnotes>
            <summary> number of plants per square meter </summary>
         </devnotes>
       </field>
-      <field name="rgr_GrainN" type="TPar" visibility="public" size="4" offset="1896" file="UHumeWheatPartitioning.pas" line="172" />
-      <field name="GM4" type="TPar" visibility="public" size="4" offset="1900" file="UHumeWheatPartitioning.pas" line="174">
+      <field name="rgr_GrainN" type="TPar" visibility="public" size="4" offset="1896" file="UHumeWheatPartitioning.pas" line="163" />
+      <field name="GM4" type="TPar" visibility="public" size="4" offset="1900" file="UHumeWheatPartitioning.pas" line="165">
         <devnotes>
            <summary> fit parameter for calculation of GPSM </summary>
         </devnotes>
       </field>
-      <field name="GM4_2" type="TPar" visibility="public" size="4" offset="1904" file="UHumeWheatPartitioning.pas" line="176">
+      <field name="GM4_2" type="TPar" visibility="public" size="4" offset="1904" file="UHumeWheatPartitioning.pas" line="167">
         <devnotes>
            <summary> fit parameter for calculation of GPSM </summary>
         </devnotes>
       </field>
-      <field name="Ini_SEEDRV" type="TPar" visibility="public" size="4" offset="1908" file="UHumeWheatPartitioning.pas" line="178">
+      <field name="Ini_SEEDRV" type="TPar" visibility="public" size="4" offset="1908" file="UHumeWheatPartitioning.pas" line="169">
         <devnotes>
            <summary> initial seed weight (g/pl) </summary>
         </devnotes>
       </field>
-      <field name="h" type="TPar" visibility="public" size="4" offset="1912" file="UHumeWheatPartitioning.pas" line="180">
+      <field name="h" type="TPar" visibility="public" size="4" offset="1912" file="UHumeWheatPartitioning.pas" line="171">
         <devnotes>
            <summary> Proportionalitaetskonstante leaf-St�ngel-Verteilung} </summary>
         </devnotes>
       </field>
-      <field name="g" type="TPar" visibility="public" size="4" offset="1916" file="UHumeWheatPartitioning.pas" line="182">
+      <field name="g" type="TPar" visibility="public" size="4" offset="1916" file="UHumeWheatPartitioning.pas" line="173">
         <devnotes>
            <summary> Proportionalitaetskonstante leaf-St�ngel-Verteilung} </summary>
         </devnotes>
       </field>
-      <field name="relLayerN_S" visibility="public" size="12" offset="1920" file="UHumeWheatPartitioning.pas" line="183">
-        <array name="relLayerN_S" visibility="public" low="1" high="3" file="UHumeWheatPartitioning.pas" line="183">
+      <field name="relLayerN_S" visibility="public" size="12" offset="1920" file="UHumeWheatPartitioning.pas" line="174">
+        <array name="relLayerN_S" visibility="public" low="1" high="3" file="UHumeWheatPartitioning.pas" line="174">
           <element type="TPar" />
         </array>
       </field>
-      <field name="relLayerN_int" visibility="public" size="12" offset="1932" file="UHumeWheatPartitioning.pas" line="184">
-        <array name="relLayerN_int" visibility="public" low="1" high="3" file="UHumeWheatPartitioning.pas" line="184">
+      <field name="relLayerN_int" visibility="public" size="12" offset="1932" file="UHumeWheatPartitioning.pas" line="175">
+        <array name="relLayerN_int" visibility="public" low="1" high="3" file="UHumeWheatPartitioning.pas" line="175">
           <element type="TPar" />
         </array>
       </field>
-      <field name="iniGRNWT" type="TPar" visibility="public" size="4" offset="1944" file="UHumeWheatPartitioning.pas" line="185" />
-      <field name="dECDP" type="TPar" visibility="public" size="4" offset="1948" file="UHumeWheatPartitioning.pas" line="187">
+      <field name="iniGRNWT" type="TPar" visibility="public" size="4" offset="1944" file="UHumeWheatPartitioning.pas" line="176" />
+      <field name="dECDP" type="TPar" visibility="public" size="4" offset="1948" file="UHumeWheatPartitioning.pas" line="178">
         <devnotes>
            <summary> duration of endosperm cell devision phase </summary>
         </devnotes>
       </field>
-      <field name="HImin" type="TPar" visibility="public" size="4" offset="1952" file="UHumeWheatPartitioning.pas" line="188" />
-      <field name="NcLeafVf1" type="TPar" visibility="public" size="4" offset="1956" file="UHumeWheatPartitioning.pas" line="191">
+      <field name="HImin" type="TPar" visibility="public" size="4" offset="1952" file="UHumeWheatPartitioning.pas" line="179" />
+      <field name="NcLeafVf1" type="TPar" visibility="public" size="4" offset="1956" file="UHumeWheatPartitioning.pas" line="182">
         <devnotes>
            <summary> Steigung der Leaf N-Verd�nnungsfunktion </summary>
         </devnotes>
       </field>
-      <field name="NcLeafVf2" type="TPar" visibility="public" size="4" offset="1960" file="UHumeWheatPartitioning.pas" line="193">
+      <field name="NcLeafVf2" type="TPar" visibility="public" size="4" offset="1960" file="UHumeWheatPartitioning.pas" line="184">
         <devnotes>
            <summary> Intercept der Leaf N-Verd�nnugsfunktion </summary>
         </devnotes>
       </field>
-      <field name="maxNupTake" type="TPar" visibility="public" size="4" offset="1964" file="UHumeWheatPartitioning.pas" line="194" />
-      <field name="iniLA" type="TPar" visibility="public" size="4" offset="1968" file="UHumeWheatPartitioning.pas" line="198" />
-      <field name="NRoot_pl" type="TState" visibility="public" size="4" offset="1972" file="UHumeWheatPartitioning.pas" line="199" />
-      <field name="NSen_pl" type="TState" visibility="public" size="4" offset="1976" file="UHumeWheatPartitioning.pas" line="201">
+      <field name="maxNupTake" type="TPar" visibility="public" size="4" offset="1964" file="UHumeWheatPartitioning.pas" line="185" />
+      <field name="iniLA" type="TPar" visibility="public" size="4" offset="1968" file="UHumeWheatPartitioning.pas" line="189" />
+      <field name="NRoot_pl" type="TState" visibility="public" size="4" offset="1972" file="UHumeWheatPartitioning.pas" line="190" />
+      <field name="NSen_pl" type="TState" visibility="public" size="4" offset="1976" file="UHumeWheatPartitioning.pas" line="192">
         <devnotes>
            <summary> N in senescent leaves [g/plant] </summary>
         </devnotes>
       </field>
-      <field name="Senwt_pl" type="TState" visibility="public" size="4" offset="1980" file="UHumeWheatPartitioning.pas" line="203">
+      <field name="Senwt_pl" type="TState" visibility="public" size="4" offset="1980" file="UHumeWheatPartitioning.pas" line="194">
         <devnotes>
            <summary> Senescent leaf weight [g/plant] </summary>
         </devnotes>
       </field>
-      <field name="STMWT_pl" type="TState" visibility="public" size="4" offset="1984" file="UHumeWheatPartitioning.pas" line="205">
+      <field name="STMWT_pl" type="TState" visibility="public" size="4" offset="1984" file="UHumeWheatPartitioning.pas" line="196">
         <devnotes>
            <summary> Stem weight of an average tiller after terminal spikelet  [g] </summary>
         </devnotes>
       </field>
-      <field name="NGrain_pl" type="TState" visibility="public" size="4" offset="1988" file="UHumeWheatPartitioning.pas" line="206" />
-      <field name="NShoot_pl" type="TState" visibility="public" size="4" offset="1992" file="UHumeWheatPartitioning.pas" line="208">
+      <field name="NGrain_pl" type="TState" visibility="public" size="4" offset="1988" file="UHumeWheatPartitioning.pas" line="197" />
+      <field name="NShoot_pl" type="TState" visibility="public" size="4" offset="1992" file="UHumeWheatPartitioning.pas" line="199">
         <devnotes>
            <summary> Spross N amount (g/plant) </summary>
         </devnotes>
       </field>
-      <field name="CropHeight" type="TState" visibility="public" size="4" offset="1996" file="UHumeWheatPartitioning.pas" line="210">
+      <field name="CropHeight" type="TState" visibility="public" size="4" offset="1996" file="UHumeWheatPartitioning.pas" line="201">
         <devnotes>
            <summary> plant height [m] </summary>
         </devnotes>
       </field>
-      <field name="SEEDRV" type="TState" visibility="public" size="4" offset="2000" file="UHumeWheatPartitioning.pas" line="212">
+      <field name="SEEDRV" type="TState" visibility="public" size="4" offset="2000" file="UHumeWheatPartitioning.pas" line="203">
         <devnotes>
            <summary> Reserve carbohydrates in seed for use by plant in seedling stage [g/plant] </summary>
         </devnotes>
       </field>
-      <field name="NcLeafWinter" type="TState" visibility="public" size="4" offset="2004" file="UHumeWheatPartitioning.pas" line="214">
+      <field name="NcLeafWinter" type="TState" visibility="public" size="4" offset="2004" file="UHumeWheatPartitioning.pas" line="205">
         <devnotes>
            <summary> N conc. Leaf Winter (%%) Strahlungsabhängig </summary>
         </devnotes>
       </field>
-      <field name="NcStemWinter" type="TState" visibility="public" size="4" offset="2008" file="UHumeWheatPartitioning.pas" line="216">
+      <field name="NcStemWinter" type="TState" visibility="public" size="4" offset="2008" file="UHumeWheatPartitioning.pas" line="207">
         <devnotes>
            <summary> N conc. Stem Winter (%%) Strahlungsabhängig </summary>
         </devnotes>
       </field>
-      <field name="GRNWT_pl" type="TState" visibility="public" size="4" offset="2012" file="UHumeWheatPartitioning.pas" line="218">
+      <field name="GRNWT_pl" type="TState" visibility="public" size="4" offset="2012" file="UHumeWheatPartitioning.pas" line="209">
         <devnotes>
            <summary> Weight of grains [g/plant] </summary>
         </devnotes>
       </field>
-      <field name="LFWT_pl" type="TState" visibility="public" size="4" offset="2016" file="UHumeWheatPartitioning.pas" line="220">
+      <field name="LFWT_pl" type="TState" visibility="public" size="4" offset="2016" file="UHumeWheatPartitioning.pas" line="211">
         <devnotes>
            <summary> Leaf weight of all leaves on a plant [g/plant] </summary>
         </devnotes>
       </field>
-      <field name="TEMPsum" type="TState" visibility="public" size="4" offset="2020" file="UHumeWheatPartitioning.pas" line="222">
+      <field name="TEMPsum" type="TState" visibility="public" size="4" offset="2020" file="UHumeWheatPartitioning.pas" line="213">
         <devnotes>
            <summary> Temperature sum </summary>
         </devnotes>
       </field>
-      <field name="RTWT_pl" type="TState" visibility="public" size="4" offset="2024" file="UHumeWheatPartitioning.pas" line="225">
+      <field name="RTWT_pl" type="TState" visibility="public" size="4" offset="2024" file="UHumeWheatPartitioning.pas" line="216">
         <devnotes>
            <summary> Root weight - [g/plant] </summary>
         </devnotes>
       </field>
-      <field name="NLeaf_pl" type="TState" visibility="public" size="4" offset="2028" file="UHumeWheatPartitioning.pas" line="227">
+      <field name="NLeaf_pl" type="TState" visibility="public" size="4" offset="2028" file="UHumeWheatPartitioning.pas" line="218">
         <devnotes>
            <summary> leaf N amount (g/plant) </summary>
         </devnotes>
       </field>
-      <field name="NStem_pl" type="TState" visibility="public" size="4" offset="2032" file="UHumeWheatPartitioning.pas" line="229">
+      <field name="NStem_pl" type="TState" visibility="public" size="4" offset="2032" file="UHumeWheatPartitioning.pas" line="220">
         <devnotes>
            <summary> St�ngel N amount (g/plant) </summary>
         </devnotes>
       </field>
-      <field name="NStoragepool_pl" type="TState" visibility="public" size="4" offset="2036" file="UHumeWheatPartitioning.pas" line="231">
+      <field name="NStoragepool_pl" type="TState" visibility="public" size="4" offset="2036" file="UHumeWheatPartitioning.pas" line="222">
         <devnotes>
            <summary> intermediate storage pool (g N/pl) </summary>
         </devnotes>
       </field>
-      <field name="NUptake" type="TState" visibility="public" size="4" offset="2040" file="UHumeWheatPartitioning.pas" line="233">
+      <field name="NUptake" type="TState" visibility="public" size="4" offset="2040" file="UHumeWheatPartitioning.pas" line="224">
         <devnotes>
            <summary> NUptake from the soil (cum. NDemand) [kg/ha] </summary>
         </devnotes>
       </field>
-      <field name="PTF" type="TVar" visibility="public" size="4" offset="2044" file="UHumeWheatPartitioning.pas" line="237">
+      <field name="PTF" type="TVar" visibility="public" size="4" offset="2044" file="UHumeWheatPartitioning.pas" line="228">
         <devnotes>
            <summary> Fraction of photosynthesis partitioned to above ground plant parts [-] </summary>
         </devnotes>
       </field>
-      <field name="GROSTM" type="TVar" visibility="public" size="4" offset="2048" file="UHumeWheatPartitioning.pas" line="239">
+      <field name="GROSTM" type="TVar" visibility="public" size="4" offset="2048" file="UHumeWheatPartitioning.pas" line="230">
         <devnotes>
            <summary> Daily stem growth  [g/(plant.d] </summary>
         </devnotes>
       </field>
-      <field name="Ndef" type="TVar" visibility="public" size="4" offset="2052" file="UHumeWheatPartitioning.pas" line="241">
+      <field name="Ndef" type="TVar" visibility="public" size="4" offset="2052" file="UHumeWheatPartitioning.pas" line="232">
         <devnotes>
            <summary> pot. N-uptake - act. N-uptake </summary>
         </devnotes>
       </field>
-      <field name="Assiflow" type="TVar" visibility="public" size="4" offset="2056" file="UHumeWheatPartitioning.pas" line="243">
+      <field name="Assiflow" type="TVar" visibility="public" size="4" offset="2056" file="UHumeWheatPartitioning.pas" line="234">
         <devnotes>
            <summary> total flux of assimliates for growth (CARBO+SEEDRV) </summary>
         </devnotes>
       </field>
-      <field name="NNI" type="TVar" visibility="public" size="4" offset="2060" file="UHumeWheatPartitioning.pas" line="244" />
-      <field name="FFineroot" type="TVar" visibility="public" size="4" offset="2064" file="UHumeWheatPartitioning.pas" line="246">
+      <field name="NNI" type="TVar" visibility="public" size="4" offset="2060" file="UHumeWheatPartitioning.pas" line="235" />
+      <field name="FFineroot" type="TVar" visibility="public" size="4" offset="2064" file="UHumeWheatPartitioning.pas" line="237">
         <devnotes>
            <summary> fraction of assimilates allocated to fine roots </summary>
         </devnotes>
       </field>
-      <field name="NStemstruc_pl" type="TVar" visibility="public" size="4" offset="2068" file="UHumeWheatPartitioning.pas" line="247" />
-      <field name="NNI60" type="TVar" visibility="public" size="4" offset="2072" file="UHumeWheatPartitioning.pas" line="248" />
-      <field name="RSWT" type="TVar" visibility="public" size="4" offset="2076" file="UHumeWheatPartitioning.pas" line="249" />
-      <field name="NSP_l" type="TVar" visibility="public" size="4" offset="2080" file="UHumeWheatPartitioning.pas" line="250" />
-      <field name="NSP_S" type="TVar" visibility="public" size="4" offset="2084" file="UHumeWheatPartitioning.pas" line="251" />
-      <field name="sumNLAL" type="TVar" visibility="public" size="4" offset="2088" file="UHumeWheatPartitioning.pas" line="252" />
-      <field name="NStoragepool_m2" type="TVar" visibility="public" size="4" offset="2092" file="UHumeWheatPartitioning.pas" line="254">
+      <field name="NStemstruc_pl" type="TVar" visibility="public" size="4" offset="2068" file="UHumeWheatPartitioning.pas" line="238" />
+      <field name="NNI60" type="TVar" visibility="public" size="4" offset="2072" file="UHumeWheatPartitioning.pas" line="239" />
+      <field name="RSWT" type="TVar" visibility="public" size="4" offset="2076" file="UHumeWheatPartitioning.pas" line="240" />
+      <field name="NSP_l" type="TVar" visibility="public" size="4" offset="2080" file="UHumeWheatPartitioning.pas" line="241" />
+      <field name="NSP_S" type="TVar" visibility="public" size="4" offset="2084" file="UHumeWheatPartitioning.pas" line="242" />
+      <field name="sumNLAL" type="TVar" visibility="public" size="4" offset="2088" file="UHumeWheatPartitioning.pas" line="243" />
+      <field name="NStoragepool_m2" type="TVar" visibility="public" size="4" offset="2092" file="UHumeWheatPartitioning.pas" line="245">
         <devnotes>
            <summary> intermediate storage pool (g/m2) </summary>
         </devnotes>
       </field>
-      <field name="LFWT_m2" type="TVar" visibility="public" size="4" offset="2096" file="UHumeWheatPartitioning.pas" line="256">
+      <field name="LFWT_m2" type="TVar" visibility="public" size="4" offset="2096" file="UHumeWheatPartitioning.pas" line="247">
         <devnotes>
            <summary> leaf weight per square meter [g/m2] </summary>
         </devnotes>
       </field>
-      <field name="Leaf_Stem_WT_Ratio" type="TVar" visibility="public" size="4" offset="2100" file="UHumeWheatPartitioning.pas" line="258">
+      <field name="Leaf_Stem_WT_Ratio" type="TVar" visibility="public" size="4" offset="2100" file="UHumeWheatPartitioning.pas" line="249">
         <devnotes>
            <summary> Ratio of Leaf and Stem dry weight and inverse </summary>
         </devnotes>
       </field>
-      <field name="Stem_Leaf_WT_Ratio" type="TVar" visibility="public" size="4" offset="2104" file="UHumeWheatPartitioning.pas" line="258" />
-      <field name="GN_NRate" type="TVar" visibility="public" size="4" offset="2108" file="UHumeWheatPartitioning.pas" line="259" />
-      <field name="SUMDTTGF" type="TVar" visibility="public" size="4" offset="2112" file="UHumeWheatPartitioning.pas" line="260" />
-      <field name="NcLeaf" type="TVar" visibility="public" size="4" offset="2116" file="UHumeWheatPartitioning.pas" line="262">
+      <field name="Stem_Leaf_WT_Ratio" type="TVar" visibility="public" size="4" offset="2104" file="UHumeWheatPartitioning.pas" line="249" />
+      <field name="GN_NRate" type="TVar" visibility="public" size="4" offset="2108" file="UHumeWheatPartitioning.pas" line="250" />
+      <field name="SUMDTTGF" type="TVar" visibility="public" size="4" offset="2112" file="UHumeWheatPartitioning.pas" line="251" />
+      <field name="NcLeaf" type="TVar" visibility="public" size="4" offset="2116" file="UHumeWheatPartitioning.pas" line="253">
         <devnotes>
            <summary> leaf N-concentration (%%) </summary>
         </devnotes>
       </field>
-      <field name="SENL" type="TVar" visibility="public" size="4" offset="2120" file="UHumeWheatPartitioning.pas" line="264">
+      <field name="SENL" type="TVar" visibility="public" size="4" offset="2120" file="UHumeWheatPartitioning.pas" line="255">
         <devnotes>
            <summary> Leaf senscence rate [g/(plant.d] </summary>
         </devnotes>
       </field>
-      <field name="NoptStem" type="TVar" visibility="public" size="4" offset="2124" file="UHumeWheatPartitioning.pas" line="266">
+      <field name="NoptStem" type="TVar" visibility="public" size="4" offset="2124" file="UHumeWheatPartitioning.pas" line="257">
         <devnotes>
            <summary> optimum N concentration stem(%%) </summary>
         </devnotes>
       </field>
-      <field name="Nc_optLeaf" type="TVar" visibility="public" size="4" offset="2128" file="UHumeWheatPartitioning.pas" line="268">
+      <field name="Nc_optLeaf" type="TVar" visibility="public" size="4" offset="2128" file="UHumeWheatPartitioning.pas" line="259">
         <devnotes>
            <summary> optimum N concentration leaf(%%) </summary>
         </devnotes>
       </field>
-      <field name="fStem" type="TVar" visibility="public" size="4" offset="2132" file="UHumeWheatPartitioning.pas" line="270">
+      <field name="fStem" type="TVar" visibility="public" size="4" offset="2132" file="UHumeWheatPartitioning.pas" line="261">
         <devnotes>
            <summary> fraction of shoot growth into stem dry matter </summary>
         </devnotes>
       </field>
-      <field name="NLphot_pl" type="TVar" visibility="public" size="4" offset="2136" file="UHumeWheatPartitioning.pas" line="271" />
-      <field name="NcStem" type="TVar" visibility="public" size="4" offset="2140" file="UHumeWheatPartitioning.pas" line="273">
+      <field name="NLphot_pl" type="TVar" visibility="public" size="4" offset="2136" file="UHumeWheatPartitioning.pas" line="262" />
+      <field name="NcStem" type="TVar" visibility="public" size="4" offset="2140" file="UHumeWheatPartitioning.pas" line="264">
         <devnotes>
            <summary> St�ngel N-concentration (%%) </summary>
         </devnotes>
       </field>
-      <field name="NcShoot" type="TVar" visibility="public" size="4" offset="2144" file="UHumeWheatPartitioning.pas" line="275">
+      <field name="NcShoot" type="TVar" visibility="public" size="4" offset="2144" file="UHumeWheatPartitioning.pas" line="266">
         <devnotes>
            <summary> Spross N-concentration (%%) </summary>
         </devnotes>
       </field>
-      <field name="STMWT_m2" type="TVar" visibility="public" size="4" offset="2148" file="UHumeWheatPartitioning.pas" line="277">
+      <field name="STMWT_m2" type="TVar" visibility="public" size="4" offset="2148" file="UHumeWheatPartitioning.pas" line="268">
         <devnotes>
            <summary> Stem weight per square meter [g/m2] </summary>
         </devnotes>
       </field>
-      <field name="SENWT_m2" type="TVar" visibility="public" size="4" offset="2152" file="UHumeWheatPartitioning.pas" line="279">
+      <field name="SENWT_m2" type="TVar" visibility="public" size="4" offset="2152" file="UHumeWheatPartitioning.pas" line="270">
         <devnotes>
            <summary> Dead Leaf weight per square meter [g/m2] </summary>
         </devnotes>
       </field>
-      <field name="TSDM_m2" type="TVar" visibility="public" size="4" offset="2156" file="UHumeWheatPartitioning.pas" line="282">
+      <field name="TSDM_m2" type="TVar" visibility="public" size="4" offset="2156" file="UHumeWheatPartitioning.pas" line="273">
         <devnotes>
            <summary> Total Shoot drymatter (incl. Stroh) </summary>
         </devnotes>
       </field>
-      <field name="NStem_m2" type="TVar" visibility="public" size="4" offset="2160" file="UHumeWheatPartitioning.pas" line="284">
+      <field name="NStem_m2" type="TVar" visibility="public" size="4" offset="2160" file="UHumeWheatPartitioning.pas" line="275">
         <devnotes>
            <summary> stem N-amount (g/m²) </summary>
         </devnotes>
       </field>
-      <field name="DMTrans_pl" type="TVar" visibility="public" size="4" offset="2164" file="UHumeWheatPartitioning.pas" line="286">
+      <field name="DMTrans_pl" type="TVar" visibility="public" size="4" offset="2164" file="UHumeWheatPartitioning.pas" line="277">
         <devnotes>
            <summary> translozierbare Trockenmasse (g/plant) </summary>
         </devnotes>
       </field>
-      <field name="TOPWT_pl" type="TVar" visibility="public" size="4" offset="2168" file="UHumeWheatPartitioning.pas" line="288">
+      <field name="TOPWT_pl" type="TVar" visibility="public" size="4" offset="2168" file="UHumeWheatPartitioning.pas" line="279">
         <devnotes>
            <summary> weight of tops without grains [g/plant] </summary>
         </devnotes>
       </field>
-      <field name="TOPWT_m2" type="TVar" visibility="public" size="4" offset="2172" file="UHumeWheatPartitioning.pas" line="289" />
-      <field name="GROLF" type="TVar" visibility="public" size="4" offset="2176" file="UHumeWheatPartitioning.pas" line="291">
+      <field name="TOPWT_m2" type="TVar" visibility="public" size="4" offset="2172" file="UHumeWheatPartitioning.pas" line="280" />
+      <field name="GROLF" type="TVar" visibility="public" size="4" offset="2176" file="UHumeWheatPartitioning.pas" line="282">
         <devnotes>
            <summary> Daily leaf growth [g/plant/d] </summary>
         </devnotes>
       </field>
-      <field name="Q45" type="TVar" visibility="public" size="4" offset="2180" file="UHumeWheatPartitioning.pas" line="292" />
-      <field name="NcLeaf_ECLGE" type="TVar" visibility="public" size="4" offset="2184" file="UHumeWheatPartitioning.pas" line="294">
+      <field name="Q45" type="TVar" visibility="public" size="4" offset="2180" file="UHumeWheatPartitioning.pas" line="283" />
+      <field name="NcLeaf_ECLGE" type="TVar" visibility="public" size="4" offset="2184" file="UHumeWheatPartitioning.pas" line="285">
         <devnotes>
            <summary> N concentration at the end of leaf growth </summary>
         </devnotes>
       </field>
-      <field name="GPPVAR" type="TVar" visibility="public" size="4" offset="2188" file="UHumeWheatPartitioning.pas" line="296" />
-      <field name="maxNShoot_m2" type="TVar" visibility="public" size="4" offset="2192" file="UHumeWheatPartitioning.pas" line="297" />
-      <field name="relTM_L1" type="TVar" visibility="public" size="4" offset="2196" file="UHumeWheatPartitioning.pas" line="298" />
-      <field name="relTM_L2" type="TVar" visibility="public" size="4" offset="2200" file="UHumeWheatPartitioning.pas" line="299" />
-      <field name="relTM_L3" type="TVar" visibility="public" size="4" offset="2204" file="UHumeWheatPartitioning.pas" line="300" />
-      <field name="relTM_L4" type="TVar" visibility="public" size="4" offset="2208" file="UHumeWheatPartitioning.pas" line="301" />
-      <field name="relBF_L1" type="TVar" visibility="public" size="4" offset="2212" file="UHumeWheatPartitioning.pas" line="302" />
-      <field name="relBF_L2" type="TVar" visibility="public" size="4" offset="2216" file="UHumeWheatPartitioning.pas" line="303" />
-      <field name="relBF_L3" type="TVar" visibility="public" size="4" offset="2220" file="UHumeWheatPartitioning.pas" line="304" />
-      <field name="relBF_L4" type="TVar" visibility="public" size="4" offset="2224" file="UHumeWheatPartitioning.pas" line="305" />
-      <field name="GPP" type="TVar" visibility="public" size="4" offset="2228" file="UHumeWheatPartitioning.pas" line="306" />
-      <field name="NcStruc" type="TVar" visibility="public" size="4" offset="2232" file="UHumeWheatPartitioning.pas" line="307" />
-      <field name="NcStem_ECLGE" type="TVar" visibility="public" size="4" offset="2236" file="UHumeWheatPartitioning.pas" line="308" />
-      <field name="NHI" type="TVar" visibility="public" size="4" offset="2240" file="UHumeWheatPartitioning.pas" line="310">
+      <field name="GPPVAR" type="TVar" visibility="public" size="4" offset="2188" file="UHumeWheatPartitioning.pas" line="287" />
+      <field name="maxNShoot_m2" type="TVar" visibility="public" size="4" offset="2192" file="UHumeWheatPartitioning.pas" line="288" />
+      <field name="relTM_L1" type="TVar" visibility="public" size="4" offset="2196" file="UHumeWheatPartitioning.pas" line="289" />
+      <field name="relTM_L2" type="TVar" visibility="public" size="4" offset="2200" file="UHumeWheatPartitioning.pas" line="290" />
+      <field name="relTM_L3" type="TVar" visibility="public" size="4" offset="2204" file="UHumeWheatPartitioning.pas" line="291" />
+      <field name="relTM_L4" type="TVar" visibility="public" size="4" offset="2208" file="UHumeWheatPartitioning.pas" line="292" />
+      <field name="relBF_L1" type="TVar" visibility="public" size="4" offset="2212" file="UHumeWheatPartitioning.pas" line="293" />
+      <field name="relBF_L2" type="TVar" visibility="public" size="4" offset="2216" file="UHumeWheatPartitioning.pas" line="294" />
+      <field name="relBF_L3" type="TVar" visibility="public" size="4" offset="2220" file="UHumeWheatPartitioning.pas" line="295" />
+      <field name="relBF_L4" type="TVar" visibility="public" size="4" offset="2224" file="UHumeWheatPartitioning.pas" line="296" />
+      <field name="GPP" type="TVar" visibility="public" size="4" offset="2228" file="UHumeWheatPartitioning.pas" line="297" />
+      <field name="NcStruc" type="TVar" visibility="public" size="4" offset="2232" file="UHumeWheatPartitioning.pas" line="298" />
+      <field name="NcStem_ECLGE" type="TVar" visibility="public" size="4" offset="2236" file="UHumeWheatPartitioning.pas" line="299" />
+      <field name="NHI" type="TVar" visibility="public" size="4" offset="2240" file="UHumeWheatPartitioning.pas" line="301">
         <devnotes>
            <summary> nitrogen harvest index </summary>
         </devnotes>
       </field>
-      <field name="NDemand" type="TVar" visibility="public" size="4" offset="2244" file="UHumeWheatPartitioning.pas" line="312">
+      <field name="NDemand" type="TVar" visibility="public" size="4" offset="2244" file="UHumeWheatPartitioning.pas" line="303">
         <devnotes>
            <summary> nitrogen demand (kg/ha/d) </summary>
         </devnotes>
       </field>
-      <field name="RGFILL" type="TVar" visibility="public" size="4" offset="2248" file="UHumeWheatPartitioning.pas" line="314">
+      <field name="RGFILL" type="TVar" visibility="public" size="4" offset="2248" file="UHumeWheatPartitioning.pas" line="305">
         <devnotes>
            <summary> Rate of grain fill - [mg/(Plant*day)] </summary>
         </devnotes>
       </field>
-      <field name="TKM" type="TVar" visibility="public" size="4" offset="2252" file="UHumeWheatPartitioning.pas" line="316">
+      <field name="TKM" type="TVar" visibility="public" size="4" offset="2252" file="UHumeWheatPartitioning.pas" line="307">
         <devnotes>
            <summary> thousand kernel weight [g] </summary>
         </devnotes>
       </field>
-      <field name="NLStruc_pl" type="TVar" visibility="public" size="4" offset="2256" file="UHumeWheatPartitioning.pas" line="317" />
-      <field name="NShoot_m2" type="TVar" visibility="public" size="4" offset="2260" file="UHumeWheatPartitioning.pas" line="319">
+      <field name="NLStruc_pl" type="TVar" visibility="public" size="4" offset="2256" file="UHumeWheatPartitioning.pas" line="308" />
+      <field name="NShoot_m2" type="TVar" visibility="public" size="4" offset="2260" file="UHumeWheatPartitioning.pas" line="310">
         <devnotes>
            <summary> Spross N amount (g/m2) </summary>
         </devnotes>
       </field>
-      <field name="NcStraw" type="TVar" visibility="public" size="4" offset="2264" file="UHumeWheatPartitioning.pas" line="321">
+      <field name="NcStraw" type="TVar" visibility="public" size="4" offset="2264" file="UHumeWheatPartitioning.pas" line="312">
         <devnotes>
            <summary> nitrogen concentration in straw </summary>
         </devnotes>
       </field>
-      <field name="NGrain_m2" type="TVar" visibility="public" size="4" offset="2268" file="UHumeWheatPartitioning.pas" line="323">
+      <field name="NGrain_m2" type="TVar" visibility="public" size="4" offset="2268" file="UHumeWheatPartitioning.pas" line="314">
         <devnotes>
            <summary> grain N amount [g/m2] </summary>
         </devnotes>
       </field>
-      <field name="Ncmob" type="TVar" visibility="public" size="4" offset="2272" file="UHumeWheatPartitioning.pas" line="325">
+      <field name="Ncmob" type="TVar" visibility="public" size="4" offset="2272" file="UHumeWheatPartitioning.pas" line="316">
         <devnotes>
            <summary> calculated mobile N concentration </summary>
         </devnotes>
       </field>
-      <field name="potGrainN_pl" type="TState" visibility="public" size="4" offset="2276" file="UHumeWheatPartitioning.pas" line="326" />
-      <field name="potGROGRN" type="TVar" visibility="public" size="4" offset="2280" file="UHumeWheatPartitioning.pas" line="327" />
-      <field name="GPSM" type="TVar" visibility="public" size="4" offset="2284" file="UHumeWheatPartitioning.pas" line="329">
+      <field name="potGrainN_pl" type="TState" visibility="public" size="4" offset="2276" file="UHumeWheatPartitioning.pas" line="317" />
+      <field name="potGROGRN" type="TVar" visibility="public" size="4" offset="2280" file="UHumeWheatPartitioning.pas" line="318" />
+      <field name="GPSM" type="TVar" visibility="public" size="4" offset="2284" file="UHumeWheatPartitioning.pas" line="320">
         <devnotes>
            <summary> kernels per m2 [n] </summary>
         </devnotes>
       </field>
-      <field name="GROGRN" type="TVar" visibility="public" size="4" offset="2288" file="UHumeWheatPartitioning.pas" line="331">
+      <field name="GROGRN" type="TVar" visibility="public" size="4" offset="2288" file="UHumeWheatPartitioning.pas" line="322">
         <devnotes>
            <summary> Daily growth of the grain  [g/(Plant*day)] </summary>
         </devnotes>
       </field>
-      <field name="GRYD" type="TVar" visibility="public" size="4" offset="2292" file="UHumeWheatPartitioning.pas" line="333">
+      <field name="GRYD" type="TVar" visibility="public" size="4" offset="2292" file="UHumeWheatPartitioning.pas" line="324">
         <devnotes>
            <summary> grain yield [dt/ha] </summary>
         </devnotes>
       </field>
-      <field name="HI" type="TVar" visibility="public" size="4" offset="2296" file="UHumeWheatPartitioning.pas" line="335">
+      <field name="HI" type="TVar" visibility="public" size="4" offset="2296" file="UHumeWheatPartitioning.pas" line="326">
         <devnotes>
            <summary> Harvest index </summary>
         </devnotes>
       </field>
-      <field name="potHI" type="TVar" visibility="public" size="4" offset="2300" file="UHumeWheatPartitioning.pas" line="337">
+      <field name="potHI" type="TVar" visibility="public" size="4" offset="2300" file="UHumeWheatPartitioning.pas" line="328">
         <devnotes>
            <summary> potential harvest index </summary>
         </devnotes>
       </field>
-      <field name="NcGrain" type="TVar" visibility="public" size="4" offset="2304" file="UHumeWheatPartitioning.pas" line="339">
+      <field name="NcGrain" type="TVar" visibility="public" size="4" offset="2304" file="UHumeWheatPartitioning.pas" line="330">
         <devnotes>
            <summary> grain N concentration </summary>
         </devnotes>
       </field>
-      <field name="pINIGN" type="TVar" visibility="public" size="4" offset="2308" file="UHumeWheatPartitioning.pas" line="341">
+      <field name="pINIGN" type="TVar" visibility="public" size="4" offset="2308" file="UHumeWheatPartitioning.pas" line="332">
         <devnotes>
            <summary> initial grain N per grain </summary>
         </devnotes>
       </field>
-      <field name="ProtGrain" type="TVar" visibility="public" size="4" offset="2312" file="UHumeWheatPartitioning.pas" line="342" />
-      <field name="GRNWT_m2" type="TVar" visibility="public" size="4" offset="2316" file="UHumeWheatPartitioning.pas" line="344">
+      <field name="ProtGrain" type="TVar" visibility="public" size="4" offset="2312" file="UHumeWheatPartitioning.pas" line="333" />
+      <field name="GRNWT_m2" type="TVar" visibility="public" size="4" offset="2316" file="UHumeWheatPartitioning.pas" line="335">
         <devnotes>
            <summary> grain weight per square meter [g/m2] as DM </summary>
         </devnotes>
       </field>
-      <field name="KernelN" type="TVar" visibility="public" size="4" offset="2320" file="UHumeWheatPartitioning.pas" line="345" />
-      <field name="SLN" type="TVar" visibility="public" size="4" offset="2324" file="UHumeWheatPartitioning.pas" line="347">
+      <field name="KernelN" type="TVar" visibility="public" size="4" offset="2320" file="UHumeWheatPartitioning.pas" line="336" />
+      <field name="SLN" type="TVar" visibility="public" size="4" offset="2324" file="UHumeWheatPartitioning.pas" line="338">
         <devnotes>
            <summary> specific leaf N [g/m2] </summary>
         </devnotes>
       </field>
-      <field name="optSLN" type="TVar" visibility="public" size="4" offset="2328" file="UHumeWheatPartitioning.pas" line="349">
+      <field name="optSLN" type="TVar" visibility="public" size="4" offset="2328" file="UHumeWheatPartitioning.pas" line="340">
         <devnotes>
            <summary> optimum SLN </summary>
         </devnotes>
       </field>
-      <field name="R" type="TVar" visibility="public" size="4" offset="2332" file="UHumeWheatPartitioning.pas" line="350" />
-      <field name="NSEN_m2" type="TVar" visibility="public" size="4" offset="2336" file="UHumeWheatPartitioning.pas" line="352">
+      <field name="R" type="TVar" visibility="public" size="4" offset="2332" file="UHumeWheatPartitioning.pas" line="341" />
+      <field name="NSEN_m2" type="TVar" visibility="public" size="4" offset="2336" file="UHumeWheatPartitioning.pas" line="343">
         <devnotes>
            <summary> N in dead leaves [g/m2] </summary>
         </devnotes>
       </field>
-      <field name="QHI" type="TVar" visibility="public" size="4" offset="2340" file="UHumeWheatPartitioning.pas" line="353" />
-      <field name="NTrans_pl" type="TVar" visibility="public" size="4" offset="2344" file="UHumeWheatPartitioning.pas" line="355">
+      <field name="QHI" type="TVar" visibility="public" size="4" offset="2340" file="UHumeWheatPartitioning.pas" line="344" />
+      <field name="NTrans_pl" type="TVar" visibility="public" size="4" offset="2344" file="UHumeWheatPartitioning.pas" line="346">
         <devnotes>
            <summary> translozierbare N amount (g/plant) </summary>
         </devnotes>
       </field>
-      <field name="NLeaf_m2" type="TVar" visibility="public" size="4" offset="2348" file="UHumeWheatPartitioning.pas" line="357">
+      <field name="NLeaf_m2" type="TVar" visibility="public" size="4" offset="2348" file="UHumeWheatPartitioning.pas" line="348">
         <devnotes>
            <summary> leaf N amount (g/m2) </summary>
         </devnotes>
       </field>
-      <field name="NRoot_m2" type="TVar" visibility="public" size="4" offset="2352" file="UHumeWheatPartitioning.pas" line="359">
+      <field name="NRoot_m2" type="TVar" visibility="public" size="4" offset="2352" file="UHumeWheatPartitioning.pas" line="350">
         <devnotes>
            <summary> Wurzel N amount (g/m2) </summary>
         </devnotes>
       </field>
-      <field name="NDemand_pl" type="TVar" visibility="public" size="4" offset="2356" file="UHumeWheatPartitioning.pas" line="361">
+      <field name="NDemand_pl" type="TVar" visibility="public" size="4" offset="2356" file="UHumeWheatPartitioning.pas" line="352">
         <devnotes>
            <summary> N demand per plant [g/(pl*d)] </summary>
         </devnotes>
       </field>
-      <field name="ActNUptake_m2" type="TVar" visibility="public" size="4" offset="2360" file="UHumeWheatPartitioning.pas" line="363">
+      <field name="ActNUptake_m2" type="TVar" visibility="public" size="4" offset="2360" file="UHumeWheatPartitioning.pas" line="354">
         <devnotes>
            <summary> limited N uptake from soil model </summary>
         </devnotes>
       </field>
-      <field name="Nbal" type="TVar" visibility="public" size="4" offset="2364" file="UHumeWheatPartitioning.pas" line="364" />
-      <field name="PlantNDemand_rate_limited_m2" type="TVar" visibility="public" size="4" offset="2368" file="UHumeWheatPartitioning.pas" line="366">
+      <field name="Nbal" type="TVar" visibility="public" size="4" offset="2364" file="UHumeWheatPartitioning.pas" line="355" />
+      <field name="PlantNDemand_rate_limited_m2" type="TVar" visibility="public" size="4" offset="2368" file="UHumeWheatPartitioning.pas" line="357">
         <devnotes>
            <summary> pot. Plant N demand limited by maxNupTake </summary>
         </devnotes>
       </field>
-      <field name="actPlantNupTake_m2" type="TVar" visibility="public" size="4" offset="2372" file="UHumeWheatPartitioning.pas" line="368">
+      <field name="actPlantNupTake_m2" type="TVar" visibility="public" size="4" offset="2372" file="UHumeWheatPartitioning.pas" line="359">
         <devnotes>
            <summary> actual N uptake rate </summary>
         </devnotes>
       </field>
-      <field name="LAIShoot" type="TVar" visibility="public" size="4" offset="2376" file="UHumeWheatPartitioning.pas" line="369" />
-      <field name="SWMIN_pl" type="TVar" visibility="public" size="4" offset="2380" file="UHumeWheatPartitioning.pas" line="370" />
-      <field name="DaysEffGF" type="TVar" visibility="public" size="4" offset="2384" file="UHumeWheatPartitioning.pas" line="373">
+      <field name="LAIShoot" type="TVar" visibility="public" size="4" offset="2376" file="UHumeWheatPartitioning.pas" line="360" />
+      <field name="SWMIN_pl" type="TVar" visibility="public" size="4" offset="2380" file="UHumeWheatPartitioning.pas" line="361" />
+      <field name="DaysEffGF" type="TVar" visibility="public" size="4" offset="2384" file="UHumeWheatPartitioning.pas" line="364">
         <devnotes>
            <summary> days from BBCH65 unitil LAI=0; </summary>
         </devnotes>
       </field>
-      <field name="TSUMEffGF" type="TVar" visibility="public" size="4" offset="2388" file="UHumeWheatPartitioning.pas" line="374" />
-      <field name="GlobRadSum" type="TVar" visibility="public" size="4" offset="2392" file="UHumeWheatPartitioning.pas" line="375" />
-      <field name="QEffGF" type="TVar" visibility="public" size="4" offset="2396" file="UHumeWheatPartitioning.pas" line="377">
+      <field name="TSUMEffGF" type="TVar" visibility="public" size="4" offset="2388" file="UHumeWheatPartitioning.pas" line="365" />
+      <field name="GlobRadSum" type="TVar" visibility="public" size="4" offset="2392" file="UHumeWheatPartitioning.pas" line="366" />
+      <field name="QEffGF" type="TVar" visibility="public" size="4" offset="2396" file="UHumeWheatPartitioning.pas" line="368">
         <devnotes>
            <summary> Photo-Thermal-Ratio during BBCH65 until LAI=0; </summary>
         </devnotes>
       </field>
-      <field name="kf_d" type="TVar" visibility="public" size="4" offset="2400" file="UHumeWheatPartitioning.pas" line="379">
+      <field name="kf_d" type="TVar" visibility="public" size="4" offset="2400" file="UHumeWheatPartitioning.pas" line="370">
         <devnotes>
            <summary> adjustment factor for leaf/stem partitioning due to drought </summary>
         </devnotes>
       </field>
-      <field name="kf_n" type="TVar" visibility="public" size="4" offset="2404" file="UHumeWheatPartitioning.pas" line="381">
+      <field name="kf_n" type="TVar" visibility="public" size="4" offset="2404" file="UHumeWheatPartitioning.pas" line="372">
         <devnotes>
            <summary> adjustment factor for leaf/stem paritioning due to N limitation </summary>
         </devnotes>
       </field>
-      <field name="NphLeaf" visibility="public" size="16" offset="2408" file="UHumeWheatPartitioning.pas" line="384">
+      <field name="NphLeaf" visibility="public" size="16" offset="2408" file="UHumeWheatPartitioning.pas" line="375">
         <devnotes>
            <summary> photosynthetic N in lamina i </summary>
         </devnotes>
-        <array name="NphLeaf" visibility="public" low="1" high="4" file="UHumeWheatPartitioning.pas" line="384">
+        <array name="NphLeaf" visibility="public" low="1" high="4" file="UHumeWheatPartitioning.pas" line="375">
           <element type="TVar" />
         </array>
       </field>
-      <field name="fdsen" type="TExternV" visibility="public" size="4" offset="2424" file="UHumeWheatPartitioning.pas" line="387" />
-      <field name="TransIntRatio" type="TExternV" visibility="public" size="4" offset="2428" file="UHumeWheatPartitioning.pas" line="388" />
-      <field name="TEMPM" type="TExternV" visibility="public" size="4" offset="2432" file="UHumeWheatPartitioning.pas" line="390">
+      <field name="fdsen" type="TExternV" visibility="public" size="4" offset="2424" file="UHumeWheatPartitioning.pas" line="378" />
+      <field name="TransIntRatio" type="TExternV" visibility="public" size="4" offset="2428" file="UHumeWheatPartitioning.pas" line="379" />
+      <field name="TEMPM" type="TExternV" visibility="public" size="4" offset="2432" file="UHumeWheatPartitioning.pas" line="381">
         <devnotes>
            <summary> average daily air temperature </summary>
         </devnotes>
       </field>
-      <field name="XSTAGE" type="TExternV" visibility="public" size="4" offset="2436" file="UHumeWheatPartitioning.pas" line="392">
+      <field name="XSTAGE" type="TExternV" visibility="public" size="4" offset="2436" file="UHumeWheatPartitioning.pas" line="383">
         <devnotes>
            <summary> Development stage according do CERES </summary>
         </devnotes>
       </field>
-      <field name="ISTAGE" type="TExternV" visibility="public" size="4" offset="2440" file="UHumeWheatPartitioning.pas" line="394">
+      <field name="ISTAGE" type="TExternV" visibility="public" size="4" offset="2440" file="UHumeWheatPartitioning.pas" line="385">
         <devnotes>
            <summary> Development stage according do CERES </summary>
         </devnotes>
       </field>
-      <field name="DayOfYear" type="TExternV" visibility="public" size="4" offset="2444" file="UHumeWheatPartitioning.pas" line="395" />
-      <field name="PSIroot" type="TExternV" visibility="public" size="4" offset="2448" file="UHumeWheatPartitioning.pas" line="396" />
-      <field name="P5" type="TExternV" visibility="public" size="4" offset="2452" file="UHumeWheatPartitioning.pas" line="397" />
-      <field name="Rad_Int" type="TExternV" visibility="public" size="4" offset="2456" file="UHumeWheatPartitioning.pas" line="398" />
-      <field name="kPAR" type="TExternV" visibility="public" size="4" offset="2460" file="UHumeWheatPartitioning.pas" line="400">
+      <field name="DayOfYear" type="TExternV" visibility="public" size="4" offset="2444" file="UHumeWheatPartitioning.pas" line="386" />
+      <field name="PSIroot" type="TExternV" visibility="public" size="4" offset="2448" file="UHumeWheatPartitioning.pas" line="387" />
+      <field name="P5" type="TExternV" visibility="public" size="4" offset="2452" file="UHumeWheatPartitioning.pas" line="388" />
+      <field name="Rad_Int" type="TExternV" visibility="public" size="4" offset="2456" file="UHumeWheatPartitioning.pas" line="389" />
+      <field name="kPAR" type="TExternV" visibility="public" size="4" offset="2460" file="UHumeWheatPartitioning.pas" line="391">
         <devnotes>
            <summary> *effective* extinction coefficient for photosynthetically active radiation </summary>
         </devnotes>
       </field>
-      <field name="SumMLAL" type="TExternV" visibility="public" size="4" offset="2464" file="UHumeWheatPartitioning.pas" line="401" />
-      <field name="SumLAL" type="TExternV" visibility="public" size="4" offset="2468" file="UHumeWheatPartitioning.pas" line="402" />
-      <field name="potSLA" type="TExternV" visibility="public" size="4" offset="2472" file="UHumeWheatPartitioning.pas" line="403" />
-      <field name="exk_PAR" type="TExternV" visibility="public" size="4" offset="2476" file="UHumeWheatPartitioning.pas" line="405">
+      <field name="SumMLAL" type="TExternV" visibility="public" size="4" offset="2464" file="UHumeWheatPartitioning.pas" line="392" />
+      <field name="SumLAL" type="TExternV" visibility="public" size="4" offset="2468" file="UHumeWheatPartitioning.pas" line="393" />
+      <field name="potSLA" type="TExternV" visibility="public" size="4" offset="2472" file="UHumeWheatPartitioning.pas" line="394" />
+      <field name="exk_PAR" type="TExternV" visibility="public" size="4" offset="2476" file="UHumeWheatPartitioning.pas" line="396">
         <devnotes>
            <summary> extinction coefficient for photosynthetically active radiation </summary>
         </devnotes>
       </field>
-      <field name="LAI" type="TExternV" visibility="public" size="4" offset="2480" file="UHumeWheatPartitioning.pas" line="407">
+      <field name="LAI" type="TExternV" visibility="public" size="4" offset="2480" file="UHumeWheatPartitioning.pas" line="398">
         <devnotes>
            <summary> leaf area index </summary>
         </devnotes>
       </field>
-      <field name="CARBO" type="TExternV" visibility="public" size="4" offset="2484" file="UHumeWheatPartitioning.pas" line="409">
+      <field name="CARBO" type="TExternV" visibility="public" size="4" offset="2484" file="UHumeWheatPartitioning.pas" line="400">
         <devnotes>
            <summary> Daily carbohydrate production (g/pl/d) </summary>
         </devnotes>
       </field>
-      <field name="GlobRad" type="TExternV" visibility="public" size="4" offset="2488" file="UHumeWheatPartitioning.pas" line="411" />
-      <field name="LAL" visibility="public" size="16" offset="2492" file="UHumeWheatPartitioning.pas" line="412">
-        <array name="LAL" visibility="public" low="1" high="4" file="UHumeWheatPartitioning.pas" line="412">
+      <field name="GlobRad" type="TExternV" visibility="public" size="4" offset="2488" file="UHumeWheatPartitioning.pas" line="402" />
+      <field name="LAL" visibility="public" size="16" offset="2492" file="UHumeWheatPartitioning.pas" line="403">
+        <array name="LAL" visibility="public" low="1" high="4" file="UHumeWheatPartitioning.pas" line="403">
           <element type="TExternV" />
         </array>
       </field>
-      <field name="NcLAL" visibility="public" size="16" offset="2508" file="UHumeWheatPartitioning.pas" line="413">
-        <array name="NcLAL" visibility="public" low="1" high="4" file="UHumeWheatPartitioning.pas" line="413">
+      <field name="NcLAL" visibility="public" size="16" offset="2508" file="UHumeWheatPartitioning.pas" line="404">
+        <array name="NcLAL" visibility="public" low="1" high="4" file="UHumeWheatPartitioning.pas" line="404">
           <element type="TVar" />
         </array>
       </field>
-      <field name="NLeaf_struc" visibility="public" size="16" offset="2524" file="UHumeWheatPartitioning.pas" line="414">
-        <array name="NLeaf_struc" visibility="public" low="1" high="4" file="UHumeWheatPartitioning.pas" line="414">
+      <field name="NLeaf_struc" visibility="public" size="16" offset="2524" file="UHumeWheatPartitioning.pas" line="405">
+        <array name="NLeaf_struc" visibility="public" low="1" high="4" file="UHumeWheatPartitioning.pas" line="405">
           <element type="TVar" />
         </array>
       </field>
-      <field name="PARi" visibility="public" size="16" offset="2540" file="UHumeWheatPartitioning.pas" line="415">
-        <array name="PARi" visibility="public" low="1" high="4" file="UHumeWheatPartitioning.pas" line="415">
+      <field name="PARi" visibility="public" size="16" offset="2540" file="UHumeWheatPartitioning.pas" line="406">
+        <array name="PARi" visibility="public" low="1" high="4" file="UHumeWheatPartitioning.pas" line="406">
           <element type="TExternV" />
         </array>
       </field>
-      <field name="MLAL" visibility="public" size="16" offset="2556" file="UHumeWheatPartitioning.pas" line="417">
+      <field name="MLAL" visibility="public" size="16" offset="2556" file="UHumeWheatPartitioning.pas" line="408">
         <devnotes>
            <summary> green leaf mass of layer </summary>
         </devnotes>
-        <array name="MLAL" visibility="public" low="1" high="4" file="UHumeWheatPartitioning.pas" line="417">
+        <array name="MLAL" visibility="public" low="1" high="4" file="UHumeWheatPartitioning.pas" line="408">
           <element type="TExternV" />
         </array>
       </field>
-      <field name="optRSWT" type="TOption" visibility="public" size="4" offset="2572" file="UHumeWheatPartitioning.pas" line="419" />
-      <field name="OptDroughtimpact" type="TOption" visibility="public" size="4" offset="2576" file="UHumeWheatPartitioning.pas" line="420" />
-      <field name="OptNimpact" type="TOption" visibility="public" size="4" offset="2580" file="UHumeWheatPartitioning.pas" line="421" />
-      <field name="avSLA" type="TExternV" visibility="public" size="4" offset="2584" file="UHumeWheatPartitioning.pas" line="424">
+      <field name="optRSWT" type="TOption" visibility="public" size="4" offset="2572" file="UHumeWheatPartitioning.pas" line="410" />
+      <field name="OptDroughtimpact" type="TOption" visibility="public" size="4" offset="2576" file="UHumeWheatPartitioning.pas" line="411" />
+      <field name="OptNimpact" type="TOption" visibility="public" size="4" offset="2580" file="UHumeWheatPartitioning.pas" line="412" />
+      <field name="avSLA" type="TExternV" visibility="public" size="4" offset="2584" file="UHumeWheatPartitioning.pas" line="415">
         <devnotes>
            <summary> average specific leaf area </summary>
         </devnotes>
       </field>
-      <field name="EC" type="TExternV" visibility="public" size="4" offset="2588" file="UHumeWheatPartitioning.pas" line="426">
+      <field name="EC" type="TExternV" visibility="public" size="4" offset="2588" file="UHumeWheatPartitioning.pas" line="417">
         <devnotes>
            <summary> EC-Stage </summary>
         </devnotes>
       </field>
-      <procedure name="setRootModel" visibility="public" file="UHumeWheatPartitioning.pas" line="428">
+      <procedure name="setRootModel" visibility="public" file="UHumeWheatPartitioning.pas" line="419">
         <parameters>
           <parameter name="AModel" type="TSimpleRootModDM" />
         </parameters>
       </procedure>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="UHumeWheatPartitioning.pas" line="429">
+      <procedure name="CreateAll" visibility="public" procflags="override" file="UHumeWheatPartitioning.pas" line="420">
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="UHumeWheatPartitioning.pas" line="430">
+      <procedure name="Init" visibility="public" procflags="override" file="UHumeWheatPartitioning.pas" line="421">
         <devnotes>
            <summary> <summary> </summary>
            <summary> Initializes the THumeWheatPartitioning module. </summary>
@@ -2146,77 +2150,77 @@
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="UHumeWheatPartitioning.pas" line="431">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="UHumeWheatPartitioning.pas" line="422">
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="override" file="UHumeWheatPartitioning.pas" line="432">
+      <procedure name="Integrate" visibility="public" procflags="override" file="UHumeWheatPartitioning.pas" line="423">
       </procedure>
-      <procedure name="CalcNNI" visibility="public" file="UHumeWheatPartitioning.pas" line="433">
+      <procedure name="CalcNNI" visibility="public" file="UHumeWheatPartitioning.pas" line="424">
         <devnotes>
            <summary> Calculates the Normalized Nitrogen Index (NNI) for wheat partitioning. </summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcQ45" visibility="public" file="UHumeWheatPartitioning.pas" line="434">
+      <procedure name="CalcQ45" visibility="public" file="UHumeWheatPartitioning.pas" line="425">
         <devnotes>
            <summary> <summary> </summary>
            <summary> Calculates the value of Q45, i.e. the radiation/thermal quotient 45 days. </summary>
            <summary> </summary> </summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcGPSM" visibility="public" file="UHumeWheatPartitioning.pas" line="435">
+      <procedure name="CalcGPSM" visibility="public" file="UHumeWheatPartitioning.pas" line="426">
         <devnotes>
            <summary> Calculates the grain per square meter (GPSM). </summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcGRFILL" visibility="public" file="UHumeWheatPartitioning.pas" line="436">
+      <procedure name="CalcGRFILL" visibility="public" file="UHumeWheatPartitioning.pas" line="427">
         <devnotes>
            <summary> <summary> </summary>
            <summary> Calculates the GRFILL (Grain Fill) for the THumeWheatPartitioning class. </summary>
            <summary> </summary> </summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcNRates" visibility="public" file="UHumeWheatPartitioning.pas" line="437">
+      <procedure name="CalcNRates" visibility="public" file="UHumeWheatPartitioning.pas" line="428">
       </procedure>
-      <procedure name="setNimpact" visibility="public" file="UHumeWheatPartitioning.pas" line="438">
+      <procedure name="setNimpact" visibility="public" file="UHumeWheatPartitioning.pas" line="429">
       </procedure>
-      <procedure name="CalcAllometricLeafStemPartitioning" visibility="public" file="UHumeWheatPartitioning.pas" line="439">
+      <procedure name="CalcAllometricLeafStemPartitioning" visibility="public" file="UHumeWheatPartitioning.pas" line="430">
       </procedure>
-      <procedure name="CalcRootDMandN" visibility="public" file="UHumeWheatPartitioning.pas" line="440">
+      <procedure name="CalcRootDMandN" visibility="public" file="UHumeWheatPartitioning.pas" line="431">
       </procedure>
-      <property name="Var_NUptakeRate" visibility="published" read="PlantNDemand_rate_limited_m2" write="PlantNDemand_rate_limited_m2" type="TVar" file="UHumeWheatPartitioning.pas" line="443" />
-      <property name="St_RTWT" visibility="published" read="RTWT_pl" write="RTWT_pl" type="TState" file="UHumeWheatPartitioning.pas" line="444" />
-      <property name="Var_GROLF" visibility="published" read="GROLF" write="GROLF" type="TVar" file="UHumeWheatPartitioning.pas" line="445" />
-      <property name="Var_AssiFlow" visibility="published" read="Assiflow" write="Assiflow" type="TVar" file="UHumeWheatPartitioning.pas" line="446" />
-      <property name="Ex_GlobRad" visibility="published" read="GlobRad" write="GlobRad" type="TExternV" file="UHumeWheatPartitioning.pas" line="447" />
-      <property name="Ex_avSLA" visibility="published" read="avSLA" write="avSLA" type="TExternV" file="UHumeWheatPartitioning.pas" line="448" />
-      <property name="Ex_PSIroot" visibility="published" read="PSIroot" write="PSIroot" type="TExternV" file="UHumeWheatPartitioning.pas" line="449" />
-      <property name="Ex_SumMLAL" visibility="published" read="SumMLAL" write="SumMLAL" type="TExternV" file="UHumeWheatPartitioning.pas" line="450" />
-      <property name="Ex_SumLAL" visibility="published" read="SumLAL" write="SumLAL" type="TExternV" file="UHumeWheatPartitioning.pas" line="451" />
-      <property name="Ex_kPAR" visibility="published" read="kPAR" write="kPAR" type="TExternV" file="UHumeWheatPartitioning.pas" line="452" />
-      <property name="Ex_Rad_Int" visibility="published" read="Rad_Int" write="Rad_Int" type="TExternV" file="UHumeWheatPartitioning.pas" line="453" />
-      <property name="Ex_P5" visibility="published" read="P5" write="P5" type="TExternV" file="UHumeWheatPartitioning.pas" line="454" />
-      <property name="Ex_EC" visibility="published" read="EC" write="EC" type="TExternV" file="UHumeWheatPartitioning.pas" line="455" />
-      <property name="Par_EC_LGend" visibility="published" read="EC_LGend" write="EC_LGend" type="TPar" file="UHumeWheatPartitioning.pas" line="456" />
-      <property name="Ex_ISTAGE" visibility="published" read="ISTAGE" write="ISTAGE" type="TExternV" file="UHumeWheatPartitioning.pas" line="457" />
-      <property name="St_LFWT" visibility="published" read="LFWT_pl" write="LFWT_pl" type="TState" file="UHumeWheatPartitioning.pas" line="458" />
-      <property name="Par_Plants" visibility="published" read="Plants" write="Plants" type="TPar" file="UHumeWheatPartitioning.pas" line="459" />
-      <property name="St_STMWT" visibility="published" read="STMWT_pl" write="STMWT_pl" type="TState" file="UHumeWheatPartitioning.pas" line="460" />
-      <property name="Var_GROSTM" visibility="published" read="GROSTM" write="GROSTM" type="TVar" file="UHumeWheatPartitioning.pas" line="461" />
-      <property name="Par_FFineRoot0" visibility="published" read="fFineRoot0" write="fFineRoot0" type="TPar" file="UHumeWheatPartitioning.pas" line="462" />
-      <property name="Par_FFineRootDec" visibility="published" read="FFineRootDec" write="FFineRootDec" type="TPar" file="UHumeWheatPartitioning.pas" line="463" />
-      <property name="St_TempSum" visibility="published" read="TEMPsum" write="TEMPsum" type="TState" file="UHumeWheatPartitioning.pas" line="464" />
-      <property name="opt_DroughtImpact" visibility="published" read="fDroughtImpact" write="fDroughtImpact" type="TDroughtImpact" file="UHumeWheatPartitioning.pas" line="465" />
-      <property name="opt_NImpact" visibility="published" read="fNImpact" write="fNImpact" type="TNImpact" file="UHumeWheatPartitioning.pas" line="467" />
-      <property name="Ex_CARBO" visibility="published" read="CARBO" write="CARBO" type="TExternV" file="UHumeWheatPartitioning.pas" line="469" />
-      <property name="Ex_TEMPM" visibility="published" read="TEMPM" write="TEMPM" type="TExternV" file="UHumeWheatPartitioning.pas" line="470" />
-      <property name="Var_LFWT_m2" visibility="published" read="LFWT_m2" write="LFWT_m2" type="TVar" file="UHumeWheatPartitioning.pas" line="471" />
-      <property name="Ex_exk_PAR" visibility="published" read="exk_PAR" write="exk_PAR" type="TExternV" file="UHumeWheatPartitioning.pas" line="472" />
-      <property name="DevelopmentModel" visibility="published" read="fDevelopmentModel" write="setDevelopmentModel" type="TDevelopment" file="UHumeWheatPartitioning.pas" line="473" />
-      <property name="DrymatterModel" visibility="published" read="fDrymatterModel" write="setDrymatterModel" type="THumeWheatDryMatter" file="UHumeWheatPartitioning.pas" line="474" />
-      <property name="LeafAreaModel" visibility="published" read="fLeafAreaModel" write="setLeafAreaModel" type="THumeWheatLeafArea" file="UHumeWheatPartitioning.pas" line="475" />
-      <property name="RootModel" visibility="published" read="fRootModel" write="setRootModel" type="TSimpleRootModDM" file="UHumeWheatPartitioning.pas" line="476" />
-      <property name="Var_LAIShoot" visibility="published" read="LAIShoot" write="LAIShoot" type="TVar" file="UHumeWheatPartitioning.pas" line="477" />
+      <property name="Var_NUptakeRate" visibility="published" read="PlantNDemand_rate_limited_m2" write="PlantNDemand_rate_limited_m2" type="TVar" file="UHumeWheatPartitioning.pas" line="434" />
+      <property name="St_RTWT" visibility="published" read="RTWT_pl" write="RTWT_pl" type="TState" file="UHumeWheatPartitioning.pas" line="435" />
+      <property name="Var_GROLF" visibility="published" read="GROLF" write="GROLF" type="TVar" file="UHumeWheatPartitioning.pas" line="436" />
+      <property name="Var_AssiFlow" visibility="published" read="Assiflow" write="Assiflow" type="TVar" file="UHumeWheatPartitioning.pas" line="437" />
+      <property name="Ex_GlobRad" visibility="published" read="GlobRad" write="GlobRad" type="TExternV" file="UHumeWheatPartitioning.pas" line="438" />
+      <property name="Ex_avSLA" visibility="published" read="avSLA" write="avSLA" type="TExternV" file="UHumeWheatPartitioning.pas" line="439" />
+      <property name="Ex_PSIroot" visibility="published" read="PSIroot" write="PSIroot" type="TExternV" file="UHumeWheatPartitioning.pas" line="440" />
+      <property name="Ex_SumMLAL" visibility="published" read="SumMLAL" write="SumMLAL" type="TExternV" file="UHumeWheatPartitioning.pas" line="441" />
+      <property name="Ex_SumLAL" visibility="published" read="SumLAL" write="SumLAL" type="TExternV" file="UHumeWheatPartitioning.pas" line="442" />
+      <property name="Ex_kPAR" visibility="published" read="kPAR" write="kPAR" type="TExternV" file="UHumeWheatPartitioning.pas" line="443" />
+      <property name="Ex_Rad_Int" visibility="published" read="Rad_Int" write="Rad_Int" type="TExternV" file="UHumeWheatPartitioning.pas" line="444" />
+      <property name="Ex_P5" visibility="published" read="P5" write="P5" type="TExternV" file="UHumeWheatPartitioning.pas" line="445" />
+      <property name="Ex_EC" visibility="published" read="EC" write="EC" type="TExternV" file="UHumeWheatPartitioning.pas" line="446" />
+      <property name="Par_EC_LGend" visibility="published" read="EC_LGend" write="EC_LGend" type="TPar" file="UHumeWheatPartitioning.pas" line="447" />
+      <property name="Ex_ISTAGE" visibility="published" read="ISTAGE" write="ISTAGE" type="TExternV" file="UHumeWheatPartitioning.pas" line="448" />
+      <property name="St_LFWT" visibility="published" read="LFWT_pl" write="LFWT_pl" type="TState" file="UHumeWheatPartitioning.pas" line="449" />
+      <property name="Par_Plants" visibility="published" read="Plants" write="Plants" type="TPar" file="UHumeWheatPartitioning.pas" line="450" />
+      <property name="St_STMWT" visibility="published" read="STMWT_pl" write="STMWT_pl" type="TState" file="UHumeWheatPartitioning.pas" line="451" />
+      <property name="Var_GROSTM" visibility="published" read="GROSTM" write="GROSTM" type="TVar" file="UHumeWheatPartitioning.pas" line="452" />
+      <property name="Par_FFineRoot0" visibility="published" read="fFineRoot0" write="fFineRoot0" type="TPar" file="UHumeWheatPartitioning.pas" line="453" />
+      <property name="Par_FFineRootDec" visibility="published" read="FFineRootDec" write="FFineRootDec" type="TPar" file="UHumeWheatPartitioning.pas" line="454" />
+      <property name="St_TempSum" visibility="published" read="TEMPsum" write="TEMPsum" type="TState" file="UHumeWheatPartitioning.pas" line="455" />
+      <property name="opt_DroughtImpact" visibility="published" read="fDroughtImpact" write="fDroughtImpact" type="TDroughtImpact" file="UHumeWheatPartitioning.pas" line="456" />
+      <property name="opt_NImpact" visibility="published" read="fNImpact" write="fNImpact" type="TNImpact" file="UHumeWheatPartitioning.pas" line="458" />
+      <property name="Ex_CARBO" visibility="published" read="CARBO" write="CARBO" type="TExternV" file="UHumeWheatPartitioning.pas" line="460" />
+      <property name="Ex_TEMPM" visibility="published" read="TEMPM" write="TEMPM" type="TExternV" file="UHumeWheatPartitioning.pas" line="461" />
+      <property name="Var_LFWT_m2" visibility="published" read="LFWT_m2" write="LFWT_m2" type="TVar" file="UHumeWheatPartitioning.pas" line="462" />
+      <property name="Ex_exk_PAR" visibility="published" read="exk_PAR" write="exk_PAR" type="TExternV" file="UHumeWheatPartitioning.pas" line="463" />
+      <property name="DevelopmentModel" visibility="published" read="fDevelopmentModel" write="setDevelopmentModel" type="TDevelopment" file="UHumeWheatPartitioning.pas" line="464" />
+      <property name="DrymatterModel" visibility="published" read="fDrymatterModel" write="setDrymatterModel" type="THumeWheatDryMatter" file="UHumeWheatPartitioning.pas" line="465" />
+      <property name="LeafAreaModel" visibility="published" read="fLeafAreaModel" write="setLeafAreaModel" type="THumeWheatLeafArea" file="UHumeWheatPartitioning.pas" line="466" />
+      <property name="RootModel" visibility="published" read="fRootModel" write="setRootModel" type="TSimpleRootModDM" file="UHumeWheatPartitioning.pas" line="467" />
+      <property name="Var_LAIShoot" visibility="published" read="LAIShoot" write="LAIShoot" type="TVar" file="UHumeWheatPartitioning.pas" line="468" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="UHumeWheatPartitioning.pas" line="2012">
+  <procedure name="Register" visibility="public" file="UHumeWheatPartitioning.pas" line="1991">
   </procedure>
 </namespace>

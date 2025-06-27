@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Agronomy and Crop Science Group, Kiel University">
-<meta name="dcterms.date" content="2025-06-16">
+<meta name="dcterms.date" content="2025-06-26">
 
 <title>TDevelopment</title>
 <style>
@@ -20,6 +20,41 @@ ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
 width: 0.8em;
 margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+}
+pre.numberSource { margin-left: 3em; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 
 div.csl-bib-body { }
@@ -3999,25 +4034,25 @@ window.Quarto = {
    
   <ul>
   <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary"><span class="header-section-number">1</span> Summary</a></li>
-  <li><a href="#development" id="toc-development" class="nav-link" data-scroll-target="#development"><span class="header-section-number">2</span> Development</a>
+  <li><a href="#lists-of-model-objects" id="toc-lists-of-model-objects" class="nav-link" data-scroll-target="#lists-of-model-objects"><span class="header-section-number">2</span> Lists of model objects</a>
   <ul>
-  <li><a href="#calculation-of-changes-of-gs-and-bbch" id="toc-calculation-of-changes-of-gs-and-bbch" class="nav-link" data-scroll-target="#calculation-of-changes-of-gs-and-bbch"><span class="header-section-number">2.1</span> Calculation of changes of GS and BBCH</a>
+  <li><a href="#state-variables" id="toc-state-variables" class="nav-link" data-scroll-target="#state-variables"><span class="header-section-number">2.1</span> State variables</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters"><span class="header-section-number">2.2</span> Parameters</a></li>
+  <li><a href="#variables" id="toc-variables" class="nav-link" data-scroll-target="#variables"><span class="header-section-number">2.3</span> Variables</a></li>
+  <li><a href="#external-variables" id="toc-external-variables" class="nav-link" data-scroll-target="#external-variables"><span class="header-section-number">2.4</span> External variables</a></li>
+  <li><a href="#options" id="toc-options" class="nav-link" data-scroll-target="#options"><span class="header-section-number">2.5</span> Options</a></li>
+  <li><a href="#scientific-background" id="toc-scientific-background" class="nav-link" data-scroll-target="#scientific-background"><span class="header-section-number">2.6</span> Scientific Background</a>
   <ul class="collapse">
-  <li><a href="#sowing-to-emergence-gs-8-and-9" id="toc-sowing-to-emergence-gs-8-and-9" class="nav-link" data-scroll-target="#sowing-to-emergence-gs-8-and-9"><span class="header-section-number">2.1.1</span> Sowing to emergence (GS 8 and 9)</a></li>
-  <li><a href="#emergence-to-terminal-spikelet-initiation-gs-1" id="toc-emergence-to-terminal-spikelet-initiation-gs-1" class="nav-link" data-scroll-target="#emergence-to-terminal-spikelet-initiation-gs-1"><span class="header-section-number">2.1.2</span> Emergence to terminal Spikelet initiation (GS 1)</a>
+  <li><a href="#calculation-of-changes-of-gs-and-bbch" id="toc-calculation-of-changes-of-gs-and-bbch" class="nav-link" data-scroll-target="#calculation-of-changes-of-gs-and-bbch"><span class="header-section-number">2.6.1</span> Calculation of changes of GS and BBCH</a>
   <ul class="collapse">
-  <li><a href="#vernalisation" id="toc-vernalisation" class="nav-link" data-scroll-target="#vernalisation"><span class="header-section-number">2.1.2.1</span> Vernalisation</a></li>
-  <li><a href="#photoperiod" id="toc-photoperiod" class="nav-link" data-scroll-target="#photoperiod"><span class="header-section-number">2.1.2.2</span> Photoperiod</a></li>
-  <li><a href="#leaf-number-and-leaf-initiation" id="toc-leaf-number-and-leaf-initiation" class="nav-link" data-scroll-target="#leaf-number-and-leaf-initiation"><span class="header-section-number">2.1.2.3</span> Leaf number and leaf initiation</a></li>
+  <li><a href="#sowing-to-emergence-gs-8-and-9" id="toc-sowing-to-emergence-gs-8-and-9" class="nav-link" data-scroll-target="#sowing-to-emergence-gs-8-and-9"><span class="header-section-number">2.6.1.1</span> Sowing to emergence (GS 8 and 9)</a></li>
+  <li><a href="#emergence-to-terminal-spikelet-initiation-gs-1" id="toc-emergence-to-terminal-spikelet-initiation-gs-1" class="nav-link" data-scroll-target="#emergence-to-terminal-spikelet-initiation-gs-1"><span class="header-section-number">2.6.1.2</span> Emergence to terminal Spikelet initiation (GS 1)</a></li>
+  <li><a href="#terminal-spikelet-to-end-of-leaf-growth-and-beginning-of-ear-growth-gs-2" id="toc-terminal-spikelet-to-end-of-leaf-growth-and-beginning-of-ear-growth-gs-2" class="nav-link" data-scroll-target="#terminal-spikelet-to-end-of-leaf-growth-and-beginning-of-ear-growth-gs-2"><span class="header-section-number">2.6.1.3</span> Terminal spikelet to end of leaf growth and beginning of ear growth (GS 2)</a></li>
+  <li><a href="#end-of-leaf-growth-and-beginning-of-ear-growth-to-end-of-pre-anthesis-ear-growth-gs3" id="toc-end-of-leaf-growth-and-beginning-of-ear-growth-to-end-of-pre-anthesis-ear-growth-gs3" class="nav-link" data-scroll-target="#end-of-leaf-growth-and-beginning-of-ear-growth-to-end-of-pre-anthesis-ear-growth-gs3"><span class="header-section-number">2.6.1.4</span> End of leaf growth and beginning of ear growth to end of pre-anthesis ear growth (GS3)</a></li>
+  <li><a href="#end-of-pre-anthesis-ear-growth-to-beginning-of-grain-filling-gs4" id="toc-end-of-pre-anthesis-ear-growth-to-beginning-of-grain-filling-gs4" class="nav-link" data-scroll-target="#end-of-pre-anthesis-ear-growth-to-beginning-of-grain-filling-gs4"><span class="header-section-number">2.6.1.5</span> End of pre-anthesis ear growth to beginning of grain filling (GS4)</a></li>
+  <li><a href="#grain-filling-gs5" id="toc-grain-filling-gs5" class="nav-link" data-scroll-target="#grain-filling-gs5"><span class="header-section-number">2.6.1.6</span> Grain filling (GS5)</a></li>
+  <li><a href="#end-of-grain-filling-to-harvest-gs6" id="toc-end-of-grain-filling-to-harvest-gs6" class="nav-link" data-scroll-target="#end-of-grain-filling-to-harvest-gs6"><span class="header-section-number">2.6.1.7</span> End of grain filling to harvest (GS6)</a></li>
   </ul></li>
-  <li><a href="#terminal-spikelet-to-end-of-leaf-growth-and-beginning-of-ear-growth-gs-2" id="toc-terminal-spikelet-to-end-of-leaf-growth-and-beginning-of-ear-growth-gs-2" class="nav-link" data-scroll-target="#terminal-spikelet-to-end-of-leaf-growth-and-beginning-of-ear-growth-gs-2"><span class="header-section-number">2.1.3</span> Terminal spikelet to end of leaf growth and beginning of ear growth (GS 2)</a>
-  <ul class="collapse">
-  <li><a href="#day-length-effects" id="toc-day-length-effects" class="nav-link" data-scroll-target="#day-length-effects"><span class="header-section-number">2.1.3.1</span> Day length effects</a></li>
-  </ul></li>
-  <li><a href="#end-of-leaf-growth-and-beginning-of-ear-growth-to-end-of-pre-anthesis-ear-growth-gs3" id="toc-end-of-leaf-growth-and-beginning-of-ear-growth-to-end-of-pre-anthesis-ear-growth-gs3" class="nav-link" data-scroll-target="#end-of-leaf-growth-and-beginning-of-ear-growth-to-end-of-pre-anthesis-ear-growth-gs3"><span class="header-section-number">2.1.4</span> End of leaf growth and beginning of ear growth to end of pre-anthesis ear growth (GS3)</a></li>
-  <li><a href="#end-of-pre-anthesis-ear-growth-to-beginning-of-grain-filling-gs4" id="toc-end-of-pre-anthesis-ear-growth-to-beginning-of-grain-filling-gs4" class="nav-link" data-scroll-target="#end-of-pre-anthesis-ear-growth-to-beginning-of-grain-filling-gs4"><span class="header-section-number">2.1.5</span> End of pre-anthesis ear growth to beginning of grain filling (GS4)</a></li>
-  <li><a href="#grain-filling-gs5" id="toc-grain-filling-gs5" class="nav-link" data-scroll-target="#grain-filling-gs5"><span class="header-section-number">2.1.6</span> Grain filling (GS5)</a></li>
-  <li><a href="#end-of-grain-filling-to-harvest-gs6" id="toc-end-of-grain-filling-to-harvest-gs6" class="nav-link" data-scroll-target="#end-of-grain-filling-to-harvest-gs6"><span class="header-section-number">2.1.7</span> End of grain filling to harvest (GS6)</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -4049,7 +4084,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 16, 2025</p>
+      <p class="date">June 26, 2025</p>
     </div>
   </div>
   
@@ -4064,50 +4099,602 @@ window.Quarto = {
 <section id="summary" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Summary</h1>
 <div class="cell" data-layout-align="center">
-<div class="cell-output cell-output-stdout">
-<pre><code>
-     This unit defines the TDevelopment class, a core component of the HUME-Wheat crop model, responsible for simulating the phenological development (growth stages) of wheat. 
-     The class models the progression of the crop through its life cycle, from sowing and emergence to maturity and harvest, using temperature, daylength, and genetic parameters.
-     
-     Key features:
-     - Growth Stage Tracking: Extends the XSTAGE stages of Ceres Wheat with EC, BBCH stages scales to represent crop development.
-     - Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).
-     - Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.
-     - Modular Design: Integrates with other model components via external variables and options.
-    
-       Phenological stages in integer values and corresponding BBCH stages:
-     1 Emergence to terminal spikelet(TS), BBCH 10-30
-     2 TS to end of vegetative growth, BBCH 30-39
-     3 End of vegetative growth and beginning ear growth to end of pre-anthesis ear growth, BBCH 40-57
-     4 End of pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase), BBCH 57-71
-     5 Beginning of grain filling to physiological maturity, BBCH 71-90
-     6 Physiological maturity to fallow (harvest), BBCH 90-99
-     7 Fallow to sowing
-     8 Sowing to germination
-     9 Germination to emergence
-     
-     Typical usage:
-     This module is used to drive the timing of crop processes (e.g., leaf growth, flowering, grain filling) in response to weather and management, providing the developmental framework for the rest of the crop model.
-     </code></pre>
-</div>
-</div>
-<div class="cell" data-layout-align="center">
 <p>Development class, a core component of the HUME-Wheat crop model, responsible for simulating the phenological development (growth stages) of wheat. The class models the progression of the crop through its life cycle, from sowing and emergence to maturity and harvest, using temperature, daylength, and genetic parameters.</p>
-<pre><code>   Key features:
-   - Growth Stage Tracking: Uses both integer (EC, BBCH, Zadoks) and continuous (xstage) scales to represent crop development.
-   - Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).
-   - Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.
-   - Event Timing: Records the day of year (DOY) for key phenological events (e.g., stem elongation, heading, flowering, ripeness).
-   - Parameterization: Supports genetic and environmental parameters (e.g., base temperature, photoperiod sensitivity, vernalization requirements).
-   - Data Integration: Can initialize and calibrate development using measured data (e.g., measured EC dates).
-   - Modular Design: Integrates with other model components via external variables and options.
-   
-   Typical usage:
-   This module is used to drive the timing of crop processes (e.g., leaf growth, flowering, grain filling) in response to weather and management, providing the developmental framework for the rest of the crop model.</code></pre>
 </div>
 </section>
-<section id="development" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Development</h1>
+<section id="lists-of-model-objects" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Lists of model objects</h1>
+<section id="state-variables" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="state-variables"><span class="header-section-number">2.1</span> State variables</h2>
+<p>The class TDevelopment has 11 following state variable(s).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 6%">
+<col style="width: 13%">
+<col style="width: 62%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">State variable</th>
+<th style="text-align: left;">Units</th>
+<th style="text-align: left;">InitialValue</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">cumvern</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">cumulative vernalisation</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DaySSow</td>
+<td style="text-align: left;">n</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">days since sowing</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ec</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">EC stage</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">inl_MS</td>
+<td style="text-align: left;">n</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">initial leaf number on main stem</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">nl_MS</td>
+<td style="text-align: left;">n</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">number of leaves on main stem</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tdu</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">thermal developmental units</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TSum_until_EC_30</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TSum_until_EC_37</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TSumEC30</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Temperature sum since EC30</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tsums</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">temperature sum since sowing</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">xstage</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">non integer growth stage indicator ranging from zero to six</td>
+</tr>
+</tbody>
+</table>
+<p>TRUE</p>
+</div>
+</div>
+</section>
+<section id="parameters" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="parameters"><span class="header-section-number">2.2</span> Parameters</h2>
+<p>The class TDevelopment has 24 following parameter(s).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 3%">
+<col style="width: 5%">
+<col style="width: 76%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: left;">Units</th>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">fdl</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ini_inLMS</td>
+<td style="text-align: left;">n</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Internode</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">Multiplikator des Phyllochronintervalls in der Schossphase</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">MaxPhotoperiod</td>
+<td style="text-align: left;">h</td>
+<td style="text-align: left;">20</td>
+<td style="text-align: left;">maximum daylength which increase developmental rate</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MaxVernDays</td>
+<td style="text-align: left;">d</td>
+<td style="text-align: left;">50</td>
+<td style="text-align: left;">maximum number of vernalisation days which increase developmental rate</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">minLeaf_number</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">p1d</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">2.76</td>
+<td style="text-align: left;">genetic specific parameter of photoperiod sensitivity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">p1v</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">2.84</td>
+<td style="text-align: left;">genetic specific parameter of vernalisation sensitivity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">p3</td>
+<td style="text-align: left;">°Cd</td>
+<td style="text-align: left;">183.48</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">p4</td>
+<td style="text-align: left;">°Cd</td>
+<td style="text-align: left;">200</td>
+<td style="text-align: left;">thermal time between Pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase)in°Cd</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">p5</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">11.67</td>
+<td style="text-align: left;">thermal time between beginning of grain fill and maturity in°Cd</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">p9</td>
+<td style="text-align: left;">°Cd</td>
+<td style="text-align: left;">139.9</td>
+<td style="text-align: left;">thermal timen from germination to seedling emergence in °Cd</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ph39</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">101.56</td>
+<td style="text-align: left;">TSUM 37 bis 39</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">phint</td>
+<td style="text-align: left;">°Cd</td>
+<td style="text-align: left;">91.74</td>
+<td style="text-align: left;">the phyllochron interval, the interval in thermal time(degree days) between successive leaf and tiller appearances</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">plastochron</td>
+<td style="text-align: left;">°Cd</td>
+<td style="text-align: left;">68.3914</td>
+<td style="text-align: left;">interval in thermal time between leaf initiation</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sdepth</td>
+<td style="text-align: left;">cm</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">sowing depth (cm), not actual in use</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sowingdate</td>
+<td style="text-align: left;">doy</td>
+<td style="text-align: left;">300</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tBase</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">base temperature</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TSumInternode</td>
+<td style="text-align: left;">°Cd</td>
+<td style="text-align: left;">97.09</td>
+<td style="text-align: left;">te´mperature sumd between two internodes</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">VernMaxTemp</td>
+<td style="text-align: left;">°C</td>
+<td style="text-align: left;">18</td>
+<td style="text-align: left;">temperature where vernalisation is getting zero</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VernMinTemp</td>
+<td style="text-align: left;">°C</td>
+<td style="text-align: left;">-0.5</td>
+<td style="text-align: left;">minimum vernalisation temperature</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">VernOptTemp1</td>
+<td style="text-align: left;">°C</td>
+<td style="text-align: left;">0.5</td>
+<td style="text-align: left;">temperature where vernalisation is starting to be optimal</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VernOptTemp2</td>
+<td style="text-align: left;">°C</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">temperature where vernalisation is ending to be optimal</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">xstage_fin_leaf_prim</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">1.78171</td>
+<td style="text-align: left;">xstage an dem keine weiteren leaf primordien angelegt werden</td>
+</tr>
+</tbody>
+</table>
+<p>TRUE</p>
+</div>
+</div>
+</section>
+<section id="variables" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="variables"><span class="header-section-number">2.3</span> Variables</h2>
+<p>The class TDevelopment has 44 following variable(s).</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(df.var,  <span class="at">escape =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 7%">
+<col style="width: 69%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Variable</th>
+<th style="text-align: left;">Units</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">c</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">variable photoperiodic influence factor (0..1)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">d10</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Day when EC equals 10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">d29</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Day when EC equals 29</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">d50</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Day when EC equals 50</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">d59</td>
+<td style="text-align: left;">[DOY]</td>
+<td style="text-align: left;">Day when EC equals 59</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">d75</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Day when EC equals 75</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">d90</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Day when EC equals 90</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DayOfYearSowingDate</td>
+<td style="text-align: left;">[DOY]</td>
+<td style="text-align: left;">Dayof Year of sowingdate</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">devrates1</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">developmet rate during istage 1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">devrates2</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">developmet rate during istage 2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">devrates3</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">developmet rate during istage 3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">devrates4</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">developmet rate during istage 4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">devrates5</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">developmet rate during istage 5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">devrates6</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">developmet rate during istage 6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">devrates9</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">developmet rate during istage 9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DOY_BegFlower</td>
+<td style="text-align: left;">[DOY]</td>
+<td style="text-align: left;">DOY for begin of flowering</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DOY_BegHeading</td>
+<td style="text-align: left;">[DOY]</td>
+<td style="text-align: left;">DOY for begin heading</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DOY_BegStemElong</td>
+<td style="text-align: left;">[DOY]</td>
+<td style="text-align: left;">DOY for begin stem elongation</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DOY_EndHeading</td>
+<td style="text-align: left;">[DOY]</td>
+<td style="text-align: left;">DOY for end heading</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DOY_PhysRipe</td>
+<td style="text-align: left;">[DOY]</td>
+<td style="text-align: left;">DOY for physiological ripeness</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DOY_YellowRipeness</td>
+<td style="text-align: left;">[DOY]</td>
+<td style="text-align: left;">DOY for yellow ripeness</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dvs10</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">xstage times 10, for convenience of plotting</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ECa</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GS_EC25</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">inl_MS_xstage2</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Anzahl nicht ausgebildeter Blätter zum Zeitpunkt Xstage 2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">istage</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Phenologicalstages in integer values</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">k_v</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">vernalisation variable</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ph39_opt</td>
+<td style="text-align: left;">[°Cd]</td>
+<td style="text-align: left;">a function of phint and day length</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rdr_p</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">relative development rate of photoperiod</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rdr_v</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">relative development rate of vernalization</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tempsumemergence</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TSEC32</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Date of BBCH32 (needed for calibration</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TSEC33</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Date of BBCH33 (needed for calibration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TSEC37</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Date of BBCH37 (needed for calibration</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TSEC38</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Date of BBCH38 (needed for calibration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TSEC57</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Date of BBCH57 (needed for calibration</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TSEC59</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Date of BBCH59 (needed for calibration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TSEC61</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Date of BBCH61 (needed for calibration</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TSEC65</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Date of BBCH65 (needed for calibration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TSEC69</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Date of BBCH69 (needed for calibration</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TSEC71</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Date of BBCH71 (needed for calibration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tsuminc</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Tagestemperatur &gt;=0 zur Basistemperatur</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">vernf</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">vernalisation factor</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">zstage</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Zadocks stages</td>
+</tr>
+</tbody>
+</table>
+<p>TRUE</p>
+</div>
+</div>
+</section>
+<section id="external-variables" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="external-variables"><span class="header-section-number">2.4</span> External variables</h2>
+<p>The class TDevelopment has 3 following external variable(s).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">External variable</th>
+<th style="text-align: left;">Units</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">daylengthp</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">photoperiodic daylength</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dayofyear</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TMPM</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">mean air temperature</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+<p>TRUE</p>
+</div>
+</div>
+</section>
+<section id="options" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="options"><span class="header-section-number">2.5</span> Options</h2>
+<p>The class TDevelopment has 4 following option(s).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Option</th>
+<th style="text-align: left;">Units</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ContOutput</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">Output every time step?</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DataInitMethod</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FinalOutput</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">Output of final values in separate file?</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RecalcSowingDate</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>TRUE</p>
+</div>
+</div>
+</section>
+<section id="scientific-background" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="scientific-background"><span class="header-section-number">2.6</span> Scientific Background</h2>
 <p>The phenological model module of HumeWheat is based on phenological Ceres Wheat (CW) model for winter wheat. It has been published originally in <span class="citation" data-cites="johnen2012">(<a href="#ref-johnen2012" role="doc-biblioref">Johnen et al., 2012a</a>)</span>. The phenological process in CW is divided into nine developmental or growth stages (GS) according to <span class="citation" data-cites="ritchie2015">(<a href="#ref-ritchie2015" role="doc-biblioref">RITCHIE, 2015</a>)</span> (<a href="#tbl-CWDevStages" class="quarto-xref">Table 1</a>), the common approach in Europe, however is the BBCH stage <span class="citation" data-cites="lancashire1991a">(<a href="#ref-lancashire1991a" role="doc-biblioref">LANCASHIRE et al., 1991</a>)</span>. Zadoks stages or equivalent BBCH values, however, are not calculated in the original phenology model of CERES-Wheat up to Version 3.0.</p>
 <div id="tbl-CWDevStages" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -4187,23 +4774,23 @@ Table 1: Development stages of the CW model (GS) and corresponding BBCH stages
 <p>Where Plast is the plastochron (°Cd) T is the air temperature and T<sub>b</sub> is the base temperature. The formation of leaf primordia which produce leaves is finished some time before the double ridge stage (Bonnet, 1935; Bonnet, 1936; Muschik, 1957). The time of the cessation of leaf primordia initiation, however, is not exactly coupled to a certain GS in the CW model and is also not linked to a certain BBCH stage. From available data of BBCH 37, i.e. the time when the last leaf appears, it was possible to estimate an approximate GS corresponding to the formation of the final leaf primordium (<span class="math inline">GS_{flp}</span>) <em>ex post</em>. The number of visible leaves on the main stem nLMS is calculated accordingly (<a href="#eq-dnLMS" class="quarto-xref">Eq. 2</a>):</p>
 <p><span id="eq-dnLMS"><span class="math display">\frac{d\,n{{L}_{MS}}}{dt}=\frac{\max (0,T-{{T}_{b}})}{Phyll} \tag{2}</span></span></p>
 <p>where Phyll denotes the phyllochron (°Cd).</p>
-<section id="calculation-of-changes-of-gs-and-bbch" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="calculation-of-changes-of-gs-and-bbch"><span class="header-section-number">2.1</span> Calculation of changes of GS and BBCH</h2>
+<section id="calculation-of-changes-of-gs-and-bbch" class="level3" data-number="2.6.1">
+<h3 data-number="2.6.1" class="anchored" data-anchor-id="calculation-of-changes-of-gs-and-bbch"><span class="header-section-number">2.6.1</span> Calculation of changes of GS and BBCH</h3>
 <p>The main state variables of the phenological model are the GS-stage according to Ritchie and the BBCH-stage more commonly used in the description of wheat phenology. Their rate of change is calculated stage specific.</p>
-<section id="sowing-to-emergence-gs-8-and-9" class="level3" data-number="2.1.1">
-<h3 data-number="2.1.1" class="anchored" data-anchor-id="sowing-to-emergence-gs-8-and-9"><span class="header-section-number">2.1.1</span> Sowing to emergence (GS 8 and 9)</h3>
+<section id="sowing-to-emergence-gs-8-and-9" class="level4" data-number="2.6.1.1">
+<h4 data-number="2.6.1.1" class="anchored" data-anchor-id="sowing-to-emergence-gs-8-and-9"><span class="header-section-number">2.6.1.1</span> Sowing to emergence (GS 8 and 9)</h4>
 <p>We simplified the model by pooling together the GS stages eight and nine, which represent the germination and emergence processes, because no data were available to distinguish between both events. The redefined parameter P9, which now governs the rate of development during the time from sowing to emergence, was calculated from observed thermal times from sowing to emergence .</p>
 <p><span id="eq-dGS_dt_GS9"><span class="math display">\frac{dGS}{dt}=\frac{\max (0,T-{{T}_{b}})}{P9} \tag{3}</span></span></p>
 <p>The rate of change for BBCH is ten time higher as for GS as the event of crop emergence is equivalent to 10.</p>
 <p><span id="eq-dBBCH_dt_GS9"><span class="math display">\frac{dBBCH}{dt}=10\frac{\max (0,T-{{T}_{b}})}{P9} \tag{4}</span></span></p>
 </section>
-<section id="emergence-to-terminal-spikelet-initiation-gs-1" class="level3" data-number="2.1.2">
-<h3 data-number="2.1.2" class="anchored" data-anchor-id="emergence-to-terminal-spikelet-initiation-gs-1"><span class="header-section-number">2.1.2</span> Emergence to terminal Spikelet initiation (GS 1)</h3>
+<section id="emergence-to-terminal-spikelet-initiation-gs-1" class="level4" data-number="2.6.1.2">
+<h4 data-number="2.6.1.2" class="anchored" data-anchor-id="emergence-to-terminal-spikelet-initiation-gs-1"><span class="header-section-number">2.6.1.2</span> Emergence to terminal Spikelet initiation (GS 1)</h4>
 <p>Temperature, vernalization, photoperiod, and phyllochron interval determine the development rate during GS 1. According to CW the lowest value of two functions, depending on the vernalization stage and the actual photoperiod in interaction with the actual effective temperature limits the development rate (<a href="#eq-dGS_dt_GS1" class="quarto-xref">Eq. 5</a>).</p>
 <p><span id="eq-dGS_dt_GS1"><span class="math display">\frac{dGS}{dt}=\frac{\max (0,T-{{T}_{b}})\cdot \min (f(V),f(P))}{(400\cdot Phyll\ /\ 95)} \tag{5}</span></span></p>
 <p>The functions f(V) and f(P) as well as the Phyllocron (Phyll) are genotype specific.</p>
-<section id="vernalisation" class="level4" data-number="2.1.2.1">
-<h4 data-number="2.1.2.1" class="anchored" data-anchor-id="vernalisation"><span class="header-section-number">2.1.2.1</span> Vernalisation</h4>
+<section id="vernalisation" class="level5" data-number="2.6.1.2.1">
+<h5 data-number="2.6.1.2.1" class="anchored" data-anchor-id="vernalisation"><span class="header-section-number">2.6.1.2.1</span> Vernalisation</h5>
 <p>The effect of vernalisation on the development rate is calculated from the accumulated sum of “vernalisation days”. The rate of change of the vernalisation days is calculated from the daily mean temperature and a vernalisation response function which is characterized by 4 cardinal temperatures (<a href="#fig-RelVernalisation" class="quarto-xref">Figure 1</a>).</p>
 <div id="fig-RelVernalisation" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -4237,8 +4824,8 @@ Figure 2: Relative vernalisation rate of winter wheat as a function of accumula
 </div>
 </div>
 </section>
-<section id="photoperiod" class="level4" data-number="2.1.2.2">
-<h4 data-number="2.1.2.2" class="anchored" data-anchor-id="photoperiod"><span class="header-section-number">2.1.2.2</span> Photoperiod</h4>
+<section id="photoperiod" class="level5" data-number="2.6.1.2.2">
+<h5 data-number="2.6.1.2.2" class="anchored" data-anchor-id="photoperiod"><span class="header-section-number">2.6.1.2.2</span> Photoperiod</h5>
 <p>The effect of photoperiod on the development rate (f(P)) is calculated from the actual photoperiod and a photoperiod response function</p>
 <p><span id="eq-fPhoto"><span class="math display">f(P)=1-C \cdot\left(20-P\right)^2 \tag{9}</span></span></p>
 <p>The parameter C is coded in the parameter P1D. The value of 20 in <a href="#eq-fPhoto" class="quarto-xref">Eq. 9</a> is the maximum photoperiod. The value of C is the slope of the quadratic relation between the photoperiod and the development rate. It can be calculated from the parameter P1D according to</p>
@@ -4259,8 +4846,8 @@ Figure 3: Relative development rate of winter wheat at GS1 as a function of pho
 </div>
 </div>
 </section>
-<section id="leaf-number-and-leaf-initiation" class="level4" data-number="2.1.2.3">
-<h4 data-number="2.1.2.3" class="anchored" data-anchor-id="leaf-number-and-leaf-initiation"><span class="header-section-number">2.1.2.3</span> Leaf number and leaf initiation</h4>
+<section id="leaf-number-and-leaf-initiation" class="level5" data-number="2.6.1.2.3">
+<h5 data-number="2.6.1.2.3" class="anchored" data-anchor-id="leaf-number-and-leaf-initiation"><span class="header-section-number">2.6.1.2.3</span> Leaf number and leaf initiation</h5>
 <p>At early development stages (BBCH&lt;30) BBCH stages are determined by the number of leaves and tillers present. Their rate of change is determined by the Phyllochron (Phyll), i.e. the inverse of the phyllochron is the emergence rate of leaves and tillers per effective day temperature (@eq-dBBCH_dt_GS1).</p>
 <p><span id="eq-dBBCH_dt_GS1"><span class="math display">\frac{dBBCH}{dt}=\frac{\max (0,T-{{T}_{b}})}{Phyll} \tag{11}</span></span></p>
 <p>At BBCH 13.5 there is a switch to BBCH 21, because simultaneously to the appearance of the fourth leaf the first tiller is emerging and mainstem leaf appearance is then associated with tiller appearance until BBCH 30.</p>
@@ -4268,8 +4855,8 @@ Figure 3: Relative development rate of winter wheat at GS1 as a function of pho
 <p><span id="eq-BBCH_jumpto21"><span class="math display">If \ \ BBCH &gt;= 13.5 \ and \ BBCH&lt;20; \    BBCH = BBCH+7.5 \tag{12}</span></span></p>
 </section>
 </section>
-<section id="terminal-spikelet-to-end-of-leaf-growth-and-beginning-of-ear-growth-gs-2" class="level3" data-number="2.1.3">
-<h3 data-number="2.1.3" class="anchored" data-anchor-id="terminal-spikelet-to-end-of-leaf-growth-and-beginning-of-ear-growth-gs-2"><span class="header-section-number">2.1.3</span> Terminal spikelet to end of leaf growth and beginning of ear growth (GS 2)</h3>
+<section id="terminal-spikelet-to-end-of-leaf-growth-and-beginning-of-ear-growth-gs-2" class="level4" data-number="2.6.1.3">
+<h4 data-number="2.6.1.3" class="anchored" data-anchor-id="terminal-spikelet-to-end-of-leaf-growth-and-beginning-of-ear-growth-gs-2"><span class="header-section-number">2.6.1.3</span> Terminal spikelet to end of leaf growth and beginning of ear growth (GS 2)</h4>
 <p>Within the model the implicit and simplifying assumption is made that GS 2 stage is more or less closely associated with BBCH 30 <span class="citation" data-cites="baker1983">(<a href="#ref-baker1983" role="doc-biblioref">Baker and Gallagher, 1983</a>)</span>, but that the initiation of the terminal leaf primordium may be reached a bit earlier at a stage we named <span class="math inline">GS_{flp}</span>.</p>
 <p>The GS change rate between GS 2 and 3 is calculated as the ratio of the daily temperature minus the base temperature (T<sub>b</sub>, assumed to be 0°C) to the thermal time interval GS 2 to GS 3. This thermal time interval is calculated by the number of leaves not yet expressed at GS 2 minus two (fL), multiplied by the phyllochron plus the temperature sum between BBCH 37 and 39, i.e. ‘PH39’:.</p>
 <p><span id="eq-dGS_dt_GS2"><span class="math display">\frac{dGS}{dt}=\frac{\max (0,T-{{T}_{b}})}{fL\cdot Phyll+Ph39} \tag{13}</span></span></p>
@@ -4282,38 +4869,38 @@ Figure 3: Relative development rate of winter wheat at GS1 as a function of pho
 <p><span id="eq-dBBCH_dt_GS2b"><span class="math display">
   \frac{dBBCH}{dt}= \min \left( \frac{2\max (0,T-{{T}_{b}})}{\text{Ph39}},(40-BBCH) \right)
 \tag{15}</span></span></p>
-<section id="day-length-effects" class="level4" data-number="2.1.3.1">
-<h4 data-number="2.1.3.1" class="anchored" data-anchor-id="day-length-effects"><span class="header-section-number">2.1.3.1</span> Day length effects</h4>
+<section id="day-length-effects" class="level5" data-number="2.6.1.3.1">
+<h5 data-number="2.6.1.3.1" class="anchored" data-anchor-id="day-length-effects"><span class="header-section-number">2.6.1.3.1</span> Day length effects</h5>
 <p>As an additional option in a later stage of the module development a daylength sensitivity of TSumInternode and Ph39 has been included. This is because data analysis revealed that the memory effect postulated from the assumption of a constant plastochron and phyllochron could not be verified in a larger data set. This is because presumably under increasing daylength the phyllochron shortens. The model parameters TSumInternode and Ph39 are closely linked to the phyllochron and thereby are change by the photoperiod:</p>
 <p><span id="eq-dayphyll"><span class="math display">
 TSumInternode = phyll + fdl \cdot daylengthp^2
 \tag{16}</span></span></p>
 </section>
 </section>
-<section id="end-of-leaf-growth-and-beginning-of-ear-growth-to-end-of-pre-anthesis-ear-growth-gs3" class="level3" data-number="2.1.4">
-<h3 data-number="2.1.4" class="anchored" data-anchor-id="end-of-leaf-growth-and-beginning-of-ear-growth-to-end-of-pre-anthesis-ear-growth-gs3"><span class="header-section-number">2.1.4</span> End of leaf growth and beginning of ear growth to end of pre-anthesis ear growth (GS3)</h3>
+<section id="end-of-leaf-growth-and-beginning-of-ear-growth-to-end-of-pre-anthesis-ear-growth-gs3" class="level4" data-number="2.6.1.4">
+<h4 data-number="2.6.1.4" class="anchored" data-anchor-id="end-of-leaf-growth-and-beginning-of-ear-growth-to-end-of-pre-anthesis-ear-growth-gs3"><span class="header-section-number">2.6.1.4</span> End of leaf growth and beginning of ear growth to end of pre-anthesis ear growth (GS3)</h4>
 <p>The period from the end of leaf growth to the beginning of ear growth is for the GS development rate defined by a length of 2 phytochrons</p>
 <p><span id="eq-dGS_dt_GS3"><span class="math display">\frac{dGS}{dt}=\frac{\max (0,T-{{T}_{b}})}{2Phyll} \tag{17}</span></span></p>
 <p>The rate of change of BBCH stages is during that stage simply synchronized with the GS rate according to equation <a href="#eq-dBBCH_dt_GS3" class="quarto-xref">Eq. 18</a>.</p>
 <p><span id="eq-dBBCH_dt_GS3"><span class="math display">\frac{dBBCH}{dt}=(4+1.7(GS-3))\cdot 10-BBCH \tag{18}</span></span></p>
 </section>
-<section id="end-of-pre-anthesis-ear-growth-to-beginning-of-grain-filling-gs4" class="level3" data-number="2.1.5">
-<h3 data-number="2.1.5" class="anchored" data-anchor-id="end-of-pre-anthesis-ear-growth-to-beginning-of-grain-filling-gs4"><span class="header-section-number">2.1.5</span> End of pre-anthesis ear growth to beginning of grain filling (GS4)</h3>
+<section id="end-of-pre-anthesis-ear-growth-to-beginning-of-grain-filling-gs4" class="level4" data-number="2.6.1.5">
+<h4 data-number="2.6.1.5" class="anchored" data-anchor-id="end-of-pre-anthesis-ear-growth-to-beginning-of-grain-filling-gs4"><span class="header-section-number">2.6.1.5</span> End of pre-anthesis ear growth to beginning of grain filling (GS4)</h4>
 <p>The period from the end of pre-anthesis ear growth to the beginning of grain filling is for the GS development rate defined by a length of 200 degree days:</p>
 <p><span id="eq-dGS_dt_GS4"><span class="math display">\frac{dGS}{dt}=\frac{\max (0,T-{{T}_{b}})}{200} \tag{19}</span></span></p>
 <p>The rate of change of BBCH stages is during that stage simply synchronized with the GS rate according to equation <a href="#eq-dBBCH_dt_GS4" class="quarto-xref">Eq. 20</a>.</p>
 <p><span id="eq-dBBCH_dt_GS4"><span class="math display">\frac{dBBCH}{dt}=(5.7+1.4(GS-4))\cdot 10-BBCH \tag{20}</span></span></p>
 </section>
-<section id="grain-filling-gs5" class="level3" data-number="2.1.6">
-<h3 data-number="2.1.6" class="anchored" data-anchor-id="grain-filling-gs5"><span class="header-section-number">2.1.6</span> Grain filling (GS5)</h3>
+<section id="grain-filling-gs5" class="level4" data-number="2.6.1.6">
+<h4 data-number="2.6.1.6" class="anchored" data-anchor-id="grain-filling-gs5"><span class="header-section-number">2.6.1.6</span> Grain filling (GS5)</h4>
 <p>The period of grain filling is for the GS development rate defined by a genotype specific temperature sum and the effective temperature during grain filling. The latter is calculated as the mean temperature minus the base temperature. The effective temperature is divided by the temperature sum for grain filling (TSumGF) to get the rate of change of GS 5:</p>
 <p><span id="eq-dGS_dt_GS5"><span class="math display">\frac{dGS}{dt}=\frac{\max (0,(T-{{T}_{b}})-1)}{TSumGF} \tag{21}</span></span></p>
 <p><span id="eq-TSumGF"><span class="math display">TSum_{GF} = \frac{(P5+21.5)}{0.05} \tag{22}</span></span></p>
 <p>The rate of change of BBCH stages is during that stage simply synchronized with the GS rate according to equation <a href="#eq-dBBCH_dt_GS5" class="quarto-xref">Eq. 23</a>.</p>
 <p><span id="eq-dBBCH_dt_GS5"><span class="math display">\frac{dBBCH}{dt}=(7.1+1.9(GS-5))\cdot 10-BBCH \tag{23}</span></span></p>
 </section>
-<section id="end-of-grain-filling-to-harvest-gs6" class="level3" data-number="2.1.7">
-<h3 data-number="2.1.7" class="anchored" data-anchor-id="end-of-grain-filling-to-harvest-gs6"><span class="header-section-number">2.1.7</span> End of grain filling to harvest (GS6)</h3>
+<section id="end-of-grain-filling-to-harvest-gs6" class="level4" data-number="2.6.1.7">
+<h4 data-number="2.6.1.7" class="anchored" data-anchor-id="end-of-grain-filling-to-harvest-gs6"><span class="header-section-number">2.6.1.7</span> End of grain filling to harvest (GS6)</h4>
 <p>The period from the end of grain filling to harvest is for the GS development rate defined by a length of 250 degree days:</p>
 <p><span id="eq-dGS_dt_GS6"><span class="math display">\frac{dGS}{dt}=\frac{\max (0,T-{{T}_{b}})}{250} \tag{24}</span></span></p>
 <p>The rate of change of BBCH stages is during that stage simply synchronized with the GS rate according to equation <a href="#eq-dBBCH_dt_GS6" class="quarto-xref">Eq. 25</a>.</p>
@@ -4321,6 +4908,7 @@ TSumInternode = phyll + fdl \cdot daylengthp^2
 
 
 
+</section>
 </section>
 </section>
 </section>

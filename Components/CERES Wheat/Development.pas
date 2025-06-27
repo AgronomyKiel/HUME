@@ -2,24 +2,24 @@
 /// This unit defines the TDevelopment class, a core component of the HUME-Wheat crop model, responsible for simulating the phenological development (growth stages) of wheat. 
 /// The class models the progression of the crop through its life cycle, from sowing and emergence to maturity and harvest, using temperature, daylength, and genetic parameters.
 /// 
-/// Key features:
-/// - Growth Stage Tracking: Extends the XSTAGE stages of Ceres Wheat with EC, BBCH stages scales to represent crop development.
-/// - Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).
-/// - Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.
-/// - Modular Design: Integrates with other model components via external variables and options.
+/// **Key features:**
+/// - **Growth Stage Tracking: Extends the XSTAGE stages of Ceres Wheat with EC, BBCH stages scales to represent crop development.
+/// - **Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).
+/// - **Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.
+/// - **Modular Design: Integrates with other model components via external variables and options.
 ///
-///   Phenological stages in integer values and corresponding BBCH stages:
-/// 1 Emergence to terminal spikelet(TS), BBCH 10-30
-/// 2 TS to end of vegetative growth, BBCH 30-39
-/// 3 End of vegetative growth and beginning ear growth to end of pre-anthesis ear growth, BBCH 40-57
-/// 4 End of pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase), BBCH 57-71
-/// 5 Beginning of grain filling to physiological maturity, BBCH 71-90
-/// 6 Physiological maturity to fallow (harvest), BBCH 90-99
-/// 7 Fallow to sowing
-/// 8 Sowing to germination
-/// 9 Germination to emergence
-/// 
-/// Typical usage:
+///   **Phenological stages in integer values and corresponding BBCH stages:**
+/// 1 **Emergence to terminal spikelet(TS), BBCH 10-30
+/// 2 **TS to end of vegetative growth, BBCH 30-39
+/// 3 **End of vegetative growth and beginning ear growth to end of pre-anthesis ear growth, BBCH 40-57
+/// 4 **End of pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase), BBCH 57-71
+/// 5 **Beginning of grain filling to physiological maturity, BBCH 71-90
+/// 6 **Physiological maturity to fallow (harvest), BBCH 90-99
+/// 7 **Fallow to sowing
+/// 8 **Sowing to germination
+/// 9 **Germination to emergence
+///
+/// **Typical usage:**
 /// This module is used to drive the timing of crop processes (e.g., leaf growth, flowering, grain filling) in response to weather and management, providing the developmental framework for the rest of the crop model.
 /// </summary>
 
@@ -54,10 +54,7 @@ type
 
 /// <summary>
 /// Enumeration for options related to Phyllochron/TSumIndernode calculation.
-/// This enumeration defines how the temperature sum for internode development is calculated.
-/// - Constant: Uses a constant temperature sum for internode development.
-/// - Daylength: Uses daylength to calculate the TSumIternoe internode development.
-/// </summary>  
+/// </summary>
   TOptTSumInternode = (constant, daylength);
 
 /// <summary>
@@ -132,11 +129,16 @@ type
     /// integer value of dev stage
     istage: TVar;
 
-    rdr_p: TVar;   /// relative development rate of photoperiod
-    rdr_v: TVar;   /// relative development rate of vernalization
-    Teff: TVar;   /// effective day temperature >=0 zur Basistemperatur
-    zstage: TVar;  ///Zadock's stages
-    vernf: TVar;   /// vernalisationfactor
+    /// relative development rate of photoperiod
+    rdr_p: TVar;   
+    /// relative development rate of vernalization
+    rdr_v: TVar;   
+    /// effective day temperature >=0 zur Basistemperatur
+    Teff: TVar;   
+    /// Zadock's stages
+    zstage: TVar;  
+    /// vernalisationfactor
+    vernf: TVar;   
     GS_EC25: TVar;
     TSEC32: Tvar;
     TSEC33: Tvar;

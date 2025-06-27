@@ -1,26 +1,17 @@
 ﻿
-{ 
- Module for carbon and nitrogen partitioning on organ level (root, stem, leaves, grains) for wheat
- see Appendix Diss. Ratjen 2012)
- C translocation to grains according to experimental results of 103, 94 (see Appendix Diss. Ratjen 2012)
-
- - N concentrations in organs during vegetative growth adapted from TSubPartitioningVegNew (U. Böttcher, Meyer-Schatz), but modified for drought stress
- according to experimental results of 103 2010 (see Diss. Ratjen Appendix)
-
- - leaf N distribution is calculated for specific leaf layers at anthesis
- according to experimental results of 103 10 (Appendix Diss. Ratjen )
-
- - N dynamics similar to Bertheloot 2008 (see Appendix Diss. Ratjen )
- 
- - sigmoid grain filling (Okt. 2015)
- 
- - Partitioning of N deficit according to Ratjen & Kage 2016 (JACS)
- 
- - Main authors A.M. Ratjen, U. Böttcher, H. Kage et al.
- 
- - restructured and commented by h. kage 2024
- }
-
+/// <summary>
+/// Module for carbon and nitrogen partitioning at the organ level (root, stem, leaves, grains) in wheat.
+/// </summary>
+/// <remarks>
+/// Implements C translocation to grains based on experimental results (see Appendix, Ratjen Diss. 2012).
+/// N concentrations in organs during vegetative growth are adapted from TSubPartitioningVegNew (U. Böttcher, Meyer-Schatz), with modifications for drought stress according to 2010 experimental results (see Ratjen Diss. Appendix).
+/// Leaf N distribution is calculated for specific leaf layers at anthesis, based on 2010 experimental results (see Ratjen Diss. Appendix).
+/// N dynamics are modeled similarly to Bertheloot 2008 (see Ratjen Diss. Appendix).
+/// Implements sigmoid grain filling (October 2015).
+/// Partitioning of N deficit follows Ratjen & Kage 2016 (JACS).
+/// Main authors: A.M. Ratjen, U. Böttcher, H. Kage et al.
+/// Restructured and commented by H. Kage, 2024.
+/// </remarks>
 
 unit UHumeWheatPartitioning;
 
@@ -785,19 +776,7 @@ begin
   Assiflow.v := Assiflow.v - RTWT_pl.c; // substract root growth
 end;
 
-//
-/// <summary> <summary> </summary>
 /// <summary> Calculates the potential harvest index (HI) for wheat. </summary>
-/// <summary> </summary> </summary>
-/// <summary>  </summary>
-/// <summary> <remarks> </summary>
-/// <summary> <para> </summary>
-/// <summary> This procedure is part of the THumeWheatPartitioning class. </summary>
-/// <summary> </para> </summary>
-/// <summary> <para> </summary>
-/// <summary> The calculated potential HI is stored in a class variable for later use. </summary>
-/// <summary> </para> </summary>
-/// <summary> </remarks> </summary>
 procedure THumeWheatPartitioning.CalcPotHI;
 begin
   //potHI: potential harvest index, calculated from the ratio of global radiation and temperature sum

@@ -41,6 +41,7 @@ options("citation_format" = "pandoc")
 
 ```
 
+
 ```{r}
 #| include: false
 fn_source <- "Q:/HUME/HUME/Components/Ceres Wheat/UHumeWheatLeafArea.pas"
@@ -55,6 +56,9 @@ doc <- read_xml(fn_xml_docu)
 #| echo: false
 #| message: false
 #| warning: false
+
+summary_text <- xml_text(xml_find_first(doc, ".//devnotes/summary"))
+#remarks_text <- xml_text(xml_find_first(doc, ".//devnotes/summary/remarks"))
 
 classes <- xml_find_all(doc, ".//class")
 
