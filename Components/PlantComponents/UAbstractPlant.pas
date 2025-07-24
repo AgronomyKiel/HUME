@@ -45,7 +45,7 @@ type
     fNextCrop: TAbstractPlant;
     fRotationlength: byte;
     fSetNewDates: boolean;
-    fSoilNitrogenMod: TPlantRelatedSubmod;  /// pointer to soil water & nitroen module
+    fSoilNitrogenMod: TPlantRelatedSubmod;  /// pointer to soil water & nitrog  en module
     fSoilMinMod: TPlantRelatedSubmod;
     fSoilLayerMod: TPlantRelatedSubmod;
     fEvapModel: TPlantRelatedSubmod;
@@ -164,7 +164,7 @@ begin
   ParCreate('Par_ExtCoeffPAR', '[-]', 0.675, Par_ExtCoeffPAR,
     'Extinction coefficient for PAR (only valid if EvapotranspirationModel uses Option Opt_Exk_Glob = fromPlantModel)');
   ParCreate('Par_Weff', '[cm]', 100, Par_Weff, 'effective rooting depth');
-  OptCreate('WithRoots', 'false', OptWithRoots, 'Option to flag that root growth is calculated within the component');
+  OptCreate('WithRoots', 'true', OptWithRoots, 'Option to flag that root growth is calculated within the component');
   OptWithRoots.OptionList.add('true');
   OptWithRoots.OptionList.add('false');
 
@@ -255,7 +255,8 @@ begin
   // hkage
   C_Residues.v := 0;
   N_Residues.v := 0;
-  harvestdate.v := sowingdate.v+365;
+  if harvestdate.v < sowingdate.v then
+     harvestdate.v := sowingdate.v+365;
   end;
 
 //end;

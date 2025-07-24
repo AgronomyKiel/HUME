@@ -1,21 +1,41 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{57A32180-8E76-44E7-9A19-47DB95B582E3}</ProjectGuid>
-        <MainSource>SoilWaterPackage.dpk</MainSource>
+        <ProjectGuid>{3FBFB58A-E29B-4F02-AF8E-DF8C677EF941}</ProjectGuid>
+        <MainSource>PackageGrowthCurvePlantRootsDM.dpk</MainSource>
         <ProjectVersion>20.1</ProjectVersion>
-        <FrameworkType>VCL</FrameworkType>
+        <FrameworkType>None</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
-        <ProjectName Condition="'$(ProjectName)'==''">SoilWaterPackage</ProjectName>
+        <ProjectName Condition="'$(ProjectName)'==''">PackageGrowthCurvePlantRootsDM</ProjectName>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Package</AppType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
     </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Android' and '$(Base)'=='true') or '$(Base_Android)'!=''">
+        <Base_Android>true</Base_Android>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Android64' and '$(Base)'=='true') or '$(Base_Android64)'!=''">
+        <Base_Android64>true</Base_Android64>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
     <PropertyGroup Condition="('$(Platform)'=='iOSDevice64' and '$(Base)'=='true') or '$(Base_iOSDevice64)'!=''">
         <Base_iOSDevice64>true</Base_iOSDevice64>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='iOSSimARM64' and '$(Base)'=='true') or '$(Base_iOSSimARM64)'!=''">
+        <Base_iOSSimARM64>true</Base_iOSSimARM64>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Linux64' and '$(Base)'=='true') or '$(Base_Linux64)'!=''">
+        <Base_Linux64>true</Base_Linux64>
         <CfgParent>Base</CfgParent>
         <Base>true</Base>
     </PropertyGroup>
@@ -60,15 +80,30 @@
         <DCC_K>false</DCC_K>
         <GenDll>true</GenDll>
         <GenPackage>true</GenPackage>
-        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <SanitizedProjectName>SoilWaterPackage</SanitizedProjectName>
-        <DCC_UnitSearchPath>Q:\HUME\HUME\Components\Rootgrowth;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <AppFileExt>bpl</AppFileExt>
+        <SanitizedProjectName>PackageGrowthCurvePlantRootsDM</SanitizedProjectName>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Android)'!=''">
+        <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
+        <EnabledSysJars>activity-1.7.2.dex.jar;annotation-experimental-1.3.0.dex.jar;annotation-jvm-1.6.0.dex.jar;annotations-13.0.dex.jar;appcompat-1.2.0.dex.jar;appcompat-resources-1.2.0.dex.jar;billing-6.0.1.dex.jar;biometric-1.1.0.dex.jar;browser-1.4.0.dex.jar;cloud-messaging.dex.jar;collection-1.1.0.dex.jar;concurrent-futures-1.1.0.dex.jar;core-1.10.1.dex.jar;core-common-2.2.0.dex.jar;core-ktx-1.10.1.dex.jar;core-runtime-2.2.0.dex.jar;cursoradapter-1.0.0.dex.jar;customview-1.0.0.dex.jar;documentfile-1.0.0.dex.jar;drawerlayout-1.0.0.dex.jar;error_prone_annotations-2.9.0.dex.jar;exifinterface-1.3.6.dex.jar;firebase-annotations-16.2.0.dex.jar;firebase-common-20.3.1.dex.jar;firebase-components-17.1.0.dex.jar;firebase-datatransport-18.1.7.dex.jar;firebase-encoders-17.0.0.dex.jar;firebase-encoders-json-18.0.0.dex.jar;firebase-encoders-proto-16.0.0.dex.jar;firebase-iid-interop-17.1.0.dex.jar;firebase-installations-17.1.3.dex.jar;firebase-installations-interop-17.1.0.dex.jar;firebase-measurement-connector-19.0.0.dex.jar;firebase-messaging-23.1.2.dex.jar;fmx.dex.jar;fragment-1.2.5.dex.jar;google-play-licensing.dex.jar;interpolator-1.0.0.dex.jar;javax.inject-1.dex.jar;kotlin-stdlib-1.8.22.dex.jar;kotlin-stdlib-common-1.8.22.dex.jar;kotlin-stdlib-jdk7-1.8.22.dex.jar;kotlin-stdlib-jdk8-1.8.22.dex.jar;kotlinx-coroutines-android-1.6.4.dex.jar;kotlinx-coroutines-core-jvm-1.6.4.dex.jar;legacy-support-core-utils-1.0.0.dex.jar;lifecycle-common-2.6.1.dex.jar;lifecycle-livedata-2.6.1.dex.jar;lifecycle-livedata-core-2.6.1.dex.jar;lifecycle-runtime-2.6.1.dex.jar;lifecycle-service-2.6.1.dex.jar;lifecycle-viewmodel-2.6.1.dex.jar;lifecycle-viewmodel-savedstate-2.6.1.dex.jar;listenablefuture-1.0.dex.jar;loader-1.0.0.dex.jar;localbroadcastmanager-1.0.0.dex.jar;okio-jvm-3.4.0.dex.jar;play-services-ads-22.2.0.dex.jar;play-services-ads-base-22.2.0.dex.jar;play-services-ads-identifier-18.0.0.dex.jar;play-services-ads-lite-22.2.0.dex.jar;play-services-appset-16.0.1.dex.jar;play-services-base-18.1.0.dex.jar;play-services-basement-18.1.0.dex.jar;play-services-cloud-messaging-17.0.1.dex.jar;play-services-location-21.0.1.dex.jar;play-services-maps-18.1.0.dex.jar;play-services-measurement-base-20.1.2.dex.jar;play-services-measurement-sdk-api-20.1.2.dex.jar;play-services-stats-17.0.2.dex.jar;play-services-tasks-18.0.2.dex.jar;print-1.0.0.dex.jar;profileinstaller-1.3.0.dex.jar;room-common-2.2.5.dex.jar;room-runtime-2.2.5.dex.jar;savedstate-1.2.1.dex.jar;sqlite-2.1.0.dex.jar;sqlite-framework-2.1.0.dex.jar;startup-runtime-1.1.1.dex.jar;tracing-1.0.0.dex.jar;transport-api-3.0.0.dex.jar;transport-backend-cct-3.1.8.dex.jar;transport-runtime-3.1.8.dex.jar;user-messaging-platform-2.0.0.dex.jar;vectordrawable-1.1.0.dex.jar;vectordrawable-animated-1.1.0.dex.jar;versionedparcelable-1.1.1.dex.jar;viewpager-1.0.0.dex.jar;work-runtime-2.7.0.dex.jar</EnabledSysJars>
+        <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Android64)'!=''">
+        <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
+        <EnabledSysJars>activity-1.7.2.dex.jar;annotation-experimental-1.3.0.dex.jar;annotation-jvm-1.6.0.dex.jar;annotations-13.0.dex.jar;appcompat-1.2.0.dex.jar;appcompat-resources-1.2.0.dex.jar;billing-6.0.1.dex.jar;biometric-1.1.0.dex.jar;browser-1.4.0.dex.jar;cloud-messaging.dex.jar;collection-1.1.0.dex.jar;concurrent-futures-1.1.0.dex.jar;core-1.10.1.dex.jar;core-common-2.2.0.dex.jar;core-ktx-1.10.1.dex.jar;core-runtime-2.2.0.dex.jar;cursoradapter-1.0.0.dex.jar;customview-1.0.0.dex.jar;documentfile-1.0.0.dex.jar;drawerlayout-1.0.0.dex.jar;error_prone_annotations-2.9.0.dex.jar;exifinterface-1.3.6.dex.jar;firebase-annotations-16.2.0.dex.jar;firebase-common-20.3.1.dex.jar;firebase-components-17.1.0.dex.jar;firebase-datatransport-18.1.7.dex.jar;firebase-encoders-17.0.0.dex.jar;firebase-encoders-json-18.0.0.dex.jar;firebase-encoders-proto-16.0.0.dex.jar;firebase-iid-interop-17.1.0.dex.jar;firebase-installations-17.1.3.dex.jar;firebase-installations-interop-17.1.0.dex.jar;firebase-measurement-connector-19.0.0.dex.jar;firebase-messaging-23.1.2.dex.jar;fmx.dex.jar;fragment-1.2.5.dex.jar;google-play-licensing.dex.jar;interpolator-1.0.0.dex.jar;javax.inject-1.dex.jar;kotlin-stdlib-1.8.22.dex.jar;kotlin-stdlib-common-1.8.22.dex.jar;kotlin-stdlib-jdk7-1.8.22.dex.jar;kotlin-stdlib-jdk8-1.8.22.dex.jar;kotlinx-coroutines-android-1.6.4.dex.jar;kotlinx-coroutines-core-jvm-1.6.4.dex.jar;legacy-support-core-utils-1.0.0.dex.jar;lifecycle-common-2.6.1.dex.jar;lifecycle-livedata-2.6.1.dex.jar;lifecycle-livedata-core-2.6.1.dex.jar;lifecycle-runtime-2.6.1.dex.jar;lifecycle-service-2.6.1.dex.jar;lifecycle-viewmodel-2.6.1.dex.jar;lifecycle-viewmodel-savedstate-2.6.1.dex.jar;listenablefuture-1.0.dex.jar;loader-1.0.0.dex.jar;localbroadcastmanager-1.0.0.dex.jar;okio-jvm-3.4.0.dex.jar;play-services-ads-22.2.0.dex.jar;play-services-ads-base-22.2.0.dex.jar;play-services-ads-identifier-18.0.0.dex.jar;play-services-ads-lite-22.2.0.dex.jar;play-services-appset-16.0.1.dex.jar;play-services-base-18.1.0.dex.jar;play-services-basement-18.1.0.dex.jar;play-services-cloud-messaging-17.0.1.dex.jar;play-services-location-21.0.1.dex.jar;play-services-maps-18.1.0.dex.jar;play-services-measurement-base-20.1.2.dex.jar;play-services-measurement-sdk-api-20.1.2.dex.jar;play-services-stats-17.0.2.dex.jar;play-services-tasks-18.0.2.dex.jar;print-1.0.0.dex.jar;profileinstaller-1.3.0.dex.jar;room-common-2.2.5.dex.jar;room-runtime-2.2.5.dex.jar;savedstate-1.2.1.dex.jar;sqlite-2.1.0.dex.jar;sqlite-framework-2.1.0.dex.jar;startup-runtime-1.1.1.dex.jar;tracing-1.0.0.dex.jar;transport-api-3.0.0.dex.jar;transport-backend-cct-3.1.8.dex.jar;transport-runtime-3.1.8.dex.jar;user-messaging-platform-2.0.0.dex.jar;vectordrawable-1.1.0.dex.jar;vectordrawable-animated-1.1.0.dex.jar;versionedparcelable-1.1.1.dex.jar;viewpager-1.0.0.dex.jar;work-runtime-2.7.0.dex.jar</EnabledSysJars>
+        <DCC_UsePackage>rtl;asgd_34;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_iOSDevice64)'!=''">
         <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
-        <DCC_UsePackage>rtl;xmlrtl;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_iOSSimARM64)'!=''">
+        <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
+        <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Linux64)'!=''">
+        <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
@@ -76,17 +111,13 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_UsePackage>vcl;rtl;vclimg;vclx;Tee;Jcl;asgd_Rio;Hume1;xmlrtl;vclactnband;VclSmp;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>vcl;rtl;vclimg;vclx;asgd_34;Hume1;SoilWaterPackage;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
-        <DCC_UsePackage>vcl;rtl;vclimg;vclx;Tee;xmlrtl;vclactnband;VclSmp;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>vcl;rtl;vclimg;vclx;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64x)'!=''">
-        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
-        <BT_BuildType>Debug</BT_BuildType>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <VerInfo_Locale>1033</VerInfo_Locale>
+        <DCC_UsePackage>vcl;rtl;vclimg;vclx;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -102,7 +133,6 @@
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_XmlOutput>Q:\HUME\HUME\XML_Delphi_Docu\</DCC_XmlOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -114,48 +144,14 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="vcl.dcp"/>
-        <DCCReference Include="vclx.dcp"/>
         <DCCReference Include="rtl.dcp"/>
-        <DCCReference Include="vclactnband.dcp"/>
-        <DCCReference Include="designide.dcp"/>
-        <DCCReference Include="VclSmp.dcp"/>
+        <DCCReference Include="vcl.dcp"/>
+        <DCCReference Include="vclimg.dcp"/>
+        <DCCReference Include="vclx.dcp"/>
+        <DCCReference Include="asgd_34.dcp"/>
         <DCCReference Include="Hume1.dcp"/>
-        <DCCReference Include="Jcl.dcp"/>
-        <DCCReference Include="USoilNitrogen.pas"/>
-        <DCCReference Include="USoilNitrogenUp.pas"/>
-        <DCCReference Include="USoilMineralisation.pas"/>
-        <DCCReference Include="USimpleSoilHeat.pas"/>
-        <DCCReference Include="..\CropManagement\UTillage.pas"/>
-        <DCCReference Include="..\PlantComponents\PlantIntegrator.pas"/>
-        <DCCReference Include="..\CropManagement\UIrrigate.pas"/>
-        <DCCReference Include="..\PlantComponents\UGrowthCurvePlant.pas"/>
-        <DCCReference Include="..\PlantComponents\UGrowthCurvePlantRoots.pas"/>
-        <DCCReference Include="..\PlantComponents\USucros.pas"/>
-        <DCCReference Include="Concentration_Niko.pas"/>
-        <DCCReference Include="..\Evapotranspiration\UPenMonteith.pas"/>
-        <DCCReference Include="UGenucht.pas"/>
-        <DCCReference Include="UlayeredSoil.pas"/>
-        <DCCReference Include="URootedSoil.pas"/>
-        <DCCReference Include="URootedSoil_zr.pas"/>
-        <DCCReference Include="USoilWaterMod.pas"/>
-        <DCCReference Include="..\PlantComponents\UDryMatProdComp.pas"/>
-        <DCCReference Include="..\PlantComponents\UMultiGrowthCurvePlant.pas"/>
-        <DCCReference Include="..\PlantComponents\UMultiGrowthCurvePlantRoots.pas"/>
-        <DCCReference Include="..\PlantComponents\UGrowthCurve.pas"/>
-        <DCCReference Include="..\CropManagement\UDueng_Par.pas"/>
-        <DCCReference Include="..\CropManagement\UFertilization.pas"/>
-        <DCCReference Include="URootedSoilET.pas"/>
-        <DCCReference Include="Usnowpack.pas"/>
-        <DCCReference Include="..\Evapotranspiration\UDailyCropSurfaceTemperatures.pas"/>
-        <DCCReference Include="USoilMineralisationNH4.pas"/>
-        <DCCReference Include="UFormDebugSoil.pas">
-            <Form>FormDebugSoil</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
-        <DCCReference Include="..\PlantComponents\ULUETotDry.pas"/>
-        <DCCReference Include="..\CropManagement\UDueng.pas"/>
-        <DCCReference Include="..\CropManagement\UInput.pas"/>
+        <DCCReference Include="SoilWaterPackage.dcp"/>
+        <DCCReference Include="UGrowthCurvePlantsRootDM.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -174,7 +170,7 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">SoilWaterPackage.dpk</Source>
+                    <Source Name="MainSource">PackageGrowthCurvePlantRootsDM.dpk</Source>
                 </Source>
                 <Excluded_Packages>
                     <Excluded_Packages Name="Q:\HUME\ADV_STRGRD\asgd_Rio.bpl">File Q:\HUME\ADV_STRGRD\asgd_Rio.bpl not found</Excluded_Packages>
@@ -187,13 +183,24 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="4">
-                <DeployFile LocalName="$(BDS)\Redist\iossimulator\libcgunwind.1.0.dylib" Class="DependencyModule"/>
-                <DeployFile LocalName="$(BDS)\Redist\iossimulator\libpcre.dylib" Class="DependencyModule"/>
-                <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule"/>
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\SoilWaterPackage.bpl" Configuration="Debug" Class="ProjectOutput"/>
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\SoilWaterPackage.bpl" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="$(BDS)\Redist\iossimulator\libcgunwind.1.0.dylib" Class="DependencyModule">
+                    <Platform Name="iOSSimulator">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="$(BDS)\Redist\iossimulator\libpcre.dylib" Class="DependencyModule">
+                    <Platform Name="iOSSimulator">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
+                    <Platform Name="OSX32">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\PackageGrowthCurvePlantRootsDM.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>SoilWaterPackage.bpl</RemoteName>
+                        <RemoteName>PackageGrowthCurvePlantRootsDM.bpl</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -1041,7 +1048,6 @@
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="iOSSimARM64" Name="$(PROJECTNAME).app"/>
-                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Linux64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="OSX64" Name="$(PROJECTNAME)"/>
@@ -1051,7 +1057,11 @@
                 <ProjectRoot Platform="Win64x" Name="$(PROJECTNAME)"/>
             </Deployment>
             <Platforms>
+                <Platform value="Android">False</Platform>
+                <Platform value="Android64">False</Platform>
                 <Platform value="iOSDevice64">False</Platform>
+                <Platform value="iOSSimARM64">False</Platform>
+                <Platform value="Linux64">False</Platform>
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">False</Platform>
                 <Platform value="Win64x">False</Platform>

@@ -36,7 +36,7 @@ uses
 type
 
   TGrowth = (Logistisch, LogIntBased, Monomolekular, Gompertz, Richards, Linear, expolinear,
-    LogIntDecay,Log_Decay, IntPol);
+    LogIntDecay, Log_Decay, IntPol);
   TStateVars = (LAI, DM, CropHeight, ShootN);
   TParameters = (BaseTemp, rgr, gr, Capacity, Richards_f, IniValue);
 
@@ -257,7 +257,7 @@ begin
     end;
   end;
 
-  ExternVCreate('Temp', '[°C]', RateField, Temp);
+  ExternVCreate('TMPM', '[°C]', RateField, Temp);
   if withNUptake then begin
     ExternVcreate('SoilNUptakeGrowth','[]',RateField,SoilNUptakeGrowthRate);
     StateCreate('SumSoilNUptakeGrowth','[]',0.0,false,SumSoilNUptakeGrowth);
