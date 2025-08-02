@@ -45,6 +45,8 @@ library(Weatherfunctions)
 library(xml2)
 library(ggpmisc)
 library(tidyr)
+library(stringr)
+
 options("citation_format" = "pandoc")
 
 ```
@@ -66,13 +68,19 @@ sigma <- 4.903e-9 # Stefan-Boltzmann-Constant in [MJ m-2 d-1 K-4]
 # Summary
 
 ```{r}
-doc <- read_xml(fn_xml_docu)
+#| message: false
+#| warning: false
+#| include: false
 
+doc <- read_xml(fn_xml_docu)
 ```
 
 ```{r}
-library(xml2)
-library(stringr)
+#| label: ExtractDevnotes
+#| echo: false
+#| message: false
+#| warning: false
+#| include: false
 
 
 # Find the <namespace name="UPenMonteith">
@@ -90,24 +98,28 @@ reference_list <- paste0("- ", xml_text(references), collapse = "\n")
 
 # Combine into markdown string
 md_text <- paste0(
-  "### Summary\n",
+  "## Summary\n",
   summary_text, "\n\n",
-  "### Author\n",
+  "## Author\n",
   author_text, "\n\n",
-  "### Timestamp\n",
+  "## Timestamp\n",
   timestamp_text, "\n\n",
-  "### References\n",
+  "## References\n",
   reference_list, "\n\n",
-  "### Purpose\n",
+  "## Purpose\n",
   purpose_text
 )
 
 # Show markdown
-cat(md_text)
+#cat(md_text)
 
 ```
 
 `r md_text`
+
+
+## Classes
+
 
 ```{r}
 #| echo: false
@@ -138,7 +150,7 @@ for (i in 1:nrow(classes_df)){
 
 The unit defines the following classes:
 
-`r out_text`.
+`r out_text`
 
 ```{r}
 classes_nodes <- xml_find_all(doc, ".//class")
@@ -162,7 +174,6 @@ classes_df <- data.frame(
 ```
 
 ```{r}
-
 # Find TPenMonteith class node
 class_node <- xml_find_first(doc, ".//class[@name='TPenMonteith']")
 
@@ -182,9 +193,9 @@ property_df <- data.frame(
   visibility = xml_attr(property_refs, "visibility"),
   stringsAsFactors = FALSE
 )
+```
 
-
-
+```{r}
 # Extract <field> elements under <members>
 #field_nodes <- xml_find_all(class_node, ".//members/field")
 field_nodes <- xml_find_all(class_node, ".//field")
@@ -203,7 +214,11 @@ field_df <- data.frame(
   }),
   stringsAsFactors = FALSE
 )
+```
 
+## Constants
+
+```{r}
 # Find all <const> nodes
 const_nodes <- xml_find_all(doc, ".//const")
 
@@ -221,8 +236,11 @@ const_df <- data.frame(
   }),
   stringsAsFactors = FALSE
 )
+```
 
+## Enumerations
 
+```{r}
 # Find all <enum> nodes
 enum_nodes <- xml_find_all(doc, ".//enum")
 
@@ -242,11 +260,10 @@ enum_df <- data.frame(
 )
 
 
-
-
-
-
 ```
+
+
+## Functions
 
 ```{r}
 #| echo: false
@@ -299,12 +316,26 @@ fun_df <- data.frame(
 ```
 
 ```{r}
-#| tbl-cap: Functions of class TPenMonteith
-#| label: tbl-TPenMonteithFunctionsTable
-#| echo: false
+#| label: tbl-TPenMonteithFunctionsTableSimple
+#| echo: true
 #| message: false
 #| warning: false
+#| tbl-cap: Functions of class TPenMonteith
 
+paged_table(fun_df)
+```
+
+
+
+```{r}
+#| label: tbl-TPenMonteithFunctionsTable
+#| eval: false
+#| message: false
+#| warning: false
+#| include: false
+#| tbl-cap: Functions of class TPenMonteith
+
+fun_df[] <- lapply(fun_df, function(x) gsub(":::", "::: ", x, fixed = TRUE))
 
 kable(fun_df, escape = FALSE, col.names = c("Name", "Visibility", "Parameters", "Summary", "Parameter Summary")) %>%
   kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) %>%
@@ -315,92 +346,6 @@ kable(fun_df, escape = FALSE, col.names = c("Name", "Visibility", "Parameters", 
   column_spec(5, width = "30em")
 
 
-```
-
-```{r}
-# Find the <class> node for TPenMonteith
-class_node <- xml_find_first(doc, './/class[@name="TPenMonteith"]')
-
-# Find all <function> nodes inside this class
-fun_nodes <- xml_find_all(class_node, ".//function")
-
-# Extract detailed information
-fun_df <- data.frame(
-  name = xml_attr(fun_nodes, "name"),
-  visibility = xml_attr(fun_nodes, "visibility"),
-  parameters = sapply(fun_nodes, function(fn) {
-    params <- xml_find_all(fn, ".//parameter")
-    paste(
-      sapply(params, function(p) {
-        pname <- xml_attr(p, "name")
-        ptype <- xml_attr(p, "type")
-        if (is.na(pname)) {
-          return(paste0("return: ", ptype))
-        } else {
-          return(paste0(pname, ": ", ptype))
-        }
-      }),
-      collapse = ", "
-    )
-  }),
-  summary = sapply(fun_nodes, function(fn) {
-    summary_node <- xml_find_first(fn, ".//devnotes//summary[not(starts-with(., '<param')) and not(starts-with(., '<returns'))]")
-    if (!is.na(summary_node)) xml_text(summary_node) else NA_character_
-  }),
-  param_docs = sapply(fun_nodes, function(fn) {
-    param_nodes <- xml_find_all(fn, ".//devnotes//summary[starts-with(., '<param')]")
-    paste(
-      sapply(param_nodes, function(p) gsub("^<param name=\"|\">|</param>$", "", xml_text(p))),
-      collapse = "\n"
-    )
-  }),
-  stringsAsFactors = FALSE
-)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Find the <class> node for TPenMonteith
-class_node <- xml_find_first(doc, './/class[@name="TPenMonteith"]')
-
-# Find all <function> nodes inside this class
-fun_nodes <- xml_find_all(class_node, ".//function")
-
-# Extract name, visibility, and parameters
-fun_df <- data.frame(
-  name = xml_attr(fun_nodes, "name"),
-  visibility = xml_attr(fun_nodes, "visibility"),
-  parameters = sapply(fun_nodes, function(fn) {
-    params <- xml_find_all(fn, ".//parameter")
-    if (length(params) == 0) return("")
-    paste(
-      sapply(params, function(p) {
-        param_name <- xml_attr(p, "name")
-        param_type <- xml_attr(p, "type")
-        if (is.na(param_name)) {
-          return(paste0("return: ", param_type))
-        } else {
-          return(paste0(param_name, ": ", param_type))
-        }
-      }),
-      collapse = ", "
-    )
-  }),
-  stringsAsFactors = FALSE
-)
 ```
 
 ## Descendence
@@ -932,3 +877,6 @@ The potential evaporation then gets:
 $${{E}_{p}}=\left( E{{T}_{p}}-I \right)\cdot \frac{{{R}_{ns}}}{{{R}_{n}}}$$ {#eq-Ep}
 
 Actual evaporation was determined from an empirical function using potential evaporation and the water potential in 10 cm depth as input parameters (@Beese1978). The potential transpiration is calculated as the remaining part of the potential evapo-transpiration after subtracting potential evaporation and interception and taking also into account an empirical crop resistance.
+
+
+

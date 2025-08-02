@@ -4,27 +4,16 @@
 /// the experimental data to which the growth curve is fitted or typically temporally even denser observed data which then dan be used for interpolation.
 /// </summary>
 /// <remarks>
-/// <para>
-/// Required external variables:
-///   - Temperature (Temp)
-/// </para>
-/// <para>
-/// Required parameters:
-///   - Growth rate [1/d] (rgr)
-///   - Maximum LAI [m2/m2] (max)
-///   - Base temperature [°C] (BaseTemp)
-///   - Richards form parameter (Richards_m)
-///   - Planting date [d] (SowingDate)
-///   - Harvest date [d] (HarvestDate)
-/// </para>
-/// <para>
-/// State variables:
-///   - Temperature sum [°C] (TSum)
-/// </para>
-/// <para>
-/// Options:
-///   - Growth type [logistic, monomolecular, Gompertz, Richards, linear, expo-linear, LogIntDecay, Log_Decay, IntPol] (CurveType) 
-/// </para>
+///   <author>
+///     Henning Kage & Agronomy Group, University of Kiel
+///   </author>
+///   <Timestamp>
+///     First edited: 6.10.89
+///     Last edited: 02.08.25
+///   </Timestamp>
+///   <References>
+///       <item>Kage, H., Kochler, M., Stutzel, H., 2000. Root growth of cauliflower (Brassica oleracea L. botrytis) under unstressed conditions: Measurement and modelling. Plant Soil 223, 131–145.</item>
+///   </References>
 /// </remarks>
 
 unit UGrowthCurvePlant;
