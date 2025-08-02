@@ -233,7 +233,7 @@ begin
   ParCreate('CompFactor', '[-]', 0.5, CompFactor, 'root competition factor, 1 leads to proportional potential water uptake by relative root length, 0.5 accounts for root competition');
   ParCreate('nFKcrit','[-]', 0.5, nFKcrit, 'relative soil water content where root water uptake reduces if nFKcrit option is choosen');
   ParCreate('IrriAmount','[mm]',10,IrriAmount, 'Amount of automated irrigation per irrigation');
-  ParCreate('Autoirri_nFKcrit', '[%]', 60, Autoirri_nFKcrit, 'Prozent nFK ab der bew�ssert wird, wenn AutoirriMeth auf amProznFKWe steht');
+  ParCreate('Autoirri_nFKcrit', '[%]', 60, Autoirri_nFKcrit, 'Prozent nFK ab der bewässert wird, wenn AutoirriMeth auf amProznFKWe steht');
   ParCreate('r_root', '[cm]', 0.01, r_root, 'root radius [cm]');
 
 
