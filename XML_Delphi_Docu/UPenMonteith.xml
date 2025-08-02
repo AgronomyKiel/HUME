@@ -18,7 +18,7 @@
            <item>Duynisveld, W.H.M. (1983). Entwicklung von Simulationsmodellen fuer den Transport von geloesten Stoffen in wasserungesaettigten Boeden and Lockersedimenten. Texte Umweltbundesamt (1983) 17, 197 Seiten</item>
            <item>Monteith, J.L. (1973). Principles of Environmental Physics. Edward Arnold, London, 1973, 241 Seiten</item>
            <item>Groot, J.J.R. (1987). Simulation of nitrogen balance in a system of winter wheat and soil. Simulation Reports CABO-TT, Wageningen 1987</item>
-           <item>Loebmeier, F.J. (1983). Agrarmeteorologisches Model zur calcuation der aktuellen Verdunstung (AMBAV). Beitraege zur Agrarmeteorologie Nr. 7/83</item>
+           <item>Loebmeier, F.J. (1983). Agrarmeteorologisches Model zur Berechnung der aktuellen Verdunstung (AMBAV). Beitraege zur Agrarmeteorologie Nr. 7/83</item>
        </References>
        <Purpose>
          Calculation of transpiration, evaporation, and interception from standard weather and plant data.
@@ -94,7 +94,8 @@
       </methodref>
       <methodref name="Init" visibility="public" procflags="override">
       </methodref>
-      <propertyref name="IsPlantModelSet" visibility="public" />
+      <propertyref name="IsPlantModelSet" visibility="public">
+      </propertyref>
       <propertyref name="PlantModel" visibility="published">
       </propertyref>
       <ancestor name="TSubmodel" namespace="UMod">
@@ -112,18 +113,30 @@
         </methodref>
         <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
         </methodref>
-        <methodref name="set_State" visibility="private" procflags="virtual" />
-        <methodref name="get_State" visibility="private" />
-        <methodref name="set_Par" visibility="private" />
-        <methodref name="Get_Par" visibility="private" />
-        <methodref name="set_Var" visibility="private" />
-        <methodref name="Get_Var" visibility="private" />
-        <methodref name="set_Const" visibility="private" />
-        <methodref name="get_Const" visibility="private" />
-        <methodref name="set_Option" visibility="private" />
-        <methodref name="get_Option" visibility="private" />
-        <methodref name="set_ExternVar" visibility="private" />
-        <methodref name="get_ExternVar" visibility="private" />
+        <methodref name="set_State" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="get_State" visibility="private">
+        </methodref>
+        <methodref name="set_Par" visibility="private">
+        </methodref>
+        <methodref name="Get_Par" visibility="private">
+        </methodref>
+        <methodref name="set_Var" visibility="private">
+        </methodref>
+        <methodref name="Get_Var" visibility="private">
+        </methodref>
+        <methodref name="set_Const" visibility="private">
+        </methodref>
+        <methodref name="get_Const" visibility="private">
+        </methodref>
+        <methodref name="set_Option" visibility="private">
+        </methodref>
+        <methodref name="get_Option" visibility="private">
+        </methodref>
+        <methodref name="set_ExternVar" visibility="private">
+        </methodref>
+        <methodref name="get_ExternVar" visibility="private">
+        </methodref>
         <methodref name="InitStates" visibility="private" procflags="virtual">
         </methodref>
         <methodref name="InitParms" visibility="private" procflags="virtual">
@@ -138,17 +151,22 @@
         </methodref>
         <methodref name="IsOutput" visibility="private" procflags="virtual">
         </methodref>
-        <methodref name="Get_GlobMod" visibility="protected" />
-        <methodref name="Set_GlobMod" visibility="protected" procflags="virtual" />
-        <methodref name="UpdateValue" visibility="protected" />
+        <methodref name="Get_GlobMod" visibility="protected">
+        </methodref>
+        <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="UpdateValue" visibility="protected">
+        </methodref>
         <methodref name="Paint" visibility="protected" procflags="override">
         </methodref>
-        <methodref name="Notification" visibility="protected" procflags="virtual" />
+        <methodref name="Notification" visibility="protected" procflags="virtual">
+        </methodref>
         <methodref name="Create" visibility="public" procflags="constructor override">
         </methodref>
         <methodref name="free" visibility="public">
         </methodref>
-        <methodref name="BeforeDestruction" visibility="public" procflags="override" />
+        <methodref name="BeforeDestruction" visibility="public" procflags="override">
+        </methodref>
         <methodref name="ParCreate" visibility="public" procflags="virtual">
         </methodref>
         <methodref name="OptCreate" visibility="public">
@@ -213,7 +231,8 @@
         </propertyref>
         <propertyref name="ExternVar" visibility="public">
         </propertyref>
-        <methodref name="DblClick" visibility="public" procflags="override" />
+        <methodref name="DblClick" visibility="public" procflags="override">
+        </methodref>
         <propertyref name="SM_GlobMod" visibility="published">
         </propertyref>
         <propertyref name="SM_ExternVStrList" visibility="published">
@@ -240,12 +259,18 @@
         </propertyref>
         <propertyref name="OptContOutput" visibility="published">
         </propertyref>
-        <propertyref name="Parent" visibility="published" />
-        <propertyref name="Canvas" visibility="published" />
-        <propertyref name="Visible" visibility="published" />
-        <propertyref name="color" visibility="published" />
-        <propertyref name="DebugForm" visibility="published" />
-        <propertyref name="OnDblClick" visibility="published" />
+        <propertyref name="Parent" visibility="published">
+        </propertyref>
+        <propertyref name="Canvas" visibility="published">
+        </propertyref>
+        <propertyref name="Visible" visibility="published">
+        </propertyref>
+        <propertyref name="color" visibility="published">
+        </propertyref>
+        <propertyref name="DebugForm" visibility="published">
+        </propertyref>
+        <propertyref name="OnDblClick" visibility="published">
+        </propertyref>
         <ancestor name="TGraphicControl" namespace="Vcl.Controls">
           <methodref name="WMPaint" visibility="private" procflags="message">
           </methodref>
@@ -1281,13 +1306,8 @@
       <procedure name="Calc_Interception" visibility="protected" file="UPenMonteith.pas" line="60">
         <devnotes>
            <summary>
-           Empirical function for determining interception of a canopy.
+             procedure for determining interception of a canopy.
            </summary>
-           <param name=>leaf area index, [-]</param>
-           <param name=>precipitation rate, [mm/d]</param>
-           <param name=>potential transpiration/interception, [mm/d]</param>
-           <param name=>interception storage, [mm]</param>
-           <param name=>interception of canopy, [mm/d]</param>
         </devnotes>
       </procedure>
       <function name="Evaporation_f" visibility="protected" file="UPenMonteith.pas" line="61">
@@ -1789,6 +1809,6 @@
       </property>
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="UPenMonteith.pas" line="945">
+  <procedure name="Register" visibility="public" file="UPenMonteith.pas" line="942">
   </procedure>
 </namespace>

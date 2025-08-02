@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Agronomy and Crop Science Group, Kiel University">
+<meta name="author" content="Chatgpt/Codex">
 
-<title>Evapotranspiration</title>
+<title>HUME Codebase Overview</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -82,7 +82,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Evapotranspiration</li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./CodeBasisOverview.html">Code basis</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -110,7 +110,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./CodeBasisOverview.html" class="sidebar-item-text sidebar-link">
+  <a href="./CodeBasisOverview.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Code basis</span></a>
   </div>
 </li>
@@ -172,7 +172,13 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#evapotranspiration" id="toc-evapotranspiration" class="nav-link active" data-scroll-target="#evapotranspiration">Evapotranspiration</a></li>
+  <li><a href="#hume-codebase-overview" id="toc-hume-codebase-overview" class="nav-link active" data-scroll-target="#hume-codebase-overview">HUME Codebase Overview</a>
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#directory-structure-key-areas" id="toc-directory-structure-key-areas" class="nav-link" data-scroll-target="#directory-structure-key-areas">Directory Structure (Key Areas)</a></li>
+  <li><a href="#architecture-operation" id="toc-architecture-operation" class="nav-link" data-scroll-target="#architecture-operation">Architecture &amp; Operation</a></li>
+  <li><a href="#what-should-a-beginner-learn" id="toc-what-should-a-beginner-learn" class="nav-link" data-scroll-target="#what-should-a-beginner-learn">What Should a Beginner Learn?</a></li>
+  </ul></li>
   </ul>
 </nav>
 </nav>
@@ -185,7 +191,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Evapotranspiration</h1>
+<h1 class="title">HUME Codebase Overview</h1>
 </div>
 
 
@@ -195,7 +201,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Agronomy and Crop Science Group, Kiel University </p>
+             <p>Chatgpt/Codex </p>
           </div>
   </div>
     
@@ -208,11 +214,127 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="evapotranspiration" class="level2">
-<h2 class="anchored" data-anchor-id="evapotranspiration">Evapotranspiration</h2>
-<p>The Hume component library provides a set of components for calculating evapotranspiration (ET) using various methods. T</p>
+<section id="hume-codebase-overview" class="level1">
+<h1>HUME Codebase Overview</h1>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p><strong>HUME</strong> is an object‑oriented Pascal/Delphi library for constructing modular dynamic simulation models. A central model object coordinates several interchangeable submodels (e.g., plant growth, soil, irrigation), which exchange data through defined interfaces.</p>
+</section>
+<section id="directory-structure-key-areas" class="level2">
+<h2 class="anchored" data-anchor-id="directory-structure-key-areas">Directory Structure (Key Areas)</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Directory/File</th>
+<th>Contents / Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>UMod.pas</code>, <code>Ustate.pas</code>, <code>UModUtils.pas</code>, <code>UTextFileH.pas</code></td>
+<td>Core units: main model class <code>TMod</code>, base class <code>TSubModel</code>, data types for states/parameters, file and utility functions</td>
+</tr>
+<tr class="even">
+<td><code>Components/</code></td>
+<td>Collection of concrete submodels such as <code>CERES Wheat</code>, <code>Maize</code>, <code>Soil</code>, etc.; these are the domain-specific modules integrated into the framework</td>
+</tr>
+<tr class="odd">
+<td><code>Forms/</code> &amp; various <code>UForm*.pas/dfm</code></td>
+<td>GUI forms for parameter input, graphics, and debugging; based on Delphi’s VCL</td>
+</tr>
+<tr class="even">
+<td><code>Demo/</code></td>
+<td>Example project with INI files and sample submodels for quick start</td>
+</tr>
+<tr class="odd">
+<td><code>Documentation_Help</code>, <code>docs/</code>, Quarto files (<code>*.qmd</code>)</td>
+<td>Documentation and help files, partially for Quarto/HTML output</td>
+</tr>
+<tr class="even">
+<td>Project files (<code>*.dpr</code>, <code>*.dproj</code>, <code>*.groupproj</code>)</td>
+<td>Delphi project and project-group files for the compiler/IDE</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="architecture-operation" class="level2">
+<h2 class="anchored" data-anchor-id="architecture-operation">Architecture &amp; Operation</h2>
+<ol type="1">
+<li><strong>Main Model (<code>TMod</code>)</strong>
+<ul>
+<li>Initiates and controls the simulation<br>
+</li>
+<li>Manages lists of submodels, state variables, and parameters<br>
+</li>
+<li>Provides functions for sensitivity analysis and parameter estimation (Levenberg–Marquardt)</li>
+</ul></li>
+<li><strong>Submodels (<code>TSubModel</code> descendants)</strong>
+<ul>
+<li>Model specific processes (e.g., yield, water balance, plant development)<br>
+</li>
+<li>Communicate via “External Values”: strings loosely couple data producers and consumers</li>
+</ul></li>
+<li><strong>Data Structures (<code>UState.pas</code>)</strong>
+<ul>
+<li>Classes such as <code>TVar</code>, <code>TPar</code>, <code>TState</code>, <code>TExternV</code> represent numerical quantities with metadata (unit, comment, …)<br>
+</li>
+<li>Uniform treatment of states, parameters, and external inputs supports generic processing</li>
+</ul></li>
+<li><strong>Configuration &amp; I/O</strong>
+<ul>
+<li>INI files and text tables (via <code>UTextFileH</code>) are used for initialization and result output<br>
+</li>
+<li>Utility functions (<code>UModUtils</code>) simplify file-name handling and numeric helper calculations</li>
+</ul></li>
+<li><strong>GUI</strong>
+<ul>
+<li>Numerous forms support loading/editing parameters, visualizing results, and debugging<br>
+</li>
+<li>For console execution, compilation can proceed without the GUI (<code>NONVISUAL</code> compiler switch)</li>
+</ul></li>
+</ol>
+</section>
+<section id="what-should-a-beginner-learn" class="level2">
+<h2 class="anchored" data-anchor-id="what-should-a-beginner-learn">What Should a Beginner Learn?</h2>
+<ol type="1">
+<li><strong>Pascal/Delphi Basics</strong>
+<ul>
+<li>Classes, inheritance, properties, <code>unit</code> structure<br>
+</li>
+<li>Working with the VCL if GUI development is planned</li>
+</ul></li>
+<li><strong>Understanding HUME Base Classes</strong>
+<ul>
+<li>Structure of <code>TMod</code> and <code>TSubModel</code>: lifecycle, key methods (<code>Init</code>, <code>Run</code>, <code>Finalize</code>)<br>
+</li>
+<li>Handling of <code>THumeEntity</code>-derived classes (<code>TState</code>, <code>TPar</code>, …)</li>
+</ul></li>
+<li><strong>Creating a Custom Submodel</strong>
+<ul>
+<li>Derive from <code>TSubModel</code>, declare required variables, and link them via strings for external values<br>
+</li>
+<li>Use configuration files for initialization</li>
+</ul></li>
+<li><strong>Project Structure &amp; Files</strong>
+<ul>
+<li>Delphi project files (.dpr, .dproj, .groupproj) for build organization<br>
+</li>
+<li>Understanding INI files and measurement tables as input/output</li>
+</ul></li>
+<li><strong>Using Documentation &amp; Demo</strong>
+<ul>
+<li>Launch the <code>Demo/</code> project as a learning example<br>
+</li>
+<li>Read Quarto/Markdown documents (<code>docs/</code>, <code>Documentation_Help/</code>) to grasp the model hierarchy and available components</li>
+</ul></li>
+</ol>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

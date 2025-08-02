@@ -15,7 +15,7 @@
 ///       <item>Duynisveld, W.H.M. (1983). Entwicklung von Simulationsmodellen fuer den Transport von geloesten Stoffen in wasserungesaettigten Boeden and Lockersedimenten. Texte Umweltbundesamt (1983) 17, 197 Seiten</item>
 ///       <item>Monteith, J.L. (1973). Principles of Environmental Physics. Edward Arnold, London, 1973, 241 Seiten</item>
 ///       <item>Groot, J.J.R. (1987). Simulation of nitrogen balance in a system of winter wheat and soil. Simulation Reports CABO-TT, Wageningen 1987</item>
-///       <item>Loebmeier, F.J. (1983). Agrarmeteorologisches Model zur calcuation der aktuellen Verdunstung (AMBAV). Beitraege zur Agrarmeteorologie Nr. 7/83</item>
+///       <item>Loebmeier, F.J. (1983). Agrarmeteorologisches Model zur Berechnung der aktuellen Verdunstung (AMBAV). Beitraege zur Agrarmeteorologie Nr. 7/83</item>
 ///   </References>
 ///   <Purpose>
 ///     Calculation of transpiration, evaporation, and interception from standard weather and plant data.
@@ -490,20 +490,17 @@ end; { Penman }
 
 
 /// <summary>
-/// Empirical function for determining interception of a canopy.
+///   procedure for determining interception of a canopy.
 /// </summary>
-/// <param name="BFI">leaf area index, [-]</param>
-/// <param name="rain">precipitation rate, [mm/d]</param>
-/// <param name="pTI">potential transpiration/interception, [mm/d]</param>
-/// <param name="Int_stor">interception storage, [mm]</param>
-/// <param name="interception">interception of canopy, [mm/d]</param>
 
 procedure TPenMonteith.Calc_Interception;
 
 
 var
-  max_int_cap, { maximum interception capacity [mm] }
-  act_int_cap { actual interception capacity [mm] }
+  /// <summary>maximum interception capacity [mm]</summary>
+  max_int_cap, 
+  /// <summary>actual interception capacity [mm]</summary>
+  act_int_cap
   : real;
 
 begin
