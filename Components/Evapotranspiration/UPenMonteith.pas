@@ -541,25 +541,14 @@ end;
 { ----------------------------------------------------------------------- }
 { ----------------------------------------------------------------------- }
 
-{ ----------------------------------------------------------------------- }
-{ ----------------------------------------------------------------------- }
+
+
+
+/// <summary>
+/// Empirical function for determining soil evaporation under a plant canopy
+/// according to Duynisveld (1983) S.22.
+/// </summary>
 function TPenMonteith.Evaporation_f: real;
-
-{ ********************************************************************** }
-{ purpose : empirische Funktion zur Ermittlung der Evaporation eines
-  Bodens unter einem Pflanzenbestand
-  nach Duynisveld (1983) S.22
-
-  Parameter :
-
-  Name             Inhalt                          Einheit      Typ
-
-  pET              potential evapotranspiration  [mm/d]       I
-  BFI              leaf area index               [-]          I
-
-  Evaporation_f    Evaporation unter einem
-  Pflanzenbestand                 [mm/d]       O }
-{ ********************************************************************** }
 
 var
   Evap: real;
@@ -575,23 +564,13 @@ begin
 end;
 
 
+/// <summary>
+///   Empirical function for determining evaporation of a soil under a plant canopy
+///   according to Duynisveld (1983) S.22
+/// </summary>
+
 function TPenMonteith.Evaporation_f_ambient: real;
 
-{ ********************************************************************** }
-{ purpose : empirische Funktion zur Ermittlung der Evaporation eines
-  Bodens unter einem Pflanzenbestand
-  nach Duynisveld (1983) S.22
-
-  Parameter :
-
-  Name             Inhalt                          Einheit      Typ
-
-  pET              potential evapotranspiration  [mm/d]       I
-  BFI              leaf area index               [-]          I
-
-  Evaporation_f    Evaporation unter einem
-  Pflanzenbestand                 [mm/d]       O }
-{ ********************************************************************** }
 
 var
   Evap: real;
@@ -617,20 +596,6 @@ end;
 
 function TPenMonteith.sat_vap_press_f(Temp: real): real;
 
-{ ********************************************************************** }
-{ purpose : empirische Funktion zur Ermittlung of gesättigten Wasserdampf-
-  druckes
-  nach Groot (1983) bzw. Goudriaan (1977)
-
-  Parameter :
-
-  Name             Inhalt                          Einheit      Typ
-
-  Temp             air temperature                      [°C]         I
-
-
-  sat_vap_press_f  saturated water vapour pressure    [mbar]       O }
-{ ********************************************************************** }
 
 begin
   sat_vap_press_f := 6.11 * exp(17.4 * Temp / (Temp + 239.0));
@@ -653,10 +618,9 @@ function TPenMonteith.delta_f(sat_vap_press, Temp: real): real;
 begin
   delta_f := 239.0 * 17.4 * sat_vap_press / sqr(Temp + 239.0);
 end;
-{ ----------------------------------------------------------------------- }
-{ ----------------------------------------------------------------------- }
 
 
+/// <summary> calculation of the psychrometer constant </summary>
 function TPenMonteith.Calc_psychro(P, Temp:real):real;
 
 begin
@@ -664,7 +628,7 @@ begin
 end;
 
 
-
+/// <summary> Create all components </summary>
 procedure TPenMonteith.CreateAll;
 
 begin
@@ -676,6 +640,7 @@ begin
   CreateOptions;
 end;
 
+/// <summary> Initialization of the model </summary>
 procedure TPenMonteith.Init;
 begin
   inherited;
@@ -698,6 +663,8 @@ begin
   end;
 end;
 
+
+/// <summary> Calculation of the variables in each time step </summary>
 procedure TPenMonteith.CalcVars;
 
 var
@@ -763,19 +730,16 @@ end;
 
 
 
-
+/// <summary> Calculation of the rates in each time step </summary>
 procedure TPenMonteith.CalcRates;
-{ ----------------------------------------------------------------------- }
-{ ----------------------------------------------------------------------- }
-
 
 begin
 
 end; { Evapo_transpi }
 { ----------------------------------------------------------------------- }
 
+/// <summary> Set the plant model and link LAI and crop height external variables to the plant model </summary>
 procedure TPenMonteith.SetPlantModel(NewPlantmodel: TAbstractPlant);
-
 
 begin
   inherited SetPlantModel(NewPlantmodel);
@@ -792,6 +756,23 @@ begin
       Ex_CropHeight.Source := Plantmodel.name+'.'+NewPlantmodel.p_CropHeight.Name;
 end;
 end;
+
+
+/// <summary> Calculate the potential transpiration </summary>
+/// <remarks>
+///   The potential transpiration is calculated as the difference between the potential evapotranspiration
+///   and the potential evaporation, minus the interception.
+///   If the potential evapotranspiration is less than or equal to zero, the potential
+///   transpiration is set to zero.
+///   If the potential evapotranspiration at ambient CO2 is greater than zero, the
+///   potential transpiration at ambient CO2 is calculated similarly.
+///   The CO2TransDiff variable is calculated as the difference between the potential transpiration
+///   and the potential transpiration at ambient CO2, adjusted for interception.
+///   The relative CO2TransDiff is calculated as the ratio of CO2TransDiff to
+///   the sum of potential transpiration and interception.
+///   If the potential transpiration is greater than zero, the relative CO2TransDiff is
+///   calculated; otherwise, it is set to zero.
+/// </remarks>  
 
 procedure TPenMonteith.Calc_potTrans;
 begin
@@ -815,6 +796,13 @@ begin
 
 end;
 
+
+/// <summary> Calculate the aerodynamic resistance </summary>
+/// <remarks>
+///   If the crop height is less than or equal to zero, the aerodynamic resistance is calculated
+///   using a minimum height of 0.05 m.
+///   Otherwise, it uses the actual crop height.
+/// </remarks>
 procedure TPenMonteith.Calc_ra;
 begin
   if ExCropHeight.v <= 0 then
@@ -844,7 +832,21 @@ begin
     result := 0.1;
 end;
 
-
+/// <summary> Calculate the stomata resistance at good water supply </summary>
+/// <param name="Plant_rc0">stomata resistance at good water supply [s/m]</param>
+/// <param name="CO2pp">CO2 partial pressure [ppm]</param>
+/// <param name="CiThreshold">threshold for Ci [ppm]</param>
+/// <param name="relRc0Inc_CO2">relative increase of rc0 with CO2</param>
+/// <param name="CO2effect">if true, CO2 effect is considered</param>
+/// <remarks>
+///   The stomata resistance at good water supply is calculated based on the plant's
+///   stomata resistance, the CO2 partial pressure, and a threshold for Ci.
+///   If the CO2 effect is enabled, the stomata resistance is adjusted based on the relative
+///   increase of rc0 with CO2 and the difference between the CO2 partial pressure and
+///   the Ci threshold.
+///   The result is stored in the rc0_Var variable, which represents the stomata
+///   resistance at good water supply with the CO2 effect applied.
+/// </remarks>    
 procedure TPenMonteith.Calc_rc0(Plant_rc0, CO2pp, CiThreshold, relRc0Inc_CO2:real;
                                CO2effect: boolean);
 
@@ -862,6 +864,14 @@ begin
 
 end;
 
+/// <summary> Create all externals </summary>
+/// <remarks>
+///   The externals are the average daily temperature, global radiation,
+///   saturation deficit, wind speed, crop height, leaf area index, rainfall rate,
+///   and external CO2 concentration.
+///   Each external is created with a specific unit and description.
+/// </remarks>  
+
 procedure TPenMonteith.CreateExterns;
 begin
   ExternVCreate('TMPM', '[°C]', StateField, Temp, 'average daily temperature');
@@ -877,6 +887,17 @@ begin
   ExternVCreate('rain', '[mm.d-1]', StateField, rain, 'rainfall rate');
   ExternVCreate('ExCO2pp', '[ppm]', StateField, ExCO2pp, 'External CO2 concentration');
 end;
+
+
+/// <summary> Create all variables </summary>
+/// <remarks>
+///   The variables include vapour pressure, air pressure, potential evapotranspiration,
+///   reference evapotranspiration, potential plant transpiration, potential soil evaporation,
+///   interception, net rain, aerodynamic resistance, canopy resistance, net radiation,     
+///   extinction coefficient for global radiation, and CO2-induced reductions in transpiration.
+///   Each variable is created with a specific unit and description.
+///   The CO2pp variable is initialized with a default value of 400 ppm.
+/// </remarks>
 
 procedure TPenMonteith.CreateVars;
 begin
@@ -910,6 +931,15 @@ begin
 
 end;
 
+/// <summary> Create all parameters </summary>
+/// <remarks>
+///   The parameters include elevation, canopy resistance at good water supply,
+///   extinction coefficient for global radiation, specific interception capacity,      
+///   measurement height of meteorological variables, CO2 threshold, and relative increase
+///   of canopy resistance with CO2.
+///   Each parameter is created with a specific unit, default value, and description.
+/// </remarks>
+
 procedure TPenMonteith.CreatePars;
 begin
   ParCreate('Elev', '[m]', 50, Elev, 'Heigt above sea level');
@@ -920,6 +950,16 @@ begin
   ParCreate('CiThreshold', '[ppm]', 380, CiThreshold, 'threshold for CO2 impact on rc0');
   ParCreate('relRc0Inc_CO2', '[(s.m-1)/ppm]', 0.3878, relRc0Inc_CO2, 'mediates the relative CO2 impact on rc0 estimated from: Elevated CO2 effects on canopy and soil water flux parameters... Burkart et al. 2010');
 end;
+
+/// <summary> Create all options </summary>
+/// <remarks>
+///   The options include the aerodynamic resistance function, CO2 effect option,
+///   and external CO2 option.
+///   Each option is created with a specific default value and description.     
+///   The aerodynamic resistance function can be either Penman-Monteith or Thom-Oliver.
+///   The CO2 effect option can be either "NoCO2Effect" or "WithCO2Effect".
+///   The external CO2 option can be either "externalCO2" or "internalCO2".
+/// </remarks>  
 
 procedure TPenMonteith.CreateOptions;
 begin
@@ -937,8 +977,7 @@ begin
   OptExCO2.OptionList.Add('internalCO2');
 end;
 
-{ ----------------------------------------------------------------------- }
-
+/// <summary> Register the TPenMonteith component on the page Simulation </summary>
 procedure Register;
 begin
 {$IFNDEF NONVISUAL}
