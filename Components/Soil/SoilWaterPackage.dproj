@@ -2,7 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{57A32180-8E76-44E7-9A19-47DB95B582E3}</ProjectGuid>
         <MainSource>SoilWaterPackage.dpk</MainSource>
-        <ProjectVersion>20.1</ProjectVersion>
+        <ProjectVersion>20.3</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
@@ -12,11 +12,6 @@
         <AppType>Package</AppType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
-        <Base>true</Base>
-    </PropertyGroup>
-    <PropertyGroup Condition="('$(Platform)'=='iOSDevice64' and '$(Base)'=='true') or '$(Base_iOSDevice64)'!=''">
-        <Base_iOSDevice64>true</Base_iOSDevice64>
-        <CfgParent>Base</CfgParent>
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
@@ -66,10 +61,6 @@
         <DCC_UnitSearchPath>Q:\HUME\HUME\Components\Rootgrowth;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <AppFileExt>bpl</AppFileExt>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Base_iOSDevice64)'!=''">
-        <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
-        <DCC_UsePackage>rtl;xmlrtl;$(DCC_UsePackage)</DCC_UsePackage>
-    </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <BT_BuildType>Debug</BT_BuildType>
@@ -103,6 +94,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_XmlOutput>Q:\HUME\HUME\XML_Delphi_Docu\</DCC_XmlOutput>
+        <DCC_UnitSearchPath>Q:\HUME\HUME\Components\PlantComponents;Q:\JCL\source\common;Q:\JCL\source\include;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -121,7 +113,6 @@
         <DCCReference Include="designide.dcp"/>
         <DCCReference Include="VclSmp.dcp"/>
         <DCCReference Include="Hume1.dcp"/>
-        <DCCReference Include="Jcl.dcp"/>
         <DCCReference Include="USoilNitrogen.pas"/>
         <DCCReference Include="USoilNitrogenUp.pas"/>
         <DCCReference Include="USoilMineralisation.pas"/>
@@ -132,7 +123,6 @@
         <DCCReference Include="..\PlantComponents\UGrowthCurvePlant.pas"/>
         <DCCReference Include="..\PlantComponents\UGrowthCurvePlantRoots.pas"/>
         <DCCReference Include="..\PlantComponents\USucros.pas"/>
-        <DCCReference Include="Concentration_Niko.pas"/>
         <DCCReference Include="..\Evapotranspiration\UPenMonteith.pas"/>
         <DCCReference Include="UGenucht.pas"/>
         <DCCReference Include="UlayeredSoil.pas"/>
@@ -141,7 +131,6 @@
         <DCCReference Include="USoilWaterMod.pas"/>
         <DCCReference Include="..\PlantComponents\UDryMatProdComp.pas"/>
         <DCCReference Include="..\PlantComponents\UMultiGrowthCurvePlant.pas"/>
-        <DCCReference Include="..\PlantComponents\UMultiGrowthCurvePlantRoots.pas"/>
         <DCCReference Include="..\PlantComponents\UGrowthCurve.pas"/>
         <DCCReference Include="..\CropManagement\UDueng_Par.pas"/>
         <DCCReference Include="..\CropManagement\UFertilization.pas"/>
@@ -151,11 +140,12 @@
         <DCCReference Include="USoilMineralisationNH4.pas"/>
         <DCCReference Include="UFormDebugSoil.pas">
             <Form>FormDebugSoil</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="..\PlantComponents\ULUETotDry.pas"/>
         <DCCReference Include="..\CropManagement\UDueng.pas"/>
         <DCCReference Include="..\CropManagement\UInput.pas"/>
+        <DCCReference Include="..\Rootgrowth\URootGrowthUtils.pas"/>
+        <DCCReference Include="..\Rootgrowth\USimpleRootModDM.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -177,16 +167,13 @@
                     <Source Name="MainSource">SoilWaterPackage.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="Q:\HUME\ADV_STRGRD\asgd_Rio.bpl">File Q:\HUME\ADV_STRGRD\asgd_Rio.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="Q:\Kohl\BarleySubmodPackage\BarleyPack.bpl">(untitled)</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k290.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp290.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k290.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp290.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\Maize.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\Maize.bpl not found</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
-            <Deployment Version="4">
+            <Deployment Version="5">
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libcgunwind.1.0.dylib" Class="DependencyModule"/>
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libpcre.dylib" Class="DependencyModule"/>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule"/>
@@ -203,16 +190,6 @@
                     </Platform>
                     <Platform Name="Win32">
                         <Operation>0</Operation>
-                    </Platform>
-                </DeployClass>
-                <DeployClass Name="AndroidClasses">
-                    <Platform Name="Android">
-                        <RemoteDir>classes</RemoteDir>
-                        <Operation>64</Operation>
-                    </Platform>
-                    <Platform Name="Android64">
-                        <RemoteDir>classes</RemoteDir>
-                        <Operation>64</Operation>
                     </Platform>
                 </DeployClass>
                 <DeployClass Name="AndroidFileProvider">
@@ -314,6 +291,16 @@
                     </Platform>
                     <Platform Name="Android64">
                         <RemoteDir>res\values-v31</RemoteDir>
+                        <Operation>1</Operation>
+                    </Platform>
+                </DeployClass>
+                <DeployClass Name="AndroidSplashStylesV35">
+                    <Platform Name="Android">
+                        <RemoteDir>res\values-v35</RemoteDir>
+                        <Operation>1</Operation>
+                    </Platform>
+                    <Platform Name="Android64">
+                        <RemoteDir>res\values-v35</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
@@ -1051,7 +1038,6 @@
                 <ProjectRoot Platform="Win64x" Name="$(PROJECTNAME)"/>
             </Deployment>
             <Platforms>
-                <Platform value="iOSDevice64">False</Platform>
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">False</Platform>
                 <Platform value="Win64x">False</Platform>

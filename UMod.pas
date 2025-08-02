@@ -1,5 +1,5 @@
 ﻿/// <summary> UMod is a unit that defines the base classes TMod and TSubmodel. TMod can be instantiated directly and is the central control object of a simulation model.No license found
-/// It summarizes the submodels of the simulation model and provides methods for data output, parameter estimation, and sensitivity analysis. 
+/// It summarizes the submodels of the simulation model and provides methods for data output, parameter estimation, and sensitivity analysis.
 /// TSubModel is an abstract base class for problem specific submodels. Furthermore some other classes are defined. </summary>
 unit UMod;
 
@@ -78,7 +78,7 @@ type
                 SubmodelSpecific);
 
 const
-  
+
   /// <summary> string constants for Model element names </summary>
   ModelElementNames: TModelElementNames = ('State Variables', 'Variables',
     'Parameters', 'Exernal Values', 'Constants');
@@ -87,7 +87,7 @@ const
 /// <summary> Path separator for Linux </summary>
   Path_sep =  '/';
   {$ELSE}
-/// <summary> Path separator for Windows </summary>  
+/// <summary> Path separator for Windows </summary>
   Path_sep =  '\';
   {$ENDIF}
 
@@ -95,10 +95,10 @@ const
 
 type
 
-/// <summary> abstract base type for the main model control component 
+/// <summary> abstract base type for the main model control component
 /// all submodels have to be connected to this component via their property gm_submodel property. </summary>
   TMod = class;
-  
+
 
   { * -----------------------------------------------------------------
     CLASS     TMarquardOptions
@@ -106,7 +106,7 @@ type
     PURPOSE   Options for the Marquard-Method used for parameter estimation
     ------------------------------------------------------------------ }
 
-/// <summary> Options for the Marquard-Method used for parameter estimation 
+/// <summary> Options for the Marquard-Method used for parameter estimation
 /// it is descended either from Tobject if compiled for command line application or from
 /// TPersistent if compiled for GUI appplication </summary>
 {$IFDEF NONVISUAL}
@@ -121,32 +121,32 @@ type
     FIniLambda: real;
     /// <PublicField> Value which is needed for numerical approximation of function derivative </PublicField>
     FDivisor: real;
-    
+
     /// <PublicField> Options for weighting of data points during optimization </PublicField>
     FWeightOptions: TWeightOptions;
-    
+
     /// <PublicField> Default error for weighting of data points </PublicField>
     FDefaultError: real;
-    
+
     /// <PublicField> Options for parameter Optimization </PublicField>
     FOptOption: TOptOption;
-    
+
     constructor create;
   published
 
     /// <summary> Initial value of parameter Lambda </summary>
     property IniLambda: real read FIniLambda write FIniLambda;
-  
+
     /// <summary> Value which is needed for numerical approximation of function derivative </summary>
     property Divisor: real read FDivisor write FDivisor;
-  
+
     /// <summary> Options for weighting of data points during optimization </summary>
     property WeightOptions: TWeightOptions read FWeightOptions
       write FWeightOptions;
-  
+
     /// <summary> Default error for weighting of data points </summary>
     property DefaultError: real read FDefaultError write FDefaultError;
-    
+
     /// <summary> Options for parameter Optimization </summary>
     property OptOption: TOptOption read FOptOption write FOptOption;
   end;
@@ -165,31 +165,31 @@ type
   TSensitivityOptions = class(TPersistent)
 {$ENDIF}
   private
-/// <summary> The ModelComponenent </summary>    
+/// <summary> The ModelComponenent </summary>
     fMod: TMod;
-    
+
     /// <summary> file variables and names for output of sensitivity analysis </summary>
     f_a, f_b: array [0 .. 30] of textFile;
     fn_a, fn_b: array [0 .. 30] of string;
-    
+
     /// <summary> maximum value during sensitivity analysis </summary>
     FMaxValue: real;
-    
+
     /// <summary> minimum value during sensitivity analysis </summary>
     FMinValue: real;
-    
+
     /// <summary> Steps of sensitivity analysis </summary>
     FSteps: Integer;
-    
+
 /// <summary> change of parameter per sensitivy setpp </summary>
     FDPar: real;
-    
+
     /// <summary> Variables selected for output </summary>
     Sens_f: textFile;
-    
+
     /// <summary> output file name for sensitivity data </summary>
     FSens_fn: string;//TMyFileName;
-    
+
     /// <summary> Parameter selected for sensitivity analysis </summary>
     procedure SetMAxValue(const MaxValue: real); /// Sets maximum value during sensitivity analysis
 
@@ -201,9 +201,9 @@ type
   protected
   public
     /// <summary> Parameter selected for sensitivity analysis </summary>
-    SelSenspar: TPar;   
+    SelSenspar: TPar;
     /// <summary> Output variables selected for sensitivity analysis </summary>
-    FOutList: TStringList;  
+    FOutList: TStringList;
     MultSens_fn_final,
     MultSens_fn_cont: string;
     constructor create(Model: TMod);
@@ -239,28 +239,31 @@ type
     ------------------------------------------------------------------ }
 
 
-/// <summary> Base type for the central model component 
+/// <summary> Base type for the central model component
 /// It summarizes the submodels of the simulation model and provides methods for data output, parameter estimation, and sensitivity analysis.
 /// It is descended either from Tobject if compiled for command line application or from
 /// TPersistent if compiled for GUI appplication.
 /// </summary>
 
 {$IFDEF NONVISUAL}
-  TMod = class(TObject) 
+  TMod = class(TObject)
 {$ELSE}
-  TMod = class(TGraphicControl) 
+  TMod = class(TGraphicControl)
 {$ENDIF}
   private
+
+{$IFDEF NONVISUAL}
     /// <PrivateField> Name of Model </PrivateField>
-    fName : string; /// Name of Model
-    
+    fName: string;
+{$ENDIF}
+
     /// <PrivateField> directory where program file is located </PrivateField>
     EXE_DIR: string; /// directory where program file is located
     /// directory where program file is located
     /// <PrivateField> directory where program file is located </PrivateField>
     FApplicationPath: TPath; /// directory where program file is located
     /// field for adress of status bar on main model formula
-    
+
     /// <PrivateField> Model name </PrivateField>
     FTitle: string;     /// Modeltitle
 
@@ -270,61 +273,61 @@ type
     fStatusBar: TStatusBar; /// status bar in Main Formular Simulation info
     fStatusBarOpt : TStatusBar; /// status bar in Formular for optimization
 {$ENDIF}
-    
+
     /// <PrivateField> Name of controlfile </PrivateField>
     fControlFileFn: string; //TMyFileName; /// Name for controlfile
-    
+
     /// <PrivateField> Name of file where regression results are stored </PrivateField>
     FReg_FN: string;  /// Name of file where regression results are stored
-    
+
     /// <PrivateField> Name of file where Model documentation is stored </PrivateField>
     fDocu_FN: string;  /// Name of file where Model documentation is stored
     fDocu_FN2: string; /// Name of file where Model documentation 2 is stored
-    
+
     /// <PrivateField> Name of global output file </PrivateField>
     fFNGlobalOutput: string; /// file name for global Output
 ///
     /// <PrivateField> Default directory for output </PrivateField>
     FOutputPath: TPath; /// default directory for output
-    
+
     /// <PrivateField> flag for reading output path from Ini-file </PrivateField>
     fReadIniOutputPath: boolean; /// flag for
-    
+
     /// <PrivateField> Default directory for input </PrivateField>
     FInputPath: TPath;
-    
+
     /// <PrivateField> separator in outputfiles </PrivateField>
     FSeparatorChar: Char;
 
     /// <PrivateField> Time step for model integration </PrivateField>
     FTimeStep: real;
     /// Time step for model integration
-    
+
     /// <PrivateField> Start of simulation </PrivateField>
     FStartTime: TDateTime;  /// Start of simulation
-    
+
     /// <PrivateField> End of simulation </PrivateField>
     FEndTime: TDateTime;   /// End of simulation
-    
+
     /// <PrivateField> Options for optimization </PrivateField>
     FSensOptions: TSensitivityOptions; /// Options for sensitivity analysis
-    
+
     /// <PrivateField> smallest measured value accepted in Optimization </PrivateField>
     FMinLegalValue: real; /// smallest measured value accepted in Optimization
-    
+
     /// <PrivateField> flag if model should be reinitalised after run: defaul: true </PrivateField>
     fReInitAfterRun: boolean;/// flag if model should be reinitalised after run: defaul: true
-    
+
     /// <PrivateField> flag for showing time in date format </PrivateField>
     fShowDateFormat: boolean;  /// flag for showing time in date format
-    
+
     /// <PrivateField> flag for writing res.ini files for documentation </PrivateField>
     fWriteResIni: boolean; /// flag for writing res.ini files for documentation.
-    
+
     /// <PrivateField> flag for writing res.ini files for documentation </PrivateField>
     fChiSqr: real;
     /// field for total sum of squared differences (sim-meas)
-    
+
     /// <PrivateField> option for continous output, type is TContOutput which defines the options
     /// NoContOutput, SubmodelSpecific and  AllContoutput </PrivateField>
     fContOutput: TContOutput; /// option for
@@ -348,7 +351,7 @@ type
     FStr_SectionTopic_WeatherFileFN,
     FStr_SectionTopic_OutputDir: string;
 
-    /// setter for submodel 
+    /// setter for submodel
     procedure setSubModel(index: Integer; const SubModel: TSubmodel);
 
     /// <summary> getter for submodel </summary>
@@ -375,13 +378,13 @@ type
     /// <summary> Method creating an Inifile from scratch</summary>
     procedure CreateIniFiles(OptionInifilefn: string; ParamIniFilefn: string;
       StateInifilefn: string);
-    
-    /// <summary> Method for sorting the submodels in the list of submodels according to their value of thier property CompIndex </summary> 
+
+    /// <summary> Method for sorting the submodels in the list of submodels according to their value of thier property CompIndex </summary>
     procedure SortSubMods;
-    
+
     /// <summary> Method for time initialisation </summary>
     procedure InitTime(IniFile: TMyIniFile);
-    
+
     /// <summary> Method for initialising the state ini file </summary>
     procedure InitStateIniFile(var StateInifilefn: string);
 
@@ -393,19 +396,20 @@ type
 
     /// <summary> Method for calculation and savin linear regressions between measured and simulated values </summary>
     procedure CalcAndSaveLinearRegressionSimMeas(fn: string; i: Integer);
-    
-    /// <summary> Method for checking if the submodel is set for continuous output </summary> 
+
+    /// <summary> Method for checking if the submodel is set for continuous output </summary>
     procedure IsSubModelContOutput;
 
     /// <summary> Method for reading or creating the ini files </summary>
     procedure ReadOrCreateInifiles;
-    
+
+
     /// <summary> Method for initialisation of the weather data file </summary>
     procedure InitWeatherFile(WeatherFilefn: string);
 {$IFNDEF NONVISUAL}
     procedure Check_GM_OutputPath;
     procedure LookForControlfile(var ControlFileFN:string);
-    
+
     /// <summary> Method for updating the status bar on the GUI at every timestep </summary>
     procedure UpdateStatusbar;
     procedure SetPaintStyle;
@@ -415,11 +419,16 @@ type
 
 {$IFNDEF NONVISUAL}
     /// Method for showing object on the screen
-    procedure Paint; override;  
+    procedure Paint; override;
+
+    ///
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 {$ENDIF}
 
     /// <summary> Method for writing results to file, including a summary of the model settings </summary>
     procedure writeRes(fn: string);  /// write parameters and filenames of simulation run to result file
+
+
   public
     FLMOptions: TMarquardOptions;
  //   {$IFNDEF NONVISUAL}
@@ -434,43 +443,43 @@ type
 
     /// <summary> The time state variable </summary>
     Time: TState;  /// model time
-    
+
     /// <summary> List of sub-models </summary>
     SubModStrList: TStringList;    /// List of sub-models
-    
+
     /// <summary> flag for end of simulation </summary>
     ModelEnd: boolean;  /// End of simulation ?
-    
+
     /// <summary> the actual ini-file </summary>
     ActIniFile: TMyIniFile; /// TMyIniFile; // actual Ini-File
-    
+
     /// <summary> Ini-file with parameter values </summary>
     ParamInifile: TMyIniFile; /// Ini-file with parameter values
-    
+
     /// <summary> Ini-file with state variable initial values </summary>
     StateIniFile: TMyIniFile;  /// Ini-file with state variable initial values
-    
+
     /// <summary> Ini-file with options for submodels </summary>
     OptionIniFile: TMyIniFile; /// Ini-file with options for submodels
-    
+
     /// <summary> TXT-file with weather data </summary>
     WeatherFile: TTextFileH; /// Weather data
-    
+
     /// <summary> Output file stream for global output </summary>
     f_GlobalOutput : TStreamWriter;  /// output stream/file for output of selected vars
-    
+
     /// <summary> Output file stream for global output </summary>
     AllMeasVal: TMeasList; /// list of all measurement values
-    
+
     /// <summary> List of measured values </summary>
     SelMeasVal: TMeasList;  /// list of measurement values selected for optimization
-    
+
     /// <summary> List of all parameters to be optimized </summary>
     SelParList: TStringList;  /// address list of all parameters to be optimized
-    
+
     /// <summary> List of output variables selected for global output </summary>
     GlobalOutputList: TStringList; ///  address list of all values for global output
-    
+
     /// <summary> Time of first weather data in Excel-Time integers </summary>
     FirstWeatherData: Integer;
 
@@ -480,8 +489,6 @@ type
 
 // {$IFDEF NONVISUAL}
 
-/// <summary> Name of Model </summary>
-  property Name: string read fName write fName;
 // {$ENDIF}
 
 {$IFNDEF NONVISUAL}
@@ -490,10 +497,10 @@ type
 {$ELSE}
     constructor create;
 {$ENDIF}
-    
+
     /// <summary> method for setting a new control file name </summary>
     procedure Set_ControlFileFN(NewFN:string);// (NewFN:string);
-    
+
     /// <summary> method for retrieving the control file name </summary>
     function Get_ControlFileFn: string;
     procedure setPropFromIniFile(strList: TStringList; submodname: string) ;
@@ -501,25 +508,25 @@ type
     /// <summary> Method retrieving a parameter adress by its name </summary>
     procedure GetParameter(ParName: string; var Par: TPar;
       var SubModname: string; var Success: boolean); virtual;
-    
-   /// <summary> Method retrieving a state variable adress by its name </summary> 
+
+   /// <summary> Method retrieving a state variable adress by its name </summary>
     procedure GetStateVar(StateName: string; var State: TState;
       var SubModname: string; var Success: boolean);
 
-    /// <summary> Method retrieving a variable adress by its name </summary>  
+    /// <summary> Method retrieving a variable adress by its name </summary>
     procedure GetVariable(VarName: string; var Variable: Tvar;
       var SubModname: string; var Success: boolean);
-    
+
     /// <summary> Method for running the simulation model
     /// over all inifiles specified in the control file </summary>
     procedure run; virtual; /// run method
-    
-    /// <summary> Method for running the simulation model for the actual inifile </summary> 
+
+    /// <summary> Method for running the simulation model for the actual inifile </summary>
     procedure runActIni; virtual;  /// run method for actual INI-file
-    
+
     /// <summary> Method intialisation of the model </summary>
     procedure Init(IniFile: TMyIniFile); virtual; /// Initialisation method
-    
+
     /// call inititalisation methods of sub-models
     procedure InitAllSubMods;
     /// call data inititalisation methods of sub-models
@@ -536,26 +543,26 @@ type
     procedure UpdateAll;
     /// write state and rate names for all sub-models
     procedure WriteAllNames;
-    
+
     /// <summary> write final names of all sub-models to file </summary>
     procedure WriteAllFinalNames;
-    
+
     /// <summary> add simulated values to the corresponding measurement data </summary>
     procedure AddAllSimValuestoDataSeries;
-    
+
     /// <summary> save the values of the state variables to the output file each time step </summary>
     procedure SaveStates;
-    
+
     /// save last values of states in file
     procedure SaveFinalStates;
-    
+
     /// save last values of rates in file
     procedure SaveRates;
-    
+
     /// <summary> write selected values to a 'global' output file, containing the results of each single simulation
     /// wrapped toegether in the corresponding control file </summary>
     procedure SaveGlobalOutput(IniFile: string);
-    
+
     /// <summary>  close all files opened during simulation run </summary>
     procedure CloseAllFiles;
 
@@ -564,7 +571,7 @@ type
 
     /// <summary> write all 1/1 regression value pairs to file </summary>
     procedure WriteAll_1_1_Files;
-    
+
     /// <summary> write the results of all regression analysis to a file </summary>
     procedure CalcAllLinearRegressions;
 
@@ -573,11 +580,11 @@ type
 
     /// <summary> Method for checking if the model is finished </summary>
     procedure IsFinished; virtual;
-    
+
     procedure CalcChiSq;
     /// calculation of sum of squared differences
     procedure ClearAllDataSeries;
-    
+
     /// Optimization routine
     procedure MarquardOptimization(fn: string);
     /// Sensitivity analysis for single simulation run
@@ -588,15 +595,15 @@ type
     procedure CalcChiSquareSensitivity;
     /// write some text file for documentation
     procedure write_documentation;
-    
+
     /// Array property for convenient Access of Submodels, allows to access submodels by their index
     /// index is the index of the submodel in the list of submodels, starting with 0
     /// e.g. SubModel[0] returns the first submodel in the list of submodels
-    /// SubModel[1] returns the second submodel in the list of submodels, etc. 
+    /// SubModel[1] returns the second submodel in the list of submodels, etc.
     /// useful for accessing submodels in a loop
     property SubModel[Index: Integer]: TSubmodel read getSubModel
       write setSubModel;
-    
+
     /// <summary> property for the control file name </summary>
     property ReadIniOutputPath: boolean read fReadIniOutputPath write fReadIniOutputPath;
 
@@ -604,12 +611,15 @@ type
 
     /// method for showing and changing model during design time
     procedure DblClick; override;
+    procedure Loaded; override;
 
+    procedure SetTitle(const Value: string);
     {$ENDIF}
+
+
 
   published
 
-    // property Name:string read fName write fName; /// Name of Model
     property GM_ControlFile: string read Get_ControlFileFn
       write Set_ControlFileFN;
     property GM_SubModStrList: TStringList read SubModStrList
@@ -633,7 +643,7 @@ type
     property LMOptions: TMarquardOptions read FLMOptions write FLMOptions;
     property SensOpt: TSensitivityOptions read FSensOptions write FSensOptions;
     property IniFileNames: TStringList read FIniFiles;
-    property Title: string read FTitle write FTitle;
+    property Title: string read FTitle write SetTitle;
 //    property ContOutput: TContOutput read FContOutput write FContOutput;
     property OptContOutput: TContOutput read FContOutput write FContOutput;
 //    property FinalOutput: boolean read FFinalOutput write FFinalOutput;
@@ -681,6 +691,12 @@ type
     property StatusBarOpt: TStatusBar read fStatusBarOpt write fStatusBarOpt;
     property OnDblclick;
  {$ENDIF}
+
+ {$IFDEF NONVISUAL}
+    property Name: string read fName write fname;
+ {$ENDIF}
+
+
   end;
   // end of Object TMod
 
@@ -691,7 +707,7 @@ type
     initialization, input and ouput and integration
     ------------------------------------------------------------------ }
 
-/// <summary> Base class of all sub-models. Provides methods for initialisation, input, output and integration. Acestor is 
+/// <summary> Base class of all sub-models. Provides methods for initialisation, input, output and integration. Acestor is
 /// TObject if compiled for command line application or from TGraphicControl if compiled for GUI application </summary>
 {$IFDEF NONVISUAL}
   TSubmodel = class(TObject) // from TObject if nonvisual
@@ -699,8 +715,12 @@ type
   TSubmodel = class(TGraphicControl) // from TGraphicControl if visual
 {$ENDIF}
   private
+
+{$IFDEF NONVISUAL}
     /// Name of instance
     fName: string;
+{$ENDIF}
+
     /// Index of computation order
     FCompIndex: Integer;
     /// List of assimilated submodels
@@ -770,7 +790,9 @@ type
     function UpdateValue(n: string): real;
   {$IFNDEF NONVISUAL}
    /// new Paint procedure
-   procedure Paint; override; 
+   procedure Paint; override;
+   procedure Notification(AComponent: TComponent; Operation: TOperation);  Virtual;
+
   {$ENDIF}
   public
    /// Name of instance
@@ -847,8 +869,8 @@ type
     /// <param name="comm"> Comment/explanation </param>
     procedure ParCreate(ParName: string; ParUnits: string; DefaultValue: real;     /// method for creating and and initialising a TPar variable
       var Par: TPar; comm: string = ''); virtual;
-    
-    
+
+
     /// <summary> Method for creating and and initialising a TOption variable </summary>
     /// <param name="OptName"> Name of option </param>
     /// <param name="Defaultstring"> Default value of option </param>
@@ -856,10 +878,10 @@ type
     /// <param name="comm"> Comment/explanation </param>
     procedure OptCreate(OptName: string; Defaultstring: string;
       var Option: TOption; comm: string = ''); /// creation objects for options
-    
-    
+
+
     /// <summary> Method for creating and and initialising a TVar variable </summary>
-    /// <param name="VarName"> Name string of variable 
+    /// <param name="VarName"> Name string of variable
     /// </param>
     /// <param name="VarUnits"> Units of variable </param>
     /// <param name="DefaultValue"> Default value of variable </param>
@@ -870,8 +892,8 @@ type
     /// The created vars are also added to the corresponding stringlist TVarsStrList
     /// </remarks>
     procedure VarCreate(VarName: string; VarUnits: string; DefaultValue: real;
-      ReadFromFile: boolean; var Variable: Tvar; comm: string = '');     /// method for creating and and initialising a TVar variable
-    
+      ReadFromFile: boolean; var Variable: Tvar; comm: string = '');
+
     /// <summary> Method for creating and and initialising a TConst variable </summary>
     /// <param name="ConstName"> Name of constant </param>
     /// <param name="ConstUnits"> Units of constant </param>
@@ -880,8 +902,8 @@ type
     /// <param name="Constant"> Constant to be created </param>
     /// <param name="comm"> Comment/explanation </param>
     procedure ConstCreate(ConstName: string; ConstUnits: string; DefaultValue: real;
-      ReadFromFile: boolean; var Constant: TVar; comm: string = '');  /// method for creating and and initialising a Constant
-    
+      ReadFromFile: boolean; var Constant: TVar; comm: string = '');
+
     /// <summary> Method for creating and and initialising a TState variable </summary>
     /// <param name="StateName"> Name of state variable </param>
     /// <param name="StateUnits"> Units of state variable </param>
@@ -892,7 +914,7 @@ type
     procedure StateCreate(StateName: string; StateUnits: string;
       DefaultValue: real; ReadFromFile: boolean; var State: TState;
       comm: string = ''); virtual;   /// method for creating and initialising a TState variable
-    
+
     /// <summary> Method for creating and and initialising a TExternV variable </summary>
     /// <param name="Name"> Name of external variable </param>
     /// <param name="Units"> Units of external variable </param>
@@ -901,31 +923,31 @@ type
     /// <param name="comm"> Comment/explanation </param>
     procedure ExternVcreate(Name, Units: string; ExV: TexValue;
       var ExternV: TExternV; comm: string = ''); virtual;     /// method for creating and  and initialising a TExternV variable
-    
+
     /// <summary> Method for initialising external variables </summary>
     /// <param name="Model"> Model to which submodel is linked </param>
     /// <returns> True if successful </returns>
     function ExternVinit(Model: TMod): boolean; virtual;   /// setting pointers of external variables
-    
-    
+
+
     /// <summary> Method for creating all entities of the submodel </summary>
     /// <remarks>
     /// This method is called by the constructor of the submodel
     /// </remarks>
     procedure CreateAll; virtual;  /// Instantiates all objects
-    
+
     /// <summary> Method for initialising the submodel </summary>
     procedure Init(var GlobMod: TMod); virtual; /// initialisation method
-    
+
     /// <summary> Method for calculating the rates of change for every time step for the submodel </summary>
     procedure CalcRates; virtual;   /// rate calculation
-    
+
     /// <summary> Method for integrating the submodel </summary>
     procedure Integrate; virtual;  /// integration of state variables
-    
+
     /// <summary> Method for calculating the variables of the submodel </summary>
     procedure CalcVars; virtual;   /// calculation of rate variables
-    
+
     /// <summary> Method for updating the submodel with measurement data </summary>
     procedure UpdateValues; virtual;     /// Update by measured values
 
@@ -937,19 +959,19 @@ type
     /// the output file with final values </summary>
     procedure WriteFinalStateName(IniFile: string = ''); virtual;
 //    procedure WriteRateName(var f: textfile; fn:string);
-    
+
     /// <summary> Method for writing the names of all rate variables of the submodel to file </summary>
     procedure WriteRateName(var f: TStreamWriter; fn:string);
 
     /// <summary> Method for writing the state values  of the submodel to file </summary>
     procedure SaveState(var f: TStreamWriter; IniFile: string = ''); virtual;
-    
+
     /// <summary> Method for writing the rate values of the submodel to file </summary>
     procedure SaveRate(var f: TStreamWriter); virtual;
 
     /// <summary> Method for writing the final state values of the submodel to file </summary>
     procedure SaveFinalState(var f: TStreamWriter; IniFile: string = ''); virtual;
-    
+
     /// <summary> Method for closing all output files of the submodel</summary>
     procedure closeOutputfiles; virtual;
 
@@ -958,11 +980,11 @@ type
 
     /// <summary> Set the Isactive flag to false </summary>
     procedure deactivate; virtual;
-    
+
     /// <summary> Method for adding measured values to data serie </summary>
     procedure AddDataValueToDataSeries; virtual;   /// adding data Values to Data series
 
-    /// <summary> Method for adding corresponding simulated values to data serie </summary>  
+    /// <summary> Method for adding corresponding simulated values to data serie </summary>
     procedure AddSimValueToDataSeries; virtual;   /// adding sim values to corresponding measured data
     procedure write_1_1_files; virtual;
     /// output of sim./meas. data pairs
@@ -971,19 +993,19 @@ type
 
     /// <summary> property to access state vars via index </summary>
     property StateVar[index: Integer]: TState read get_State write set_State; /// List of state variables
-    
+
     /// <summary> property to access parameters via index </summary>
     property ParamVar[index: Integer]: TPar read Get_Par write set_Par;
-    
+
     /// <summary> property to access variables via index </summary>
     property VarVar[index: Integer]: Tvar read Get_Var write set_Var;
-    
+
     /// <summary> property to access constants via index </summary>
     property ConstVar[index: Integer]: Tvar read get_Const write set_Const;
 
     /// <summary> property to access options via index </summary>
     property Option[index: Integer]: TOption read get_Option write set_Option;
-    
+
     /// <summary> property to access external variables via index </summary>
     property ExternVar[index: Integer]: TExternV read get_ExternVar
       write set_ExternVar;
@@ -999,47 +1021,47 @@ type
 
     /// <summary> property to linkt the submodel to the main model component </summary>
     property SM_GlobMod: TMod read Get_GlobMod write Set_GlobMod;
-    
+
     /// <summary> property to access the stringlist with external variables of the submodel </summary>
     property SM_ExternVStrList: TStringList read ExternVStrList
     { write Set_ExternVStrList };
-    
+
     /// <summary> property to access the stringlist with variables of the submodel </summary>
     property SM_VarStrList: TStringList read VarStrList
     { write  Set_VarStrList };
-    
+
     /// <summary> property to access the stringlist with constants of the submodel </summary>
     property SM_ConstStrList: TStringList read ConstStrList
     { write  Set_VarStrList };
-    
+
     /// <summary> property to access the stringlist with parameters of the submodel </summary>
     property SM_ParStrList: TStringList read ParStrList
     { write Set_ParStrList };
-    
+
     /// <summary> property to access the stringlist with state variables of the submodel </summary>
     property SM_StateStrList: TStringList read StateStrList
     { write Set_ParStrList };
  //   property OnClick;//:TNotifyEvent read fOnClick write fOnClick;
-    
-    /// <summary> property to access the compindex field of the submodel. This field 
+
+    /// <summary> property to access the compindex field of the submodel. This field
     /// controls the execution order of the submodels </summary>
     property CompIndex: Integer read FCompIndex write FCompIndex;
-    
+
     /// <summary> property to access the file name of the submodel rate output file </summary>
     property FN_ratefn: string {TMyFileName} read fn_rate write fn_rate;
-    
+
     /// <summary> property to access the file name of the submodel state output file </summary>
     property FN_Statefn: string {TMyFileName} read fn_state write fn_state;
-    
+
     /// <summary> property to access the file name of the measruement data for the submodel </summary>
     property MeasFile: TTextFileH read FMeasValues write FMeasValues;
     // property fn_MeasFile: TMyFileName read get_fnMeasFile write set_fnMeasFile;
-    
-    /// <summary> property to access the stringlist with assimilated sub models, i.e. submodels which are 
+
+    /// <summary> property to access the stringlist with assimilated sub models, i.e. submodels which are
     /// linked to the submodel but not to the central model, this feature is not yet worked out </summary>
     property AssimilatedSubmodList: TStringList read fAssimilatedSubmodList
       write fAssimilatedSubmodList;
-    
+
     /// <summary> property access the debug modus field of the sub model </summary>
     property DebugModus: boolean read fDebugmodus write fDebugmodus;
 
@@ -1080,6 +1102,11 @@ type
 
 function IsDesignTime: Boolean;
 
+
+ // Comparison function
+    function CompareByModelCompIndex(List: TStringList; Index1, Index2: Integer): Integer;
+
+
 /// <summary> Registering the TMod and TSubModel components for designtime editing </summary>
 procedure Register;
 
@@ -1100,6 +1127,19 @@ function IsDesignTime: Boolean;
 begin
   Result := DesignTime;
 end;
+
+// Comparison function
+function CompareByModelCompIndex(List: TStringList; Index1, Index2: Integer): Integer;
+var
+  Obj1, Obj2: TSubModel;
+begin
+  Obj1 := TSubModel(List.Objects[Index1]);
+  Obj2 := TSubModel(List.Objects[Index2]);
+
+  // ascending order
+  Result := Obj1.CompIndex - Obj2.CompIndex;
+end;
+
 
 
 constructor TMarquardOptions.create;
@@ -1191,25 +1231,73 @@ end;
   ****************************************************************** }
 
 
-procedure TMod.Paint;
+{procedure TMod.Paint;
 var
   X, Y, w, h, text_left, text_length: Integer;
   Titel: string;
 begin
-  inherited;
-  Titel := Name;
-  with Canvas do
   begin
-    X := Pen.Width div 2;
-    Y := X;
-    w := Width - Pen.Width + 1;
-    h := Height - Pen.Width + 1;
-    RoundRect(X, Y, X + w, Y + h, 8, 8);
-    text_length := TextWidth(Titel);
-    text_left := (Width - text_length) div 2;
-    TextOut(text_left, Height div 2 - TextHeight(Titel) div 2, Titel);
+    Titel := self.Name;
+    with Canvas do
+    begin
+      X := Pen.Width div 2;
+      Y := X;
+      w := Width - Pen.Width + 1;
+      h := Height - Pen.Width + 1;
+      RoundRect(X, Y, X + w, Y + h, 8, 8);
+      text_length := TextWidth(Titel);
+      text_left := (Width - text_length) div 2;
+      TextOut(text_left, Height div 2 - TextHeight(Titel) div 2, Titel);
+    end;
+end;
+end;     }
+
+
+procedure TMod.SetTitle(const Value: string);
+begin
+  if FTitle <> Value then
+  begin
+    FTitle := Value;
+    Invalidate; // redraw when title changes
   end;
 end;
+
+procedure TMod.Paint;
+var
+  R: TRect;
+  Titel: string;
+  text_left: Integer;
+begin
+  inherited;
+  self.Title := self.Name;
+
+  Titel := self.Title;
+  R := ClientRect;
+  InflateRect(R, -Canvas.Pen.Width div 2, -Canvas.Pen.Width div 2);
+
+  with Canvas do
+  begin
+    // Optional background
+    // Brush.Color := Self.Color;
+    // FillRect(ClientRect);
+
+    RoundRect(R.Left, R.Top, R.Right, R.Bottom, 8, 8);
+    text_left := (R.Right - R.Left - TextWidth(Titel)) div 2 + R.Left;
+    TextOut(text_left, (R.Bottom + R.Top - TextHeight(Titel)) div 2, Titel);
+  end;
+end;
+
+
+procedure TMod.Loaded;
+begin
+  inherited;
+//  Invalidate; // triggers Paint after everything is set
+  if FTitle = '' then
+    FTitle := Name; // fallback
+end;
+
+
+
 
 {$ENDIF}
 
@@ -1531,7 +1619,6 @@ begin
 {$ELSE}
   inherited create;
 {$ENDIF}
-
 //  self.ControlStyle.
   // initialize several properties, lists and files
   SubModStrList := TStringList.create;
@@ -1620,7 +1707,7 @@ begin
     SubModel[subMod].fWriteContinuouslyTofile := false;
     for Element := low(TModelElements) to high(TModelElements) do
     begin
-      for Entity := SubModel[subMod].fModelElementLists[Element].count - 1 
+      for Entity := SubModel[subMod].fModelElementLists[Element].count - 1
       downto 0 do
       begin
         If THumeEntity(SubModel[subMod].fModelElementLists[Element].objects
@@ -1668,6 +1755,36 @@ begin
 
   inherited;
 end;
+
+
+
+/// ensures that if a submodel is removed from the model it is also removed from the SubModStrList
+procedure TMod.Notification(AComponent: TComponent; Operation: TOperation);
+var
+  idx, i: Integer;
+  SubMod : TSubModel;
+  CompIndex : integer;
+begin
+  inherited Notification(AComponent, Operation);
+
+  if (Operation = opRemove) and (AComponent is TSubModel) then
+  begin
+    idx := SubModStrList.IndexOfObject(AComponent);
+    if idx >= 0 then begin
+      SubMod := TSubModel(SubModStrList.Objects[idx]);
+      CompIndex := SubMod.CompIndex;
+      SubModStrList.Delete(idx);
+      SubModStrList.CustomSort(@CompareByModelCompIndex);  // <- this sorts it
+      CompIndex := 0;
+      for i := Low(self.SubModStrList.Count) to High(SubModStrlist.count) do begin
+        SubMod := TSubModel(SubModStrList.Objects[i]);
+        SubMod.CompIndex := CompIndex;
+        inc(CompIndex);
+      end;
+    end;
+  end;
+end;
+
 
 { * *****************************************************************
   CLASS   TMod
@@ -1901,7 +2018,7 @@ procedure TMod.CalcAllRates;
 
 var
   i: Integer;
-  // subMod: TSubmodel; 
+  // subMod: TSubmodel;
 begin
   // for all submodels do...
   for i := 0 to SubModStrList.count - 1 do
@@ -1916,7 +2033,7 @@ end;
 procedure TMod.CalcAllVars;
 var
   i: Integer;
-  // subMod: TSubmodel; 
+  // subMod: TSubmodel;
 begin
   // for all submodels do...
   for i := 0 to SubModStrList.count - 1 do
@@ -1995,7 +2112,7 @@ end;
   METHOD  ClearAllDataSeries
   PURPOSE For each submodel clear data pair series
   ****************************************************************** }
-  
+
 
 
 { * *****************************************************************
@@ -3830,6 +3947,8 @@ begin
   SubModname := Name;
   GlobMod := Model;
 {$IFNDEF NONVISUAL}
+  if Assigned(GlobMod) then
+   GlobMod.FreeNotification(Self);
   if Model.Parent <> nil then
     Parent := Model.Parent;
   Canvas.Brush.color := clgreen;
@@ -4051,6 +4170,9 @@ begin
 
 end;
 
+
+
+
 procedure TSubmodel.free;
 var
   Element: TModelElements;
@@ -4069,6 +4191,14 @@ begin
   for Option := self.OptionStrList.count - 1 downto 0 do
     OptionStrList.objects[Option].Free;
   inherited;
+end;
+
+
+procedure TSubModel.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+  inherited;
+  if (Operation = opRemove) and (AComponent =  GlobMod) then
+    GlobMod := nil;
 end;
 
 
@@ -5632,9 +5762,8 @@ var
   TypeStr: string;
   oldfontsize: Integer;
 begin
- inherited;
+  inherited;
 
-  if Visible then
   begin
     Titel := Name;
     TypeStr := ClassName;
@@ -5658,9 +5787,7 @@ begin
         '(' + TypeStr + ')');
       Canvas.Font.Size := oldfontsize;
     end;
-
   end;
-
 end;
 
 {$ENDIF}

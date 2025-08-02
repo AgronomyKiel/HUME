@@ -1018,10 +1018,13 @@
       <ancestor name="TPlantRelatedSubMod" namespace="UAbstractPlant">
         <methodref name="GetIsPlantModelset" visibility="protected">
         </methodref>
-        <methodref name="SetPlantModel" visibility="protected" procflags="virtual" />
-        <methodref name="Init" visibility="public" procflags="override" />
+        <methodref name="SetPlantModel" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="Init" visibility="public" procflags="override">
+        </methodref>
         <propertyref name="IsPlantModelSet" visibility="public" />
-        <propertyref name="PlantModel" visibility="published" />
+        <propertyref name="PlantModel" visibility="published">
+        </propertyref>
         <ancestor name="TSubmodel" namespace="UMod">
           <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
           </methodref>
@@ -1068,6 +1071,7 @@
           <methodref name="UpdateValue" visibility="protected" />
           <methodref name="Paint" visibility="protected" procflags="override">
           </methodref>
+          <methodref name="Notification" visibility="protected" procflags="virtual" />
           <methodref name="Create" visibility="public" procflags="constructor override">
           </methodref>
           <methodref name="free" visibility="public">
@@ -2467,11 +2471,9 @@
         <parameters>
           <retval type="TExternV">
             <devnotes>
-               <summary>
-               TExternV represents an external variable in the model. Values of model
-               elements outside a submodel are &quot;external&quot; and made accessible by linking
-               to the source variable, often via a pointer.
-               </summary>
+               <summary> TExternV is a class representing an external variable in the model. Values of model elements outside a submodel are called &quot;external variables&quot;. They can be made accessible by adressing a pointer for that value.
+               The default method for setting the link to the external variable is to search for it in the model by its name.
+               It extends THumeNumEntity and provides methods for getting and setting the value, as well as creating the external variable with a name, units, and an external value type. </summary>
             </devnotes>
           </retval>
         </parameters>
@@ -2480,11 +2482,9 @@
         <parameters>
           <retval type="TExternV">
             <devnotes>
-               <summary>
-               TExternV represents an external variable in the model. Values of model
-               elements outside a submodel are &quot;external&quot; and made accessible by linking
-               to the source variable, often via a pointer.
-               </summary>
+               <summary> TExternV is a class representing an external variable in the model. Values of model elements outside a submodel are called &quot;external variables&quot;. They can be made accessible by adressing a pointer for that value.
+               The default method for setting the link to the external variable is to search for it in the model by its name.
+               It extends THumeNumEntity and provides methods for getting and setting the value, as well as creating the external variable with a name, units, and an external value type. </summary>
             </devnotes>
           </retval>
         </parameters>
@@ -2659,687 +2659,687 @@
             ratio of flow to soil water storage
         </devnotes>
       </field>
-      <procedure name="SetPlantModel" visibility="protected" procflags="override" file="USoilWaterMod.pas" line="156">
+      <function name="ndx_str" visibility="protected" file="USoilWaterMod.pas" line="156">
         <devnotes>
            Lower boundary condition specification
         </devnotes>
-        <parameters>
-          <parameter name="NewPlantmodel" type="TAbstractPlant" />
-        </parameters>
-      </procedure>
-      <function name="ndx_str" visibility="protected" file="USoilWaterMod.pas" line="157">
         <parameters>
           <parameter name="i" type="Integer" />
           <retval type="string" />
         </parameters>
       </function>
-      <function name="getTexture" visibility="protected" file="USoilWaterMod.pas" line="158">
+      <function name="getTexture" visibility="protected" file="USoilWaterMod.pas" line="157">
         <parameters>
           <parameter name="i" type="Integer" />
           <retval type="TTextureClass" />
         </parameters>
       </function>
-      <function name="getLD" visibility="protected" file="USoilWaterMod.pas" line="159">
+      <function name="getLD" visibility="protected" file="USoilWaterMod.pas" line="158">
         <parameters>
           <parameter name="i" type="Integer" />
           <retval type="TLDClass" />
         </parameters>
       </function>
-      <field name="act_n_comp" type="Integer" visibility="public" size="4" offset="11468" file="USoilWaterMod.pas" line="163">
+      <field name="act_n_comp" type="Integer" visibility="public" size="4" offset="11468" file="USoilWaterMod.pas" line="162">
         <devnotes>
           
         </devnotes>
       </field>
-      <field name="iter" type="Integer" visibility="public" size="4" offset="11472" file="USoilWaterMod.pas" line="164">
+      <field name="iter" type="Integer" visibility="public" size="4" offset="11472" file="USoilWaterMod.pas" line="163">
         <devnotes>
            actual number of layers to be calculated, variable in case of groundwater influence
         </devnotes>
       </field>
-      <field name="akt_bilanz_f" type="Double" visibility="public" size="8" offset="11480" file="USoilWaterMod.pas" line="165">
+      <field name="akt_bilanz_f" type="Double" visibility="public" size="8" offset="11480" file="USoilWaterMod.pas" line="164">
         <devnotes>
            number of iterations during internal time step
         </devnotes>
       </field>
-      <field name="sum_Bilanz_f" type="Double" visibility="public" size="8" offset="11488" file="USoilWaterMod.pas" line="166" />
-      <field name="SW_start" type="Double" visibility="public" size="8" offset="11496" file="USoilWaterMod.pas" line="167" />
-      <field name="global_WaterBalance" type="Double" visibility="public" size="8" offset="11504" file="USoilWaterMod.pas" line="168">
+      <field name="sum_Bilanz_f" type="Double" visibility="public" size="8" offset="11488" file="USoilWaterMod.pas" line="165" />
+      <field name="SW_start" type="Double" visibility="public" size="8" offset="11496" file="USoilWaterMod.pas" line="166" />
+      <field name="global_WaterBalance" type="Double" visibility="public" size="8" offset="11504" file="USoilWaterMod.pas" line="167">
         <devnotes>
            sum of soil and ponded water [mm]
         </devnotes>
       </field>
-      <field name="old_global_WaterBalance" type="Double" visibility="public" size="8" offset="11512" file="USoilWaterMod.pas" line="169" />
-      <field name="theta_arr" type="TSoilVarArray" visibility="public" size="212" offset="11520" file="USoilWaterMod.pas" line="170" />
-      <field name="theta_new" type="TSoilArray" visibility="public" size="416" offset="11736" file="USoilWaterMod.pas" line="171">
+      <field name="old_global_WaterBalance" type="Double" visibility="public" size="8" offset="11512" file="USoilWaterMod.pas" line="168" />
+      <field name="theta_arr" type="TSoilVarArray" visibility="public" size="212" offset="11520" file="USoilWaterMod.pas" line="169" />
+      <field name="theta_new" type="TSoilArray" visibility="public" size="416" offset="11736" file="USoilWaterMod.pas" line="170">
         <devnotes>
            Wassergehaltsvektor [cm3/cm3]
         </devnotes>
       </field>
-      <field name="WAmount" type="TSoilStateArray" visibility="public" size="208" offset="12152" file="USoilWaterMod.pas" line="172">
+      <field name="WAmount" type="TSoilStateArray" visibility="public" size="208" offset="12152" file="USoilWaterMod.pas" line="171">
         <devnotes>
            new soil water contents
         </devnotes>
       </field>
-      <field name="psi_arr" type="TSoilVarArray" visibility="public" size="212" offset="12360" file="USoilWaterMod.pas" line="173">
+      <field name="psi_arr" type="TSoilVarArray" visibility="public" size="212" offset="12360" file="USoilWaterMod.pas" line="172">
         <devnotes>
            Wassermenge je Schicht [cm]
         </devnotes>
       </field>
-      <field name="Wflow_arr" type="TSoilVarArray" visibility="public" size="212" offset="12572" file="USoilWaterMod.pas" line="174">
+      <field name="Wflow_arr" type="TSoilVarArray" visibility="public" size="212" offset="12572" file="USoilWaterMod.pas" line="173">
         <devnotes>
            Wasserspannungsvektor [cm]
         </devnotes>
       </field>
-      <field name="WflowInt_arr" type="TSoilVarArray" visibility="public" size="212" offset="12784" file="USoilWaterMod.pas" line="175">
+      <field name="WflowInt_arr" type="TSoilVarArray" visibility="public" size="212" offset="12784" file="USoilWaterMod.pas" line="174">
         <devnotes>
            Flussvektor [cm/d]
         </devnotes>
       </field>
-      <field name="Sink_arr" type="TSoilVarArray" visibility="public" size="212" offset="12996" file="USoilWaterMod.pas" line="176">
+      <field name="Sink_arr" type="TSoilVarArray" visibility="public" size="212" offset="12996" file="USoilWaterMod.pas" line="175">
         <devnotes>
            Flussvektor [cm/d] f�r internen Zeitschritt
         </devnotes>
       </field>
-      <field name="SinkInt_arr" type="TSoilVarArray" visibility="public" size="212" offset="13208" file="USoilWaterMod.pas" line="177">
+      <field name="SinkInt_arr" type="TSoilVarArray" visibility="public" size="212" offset="13208" file="USoilWaterMod.pas" line="176">
         <devnotes>
            Sinkvektor [cm]
         </devnotes>
       </field>
-      <field name="FK_Arr" type="TSoilArray" visibility="public" size="416" offset="13424" file="USoilWaterMod.pas" line="178">
+      <field name="FK_Arr" type="TSoilArray" visibility="public" size="416" offset="13424" file="USoilWaterMod.pas" line="177">
         <devnotes>
            Sinkvektor [cm/d] f�r internen Zeitschritt
         </devnotes>
       </field>
-      <field name="PWP_Arr" type="TSoilArray" visibility="public" size="416" offset="13840" file="USoilWaterMod.pas" line="179">
+      <field name="PWP_Arr" type="TSoilArray" visibility="public" size="416" offset="13840" file="USoilWaterMod.pas" line="178">
         <devnotes>
            Feldkapazit�t [cm3/cm3]
         </devnotes>
       </field>
-      <field name="nFK_Arr" type="TSoilArray" visibility="public" size="416" offset="14256" file="USoilWaterMod.pas" line="180">
+      <field name="nFK_Arr" type="TSoilArray" visibility="public" size="416" offset="14256" file="USoilWaterMod.pas" line="179">
         <devnotes>
            permanenter Welkepunkt [cm3/cm3]
         </devnotes>
       </field>
-      <field name="WPar" type="TSoilWaterParams" visibility="public" size="200" offset="14672" file="USoilWaterMod.pas" line="181">
+      <field name="WPar" type="TSoilWaterParams" visibility="public" size="200" offset="14672" file="USoilWaterMod.pas" line="180">
         <devnotes>
            nutzbare Feldkapazit�t [cm3/cm3]
         </devnotes>
       </field>
-      <field name="Wflow_old" type="TSoilArray" visibility="public" size="416" offset="14872" file="USoilWaterMod.pas" line="183">
+      <field name="Wflow_old" type="TSoilArray" visibility="public" size="416" offset="14872" file="USoilWaterMod.pas" line="182">
         <devnotes>
            Array der Van-Genuchten Parameter f�r jede Schicht
         </devnotes>
       </field>
-      <field name="theta_old" type="TSoilArray" visibility="public" size="416" offset="15288" file="USoilWaterMod.pas" line="184">
+      <field name="theta_old" type="TSoilArray" visibility="public" size="416" offset="15288" file="USoilWaterMod.pas" line="183">
         <devnotes>
            alte Wasserfl�sse [cm/d]
         </devnotes>
       </field>
-      <field name="psi_neu" type="TSoilArray" visibility="public" size="416" offset="15704" file="USoilWaterMod.pas" line="185">
+      <field name="psi_neu" type="TSoilArray" visibility="public" size="416" offset="15704" file="USoilWaterMod.pas" line="184">
         <devnotes>
            alte Wassergehalte
         </devnotes>
       </field>
-      <field name="SW_Balance_arr" type="TSoilArray" visibility="public" size="416" offset="16120" file="USoilWaterMod.pas" line="186">
+      <field name="SW_Balance_arr" type="TSoilArray" visibility="public" size="416" offset="16120" file="USoilWaterMod.pas" line="185">
         <devnotes>
            New estimate of water potential [cm]
         </devnotes>
       </field>
-      <field name="cumSW_Balance_arr" type="TSoilArray" visibility="public" size="416" offset="16536" file="USoilWaterMod.pas" line="187">
+      <field name="cumSW_Balance_arr" type="TSoilArray" visibility="public" size="416" offset="16536" file="USoilWaterMod.pas" line="186">
         <devnotes>
            actual values of water balance for single layers
         </devnotes>
       </field>
-      <field name="nHorizons" type="TPar" visibility="public" size="4" offset="16952" file="USoilWaterMod.pas" line="189">
+      <field name="nHorizons" type="TPar" visibility="public" size="4" offset="16952" file="USoilWaterMod.pas" line="188">
         <devnotes>
            cumulative values of water balance for single layers
         </devnotes>
       </field>
-      <field name="HoriNdx1" type="TPar" visibility="public" size="4" offset="16956" file="USoilWaterMod.pas" line="191">
+      <field name="HoriNdx1" type="TPar" visibility="public" size="4" offset="16956" file="USoilWaterMod.pas" line="190">
         <devnotes>
            number of soil horizons with different textures
         </devnotes>
       </field>
-      <field name="HoriNdx2" type="TPar" visibility="public" size="4" offset="16960" file="USoilWaterMod.pas" line="191" />
-      <field name="HoriNdx3" type="TPar" visibility="public" size="4" offset="16964" file="USoilWaterMod.pas" line="191" />
-      <field name="HoriNdx4" type="TPar" visibility="public" size="4" offset="16968" file="USoilWaterMod.pas" line="191" />
-      <field name="HoriNdx5" type="TPar" visibility="public" size="4" offset="16972" file="USoilWaterMod.pas" line="191" />
-      <field name="HoriNdx6" type="TPar" visibility="public" size="4" offset="16976" file="USoilWaterMod.pas" line="191" />
-      <field name="FVGParsFromTextOption" type="TOption" visibility="public" size="4" offset="16980" file="USoilWaterMod.pas" line="194">
+      <field name="HoriNdx2" type="TPar" visibility="public" size="4" offset="16960" file="USoilWaterMod.pas" line="190" />
+      <field name="HoriNdx3" type="TPar" visibility="public" size="4" offset="16964" file="USoilWaterMod.pas" line="190" />
+      <field name="HoriNdx4" type="TPar" visibility="public" size="4" offset="16968" file="USoilWaterMod.pas" line="190" />
+      <field name="HoriNdx5" type="TPar" visibility="public" size="4" offset="16972" file="USoilWaterMod.pas" line="190" />
+      <field name="HoriNdx6" type="TPar" visibility="public" size="4" offset="16976" file="USoilWaterMod.pas" line="190" />
+      <field name="FVGParsFromTextOption" type="TOption" visibility="public" size="4" offset="16980" file="USoilWaterMod.pas" line="193">
         <devnotes>
            Index der untersten Schicht im jeweiligen Horizont
         </devnotes>
       </field>
-      <field name="FKsFromTextOption" type="TOption" visibility="public" size="4" offset="16984" file="USoilWaterMod.pas" line="195">
+      <field name="FKsFromTextOption" type="TOption" visibility="public" size="4" offset="16984" file="USoilWaterMod.pas" line="194">
         <devnotes>
            Texture_versionOption: TOption;
         </devnotes>
       </field>
-      <field name="act_EvaporationOption" type="TOption" visibility="public" size="4" offset="16988" file="USoilWaterMod.pas" line="196">
+      <field name="act_EvaporationOption" type="TOption" visibility="public" size="4" offset="16988" file="USoilWaterMod.pas" line="195">
         <devnotes>
           
         </devnotes>
       </field>
-      <field name="red_fOption" type="TOption" visibility="public" size="4" offset="16992" file="USoilWaterMod.pas" line="197" />
-      <field name="OptUntere_Randb" type="TOption" visibility="public" size="4" offset="16996" file="USoilWaterMod.pas" line="199" />
-      <field name="OptIniMethod" type="TOption" visibility="public" size="4" offset="17000" file="USoilWaterMod.pas" line="200">
+      <field name="red_fOption" type="TOption" visibility="public" size="4" offset="16992" file="USoilWaterMod.pas" line="196" />
+      <field name="OptUntere_Randb" type="TOption" visibility="public" size="4" offset="16996" file="USoilWaterMod.pas" line="198" />
+      <field name="OptIniMethod" type="TOption" visibility="public" size="4" offset="17000" file="USoilWaterMod.pas" line="199">
         <devnotes>
            lowerBoundCond
         </devnotes>
       </field>
-      <field name="OptCompMethod" type="TOption" visibility="public" size="4" offset="17004" file="USoilWaterMod.pas" line="201">
+      <field name="OptCompMethod" type="TOption" visibility="public" size="4" offset="17004" file="USoilWaterMod.pas" line="200">
         <devnotes>
            Option for choosing the initialisaiton method
         </devnotes>
       </field>
-      <field name="OptWriteParsFromTexture" type="TOption" visibility="public" size="4" offset="17008" file="USoilWaterMod.pas" line="202">
+      <field name="OptWriteParsFromTexture" type="TOption" visibility="public" size="4" offset="17008" file="USoilWaterMod.pas" line="201">
         <devnotes>
            Option for choosing the computation method
         </devnotes>
       </field>
-      <field name="OptTransferWGToNextIniFile" type="TOption" visibility="public" size="4" offset="17012" file="USoilWaterMod.pas" line="204">
+      <field name="OptTransferWGToNextIniFile" type="TOption" visibility="public" size="4" offset="17012" file="USoilWaterMod.pas" line="203">
         <devnotes>
            Option for writing VG-Pars from Texture estimates into Param-Ini-file
           
         </devnotes>
       </field>
-      <field name="Groundwaterdepth" type="TExternV" visibility="public" size="4" offset="17016" file="USoilWaterMod.pas" line="207">
+      <field name="Groundwaterdepth" type="TExternV" visibility="public" size="4" offset="17016" file="USoilWaterMod.pas" line="206">
         <devnotes>
           
           
         </devnotes>
       </field>
-      <field name="FTextClass1Option" type="TTextClassOption" visibility="public" size="4" offset="17020" file="USoilWaterMod.pas" line="209">
+      <field name="FTextClass1Option" type="TTextClassOption" visibility="public" size="4" offset="17020" file="USoilWaterMod.pas" line="208">
         <devnotes>
            depth of groundwatertable [cm] needed if option is selected
         </devnotes>
       </field>
-      <field name="FTextClass2Option" type="TTextClassOption" visibility="public" size="4" offset="17024" file="USoilWaterMod.pas" line="209" />
-      <field name="FTextClass3Option" type="TTextClassOption" visibility="public" size="4" offset="17028" file="USoilWaterMod.pas" line="209" />
-      <field name="FTextClass4Option" type="TTextClassOption" visibility="public" size="4" offset="17032" file="USoilWaterMod.pas" line="210" />
-      <field name="FTextClass5Option" type="TTextClassOption" visibility="public" size="4" offset="17036" file="USoilWaterMod.pas" line="210" />
-      <field name="FTextClass6Option" type="TTextClassOption" visibility="public" size="4" offset="17040" file="USoilWaterMod.pas" line="210" />
-      <field name="fLDClass1Option" type="TLDClassOption" visibility="public" size="4" offset="17044" file="USoilWaterMod.pas" line="213">
+      <field name="FTextClass2Option" type="TTextClassOption" visibility="public" size="4" offset="17024" file="USoilWaterMod.pas" line="208" />
+      <field name="FTextClass3Option" type="TTextClassOption" visibility="public" size="4" offset="17028" file="USoilWaterMod.pas" line="208" />
+      <field name="FTextClass4Option" type="TTextClassOption" visibility="public" size="4" offset="17032" file="USoilWaterMod.pas" line="209" />
+      <field name="FTextClass5Option" type="TTextClassOption" visibility="public" size="4" offset="17036" file="USoilWaterMod.pas" line="209" />
+      <field name="FTextClass6Option" type="TTextClassOption" visibility="public" size="4" offset="17040" file="USoilWaterMod.pas" line="209" />
+      <field name="fLDClass1Option" type="TLDClassOption" visibility="public" size="4" offset="17044" file="USoilWaterMod.pas" line="212">
         <devnotes>
            Options for choosing Parameters for 6 distinct horizons
         </devnotes>
       </field>
-      <field name="fLDClass2Option" type="TLDClassOption" visibility="public" size="4" offset="17048" file="USoilWaterMod.pas" line="213" />
-      <field name="fLDClass3Option" type="TLDClassOption" visibility="public" size="4" offset="17052" file="USoilWaterMod.pas" line="213" />
-      <field name="fLDClass4Option" type="TLDClassOption" visibility="public" size="4" offset="17056" file="USoilWaterMod.pas" line="214" />
-      <field name="fLDClass5Option" type="TLDClassOption" visibility="public" size="4" offset="17060" file="USoilWaterMod.pas" line="214" />
-      <field name="fLDClass6Option" type="TLDClassOption" visibility="public" size="4" offset="17064" file="USoilWaterMod.pas" line="214" />
-      <field name="max_aenderWG" type="TPar" visibility="public" size="4" offset="17068" file="USoilWaterMod.pas" line="218">
+      <field name="fLDClass2Option" type="TLDClassOption" visibility="public" size="4" offset="17048" file="USoilWaterMod.pas" line="212" />
+      <field name="fLDClass3Option" type="TLDClassOption" visibility="public" size="4" offset="17052" file="USoilWaterMod.pas" line="212" />
+      <field name="fLDClass4Option" type="TLDClassOption" visibility="public" size="4" offset="17056" file="USoilWaterMod.pas" line="213" />
+      <field name="fLDClass5Option" type="TLDClassOption" visibility="public" size="4" offset="17060" file="USoilWaterMod.pas" line="213" />
+      <field name="fLDClass6Option" type="TLDClassOption" visibility="public" size="4" offset="17064" file="USoilWaterMod.pas" line="213" />
+      <field name="max_aenderWG" type="TPar" visibility="public" size="4" offset="17068" file="USoilWaterMod.pas" line="217">
         <devnotes>
            Options for choosing layer density  for 6 distinct horizons
         </devnotes>
       </field>
-      <field name="max_IterError" type="TPar" visibility="public" size="4" offset="17072" file="USoilWaterMod.pas" line="219">
+      <field name="max_IterError" type="TPar" visibility="public" size="4" offset="17072" file="USoilWaterMod.pas" line="218">
         <devnotes>
            maximale Wassergehalts�nderung pro Zeitschritt
         </devnotes>
       </field>
-      <field name="Max_dt" type="TPar" visibility="public" size="4" offset="17076" file="USoilWaterMod.pas" line="222">
+      <field name="Max_dt" type="TPar" visibility="public" size="4" offset="17076" file="USoilWaterMod.pas" line="221">
         <devnotes>
            maximum change of water content in a layer between two iterations
           
         </devnotes>
       </field>
-      <field name="Min_dt" type="TPar" visibility="public" size="4" offset="17080" file="USoilWaterMod.pas" line="223">
+      <field name="Min_dt" type="TPar" visibility="public" size="4" offset="17080" file="USoilWaterMod.pas" line="222">
         <devnotes>
            maximum internal time step
         </devnotes>
       </field>
-      <field name="IterMax" type="TPar" visibility="public" size="4" offset="17084" file="USoilWaterMod.pas" line="224">
+      <field name="IterMax" type="TPar" visibility="public" size="4" offset="17084" file="USoilWaterMod.pas" line="223">
         <devnotes>
            minimum internal time step [d]
         </devnotes>
       </field>
-      <field name="bsat_scaling" type="TPar" visibility="public" size="4" offset="17088" file="USoilWaterMod.pas" line="226">
+      <field name="bsat_scaling" type="TPar" visibility="public" size="4" offset="17088" file="USoilWaterMod.pas" line="225">
         <devnotes>
            maximum number of Iterations before internal time step is reduced
         </devnotes>
       </field>
-      <field name="alpha_scaling" type="TPar" visibility="public" size="4" offset="17092" file="USoilWaterMod.pas" line="227">
+      <field name="alpha_scaling" type="TPar" visibility="public" size="4" offset="17092" file="USoilWaterMod.pas" line="226">
         <devnotes>
            Parameter for linear scaling of soil hydraulic Parameter bsat
         </devnotes>
       </field>
-      <field name="b_sat1" type="TPar" visibility="public" size="4" offset="17096" file="USoilWaterMod.pas" line="230">
+      <field name="b_sat1" type="TPar" visibility="public" size="4" offset="17096" file="USoilWaterMod.pas" line="229">
         <devnotes>
            Parameter for linear scaling of soil hydraulic Parameter alpha
            van-Genuchten Parameter fuer Horizont 1
         </devnotes>
       </field>
-      <field name="b_rest1" type="TPar" visibility="public" size="4" offset="17100" file="USoilWaterMod.pas" line="231">
+      <field name="b_rest1" type="TPar" visibility="public" size="4" offset="17100" file="USoilWaterMod.pas" line="230">
         <devnotes>
            Wassergehalt bei S�ttigung [cm3/cm3] }
         </devnotes>
       </field>
-      <field name="alpha1" type="TPar" visibility="public" size="4" offset="17104" file="USoilWaterMod.pas" line="232">
+      <field name="alpha1" type="TPar" visibility="public" size="4" offset="17104" file="USoilWaterMod.pas" line="231">
         <devnotes>
            &quot;Restwassergehalt&quot; [cm3/cm3] }
         </devnotes>
       </field>
-      <field name="n_par1" type="TPar" visibility="public" size="4" offset="17108" file="USoilWaterMod.pas" line="233">
+      <field name="n_par1" type="TPar" visibility="public" size="4" offset="17108" file="USoilWaterMod.pas" line="232">
         <devnotes>
            Fitparameter &quot;&quot; [1/cm] }
         </devnotes>
       </field>
-      <field name="l_par1" type="TPar" visibility="public" size="4" offset="17112" file="USoilWaterMod.pas" line="234">
+      <field name="l_par1" type="TPar" visibility="public" size="4" offset="17112" file="USoilWaterMod.pas" line="233">
         <devnotes>
            Fitparameter &quot;n&quot; dimensionslos }
         </devnotes>
       </field>
-      <field name="Ks1" type="TPar" visibility="public" size="4" offset="17116" file="USoilWaterMod.pas" line="235">
+      <field name="Ks1" type="TPar" visibility="public" size="4" offset="17116" file="USoilWaterMod.pas" line="234">
         <devnotes>
            parameter for hydraulic conductivity shape
         </devnotes>
       </field>
-      <field name="FK1" type="TPar" visibility="public" size="4" offset="17120" file="USoilWaterMod.pas" line="236">
+      <field name="FK1" type="TPar" visibility="public" size="4" offset="17120" file="USoilWaterMod.pas" line="235">
         <devnotes>
            ges�ttigte Leitf�higkeit [cm.d-1]
         </devnotes>
       </field>
-      <field name="PWP1" type="TPar" visibility="public" size="4" offset="17124" file="USoilWaterMod.pas" line="237">
+      <field name="PWP1" type="TPar" visibility="public" size="4" offset="17124" file="USoilWaterMod.pas" line="236">
         <devnotes>
            Feldkapazit�t [cm3/cm3]
         </devnotes>
       </field>
-      <field name="nFK1" type="TPar" visibility="public" size="4" offset="17128" file="USoilWaterMod.pas" line="238">
+      <field name="nFK1" type="TPar" visibility="public" size="4" offset="17128" file="USoilWaterMod.pas" line="237">
         <devnotes>
            permanenter Welkepunkt
         </devnotes>
       </field>
-      <field name="b_sat2" type="TPar" visibility="public" size="4" offset="17132" file="USoilWaterMod.pas" line="241">
+      <field name="b_sat2" type="TPar" visibility="public" size="4" offset="17132" file="USoilWaterMod.pas" line="240">
         <devnotes>
            nutzbare Feldkapazit�t
            van-Genuchten Parameter fuer Horizont 2
         </devnotes>
       </field>
-      <field name="b_rest2" type="TPar" visibility="public" size="4" offset="17136" file="USoilWaterMod.pas" line="242">
+      <field name="b_rest2" type="TPar" visibility="public" size="4" offset="17136" file="USoilWaterMod.pas" line="241">
         <devnotes>
            Wassergehalt bei S�ttigung [cm3/cm3] }
         </devnotes>
       </field>
-      <field name="alpha2" type="TPar" visibility="public" size="4" offset="17140" file="USoilWaterMod.pas" line="243">
+      <field name="alpha2" type="TPar" visibility="public" size="4" offset="17140" file="USoilWaterMod.pas" line="242">
         <devnotes>
            &quot;Restwassergehalt&quot; [cm3/cm3] }
         </devnotes>
       </field>
-      <field name="n_par2" type="TPar" visibility="public" size="4" offset="17144" file="USoilWaterMod.pas" line="244">
+      <field name="n_par2" type="TPar" visibility="public" size="4" offset="17144" file="USoilWaterMod.pas" line="243">
         <devnotes>
            Fitparameter &quot;&quot; [1/cm] }
         </devnotes>
       </field>
-      <field name="l_par2" type="TPar" visibility="public" size="4" offset="17148" file="USoilWaterMod.pas" line="245">
+      <field name="l_par2" type="TPar" visibility="public" size="4" offset="17148" file="USoilWaterMod.pas" line="244">
         <devnotes>
            Fitparameter &quot;n&quot; dimensionslos }
         </devnotes>
       </field>
-      <field name="Ks2" type="TPar" visibility="public" size="4" offset="17152" file="USoilWaterMod.pas" line="246">
+      <field name="Ks2" type="TPar" visibility="public" size="4" offset="17152" file="USoilWaterMod.pas" line="245">
         <devnotes>
            parameter for hydraulic conductivity shape
         </devnotes>
       </field>
-      <field name="FK2" type="TPar" visibility="public" size="4" offset="17156" file="USoilWaterMod.pas" line="247">
+      <field name="FK2" type="TPar" visibility="public" size="4" offset="17156" file="USoilWaterMod.pas" line="246">
         <devnotes>
            ges�ttigte Leitf�higkeit [cm.d-1]
         </devnotes>
       </field>
-      <field name="PWP2" type="TPar" visibility="public" size="4" offset="17160" file="USoilWaterMod.pas" line="248">
+      <field name="PWP2" type="TPar" visibility="public" size="4" offset="17160" file="USoilWaterMod.pas" line="247">
         <devnotes>
            Feldkapazit�t [cm3/cm3]
         </devnotes>
       </field>
-      <field name="nFK2" type="TPar" visibility="public" size="4" offset="17164" file="USoilWaterMod.pas" line="249">
+      <field name="nFK2" type="TPar" visibility="public" size="4" offset="17164" file="USoilWaterMod.pas" line="248">
         <devnotes>
            permanenter Welkepunkt
         </devnotes>
       </field>
-      <field name="b_sat3" type="TPar" visibility="public" size="4" offset="17168" file="USoilWaterMod.pas" line="252">
+      <field name="b_sat3" type="TPar" visibility="public" size="4" offset="17168" file="USoilWaterMod.pas" line="251">
         <devnotes>
            nutzbare Feldkapazit�t
            van-Genuchten Parameter fuer Horizont 3
         </devnotes>
       </field>
-      <field name="b_rest3" type="TPar" visibility="public" size="4" offset="17172" file="USoilWaterMod.pas" line="253">
+      <field name="b_rest3" type="TPar" visibility="public" size="4" offset="17172" file="USoilWaterMod.pas" line="252">
         <devnotes>
            Wassergehalt bei S�ttigung [cm3/cm3] }
         </devnotes>
       </field>
-      <field name="alpha3" type="TPar" visibility="public" size="4" offset="17176" file="USoilWaterMod.pas" line="254">
+      <field name="alpha3" type="TPar" visibility="public" size="4" offset="17176" file="USoilWaterMod.pas" line="253">
         <devnotes>
            &quot;Restwassergehalt&quot; [cm3/cm3] }
         </devnotes>
       </field>
-      <field name="n_par3" type="TPar" visibility="public" size="4" offset="17180" file="USoilWaterMod.pas" line="255">
+      <field name="n_par3" type="TPar" visibility="public" size="4" offset="17180" file="USoilWaterMod.pas" line="254">
         <devnotes>
            Fitparameter &quot;&quot; [1/cm] }
         </devnotes>
       </field>
-      <field name="l_par3" type="TPar" visibility="public" size="4" offset="17184" file="USoilWaterMod.pas" line="256">
+      <field name="l_par3" type="TPar" visibility="public" size="4" offset="17184" file="USoilWaterMod.pas" line="255">
         <devnotes>
            Fitparameter &quot;n&quot; dimensionslos }
         </devnotes>
       </field>
-      <field name="Ks3" type="TPar" visibility="public" size="4" offset="17188" file="USoilWaterMod.pas" line="257">
+      <field name="Ks3" type="TPar" visibility="public" size="4" offset="17188" file="USoilWaterMod.pas" line="256">
         <devnotes>
            parameter for hydraulic conductivity shape
         </devnotes>
       </field>
-      <field name="FK3" type="TPar" visibility="public" size="4" offset="17192" file="USoilWaterMod.pas" line="258">
+      <field name="FK3" type="TPar" visibility="public" size="4" offset="17192" file="USoilWaterMod.pas" line="257">
         <devnotes>
            ges�ttigte Leitf�higkeit [cm.d-1]
         </devnotes>
       </field>
-      <field name="PWP3" type="TPar" visibility="public" size="4" offset="17196" file="USoilWaterMod.pas" line="259">
+      <field name="PWP3" type="TPar" visibility="public" size="4" offset="17196" file="USoilWaterMod.pas" line="258">
         <devnotes>
            Feldkapazit�t [cm3/cm3]
         </devnotes>
       </field>
-      <field name="nFK3" type="TPar" visibility="public" size="4" offset="17200" file="USoilWaterMod.pas" line="260">
+      <field name="nFK3" type="TPar" visibility="public" size="4" offset="17200" file="USoilWaterMod.pas" line="259">
         <devnotes>
            permanenter Welkepunkt
         </devnotes>
       </field>
-      <field name="b_sat4" type="TPar" visibility="public" size="4" offset="17204" file="USoilWaterMod.pas" line="263">
+      <field name="b_sat4" type="TPar" visibility="public" size="4" offset="17204" file="USoilWaterMod.pas" line="262">
         <devnotes>
            nutzbare Feldkapazit�t
            van-Genuchten Parameter fuer Horizont 4
         </devnotes>
       </field>
-      <field name="b_rest4" type="TPar" visibility="public" size="4" offset="17208" file="USoilWaterMod.pas" line="264">
+      <field name="b_rest4" type="TPar" visibility="public" size="4" offset="17208" file="USoilWaterMod.pas" line="263">
         <devnotes>
            Wassergehalt bei S�ttigung [cm3/cm3] }
         </devnotes>
       </field>
-      <field name="alpha4" type="TPar" visibility="public" size="4" offset="17212" file="USoilWaterMod.pas" line="265">
+      <field name="alpha4" type="TPar" visibility="public" size="4" offset="17212" file="USoilWaterMod.pas" line="264">
         <devnotes>
            &quot;Restwassergehalt&quot; [cm3/cm3] }
         </devnotes>
       </field>
-      <field name="n_par4" type="TPar" visibility="public" size="4" offset="17216" file="USoilWaterMod.pas" line="266">
+      <field name="n_par4" type="TPar" visibility="public" size="4" offset="17216" file="USoilWaterMod.pas" line="265">
         <devnotes>
            Fitparameter &quot;&quot; [1/cm] }
         </devnotes>
       </field>
-      <field name="l_par4" type="TPar" visibility="public" size="4" offset="17220" file="USoilWaterMod.pas" line="267">
+      <field name="l_par4" type="TPar" visibility="public" size="4" offset="17220" file="USoilWaterMod.pas" line="266">
         <devnotes>
            Fitparameter &quot;n&quot; dimensionslos }
         </devnotes>
       </field>
-      <field name="Ks4" type="TPar" visibility="public" size="4" offset="17224" file="USoilWaterMod.pas" line="268">
+      <field name="Ks4" type="TPar" visibility="public" size="4" offset="17224" file="USoilWaterMod.pas" line="267">
         <devnotes>
            parameter for hydraulic conductivity shape
         </devnotes>
       </field>
-      <field name="FK4" type="TPar" visibility="public" size="4" offset="17228" file="USoilWaterMod.pas" line="269">
+      <field name="FK4" type="TPar" visibility="public" size="4" offset="17228" file="USoilWaterMod.pas" line="268">
         <devnotes>
            ges�ttigte Leitf�higkeit [cm.d-1]
         </devnotes>
       </field>
-      <field name="PWP4" type="TPar" visibility="public" size="4" offset="17232" file="USoilWaterMod.pas" line="270">
+      <field name="PWP4" type="TPar" visibility="public" size="4" offset="17232" file="USoilWaterMod.pas" line="269">
         <devnotes>
            Feldkapazit�t [cm3/cm3]
         </devnotes>
       </field>
-      <field name="nFK4" type="TPar" visibility="public" size="4" offset="17236" file="USoilWaterMod.pas" line="271">
+      <field name="nFK4" type="TPar" visibility="public" size="4" offset="17236" file="USoilWaterMod.pas" line="270">
         <devnotes>
            permanenter Welkepunkt
         </devnotes>
       </field>
-      <field name="b_sat5" type="TPar" visibility="public" size="4" offset="17240" file="USoilWaterMod.pas" line="274">
+      <field name="b_sat5" type="TPar" visibility="public" size="4" offset="17240" file="USoilWaterMod.pas" line="273">
         <devnotes>
            nutzbare Feldkapazit�t
           
            van-Genuchten Parameter fuer Horizont 5
         </devnotes>
       </field>
-      <field name="b_rest5" type="TPar" visibility="public" size="4" offset="17244" file="USoilWaterMod.pas" line="275">
+      <field name="b_rest5" type="TPar" visibility="public" size="4" offset="17244" file="USoilWaterMod.pas" line="274">
         <devnotes>
            Wassergehalt bei S�ttigung [cm3/cm3] }
         </devnotes>
       </field>
-      <field name="alpha5" type="TPar" visibility="public" size="4" offset="17248" file="USoilWaterMod.pas" line="276">
+      <field name="alpha5" type="TPar" visibility="public" size="4" offset="17248" file="USoilWaterMod.pas" line="275">
         <devnotes>
            &quot;Restwassergehalt&quot; [cm3/cm3] }
         </devnotes>
       </field>
-      <field name="n_par5" type="TPar" visibility="public" size="4" offset="17252" file="USoilWaterMod.pas" line="277">
+      <field name="n_par5" type="TPar" visibility="public" size="4" offset="17252" file="USoilWaterMod.pas" line="276">
         <devnotes>
            Fitparameter &quot;&quot; [1/cm] }
         </devnotes>
       </field>
-      <field name="l_par5" type="TPar" visibility="public" size="4" offset="17256" file="USoilWaterMod.pas" line="278">
+      <field name="l_par5" type="TPar" visibility="public" size="4" offset="17256" file="USoilWaterMod.pas" line="277">
         <devnotes>
            Fitparameter &quot;n&quot; dimensionslos }
         </devnotes>
       </field>
-      <field name="Ks5" type="TPar" visibility="public" size="4" offset="17260" file="USoilWaterMod.pas" line="279">
+      <field name="Ks5" type="TPar" visibility="public" size="4" offset="17260" file="USoilWaterMod.pas" line="278">
         <devnotes>
            parameter for hydraulic conductivity shape
         </devnotes>
       </field>
-      <field name="FK5" type="TPar" visibility="public" size="4" offset="17264" file="USoilWaterMod.pas" line="280">
+      <field name="FK5" type="TPar" visibility="public" size="4" offset="17264" file="USoilWaterMod.pas" line="279">
         <devnotes>
            ges�ttigte Leitf�higkeit [cm.d-1]
         </devnotes>
       </field>
-      <field name="PWP5" type="TPar" visibility="public" size="4" offset="17268" file="USoilWaterMod.pas" line="281">
+      <field name="PWP5" type="TPar" visibility="public" size="4" offset="17268" file="USoilWaterMod.pas" line="280">
         <devnotes>
            Feldkapazit�t [cm3/cm3]
         </devnotes>
       </field>
-      <field name="nFK5" type="TPar" visibility="public" size="4" offset="17272" file="USoilWaterMod.pas" line="282">
+      <field name="nFK5" type="TPar" visibility="public" size="4" offset="17272" file="USoilWaterMod.pas" line="281">
         <devnotes>
            permanenter Welkepunkt
         </devnotes>
       </field>
-      <field name="b_sat6" type="TPar" visibility="public" size="4" offset="17276" file="USoilWaterMod.pas" line="285">
+      <field name="b_sat6" type="TPar" visibility="public" size="4" offset="17276" file="USoilWaterMod.pas" line="284">
         <devnotes>
            nutzbare Feldkapazit�t
           
            van-Genuchten Parameter fuer Horizont 6
         </devnotes>
       </field>
-      <field name="b_rest6" type="TPar" visibility="public" size="4" offset="17280" file="USoilWaterMod.pas" line="286">
+      <field name="b_rest6" type="TPar" visibility="public" size="4" offset="17280" file="USoilWaterMod.pas" line="285">
         <devnotes>
            Wassergehalt bei S�ttigung [cm3/cm3] }
         </devnotes>
       </field>
-      <field name="alpha6" type="TPar" visibility="public" size="4" offset="17284" file="USoilWaterMod.pas" line="287">
+      <field name="alpha6" type="TPar" visibility="public" size="4" offset="17284" file="USoilWaterMod.pas" line="286">
         <devnotes>
            &quot;Restwassergehalt&quot; [cm3/cm3] }
         </devnotes>
       </field>
-      <field name="n_par6" type="TPar" visibility="public" size="4" offset="17288" file="USoilWaterMod.pas" line="288">
+      <field name="n_par6" type="TPar" visibility="public" size="4" offset="17288" file="USoilWaterMod.pas" line="287">
         <devnotes>
            Fitparameter &quot;&quot; [1/cm] }
         </devnotes>
       </field>
-      <field name="l_par6" type="TPar" visibility="public" size="4" offset="17292" file="USoilWaterMod.pas" line="289">
+      <field name="l_par6" type="TPar" visibility="public" size="4" offset="17292" file="USoilWaterMod.pas" line="288">
         <devnotes>
            Fitparameter &quot;n&quot; dimensionslos }
         </devnotes>
       </field>
-      <field name="Ks6" type="TPar" visibility="public" size="4" offset="17296" file="USoilWaterMod.pas" line="290">
+      <field name="Ks6" type="TPar" visibility="public" size="4" offset="17296" file="USoilWaterMod.pas" line="289">
         <devnotes>
            parameter for hydraulic conductivity shape
         </devnotes>
       </field>
-      <field name="FK6" type="TPar" visibility="public" size="4" offset="17300" file="USoilWaterMod.pas" line="291">
+      <field name="FK6" type="TPar" visibility="public" size="4" offset="17300" file="USoilWaterMod.pas" line="290">
         <devnotes>
            ges�ttigte Leitf�higkeit [cm.d-1]
         </devnotes>
       </field>
-      <field name="PWP6" type="TPar" visibility="public" size="4" offset="17304" file="USoilWaterMod.pas" line="292">
+      <field name="PWP6" type="TPar" visibility="public" size="4" offset="17304" file="USoilWaterMod.pas" line="291">
         <devnotes>
            Feldkapazit�t [cm3/cm3]
         </devnotes>
       </field>
-      <field name="nFK6" type="TPar" visibility="public" size="4" offset="17308" file="USoilWaterMod.pas" line="293">
+      <field name="nFK6" type="TPar" visibility="public" size="4" offset="17308" file="USoilWaterMod.pas" line="292">
         <devnotes>
            permanenter Welkepunkt
         </devnotes>
       </field>
-      <field name="PsiStart1" type="TPar" visibility="public" size="4" offset="17312" file="USoilWaterMod.pas" line="296">
+      <field name="PsiStart1" type="TPar" visibility="public" size="4" offset="17312" file="USoilWaterMod.pas" line="295">
         <devnotes>
            nutzbare Feldkapazit�t
           
           
         </devnotes>
       </field>
-      <field name="bil_nr" type="TPar" visibility="public" size="4" offset="17316" file="USoilWaterMod.pas" line="297">
+      <field name="bil_nr" type="TPar" visibility="public" size="4" offset="17316" file="USoilWaterMod.pas" line="296">
         <devnotes>
            For initalisation of Soil water contents and suction values
         </devnotes>
       </field>
-      <field name="Weff" type="TPar" visibility="public" size="4" offset="17320" file="USoilWaterMod.pas" line="298">
+      <field name="Weff" type="TPar" visibility="public" size="4" offset="17320" file="USoilWaterMod.pas" line="297">
         <devnotes>
            Index of Layer where lower boundary fluxes are calculated
         </devnotes>
       </field>
-      <field name="psi_critEvap" type="TPar" visibility="public" size="4" offset="17324" file="USoilWaterMod.pas" line="299">
+      <field name="psi_critEvap" type="TPar" visibility="public" size="4" offset="17324" file="USoilWaterMod.pas" line="298">
         <devnotes>
            effective rooting deph [cm]
         </devnotes>
       </field>
-      <field name="NetRain" type="TExternV" visibility="public" size="4" offset="17328" file="USoilWaterMod.pas" line="300">
+      <field name="NetRain" type="TExternV" visibility="public" size="4" offset="17328" file="USoilWaterMod.pas" line="299">
         <devnotes>
            Wasserspannung ab der Evaporation abnimmt [hPa]
         </devnotes>
       </field>
-      <field name="CumNetRain" type="TState" visibility="public" size="4" offset="17332" file="USoilWaterMod.pas" line="302">
+      <field name="CumNetRain" type="TState" visibility="public" size="4" offset="17332" file="USoilWaterMod.pas" line="301">
         <devnotes>
            NetRain = Niederschlag - Interception
         </devnotes>
       </field>
-      <field name="Pot_Evap" type="THumeNumEntity" visibility="public" size="4" offset="17336" file="USoilWaterMod.pas" line="303">
+      <field name="Pot_Evap" type="THumeNumEntity" visibility="public" size="4" offset="17336" file="USoilWaterMod.pas" line="302">
         <devnotes>
            kumulativer Niederschlag [mm]
         </devnotes>
       </field>
-      <field name="red_evap" type="TVar" visibility="public" size="4" offset="17340" file="USoilWaterMod.pas" line="305">
+      <field name="red_evap" type="TVar" visibility="public" size="4" offset="17340" file="USoilWaterMod.pas" line="304">
         <devnotes>
            potentielle Evaporationsrate
         </devnotes>
       </field>
-      <field name="Act_Evap" type="TVar" visibility="public" size="4" offset="17344" file="USoilWaterMod.pas" line="306">
+      <field name="Act_Evap" type="TVar" visibility="public" size="4" offset="17344" file="USoilWaterMod.pas" line="305">
         <devnotes>
            Reduktionsfaktor f�r Evaporation
         </devnotes>
       </field>
-      <field name="Exfiltration" type="TVar" visibility="public" size="4" offset="17348" file="USoilWaterMod.pas" line="307">
+      <field name="Exfiltration" type="TVar" visibility="public" size="4" offset="17348" file="USoilWaterMod.pas" line="306">
         <devnotes>
            aktuelle Evaporationsrate
         </devnotes>
       </field>
-      <field name="CumTrans" type="TState" visibility="public" size="4" offset="17352" file="USoilWaterMod.pas" line="308">
+      <field name="CumTrans" type="TState" visibility="public" size="4" offset="17352" file="USoilWaterMod.pas" line="307">
         <devnotes>
            Estimation of maximum exfiltration rate
         </devnotes>
       </field>
-      <field name="CumEvap" type="TState" visibility="public" size="4" offset="17356" file="USoilWaterMod.pas" line="309">
+      <field name="CumEvap" type="TState" visibility="public" size="4" offset="17356" file="USoilWaterMod.pas" line="308">
         <devnotes>
            kumulative Transpiration [mm]
         </devnotes>
       </field>
-      <field name="CumDrainage" type="TState" visibility="public" size="4" offset="17360" file="USoilWaterMod.pas" line="310">
+      <field name="CumDrainage" type="TState" visibility="public" size="4" offset="17360" file="USoilWaterMod.pas" line="309">
         <devnotes>
            kumulative Evaporation
         </devnotes>
       </field>
-      <field name="CumWaterBalance" type="TState" visibility="public" size="4" offset="17364" file="USoilWaterMod.pas" line="311">
+      <field name="CumWaterBalance" type="TState" visibility="public" size="4" offset="17364" file="USoilWaterMod.pas" line="310">
         <devnotes>
            kumulative Sickerwasserspende/kapillarer Aufstieg [mm]
         </devnotes>
       </field>
-      <field name="CumGlobalWaterBalance" type="TState" visibility="public" size="4" offset="17368" file="USoilWaterMod.pas" line="313">
+      <field name="CumGlobalWaterBalance" type="TState" visibility="public" size="4" offset="17368" file="USoilWaterMod.pas" line="312">
         <devnotes>
           
         </devnotes>
       </field>
-      <field name="PondedWater" type="TState" visibility="public" size="4" offset="17372" file="USoilWaterMod.pas" line="315">
+      <field name="PondedWater" type="TState" visibility="public" size="4" offset="17372" file="USoilWaterMod.pas" line="314">
         <devnotes>
            Water-balance based on Evapotranspiration, losses and Rain
         </devnotes>
       </field>
-      <field name="PondMax" type="TPar" visibility="public" size="4" offset="17376" file="USoilWaterMod.pas" line="316">
+      <field name="PondMax" type="TPar" visibility="public" size="4" offset="17376" file="USoilWaterMod.pas" line="315">
         <devnotes>
            amount of ponded water on the soil surface [mm]
         </devnotes>
       </field>
-      <field name="CumRunoff" type="TState" visibility="public" size="4" offset="17380" file="USoilWaterMod.pas" line="319">
+      <field name="CumRunoff" type="TState" visibility="public" size="4" offset="17380" file="USoilWaterMod.pas" line="318">
         <devnotes>
            maximum ponding height [mm];
            kumulative Bilanz [mm] zur Kontrolle!
         </devnotes>
       </field>
-      <field name="SumSoilWater" type="TVar" visibility="public" size="4" offset="17384" file="USoilWaterMod.pas" line="321">
+      <field name="SumSoilWater" type="TVar" visibility="public" size="4" offset="17384" file="USoilWaterMod.pas" line="320">
         <devnotes>
            cumulative Runoff [mm]
         </devnotes>
       </field>
-      <field name="SumPAVSoilWater" type="TVar" visibility="public" size="4" offset="17388" file="USoilWaterMod.pas" line="322">
+      <field name="SumPAVSoilWater" type="TVar" visibility="public" size="4" offset="17388" file="USoilWaterMod.pas" line="321">
         <devnotes>
            sum of soil water down to boundary given by the Par &quot;bil_nr&quot;
         </devnotes>
       </field>
-      <field name="SumPAvSoilWaterRZ" type="TVar" visibility="public" size="4" offset="17392" file="USoilWaterMod.pas" line="323">
+      <field name="SumPAvSoilWaterRZ" type="TVar" visibility="public" size="4" offset="17392" file="USoilWaterMod.pas" line="322">
         <devnotes>
            sum of plant available soil water down to boundary given by the Par &quot;bil_nr&quot;
         </devnotes>
       </field>
-      <field name="global_iter" type="TVar" visibility="public" size="4" offset="17396" file="USoilWaterMod.pas" line="324">
+      <field name="global_iter" type="TVar" visibility="public" size="4" offset="17396" file="USoilWaterMod.pas" line="323">
         <devnotes>
            sum of plant available soil water in the rooting zone (down to Weff)
         </devnotes>
       </field>
-      <field name="dt" type="TVar" visibility="public" size="4" offset="17400" file="USoilWaterMod.pas" line="326">
+      <field name="dt" type="TVar" visibility="public" size="4" offset="17400" file="USoilWaterMod.pas" line="325">
         <devnotes>
            total number of iterations over the simulation run
         </devnotes>
       </field>
-      <field name="n_int_timesteps" type="TVar" visibility="public" size="4" offset="17404" file="USoilWaterMod.pas" line="327">
+      <field name="n_int_timesteps" type="TVar" visibility="public" size="4" offset="17404" file="USoilWaterMod.pas" line="326">
         <devnotes>
            interne Zeitschrittweite des Diff. Wassertransportmodells
         </devnotes>
       </field>
-      <field name="SumOfInternalTimeSteps" type="TVar" visibility="public" size="4" offset="17408" file="USoilWaterMod.pas" line="328">
+      <field name="SumOfInternalTimeSteps" type="TVar" visibility="public" size="4" offset="17408" file="USoilWaterMod.pas" line="327">
         <devnotes>
            number of time steps per day
         </devnotes>
       </field>
-      <field name="WG0_30" type="TVar" visibility="public" size="4" offset="17412" file="USoilWaterMod.pas" line="330">
+      <field name="WG0_30" type="TVar" visibility="public" size="4" offset="17412" file="USoilWaterMod.pas" line="329">
         <devnotes>
            Summe der internen Zeitschritte (Kontrollvariable)
         </devnotes>
       </field>
-      <field name="WG30_60" type="TVar" visibility="public" size="4" offset="17416" file="USoilWaterMod.pas" line="330" />
-      <field name="WG60_90" type="TVar" visibility="public" size="4" offset="17420" file="USoilWaterMod.pas" line="330" />
-      <field name="WG90_120" type="TVar" visibility="public" size="4" offset="17424" file="USoilWaterMod.pas" line="330" />
-      <field name="WG0_60" type="TVar" visibility="public" size="4" offset="17428" file="USoilWaterMod.pas" line="330" />
-      <field name="WG0_10" type="TVar" visibility="public" size="4" offset="17432" file="USoilWaterMod.pas" line="332" />
-      <field name="WG0_20" type="TVar" visibility="public" size="4" offset="17436" file="USoilWaterMod.pas" line="332" />
-      <field name="WG0_40" type="TVar" visibility="public" size="4" offset="17440" file="USoilWaterMod.pas" line="332" />
-      <field name="WG10_30" type="TVar" visibility="public" size="4" offset="17444" file="USoilWaterMod.pas" line="332" />
-      <field name="WG20_30" type="TVar" visibility="public" size="4" offset="17448" file="USoilWaterMod.pas" line="332" />
-      <field name="WG20_40" type="TVar" visibility="public" size="4" offset="17452" file="USoilWaterMod.pas" line="332" />
-      <field name="WG30_40" type="TVar" visibility="public" size="4" offset="17456" file="USoilWaterMod.pas" line="332" />
-      <field name="WG30_50" type="TVar" visibility="public" size="4" offset="17460" file="USoilWaterMod.pas" line="332" />
-      <field name="WG30_120" type="TVar" visibility="public" size="4" offset="17464" file="USoilWaterMod.pas" line="333" />
-      <field name="WG30_100" type="TVar" visibility="public" size="4" offset="17468" file="USoilWaterMod.pas" line="333" />
-      <field name="WG40_60" type="TVar" visibility="public" size="4" offset="17472" file="USoilWaterMod.pas" line="333" />
-      <field name="WG60_80" type="TVar" visibility="public" size="4" offset="17476" file="USoilWaterMod.pas" line="333" />
-      <field name="WG80_100" type="TVar" visibility="public" size="4" offset="17480" file="USoilWaterMod.pas" line="333" />
-      <field name="WG90_110" type="TVar" visibility="public" size="4" offset="17484" file="USoilWaterMod.pas" line="333" />
-      <field name="WG0_100" type="TVar" visibility="public" size="4" offset="17488" file="USoilWaterMod.pas" line="333" />
-      <field name="WG0_120" type="TVar" visibility="public" size="4" offset="17492" file="USoilWaterMod.pas" line="334" />
-      <field name="wg0_90" type="TVar" visibility="public" size="4" offset="17496" file="USoilWaterMod.pas" line="334" />
-      <field name="WG60_100" type="TVar" visibility="public" size="4" offset="17500" file="USoilWaterMod.pas" line="334" />
-      <field name="ProzNFK0_Weff" type="TVar" visibility="public" size="4" offset="17504" file="USoilWaterMod.pas" line="335" />
-      <field name="ProzNFK0_100" type="TVar" visibility="public" size="4" offset="17508" file="USoilWaterMod.pas" line="336" />
-      <field name="ProzNFK0_30" type="TVar" visibility="public" size="4" offset="17512" file="USoilWaterMod.pas" line="337" />
+      <field name="WG30_60" type="TVar" visibility="public" size="4" offset="17416" file="USoilWaterMod.pas" line="329" />
+      <field name="WG60_90" type="TVar" visibility="public" size="4" offset="17420" file="USoilWaterMod.pas" line="329" />
+      <field name="WG90_120" type="TVar" visibility="public" size="4" offset="17424" file="USoilWaterMod.pas" line="329" />
+      <field name="WG0_60" type="TVar" visibility="public" size="4" offset="17428" file="USoilWaterMod.pas" line="329" />
+      <field name="WG0_10" type="TVar" visibility="public" size="4" offset="17432" file="USoilWaterMod.pas" line="331" />
+      <field name="WG0_20" type="TVar" visibility="public" size="4" offset="17436" file="USoilWaterMod.pas" line="331" />
+      <field name="WG0_40" type="TVar" visibility="public" size="4" offset="17440" file="USoilWaterMod.pas" line="331" />
+      <field name="WG10_30" type="TVar" visibility="public" size="4" offset="17444" file="USoilWaterMod.pas" line="331" />
+      <field name="WG20_30" type="TVar" visibility="public" size="4" offset="17448" file="USoilWaterMod.pas" line="331" />
+      <field name="WG20_40" type="TVar" visibility="public" size="4" offset="17452" file="USoilWaterMod.pas" line="331" />
+      <field name="WG30_40" type="TVar" visibility="public" size="4" offset="17456" file="USoilWaterMod.pas" line="331" />
+      <field name="WG30_50" type="TVar" visibility="public" size="4" offset="17460" file="USoilWaterMod.pas" line="331" />
+      <field name="WG30_120" type="TVar" visibility="public" size="4" offset="17464" file="USoilWaterMod.pas" line="332" />
+      <field name="WG30_100" type="TVar" visibility="public" size="4" offset="17468" file="USoilWaterMod.pas" line="332" />
+      <field name="WG40_60" type="TVar" visibility="public" size="4" offset="17472" file="USoilWaterMod.pas" line="332" />
+      <field name="WG60_80" type="TVar" visibility="public" size="4" offset="17476" file="USoilWaterMod.pas" line="332" />
+      <field name="WG80_100" type="TVar" visibility="public" size="4" offset="17480" file="USoilWaterMod.pas" line="332" />
+      <field name="WG90_110" type="TVar" visibility="public" size="4" offset="17484" file="USoilWaterMod.pas" line="332" />
+      <field name="WG0_100" type="TVar" visibility="public" size="4" offset="17488" file="USoilWaterMod.pas" line="332" />
+      <field name="WG0_120" type="TVar" visibility="public" size="4" offset="17492" file="USoilWaterMod.pas" line="333" />
+      <field name="wg0_90" type="TVar" visibility="public" size="4" offset="17496" file="USoilWaterMod.pas" line="333" />
+      <field name="WG60_100" type="TVar" visibility="public" size="4" offset="17500" file="USoilWaterMod.pas" line="333" />
+      <field name="ProzNFK0_Weff" type="TVar" visibility="public" size="4" offset="17504" file="USoilWaterMod.pas" line="334" />
+      <field name="ProzNFK0_100" type="TVar" visibility="public" size="4" offset="17508" file="USoilWaterMod.pas" line="335" />
+      <field name="ProzNFK0_30" type="TVar" visibility="public" size="4" offset="17512" file="USoilWaterMod.pas" line="336" />
+      <procedure name="SetPlantModel" visibility="public" procflags="override" file="USoilWaterMod.pas" line="338">
+        <parameters>
+          <parameter name="NewPlantmodel" type="TAbstractPlant" />
+        </parameters>
+      </procedure>
       <procedure name="CreateAll" visibility="public" procflags="override" file="USoilWaterMod.pas" line="339">
       </procedure>
       <procedure name="Init" visibility="public" procflags="override" file="USoilWaterMod.pas" line="341">

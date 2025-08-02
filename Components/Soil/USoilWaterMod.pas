@@ -153,7 +153,6 @@ type
 
     LowerBoundaryCondition: TLowerBoundaryCondition;    /// Lower boundary condition specification
 
-    procedure SetPlantModel(NewPlantmodel: TAbstractPlant); override;
     function ndx_str(i: integer): string;
     function getTexture(i: integer): TTextureClass;
     function getLD(i: integer): TLDClass;
@@ -336,6 +335,7 @@ type
     ProzNFK0_100: TVar;
     ProzNFK0_30: TVar;
 
+    procedure SetPlantModel(NewPlantmodel: TAbstractPlant); override;
     procedure CreateAll; override;
 
     procedure Init(var GlobMod: Tmod); override;

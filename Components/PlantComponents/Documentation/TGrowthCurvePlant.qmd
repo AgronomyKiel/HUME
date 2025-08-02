@@ -1,0 +1,398 @@
+---
+title: "TGrowthCurvePlant"
+author: "Agronomy and Crop Science Group, Kiel University"
+date: "`r Sys.Date()`"
+bibliography: bibliography.bibtex.bib
+csl: european-journal-of-agronomy.csl
+chunk_output_type: console
+html-math-method: katex
+number-sections: true
+toc: true
+toc-expand: 4
+toc-depth: 4
+toc-location: left
+crossref:
+  eq-prefix: Eq.
+format: 
+  html:
+    embed-resources: true 
+---
+
+```{r}
+#| label: SetupLibraries
+#| include: FALSE
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center", fig.width = 12, fig.height = 8, fig.pos = "h", fig.cap = TRUE)
+rm(list = ls(all.names = TRUE))
+
+library(rmarkdown)
+library(bookdown)
+library(soilwater)
+library(pracma)
+library(dplyr)
+library(ggplot2)
+library(extrafont)
+library(gifski)
+library(gganimate)
+library(transformr)
+library(reticulate)
+library(tinytex)
+library(magick)
+library(bibtex)
+library(ggsci)
+library(knitcitations)
+library(kableExtra)
+library(Weatherfunctions)
+library(xml2)
+library(ggpmisc)
+library(tidyr)
+options("citation_format" = "pandoc")
+
+```
+
+```{r}
+#| label: SetupPathsReadXML
+#| message: false
+#| warning: false
+#| include: false
+fn_source <- "Q:/HUME/HUME/Components/PlantComponents/UGrowthCurvePlant.pas"
+fn_xml_docu <- "Q:/HUME/HUME/XML_Delphi_Docu/UGrowthCurvePlant.xml"
+doc <- read_xml(fn_xml_docu)
+
+
+```
+
+# Summary
+
+```{r}
+#| label: SummaryDevnotes
+#| echo: false
+#| message: false
+#| warning: false
+
+classes <- xml_find_all(doc, ".//class")
+
+# Extract <devnotes> content and class names
+result <- data.frame(
+  class_name = xml_attr(classes, "name"),
+  devnotes   = sapply(classes, function(class_node) {
+    devnotes_node <- xml_find_first(class_node, "./devnotes")
+    if (!is.na(devnotes_node)) trimws(xml_text(devnotes_node)) else NA_character_
+  }),
+  stringsAsFactors = FALSE
+)
+```
+
+```{r}
+# Find the TGrowthCurvePlant class node
+class_node <- xml_find_first(doc, ".//class[@name='TGrowthCurvePlant']")
+
+# Extract all propertyref nodes inside that class
+properties <- xml_find_all(class_node, ".//propertyref")
+
+# Extract attributes: name and visibility
+property_df <- data.frame(
+  name       = xml_attr(properties, "name"),
+  visibility = xml_attr(properties, "visibility"),
+  stringsAsFactors = FALSE
+)
+```
+
+```{r}
+library(xml2)
+library(dplyr)
+library(tidyr)
+library(stringr)
+
+# Load XML
+#doc <- read_xml("UGrowthCurvePlant.xml")
+
+# Find TGrowthCurvePlant class node
+class_node <- xml_find_first(doc, ".//class[@name='TGrowthCurvePlant']")
+
+# Extract <propertyref> elements
+property_refs <- xml_find_all(class_node, ".//propertyref")
+
+property_df <- data.frame(
+  name       = xml_attr(property_refs, "name"),
+  visibility = xml_attr(property_refs, "visibility"),
+  stringsAsFactors = FALSE
+)
+
+
+
+# Extract <field> elements under <members>
+#field_nodes <- xml_find_all(class_node, ".//members/field")
+field_nodes <- xml_find_all(class_node, ".//field")
+
+# Extract name, type, and optional <summary> and <remarks>
+field_df <- data.frame(
+  name     = xml_attr(field_nodes, "name"),
+  type     = xml_attr(field_nodes, "type"),
+  summary  = sapply(field_nodes, function(x) {
+    summary_node <- xml_find_first(x, ".//summary")
+    if (!is.na(summary_node)) xml_text(summary_node) else NA_character_
+  }),
+  remarks  = sapply(field_nodes, function(x) {
+    remarks_node <- xml_find_first(x, ".//remarks")
+    if (!is.na(remarks_node)) xml_text(remarks_node) else NA_character_
+  }),
+  stringsAsFactors = FALSE
+)
+
+# Combine property_ref and field info by matching name
+full_df <- left_join(property_df, field_df, by = "name")
+
+# Optional: clean up whitespace
+full_df <- full_df %>%
+  mutate(across(where(is.character), ~str_squish(.)))
+
+# View result
+#print(full_df)
+
+```
+
+```{r}
+#| label: SummaryDevnotesOutput
+#| echo: false
+#| message: false
+#| warning: false
+#| results: asis
+#cat(result$devnotes, sep="\n\n")
+
+```
+
+`r result$devnotes`
+
+## Descendence
+
+The class TGrowthCurvePlant is derived from TAbstractPlant which derived from TSubmodel which is derived from TObject or TGraphicControl when compiled for a console app or a Delphi VCL application.
+
+TAbstractPlant \|\_\_\_\_TSubmodel
+
+## State variables
+
+```{r}
+#| label: StateVariables
+#| message: false
+#| warning: false
+#| include: false
+#fn <- "Q:/SimProject/project/GrowthCurvePlant1.csv"
+fn <- "csv_Hume_Docu/GrowthCurvePlant1.csv"
+df <- read.delim(fn, header = TRUE, sep = ";")
+df.state <- df %>% filter(SubModel == "GrowthCurvePlant1", EntityType == "State") %>% dplyr::select(EntityName, Units, Value, Comment)
+names(df.state) <- c("State variable", "Units", "InitialValue", "Description")
+```
+
+The class TGrowthCurvePlant has `r trunc(nrow(df.state))` following state variable(s).
+
+```{r}
+#| label: StateVariablesOutput
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.state)
+```
+
+## Parameters
+
+```{r}
+#| label: Parameters
+#| message: false
+#| warning: false
+#| include: false
+
+df.par <- df %>% filter(SubModel == "GrowthCurvePlant1", EntityType == "Parameter") %>% dplyr::select(EntityName, Units, Value, Comment)
+names(df.par) <- c("Parameter", "Units", "Value", "Description")
+
+```
+
+The class TGrowthCurvePlant has `r trunc(nrow(df.par))` following parameter(s).
+
+```{r}
+#| label: ParametersOutput
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.par,  escape = FALSE)
+```
+
+## Variables
+
+```{r}
+#| label: Variables
+#| message: false
+#| warning: false
+#| include: false
+
+df.var <- df %>% filter(SubModel == "GrowthCurvePlant1", EntityType == "Variable") %>% dplyr::select(EntityName, Units, Comment)
+names(df.var) <- c("Variable", "Units", "Description")
+
+```
+
+The class TGrowthCurvePlant has `r trunc(nrow(df.var))` following variable(s).
+
+```{r}
+#| label: VariablesOutput
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.var,  escape = FALSE)
+```
+
+## External variables
+
+```{r}
+#| label: ExternalVariables
+#| message: false
+#| warning: false
+#| include: false
+
+df.ext <- df %>% filter(SubModel == "GrowthCurvePlant1", EntityType == "ExtVar") %>% dplyr::select(EntityName, Units, Comment, Option)
+names(df.ext) <- c("External variable", "Units", "Description", "Source")
+
+```
+
+The class TGrowthCurvePlant has `r trunc(nrow(df.ext))` following external variable(s).
+
+```{r}
+#| label: ExternalVariablesOutput
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.ext,  escape = FALSE)
+```
+
+## Options
+
+```{r}
+#| label: Options
+#| message: false
+#| warning: false
+#| include: false
+
+df.opt <- df %>% filter(SubModel == "GrowthCurvePlant1",EntityType == "Option" ) %>% dplyr::select(EntityName, Units, Comment)
+names(df.opt) <- c("Option", "Units", "Description")
+
+```
+
+The class TGrowthCurvePlant has `r trunc(nrow(df.opt))` following option(s).
+
+```{r}
+#| label: OptionsOutput
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.opt,  escape = FALSE)
+```
+
+## Scientific Background
+
+The interpolation of measured values is a task which is supported by the class TGrowthCurvePlant. Thereby growth curves as well as linear interpolation can be used.
+
+### Growth curves
+
+The growth curves supported by this class are:
+
+-   Linear Growth
+-   Exponential growth
+-   Logistic growth
+-   Expolinear growth
+-   Richards function
+-   Logistic with decay
+-   LogInt growth
+-   LogInt with decay
+
+### Temperature sum and effective Temperature
+
+All growth curves are based on growth rates which are defined as a function of the effectiv temperature $T_{eff}$, which is the daily mean temperatures above a base temperature $T_b$.
+
+The effective temperature is defined as:
+
+$$ T_{eff} = max \left( 0, T_{mean}-T_b  \right) $$ {#eq-effective-temperature}
+
+where $T_{mean}$ is the daily mean temperature and $T_b$ is the base temperature.
+
+The temperature sum $T_{sum}$ is defined as the sum of the effective temperatures over time:
+
+$$ T_{sum} = \sum_0^t T_{eff}(t) dt $$ {eq -temperature-sum}
+
+where $T_{sum}$ is the temperature sum at time $t$ and $T_{eff}(t)$ is the effective temperature at time $t$.
+
+#### Linear growth
+
+The linear growth curve is defined by the following equation:
+
+$$ \frac{dW}{dt} = gr \cdot T_{eff} $$ {#eq-linear-growth}
+
+where $dW/dt$ is the growth rate and $gr$ is the growth rate parameter.
+
+Integration with respect to temperature sum and with W_0 as the initial value gives:
+
+$$ W(t) = W_0 + gr \cdot Tsum $$ {#eq-linear-growth-integration}
+
+where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
+
+#### Exponential growth
+
+The exponential growth curve is defined by the following equation:
+
+$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W $$ {#eq-exponential-growth}
+
+where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter and $W$ is the weight.
+
+Integration with respect to temperature sum and with $W_0$ as the initial value gives:
+
+$$ W(t) = W_0 \cdot e^{rgr \cdot T_{sum}} $$ {#eq-exponential-growth-integration}
+
+where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
+
+#### Logistic growth
+
+The logistic growth curve is defined by the following equation:
+
+$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W \cdot (1 - \frac{W}{W_{max}}) $$ {#eq-logistic-growth}
+
+where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter, $W$ is the weight and $W_{max}$ is the maximum weight.
+
+Integration with respect to temperature sum and with $W_0$ as the initial value gives:
+
+$$ W(t) = \frac{W_{max} \cdot W_0}{W_{max} + (W_{0} - W_{max}) \cdot e^{-rgr \cdot T_{sum}}} $$ {#eq-logistic-growth-integration}
+
+where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
+
+#### Expolinear growth
+
+The expolinear growth curve is defined by the following equation:
+
+$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W \cdot (1 - e^{-k \cdot T_{sum}}) $$ {#eq-expolinear-growth}
+
+where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter, $W$ is the weight, $k$ is a decay parameter and $T_{sum}$ is the temperature sum.
+
+Integration with respect to temperature sum and with $W_0$ as the initial value gives:
+
+$$ W(t) = W_0 \cdot e^{rgr \cdot T_{sum}} \cdot (1 - e^{-k \cdot T_{sum}}) $$ {#eq-expolinear-growth-integration}
+
+where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
+
+#### Richards function
+
+The Richards function is defined by the following equation:
+
+$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W \cdot (1 - (W/W_{max})^{\frac{1}{m}}) $$ {#eq-richards-growth}
+
+where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter, $W$ is the weight, $W_{max}$ is the maximum weight and $m$ is a shape parameter.
+
+Integration with respect to temperature sum and with $W_0$ as the initial value gives:
+
+$$ W(t) = W_{max} \cdot (1 + (W_{0}/W_{max})^{m} \cdot e^{-rgr \cdot T_{sum}})^{-\frac{1}{m}} $$ {#eq-richards-growth-integration}
+
+where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
+
+#### Logistic with decay
+
+The logistic with decay growth curve is defined by the following equation:
+
+$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W \cdot (1 - \frac{W}{W_{max}}) - k \cdot W $$ {#eq-logistic-decay-growth}
+
+where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter, $W$ is the weight, $W_{max}$ is the maximum weight and $k$ is a decay parameter.

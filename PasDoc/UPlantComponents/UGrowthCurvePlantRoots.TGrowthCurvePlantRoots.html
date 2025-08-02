@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>UGrowthCurvePlantRoots: Class TGrowthCurvePlantRoots</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="PasDoc 0.16.0-snapshot">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">
+
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<div class="container"><div class="navigation">
+<ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li><li><form class="search-form" action="tipue_results.html"><div class="search-input"><input type="text" name="q" id="tipue_search_input" pattern=".{1,}" title="At least 1 characters" required><div class="search-button"><input type="button" id="tipue_search_button" onclick="this.form.submit();"></div></div></form>
+<div style="clear: both"></div>
+</li></ul></div><div class="content">
+<span id="TGrowthCurvePlantRoots"></span><h1 class="cio">Class TGrowthCurvePlantRoots</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section"><a class="section" href="#PasDoc-Fields">Fields</a></div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section"><a class="section" href="#PasDoc-Properties">Properties</a></div></div>
+<span id="PasDoc-Description"></span><h2 class="unit">Unit</h2>
+<p class="unitlink">
+<a href="UGrowthCurvePlantRoots.html">UGrowthCurvePlantRoots</a></p>
+<h2 class="declaration">Declaration</h2>
+<p class="declaration">
+<code>type TGrowthCurvePlantRoots = class(<a class="normal" href="UGrowthCurvePlant.TGrowthCurvePlant.html">TGrowthCurvePlant</a>)</code></p>
+<h2 class="description">Description</h2>
+<p class="inheritdescription">This item has no description. Showing description inherited from <a class="normal" href="UGrowthCurvePlant.TGrowthCurvePlant.html">TGrowthCurvePlant</a>.</p><p>
+ Plant model that simulates growth curves based on logistic, monomolecular, Gompertz, or Richards growth. It calculates growth rates based on temperature and other parameters, and integrates these rates over time to update state variables such as LAI, DM, CropHeight, and ShootN. 
+
+<p>This class extends TAbstractPlant and provides methods for calculating growth rates, integrating state variables, and handling temperature effects on plant growth. It also supports soil nitrogen uptake if enabled.</p>
+<span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
+<ul class="hierarchy"><li class="ancestor">TSubModel</li>
+<li class="ancestor"><a class="normal" href="UAbstractPlant.TAbstractPlant.html">TAbstractPlant</a></li>
+<li class="ancestor"><a class="normal" href="UGrowthCurvePlant.TGrowthCurvePlant.html">TGrowthCurvePlant</a></li>
+<li class="thisitem">TGrowthCurvePlantRoots</li></ul><h2 class="overview">Overview</h2>
+<span id="PasDoc-Fields"></span><h3 class="summary">Fields</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#K_a">K_a</a></strong>: Tpar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#k_Wl">k_Wl</a></strong>: Tpar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#ActiveDuration">ActiveDuration</a></strong>: Tpar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#depthgrowthchoice">depthgrowthchoice</a></strong>: <a href="UGrowthCurvePlantRoots.html#TRootDepthgrowth">TRootdepthgrowth</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#depthgrowthOptStr">depthgrowthOptStr</a></strong>: Toption;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#EffWld_arr">EffWld_arr</a></strong>: TsoilVarArray;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#effWL_arr">effWL_arr</a></strong>: TSoilVarArray;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#k_z">k_z</a></strong>: Tpar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#n_age_cl">n_age_cl</a></strong>: integer;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#N_Rootcomp">N_Rootcomp</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#Opt_RootAgeing">Opt_RootAgeing</a></strong>: TOption;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#Root_Matrix">Root_Matrix</a></strong>: array[1..<a href="UAbstractPlant.html#max_comp">Max_Comp</a>, 1..<a href="UGrowthCurvePlantRoots.html#MaxAgeCl">MaxAgeCl</a>] of <a href="UAbstractPlant.html#real">real</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#SRL">SRL</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#SRL_eff">SRL_eff</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#Tiefe">Tiefe</a></strong>: TSoilExtArray;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#Wld_arr">Wld_arr</a></strong>: TSoilVarArray;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#WL_0">WL_0</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#WL_arr">WL_arr</a></strong>: TSoilVarArray;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#WL_max">WL_max</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#zr_0">zr_0</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#zr_max">zr_max</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#zr">zr</a></strong>: TVar;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>function <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#GetSumRootLength">GetSumRootLength</a></strong>: THumeNumEntity; override;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>function <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#GetSumRootLength_eff">GetSumRootLength_eff</a></strong>: THumeNumEntity; override;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>function <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#GetWLD-Integer-">GetWLD</a></strong>(Index: Integer): THumeNumEntity; override;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>function <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#WLD_z_t_f-real-real-real-real-real-real-real-">WLD_z_t_f</a></strong>(z1, z2, t, SRLmax, SRL0, kL, ka: <a href="UAbstractPlant.html#real">real</a>): <a href="UAbstractPlant.html#real">real</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#CalcRates">CalcRates</a></strong>; override;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#CreateAll">CreateAll</a></strong>; override;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#Init-Tmod-">Init</a></strong>(var GlobMod: Tmod); override;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Properties"></span><h3 class="summary">Properties</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#Par_ActiveDuration">Par_ActiveDuration</a></strong>: Tpar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#ActiveDuration">ActiveDuration</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#ActiveDuration">ActiveDuration</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#Par_kWL">Par_kWL</a></strong>: TPar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#k_Wl">k_WL</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#k_Wl">k_WL</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#Par_kz">Par_kz</a></strong>: TPar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#k_z">k_z</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#k_z">k_z</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#Par_Wl0">Par_Wl0</a></strong>: TPar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#WL_0">Wl_0</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#WL_0">Wl_0</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#Par_Wlmax">Par_Wlmax</a></strong>: TPar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#WL_max">WL_max</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#WL_max">WL_max</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#Par_zr0">Par_zr0</a></strong>: TPar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#zr_0">zr_0</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#zr_0">zr_0</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#Par_zrmax">Par_zrmax</a></strong>: TPar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#zr_max">zr_max</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#zr_max">zr_max</a>;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Fields</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="K_a"></span><code><strong>K_a</strong>: Tpar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Sum of root length [cm/cm2]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="k_Wl"></span><code><strong>k_Wl</strong>: Tpar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Sum of root length [cm/cm2]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="ActiveDuration"></span><code><strong>ActiveDuration</strong>: Tpar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="depthgrowthchoice"></span><code><strong>depthgrowthchoice</strong>: <a href="UGrowthCurvePlantRoots.html#TRootDepthgrowth">TRootdepthgrowth</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="depthgrowthOptStr"></span><code><strong>depthgrowthOptStr</strong>: Toption;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="EffWld_arr"></span><code><strong>EffWld_arr</strong>: TsoilVarArray;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+effective root length density []</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="effWL_arr"></span><code><strong>effWL_arr</strong>: TSoilVarArray;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+active root length [cm.cm-2]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="k_z"></span><code><strong>k_z</strong>: Tpar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Sum of root length [cm/cm2]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="n_age_cl"></span><code><strong>n_age_cl</strong>: integer;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+time of root activity</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="N_Rootcomp"></span><code><strong>N_Rootcomp</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Opt_RootAgeing"></span><code><strong>Opt_RootAgeing</strong>: TOption;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Root_Matrix"></span><code><strong>Root_Matrix</strong>: array[1..<a href="UAbstractPlant.html#max_comp">Max_Comp</a>, 1..<a href="UGrowthCurvePlantRoots.html#MaxAgeCl">MaxAgeCl</a>] of <a href="UAbstractPlant.html#real">real</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="SRL"></span><code><strong>SRL</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Durchwurzelungstiefe [cm]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="SRL_eff"></span><code><strong>SRL_eff</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Durchwurzelungstiefe [cm]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Tiefe"></span><code><strong>Tiefe</strong>: TSoilExtArray;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Wld_arr"></span><code><strong>Wld_arr</strong>: TSoilVarArray;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Wurzellängendichten [cm.cm-3]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="WL_0"></span><code><strong>WL_0</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Wurzellänge zur Pflanzung / Aussaat [cm]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="WL_arr"></span><code><strong>WL_arr</strong>: TSoilVarArray;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Wurzellängen [cm.cm-2]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="WL_max"></span><code><strong>WL_max</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+maximale Wurzellänge [cm]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="zr_0"></span><code><strong>zr_0</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Wurzeltiefe zur Pflanzung / Aussaat [cm]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="zr_max"></span><code><strong>zr_max</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+maximale Wurzeltiefe [cm]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="zr"></span><code><strong>zr</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Durchwurzelungstiefe [cm]</p>
+</td></tr>
+</table>
+<h3 class="detail">Methods</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="GetSumRootLength"></span><code>function <strong>GetSumRootLength</strong>: THumeNumEntity; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="GetSumRootLength_eff"></span><code>function <strong>GetSumRootLength_eff</strong>: THumeNumEntity; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="GetWLD-Integer-"></span><code>function <strong>GetWLD</strong>(Index: Integer): THumeNumEntity; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="WLD_z_t_f-real-real-real-real-real-real-real-"></span><code>function <strong>WLD_z_t_f</strong>(z1, z2, t, SRLmax, SRL0, kL, ka: <a href="UAbstractPlant.html#real">real</a>): <a href="UAbstractPlant.html#real">real</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="CalcRates"></span><code>procedure <strong>CalcRates</strong>; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="CreateAll"></span><code>procedure <strong>CreateAll</strong>; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Init-Tmod-"></span><code>procedure <strong>Init</strong>(var GlobMod: Tmod); override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="inheritdescription">This item has no description. Showing description inherited from <a class="normal" href="UAbstractPlant.TAbstractPlant.html#Init-Tmod-">TAbstractPlant.Init</a>.</p><p>
+Initializes the plant model with global model parameters This method sets the initial conditions for the plant model harvest status, and residue states. It also ensures that the harvest date is set correctly relative to the sowing date. </p>
+</td></tr>
+</table>
+<h3 class="detail">Properties</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_ActiveDuration"></span><code>property <strong>Par_ActiveDuration</strong>: Tpar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#ActiveDuration">ActiveDuration</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#ActiveDuration">ActiveDuration</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_kWL"></span><code>property <strong>Par_kWL</strong>: TPar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#k_Wl">k_WL</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#k_Wl">k_WL</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_kz"></span><code>property <strong>Par_kz</strong>: TPar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#k_z">k_z</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#k_z">k_z</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_Wl0"></span><code>property <strong>Par_Wl0</strong>: TPar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#WL_0">Wl_0</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#WL_0">Wl_0</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_Wlmax"></span><code>property <strong>Par_Wlmax</strong>: TPar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#WL_max">WL_max</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#WL_max">WL_max</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_zr0"></span><code>property <strong>Par_zr0</strong>: TPar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#zr_0">zr_0</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#zr_0">zr_0</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_zrmax"></span><code>property <strong>Par_zrmax</strong>: TPar read <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#zr_max">zr_max</a> write <a href="UGrowthCurvePlantRoots.TGrowthCurvePlantRoots.html#zr_max">zr_max</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0-snapshot</a>. </em>
+</span>
+</div></div></body></html>

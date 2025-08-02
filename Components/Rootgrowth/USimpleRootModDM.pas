@@ -1,13 +1,5 @@
 ﻿unit USimpleRootModDM;
 
-
-{$IFDEF LINUX}
-{$DEFINE NONVISUAL}
-{$ENDIF LINUX}
-{$IFDEF CONSOLE}
-{$DEFINE NONVISUAL}
-{$ENDIF CONSOLE}
-
 /// a unit to model root growth in a simple way based on daily growth rates of fine root DM
 /// a negative exponential root disribution with depth is assumed
 /// root ageing is implemented by a simple box car approach
@@ -21,52 +13,15 @@
 interface
 
 uses
-  UState,
-  UMod,
-  IniFiles,
-  UlayeredSoil,
-  classes,
-//  UModUtils,
-//  USimplePlant,
-  UAbstractPlant,
+  UState, UMod, IniFiles, UlayeredSoil,
+  classes, UModUtils, USimplePlant, UAbstractPlant,
   USoilTexture,
-  URootedSoil;
+  URootedSoil,
+  URootGrowthUtils;
 
-const
-// maximum number of days in age classes
-  MaxAgeCl = 2500;
+
 
 type
-
-// an object to store the effects of soil texture on root growth
-/// <summary>
-/// Represents a texture effect for root growth.
-/// </summary>
-TTextureEffect = class(TObject)
-private
-  fTextureClass: string; // the texture class according to KA5
-  fLD: string; // a string with the layer density class LD1 .. LD5 according to KA5
-  fWeff: real; // the effective rooting depth in dm
-  frelWeff: real; // the relative effective rooting depth, relative to Ut3 at LD3
-protected
-  /// <summary>
-  /// Creates a new instance of the TTextureEffect class.
-  /// </summary>
-  /// <param name="TextureClass">The texture class according to KA5.</param>
-  /// <param name="LD">A string with the layer density class LD1 .. LD5 according to KA5.</param>
-  /// <param name="Weff">The effective rooting depth in dm.</param>
-  /// <param name="relWeff">The relative effective rooting depth, relative to Ut3 at LD3.</param>
-  constructor Create(TextureClass: string; LD: string; Weff: real; relWeff: real);
-end;
-
-
-/// Enumeration of options for the increase of rooting depth.
-/// The options include linear and expolinear.
-TRootingdepthIncrease = (linear, expolinear);
-
-
-
-///////////////////////////////////////////////////////////////////////////////////
 
 {/**
  * @class TSimpleRootModDM
@@ -153,11 +108,11 @@ public
 
   Tiefe : TSoilExtArray;
 
-  zr0    : TPar;            ///  root depth at plantig / sowing cm]
+  zr0    : TPar;            /// Wurzeldepth zur Pflanzung / Aussaat [cm]
 
   k_za   : TPar;            /// relative root depth increase in optional exponential phase [cm.cm-1.Cd-1]
   k_zb   : TPar;            /// Wurzelwachstum je Grad-Tag im linearen Teil
-  Zrmax   : TPar;            /// maximum  rooting depth [cm]
+  Zrmax   : TPar;            /// maximum Wurzeldepth [cm]
   TempSumRootBaseTemp : TPar;  /// Base temperature for root growth
   sp_RL                     /// specific root length [cm/g DM]
 ,
@@ -242,7 +197,7 @@ property var_effWLD_120_150 : TVar read effWLD_120_150 write effWLD_120_150;
 
 end;
 
-procedure Register;
+procedure Regiser;
 
 implementation
 
@@ -250,20 +205,6 @@ uses
   SysUtils, math, System.TypInfo;
 
 
-/// <summary>
-/// Constructor for TTextureeffect class.
-/// </summary>
-/// <param name="TextureClass">The texture class.</param>
-/// <param name="LD">The LD value.</param>
-/// <param name="Weff">The Weff value.</param>
-/// <param name="relWeff">The relative Weff value.</param>
-constructor TTextureeffect.create(TextureClass: string; LD: string; Weff: real; relWeff: real);
-begin
-  fTextureClass := TextureClass;
-  fLD := LD;
-  fWeff := Weff;
-  frelWeff := relWeff;
-end;
 
 
 {*************************************************************************}
@@ -404,34 +345,34 @@ begin
   VarCreate('N_Rootcomp', '[n]',  20, true, N_Rootcomp, 'number of layers which can in maximum contain roots');
 
   VarCreate('WLD_0_15', '[cm.cm-3]',  0, false, WLD_0_15, 'Root length density for 0-15 cm depth');
-  VarCreate('WLD_15_30', '[cm.cm-3]',  0, false, WLD_15_30);
-  VarCreate('WLD_30_45', '[cm.cm-3]',  0, false, WLD_30_45);
-  VarCreate('WLD_45_60', '[cm.cm-3]',  0, false, WLD_45_60);
-  VarCreate('WLD_60_75', '[cm.cm-3]',  0, false, WLD_60_75);
-  VarCreate('WLD_75_90', '[cm.cm-3]',  0, false, WLD_75_90);
-  VarCreate('WLD_90_105', '[cm.cm-3]',  0, false, WLD_90_105);
-  VarCreate('WLD_105_120', '[cm.cm-3]',  0, false, WLD_105_120);
-  VarCreate('WLD_0_30', '[cm.cm-3]',  0, false, WLD_0_30);
-  VarCreate('WLD_30_60', '[cm.cm-3]',  0, false, WLD_30_60);
-  VarCreate('WLD_60_90', '[cm.cm-3]',  0, false, WLD_60_90);
-  VarCreate('WLD_90_120', '[cm.cm-3]',  0, false, WLD_90_120);
-  VarCreate('WLD_120_150', '[cm.cm-3]',  0, false, WLD_120_150);
-  VarCreate('WLD_0_150', '[cm.cm-3]',  0, false, WLD_0_150);
-  VarCreate('effWLD_0_30', '[cm.cm-3]',  0, false, effWLD_0_30);
-  VarCreate('effWLD_30_60', '[cm.cm-3]',  0, false, effWLD_30_60);
-  VarCreate('effWLD_60_90', '[cm.cm-3]',  0, false, effWLD_60_90);
-  VarCreate('effWLD_90_120', '[cm.cm-3]',  0, false, effWLD_90_120);
-  VarCreate('effWLD_120_150', '[cm.cm-3]',  0, false, effWLD_120_150);
-  VarCreate('WLD_10', '[cm.cm-3]',  0, false, WLD_0_10);
-  VarCreate('WLD_20', '[cm.cm-3]',  0, false, WLD_10_20);
-  VarCreate('WLD_30', '[cm.cm-3]',  0, false, WLD_20_30);
-  VarCreate('WLD_40', '[cm.cm-3]',  0, false, WLD_30_40);
-  VarCreate('WLD_50', '[cm.cm-3]',  0, false, WLD_40_50);
-  VarCreate('WLD_60', '[cm.cm-3]',  0, false, WLD_50_60);
-  VarCreate('WLD_70', '[cm.cm-3]',  0, false, WLD_60_70);
-  VarCreate('WLD_80', '[cm.cm-3]',  0, false, WLD_70_80);
-  VarCreate('WLD_90', '[cm.cm-3]',  0, false, WLD_80_90);
-  VarCreate('WLD_100', '[cm.cm-3]',  0, false, WLD_90_100);
+  VarCreate('WLD_15_30', '[cm.cm-3]',  0, false, WLD_15_30, 'Root length density for 15-30 cm depth');
+  VarCreate('WLD_30_45', '[cm.cm-3]',  0, false, WLD_30_45, 'Root length density for 30-45 cm depth');
+  VarCreate('WLD_45_60', '[cm.cm-3]',  0, false, WLD_45_60, 'Root length density for 45-60 cm depth');
+  VarCreate('WLD_60_75', '[cm.cm-3]',  0, false, WLD_60_75, 'Root length density for 60-75 cm depth');
+  VarCreate('WLD_75_90', '[cm.cm-3]',  0, false, WLD_75_90, 'Root length density for 75-90 cm depth');
+  VarCreate('WLD_90_105', '[cm.cm-3]',  0, false, WLD_90_105, 'Root length density for 90-105 cm depth');
+  VarCreate('WLD_105_120', '[cm.cm-3]',  0, false, WLD_105_120, 'Root length density for 105-120 cm depth');
+  VarCreate('WLD_0_30', '[cm.cm-3]',  0, false, WLD_0_30, 'Root length density for 0-30 cm depth');
+  VarCreate('WLD_30_60', '[cm.cm-3]',  0, false, WLD_30_60, 'Root length density for 30-60 cm depth');
+  VarCreate('WLD_60_90', '[cm.cm-3]',  0, false, WLD_60_90, 'Root length density for 60-90 cm depth');
+  VarCreate('WLD_90_120', '[cm.cm-3]',  0, false, WLD_90_120, 'Root length density for 90-120 cm depth');
+  VarCreate('WLD_120_150', '[cm.cm-3]',  0, false, WLD_120_150, 'Root length density for 120-150 cm depth');
+  VarCreate('WLD_0_150', '[cm.cm-3]',  0, false, WLD_0_150, 'Root length density for 0-150 cm depth');
+  VarCreate('effWLD_0_30', '[cm.cm-3]',  0, false, effWLD_0_30, 'Effective root length density for 0-30 cm depth');
+  VarCreate('effWLD_30_60', '[cm.cm-3]',  0, false, effWLD_30_60, 'Effective root length density for 30-60 cm depth');
+  VarCreate('effWLD_60_90', '[cm.cm-3]',  0, false, effWLD_60_90, 'Effective root length density for 60-90 cm depth');
+  VarCreate('effWLD_90_120', '[cm.cm-3]',  0, false, effWLD_90_120, 'Effective root length density for 90-120 cm depth');
+  VarCreate('effWLD_120_150', '[cm.cm-3]',  0, false, effWLD_120_150, 'Effective root length density for 120-150 cm depth');
+  VarCreate('WLD_10', '[cm.cm-3]',  0, false, WLD_0_10, 'Root length density for 0-10 cm depth');
+  VarCreate('WLD_20', '[cm.cm-3]',  0, false, WLD_10_20, 'Root length density for 10-20 cm depth');
+  VarCreate('WLD_30', '[cm.cm-3]',  0, false, WLD_20_30, 'Root length density for 20-30 cm depth');
+  VarCreate('WLD_40', '[cm.cm-3]',  0, false, WLD_30_40, 'Root length density for 30-40 cm depth');
+  VarCreate('WLD_50', '[cm.cm-3]',  0, false, WLD_40_50, 'Root length density for 40-50 cm depth');
+  VarCreate('WLD_60', '[cm.cm-3]',  0, false, WLD_50_60, 'Root length density for 50-60 cm depth');
+  VarCreate('WLD_70', '[cm.cm-3]',  0, false, WLD_60_70, 'Root length density for 60-70 cm depth');
+  VarCreate('WLD_80', '[cm.cm-3]',  0, false, WLD_70_80, 'Root length density for 70-80 cm depth');
+  VarCreate('WLD_90', '[cm.cm-3]',  0, false, WLD_80_90, 'Root length density for 80-90 cm depth');
+  VarCreate('WLD_100', '[cm.cm-3]',  0, false, WLD_90_100, 'Root length density for 90-100 cm depth');
 
   StateCreate('zr', '[cm]',  0, true, zr, 'rooting depth');
   StateCreate('TempSumR', '[°C*d]', 0.0, false, TempSumR, 'temperature sum effective for rooting');
@@ -443,7 +384,6 @@ begin
   DMFineRoot.Search := true;
   ExternVCreate('DMFineRoot', '[g.m-2.d-1]',ratefield, DMroot_inc, 'daily increase in fine root mass');
   ExternVcreate('EmergenceDay', '[-]', stateField, EmergenceDay, 'day of emergence taken from potato growth module');
-
 
   DMroot_inc.Search := true;
   for i := 1 to trunc(n_Rootcomp.v) do begin
@@ -482,707 +422,190 @@ begin
 
 /// create a texture effect object, create an index string and add the object to the lis
 NewTextureEffect := TTextureEffect.create('gS', 'LD1' , 9, 0.75);
-  txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-  fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+txtndx_str :=   NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;
+fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
 
 NewTextureEffect := TTextureEffect.create('gSms', 'LD1' , 9, 0.75);
-  txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-  fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-NewTextureEffect := TTextureEffect.create('gSfs', 'LD1' , 9, 0.75);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('gS', 'LD2' , 9, 0.75);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('gSms', 'LD2' , 9, 0.75);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('gSfs', 'LD2' , 9, 0.75);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('gS', 'LD3' , 7, 0.583333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('gSms', 'LD3' , 7, 0.583333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('gSfs', 'LD3' , 7, 0.583333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('gS', 'LD4' , 5, 0.416666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('gSms', 'LD4' , 5, 0.416666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('gSfs', 'LD4' , 5, 0.416666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('gS', 'LD5' , 4, 0.333333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('gSms', 'LD5' , 4, 0.333333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('gSfs', 'LD5' , 4, 0.333333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ss', 'LD1' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mS', 'LD1' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('fS', 'LD1' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mSgs', 'LD1' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mSfs', 'LD1' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ss', 'LD2' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mS', 'LD2' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('fS', 'LD2' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mSgs', 'LD2' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mSfs', 'LD2' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ss', 'LD3' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mS', 'LD3' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('fS', 'LD3' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mSgs', 'LD3' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mSfs', 'LD3' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ss', 'LD4' , 5, 0.416666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mS', 'LD4' , 5, 0.416666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('fS', 'LD4' , 5, 0.416666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mSgs', 'LD4' , 5, 0.416666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mSfs', 'LD4' , 5, 0.416666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ss', 'LD5' , 4, 0.333333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mS', 'LD5' , 4, 0.333333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('fS', 'LD5' , 4, 0.333333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mSgs', 'LD5' , 4, 0.333333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('mSfs', 'LD5' , 4, 0.333333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl2', 'LD1' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl2', 'LD2' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl2', 'LD3' , 9, 0.75);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl2', 'LD4' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl2', 'LD5' , 4, 0.333333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su2', 'LD1' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su2', 'LD2' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su2', 'LD3' , 9, 0.75);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su2', 'LD4' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su2', 'LD5' , 4, 0.333333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su3', 'LD1' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su3', 'LD2' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su3', 'LD3' , 9, 0.75);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su3', 'LD4' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su3', 'LD5' , 4, 0.333333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su4', 'LD1' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su4', 'LD2' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su4', 'LD3' , 9, 0.75);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su4', 'LD4' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Su4', 'LD5' , 4, 0.333333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl3', 'LD1' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl3', 'LD2' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl3', 'LD3' , 9, 0.75);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl3', 'LD4' , 7, 0.583333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl3', 'LD5' , 5, 0.416666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('St2', 'LD1' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('St2', 'LD2' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('St2', 'LD3' , 9, 0.75);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('St2', 'LD4' , 7, 0.583333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('St2', 'LD5' , 5, 0.416666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl4', 'LD1' , 13, 1.08333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl4', 'LD2' , 13, 1.08333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl4', 'LD3' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl4', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Sl4', 'LD5' , 5, 0.416666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('St4', 'LD1' , 13, 1.08333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('St4', 'LD2' , 13, 1.08333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('St4', 'LD3' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('St4', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('St4', 'LD5' , 5, 0.416666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Slu', 'LD1' , 13, 1.08333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Slu', 'LD2' , 13, 1.08333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Slu', 'LD3' , 10, 0.833333333333333);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Slu', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Slu', 'LD5' , 5, 0.416666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls2', 'LD1' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls2', 'LD2' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls2', 'LD3' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls2', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls2', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls3', 'LD1' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls3', 'LD2' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls3', 'LD3' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls3', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls3', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls4', 'LD1' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls4', 'LD2' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls4', 'LD3' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls4', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ls4', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lt2', 'LD1' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lt2', 'LD2' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lt2', 'LD3' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lt2', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lt2', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lt3', 'LD1' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lt3', 'LD2' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lt3', 'LD3' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lt3', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lt3', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lts', 'LD1' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lts', 'LD2' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lts', 'LD3' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lts', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lts', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Uu', 'LD1' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Uu', 'LD2' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Uu', 'LD3' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Uu', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Uu', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Us', 'LD1' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Us', 'LD2' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Us', 'LD3' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Us', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Us', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu2', 'LD1' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu2', 'LD2' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu2', 'LD3' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu2', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu2', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tl', 'LD1' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tl', 'LD2' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tl', 'LD3' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tl', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tl', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tt', 'LD1' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tt', 'LD2' , 14, 1.16666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tt', 'LD3' , 11, 0.916666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tt', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tt', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Uls', 'LD1' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Uls', 'LD2' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Uls', 'LD3' , 12, 1);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Uls', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Uls', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut2', 'LD1' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut2', 'LD2' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut2', 'LD3' , 12, 1);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut2', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut2', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut3', 'LD1' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut3', 'LD2' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut3', 'LD3' , 12, 1);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut3', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut3', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut4', 'LD1' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut4', 'LD2' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut4', 'LD3' , 12, 1);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut4', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Ut4', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lu', 'LD1' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lu', 'LD2' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lu', 'LD3' , 12, 1);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lu', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Lu', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu3', 'LD1' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu3', 'LD2' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu3', 'LD3' , 12, 1);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu3', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu3', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu4', 'LD1' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu4', 'LD2' , 15, 1.25);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu4', 'LD3' , 12, 1);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu4', 'LD4' , 8, 0.666666666666667);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
-
-NewTextureEffect := TTextureEffect.create('Tu4', 'LD5' , 6, 0.5);
-	txtndx_str := NewTextureEffect.fTextureClass + '_' +NewTextureEffect.fLD;
-	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;
+fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('gSfs', 'LD1' , 9, 0.75);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('gS', 'LD2' , 9, 0.75);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('gSms', 'LD2' , 9, 0.75);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('gSfs', 'LD2' , 9, 0.75);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('gS', 'LD3' , 7, 0.583333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('gSms', 'LD3' , 7, 0.583333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('gSfs', 'LD3' , 7, 0.583333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('gS', 'LD4' , 5, 0.416666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('gSms', 'LD4' , 5, 0.416666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('gSfs', 'LD4' , 5, 0.416666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('gS', 'LD5' , 4, 0.333333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('gSms', 'LD5' , 4, 0.333333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('gSfs', 'LD5' , 4, 0.333333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ss', 'LD1' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mS', 'LD1' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('fS', 'LD1' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mSgs', 'LD1' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mSfs', 'LD1' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ss', 'LD2' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mS', 'LD2' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('fS', 'LD2' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mSgs', 'LD2' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mSfs', 'LD2' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ss', 'LD3' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mS', 'LD3' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('fS', 'LD3' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mSgs', 'LD3' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mSfs', 'LD3' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ss', 'LD4' , 5, 0.416666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mS', 'LD4' , 5, 0.416666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('fS', 'LD4' , 5, 0.416666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mSgs', 'LD4' , 5, 0.416666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mSfs', 'LD4' , 5, 0.416666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ss', 'LD5' , 4, 0.333333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mS', 'LD5' , 4, 0.333333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('fS', 'LD5' , 4, 0.333333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mSgs', 'LD5' , 4, 0.333333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('mSfs', 'LD5' , 4, 0.333333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl2', 'LD1' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl2', 'LD2' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl2', 'LD3' , 9, 0.75);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl2', 'LD4' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl2', 'LD5' , 4, 0.333333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su2', 'LD1' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su2', 'LD2' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su2', 'LD3' , 9, 0.75);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su2', 'LD4' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su2', 'LD5' , 4, 0.333333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su3', 'LD1' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su3', 'LD2' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su3', 'LD3' , 9, 0.75);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su3', 'LD4' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su3', 'LD5' , 4, 0.333333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su4', 'LD1' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su4', 'LD2' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su4', 'LD3' , 9, 0.75);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su4', 'LD4' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Su4', 'LD5' , 4, 0.333333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl3', 'LD1' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl3', 'LD2' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl3', 'LD3' , 9, 0.75);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl3', 'LD4' , 7, 0.583333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl3', 'LD5' , 5, 0.416666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('St2', 'LD1' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('St2', 'LD2' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('St2', 'LD3' , 9, 0.75);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('St2', 'LD4' , 7, 0.583333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('St2', 'LD5' , 5, 0.416666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl4', 'LD1' , 13, 1.08333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl4', 'LD2' , 13, 1.08333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl4', 'LD3' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl4', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Sl4', 'LD5' , 5, 0.416666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('St4', 'LD1' , 13, 1.08333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('St4', 'LD2' , 13, 1.08333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('St4', 'LD3' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('St4', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('St4', 'LD5' , 5, 0.416666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Slu', 'LD1' , 13, 1.08333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Slu', 'LD2' , 13, 1.08333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Slu', 'LD3' , 10, 0.833333333333333);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Slu', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Slu', 'LD5' , 5, 0.416666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls2', 'LD1' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls2', 'LD2' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls2', 'LD3' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls2', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls2', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls3', 'LD1' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls3', 'LD2' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls3', 'LD3' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls3', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls3', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls4', 'LD1' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls4', 'LD2' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls4', 'LD3' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls4', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ls4', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lt2', 'LD1' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lt2', 'LD2' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lt2', 'LD3' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lt2', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lt2', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lt3', 'LD1' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lt3', 'LD2' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lt3', 'LD3' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lt3', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lt3', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lts', 'LD1' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lts', 'LD2' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lts', 'LD3' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lts', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lts', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Uu', 'LD1' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Uu', 'LD2' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Uu', 'LD3' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Uu', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Uu', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Us', 'LD1' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Us', 'LD2' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Us', 'LD3' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Us', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Us', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu2', 'LD1' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu2', 'LD2' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu2', 'LD3' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu2', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu2', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tl', 'LD1' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tl', 'LD2' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tl', 'LD3' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tl', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tl', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tt', 'LD1' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tt', 'LD2' , 14, 1.16666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tt', 'LD3' , 11, 0.916666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tt', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tt', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Uls', 'LD1' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Uls', 'LD2' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Uls', 'LD3' , 12, 1);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Uls', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Uls', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut2', 'LD1' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut2', 'LD2' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut2', 'LD3' , 12, 1);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut2', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut2', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut3', 'LD1' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut3', 'LD2' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut3', 'LD3' , 12, 1);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut3', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut3', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut4', 'LD1' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut4', 'LD2' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut4', 'LD3' , 12, 1);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut4', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Ut4', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lu', 'LD1' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lu', 'LD2' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lu', 'LD3' , 12, 1);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lu', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Lu', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu3', 'LD1' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu3', 'LD2' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu3', 'LD3' , 12, 1);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu3', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu3', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu4', 'LD1' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu4', 'LD2' , 15, 1.25);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu4', 'LD3' , 12, 1);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu4', 'LD4' , 8, 0.666666666666667);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
+NewTextureEffect := TTextureEffect.create('Tu4', 'LD5' , 6, 0.5);	txtndx_str := NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;	fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
 
 end;
 
-
+/// <summary> Set the name for root length variables </summary>
+/// <param name="Name_WL">The name to be set additionally to the depth increment string </param>
 Procedure TSimpleRootModDM.set_Name_WL(const Name_WL: string);
 
 var
@@ -1199,7 +622,9 @@ begin
   end;
 end;
 
-
+/// <summary> Set the plant model for this module </summary>
+/// <param name="NewPlantModel">The new plant model to be set</param>
+/// <remarks> This method sets the plant model for the module and updates the search parameters for fine root and root growth variables. </remarks>
 Procedure TSimpleRootModDM.SetPlantModel(NewPlantmodel: TAbstractPlant);
 
 begin
@@ -1232,7 +657,6 @@ begin
     RootDepthInc := linear;
   if uppercase(depthgrowthoptstr.Option) = uppercase('expolinear') then
     RootDepthInc := expolinear;
-
   if uppercase(RootGrowthAfterEmergence.Option) = uppercase('true') then
     begin
       fRootGrowthAfterEmergence := true;
@@ -1283,8 +707,6 @@ var
 
 
 begin
-
-
   If (sowingdate = nil) or (Globtime.v >= SowingDate.v) then begin
     if root_matrix[1,1] <= 0.0 then begin
       SRL.v := DMFineRoot.v*sp_RL.v/1e4; /// sum of root length in cm/cm2
@@ -1303,28 +725,28 @@ begin
     for i  := 1 to RootedSoilWaterModel.act_n_comp do
       if Wld_arr[i].v > 0.0 then
         act_rooted_comps := i;
-    
-    /// get texture and LD of rooted compartments and calculate texture factor
+
+    /// get texture and LD (bulk density class) of rooted compartments and calculate texture factor
     act_texture := self.RootedSoilWaterModel.Texture[act_rooted_comps];
     act_texture_str := GetEnumName(typeInfo(TTextureClass), Ord(act_texture)); // string from typee
 
     act_LD := RootedSoilWaterModel.LD[act_rooted_comps];
     act_LD_str :=    GetEnumName(typeInfo(TLDClass), Ord(act_LD));
-    
+
     /// construct index string
     TexLD_str := act_texture_str +'_' + act_LD_str;
-    
+
     /// retrieve texture effect from lis
     Texture_ndx := fTextureEffectList.IndexOf(TexLD_str);
     if  Texture_ndx <> -1 then begin
       act_Texture_effect := TTextureEffect(fTextureEffectList.Objects[Texture_ndx]);
-      Texturefactor := act_Texture_effect.frelWeff;
-    end else Texturefactor := 1;       // default
+      Texturefactor := act_Texture_effect.relWeff;
+    end else Texturefactor := 1;
 
 
   end;
 
-  If (Zr.v <= (Zrmax.v)) then   // *Texturefactor
+  If (Zr.v <= (Zrmax.v*Texturefactor)) then
   begin
     If RootDepthInc = expolinear then
     begin
@@ -1351,7 +773,6 @@ begin
     zr.c := 0;
 
   OldDMFineRoot := DMFineRoot.v;
-
     if (fRootGrowthAfterEmergence = true) then begin
       if (EmergenceDay.v > 0) then begin
         TempSumR.C := max(0, (Temp.v-TempSumRootBaseTemp.V))
@@ -1366,6 +787,9 @@ begin
 
 
 
+//    If Temp.v>TempSumRootBaseTemp.v then
+//      TempSumR.C := (Temp.v-TempSumRootBaseTemp.V)
+//    else TempSumr.c := 0.0;
     inc(N_age_cl);
     SRL_eff.v  := 0.0;
     for i := 1 to trunc(n_Rootcomp.v) do begin
@@ -1441,11 +865,11 @@ begin
 end;
 
 
-procedure Register;
+procedure Regiser;
 begin
- {$IFNDEF NONVISUAL}
+{$IFNDEF NONVISUAL}
   RegisterComponents('Simulation', [TSimpleRootModDM]);
- {$ENDIF}
+{$ENDIF}
 end;
 
 end.

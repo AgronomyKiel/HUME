@@ -1,4 +1,18 @@
-unit UGrowthCurvePlantRoots; // Neue Komponente
+ï»¿/// <summary>
+/// This unit defines the TGrowthCurvePlantRoots class, which in addition to its parent class,
+/// models the growth of plant roots in terms of various parameters such as root depth, root length, and growth rates.
+/// It also includes the calculation root length density and effective root length,
+/// as well as handling different growth models for root depth development.
+/// The class also supports options for root ageing and depth growth choices.
+/// </summary>
+/// <remarks>
+/// The TGrowthCurvePlantRoots class extends the TGrowthCurvePlant class and provides
+/// specific implementations for root growth dynamics. It includes properties for root depth,
+/// root length, and growth parameters, as well as methods for initializing and calculating
+/// growth rates based on the current state of the plant and environmental conditions.
+/// </remarks>  
+
+unit UGrowthCurvePlantRoots;
 
 interface
 
@@ -8,14 +22,14 @@ uses
   UlayeredSoil,
   UGrowthCurvePlant,
   UAbstractPlant,
+  URootGrowthUtils,
   classes;
-const  MaxAgeCl = 500;
+
+
 type
 
 
-
-  TRootDepthgrowth = (linear, monomolecular);
-
+/// <summary> TGrowthCurvePlantRoots class extends TGrowthCurvePlant to model root growth dynamics </summary>
   TGrowthCurvePlantRoots = class(TGrowthCurvePlant)
 
   private
@@ -33,38 +47,69 @@ type
     Root_Matrix: array[1..Max_Comp, 1..MaxAgeCl] of real;
     n_age_cl: integer;
 
-    ActiveDuration // time of root activity
-      : Tpar;
+    /// <summary> Active duration of root growth </summary>
+    ActiveDuration: TPar;
 
-    Wld_arr: TSoilVarArray; // Wurzellängendichten [cm.cm-3]
+    /// <summary> Array of root length densities [cm.cm-3] </summary>
+    Wld_arr: TSoilVarArray; // WurzellÃ¤ngendichten [cm.cm-3]
 
-    WL_arr: TSoilVarArray; // Wurzellängen [cm.cm-2]
-
+/// <summary> Array of root lengths [cm.cm-2] </summary>
+    WL_arr: TSoilVarArray; // WurzellÃ¤ngen [cm.cm-2]
+/// <summary> Array of effective root length densities [cm.cm-3] </summary>
     EffWld_arr: TsoilVarArray; // effective root length density []
+/// <summary> Array of effective root lengths [cm.cm-2] </summary>    
     effWL_arr: TSoilVarArray; // active root length [cm.cm-2]
 
+/// <summary> number of potential rooted soil layers </summary>
     N_Rootcomp: TVar;
 
+/// <summary> Array of soil depths for each root component [cm] </summary>    
     Tiefe: TSoilExtArray;
 
+/// <summary> rooting at planting/sowing depth [cm] </summary>
     zr_0: TPar; // Wurzeltiefe zur Pflanzung / Aussaat [cm]
+
+/// <summary> maximum rooting depth [cm] </summary>
     zr_max: TPar; // maximale Wurzeltiefe [cm]
 
-    WL_0: TPar; // Wurzellänge zur Pflanzung / Aussaat [cm]
-    WL_max: TPar; // maximale Wurzellänge [cm]
+    WL_0: TPar; // Wurzellï¿½nge zur Pflanzung / Aussaat [cm]
+    WL_max: TPar; // maximale Wurzellï¿½nge [cm]
 
-    k_z, // Wachstumsratenparameter für Tiefenentwicklung [cm]
-      k_Wl,
-      K_a
-      : Tpar;
+/// <summary> growth rate parameter for root depth development [cm.d-1.ï¿½C] </summary>
+    k_z: TPar; // Wachstumsratenparameter fï¿½r Tiefenentwicklung [cm]
+/// <summary> growth rate parameter for root depth development in an exponential phase [cm.d-1.ï¿½C] </summary>
+    k_za: TPar;
 
-    SRL, // Sum of root length [cm/cm2]
-      SRL_eff, // Total root length of functional roots (cm.cm-2)
+/// <summary> growth rate parameter for root length development phase [cm.d-1.ï¿½C] </summary>
+    k_Wl: TPar;
 
-    zr: TVar; // Durchwurzelungstiefe [cm]
+/// <summary> Parameter for the vertical distribution of root length, Ratio of RLD at z=0 and RLD at z=zr [-] </summary>    
+    K_a: TPar;
+
+/// <summary> Base temperature for root growth </summary>
+    TempSumRootBaseTemp: Tpar;
+
+/// <summary> variable for sum of root legnth [cm/cm2] </summary>
+    SRL: TVar; // Sum of root length [cm/cm2]
+
+ /// <summary> variable for effective root length density [cm/cm2] </summary>
+    SRL_eff: TVar; // Total root length of functional roots (cm.cm-2)
+
+/// <summary> state variable for root depth [cm] </summary>
+    zr: TState; // Durchwurzelungstiefe [cm]
+
+/// <summary> option to enable root growth </summary>
+    OptWithRoots: TOption; // Option to enable root growth
+
+/// <summary> Option for root depth growth model </summary>
     depthgrowthOptStr: Toption;
+
+
+/// <summary> Option for root ageing </summary>
     Opt_RootAgeing: TOption;
-    depthgrowthchoice: TRootdepthgrowth;
+
+
+    depthgrowthchoice: TRootingdepthIncrease;
 
     procedure CreateAll; override;
 
@@ -93,73 +138,7 @@ implementation
 uses
   SysUtils, math;//, Dialogs;
 
-{*************************************************************************}
 
-{
-Zweck
-
-Funktion zur Berechnung der Wurzell„ngendichte in Abh„ngigkeit von der Tiefe
-
-Parameter
-
-Name        Inhalt                       Einheit      Typ
-
-wld0        WLD bei z=0                  [cm/cm3]     I
-a           Fitparameter                 [1/cm]       I
-            bei 1/a ist WLD=0.63*WLD0
-z           Tiefe unter GOF              [cm]         I
-
-WLD_z_f     WLD in Tiefe z               [cm/cm3]     O
-
-{*************************************************************************}
-
-{*************************************************************************}
-
-{
-Zweck
-
-Funktion zur Berechnung der mittleren Wurzellängendichte zwischen zwei
-Tiefen z1 und z2 (z1 < z2) in Abhängigkeit von Zeit und Tiefe
-
-Parameter
-
-Name        Inhalt                       Einheit      Typ
-
-z1          Tiefe 1                      [cm]         I
-z2          Tiefe 2                      [cm]         I
-t           Zeit                         [d]          I
-Zrmax       maximale Durchwurzelungstiefe[cm]         I
-zr0         Durchwurzelungstiefe bei t=0 [cm]         I
-kz          Fitparameter                 [1/d]        I
-SRLmax      maximale Wurzellänge         [cm/cm2]     I
-            (1 cm/cm2 entspr. 0.1 km/m2)
-SR0         Wurzellänge bei t=0          [cm/cm2]     I
-kL          Fitparameter                 [1/d]        I
-ka          Fitparameter                 [1/cm]       I
-            bei 1/(ka*zr)ist WLD=0.63*WLD0
-
-WLD_z_t_f   WLD zwischen z1 und z2 bei t [cm/cm3]     O
-
-{*************************************************************************}
-
-function monomo_f(Pmax, P0, k, t: real): real;
-
-begin
-  monomo_f := Pmax - (Pmax - P0) * exp(-k * t);
-end;
-
-function Logist_f(Wmax, W0, k, Tsum: real): real;
-
-begin
-  result := WMax / (1 + (WMAx / W0 - 1) * EXP(-TSum * k))
-
-end;
-
-function WLD_z_f(wld0, a, z: real): real;
-
-begin
-  WLD_z_f := wld0 * exp(-a * z);
-end;
 
 function TGrowthCurvePlantRoots.WLD_z_t_f(z1, z2, t, //Zrmax, Zr0, Kz,
   SRLmax, SRL0, kL, ka: real): real;
@@ -215,24 +194,26 @@ var
   i: integer;
 begin
   inherited createAll;
-  ParCreate('zr_0', '[cm]', 10, zr_0);
-  ParCreate('zr_max', '[cm]', 120, zr_max);
-  ParCreate('WL_0', '[cm]', 1, WL_0);
-  ParCreate('WL_max', '[cm]', 15, WL_max);
-  ParCreate('k_z', '[cm.d-1.°C]', 0.0009, k_z);
-  ParCreate('k_WL', '[cm.d-1.°C]', 0.002, k_WL);
+  ParCreate('zr_0', '[cm]', 10, zr_0, 'planting/sowing depth');
+  ParCreate('zr_max', '[cm]', 120, zr_max, 'maximum rooting depth');
+  ParCreate('WL_0', '[cmcm2]', 1, WL_0, 'root length at begin of root growth');
+  ParCreate('WL_max', '[cm/cm2]', 15, WL_max, 'maximum root length');
+  ParCreate('k_z', '[cm.d-1.C]', 0.09, k_z, 'rooting depth increase parameter, value depends on choice of rooting depth model! ');
+  ParCreate('k_WL', '[cm.d-1.ï¿½C]', 0.002, k_WL);
   ParCreate('k_a', '[-]', 0.01, k_a, 'Ratio of RLD at z=0 and RLD at z=zr');
+  ParCreate('TempSumRootBaseTemp', '[Â°C]', 0, TempSumRootBaseTemp, 'Base temperature for root growth');
   VarCreate('N_Rootcomp', '[n]', 20, true, N_Rootcomp);
-  VarCreate('zr', '[cm]', 0, true, zr);
-  Varcreate('SRL', '[cm.cm-2]', 0.0, false, SRL);
-  Varcreate('SRL_eff', '[cm.cm-2]', 0.0, false, SRL_eff);
+  StateCreate('zr', '[cm]', 0, true, zr, 'rooting depth');
+  Varcreate('SRL', '[cm.cm-2]', 0.0, false, SRL, 'som of root length');
+  Varcreate('SRL_eff', '[cm.cm-2]', 0.0, false, SRL_eff, 'sum of effective root length');
   fwithRoots := true;
   OptWithRoots.Option := 'true';
-  OptCreate('Rootdepthgrowth', 'Monomolecular', depthgrowthoptstr);
+  OptCreate('Rootdepthgrowth', 'linear', depthgrowthoptstr);
   depthgrowthoptstr.optionlist.Clear;
   depthgrowthoptstr.optionlist.Add('linear');
   depthgrowthoptstr.OptionList.Add('monomolecular');
-  depthgrowthchoice := monomolecular;
+  depthgrowthoptstr.OptionList.Add('expolinear');
+  depthgrowthchoice := linear;
 
   ParCreate('ActiveDuration', '[d]', 20, ActiveDuration);
 
@@ -265,6 +246,8 @@ begin
     depthgrowthchoice := linear;
   if uppercase(depthgrowthoptstr.Option) = uppercase('monomolecular') then
     depthgrowthchoice := monomolecular;
+  if uppercase(depthgrowthoptstr.Option) = uppercase('expolinear') then
+    depthgrowthchoice := expolinear;
 
   for i := 1 to trunc(n_Rootcomp.v) do begin
     WLD_arr[i].v := 0.0;
@@ -279,17 +262,33 @@ procedure TGrowthCurvePlantRoots.CalcRates;
 
 var
   i,j: integer;
-  wl_alt, ActiveRL: real;
+  wl_alt, ActiveRL, zrkrit: real;
 
 begin
   inherited;
   if (GlobTime.v >= SowingDate.v) and (GlobTime.v < HarvestDate.v) then begin
     SRL.v := 0.0;
     SRL_eff.v := 0.0;
-    if depthgrowthchoice = monomolecular then
+    if depthgrowthchoice = monomolecular then begin
       zr.v := monomo_f(Zr_max.v, Zr_0.v, k_z.v, TSum.v);
-    if depthgrowthchoice = linear then
+      zr.c := 0.0;
+    end;
+    if depthgrowthchoice = linear then begin
       zr.v := min(zr_max.v, zr_0.v + Tsum.v * K_z.v);
+      zr.c := 0.0;
+    end;
+    if depthgrowthchoice = expolinear then
+      zr.v := min(zr_max.v, zr_0.v + Tsum.v * K_z.v);
+    If depthgrowthchoice = expolinear then
+    begin
+      zrkrit := k_z.v / k_za.v;
+//      TsumKrit := ln(zrkrit / zr0.v) / k_za.v;
+      if zr.v < zrkrit then
+        zr.c := zr.v * (max(0, Temp.v - TempSumRootBaseTemp.v)) * k_za.v
+      else
+        zr.c := k_z.v * max(0, Temp.v - TempSumRootBaseTemp.v) ;
+    end;
+
 
 
     if withRoots then for i := 1 to trunc(n_Rootcomp.v) do begin

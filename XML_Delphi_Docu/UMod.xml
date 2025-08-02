@@ -2,7 +2,7 @@
 <namespace name="UMod" platform="Win32">
   <devnotes>
      <summary> UMod is a unit that defines the base classes TMod and TSubmodel. TMod can be instantiated directly and is the central control object of a simulation model.No license found
-     It summarizes the submodels of the simulation model and provides methods for data output, parameter estimation, and sensitivity analysis. 
+     It summarizes the submodels of the simulation model and provides methods for data output, parameter estimation, and sensitivity analysis.
      TSubModel is an abstract base class for problem specific submodels. Furthermore some other classes are defined. </summary>
   </devnotes>
   <const name="States" type="TModelElements" file="UMod.pas" line="44">
@@ -983,14 +983,14 @@
     <element value="1" name="AllContoutput" file="UMod.pas" line="77" />
     <element value="2" name="SubmodelSpecific" file="UMod.pas" line="78" />
   </enum>
-  <variable name="ModelElementNames" type="TModelElementNames" visibility="public" file="UMod.pas" line="83">
+  <const name="ModelElementNames" type="TModelElementNames" visibility="public" file="UMod.pas" line="83">
     <devnotes>
        <summary> string constants for Model element names </summary>
     </devnotes>
-  </variable>
+  </const>
   <const name="Path_sep" type="Char" file="UMod.pas" line="91">
     <devnotes>
-       <summary> Path separator for Windows </summary>  
+       <summary> Path separator for Windows </summary>
     </devnotes>
     <value>
       $5C
@@ -998,7 +998,7 @@
   </const>
   <class name="TMarquardOptions" file="UMod.pas" line="115">
     <devnotes>
-       <summary> Options for the Marquard-Method used for parameter estimation 
+       <summary> Options for the Marquard-Method used for parameter estimation
        it is descended either from Tobject if compiled for command line application or from
        TPersistent if compiled for GUI appplication </summary>
     </devnotes>
@@ -1250,7 +1250,7 @@
     <members>
       <field name="fMod" type="TMod" visibility="private" size="4" offset="4" file="UMod.pas" line="169">
         <devnotes>
-           <summary> The ModelComponenent </summary>    
+           <summary> The ModelComponenent </summary>
         </devnotes>
       </field>
       <field name="f_a" visibility="private" size="22630" offset="8" file="UMod.pas" line="172">
@@ -1386,12 +1386,12 @@
   <class name="TMod" file="UMod.pas" line="251">
     <devnotes>
        abstract base type for a model component, forward declaration
-       <summary> Base type for the central model component 
+       <summary> Base type for the central model component
        It summarizes the submodels of the simulation model and provides methods for data output, parameter estimation, and sensitivity analysis.
        It is descended either from Tobject if compiled for command line application or from
        TPersistent if compiled for GUI appplication.
        </summary>
-       <summary> abstract base type for the main model control component 
+       <summary> abstract base type for the main model control component
        all submodels have to be connected to this component via their property gm_submodel property. </summary>
     </devnotes>
     <ancestor name="TGraphicControl" namespace="Vcl.Controls">
@@ -2417,188 +2417,182 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fName" type="string" visibility="private" size="4" offset="480" file="UMod.pas" line="255">
+      <field name="EXE_DIR" type="string" visibility="private" size="4" offset="480" file="UMod.pas" line="261">
         <devnotes>
-           <PrivateField> Name of Model </PrivateField>
-        </devnotes>
-      </field>
-      <field name="EXE_DIR" type="string" visibility="private" size="4" offset="484" file="UMod.pas" line="258">
-        <devnotes>
-           Name of Model
            <PrivateField> directory where program file is located </PrivateField>
         </devnotes>
       </field>
-      <field name="FApplicationPath" type="string" visibility="private" size="4" offset="488" file="UMod.pas" line="261">
+      <field name="FApplicationPath" type="string" visibility="private" size="4" offset="484" file="UMod.pas" line="264">
         <devnotes>
            directory where program file is located
            directory where program file is located
            <PrivateField> directory where program file is located </PrivateField>
         </devnotes>
       </field>
-      <field name="FTitle" type="string" visibility="private" size="4" offset="492" file="UMod.pas" line="265">
+      <field name="FTitle" type="string" visibility="private" size="4" offset="488" file="UMod.pas" line="268">
         <devnotes>
            directory where program file is located
            field for adress of status bar on main model formula
            <PrivateField> Model name </PrivateField>
         </devnotes>
       </field>
-      <field name="fStatusBar" type="TStatusBar" visibility="private" size="4" offset="496" file="UMod.pas" line="270">
+      <field name="fStatusBar" type="TStatusBar" visibility="private" size="4" offset="492" file="UMod.pas" line="273">
         <devnotes>
            Modeltitle
            <PrivateField> status bar in Main Formular Simulation info </PrivateField>
         </devnotes>
       </field>
-      <field name="fStatusBarOpt" type="TStatusBar" visibility="private" size="4" offset="500" file="UMod.pas" line="271">
+      <field name="fStatusBarOpt" type="TStatusBar" visibility="private" size="4" offset="496" file="UMod.pas" line="274">
         <devnotes>
            status bar in Main Formular Simulation info
         </devnotes>
       </field>
-      <field name="fControlFileFn" type="string" visibility="private" size="4" offset="504" file="UMod.pas" line="275">
+      <field name="fControlFileFn" type="string" visibility="private" size="4" offset="500" file="UMod.pas" line="278">
         <devnotes>
            status bar in Formular for optimization
            <PrivateField> Name of controlfile </PrivateField>
         </devnotes>
       </field>
-      <field name="FReg_FN" type="string" visibility="private" size="4" offset="508" file="UMod.pas" line="278">
+      <field name="FReg_FN" type="string" visibility="private" size="4" offset="504" file="UMod.pas" line="281">
         <devnotes>
            <PrivateField> Name of file where regression results are stored </PrivateField>
         </devnotes>
       </field>
-      <field name="fDocu_FN" type="string" visibility="private" size="4" offset="512" file="UMod.pas" line="281">
+      <field name="fDocu_FN" type="string" visibility="private" size="4" offset="508" file="UMod.pas" line="284">
         <devnotes>
            Name of file where regression results are stored
            <PrivateField> Name of file where Model documentation is stored </PrivateField>
         </devnotes>
       </field>
-      <field name="fDocu_FN2" type="string" visibility="private" size="4" offset="516" file="UMod.pas" line="282">
+      <field name="fDocu_FN2" type="string" visibility="private" size="4" offset="512" file="UMod.pas" line="285">
         <devnotes>
            Name of file where Model documentation is stored
         </devnotes>
       </field>
-      <field name="fFNGlobalOutput" type="string" visibility="private" size="4" offset="520" file="UMod.pas" line="285">
+      <field name="fFNGlobalOutput" type="string" visibility="private" size="4" offset="516" file="UMod.pas" line="288">
         <devnotes>
            Name of file where Model documentation 2 is stored
            <PrivateField> Name of global output file </PrivateField>
         </devnotes>
       </field>
-      <field name="FOutputPath" type="string" visibility="private" size="4" offset="524" file="UMod.pas" line="288">
+      <field name="FOutputPath" type="string" visibility="private" size="4" offset="520" file="UMod.pas" line="291">
         <devnotes>
            file name for global Output
           
            <PrivateField> Default directory for output </PrivateField>
         </devnotes>
       </field>
-      <field name="fReadIniOutputPath" type="Boolean" visibility="private" size="1" offset="528" file="UMod.pas" line="291">
+      <field name="fReadIniOutputPath" type="Boolean" visibility="private" size="1" offset="524" file="UMod.pas" line="294">
         <devnotes>
            default directory for output
            <PrivateField> flag for reading output path from Ini-file </PrivateField>
         </devnotes>
       </field>
-      <field name="FInputPath" type="string" visibility="private" size="4" offset="532" file="UMod.pas" line="294">
+      <field name="FInputPath" type="string" visibility="private" size="4" offset="528" file="UMod.pas" line="297">
         <devnotes>
            flag for
            <PrivateField> Default directory for input </PrivateField>
         </devnotes>
       </field>
-      <field name="FSeparatorChar" type="Char" visibility="private" size="2" offset="536" file="UMod.pas" line="297">
+      <field name="FSeparatorChar" type="Char" visibility="private" size="2" offset="532" file="UMod.pas" line="300">
         <devnotes>
            <PrivateField> separator in outputfiles </PrivateField>
         </devnotes>
       </field>
-      <field name="FTimeStep" type="Double" visibility="private" size="8" offset="544" file="UMod.pas" line="300">
+      <field name="FTimeStep" type="Double" visibility="private" size="8" offset="536" file="UMod.pas" line="303">
         <devnotes>
            <PrivateField> Time step for model integration </PrivateField>
         </devnotes>
       </field>
-      <field name="FStartTime" type="TDateTime" visibility="private" size="8" offset="552" file="UMod.pas" line="304">
+      <field name="FStartTime" type="TDateTime" visibility="private" size="8" offset="544" file="UMod.pas" line="307">
         <devnotes>
            Time step for model integration
            <PrivateField> Start of simulation </PrivateField>
         </devnotes>
       </field>
-      <field name="FEndTime" type="TDateTime" visibility="private" size="8" offset="560" file="UMod.pas" line="307">
+      <field name="FEndTime" type="TDateTime" visibility="private" size="8" offset="552" file="UMod.pas" line="310">
         <devnotes>
            Start of simulation
            <PrivateField> End of simulation </PrivateField>
         </devnotes>
       </field>
-      <field name="FSensOptions" type="TSensitivityOptions" visibility="private" size="4" offset="568" file="UMod.pas" line="310">
+      <field name="FSensOptions" type="TSensitivityOptions" visibility="private" size="4" offset="560" file="UMod.pas" line="313">
         <devnotes>
            End of simulation
            <PrivateField> Options for optimization </PrivateField>
         </devnotes>
       </field>
-      <field name="FMinLegalValue" type="Double" visibility="private" size="8" offset="576" file="UMod.pas" line="313">
+      <field name="FMinLegalValue" type="Double" visibility="private" size="8" offset="568" file="UMod.pas" line="316">
         <devnotes>
            Options for sensitivity analysis
            <PrivateField> smallest measured value accepted in Optimization </PrivateField>
         </devnotes>
       </field>
-      <field name="fReInitAfterRun" type="Boolean" visibility="private" size="1" offset="584" file="UMod.pas" line="316">
+      <field name="fReInitAfterRun" type="Boolean" visibility="private" size="1" offset="576" file="UMod.pas" line="319">
         <devnotes>
            smallest measured value accepted in Optimization
            <PrivateField> flag if model should be reinitalised after run: defaul: true </PrivateField>
         </devnotes>
       </field>
-      <field name="fShowDateFormat" type="Boolean" visibility="private" size="1" offset="585" file="UMod.pas" line="319">
+      <field name="fShowDateFormat" type="Boolean" visibility="private" size="1" offset="577" file="UMod.pas" line="322">
         <devnotes>
            flag if model should be reinitalised after run: defaul: true
            <PrivateField> flag for showing time in date format </PrivateField>
         </devnotes>
       </field>
-      <field name="fWriteResIni" type="Boolean" visibility="private" size="1" offset="586" file="UMod.pas" line="322">
+      <field name="fWriteResIni" type="Boolean" visibility="private" size="1" offset="578" file="UMod.pas" line="325">
         <devnotes>
            flag for showing time in date format
            <PrivateField> flag for writing res.ini files for documentation </PrivateField>
         </devnotes>
       </field>
-      <field name="fChiSqr" type="Double" visibility="private" size="8" offset="592" file="UMod.pas" line="325">
+      <field name="fChiSqr" type="Double" visibility="private" size="8" offset="584" file="UMod.pas" line="328">
         <devnotes>
            flag for writing res.ini files for documentation.
            <PrivateField> flag for writing res.ini files for documentation </PrivateField>
         </devnotes>
       </field>
-      <field name="fContOutput" type="TContOutput" visibility="private" size="1" offset="600" file="UMod.pas" line="330">
+      <field name="fContOutput" type="TContOutput" visibility="private" size="1" offset="592" file="UMod.pas" line="333">
         <devnotes>
            field for total sum of squared differences (sim-meas)
            <PrivateField> option for continous output, type is TContOutput which defines the options
            NoContOutput, SubmodelSpecific and  AllContoutput </PrivateField>
         </devnotes>
       </field>
-      <field name="fOptContOutput" type="TOption" visibility="private" size="4" offset="604" file="UMod.pas" line="331">
+      <field name="fOptContOutput" type="TOption" visibility="private" size="4" offset="596" file="UMod.pas" line="334">
         <devnotes>
            option for
         </devnotes>
       </field>
-      <field name="FStr_SectionName_TimeInit" type="string" visibility="private" size="4" offset="608" file="UMod.pas" line="335">
+      <field name="FStr_SectionName_TimeInit" type="string" visibility="private" size="4" offset="600" file="UMod.pas" line="338">
         <devnotes>
            Toggle choice for file output every time step
         </devnotes>
       </field>
-      <field name="FStr_SectionNameMeasurementFiles" type="string" visibility="private" size="4" offset="612" file="UMod.pas" line="336" />
-      <field name="FStr_SectionNameUpdateFiles" type="string" visibility="private" size="4" offset="616" file="UMod.pas" line="337" />
-      <field name="FStr_SectionNameOutputFiles" type="string" visibility="private" size="4" offset="620" file="UMod.pas" line="338" />
-      <field name="FStr_SectionName_FileNames" type="string" visibility="private" size="4" offset="624" file="UMod.pas" line="339" />
-      <field name="FStr_SectionTopic_SimStart" type="string" visibility="private" size="4" offset="628" file="UMod.pas" line="340" />
-      <field name="FStr_SectionTopic_SimEnd" type="string" visibility="private" size="4" offset="632" file="UMod.pas" line="341" />
-      <field name="FStr_SectionName_SimOptions" type="string" visibility="private" size="4" offset="636" file="UMod.pas" line="342" />
-      <field name="FStr_SectionTopic_TimeStep" type="string" visibility="private" size="4" offset="640" file="UMod.pas" line="343" />
-      <field name="FStr_SectionTopic_ContOutput" type="string" visibility="private" size="4" offset="644" file="UMod.pas" line="344" />
-      <field name="FStr_SectionTopic_StateIniFN" type="string" visibility="private" size="4" offset="648" file="UMod.pas" line="345" />
-      <field name="FStr_SectionTopic_ParamIniFN" type="string" visibility="private" size="4" offset="652" file="UMod.pas" line="346" />
-      <field name="FStr_SectionTopic_OptionIniFN" type="string" visibility="private" size="4" offset="656" file="UMod.pas" line="347" />
-      <field name="FStr_SectionTopic_WeatherFileFN" type="string" visibility="private" size="4" offset="660" file="UMod.pas" line="348" />
-      <field name="FStr_SectionTopic_OutputDir" type="string" visibility="private" size="4" offset="664" file="UMod.pas" line="349" />
-      <procedure name="setSubModel" visibility="private" file="UMod.pas" line="352">
+      <field name="FStr_SectionNameMeasurementFiles" type="string" visibility="private" size="4" offset="604" file="UMod.pas" line="339" />
+      <field name="FStr_SectionNameUpdateFiles" type="string" visibility="private" size="4" offset="608" file="UMod.pas" line="340" />
+      <field name="FStr_SectionNameOutputFiles" type="string" visibility="private" size="4" offset="612" file="UMod.pas" line="341" />
+      <field name="FStr_SectionName_FileNames" type="string" visibility="private" size="4" offset="616" file="UMod.pas" line="342" />
+      <field name="FStr_SectionTopic_SimStart" type="string" visibility="private" size="4" offset="620" file="UMod.pas" line="343" />
+      <field name="FStr_SectionTopic_SimEnd" type="string" visibility="private" size="4" offset="624" file="UMod.pas" line="344" />
+      <field name="FStr_SectionName_SimOptions" type="string" visibility="private" size="4" offset="628" file="UMod.pas" line="345" />
+      <field name="FStr_SectionTopic_TimeStep" type="string" visibility="private" size="4" offset="632" file="UMod.pas" line="346" />
+      <field name="FStr_SectionTopic_ContOutput" type="string" visibility="private" size="4" offset="636" file="UMod.pas" line="347" />
+      <field name="FStr_SectionTopic_StateIniFN" type="string" visibility="private" size="4" offset="640" file="UMod.pas" line="348" />
+      <field name="FStr_SectionTopic_ParamIniFN" type="string" visibility="private" size="4" offset="644" file="UMod.pas" line="349" />
+      <field name="FStr_SectionTopic_OptionIniFN" type="string" visibility="private" size="4" offset="648" file="UMod.pas" line="350" />
+      <field name="FStr_SectionTopic_WeatherFileFN" type="string" visibility="private" size="4" offset="652" file="UMod.pas" line="351" />
+      <field name="FStr_SectionTopic_OutputDir" type="string" visibility="private" size="4" offset="656" file="UMod.pas" line="352" />
+      <procedure name="setSubModel" visibility="private" file="UMod.pas" line="355">
         <devnotes>
-           setter for submodel 
+           setter for submodel
         </devnotes>
         <parameters>
           <parameter name="index" type="Integer" />
           <parameter name="SubModel" type="TSubmodel" paramflags="const" />
         </parameters>
       </procedure>
-      <function name="getSubModel" visibility="private" file="UMod.pas" line="355">
+      <function name="getSubModel" visibility="private" file="UMod.pas" line="358">
         <devnotes>
            <summary> getter for submodel </summary>
         </devnotes>
@@ -2606,14 +2600,14 @@
           <parameter name="index" type="Integer" />
           <retval type="TSubmodel">
             <devnotes>
-               <summary> Base class of all sub-models. Provides methods for initialisation, input, output and integration. Acestor is 
+               <summary> Base class of all sub-models. Provides methods for initialisation, input, output and integration. Acestor is
                TObject if compiled for command line application or from TGraphicControl if compiled for GUI application </summary>
                <summary> Abstract base class for a model component </summary>
             </devnotes>
           </retval>
         </parameters>
       </function>
-      <procedure name="Set_StartTime" visibility="private" file="UMod.pas" line="358">
+      <procedure name="Set_StartTime" visibility="private" file="UMod.pas" line="361">
         <devnotes>
            <summary> Method for setting the start time of the simulation </summary>
         </devnotes>
@@ -2621,7 +2615,7 @@
           <parameter name="StartTime" type="TDateTime" paramflags="const" />
         </parameters>
       </procedure>
-      <procedure name="Set_EndTime" visibility="private" file="UMod.pas" line="361">
+      <procedure name="Set_EndTime" visibility="private" file="UMod.pas" line="364">
         <devnotes>
            <summary> Method for setting the end time of the simulation </summary>
         </devnotes>
@@ -2629,7 +2623,7 @@
           <parameter name="EndTime" type="TDateTime" paramflags="const" />
         </parameters>
       </procedure>
-      <procedure name="Set_TimeStep" visibility="private" file="UMod.pas" line="364">
+      <procedure name="Set_TimeStep" visibility="private" file="UMod.pas" line="367">
         <devnotes>
            <summary> Method for setting the time step of the simulation </summary>
         </devnotes>
@@ -2637,7 +2631,7 @@
           <parameter name="TimeStep" type="Double" paramflags="const" />
         </parameters>
       </procedure>
-      <procedure name="WriteSensNames" visibility="private" file="UMod.pas" line="367">
+      <procedure name="WriteSensNames" visibility="private" file="UMod.pas" line="370">
         <devnotes>
            <summary> Method for writing the names of variables for the sensitivity analysis to a file </summary>
         </devnotes>
@@ -2646,7 +2640,7 @@
           <parameter name="f" type="Text" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="WriteGlobalOutputNames" visibility="private" file="UMod.pas" line="370">
+      <procedure name="WriteGlobalOutputNames" visibility="private" file="UMod.pas" line="373">
         <devnotes>
            <summary> Method for writing the names of variables for the global output to a file </summary>
         </devnotes>
@@ -2654,7 +2648,7 @@
           <parameter name="fn" type="string" />
         </parameters>
       </procedure>
-      <procedure name="WriteSensValue" visibility="private" file="UMod.pas" line="373">
+      <procedure name="WriteSensValue" visibility="private" file="UMod.pas" line="376">
         <devnotes>
            <summary> Method for writing the names of variables for the global output to a file </summary>
         </devnotes>
@@ -2665,7 +2659,7 @@
           <parameter name="f_b" type="Text" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CreateIniFiles" visibility="private" file="UMod.pas" line="376">
+      <procedure name="CreateIniFiles" visibility="private" file="UMod.pas" line="379">
         <devnotes>
            <summary> Method creating an Inifile from scratch</summary>
         </devnotes>
@@ -2675,12 +2669,12 @@
           <parameter name="StateInifilefn" type="string" />
         </parameters>
       </procedure>
-      <procedure name="SortSubMods" visibility="private" file="UMod.pas" line="380">
+      <procedure name="SortSubMods" visibility="private" file="UMod.pas" line="383">
         <devnotes>
-           <summary> Method for sorting the submodels in the list of submodels according to their value of thier property CompIndex </summary> 
+           <summary> Method for sorting the submodels in the list of submodels according to their value of thier property CompIndex </summary>
         </devnotes>
       </procedure>
-      <procedure name="InitTime" visibility="private" file="UMod.pas" line="383">
+      <procedure name="InitTime" visibility="private" file="UMod.pas" line="386">
         <devnotes>
            <summary> Method for time initialisation </summary>
         </devnotes>
@@ -2688,7 +2682,7 @@
           <parameter name="IniFile" type="TMemIniFile" />
         </parameters>
       </procedure>
-      <procedure name="InitStateIniFile" visibility="private" file="UMod.pas" line="386">
+      <procedure name="InitStateIniFile" visibility="private" file="UMod.pas" line="389">
         <devnotes>
            <summary> Method for initialising the state ini file </summary>
         </devnotes>
@@ -2696,7 +2690,7 @@
           <parameter name="StateInifilefn" type="string" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="InitParmIniFile" visibility="private" file="UMod.pas" line="389">
+      <procedure name="InitParmIniFile" visibility="private" file="UMod.pas" line="392">
         <devnotes>
            <summary> Method for initialising the parameter ini file </summary>
         </devnotes>
@@ -2704,7 +2698,7 @@
           <parameter name="ParamIniFilefn" type="string" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="InitOptionsIniFile" visibility="private" file="UMod.pas" line="392">
+      <procedure name="InitOptionsIniFile" visibility="private" file="UMod.pas" line="395">
         <devnotes>
            <summary> Method for initialising the options ini file </summary>
         </devnotes>
@@ -2712,7 +2706,7 @@
           <parameter name="OptionInifilefn" type="string" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcAndSaveLinearRegressionSimMeas" visibility="private" file="UMod.pas" line="395">
+      <procedure name="CalcAndSaveLinearRegressionSimMeas" visibility="private" file="UMod.pas" line="398">
         <devnotes>
            <summary> Method for calculation and savin linear regressions between measured and simulated values </summary>
         </devnotes>
@@ -2721,17 +2715,17 @@
           <parameter name="i" type="Integer" />
         </parameters>
       </procedure>
-      <procedure name="IsSubModelContOutput" visibility="private" file="UMod.pas" line="398">
+      <procedure name="IsSubModelContOutput" visibility="private" file="UMod.pas" line="401">
         <devnotes>
-           <summary> Method for checking if the submodel is set for continuous output </summary> 
+           <summary> Method for checking if the submodel is set for continuous output </summary>
         </devnotes>
       </procedure>
-      <procedure name="ReadOrCreateInifiles" visibility="private" file="UMod.pas" line="401">
+      <procedure name="ReadOrCreateInifiles" visibility="private" file="UMod.pas" line="404">
         <devnotes>
            <summary> Method for reading or creating the ini files </summary>
         </devnotes>
       </procedure>
-      <procedure name="InitWeatherFile" visibility="private" file="UMod.pas" line="404">
+      <procedure name="InitWeatherFile" visibility="private" file="UMod.pas" line="408">
         <devnotes>
            <summary> Method for initialisation of the weather data file </summary>
         </devnotes>
@@ -2739,26 +2733,35 @@
           <parameter name="WeatherFilefn" type="string" />
         </parameters>
       </procedure>
-      <procedure name="Check_GM_OutputPath" visibility="private" file="UMod.pas" line="406">
+      <procedure name="Check_GM_OutputPath" visibility="private" file="UMod.pas" line="410">
       </procedure>
-      <procedure name="LookForControlfile" visibility="private" file="UMod.pas" line="407">
+      <procedure name="LookForControlfile" visibility="private" file="UMod.pas" line="411">
         <parameters>
           <parameter name="ControlFileFN" type="string" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="UpdateStatusbar" visibility="private" file="UMod.pas" line="410">
+      <procedure name="UpdateStatusbar" visibility="private" file="UMod.pas" line="414">
         <devnotes>
            <summary> Method for updating the status bar on the GUI at every timestep </summary>
         </devnotes>
       </procedure>
-      <procedure name="SetPaintStyle" visibility="private" file="UMod.pas" line="411">
+      <procedure name="SetPaintStyle" visibility="private" file="UMod.pas" line="415">
       </procedure>
-      <procedure name="Paint" visibility="protected" procflags="override" file="UMod.pas" line="418">
+      <procedure name="Paint" visibility="protected" procflags="override" file="UMod.pas" line="422">
         <devnotes>
            Method for showing object on the screen
         </devnotes>
       </procedure>
-      <procedure name="writeRes" visibility="protected" file="UMod.pas" line="422">
+      <procedure name="Notification" visibility="protected" procflags="override" file="UMod.pas" line="425">
+        <devnotes>
+           ensures that if a submodel is removed from the model it is also removed from the SubModStrList
+        </devnotes>
+        <parameters>
+          <parameter name="AComponent" type="TComponent" />
+          <parameter name="Operation" type="TOperation" />
+        </parameters>
+      </procedure>
+      <procedure name="writeRes" visibility="protected" file="UMod.pas" line="429">
         <devnotes>
            <summary> Method for writing results to file, including a summary of the model settings </summary>
         </devnotes>
@@ -2766,119 +2769,114 @@
           <parameter name="fn" type="string" />
         </parameters>
       </procedure>
-      <field name="FLMOptions" type="TMarquardOptions" visibility="public" size="4" offset="668" file="UMod.pas" line="424">
+      <field name="FLMOptions" type="TMarquardOptions" visibility="public" size="4" offset="660" file="UMod.pas" line="433">
         <devnotes>
            write parameters and filenames of simulation run to result file
         </devnotes>
       </field>
-      <field name="FPropIniFile" type="TMemIniFile" visibility="public" size="4" offset="672" file="UMod.pas" line="426" />
-      <field name="FIniFiles" type="TStringList" visibility="public" size="4" offset="676" file="UMod.pas" line="430">
+      <field name="FPropIniFile" type="TMemIniFile" visibility="public" size="4" offset="664" file="UMod.pas" line="435" />
+      <field name="FIniFiles" type="TStringList" visibility="public" size="4" offset="668" file="UMod.pas" line="439">
         <devnotes>
            Pointer for GUI-properties saving file
            List of Inifiles
         </devnotes>
       </field>
-      <field name="FRegFile" type="Text" visibility="public" size="730" offset="680" file="UMod.pas" line="433">
+      <field name="FRegFile" type="Text" visibility="public" size="730" offset="672" file="UMod.pas" line="442">
         <devnotes>
            File variable of results of regression analysis
         </devnotes>
       </field>
-      <field name="Time" type="TState" visibility="public" size="4" offset="1412" file="UMod.pas" line="436">
+      <field name="Time" type="TState" visibility="public" size="4" offset="1404" file="UMod.pas" line="445">
         <devnotes>
            <summary> The time state variable </summary>
         </devnotes>
       </field>
-      <field name="SubModStrList" type="TStringList" visibility="public" size="4" offset="1416" file="UMod.pas" line="439">
+      <field name="SubModStrList" type="TStringList" visibility="public" size="4" offset="1408" file="UMod.pas" line="448">
         <devnotes>
            model time
            <summary> List of sub-models </summary>
         </devnotes>
       </field>
-      <field name="ModelEnd" type="Boolean" visibility="public" size="1" offset="1420" file="UMod.pas" line="442">
+      <field name="ModelEnd" type="Boolean" visibility="public" size="1" offset="1412" file="UMod.pas" line="451">
         <devnotes>
            List of sub-models
            <summary> flag for end of simulation </summary>
         </devnotes>
       </field>
-      <field name="ActIniFile" type="TMemIniFile" visibility="public" size="4" offset="1424" file="UMod.pas" line="445">
+      <field name="ActIniFile" type="TMemIniFile" visibility="public" size="4" offset="1416" file="UMod.pas" line="454">
         <devnotes>
            End of simulation ?
            <summary> the actual ini-file </summary>
         </devnotes>
       </field>
-      <field name="ParamInifile" type="TMemIniFile" visibility="public" size="4" offset="1428" file="UMod.pas" line="448">
+      <field name="ParamInifile" type="TMemIniFile" visibility="public" size="4" offset="1420" file="UMod.pas" line="457">
         <devnotes>
            TMyIniFile; // actual Ini-File
            <summary> Ini-file with parameter values </summary>
         </devnotes>
       </field>
-      <field name="StateIniFile" type="TMemIniFile" visibility="public" size="4" offset="1432" file="UMod.pas" line="451">
+      <field name="StateIniFile" type="TMemIniFile" visibility="public" size="4" offset="1424" file="UMod.pas" line="460">
         <devnotes>
            Ini-file with parameter values
            <summary> Ini-file with state variable initial values </summary>
         </devnotes>
       </field>
-      <field name="OptionIniFile" type="TMemIniFile" visibility="public" size="4" offset="1436" file="UMod.pas" line="454">
+      <field name="OptionIniFile" type="TMemIniFile" visibility="public" size="4" offset="1428" file="UMod.pas" line="463">
         <devnotes>
            Ini-file with state variable initial values
            <summary> Ini-file with options for submodels </summary>
         </devnotes>
       </field>
-      <field name="WeatherFile" type="TTextFileH" visibility="public" size="4" offset="1440" file="UMod.pas" line="457">
+      <field name="WeatherFile" type="TTextFileH" visibility="public" size="4" offset="1432" file="UMod.pas" line="466">
         <devnotes>
            Ini-file with options for submodels
            <summary> TXT-file with weather data </summary>
         </devnotes>
       </field>
-      <field name="f_GlobalOutput" type="TStreamWriter" visibility="public" size="4" offset="1444" file="UMod.pas" line="460">
+      <field name="f_GlobalOutput" type="TStreamWriter" visibility="public" size="4" offset="1436" file="UMod.pas" line="469">
         <devnotes>
            Weather data
            <summary> Output file stream for global output </summary>
         </devnotes>
       </field>
-      <field name="AllMeasVal" type="TMeasList" visibility="public" size="4" offset="1448" file="UMod.pas" line="463">
+      <field name="AllMeasVal" type="TMeasList" visibility="public" size="4" offset="1440" file="UMod.pas" line="472">
         <devnotes>
            output stream/file for output of selected vars
            <summary> Output file stream for global output </summary>
         </devnotes>
       </field>
-      <field name="SelMeasVal" type="TMeasList" visibility="public" size="4" offset="1452" file="UMod.pas" line="466">
+      <field name="SelMeasVal" type="TMeasList" visibility="public" size="4" offset="1444" file="UMod.pas" line="475">
         <devnotes>
            list of all measurement values
            <summary> List of measured values </summary>
         </devnotes>
       </field>
-      <field name="SelParList" type="TStringList" visibility="public" size="4" offset="1456" file="UMod.pas" line="469">
+      <field name="SelParList" type="TStringList" visibility="public" size="4" offset="1448" file="UMod.pas" line="478">
         <devnotes>
            list of measurement values selected for optimization
            <summary> List of all parameters to be optimized </summary>
         </devnotes>
       </field>
-      <field name="GlobalOutputList" type="TStringList" visibility="public" size="4" offset="1460" file="UMod.pas" line="472">
+      <field name="GlobalOutputList" type="TStringList" visibility="public" size="4" offset="1452" file="UMod.pas" line="481">
         <devnotes>
            address list of all parameters to be optimized
            <summary> List of output variables selected for global output </summary>
         </devnotes>
       </field>
-      <field name="FirstWeatherData" type="Integer" visibility="public" size="4" offset="1464" file="UMod.pas" line="475">
+      <field name="FirstWeatherData" type="Integer" visibility="public" size="4" offset="1456" file="UMod.pas" line="484">
         <devnotes>
             address list of all values for global output
            <summary> Time of first weather data in Excel-Time integers </summary>
         </devnotes>
       </field>
-      <field name="LastWeatherData" type="Integer" visibility="public" size="4" offset="1468" file="UMod.pas" line="478">
+      <field name="LastWeatherData" type="Integer" visibility="public" size="4" offset="1460" file="UMod.pas" line="487">
         <devnotes>
            <summary> Time of last weather data in Excel-Time integers </summary>
         </devnotes>
       </field>
-      <procedure name="free" visibility="public" file="UMod.pas" line="479">
+      <procedure name="free" visibility="public" file="UMod.pas" line="488">
       </procedure>
-      <property name="Name" visibility="public" read="fName" write="fName" type="string" file="UMod.pas" line="484">
-        <devnotes>
-           <summary> Name of Model </summary>
-        </devnotes>
-      </property>
-      <constructor name="Create" visibility="public" file="UMod.pas" line="489">
+      <constructor name="Create" visibility="public" file="UMod.pas" line="496">
         <devnotes>
            <summary> Calls inherited create and  initializes properties, lists and files </summary>
         </devnotes>
@@ -2886,7 +2884,7 @@
           <parameter name="AOwner" type="TComponent" />
         </parameters>
       </constructor>
-      <procedure name="Set_ControlFileFN" visibility="public" file="UMod.pas" line="495">
+      <procedure name="Set_ControlFileFN" visibility="public" file="UMod.pas" line="502">
         <devnotes>
            <summary>
            CLASS   TMod
@@ -2903,7 +2901,7 @@
           <parameter name="NewFN" type="string" />
         </parameters>
       </procedure>
-      <function name="Get_ControlFileFn" visibility="public" file="UMod.pas" line="498">
+      <function name="Get_ControlFileFn" visibility="public" file="UMod.pas" line="505">
         <devnotes>
            <summary> method for retrieving the control file name </summary>
         </devnotes>
@@ -2911,7 +2909,7 @@
           <retval type="string" />
         </parameters>
       </function>
-      <procedure name="setPropFromIniFile" visibility="public" file="UMod.pas" line="499">
+      <procedure name="setPropFromIniFile" visibility="public" file="UMod.pas" line="506">
         <devnotes>
            <summary> Set the plot and output properties from Ini file for entities in a stringlist of a submodel </summary>
            <param name="strList"> List of all THumeNumEntity objects </param>
@@ -2922,7 +2920,7 @@
           <parameter name="submodname" type="string" />
         </parameters>
       </procedure>
-      <procedure name="GetParameter" visibility="public" procflags="virtual" file="UMod.pas" line="502">
+      <procedure name="GetParameter" visibility="public" procflags="virtual" file="UMod.pas" line="509">
         <devnotes>
            <summary> Method retrieving a parameter adress by its name </summary>
         </devnotes>
@@ -2933,9 +2931,9 @@
           <parameter name="Success" type="Boolean" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="GetStateVar" visibility="public" file="UMod.pas" line="506">
+      <procedure name="GetStateVar" visibility="public" file="UMod.pas" line="513">
         <devnotes>
-           <summary> Method retrieving a state variable adress by its name </summary> 
+           <summary> Method retrieving a state variable adress by its name </summary>
         </devnotes>
         <parameters>
           <parameter name="StateName" type="string" />
@@ -2944,9 +2942,9 @@
           <parameter name="Success" type="Boolean" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="GetVariable" visibility="public" file="UMod.pas" line="510">
+      <procedure name="GetVariable" visibility="public" file="UMod.pas" line="517">
         <devnotes>
-           <summary> Method retrieving a variable adress by its name </summary>  
+           <summary> Method retrieving a variable adress by its name </summary>
         </devnotes>
         <parameters>
           <parameter name="VarName" type="string" />
@@ -2955,18 +2953,18 @@
           <parameter name="Success" type="Boolean" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="run" visibility="public" procflags="virtual" file="UMod.pas" line="515">
+      <procedure name="run" visibility="public" procflags="virtual" file="UMod.pas" line="522">
         <devnotes>
            <summary> Run method, runs the model over the list of ini files </summary>
         </devnotes>
       </procedure>
-      <procedure name="runActIni" visibility="public" procflags="virtual" file="UMod.pas" line="518">
+      <procedure name="runActIni" visibility="public" procflags="virtual" file="UMod.pas" line="525">
         <devnotes>
            run method
-           <summary> Method for running the simulation model for the actual inifile </summary> 
+           <summary> Method for running the simulation model for the actual inifile </summary>
         </devnotes>
       </procedure>
-      <procedure name="Init" visibility="public" procflags="virtual" file="UMod.pas" line="521">
+      <procedure name="Init" visibility="public" procflags="virtual" file="UMod.pas" line="528">
         <devnotes>
            <summary> Initialize state, parameter and weather files; init time settings; resort submodels </summary>
         </devnotes>
@@ -2974,75 +2972,75 @@
           <parameter name="IniFile" type="TMemIniFile" />
         </parameters>
       </procedure>
-      <procedure name="InitAllSubMods" visibility="public" file="UMod.pas" line="524">
+      <procedure name="InitAllSubMods" visibility="public" file="UMod.pas" line="531">
         <devnotes>
            <summary> Call inititalisation methods of sub-models </summary>
         </devnotes>
       </procedure>
-      <procedure name="InitAllDataSeries" visibility="public" file="UMod.pas" line="526">
+      <procedure name="InitAllDataSeries" visibility="public" file="UMod.pas" line="533">
         <devnotes>
            call data inititalisation methods of sub-models
         </devnotes>
       </procedure>
-      <procedure name="InitGlobalOutputList" visibility="public" file="UMod.pas" line="528">
+      <procedure name="InitGlobalOutputList" visibility="public" file="UMod.pas" line="535">
         <devnotes>
            call data inititalisation methods of sub-models
         </devnotes>
       </procedure>
-      <procedure name="integrateAllSubModels" visibility="public" procflags="virtual" file="UMod.pas" line="530">
+      <procedure name="integrateAllSubModels" visibility="public" procflags="virtual" file="UMod.pas" line="537">
         <devnotes>
           
            call integration methods of all sub-models
         </devnotes>
       </procedure>
-      <procedure name="CalcAllRates" visibility="public" file="UMod.pas" line="532">
+      <procedure name="CalcAllRates" visibility="public" file="UMod.pas" line="539">
         <devnotes>
            call rate calculations of all sum-models
         </devnotes>
       </procedure>
-      <procedure name="CalcAllVars" visibility="public" file="UMod.pas" line="534">
+      <procedure name="CalcAllVars" visibility="public" file="UMod.pas" line="541">
         <devnotes>
            call variable calculations of all sub-models
         </devnotes>
       </procedure>
-      <procedure name="UpdateAll" visibility="public" file="UMod.pas" line="536">
+      <procedure name="UpdateAll" visibility="public" file="UMod.pas" line="543">
         <devnotes>
            call update procedure for all sub-models if applicable
         </devnotes>
       </procedure>
-      <procedure name="WriteAllNames" visibility="public" file="UMod.pas" line="538">
+      <procedure name="WriteAllNames" visibility="public" file="UMod.pas" line="545">
         <devnotes>
            <summary>
            Call methods for calculation of variables of all active submodels
            </summary>
         </devnotes>
       </procedure>
-      <procedure name="WriteAllFinalNames" visibility="public" file="UMod.pas" line="541">
+      <procedure name="WriteAllFinalNames" visibility="public" file="UMod.pas" line="548">
         <devnotes>
            <summary> write final names of all sub-models to file </summary>
         </devnotes>
       </procedure>
-      <procedure name="AddAllSimValuestoDataSeries" visibility="public" file="UMod.pas" line="544">
+      <procedure name="AddAllSimValuestoDataSeries" visibility="public" file="UMod.pas" line="551">
         <devnotes>
            <summary> add simulated values to the corresponding measurement data </summary>
         </devnotes>
       </procedure>
-      <procedure name="SaveStates" visibility="public" file="UMod.pas" line="547">
+      <procedure name="SaveStates" visibility="public" file="UMod.pas" line="554">
         <devnotes>
            <summary> save the values of the state variables to the output file each time step </summary>
         </devnotes>
       </procedure>
-      <procedure name="SaveFinalStates" visibility="public" file="UMod.pas" line="550">
+      <procedure name="SaveFinalStates" visibility="public" file="UMod.pas" line="557">
         <devnotes>
            save last values of states in file
         </devnotes>
       </procedure>
-      <procedure name="SaveRates" visibility="public" file="UMod.pas" line="553">
+      <procedure name="SaveRates" visibility="public" file="UMod.pas" line="560">
         <devnotes>
            save last values of rates in file
         </devnotes>
       </procedure>
-      <procedure name="SaveGlobalOutput" visibility="public" file="UMod.pas" line="557">
+      <procedure name="SaveGlobalOutput" visibility="public" file="UMod.pas" line="564">
         <devnotes>
            <summary> write selected values to a 'global' output file, containing the results of each single simulation
            wrapped toegether in the corresponding control file </summary>
@@ -3051,27 +3049,27 @@
           <parameter name="IniFile" type="string" />
         </parameters>
       </procedure>
-      <procedure name="CloseAllFiles" visibility="public" file="UMod.pas" line="560">
+      <procedure name="CloseAllFiles" visibility="public" file="UMod.pas" line="567">
         <devnotes>
            <summary>  close all files opened during simulation run </summary>
         </devnotes>
       </procedure>
-      <procedure name="CloseAllFinalFiles" visibility="public" file="UMod.pas" line="563">
+      <procedure name="CloseAllFinalFiles" visibility="public" file="UMod.pas" line="570">
         <devnotes>
            <summary>  close all final files opened during simulation run </summary>
         </devnotes>
       </procedure>
-      <procedure name="WriteAll_1_1_Files" visibility="public" file="UMod.pas" line="566">
+      <procedure name="WriteAll_1_1_Files" visibility="public" file="UMod.pas" line="573">
         <devnotes>
            <summary> write all 1/1 regression value pairs to file </summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcAllLinearRegressions" visibility="public" file="UMod.pas" line="569">
+      <procedure name="CalcAllLinearRegressions" visibility="public" file="UMod.pas" line="576">
         <devnotes>
            <summary> write the results of all regression analysis to a file </summary>
         </devnotes>
       </procedure>
-      <function name="InitAllExternV" visibility="public" file="UMod.pas" line="572">
+      <function name="InitAllExternV" visibility="public" file="UMod.pas" line="579">
         <devnotes>
            <summary> Initialise the pointers of all external variables to their corresponding entities </summary>
         </devnotes>
@@ -3079,19 +3077,19 @@
           <retval type="Boolean" />
         </parameters>
       </function>
-      <procedure name="IsFinished" visibility="public" procflags="virtual" file="UMod.pas" line="575">
+      <procedure name="IsFinished" visibility="public" procflags="virtual" file="UMod.pas" line="582">
         <devnotes>
            <summary> Method for checking if the model is finished </summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcChiSq" visibility="public" file="UMod.pas" line="577">
+      <procedure name="CalcChiSq" visibility="public" file="UMod.pas" line="584">
       </procedure>
-      <procedure name="ClearAllDataSeries" visibility="public" file="UMod.pas" line="579">
+      <procedure name="ClearAllDataSeries" visibility="public" file="UMod.pas" line="586">
         <devnotes>
            calculation of sum of squared differences
         </devnotes>
       </procedure>
-      <procedure name="MarquardOptimization" visibility="public" file="UMod.pas" line="582">
+      <procedure name="MarquardOptimization" visibility="public" file="UMod.pas" line="589">
         <devnotes>
            Optimization routine
         </devnotes>
@@ -3099,99 +3097,106 @@
           <parameter name="fn" type="string" />
         </parameters>
       </procedure>
-      <procedure name="CalcSensitivity" visibility="public" file="UMod.pas" line="584">
+      <procedure name="CalcSensitivity" visibility="public" file="UMod.pas" line="591">
         <devnotes>
            Sensitivity analysis for single simulation run
         </devnotes>
       </procedure>
-      <procedure name="CalcSensitivityMultRun" visibility="public" file="UMod.pas" line="586">
+      <procedure name="CalcSensitivityMultRun" visibility="public" file="UMod.pas" line="593">
         <devnotes>
            Sensitivity analysis for single simulation run
         </devnotes>
       </procedure>
-      <procedure name="CalcChiSquareSensitivity" visibility="public" file="UMod.pas" line="588">
+      <procedure name="CalcChiSquareSensitivity" visibility="public" file="UMod.pas" line="595">
         <devnotes>
            Sensititvity of ChiSquare Values over 1 to several simulation runs
         </devnotes>
       </procedure>
-      <procedure name="write_documentation" visibility="public" file="UMod.pas" line="590">
+      <procedure name="write_documentation" visibility="public" file="UMod.pas" line="597">
         <devnotes>
            write some text file for documentation
         </devnotes>
       </procedure>
-      <property name="SubModel[Index]" visibility="public" read="getSubModel" write="setSubModel" type="TSubmodel" file="UMod.pas" line="597">
+      <property name="SubModel[Index]" visibility="public" read="getSubModel" write="setSubModel" type="TSubmodel" file="UMod.pas" line="604">
         <devnotes>
            Array property for convenient Access of Submodels, allows to access submodels by their index
            index is the index of the submodel in the list of submodels, starting with 0
            e.g. SubModel[0] returns the first submodel in the list of submodels
-           SubModel[1] returns the second submodel in the list of submodels, etc. 
+           SubModel[1] returns the second submodel in the list of submodels, etc.
            useful for accessing submodels in a loop
         </devnotes>
       </property>
-      <property name="ReadIniOutputPath" visibility="public" read="fReadIniOutputPath" write="fReadIniOutputPath" type="Boolean" file="UMod.pas" line="601">
+      <property name="ReadIniOutputPath" visibility="public" read="fReadIniOutputPath" write="fReadIniOutputPath" type="Boolean" file="UMod.pas" line="608">
         <devnotes>
            <summary> property for the control file name </summary>
         </devnotes>
       </property>
-      <procedure name="DblClick" visibility="public" procflags="override" file="UMod.pas" line="606">
+      <procedure name="DblClick" visibility="public" procflags="override" file="UMod.pas" line="613">
         <devnotes>
            method for showing and changing model during design time
         </devnotes>
       </procedure>
-      <property name="GM_ControlFile" visibility="published" read="Get_ControlFileFn" write="Set_ControlFileFN" type="string" default="0" file="UMod.pas" line="613" />
-      <property name="GM_SubModStrList" visibility="published" read="SubModStrList" type="TStringList" file="UMod.pas" line="615" />
-      <property name="ApplicationPath" visibility="published" read="FApplicationPath" write="FApplicationPath" type="string" default="0" file="UMod.pas" line="617" />
-      <property name="GM_OutPutPath" visibility="published" read="FOutputPath" write="FOutputPath" type="string" default="0" file="UMod.pas" line="619" />
-      <property name="GM_InPutPath" visibility="published" read="FInputPath" write="FInputPath" type="string" default="0" file="UMod.pas" line="620" />
-      <property name="GM_OutputFileName" visibility="published" read="fFNGlobalOutput" write="fFNGlobalOutput" type="string" default="0" file="UMod.pas" line="621" />
-      <property name="Separator" visibility="published" read="FSeparatorChar" write="FSeparatorChar" type="Char" default="44" file="UMod.pas" line="622" />
-      <property name="TimeStep" visibility="published" read="FTimeStep" write="Set_TimeStep" type="Double" default="0" file="UMod.pas" line="624" />
-      <property name="StartTime" visibility="published" read="FStartTime" write="Set_StartTime" type="TDateTime" default="0" file="UMod.pas" line="625" />
-      <property name="EndTime" visibility="published" read="FEndTime" write="Set_EndTime" type="TDateTime" default="0" file="UMod.pas" line="626" />
-      <property name="ChiSqr" visibility="published" read="fChiSqr" write="fChiSqr" type="Double" default="0" file="UMod.pas" line="627" />
-      <property name="Reg_fn" visibility="published" read="FReg_FN" write="FReg_FN" type="string" default="0" file="UMod.pas" line="628" />
-      <property name="WriteResIni" visibility="published" read="fWriteResIni" write="fWriteResIni" type="Boolean" file="UMod.pas" line="629" />
-      <property name="Docu_fn" visibility="published" read="fDocu_FN" write="fDocu_FN" type="string" default="0" file="UMod.pas" line="630" />
-      <property name="Docu_fn2" visibility="published" read="fDocu_FN2" write="fDocu_FN2" type="string" default="0" file="UMod.pas" line="631" />
-      <property name="ModTime" visibility="published" read="Time" write="Time" type="TState" file="UMod.pas" line="632" />
-      <property name="LMOptions" visibility="published" read="FLMOptions" write="FLMOptions" type="TMarquardOptions" file="UMod.pas" line="633" />
-      <property name="SensOpt" visibility="published" read="FSensOptions" write="FSensOptions" type="TSensitivityOptions" file="UMod.pas" line="634" />
-      <property name="IniFileNames" visibility="published" read="FIniFiles" type="TStringList" file="UMod.pas" line="635" />
-      <property name="Title" visibility="published" read="FTitle" write="FTitle" type="string" default="0" file="UMod.pas" line="636" />
-      <property name="OptContOutput" visibility="published" read="fContOutput" write="fContOutput" type="TContOutput" file="UMod.pas" line="638" />
-      <property name="MinLegalValue" visibility="published" read="FMinLegalValue" write="FMinLegalValue" type="Double" default="0" file="UMod.pas" line="640" />
-      <property name="Str_SectionName_TimeInit" visibility="published" read="FStr_SectionName_TimeInit" write="FStr_SectionName_TimeInit" type="string" default="0" file="UMod.pas" line="642">
+      <procedure name="Loaded" visibility="public" procflags="override" file="UMod.pas" line="614">
+      </procedure>
+      <procedure name="SetTitle" visibility="public" file="UMod.pas" line="616">
+        <parameters>
+          <parameter name="Value" type="string" paramflags="const" />
+        </parameters>
+      </procedure>
+      <property name="GM_ControlFile" visibility="published" read="Get_ControlFileFn" write="Set_ControlFileFN" type="string" default="0" file="UMod.pas" line="623" />
+      <property name="GM_SubModStrList" visibility="published" read="SubModStrList" type="TStringList" file="UMod.pas" line="625" />
+      <property name="ApplicationPath" visibility="published" read="FApplicationPath" write="FApplicationPath" type="string" default="0" file="UMod.pas" line="627" />
+      <property name="GM_OutPutPath" visibility="published" read="FOutputPath" write="FOutputPath" type="string" default="0" file="UMod.pas" line="629" />
+      <property name="GM_InPutPath" visibility="published" read="FInputPath" write="FInputPath" type="string" default="0" file="UMod.pas" line="630" />
+      <property name="GM_OutputFileName" visibility="published" read="fFNGlobalOutput" write="fFNGlobalOutput" type="string" default="0" file="UMod.pas" line="631" />
+      <property name="Separator" visibility="published" read="FSeparatorChar" write="FSeparatorChar" type="Char" default="44" file="UMod.pas" line="632" />
+      <property name="TimeStep" visibility="published" read="FTimeStep" write="Set_TimeStep" type="Double" default="0" file="UMod.pas" line="634" />
+      <property name="StartTime" visibility="published" read="FStartTime" write="Set_StartTime" type="TDateTime" default="0" file="UMod.pas" line="635" />
+      <property name="EndTime" visibility="published" read="FEndTime" write="Set_EndTime" type="TDateTime" default="0" file="UMod.pas" line="636" />
+      <property name="ChiSqr" visibility="published" read="fChiSqr" write="fChiSqr" type="Double" default="0" file="UMod.pas" line="637" />
+      <property name="Reg_fn" visibility="published" read="FReg_FN" write="FReg_FN" type="string" default="0" file="UMod.pas" line="638" />
+      <property name="WriteResIni" visibility="published" read="fWriteResIni" write="fWriteResIni" type="Boolean" file="UMod.pas" line="639" />
+      <property name="Docu_fn" visibility="published" read="fDocu_FN" write="fDocu_FN" type="string" default="0" file="UMod.pas" line="640" />
+      <property name="Docu_fn2" visibility="published" read="fDocu_FN2" write="fDocu_FN2" type="string" default="0" file="UMod.pas" line="641" />
+      <property name="ModTime" visibility="published" read="Time" write="Time" type="TState" file="UMod.pas" line="642" />
+      <property name="LMOptions" visibility="published" read="FLMOptions" write="FLMOptions" type="TMarquardOptions" file="UMod.pas" line="643" />
+      <property name="SensOpt" visibility="published" read="FSensOptions" write="FSensOptions" type="TSensitivityOptions" file="UMod.pas" line="644" />
+      <property name="IniFileNames" visibility="published" read="FIniFiles" type="TStringList" file="UMod.pas" line="645" />
+      <property name="Title" visibility="published" read="FTitle" write="SetTitle" type="string" default="0" file="UMod.pas" line="646" />
+      <property name="OptContOutput" visibility="published" read="fContOutput" write="fContOutput" type="TContOutput" file="UMod.pas" line="648" />
+      <property name="MinLegalValue" visibility="published" read="FMinLegalValue" write="FMinLegalValue" type="Double" default="0" file="UMod.pas" line="650" />
+      <property name="Str_SectionName_TimeInit" visibility="published" read="FStr_SectionName_TimeInit" write="FStr_SectionName_TimeInit" type="string" default="0" file="UMod.pas" line="652">
         <devnotes>
            smallest measurement value accepted in optimization
         </devnotes>
       </property>
-      <property name="Str_SectionName_FileNames" visibility="published" read="FStr_SectionName_FileNames" write="FStr_SectionName_FileNames" type="string" default="0" file="UMod.pas" line="644" />
-      <property name="Str_SectionName_SimOptions" visibility="published" read="FStr_SectionName_SimOptions" write="FStr_SectionName_SimOptions" type="string" default="0" file="UMod.pas" line="646" />
-      <property name="Str_SectionName_MeasurementFiles" visibility="published" read="FStr_SectionNameMeasurementFiles" write="FStr_SectionNameMeasurementFiles" type="string" default="0" file="UMod.pas" line="648" />
-      <property name="Str_SectionName_UpdateFiles" visibility="published" read="FStr_SectionNameUpdateFiles" write="FStr_SectionNameUpdateFiles" type="string" default="0" file="UMod.pas" line="651" />
-      <property name="Str_SectionName_OutPutFiles" visibility="published" read="FStr_SectionNameOutputFiles" write="FStr_SectionNameOutputFiles" type="string" default="0" file="UMod.pas" line="653" />
-      <property name="Str_SectionTopic_SimStart" visibility="published" read="FStr_SectionTopic_SimStart" write="FStr_SectionTopic_SimStart" type="string" default="0" file="UMod.pas" line="655" />
-      <property name="Str_SectionTopic_SimEnd" visibility="published" read="FStr_SectionTopic_SimEnd" write="FStr_SectionTopic_SimEnd" type="string" default="0" file="UMod.pas" line="657" />
-      <property name="Str_SectionTopic_TimeStep" visibility="published" read="FStr_SectionTopic_TimeStep" write="FStr_SectionTopic_TimeStep" type="string" default="0" file="UMod.pas" line="659" />
-      <property name="Str_SectionTopic_ContOutput" visibility="published" read="FStr_SectionTopic_ContOutput" write="FStr_SectionTopic_ContOutput" type="string" default="0" file="UMod.pas" line="661" />
-      <property name="Str_SectionTopic_StateIniFN" visibility="published" read="FStr_SectionTopic_StateIniFN" write="FStr_SectionTopic_StateIniFN" type="string" default="0" file="UMod.pas" line="663" />
-      <property name="Str_SectionTopic_ParamIniFN" visibility="published" read="FStr_SectionTopic_ParamIniFN" write="FStr_SectionTopic_ParamIniFN" type="string" default="0" file="UMod.pas" line="665" />
-      <property name="Str_SectionTopic_WeatherFileFN" visibility="published" read="FStr_SectionTopic_WeatherFileFN" write="FStr_SectionTopic_WeatherFileFN" type="string" default="0" file="UMod.pas" line="667" />
-      <property name="Str_SectionTopic_OptionIniFN" visibility="published" read="FStr_SectionTopic_OptionIniFN" write="FStr_SectionTopic_OptionIniFN" type="string" default="0" file="UMod.pas" line="670" />
-      <property name="Str_SectionTopic_OutputDir" visibility="published" read="FStr_SectionTopic_OutputDir" write="FStr_SectionTopic_OutputDir" type="string" default="0" file="UMod.pas" line="672" />
-      <property name="ReInitAfterRun" visibility="published" read="fReInitAfterRun" write="fReInitAfterRun" type="Boolean" file="UMod.pas" line="674" />
-      <property name="ShowDateFormat" visibility="published" read="fShowDateFormat" write="fShowDateFormat" type="Boolean" file="UMod.pas" line="675" />
-      <property name="Visible" visibility="published" read="FVisible" write="SetVisible" stored="IsVisibleStored" type="Boolean" default="1" hoisted="true" file="UMod.pas" line="677" />
-      <property name="Parent" visibility="published" read="FParent" write="SetParent" type="TWinControl" hoisted="true" file="UMod.pas" line="678" />
-      <property name="Canvas" visibility="published" read="FCanvas" type="TCanvas" hoisted="true" file="UMod.pas" line="679" />
-      <property name="StatusBar" visibility="published" read="fStatusBar" write="fStatusBar" type="TStatusBar" file="UMod.pas" line="680" />
-      <property name="StatusBarOpt" visibility="published" read="fStatusBarOpt" write="fStatusBarOpt" type="TStatusBar" file="UMod.pas" line="681" />
-      <event name="OnDblclick" visibility="published" read="FOnDblClick" write="FOnDblClick" type="TNotifyEvent" hoisted="true" file="UMod.pas" line="682" />
+      <property name="Str_SectionName_FileNames" visibility="published" read="FStr_SectionName_FileNames" write="FStr_SectionName_FileNames" type="string" default="0" file="UMod.pas" line="654" />
+      <property name="Str_SectionName_SimOptions" visibility="published" read="FStr_SectionName_SimOptions" write="FStr_SectionName_SimOptions" type="string" default="0" file="UMod.pas" line="656" />
+      <property name="Str_SectionName_MeasurementFiles" visibility="published" read="FStr_SectionNameMeasurementFiles" write="FStr_SectionNameMeasurementFiles" type="string" default="0" file="UMod.pas" line="658" />
+      <property name="Str_SectionName_UpdateFiles" visibility="published" read="FStr_SectionNameUpdateFiles" write="FStr_SectionNameUpdateFiles" type="string" default="0" file="UMod.pas" line="661" />
+      <property name="Str_SectionName_OutPutFiles" visibility="published" read="FStr_SectionNameOutputFiles" write="FStr_SectionNameOutputFiles" type="string" default="0" file="UMod.pas" line="663" />
+      <property name="Str_SectionTopic_SimStart" visibility="published" read="FStr_SectionTopic_SimStart" write="FStr_SectionTopic_SimStart" type="string" default="0" file="UMod.pas" line="665" />
+      <property name="Str_SectionTopic_SimEnd" visibility="published" read="FStr_SectionTopic_SimEnd" write="FStr_SectionTopic_SimEnd" type="string" default="0" file="UMod.pas" line="667" />
+      <property name="Str_SectionTopic_TimeStep" visibility="published" read="FStr_SectionTopic_TimeStep" write="FStr_SectionTopic_TimeStep" type="string" default="0" file="UMod.pas" line="669" />
+      <property name="Str_SectionTopic_ContOutput" visibility="published" read="FStr_SectionTopic_ContOutput" write="FStr_SectionTopic_ContOutput" type="string" default="0" file="UMod.pas" line="671" />
+      <property name="Str_SectionTopic_StateIniFN" visibility="published" read="FStr_SectionTopic_StateIniFN" write="FStr_SectionTopic_StateIniFN" type="string" default="0" file="UMod.pas" line="673" />
+      <property name="Str_SectionTopic_ParamIniFN" visibility="published" read="FStr_SectionTopic_ParamIniFN" write="FStr_SectionTopic_ParamIniFN" type="string" default="0" file="UMod.pas" line="675" />
+      <property name="Str_SectionTopic_WeatherFileFN" visibility="published" read="FStr_SectionTopic_WeatherFileFN" write="FStr_SectionTopic_WeatherFileFN" type="string" default="0" file="UMod.pas" line="677" />
+      <property name="Str_SectionTopic_OptionIniFN" visibility="published" read="FStr_SectionTopic_OptionIniFN" write="FStr_SectionTopic_OptionIniFN" type="string" default="0" file="UMod.pas" line="680" />
+      <property name="Str_SectionTopic_OutputDir" visibility="published" read="FStr_SectionTopic_OutputDir" write="FStr_SectionTopic_OutputDir" type="string" default="0" file="UMod.pas" line="682" />
+      <property name="ReInitAfterRun" visibility="published" read="fReInitAfterRun" write="fReInitAfterRun" type="Boolean" file="UMod.pas" line="684" />
+      <property name="ShowDateFormat" visibility="published" read="fShowDateFormat" write="fShowDateFormat" type="Boolean" file="UMod.pas" line="685" />
+      <property name="Visible" visibility="published" read="FVisible" write="SetVisible" stored="IsVisibleStored" type="Boolean" default="1" hoisted="true" file="UMod.pas" line="687" />
+      <property name="Parent" visibility="published" read="FParent" write="SetParent" type="TWinControl" hoisted="true" file="UMod.pas" line="688" />
+      <property name="Canvas" visibility="published" read="FCanvas" type="TCanvas" hoisted="true" file="UMod.pas" line="689" />
+      <property name="StatusBar" visibility="published" read="fStatusBar" write="fStatusBar" type="TStatusBar" file="UMod.pas" line="690" />
+      <property name="StatusBarOpt" visibility="published" read="fStatusBarOpt" write="fStatusBarOpt" type="TStatusBar" file="UMod.pas" line="691" />
+      <event name="OnDblclick" visibility="published" read="FOnDblClick" write="FOnDblClick" type="TNotifyEvent" hoisted="true" file="UMod.pas" line="692" />
     </members>
   </class>
-  <class name="TSubmodel" file="UMod.pas" line="699">
+  <class name="TSubmodel" file="UMod.pas" line="715">
     <devnotes>
-       <summary> Base class of all sub-models. Provides methods for initialisation, input, output and integration. Acestor is 
+       <summary> Base class of all sub-models. Provides methods for initialisation, input, output and integration. Acestor is
        TObject if compiled for command line application or from TGraphicControl if compiled for GUI application </summary>
        <summary> Abstract base class for a model component </summary>
     </devnotes>
@@ -4218,62 +4223,57 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fName" type="string" visibility="private" size="4" offset="480" file="UMod.pas" line="703">
-        <devnotes>
-           Name of instance
-        </devnotes>
-      </field>
-      <field name="FCompIndex" type="Integer" visibility="private" size="4" offset="484" file="UMod.pas" line="705">
+      <field name="FCompIndex" type="Integer" visibility="private" size="4" offset="480" file="UMod.pas" line="725">
         <devnotes>
            Index of computation order
         </devnotes>
       </field>
-      <field name="fAssimilatedSubmodList" type="TStringList" visibility="private" size="4" offset="488" file="UMod.pas" line="707">
+      <field name="fAssimilatedSubmodList" type="TStringList" visibility="private" size="4" offset="484" file="UMod.pas" line="727">
         <devnotes>
            List of assimilated submodels
         </devnotes>
       </field>
-      <field name="fUpdateValueList" type="TStringList" visibility="private" size="4" offset="492" file="UMod.pas" line="709">
+      <field name="fUpdateValueList" type="TStringList" visibility="private" size="4" offset="488" file="UMod.pas" line="729">
         <devnotes>
            List of update values
         </devnotes>
       </field>
-      <field name="fModelElementLists" type="TListsOf" visibility="private" size="20" offset="496" file="UMod.pas" line="711">
+      <field name="fModelElementLists" type="TListsOf" visibility="private" size="20" offset="492" file="UMod.pas" line="731">
         <devnotes>
            List of Model Elements, i.e. State, Vars, Params, Externals, Consts
         </devnotes>
       </field>
-      <field name="fDebugmodus" type="Boolean" visibility="private" size="1" offset="516" file="UMod.pas" line="713">
+      <field name="fDebugmodus" type="Boolean" visibility="private" size="1" offset="512" file="UMod.pas" line="733">
         <devnotes>
            flag for enabling debugging mode
         </devnotes>
       </field>
-      <field name="fOptContOutput" type="TOption" visibility="private" size="4" offset="520" file="UMod.pas" line="715">
+      <field name="fOptContOutput" type="TOption" visibility="private" size="4" offset="516" file="UMod.pas" line="735">
         <devnotes>
            Option for writing output each time step
         </devnotes>
       </field>
-      <field name="fWritecontinuouslyToFile" type="Boolean" visibility="private" size="1" offset="524" file="UMod.pas" line="717">
+      <field name="fWritecontinuouslyToFile" type="Boolean" visibility="private" size="1" offset="520" file="UMod.pas" line="737">
         <devnotes>
            Should output be written to file continously
         </devnotes>
       </field>
-      <field name="fOptFinalOutput" type="TOption" visibility="private" size="4" offset="528" file="UMod.pas" line="719">
+      <field name="fOptFinalOutput" type="TOption" visibility="private" size="4" offset="524" file="UMod.pas" line="739">
         <devnotes>
            Option for writing final values output at end of simulation
         </devnotes>
       </field>
-      <field name="fWriteFinallyToFile" type="Boolean" visibility="private" size="1" offset="532" file="UMod.pas" line="721">
+      <field name="fWriteFinallyToFile" type="Boolean" visibility="private" size="1" offset="528" file="UMod.pas" line="741">
         <devnotes>
            Should output be written to file finally
         </devnotes>
       </field>
-      <field name="fDebugForm" type="TFormDebugAbstract" visibility="private" size="4" offset="536" file="UMod.pas" line="725">
+      <field name="fDebugForm" type="TFormDebugAbstract" visibility="private" size="4" offset="532" file="UMod.pas" line="745">
         <devnotes>
            Pointer to abstract Form for debugging
         </devnotes>
       </field>
-      <procedure name="RegistrateParameter" visibility="private" procflags="virtual" file="UMod.pas" line="728">
+      <procedure name="RegistrateParameter" visibility="private" procflags="virtual" file="UMod.pas" line="748">
         <devnotes>
            Registrate a parameter
         </devnotes>
@@ -4281,7 +4281,7 @@
           <parameter name="Par" type="TPar" />
         </parameters>
       </procedure>
-      <procedure name="RegistrateOption" visibility="private" procflags="virtual" file="UMod.pas" line="730">
+      <procedure name="RegistrateOption" visibility="private" procflags="virtual" file="UMod.pas" line="750">
         <devnotes>
            Registrate an option
         </devnotes>
@@ -4289,7 +4289,7 @@
           <parameter name="Option" type="TOption" />
         </parameters>
       </procedure>
-      <procedure name="RegistrateVariable" visibility="private" procflags="virtual" file="UMod.pas" line="732">
+      <procedure name="RegistrateVariable" visibility="private" procflags="virtual" file="UMod.pas" line="752">
         <devnotes>
            Registrate a variable
         </devnotes>
@@ -4297,7 +4297,7 @@
           <parameter name="Variable" type="TVar" />
         </parameters>
       </procedure>
-      <procedure name="RegistrateStateVar" visibility="private" procflags="virtual" file="UMod.pas" line="734">
+      <procedure name="RegistrateStateVar" visibility="private" procflags="virtual" file="UMod.pas" line="754">
         <devnotes>
            Registrate a state variable
         </devnotes>
@@ -4305,7 +4305,7 @@
           <parameter name="State" type="TState" />
         </parameters>
       </procedure>
-      <procedure name="RegistrateConstant" visibility="private" procflags="virtual" file="UMod.pas" line="736">
+      <procedure name="RegistrateConstant" visibility="private" procflags="virtual" file="UMod.pas" line="756">
         <devnotes>
            Registrate a constant
         </devnotes>
@@ -4313,7 +4313,7 @@
           <parameter name="Constant" type="TVar" />
         </parameters>
       </procedure>
-      <procedure name="RegistrateSubMod" visibility="private" procflags="virtual" file="UMod.pas" line="738">
+      <procedure name="RegistrateSubMod" visibility="private" procflags="virtual" file="UMod.pas" line="758">
         <devnotes>
            Registrate a submodel
         </devnotes>
@@ -4322,18 +4322,18 @@
           <parameter name="Model" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="ClearDataSeries" visibility="private" procflags="virtual" file="UMod.pas" line="740">
+      <procedure name="ClearDataSeries" visibility="private" procflags="virtual" file="UMod.pas" line="760">
         <devnotes>
            Clear data series
         </devnotes>
       </procedure>
-      <procedure name="set_State" visibility="private" procflags="virtual" file="UMod.pas" line="741">
+      <procedure name="set_State" visibility="private" procflags="virtual" file="UMod.pas" line="761">
         <parameters>
           <parameter name="index" type="Integer" />
           <parameter name="State" type="TState" paramflags="const" />
         </parameters>
       </procedure>
-      <function name="get_State" visibility="private" file="UMod.pas" line="742">
+      <function name="get_State" visibility="private" file="UMod.pas" line="762">
         <parameters>
           <parameter name="index" type="Integer" />
           <retval type="TState">
@@ -4344,13 +4344,13 @@
           </retval>
         </parameters>
       </function>
-      <procedure name="set_Par" visibility="private" file="UMod.pas" line="743">
+      <procedure name="set_Par" visibility="private" file="UMod.pas" line="763">
         <parameters>
           <parameter name="index" type="Integer" />
           <parameter name="Par" type="TPar" paramflags="const" />
         </parameters>
       </procedure>
-      <function name="Get_Par" visibility="private" file="UMod.pas" line="744">
+      <function name="Get_Par" visibility="private" file="UMod.pas" line="764">
         <parameters>
           <parameter name="index" type="Integer" />
           <retval type="TPar">
@@ -4361,13 +4361,13 @@
           </retval>
         </parameters>
       </function>
-      <procedure name="set_Var" visibility="private" file="UMod.pas" line="745">
+      <procedure name="set_Var" visibility="private" file="UMod.pas" line="765">
         <parameters>
           <parameter name="index" type="Integer" />
           <parameter name="Variable" type="TVar" paramflags="const" />
         </parameters>
       </procedure>
-      <function name="Get_Var" visibility="private" file="UMod.pas" line="746">
+      <function name="Get_Var" visibility="private" file="UMod.pas" line="766">
         <parameters>
           <parameter name="index" type="Integer" />
           <retval type="TVar">
@@ -4378,13 +4378,13 @@
           </retval>
         </parameters>
       </function>
-      <procedure name="set_Const" visibility="private" file="UMod.pas" line="747">
+      <procedure name="set_Const" visibility="private" file="UMod.pas" line="767">
         <parameters>
           <parameter name="index" type="Integer" />
           <parameter name="Constant" type="TVar" paramflags="const" />
         </parameters>
       </procedure>
-      <function name="get_Const" visibility="private" file="UMod.pas" line="748">
+      <function name="get_Const" visibility="private" file="UMod.pas" line="768">
         <parameters>
           <parameter name="index" type="Integer" />
           <retval type="TVar">
@@ -4395,13 +4395,13 @@
           </retval>
         </parameters>
       </function>
-      <procedure name="set_Option" visibility="private" file="UMod.pas" line="749">
+      <procedure name="set_Option" visibility="private" file="UMod.pas" line="769">
         <parameters>
           <parameter name="index" type="Integer" />
           <parameter name="Option" type="TOption" paramflags="const" />
         </parameters>
       </procedure>
-      <function name="get_Option" visibility="private" file="UMod.pas" line="750">
+      <function name="get_Option" visibility="private" file="UMod.pas" line="770">
         <parameters>
           <parameter name="index" type="Integer" />
           <retval type="TOption">
@@ -4411,13 +4411,13 @@
           </retval>
         </parameters>
       </function>
-      <procedure name="set_ExternVar" visibility="private" file="UMod.pas" line="751">
+      <procedure name="set_ExternVar" visibility="private" file="UMod.pas" line="771">
         <parameters>
           <parameter name="index" type="Integer" />
           <parameter name="ExternVar" type="TExternV" paramflags="const" />
         </parameters>
       </procedure>
-      <function name="get_ExternVar" visibility="private" file="UMod.pas" line="752">
+      <function name="get_ExternVar" visibility="private" file="UMod.pas" line="772">
         <parameters>
           <parameter name="index" type="Integer" />
           <retval type="TExternV">
@@ -4429,7 +4429,7 @@
           </retval>
         </parameters>
       </function>
-      <procedure name="InitStates" visibility="private" procflags="virtual" file="UMod.pas" line="754">
+      <procedure name="InitStates" visibility="private" procflags="virtual" file="UMod.pas" line="774">
         <devnotes>
            Initialisation of state variables
         </devnotes>
@@ -4437,7 +4437,7 @@
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="InitParms" visibility="private" procflags="virtual" file="UMod.pas" line="756">
+      <procedure name="InitParms" visibility="private" procflags="virtual" file="UMod.pas" line="776">
         <devnotes>
            Initialisation of parameters
         </devnotes>
@@ -4445,7 +4445,7 @@
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="InitVars" visibility="private" procflags="virtual" file="UMod.pas" line="758">
+      <procedure name="InitVars" visibility="private" procflags="virtual" file="UMod.pas" line="778">
         <devnotes>
            Initialisation of variables
         </devnotes>
@@ -4453,7 +4453,7 @@
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="InitOptions" visibility="private" procflags="virtual" file="UMod.pas" line="760">
+      <procedure name="InitOptions" visibility="private" procflags="virtual" file="UMod.pas" line="780">
         <devnotes>
            Initialisation of options
         </devnotes>
@@ -4461,7 +4461,7 @@
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="InitOutputFileNames" visibility="private" procflags="virtual" file="UMod.pas" line="762">
+      <procedure name="InitOutputFileNames" visibility="private" procflags="virtual" file="UMod.pas" line="782">
         <devnotes>
            Initialisation of output file names
         </devnotes>
@@ -4469,7 +4469,7 @@
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="InitUpdateFile" visibility="private" procflags="virtual" file="UMod.pas" line="764">
+      <procedure name="InitUpdateFile" visibility="private" procflags="virtual" file="UMod.pas" line="784">
         <devnotes>
            Initialisation of update file
         </devnotes>
@@ -4477,7 +4477,7 @@
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="IsOutput" visibility="private" procflags="virtual" file="UMod.pas" line="766">
+      <procedure name="IsOutput" visibility="private" procflags="virtual" file="UMod.pas" line="786">
         <devnotes>
            Check for output
         </devnotes>
@@ -4485,174 +4485,180 @@
           <parameter name="IsOutput" type="Boolean" paramflags="var" />
         </parameters>
       </procedure>
-      <function name="Get_GlobMod" visibility="protected" file="UMod.pas" line="768">
+      <function name="Get_GlobMod" visibility="protected" file="UMod.pas" line="788">
         <parameters>
           <retval type="TMod">
             <devnotes>
                abstract base type for a model component, forward declaration
-               <summary> Base type for the central model component 
+               <summary> Base type for the central model component
                It summarizes the submodels of the simulation model and provides methods for data output, parameter estimation, and sensitivity analysis.
                It is descended either from Tobject if compiled for command line application or from
                TPersistent if compiled for GUI appplication.
                </summary>
-               <summary> abstract base type for the main model control component 
+               <summary> abstract base type for the main model control component
                all submodels have to be connected to this component via their property gm_submodel property. </summary>
             </devnotes>
           </retval>
         </parameters>
       </function>
-      <procedure name="Set_GlobMod" visibility="protected" procflags="virtual" file="UMod.pas" line="769">
+      <procedure name="Set_GlobMod" visibility="protected" procflags="virtual" file="UMod.pas" line="789">
         <parameters>
           <parameter name="Model" type="TMod" />
         </parameters>
       </procedure>
-      <function name="UpdateValue" visibility="protected" file="UMod.pas" line="770">
+      <function name="UpdateValue" visibility="protected" file="UMod.pas" line="790">
         <parameters>
           <parameter name="n" type="string" />
           <retval type="Double" />
         </parameters>
       </function>
-      <procedure name="Paint" visibility="protected" procflags="override" file="UMod.pas" line="773">
+      <procedure name="Paint" visibility="protected" procflags="override" file="UMod.pas" line="793">
         <devnotes>
            new Paint procedure
         </devnotes>
       </procedure>
-      <field name="submodname" type="string" visibility="public" size="4" offset="540" file="UMod.pas" line="777">
+      <procedure name="Notification" visibility="protected" procflags="virtual" file="UMod.pas" line="794">
+        <parameters>
+          <parameter name="AComponent" type="TComponent" />
+          <parameter name="Operation" type="TOperation" />
+        </parameters>
+      </procedure>
+      <field name="submodname" type="string" visibility="public" size="4" offset="536" file="UMod.pas" line="799">
         <devnotes>
            Name of instance
         </devnotes>
       </field>
-      <field name="GlobMod" type="TMod" visibility="public" size="4" offset="544" file="UMod.pas" line="779">
+      <field name="GlobMod" type="TMod" visibility="public" size="4" offset="540" file="UMod.pas" line="801">
         <devnotes>
            Instance of class Tmod to which sub-model is linked
         </devnotes>
       </field>
-      <field name="StateStrList" type="TStringList" visibility="public" size="4" offset="548" file="UMod.pas" line="781">
+      <field name="StateStrList" type="TStringList" visibility="public" size="4" offset="544" file="UMod.pas" line="803">
         <devnotes>
            List of state variables
         </devnotes>
       </field>
-      <field name="ParStrList" type="TStringList" visibility="public" size="4" offset="552" file="UMod.pas" line="783">
+      <field name="ParStrList" type="TStringList" visibility="public" size="4" offset="548" file="UMod.pas" line="805">
         <devnotes>
            List of parameters
         </devnotes>
       </field>
-      <field name="VarStrList" type="TStringList" visibility="public" size="4" offset="556" file="UMod.pas" line="785">
+      <field name="VarStrList" type="TStringList" visibility="public" size="4" offset="552" file="UMod.pas" line="807">
         <devnotes>
            List of variables
         </devnotes>
       </field>
-      <field name="ConstStrList" type="TStringList" visibility="public" size="4" offset="560" file="UMod.pas" line="787">
+      <field name="ConstStrList" type="TStringList" visibility="public" size="4" offset="556" file="UMod.pas" line="809">
         <devnotes>
            List of constants
         </devnotes>
       </field>
-      <field name="OptionStrList" type="TStringList" visibility="public" size="4" offset="564" file="UMod.pas" line="789">
+      <field name="OptionStrList" type="TStringList" visibility="public" size="4" offset="560" file="UMod.pas" line="811">
         <devnotes>
            List of Options (saved as strings)
         </devnotes>
       </field>
-      <field name="ExternVStrList" type="TStringList" visibility="public" size="4" offset="568" file="UMod.pas" line="791">
+      <field name="ExternVStrList" type="TStringList" visibility="public" size="4" offset="564" file="UMod.pas" line="813">
         <devnotes>
            List of external values
         </devnotes>
       </field>
-      <field name="ParIniF" type="TMemIniFile" visibility="public" size="4" offset="572" file="UMod.pas" line="793">
+      <field name="ParIniF" type="TMemIniFile" visibility="public" size="4" offset="568" file="UMod.pas" line="815">
         <devnotes>
            Ini-file with parameters
         </devnotes>
       </field>
-      <field name="StateIniF" type="TMemIniFile" visibility="public" size="4" offset="576" file="UMod.pas" line="795">
+      <field name="StateIniF" type="TMemIniFile" visibility="public" size="4" offset="572" file="UMod.pas" line="817">
         <devnotes>
            Ini-file with initial values of state variables
         </devnotes>
       </field>
-      <field name="OptionIniF" type="TMemIniFile" visibility="public" size="4" offset="580" file="UMod.pas" line="797">
+      <field name="OptionIniF" type="TMemIniFile" visibility="public" size="4" offset="576" file="UMod.pas" line="819">
         <devnotes>
            Ini-file with options
         </devnotes>
       </field>
-      <field name="f_state" type="TStreamWriter" visibility="public" size="4" offset="584" file="UMod.pas" line="799">
+      <field name="f_state" type="TStreamWriter" visibility="public" size="4" offset="580" file="UMod.pas" line="821">
         <devnotes>
            File variable for state output, now implemented as TStreamWriter
         </devnotes>
       </field>
-      <field name="ffin_state" type="TStreamWriter" visibility="public" size="4" offset="588" file="UMod.pas" line="802">
+      <field name="ffin_state" type="TStreamWriter" visibility="public" size="4" offset="584" file="UMod.pas" line="824">
         <devnotes>
            File variable for final state output, now implemented as TStreamWriter
         </devnotes>
       </field>
-      <field name="f_rate" type="TStreamWriter" visibility="public" size="4" offset="592" file="UMod.pas" line="804">
+      <field name="f_rate" type="TStreamWriter" visibility="public" size="4" offset="588" file="UMod.pas" line="826">
         <devnotes>
            File variable for rate output, now implemented as TStreamWriter
         </devnotes>
       </field>
-      <field name="fn_state" type="string" visibility="public" size="4" offset="596" file="UMod.pas" line="806">
+      <field name="fn_state" type="string" visibility="public" size="4" offset="592" file="UMod.pas" line="828">
         <devnotes>
            File name for state output
         </devnotes>
       </field>
-      <field name="fn_finalstate" type="string" visibility="public" size="4" offset="600" file="UMod.pas" line="808">
+      <field name="fn_finalstate" type="string" visibility="public" size="4" offset="596" file="UMod.pas" line="830">
         <devnotes>
            File name for final output of states
         </devnotes>
       </field>
-      <field name="fn_rate" type="string" visibility="public" size="4" offset="604" file="UMod.pas" line="810">
+      <field name="fn_rate" type="string" visibility="public" size="4" offset="600" file="UMod.pas" line="832">
         <devnotes>
            File name for rate output
         </devnotes>
       </field>
-      <field name="FMeasValues" type="TTextFileH" visibility="public" size="4" offset="608" file="UMod.pas" line="812">
+      <field name="FMeasValues" type="TTextFileH" visibility="public" size="4" offset="604" file="UMod.pas" line="834">
         <devnotes>
            file with measured data
         </devnotes>
       </field>
-      <field name="FMeasValues_2" type="TTextFileH" visibility="public" size="4" offset="612" file="UMod.pas" line="814">
+      <field name="FMeasValues_2" type="TTextFileH" visibility="public" size="4" offset="608" file="UMod.pas" line="836">
         <devnotes>
            second file with measured data, meant for input with different time resolution
         </devnotes>
       </field>
-      <field name="FUpdValues" type="TTextFileH" visibility="public" size="4" offset="616" file="UMod.pas" line="816">
+      <field name="FUpdValues" type="TTextFileH" visibility="public" size="4" offset="612" file="UMod.pas" line="838">
         <devnotes>
            file with measured data for updating
         </devnotes>
       </field>
-      <field name="SomethingMeasured" type="Boolean" visibility="public" size="1" offset="620" file="UMod.pas" line="818">
+      <field name="SomethingMeasured" type="Boolean" visibility="public" size="1" offset="616" file="UMod.pas" line="840">
         <devnotes>
            true if measurement data is available
         </devnotes>
       </field>
-      <field name="DoUpdate" type="Boolean" visibility="public" size="1" offset="621" file="UMod.pas" line="820">
+      <field name="DoUpdate" type="Boolean" visibility="public" size="1" offset="617" file="UMod.pas" line="842">
         <devnotes>
            true if data for updating is available
         </devnotes>
       </field>
-      <field name="NextUpdate" type="Double" visibility="public" size="8" offset="624" file="UMod.pas" line="822">
+      <field name="NextUpdate" type="Double" visibility="public" size="8" offset="624" file="UMod.pas" line="844">
         <devnotes>
            Time of next Update
         </devnotes>
       </field>
-      <field name="DataList" type="TStringList" visibility="public" size="4" offset="632" file="UMod.pas" line="824">
+      <field name="DataList" type="TStringList" visibility="public" size="4" offset="632" file="UMod.pas" line="846">
         <devnotes>
            List of measured data series
         </devnotes>
       </field>
-      <field name="IsActive" type="Boolean" visibility="public" size="1" offset="636" file="UMod.pas" line="826">
+      <field name="IsActive" type="Boolean" visibility="public" size="1" offset="636" file="UMod.pas" line="848">
         <devnotes>
            Check for inactivation
         </devnotes>
       </field>
-      <field name="ShowWarnings" type="Boolean" visibility="public" size="1" offset="637" file="UMod.pas" line="829">
+      <field name="ShowWarnings" type="Boolean" visibility="public" size="1" offset="637" file="UMod.pas" line="851">
         <devnotes>
            Should output be written to file finally
         </devnotes>
       </field>
-      <field name="GlobTime" type="TState" visibility="public" size="4" offset="640" file="UMod.pas" line="831">
+      <field name="GlobTime" type="TState" visibility="public" size="4" offset="640" file="UMod.pas" line="853">
         <devnotes>
            show warnings during simulation
         </devnotes>
       </field>
-      <constructor name="Create" visibility="public" file="UMod.pas" line="835">
+      <constructor name="Create" visibility="public" file="UMod.pas" line="857">
         <devnotes>
            global time of simulation model
         </devnotes>
@@ -4660,14 +4666,14 @@
           <parameter name="AOwner" type="TComponent" />
         </parameters>
       </constructor>
-      <procedure name="free" visibility="public" file="UMod.pas" line="839">
+      <procedure name="free" visibility="public" file="UMod.pas" line="861">
         <devnotes>
            constructor if visual
         </devnotes>
       </procedure>
-      <procedure name="BeforeDestruction" visibility="public" procflags="override" file="UMod.pas" line="840">
+      <procedure name="BeforeDestruction" visibility="public" procflags="override" file="UMod.pas" line="862">
       </procedure>
-      <procedure name="ParCreate" visibility="public" procflags="virtual" file="UMod.pas" line="848">
+      <procedure name="ParCreate" visibility="public" procflags="virtual" file="UMod.pas" line="870">
         <devnotes>
            <summary> Method for creating and and initialising a TPar variable </summary>
            <param name="ParName"> Name of parameter </param>
@@ -4688,7 +4694,7 @@
           </parameter>
         </parameters>
       </procedure>
-      <procedure name="OptCreate" visibility="public" file="UMod.pas" line="857">
+      <procedure name="OptCreate" visibility="public" file="UMod.pas" line="879">
         <devnotes>
            method for creating and and initialising a TPar variable
            <summary> Method for creating and and initialising a TOption variable </summary>
@@ -4708,11 +4714,11 @@
           </parameter>
         </parameters>
       </procedure>
-      <procedure name="VarCreate" visibility="public" file="UMod.pas" line="872">
+      <procedure name="VarCreate" visibility="public" file="UMod.pas" line="894">
         <devnotes>
            creation objects for options
            <summary> Method for creating and and initialising a TVar variable </summary>
-           <param name="VarName"> Name string of variable 
+           <param name="VarName"> Name string of variable
            </param>
            <param name="VarUnits"> Units of variable </param>
            <param name="DefaultValue"> Default value of variable </param>
@@ -4736,9 +4742,8 @@
           </parameter>
         </parameters>
       </procedure>
-      <procedure name="ConstCreate" visibility="public" file="UMod.pas" line="882">
+      <procedure name="ConstCreate" visibility="public" file="UMod.pas" line="904">
         <devnotes>
-           method for creating and and initialising a TVar variable
            <summary> Method for creating and and initialising a TConst variable </summary>
            <param name="ConstName"> Name of constant </param>
            <param name="ConstUnits"> Units of constant </param>
@@ -4760,9 +4765,8 @@
           </parameter>
         </parameters>
       </procedure>
-      <procedure name="StateCreate" visibility="public" procflags="virtual" file="UMod.pas" line="892">
+      <procedure name="StateCreate" visibility="public" procflags="virtual" file="UMod.pas" line="914">
         <devnotes>
-           method for creating and and initialising a Constant
            <summary> Method for creating and and initialising a TState variable </summary>
            <param name="StateName"> Name of state variable </param>
            <param name="StateUnits"> Units of state variable </param>
@@ -4784,7 +4788,7 @@
           </parameter>
         </parameters>
       </procedure>
-      <procedure name="ExternVcreate" visibility="public" procflags="virtual" file="UMod.pas" line="902">
+      <procedure name="ExternVcreate" visibility="public" procflags="virtual" file="UMod.pas" line="924">
         <devnotes>
            method for creating and initialising a TState variable
            <summary> Method for creating and and initialising a TExternV variable </summary>
@@ -4806,7 +4810,7 @@
           </parameter>
         </parameters>
       </procedure>
-      <function name="ExternVinit" visibility="public" procflags="virtual" file="UMod.pas" line="908">
+      <function name="ExternVinit" visibility="public" procflags="virtual" file="UMod.pas" line="930">
         <devnotes>
            method for creating and  and initialising a TExternV variable
            <summary> Method for initialising external variables </summary>
@@ -4818,7 +4822,7 @@
           <retval type="Boolean" />
         </parameters>
       </function>
-      <procedure name="CreateAll" visibility="public" procflags="virtual" file="UMod.pas" line="915">
+      <procedure name="CreateAll" visibility="public" procflags="virtual" file="UMod.pas" line="937">
         <devnotes>
            setting pointers of external variables
            <summary> Method for creating all entities of the submodel </summary>
@@ -4827,7 +4831,7 @@
            </remarks>
         </devnotes>
       </procedure>
-      <procedure name="Init" visibility="public" procflags="virtual" file="UMod.pas" line="918">
+      <procedure name="Init" visibility="public" procflags="virtual" file="UMod.pas" line="940">
         <devnotes>
            Instantiates all objects
            <summary> Method for initialising the submodel </summary>
@@ -4836,31 +4840,31 @@
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="virtual" file="UMod.pas" line="921">
+      <procedure name="CalcRates" visibility="public" procflags="virtual" file="UMod.pas" line="943">
         <devnotes>
            initialisation method
            <summary> Method for calculating the rates of change for every time step for the submodel </summary>
         </devnotes>
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="virtual" file="UMod.pas" line="924">
+      <procedure name="Integrate" visibility="public" procflags="virtual" file="UMod.pas" line="946">
         <devnotes>
            rate calculation
            <summary> Method for integrating the submodel </summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcVars" visibility="public" procflags="virtual" file="UMod.pas" line="927">
+      <procedure name="CalcVars" visibility="public" procflags="virtual" file="UMod.pas" line="949">
         <devnotes>
            integration of state variables
            <summary> Method for calculating the variables of the submodel </summary>
         </devnotes>
       </procedure>
-      <procedure name="UpdateValues" visibility="public" procflags="virtual" file="UMod.pas" line="930">
+      <procedure name="UpdateValues" visibility="public" procflags="virtual" file="UMod.pas" line="952">
         <devnotes>
            calculation of rate variables
            <summary> Method for updating the submodel with measurement data </summary>
         </devnotes>
       </procedure>
-      <procedure name="WriteStateName" visibility="public" file="UMod.pas" line="933">
+      <procedure name="WriteStateName" visibility="public" file="UMod.pas" line="955">
         <devnotes>
            Update by measured values
            <summary> Method for writing the names of all state variables of the submodel to file </summary>
@@ -4875,7 +4879,7 @@
           </parameter>
         </parameters>
       </procedure>
-      <procedure name="WriteFinalStateName" visibility="public" procflags="virtual" file="UMod.pas" line="938">
+      <procedure name="WriteFinalStateName" visibility="public" procflags="virtual" file="UMod.pas" line="960">
         <devnotes>
            <summary> Method for writing the names of all state variables of the submodel to
            the output file with final values </summary>
@@ -4888,7 +4892,7 @@
           </parameter>
         </parameters>
       </procedure>
-      <procedure name="WriteRateName" visibility="public" file="UMod.pas" line="942">
+      <procedure name="WriteRateName" visibility="public" file="UMod.pas" line="964">
         <devnotes>
            <summary> Method for writing the names of all rate variables of the submodel to file </summary>
         </devnotes>
@@ -4897,7 +4901,7 @@
           <parameter name="fn" type="string" />
         </parameters>
       </procedure>
-      <procedure name="SaveState" visibility="public" procflags="virtual" file="UMod.pas" line="945">
+      <procedure name="SaveState" visibility="public" procflags="virtual" file="UMod.pas" line="967">
         <devnotes>
            <summary> Method for writing the state values  of the submodel to file </summary>
         </devnotes>
@@ -4910,7 +4914,7 @@
           </parameter>
         </parameters>
       </procedure>
-      <procedure name="SaveRate" visibility="public" procflags="virtual" file="UMod.pas" line="948">
+      <procedure name="SaveRate" visibility="public" procflags="virtual" file="UMod.pas" line="970">
         <devnotes>
            <summary> Method for writing the rate values of the submodel to file </summary>
         </devnotes>
@@ -4918,7 +4922,7 @@
           <parameter name="f" type="TStreamWriter" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="SaveFinalState" visibility="public" procflags="virtual" file="UMod.pas" line="951">
+      <procedure name="SaveFinalState" visibility="public" procflags="virtual" file="UMod.pas" line="973">
         <devnotes>
            <summary> Method for writing the final state values of the submodel to file </summary>
         </devnotes>
@@ -4931,157 +4935,165 @@
           </parameter>
         </parameters>
       </procedure>
-      <procedure name="closeOutputfiles" visibility="public" procflags="virtual" file="UMod.pas" line="954">
+      <procedure name="closeOutputfiles" visibility="public" procflags="virtual" file="UMod.pas" line="976">
         <devnotes>
            <summary> Method for closing all output files of the submodel</summary>
         </devnotes>
       </procedure>
-      <procedure name="activate" visibility="public" procflags="virtual" file="UMod.pas" line="957">
+      <procedure name="activate" visibility="public" procflags="virtual" file="UMod.pas" line="979">
         <devnotes>
            <summary> Set the Isactive flag to true </summary>
         </devnotes>
       </procedure>
-      <procedure name="deactivate" visibility="public" procflags="virtual" file="UMod.pas" line="960">
+      <procedure name="deactivate" visibility="public" procflags="virtual" file="UMod.pas" line="982">
         <devnotes>
            <summary> Set the Isactive flag to false </summary>
         </devnotes>
       </procedure>
-      <procedure name="AddDataValueToDataSeries" visibility="public" procflags="virtual" file="UMod.pas" line="963">
+      <procedure name="AddDataValueToDataSeries" visibility="public" procflags="virtual" file="UMod.pas" line="985">
         <devnotes>
            <summary> Method for adding measured values to data serie </summary>
         </devnotes>
       </procedure>
-      <procedure name="AddSimValueToDataSeries" visibility="public" procflags="virtual" file="UMod.pas" line="966">
+      <procedure name="AddSimValueToDataSeries" visibility="public" procflags="virtual" file="UMod.pas" line="988">
         <devnotes>
            adding data Values to Data series
-           <summary> Method for adding corresponding simulated values to data serie </summary>  
+           <summary> Method for adding corresponding simulated values to data serie </summary>
         </devnotes>
       </procedure>
-      <procedure name="write_1_1_files" visibility="public" procflags="virtual" file="UMod.pas" line="967">
+      <procedure name="write_1_1_files" visibility="public" procflags="virtual" file="UMod.pas" line="989">
         <devnotes>
            adding sim values to corresponding measured data
         </devnotes>
       </procedure>
-      <procedure name="CalcLinearRegressions" visibility="public" file="UMod.pas" line="969">
+      <procedure name="CalcLinearRegressions" visibility="public" file="UMod.pas" line="991">
         <devnotes>
            output of sim./meas. data pairs
         </devnotes>
       </procedure>
-      <property name="StateVar[index]" visibility="public" read="get_State" write="set_State" type="TState" file="UMod.pas" line="973">
+      <property name="StateVar[index]" visibility="public" read="get_State" write="set_State" type="TState" file="UMod.pas" line="995">
         <devnotes>
            calculation of linear regression
            <summary> property to access state vars via index </summary>
         </devnotes>
       </property>
-      <property name="ParamVar[index]" visibility="public" read="Get_Par" write="set_Par" type="TPar" file="UMod.pas" line="976">
+      <property name="ParamVar[index]" visibility="public" read="Get_Par" write="set_Par" type="TPar" file="UMod.pas" line="998">
         <devnotes>
            List of state variables
            <summary> property to access parameters via index </summary>
         </devnotes>
       </property>
-      <property name="VarVar[index]" visibility="public" read="Get_Var" write="set_Var" type="TVar" file="UMod.pas" line="979">
+      <property name="VarVar[index]" visibility="public" read="Get_Var" write="set_Var" type="TVar" file="UMod.pas" line="1001">
         <devnotes>
            <summary> property to access variables via index </summary>
         </devnotes>
       </property>
-      <property name="ConstVar[index]" visibility="public" read="get_Const" write="set_Const" type="TVar" file="UMod.pas" line="982">
+      <property name="ConstVar[index]" visibility="public" read="get_Const" write="set_Const" type="TVar" file="UMod.pas" line="1004">
         <devnotes>
            <summary> property to access constants via index </summary>
         </devnotes>
       </property>
-      <property name="Option[index]" visibility="public" read="get_Option" write="set_Option" type="TOption" file="UMod.pas" line="985">
+      <property name="Option[index]" visibility="public" read="get_Option" write="set_Option" type="TOption" file="UMod.pas" line="1007">
         <devnotes>
            <summary> property to access options via index </summary>
         </devnotes>
       </property>
-      <property name="ExternVar[index]" visibility="public" read="get_ExternVar" write="set_ExternVar" type="TExternV" file="UMod.pas" line="988">
+      <property name="ExternVar[index]" visibility="public" read="get_ExternVar" write="set_ExternVar" type="TExternV" file="UMod.pas" line="1010">
         <devnotes>
            <summary> property to access external variables via index </summary>
         </devnotes>
       </property>
-      <procedure name="DblClick" visibility="public" procflags="override" file="UMod.pas" line="994">
+      <procedure name="DblClick" visibility="public" procflags="override" file="UMod.pas" line="1016">
       </procedure>
-      <property name="SM_GlobMod" visibility="published" read="Get_GlobMod" write="Set_GlobMod" type="TMod" file="UMod.pas" line="1001">
+      <property name="SM_GlobMod" visibility="published" read="Get_GlobMod" write="Set_GlobMod" type="TMod" file="UMod.pas" line="1023">
         <devnotes>
            <summary> property to linkt the submodel to the main model component </summary>
         </devnotes>
       </property>
-      <property name="SM_ExternVStrList" visibility="published" read="ExternVStrList" type="TStringList" file="UMod.pas" line="1004">
+      <property name="SM_ExternVStrList" visibility="published" read="ExternVStrList" type="TStringList" file="UMod.pas" line="1026">
         <devnotes>
            <summary> property to access the stringlist with external variables of the submodel </summary>
         </devnotes>
       </property>
-      <property name="SM_VarStrList" visibility="published" read="VarStrList" type="TStringList" file="UMod.pas" line="1008">
+      <property name="SM_VarStrList" visibility="published" read="VarStrList" type="TStringList" file="UMod.pas" line="1030">
         <devnotes>
            <summary> property to access the stringlist with variables of the submodel </summary>
         </devnotes>
       </property>
-      <property name="SM_ConstStrList" visibility="published" read="ConstStrList" type="TStringList" file="UMod.pas" line="1012">
+      <property name="SM_ConstStrList" visibility="published" read="ConstStrList" type="TStringList" file="UMod.pas" line="1034">
         <devnotes>
            <summary> property to access the stringlist with constants of the submodel </summary>
         </devnotes>
       </property>
-      <property name="SM_ParStrList" visibility="published" read="ParStrList" type="TStringList" file="UMod.pas" line="1016">
+      <property name="SM_ParStrList" visibility="published" read="ParStrList" type="TStringList" file="UMod.pas" line="1038">
         <devnotes>
            <summary> property to access the stringlist with parameters of the submodel </summary>
         </devnotes>
       </property>
-      <property name="SM_StateStrList" visibility="published" read="StateStrList" type="TStringList" file="UMod.pas" line="1020">
+      <property name="SM_StateStrList" visibility="published" read="StateStrList" type="TStringList" file="UMod.pas" line="1042">
         <devnotes>
            <summary> property to access the stringlist with state variables of the submodel </summary>
         </devnotes>
       </property>
-      <property name="CompIndex" visibility="published" read="FCompIndex" write="FCompIndex" type="Integer" file="UMod.pas" line="1026">
+      <property name="CompIndex" visibility="published" read="FCompIndex" write="FCompIndex" type="Integer" file="UMod.pas" line="1048">
         <devnotes>
-           <summary> property to access the compindex field of the submodel. This field 
+           <summary> property to access the compindex field of the submodel. This field
            controls the execution order of the submodels </summary>
         </devnotes>
       </property>
-      <property name="FN_ratefn" visibility="published" read="fn_rate" write="fn_rate" type="string" default="0" file="UMod.pas" line="1029">
+      <property name="FN_ratefn" visibility="published" read="fn_rate" write="fn_rate" type="string" default="0" file="UMod.pas" line="1051">
         <devnotes>
            <summary> property to access the file name of the submodel rate output file </summary>
         </devnotes>
       </property>
-      <property name="FN_Statefn" visibility="published" read="fn_state" write="fn_state" type="string" default="0" file="UMod.pas" line="1032">
+      <property name="FN_Statefn" visibility="published" read="fn_state" write="fn_state" type="string" default="0" file="UMod.pas" line="1054">
         <devnotes>
            <summary> property to access the file name of the submodel state output file </summary>
         </devnotes>
       </property>
-      <property name="MeasFile" visibility="published" read="FMeasValues" write="FMeasValues" type="TTextFileH" file="UMod.pas" line="1035">
+      <property name="MeasFile" visibility="published" read="FMeasValues" write="FMeasValues" type="TTextFileH" file="UMod.pas" line="1057">
         <devnotes>
            <summary> property to access the file name of the measruement data for the submodel </summary>
         </devnotes>
       </property>
-      <property name="AssimilatedSubmodList" visibility="published" read="fAssimilatedSubmodList" write="fAssimilatedSubmodList" type="TStringList" file="UMod.pas" line="1040">
+      <property name="AssimilatedSubmodList" visibility="published" read="fAssimilatedSubmodList" write="fAssimilatedSubmodList" type="TStringList" file="UMod.pas" line="1062">
         <devnotes>
-           <summary> property to access the stringlist with assimilated sub models, i.e. submodels which are 
+           <summary> property to access the stringlist with assimilated sub models, i.e. submodels which are
            linked to the submodel but not to the central model, this feature is not yet worked out </summary>
         </devnotes>
       </property>
-      <property name="DebugModus" visibility="published" read="fDebugmodus" write="fDebugmodus" type="Boolean" file="UMod.pas" line="1044">
+      <property name="DebugModus" visibility="published" read="fDebugmodus" write="fDebugmodus" type="Boolean" file="UMod.pas" line="1066">
         <devnotes>
            <summary> property access the debug modus field of the sub model </summary>
         </devnotes>
       </property>
-      <property name="OptContOutput" visibility="published" read="fWritecontinuouslyToFile" write="fWritecontinuouslyToFile" type="Boolean" file="UMod.pas" line="1047">
+      <property name="OptContOutput" visibility="published" read="fWritecontinuouslyToFile" write="fWritecontinuouslyToFile" type="Boolean" file="UMod.pas" line="1069">
         <devnotes>
            <summary> property to access the flag for writing output continously </summary>
         </devnotes>
       </property>
-      <property name="Parent" visibility="published" read="FParent" write="SetParent" type="TWinControl" hoisted="true" file="UMod.pas" line="1052" />
-      <property name="Canvas" visibility="published" read="FCanvas" type="TCanvas" hoisted="true" file="UMod.pas" line="1053" />
-      <property name="Visible" visibility="published" read="FVisible" write="SetVisible" stored="IsVisibleStored" type="Boolean" default="1" hoisted="true" file="UMod.pas" line="1054" />
-      <property name="color" visibility="published" read="FColor" write="SetColor" stored="IsColorStored" type="TColor" default="32768" hoisted="true" file="UMod.pas" line="1055" />
-      <property name="DebugForm" visibility="published" read="fDebugForm" write="fDebugForm" type="TFormDebugAbstract" file="UMod.pas" line="1056" />
-      <event name="OnDblClick" visibility="published" read="FOnDblClick" write="FOnDblClick" type="TNotifyEvent" hoisted="true" file="UMod.pas" line="1057" />
+      <property name="Parent" visibility="published" read="FParent" write="SetParent" type="TWinControl" hoisted="true" file="UMod.pas" line="1074" />
+      <property name="Canvas" visibility="published" read="FCanvas" type="TCanvas" hoisted="true" file="UMod.pas" line="1075" />
+      <property name="Visible" visibility="published" read="FVisible" write="SetVisible" stored="IsVisibleStored" type="Boolean" default="1" hoisted="true" file="UMod.pas" line="1076" />
+      <property name="color" visibility="published" read="FColor" write="SetColor" stored="IsColorStored" type="TColor" default="32768" hoisted="true" file="UMod.pas" line="1077" />
+      <property name="DebugForm" visibility="published" read="fDebugForm" write="fDebugForm" type="TFormDebugAbstract" file="UMod.pas" line="1078" />
+      <event name="OnDblClick" visibility="published" read="FOnDblClick" write="FOnDblClick" type="TNotifyEvent" hoisted="true" file="UMod.pas" line="1079" />
     </members>
   </class>
-  <function name="IsDesignTime" visibility="public" file="UMod.pas" line="1099">
+  <function name="IsDesignTime" visibility="public" file="UMod.pas" line="1126">
     <parameters>
       <retval type="Boolean" />
     </parameters>
   </function>
-  <procedure name="Register" visibility="public" file="UMod.pas" line="6330">
+  <function name="CompareByModelCompIndex" visibility="public" file="UMod.pas" line="1132">
+    <parameters>
+      <parameter name="List" type="TStringList" />
+      <parameter name="Index1" type="Integer" />
+      <parameter name="Index2" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <procedure name="Register" visibility="public" file="UMod.pas" line="6457">
     <devnotes>
        <summary> Registering the TMod and TSubModel components for designtime editing </summary>
     </devnotes>

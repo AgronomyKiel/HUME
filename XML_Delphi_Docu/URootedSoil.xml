@@ -129,11 +129,11 @@
       <methodref name="CalcProfile_and_HorizonSums" visibility="private" />
       <methodref name="TransferWGsToNextINI" visibility="private" />
       <methodref name="obere_Randbedingung" visibility="private" />
-      <methodref name="SetPlantModel" visibility="protected" procflags="override">
+      <methodref name="ndx_str" visibility="protected">
       </methodref>
-      <methodref name="ndx_str" visibility="protected" />
       <methodref name="getTexture" visibility="protected" />
       <methodref name="getLD" visibility="protected" />
+      <methodref name="SetPlantModel" visibility="public" procflags="override" />
       <methodref name="CreateAll" visibility="public" procflags="override" />
       <methodref name="Init" visibility="public" procflags="override" />
       <methodref name="CalcEvap_red_f" visibility="public" />
@@ -281,7 +281,7 @@
         <ancestor name="TPlantRelatedSubMod" namespace="UAbstractPlant">
           <methodref name="GetIsPlantModelset" visibility="protected">
           </methodref>
-          <methodref name="SetPlantModel" visibility="protected" procflags="virtual" />
+          <methodref name="SetPlantModel" visibility="public" procflags="virtual" />
           <methodref name="Init" visibility="public" procflags="override" />
           <propertyref name="IsPlantModelSet" visibility="public" />
           <propertyref name="PlantModel" visibility="published" />
@@ -331,6 +331,7 @@
             <methodref name="UpdateValue" visibility="protected" />
             <methodref name="Paint" visibility="protected" procflags="override">
             </methodref>
+            <methodref name="Notification" visibility="protected" procflags="virtual" />
             <methodref name="Create" visibility="public" procflags="constructor override">
             </methodref>
             <methodref name="free" visibility="public">
@@ -1487,165 +1488,165 @@
       </procedure>
       <procedure name="CreateOptionsRootedSoil" visibility="private" file="URootedSoil.pas" line="43">
       </procedure>
-      <procedure name="SetPlantModel" visibility="protected" procflags="override" file="URootedSoil.pas" line="49">
-        <parameters>
-          <parameter name="NewPlantModel" type="TAbstractPlant" />
-        </parameters>
-      </procedure>
-      <field name="AutoIrriOptStr" type="TOption" visibility="public" size="4" offset="17544" file="URootedSoil.pas" line="53" />
-      <field name="AutoIrriMethodOptStr" type="TOption" visibility="public" size="4" offset="17548" file="URootedSoil.pas" line="54" />
-      <field name="SinkTermMethodOptStr" type="TOption" visibility="public" size="4" offset="17552" file="URootedSoil.pas" line="55" />
-      <field name="WriteMFPTable" type="TOption" visibility="public" size="4" offset="17556" file="URootedSoil.pas" line="56" />
-      <field name="WcontDiff_arr" type="TSoilVarArray" visibility="public" size="212" offset="17560" file="URootedSoil.pas" line="57">
+      <field name="AutoIrriOptStr" type="TOption" visibility="public" size="4" offset="17544" file="URootedSoil.pas" line="52" />
+      <field name="AutoIrriMethodOptStr" type="TOption" visibility="public" size="4" offset="17548" file="URootedSoil.pas" line="53" />
+      <field name="SinkTermMethodOptStr" type="TOption" visibility="public" size="4" offset="17552" file="URootedSoil.pas" line="54" />
+      <field name="WriteMFPTable" type="TOption" visibility="public" size="4" offset="17556" file="URootedSoil.pas" line="55" />
+      <field name="WcontDiff_arr" type="TSoilVarArray" visibility="public" size="212" offset="17560" file="URootedSoil.pas" line="56">
         <devnotes>
            Option for output of MFP-table functions as txt file
         </devnotes>
       </field>
-      <field name="PsiRootDiff_arr" type="TSoilVarArray" visibility="public" size="212" offset="17772" file="URootedSoil.pas" line="58">
+      <field name="PsiRootDiff_arr" type="TSoilVarArray" visibility="public" size="212" offset="17772" file="URootedSoil.pas" line="57">
         <devnotes>
            Wassergehaltsdifferenzen Wurzeloberfl�che/Bodenraum [cm3/cm3]
         </devnotes>
       </field>
-      <field name="ProzNFK_arr" type="TSoilVarArray" visibility="public" size="212" offset="17984" file="URootedSoil.pas" line="59">
+      <field name="ProzNFK_arr" type="TSoilVarArray" visibility="public" size="212" offset="17984" file="URootedSoil.pas" line="58">
         <devnotes>
            Wasserspannungsdifferenzen Wurzeloberfl�che/Bodenraum [cm3/cm3]
         </devnotes>
       </field>
-      <field name="ExWld_arr" type="TSoilExtArray" visibility="public" size="208" offset="18196" file="URootedSoil.pas" line="61" />
-      <field name="WLges" type="TVar" visibility="public" size="4" offset="18404" file="URootedSoil.pas" line="62">
+      <field name="ExWld_arr" type="TSoilExtArray" visibility="public" size="208" offset="18196" file="URootedSoil.pas" line="60" />
+      <field name="WLges" type="TVar" visibility="public" size="4" offset="18404" file="URootedSoil.pas" line="61">
         <devnotes>
-           Wurzell�ngendichten [cm.cm-3]
+           Wurzellaengendichten [cm.cm-3]
         </devnotes>
       </field>
-      <field name="SinkRedF" type="TSoilArray" visibility="public" size="416" offset="18408" file="URootedSoil.pas" line="64">
+      <field name="SinkRedF" type="TSoilArray" visibility="public" size="416" offset="18408" file="URootedSoil.pas" line="63">
         <devnotes>
            GesamtWurzell�nge [cm]
         </devnotes>
       </field>
-      <field name="psiRoot" type="TVar" visibility="public" size="4" offset="18824" file="URootedSoil.pas" line="65">
+      <field name="psiRoot" type="TVar" visibility="public" size="4" offset="18824" file="URootedSoil.pas" line="64">
         <devnotes>
            Reduktionsfaktoren bei Wasseraufnahme
         </devnotes>
       </field>
-      <field name="psi_2" type="TPar" visibility="public" size="4" offset="18828" file="URootedSoil.pas" line="66">
+      <field name="psi_2" type="TPar" visibility="public" size="4" offset="18828" file="URootedSoil.pas" line="65">
         <devnotes>
            average, weighted soil water potential within the rooting zone [pF]
         </devnotes>
       </field>
-      <field name="psi_3" type="TPar" visibility="public" size="4" offset="18832" file="URootedSoil.pas" line="67">
+      <field name="psi_3" type="TPar" visibility="public" size="4" offset="18832" file="URootedSoil.pas" line="66">
         <devnotes>
            Wasserspannung ab der Wasseraufnahme beginnt abzunehmen
         </devnotes>
       </field>
-      <field name="CompFactor" type="TPar" visibility="public" size="4" offset="18836" file="URootedSoil.pas" line="68">
+      <field name="CompFactor" type="TPar" visibility="public" size="4" offset="18836" file="URootedSoil.pas" line="67">
         <devnotes>
            Wasserspannung ab der Wasseraufnahme = 0
         </devnotes>
       </field>
-      <field name="IrriAmount" type="TPar" visibility="public" size="4" offset="18840" file="URootedSoil.pas" line="69">
+      <field name="IrriAmount" type="TPar" visibility="public" size="4" offset="18840" file="URootedSoil.pas" line="68">
         <devnotes>
            Konkurrenzfaktor f�r Wasseraufnahme der Wurzeln (i.d.R. &lt; 1.0)
         </devnotes>
       </field>
-      <field name="Autoirri_nFKcrit" type="TPar" visibility="public" size="4" offset="18844" file="URootedSoil.pas" line="71">
+      <field name="Autoirri_nFKcrit" type="TPar" visibility="public" size="4" offset="18844" file="URootedSoil.pas" line="70">
         <devnotes>
            Auto BEw. Menge [mm]
         </devnotes>
       </field>
-      <field name="nfk_threshold" type="TPar" visibility="public" size="4" offset="18848" file="URootedSoil.pas" line="72">
+      <field name="nfk_threshold" type="TPar" visibility="public" size="4" offset="18848" file="URootedSoil.pas" line="71">
         <devnotes>
            critical nFK value for triggering irrigation
         </devnotes>
       </field>
-      <field name="feddes_a" type="TPar" visibility="public" size="4" offset="18852" file="URootedSoil.pas" line="73" />
-      <field name="feddes_b" type="TPar" visibility="public" size="4" offset="18856" file="URootedSoil.pas" line="74" />
-      <field name="feddes_c" type="TPar" visibility="public" size="4" offset="18860" file="URootedSoil.pas" line="75" />
-      <field name="ProznFK_act_rooted_comps" type="TVar" visibility="public" size="4" offset="18864" file="URootedSoil.pas" line="76" />
-      <field name="nFKcrit" type="TPar" visibility="public" size="4" offset="18868" file="URootedSoil.pas" line="78" />
-      <field name="PotTrans" type="TExternV" visibility="public" size="4" offset="18872" file="URootedSoil.pas" line="80" />
-      <field name="Interzeption" type="TExternV" visibility="public" size="4" offset="18876" file="URootedSoil.pas" line="81">
+      <field name="feddes_a" type="TPar" visibility="public" size="4" offset="18852" file="URootedSoil.pas" line="72" />
+      <field name="feddes_b" type="TPar" visibility="public" size="4" offset="18856" file="URootedSoil.pas" line="73" />
+      <field name="feddes_c" type="TPar" visibility="public" size="4" offset="18860" file="URootedSoil.pas" line="74" />
+      <field name="ProznFK_act_rooted_comps" type="TVar" visibility="public" size="4" offset="18864" file="URootedSoil.pas" line="75" />
+      <field name="nFKcrit" type="TPar" visibility="public" size="4" offset="18868" file="URootedSoil.pas" line="77" />
+      <field name="PotTrans" type="TExternV" visibility="public" size="4" offset="18872" file="URootedSoil.pas" line="79" />
+      <field name="Interzeption" type="TExternV" visibility="public" size="4" offset="18876" file="URootedSoil.pas" line="80">
         <devnotes>
            External value for potential transpiration
         </devnotes>
       </field>
-      <field name="ActTrans" type="TVar" visibility="public" size="4" offset="18880" file="URootedSoil.pas" line="82">
+      <field name="ActTrans" type="TVar" visibility="public" size="4" offset="18880" file="URootedSoil.pas" line="81">
         <devnotes>
            External value for Interception
         </devnotes>
       </field>
-      <field name="TransRatio" type="TVar" visibility="public" size="4" offset="18884" file="URootedSoil.pas" line="83">
+      <field name="TransRatio" type="TVar" visibility="public" size="4" offset="18884" file="URootedSoil.pas" line="82">
         <devnotes>
            aktuelle Transpirationsrate [mm/d]
         </devnotes>
       </field>
-      <field name="TransIntRatio" type="TVar" visibility="public" size="4" offset="18888" file="URootedSoil.pas" line="84">
+      <field name="TransIntRatio" type="TVar" visibility="public" size="4" offset="18888" file="URootedSoil.pas" line="83">
         <devnotes>
            Verh�ltnis aktuelle zu potentielle Transpiration
         </devnotes>
       </field>
-      <field name="Eact_ETP" type="TVar" visibility="public" size="4" offset="18892" file="URootedSoil.pas" line="85">
+      <field name="Eact_ETP" type="TVar" visibility="public" size="4" offset="18892" file="URootedSoil.pas" line="84">
         <devnotes>
            Verh�ltnis aktuelle zu potentielle Transpiration
         </devnotes>
       </field>
-      <field name="Psi2" type="TVar" visibility="public" size="4" offset="18896" file="URootedSoil.pas" line="86">
+      <field name="Psi2" type="TVar" visibility="public" size="4" offset="18896" file="URootedSoil.pas" line="85">
         <devnotes>
            Ration of act. evaporation to pot. evapotranspiration
         </devnotes>
       </field>
-      <field name="act_rooted_comps" type="TVar" visibility="public" size="4" offset="18900" file="URootedSoil.pas" line="87">
+      <field name="act_rooted_comps" type="TVar" visibility="public" size="4" offset="18900" file="URootedSoil.pas" line="86">
         <devnotes>
            water potential at which water uptake by the plant starts to decrease [hPa]
         </devnotes>
       </field>
-      <field name="EmergenceDay" type="TExternV" visibility="public" size="4" offset="18904" file="URootedSoil.pas" line="88">
+      <field name="EmergenceDay" type="TExternV" visibility="public" size="4" offset="18904" file="URootedSoil.pas" line="87">
         <devnotes>
            actual number of rooted compartiments
         </devnotes>
       </field>
-      <field name="CumAutoIrrigation" type="TState" visibility="public" size="4" offset="18908" file="URootedSoil.pas" line="90">
+      <field name="CumAutoIrrigation" type="TState" visibility="public" size="4" offset="18908" file="URootedSoil.pas" line="89">
         <devnotes>
           used for Autoirrigation
         </devnotes>
       </field>
-      <field name="CumTrans" type="TState" visibility="public" size="4" offset="18912" file="URootedSoil.pas" line="91">
+      <field name="CumTrans" type="TState" visibility="public" size="4" offset="18912" file="URootedSoil.pas" line="90">
         <devnotes>
            cum. Amount of  Irrigation
         </devnotes>
       </field>
-      <field name="CumET" type="TState" visibility="public" size="4" offset="18916" file="URootedSoil.pas" line="92">
+      <field name="CumET" type="TState" visibility="public" size="4" offset="18916" file="URootedSoil.pas" line="91">
         <devnotes>
            kumulative Transpiration [mm]
         </devnotes>
       </field>
-      <field name="CumETpot" type="TState" visibility="public" size="4" offset="18920" file="URootedSoil.pas" line="93">
+      <field name="CumETpot" type="TState" visibility="public" size="4" offset="18920" file="URootedSoil.pas" line="92">
         <devnotes>
            cumulative actual Evapotranspiration
         </devnotes>
       </field>
-      <field name="CumTranspot" type="TState" visibility="public" size="4" offset="18924" file="URootedSoil.pas" line="94">
+      <field name="CumTranspot" type="TState" visibility="public" size="4" offset="18924" file="URootedSoil.pas" line="93">
         <devnotes>
            cumulative potential Evapotranspiration
         </devnotes>
       </field>
-      <field name="f_SqrWl_Option" type="TOption" visibility="public" size="4" offset="18928" file="URootedSoil.pas" line="95">
+      <field name="f_SqrWl_Option" type="TOption" visibility="public" size="4" offset="18928" file="URootedSoil.pas" line="94">
         <devnotes>
            cumulative potential Transpiration
         </devnotes>
       </field>
-      <field name="r_root" type="TPar" visibility="public" size="4" offset="18932" file="URootedSoil.pas" line="96">
+      <field name="r_root" type="TPar" visibility="public" size="4" offset="18932" file="URootedSoil.pas" line="95">
         <devnotes>
            Option for sink reduction (Sqr_wl_arr calculation)
         </devnotes>
       </field>
-      <field name="MFP_arr" visibility="public" size="84" offset="18936" file="URootedSoil.pas" line="98">
+      <field name="MFP_arr" visibility="public" size="84" offset="18936" file="URootedSoil.pas" line="97">
         <devnotes>
            root radius
         </devnotes>
-        <array name="MFP_arr" visibility="public" low="0" high="20" file="URootedSoil.pas" line="98">
+        <array name="MFP_arr" visibility="public" low="0" high="20" file="URootedSoil.pas" line="97">
           <element type="TMFP_table" />
         </array>
       </field>
+      <procedure name="SetPlantModel" visibility="public" procflags="override" file="URootedSoil.pas" line="99">
+        <parameters>
+          <parameter name="NewPlantModel" type="TAbstractPlant" />
+        </parameters>
+      </procedure>
       <procedure name="CreateAll" visibility="public" procflags="override" file="URootedSoil.pas" line="100">
       </procedure>
       <procedure name="Init" visibility="public" procflags="override" file="URootedSoil.pas" line="102">

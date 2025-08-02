@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>UGrowthCurvePlant: Class TGrowthCurvePlant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="PasDoc 0.16.0-snapshot">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">
+
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<div class="container"><div class="navigation">
+<ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li><li><form class="search-form" action="tipue_results.html"><div class="search-input"><input type="text" name="q" id="tipue_search_input" pattern=".{1,}" title="At least 1 characters" required><div class="search-button"><input type="button" id="tipue_search_button" onclick="this.form.submit();"></div></div></form>
+<div style="clear: both"></div>
+</li></ul></div><div class="content">
+<span id="TGrowthCurvePlant"></span><h1 class="cio">Class TGrowthCurvePlant</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section"><a class="section" href="#PasDoc-Fields">Fields</a></div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section"><a class="section" href="#PasDoc-Properties">Properties</a></div></div>
+<span id="PasDoc-Description"></span><h2 class="unit">Unit</h2>
+<p class="unitlink">
+<a href="UGrowthCurvePlant.html">UGrowthCurvePlant</a></p>
+<h2 class="declaration">Declaration</h2>
+<p class="declaration">
+<code>type TGrowthCurvePlant = class(<a class="normal" href="UAbstractPlant.TAbstractPlant.html">TAbstractPlant</a>)</code></p>
+<h2 class="description">Description</h2>
+<p>
+ Plant model that simulates growth curves based on logistic, monomolecular, Gompertz, or Richards growth. It calculates growth rates based on temperature and other parameters, and integrates these rates over time to update state variables such as LAI, DM, CropHeight, and ShootN. </p>
+<p>
+
+
+<p>This class extends TAbstractPlant and provides methods for calculating growth rates, integrating state variables, and handling temperature effects on plant growth. It also supports soil nitrogen uptake if enabled.</p>
+<span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
+<ul class="hierarchy"><li class="ancestor">TSubModel</li>
+<li class="ancestor"><a class="normal" href="UAbstractPlant.TAbstractPlant.html">TAbstractPlant</a></li>
+<li class="thisitem">TGrowthCurvePlant</li></ul><h2 class="overview">Overview</h2>
+<span id="PasDoc-Fields"></span><h3 class="summary">Fields</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#CurveOptions">CurveOptions</a></strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>] of TOption;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#CurveSwitches">CurveSwitches</a></strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>] of boolean;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#CurveTypes">CurveTypes</a></strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>] of <a href="UGrowthCurvePlant.html#TGrowth">TGrowth</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#C_cont_Res">C_cont_Res</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#fEmergence">fEmergence</a></strong>: boolean;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#fWithNUptake">fWithNUptake</a></strong>: boolean;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#GrowthRates">GrowthRates</a></strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>] of TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Harvestindex">Harvestindex</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#IntPolVals">IntPolVals</a></strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>, 0..<a href="UGrowthCurvePlant.html#MaxVals">MaxVals</a>] of record
+      t: <a href="UAbstractPlant.html#real">real</a>;
+      V: <a href="UAbstractPlant.html#real">real</a>;
+    end;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#N_Harvestindex">N_Harvestindex</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Parameters">Parameters</a></strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>, <a href="UGrowthCurvePlant.html#TParameters">TParameters</a>] of Tpar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#plantIsGrowing">plantIsGrowing</a></strong>: Boolean;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#SoilNUptakeGrowthRate">SoilNUptakeGrowthRate</a></strong>: TExternV;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#StateVars">StateVars</a></strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>] of TState;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#SumSoilNUptakeGrowth">SumSoilNUptakeGrowth</a></strong>: TState;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Temp">Temp</a></strong>: TExternV;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#TempSumEmerge">TempSumEmerge</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#TSum">TSum</a></strong>: TState;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#TSum_DM">TSum_DM</a></strong>: TState;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>function <strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#CalcGrowthRate-real-real-real-real-real-real-real-TGrowth-TStateVars-">CalcGrowthRate</a></strong>(ActValue, temp, BaseTemp, rgr, gr, Capacity, Form: <a href="UAbstractPlant.html#real">real</a>; CurveType: <a href="UGrowthCurvePlant.html#TGrowth">TGrowth</a>; StateVar: <a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>): <a href="UAbstractPlant.html#real">real</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>function <strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#GetCropHeight">GetCropHeight</a></strong>: THumeNumEntity; override;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>function <strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#GetLAI">GetLAI</a></strong>: THumeNumEntity; override;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>function <strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#GetNUptakeRate">GetNUptakeRate</a></strong>: THumeNumEntity; override;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#CalcRates">CalcRates</a></strong>; override;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#CreateAll">CreateAll</a></strong>; override;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Init-Tmod-">Init</a></strong>(var GlobMod: Tmod); override;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Integrate">Integrate</a></strong>; override;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Properties"></span><h3 class="summary">Properties</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Ex_Temp">Ex_Temp</a></strong>: TExternV read <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Temp">Temp</a> write <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Temp">Temp</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Par_LAImax">Par_LAImax</a></strong>: TPar read <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Parameters">Parameters</a>[<a href="UGrowthCurvePlant.html#LAI">LAI</a>, <a href="UGrowthCurvePlant.html#Capacity">Capacity</a>] write
+      <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Parameters">Parameters</a>[<a href="UGrowthCurvePlant.html#LAI">LAI</a>, <a href="UGrowthCurvePlant.html#Capacity">Capacity</a>];</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Par_TempsumEmerge">Par_TempsumEmerge</a></strong>: TPar read <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#TempSumEmerge">TempSumEmerge</a> write <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#TempSumEmerge">TempSumEmerge</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="UGrowthCurvePlant.TGrowthCurvePlant.html#withNUptake">withNUptake</a></strong>: boolean read <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#fWithNUptake">fWithNUptake</a> write <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#fWithNUptake">fWithNUptake</a>;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Fields</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="CurveOptions"></span><code><strong>CurveOptions</strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>] of TOption;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="CurveSwitches"></span><code><strong>CurveSwitches</strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>] of boolean;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="CurveTypes"></span><code><strong>CurveTypes</strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>] of <a href="UGrowthCurvePlant.html#TGrowth">TGrowth</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="C_cont_Res"></span><code><strong>C_cont_Res</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="fEmergence"></span><code><strong>fEmergence</strong>: boolean;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Indicates if the plant has emerged</p>
+<p>
+ This boolean flag is set to true when the plant has emerged from the soil</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="fWithNUptake"></span><code><strong>fWithNUptake</strong>: boolean;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Indicates if nitrogen uptake should be simulated </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="GrowthRates"></span><code><strong>GrowthRates</strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>] of TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+notwendig?</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Harvestindex"></span><code><strong>Harvestindex</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="IntPolVals"></span><code><strong>IntPolVals</strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>, 0..<a href="UGrowthCurvePlant.html#MaxVals">MaxVals</a>] of record
+      t: <a href="UAbstractPlant.html#real">real</a>;
+      V: <a href="UAbstractPlant.html#real">real</a>;
+    end;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Interpolation values for state variables containing records of time and value</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="N_Harvestindex"></span><code><strong>N_Harvestindex</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Parameters"></span><code><strong>Parameters</strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>, <a href="UGrowthCurvePlant.html#TParameters">TParameters</a>] of Tpar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="plantIsGrowing"></span><code><strong>plantIsGrowing</strong>: Boolean;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Indicates if the plant is currently growing</p>
+<p>
+ This boolean flag is set to true when the plant is actively growing, false otherwise.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="SoilNUptakeGrowthRate"></span><code><strong>SoilNUptakeGrowthRate</strong>: TExternV;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="StateVars"></span><code><strong>StateVars</strong>: array[<a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>] of TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="SumSoilNUptakeGrowth"></span><code><strong>SumSoilNUptakeGrowth</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Temp"></span><code><strong>Temp</strong>: TExternV;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Pointer to external temperature variable of type TExternV</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TempSumEmerge"></span><code><strong>TempSumEmerge</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSum"></span><code><strong>TSum</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ Temperature sum state variable</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSum_DM"></span><code><strong>TSum_DM</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ Temperature sum state variable for dry matter</p>
+</td></tr>
+</table>
+<h3 class="detail">Methods</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="CalcGrowthRate-real-real-real-real-real-real-real-TGrowth-TStateVars-"></span><code>function <strong>CalcGrowthRate</strong>(ActValue, temp, BaseTemp, rgr, gr, Capacity, Form: <a href="UAbstractPlant.html#real">real</a>; CurveType: <a href="UGrowthCurvePlant.html#TGrowth">TGrowth</a>; StateVar: <a href="UGrowthCurvePlant.html#TStateVars">TStateVars</a>): <a href="UAbstractPlant.html#real">real</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ function to calculate the growth rate based on the current state, temperature, and parameters depending on the type of growth curve</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="GetCropHeight"></span><code>function <strong>GetCropHeight</strong>: THumeNumEntity; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Getter for the Crop Height</p>
+<p>
+  This method retrieves the current crop height from the state variables.</p>
+<h6 class="description_section">Returns</h6>
+<p class="return">Crop Height as a THumeNumEntity</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="GetLAI"></span><code>function <strong>GetLAI</strong>: THumeNumEntity; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Getter for the Leaf Area Index (LAI)</p>
+<p>
+  This method retrieves the current Leaf Area Index from the state variables.</p>
+<h6 class="description_section">Returns</h6>
+<p class="return">Leaf Area Index as a THumeNumEntity</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="GetNUptakeRate"></span><code>function <strong>GetNUptakeRate</strong>: THumeNumEntity; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Getter for the Nitrogen uptake rate</p>
+<p>
+  This method retrieves the current nitrogen uptake rate from the growth rates.</p>
+<h6 class="description_section">Returns</h6>
+<p class="return">Nitrogen uptake rate as a THumeNumEntity</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="CalcRates"></span><code>procedure <strong>CalcRates</strong>; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="CreateAll"></span><code>procedure <strong>CreateAll</strong>; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Init-Tmod-"></span><code>procedure <strong>Init</strong>(var GlobMod: Tmod); override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="inheritdescription">This item has no description. Showing description inherited from <a class="normal" href="UAbstractPlant.TAbstractPlant.html#Init-Tmod-">TAbstractPlant.Init</a>.</p><p>
+Initializes the plant model with global model parameters This method sets the initial conditions for the plant model harvest status, and residue states. It also ensures that the harvest date is set correctly relative to the sowing date. </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Integrate"></span><code>procedure <strong>Integrate</strong>; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="inheritdescription">This item has no description. Showing description inherited from <a class="normal" href="UAbstractPlant.TAbstractPlant.html#Integrate">TAbstractPlant.Integrate</a>.</p><p>
+Integrates the plant model state variables and performs harvest if conditions are met This method checks if the harvest date has been reached or if harvesting is triggered. If so, it sets the harvested flag, adds residues to the soil model, and prepares the next crop for planting. It also resets state variables and updates sowing and harvest dates based on the rotation lengt furthermore it moves pointer of coupled submodels to the next crop in the rotation.</p>
+</td></tr>
+</table>
+<h3 class="detail">Properties</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Ex_Temp"></span><code>property <strong>Ex_Temp</strong>: TExternV read <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Temp">Temp</a> write <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Temp">Temp</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_LAImax"></span><code>property <strong>Par_LAImax</strong>: TPar read <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Parameters">Parameters</a>[<a href="UGrowthCurvePlant.html#LAI">LAI</a>, <a href="UGrowthCurvePlant.html#Capacity">Capacity</a>] write
+      <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#Parameters">Parameters</a>[<a href="UGrowthCurvePlant.html#LAI">LAI</a>, <a href="UGrowthCurvePlant.html#Capacity">Capacity</a>];</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_TempsumEmerge"></span><code>property <strong>Par_TempsumEmerge</strong>: TPar read <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#TempSumEmerge">TempSumEmerge</a> write <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#TempSumEmerge">TempSumEmerge</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="withNUptake"></span><code>property <strong>withNUptake</strong>: boolean read <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#fWithNUptake">fWithNUptake</a> write <a href="UGrowthCurvePlant.TGrowthCurvePlant.html#fWithNUptake">fWithNUptake</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0-snapshot</a>. </em>
+</span>
+</div></div></body></html>

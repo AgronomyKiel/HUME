@@ -1,31 +1,34 @@
+ï»¿/// <summary>
+/// Simulates logistic, monomolecular, Gompertz, or Richards growth. It is mainly used for describing/interpolation the crop parameters
+/// such as LAI, DM, CropHeight, and ShootN over time which are needed to simulate soil water and soil nitrogen.No license found. Thereby it depends on 
+/// the experimental data to which the growth curve is fitted or typically temporally even denser observed data which then dan be used for interpolation.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Required external variables:
+///   - Temperature (Temp)
+/// </para>
+/// <para>
+/// Required parameters:
+///   - Growth rate [1/d] (rgr)
+///   - Maximum LAI [m2/m2] (max)
+///   - Base temperature [Â°C] (BaseTemp)
+///   - Richards form parameter (Richards_m)
+///   - Planting date [d] (SowingDate)
+///   - Harvest date [d] (HarvestDate)
+/// </para>
+/// <para>
+/// State variables:
+///   - Temperature sum [Â°C] (TSum)
+/// </para>
+/// <para>
+/// Options:
+///   - Growth type [logistic, monomolecular, Gompertz, Richards, linear, expo-linear, LogIntDecay, Log_Decay, IntPol] (CurveType) 
+/// </para>
+/// </remarks>
+
 unit UGrowthCurvePlant;
 
-{******************************************************************************
-*******************************************************************************
-**  Simuliert logistisches, monomolekulares, Gomperz oder Richards Wachstum **
-*******************************************************************************
-{******************************************************************************
-
-benötigte externe Größen:
-                  - Temperatur                               -->Temp
-
-benötigte Parameter:
-                  - Wachstumsrate [1/d]                      -->rgr
-                  - maximaler LAI [m2/m2]                    -->max
-                  - Basistemperatur [°C]                     -->BaseTemp
-                  - Richards Formparameter                   --> Richards_m
-                  - Auspflanzdatum [d]                       -->SowingDate
-                  - Rode/ Erntedatum [d]                     -->HarvestDate
-
-Zustandsgrößen:
-                  - Temperatursumme [°C]                     -->Tsum
-
-Optionen:
-                  - Wachstumart [logistisch,
-                                 monomolekular,
-                                 Gompertz,
-                                 Richards]
-******************************************************************************}
 
 interface
 
@@ -35,64 +38,128 @@ uses
 
 type
 
+/// <summary>
+/// Defines the types of growth curves/interpolation methods available.
+/// </summary>
   TGrowth = (Logistisch, LogIntBased, Monomolekular, Gompertz, Richards, Linear, expolinear,
     LogIntDecay, Log_Decay, IntPol);
+
+/// <summary>  Enumeration type for the state variables used in the growth curve plant model</summary>    
   TStateVars = (LAI, DM, CropHeight, ShootN);
+
+/// <summary>   Enumeration type for the parameters used in the growth curve plant model</summary>
+//// <remarks> be aware that th meaning of the parameters depends on the growth curve type</remarks>
   TParameters = (BaseTemp, rgr, gr, Capacity, Richards_f, IniValue);
 
 const
+
+/// <summary>  Array of state variable names for the growth curve plant model</summary>
   Statenames: array[TStatevars] of string = ('LAI', 'DM', 'Height', 'ShootN');
+/// <summary>  Array of state variable units for the growth curve plant model</summary>  
   StateUnits: array[TStatevars] of string = ('[-]', '[g/m2]', '[m]', '[gN/m2]');
+
+/// <summary>  Array of parameter names for the growth curve plant model</summary>  
   Parnames: array[TParameters] of string = ('BaseTemp', 'rgr', 'gr', 'Capacity',
     'Richards_f', 'IniValue');
-  ParUnits: array[TParameters] of string = ('[°C]', '[1/d]', '[]', '[]', '[]',
+
+/// <summary>  Array of parameter units for the growth curve plant model</summary>
+/// <remarks> be aware that the the units can not defined independently from the state variables</remarks>    
+  ParUnits: array[TParameters] of string = ('[Â°C]', '[1/d]', '[]', '[]', '[]',
     '[]');
-  MaxVals = 10000; // Maximale Anzahl Datenpunkte für Option 'IntPol'
+
+/// <summary>Maximum number of data points for interpolation</summary>
+  MaxVals = 10000; 
 
 type
+
+/// <summary>
+/// Plant model that simulates growth curves based on logistic, monomolecular, Gompertz, or Richards growth.
+/// It calculates growth rates based on temperature and other parameters, and integrates these rates
+/// over time to update state variables such as LAI, DM, CropHeight, and ShootN.
+/// </summary>
+/// <remarks>
+/// This class extends TAbstractPlant and provides methods for calculating growth rates, integrating state variables,
+/// and handling temperature effects on plant growth. It also supports soil nitrogen uptake if enabled.
+/// </remarks>  
 
   TGrowthCurvePlant = class(TAbstractPlant)
 
   private
-    Emergence: boolean;
+/// <summary>Indicates if the plant has emerged</summary>
+    /// <remarks>This boolean flag is set to true when the plant has emerged from the soil</remarks>
+    fEmergence: boolean;
   protected
+
+/// <summary>Interpolation values for state variables containing records of time and value</summary>
     IntPolVals: array[TStateVars, 0..MaxVals] of record
       t: real;
       V: real;
     end;
+
+/// <summary>Indicates if nitrogen uptake should be simulated </summary>    
     fWithNUptake: boolean;
 
+/// <summary> function to calculate the growth rate based on the current state, temperature, and parameters depending
+/// on the type of growth curve</summary>
     function CalcGrowthRate(ActValue, temp, BaseTemp, rgr, gr, Capacity, Form:
       real;
       CurveType: TGrowth; StateVar: TStateVars): real;
-
+/// <summary>Getter for the Leaf Area Index (LAI)</summary>
+    /// <returns>Leaf Area Index as a THumeNumEntity</returns>
+    /// <remarks>This method retrieves the current Leaf Area Index from the state variables.</remarks>
     function GetLAI: THumeNumEntity; override;
+
+/// <summary>Getter for the Crop Height</summary>
+    /// <returns>Crop Height as a THumeNumEntity</returns>
+    /// <remarks>This method retrieves the current crop height from the state variables.</remarks>
     function GetCropHeight: THumeNumEntity; override;
+
+/// <summary>Getter for the Nitrogen uptake rate</summary>
+    /// <returns>Nitrogen uptake rate as a THumeNumEntity</returns>
+    /// <remarks>This method retrieves the current nitrogen uptake rate from the growth rates.</remarks>    
     function GetNUptakeRate: THumeNumEntity; override;
 
   public
-
+/// <summary>Indicates if the plant is currently growing</summary>
+/// <remarks>This boolean flag is set to true when the plant is actively growing, false otherwise.</remarks>
     plantIsGrowing: Boolean;
 
+/// Pointer to external temperature variable of type TExternV
     Temp: TExternV;
+/// <summary> Temperature sum state variable</summary>    
     TSum: TState;
+
+/// <summary> Temperature sum state variable for dry matter</summary>    
     TSum_DM: TState;
     Harvestindex,
       C_cont_Res,
       N_Harvestindex: TPar;
 
+/// <summary>Array of state variables for the growth model</summary>
     StateVars: array[TStateVars] of TState;
+
+/// <summary>Array of growth curve types for each state variable</summary>    
     CurveTypes: array[TStateVars] of TGrowth;
+
+/// <summary>Array of curve options for each state variable</summary>
+ /// <remarks>Options are the user interface to define the type of growth curve used for each state variable.</remarks> 
     CurveOptions: array[TStateVars] of TOption;
     CurveSwitches: array[TStateVars] of boolean;
-    GrowthRates: array[TStateVars] of TVar; // notwendig?
+
+/// <summary>Array of variable changes for each state variable</summary>    
+    GrowthRates: array[TStateVars] of TVar;
+
+/// <summary>Two dimensional Array of parameters for each state variable</summary>
+   Parameters: array[TStateVars, TParameters] of Tpar;
+
+
+/// <summary>Temperature sum for emergence</summary>    
     TempSumEmerge: TPar;
 
     SoilNUptakeGrowthRate: TExternV;
     SumSoilNUptakeGrowth: TState;
 
-    Parameters: array[TStateVars, TParameters] of Tpar;
-
+ 
     procedure CalcRates; override;
     procedure Integrate; override;
     procedure CreateAll; override;
@@ -217,14 +284,15 @@ var
 
 begin
   inherited createall;
-  StateCreate('TSum', '[°Cd]', 0.0, false, TSUM);
-  StateCreate('TSum_DM', '[°Cd]', 0.0, false, TSUM_DM);
-  Parcreate('Harvestindex', '[-]', 0.5, Harvestindex);
-  Parcreate('C_cont_Res', '[-]', 0.45, C_cont_Res);
-  Parcreate('N_Harvestindex', '[-]', 0.5, N_Harvestindex);
-  Parcreate('TempSumEmerge', '[°C*d]', 150, TempSumEmerge);
+  StateCreate('TSum', '[Â°Cd]', 0.0, false, TSUM, 'Temperature sum for growth, starting at sowing date corrected for base temperature');
+  StateCreate('TSum_DM', '[Â°Cd]', 0.0, false, TSUM_DM, 'Temperature sum for dry matter');
+  Parcreate('Harvestindex', '[-]', 0.5, Harvestindex, 'Harvest index');
+  Parcreate('C_cont_Res', '[-]', 0.45, C_cont_Res, 'C content residues');
+  Parcreate('N_Harvestindex', '[-]', 0.5, N_Harvestindex, 'N harvest index');
+  Parcreate('TempSumEmerge', '[Â°C*d]', 150, TempSumEmerge, 'Temperature sum for emergence, emerges when TSum >= TempSumEmerge');
 
   for State := low(TStateVars) to high(TStateVars) do begin
+/// <summary>Create state variable with name, units, initial value and comment date</summary>
     if ((State = DM) or (State = ShootN)) then
       StateCreate(StateNames[State], StateUnits[State], 0.0, false,
       StateVars[State],'if Opt = LogIntBased then Capacity: ASYM; gr: XMID; rgr: SCAL (SSLogisR)')
@@ -232,8 +300,9 @@ begin
     StateCreate(StateNames[State], StateUnits[State], 0.0, false,
       StateVars[State]);
     StateVars[State].PlotTograpH := true;
+ /// <summary>Create options for curve type with name, default value and comment</summary>   
     OptCreate(StateNames[State] + '_CurveType', 'Logistisch',
-      CurveOptions[State]);
+      CurveOptions[State], 'Curve type for growth rate calculation');
     CurveOptions[State].OptionList.Add('Logistisch');
     CurveOptions[State].OptionList.Add('LogIntBased');
     CurveOptions[State].OptionList.Add('Monomolekular');
@@ -244,11 +313,11 @@ begin
     CurveOptions[State].OptionList.Add('LogIntDecay');
     CurveOptions[State].OptionList.Add('Log_Decay');
     CurveOptions[State].OptionList.Add('IntPol');
-
+/// <summary>Create variable with name, units, initial value and comment</summary>
     VarCreate(StateNames[State] + '_Change', StateUnits[State], 0, false,
       Growthrates[State]);
   end;
-
+/// 
   for State := low(TStateVars) to high(TStateVars) do begin
     for Parm := low(TParameters) to high(TParameters) do begin
       Parcreate(StateNames[State] + '_' + ParNames[Parm], ParUnits[Parm], 0,
@@ -256,8 +325,8 @@ begin
 
     end;
   end;
-
-  ExternVCreate('TMPM', '[°C]', RateField, Temp);
+///
+  ExternVCreate('TMPM', '[ï¿½C]', RateField, Temp);
   if withNUptake then begin
     ExternVcreate('SoilNUptakeGrowth','[]',RateField,SoilNUptakeGrowthRate);
     StateCreate('SumSoilNUptakeGrowth','[]',0.0,false,SumSoilNUptakeGrowth);
@@ -275,7 +344,7 @@ var
 
 begin
   inherited Init(GlobMod);
-  Emergence := false;
+  fEmergence := false;
   for State := low(TStateVars) to high(TStateVars) do begin
     CurveSwitches[State] := false;
     if CurveOptions[State].Option = lowercase('Logistisch') then
@@ -343,7 +412,7 @@ var
   State: TStateVars;
 
 begin
-
+/// <summary> after the sowing date, initialize state variables with initial values</summary>
   if (GlobTime.v >= SowingDate.v) and (GlobTime.v <= HarvestDate.v) then begin
     for State := low(TStateVars) to high(TStateVars) do begin
       if StateVars[State].V <= 0.0 then
@@ -399,43 +468,10 @@ begin
   end;
 
   if (GlobTime.V > HarvestDate.V) and (harvested = false)
-  then begin // +1 geändert Mehrtens //zurück geändert Wienforth (28.11.08)
+  then begin // +1 geï¿½ndert Mehrtens //zurï¿½ck geï¿½ndert Wienforth (28.11.08)
     DoHarvest := true;
     C_Residues.v := {C_residues.v +} (1 - Harvestindex.v) * StateVars[DM].v * C_cont_Res.v;
     N_Residues.v := {N_Residues.v +} (1 - N_harvestindex.v) * StateVars[ShootN].v;
-(*    if assigned(SoilMinMod) and (SoilMinMod is TAbstractSoilMin) then TAbstractSoilMin(SoilMinMod).AddResidues(C_Residues.v*10,N_Residues.v*10);
-    if nextCrop <> nil then begin
-
-       if (SoilMinMOd is TMinMod2Pool)  then begin
-
-       end else begin
-         if SoilMinMod <> nil then begin
-           SoilMinMod.PlantModel := nextCrop;
-           NextCrop.SoilMinMod := SoilMinMod;
-         end;
-       end;
-
-
-
-
-      //if SoilMinMod <> nil then begin
-      //  SoilMinMod.PlantModel := nextCrop;
-      //  NextCrop.SoilMinMod := SoilMinMod;
-      //end;
-
-      if SoilLayerMod <> nil then begin
-        SoilLayerMod.PlantModel := NextCrop;
-        NextCrop.SoilLayerMod := SoilLayerMod;
-      end;
-    end;
-    for State := low(TStateVars) to high(TStateVars) do begin
-      StateVars[State].V := 0.0;
-      StateVars[State].c := 0.0;
-      TSum.v := 0.0;
-      TSum.c := 0; //geändert 23.5.08 Mehrtens
-      CurveSwitches[State] := false;
-    end;
-*)
   end;
 
   for State := low(TStateVars) to high(TStateVars) do
@@ -451,13 +487,14 @@ var
 begin
   inherited Integrate;
 
-  if (GlobTime.v >= SowingDate.v) and (TSum.v >= TempSumEmerge.v) and (Emergence
+  if (GlobTime.v >= SowingDate.v) and (TSum.v >= TempSumEmerge.v) and (fEmergence
     = false) then begin
     for State := low(TStateVars) to high(TStateVars) do begin
       StateVars[State].v := Parameters[State, IniValue].v;
-      if CurveTypes[State] = IntPol then IntPolVals[State, 0].t := GlobTime.V;
+      if CurveTypes[State] = IntPol then 
+        IntPolVals[State, 0].t := GlobTime.V;
     end;
-    emergence := true;
+    femergence := true;
   end;
 
 end;

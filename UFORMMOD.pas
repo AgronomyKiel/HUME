@@ -519,8 +519,6 @@ begin
  // Lmod.fModel.Set_ControlFileFN(CtrlFileFN);
 //  Lmod.fModel.GM_ControlFile := CtrlFileFN;
   updateForm;
-
-
 end;
 
 procedure TFormMod.RunModel;

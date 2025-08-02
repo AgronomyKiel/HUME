@@ -6,10 +6,10 @@
         <Projects Include="Soil\SoilWaterPackage.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Q:\Potato\PackagePotato.dproj">
+        <Projects Include="CERES Wheat\CeresSubModels.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="CERES Wheat\CeresSubModels.dproj">
+        <Projects Include="PlantComponents\PackageGrowthCurvePlantRootsDM.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -29,15 +29,6 @@
     <Target Name="SoilWaterPackage:Make">
         <MSBuild Projects="Soil\SoilWaterPackage.dproj" Targets="Make"/>
     </Target>
-    <Target Name="PackagePotato">
-        <MSBuild Projects="Q:\Potato\PackagePotato.dproj"/>
-    </Target>
-    <Target Name="PackagePotato:Clean">
-        <MSBuild Projects="Q:\Potato\PackagePotato.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="PackagePotato:Make">
-        <MSBuild Projects="Q:\Potato\PackagePotato.dproj" Targets="Make"/>
-    </Target>
     <Target Name="CeresSubModels">
         <MSBuild Projects="CERES Wheat\CeresSubModels.dproj"/>
     </Target>
@@ -47,14 +38,23 @@
     <Target Name="CeresSubModels:Make">
         <MSBuild Projects="CERES Wheat\CeresSubModels.dproj" Targets="Make"/>
     </Target>
+    <Target Name="PackageGrowthCurvePlantRootsDM">
+        <MSBuild Projects="PlantComponents\PackageGrowthCurvePlantRootsDM.dproj"/>
+    </Target>
+    <Target Name="PackageGrowthCurvePlantRootsDM:Clean">
+        <MSBuild Projects="PlantComponents\PackageGrowthCurvePlantRootsDM.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PackageGrowthCurvePlantRootsDM:Make">
+        <MSBuild Projects="PlantComponents\PackageGrowthCurvePlantRootsDM.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="SoilWaterPackage;PackagePotato;CeresSubModels"/>
+        <CallTarget Targets="SoilWaterPackage;CeresSubModels;PackageGrowthCurvePlantRootsDM"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="SoilWaterPackage:Clean;PackagePotato:Clean;CeresSubModels:Clean"/>
+        <CallTarget Targets="SoilWaterPackage:Clean;CeresSubModels:Clean;PackageGrowthCurvePlantRootsDM:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="SoilWaterPackage:Make;PackagePotato:Make;CeresSubModels:Make"/>
+        <CallTarget Targets="SoilWaterPackage:Make;CeresSubModels:Make;PackageGrowthCurvePlantRootsDM:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

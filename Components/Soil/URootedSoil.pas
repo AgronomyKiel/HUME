@@ -46,7 +46,6 @@ private
 
 protected
 
-  procedure SetPlantModel(NewPlantModel:TAbstractplant); override;
 
 
 public
@@ -58,7 +57,7 @@ public
   PsiRootDiff_arr: TSoilvarArray;  /// Wasserspannungsdifferenzen Wurzeloberfl�che/Bodenraum [cm3/cm3]
   ProzNFK_arr: TSoilVarArray;
 
-  ExWld_arr : TSoilExtArray;  /// Wurzell�ngendichten [cm.cm-3]
+  ExWld_arr : TSoilExtArray;  /// Wurzellaengendichten [cm.cm-3]
   WLges   : TVar;           /// GesamtWurzell�nge [cm]
   // w_influx : TSoilVarArray; /// Wasserinfluxraten [cm3.cm-1.d-1]
   SinkRedF : TSoilArray;    /// Reduktionsfaktoren bei Wasseraufnahme
@@ -97,6 +96,7 @@ public
 
   MFP_arr: array[0..20] of TMFP_table;
 
+procedure SetPlantModel(NewPlantModel:TAbstractplant); override;
 procedure CreateAll; override;
 
 procedure Init(var GlobMod: TMod); override;
@@ -284,7 +284,7 @@ begin
     if exWLD_arr[i] = nil then ExternVCreate('effWLD_'+ndx_str(i),'[cm/cm3]',StateField, exWLD_arr[i]);
     if Sink_arr[i] = nil then VarCreate('WAuf'+ndx_str(i), '[cm.d-1]', 0.0, false, Sink_arr[i]);
   end;
-  FWithRoots := true;
+  FWithRoots := settrue;
 end;
 
 
