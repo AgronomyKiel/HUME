@@ -251,41 +251,41 @@ type
     /// Plant height [m]
     property Ex_CropHeight: TExternV read ExCropHeight write ExCropHeight;
     /// Leaf Area Index []
-    Property Ex_LAI: TExternV read ExLAI write ExLAI;
+    property Ex_LAI: TExternV read ExLAI write ExLAI;
     /// Precipitation [mm.d-1]
-    Property Ex_Rain: TExternV read rain write rain;
+    property Ex_Rain: TExternV read rain write rain;
     /// stomata resistance at good water supply [s.m-1]
-    Property Par_RC0: TPar read rc0 write rc0;
+    property Par_RC0: TPar read rc0 write rc0;
     /// extinction coefficient for global radiation [-]
-    Property Par_Exk_Glob: TPar read exk_GlobRad write exk_GlobRad;
+    property Par_Exk_Glob: TPar read exk_GlobRad write exk_GlobRad;
     /// elevation above sea level [m]
-    Property Par_Elev: TPar read Elev write Elev;
+    property Par_Elev: TPar read Elev write Elev;
     /// specific interception capacity per unit BFI [mm/BFI]
-    Property Par_SIC: TPar read sic write sic;
+    property Par_SIC: TPar read sic write sic;
     /// measurement height of the parameters [m]
-    Property Par_measure_height: TPar read measure_height write measure_height;
+    property Par_measure_height: TPar read measure_height write measure_height;
     /// CO2 partial pressure [ppm]
     property Ex_CO2pp: TExternV Read ExCO2pp Write ExCO2pp;
     /// potential evapotranspiration [mm.d-1]
-    Property Var_pETP: TVar read pETP write pETP;
+    property Var_pETP: TVar read pETP write pETP;
     /// reference evapotranspiration according to FAO
-    Property Var_ET0: TVar read ET0 write ET0;
+    property Var_ET0: TVar read ET0 write ET0;
     /// potential transpiration [mm.d-1]
-    Property Var_PotTrans: TVar read pot_trans write pot_trans;
+    property Var_PotTrans: TVar read pot_trans write pot_trans;
     /// potential Evaporation
-    Property Var_PotEvap: TVar read pot_Evapo write pot_Evapo;
+    property Var_PotEvap: TVar read pot_Evapo write pot_Evapo;
     /// interception
-    Property Var_interzeption: TVar read interception write interception;
+    property Var_interzeption: TVar read interception write interception;
     /// precipitation rate-interception
-    Property Var_NetRain: TVar read net_rain write net_rain;
+    property Var_NetRain: TVar read net_rain write net_rain;
     /// aerodynamic resistance [s.m-1]
-    Property Var_ra: TVar read ra write ra;
+    property Var_ra: TVar read ra write ra;
     /// net radiation [W.m-2]
-    Property Var_NetRad: TVar read netRad write netRad;
+    property Var_NetRad: TVar read netRad write netRad;
     /// Option for Source of extinction coefficient
-    Property Opt_Exk_Glob: TSource read fExkOpt write fExkOpt;
+    property Opt_Exk_Glob: TSource read fExkOpt write fExkOpt;
     /// Option for Source of extinction coefficient
-    Property Opt_rc0: TSource read frc0Opt write frc0Opt;
+    property Opt_rc0: TSource read frc0Opt write frc0Opt;
   end;
 
 procedure Register;
