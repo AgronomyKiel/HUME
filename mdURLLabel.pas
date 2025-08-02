@@ -2,7 +2,7 @@
 //
 //                          mdURLLabel
 //
-//              © Copyright 1997 by Martin Djernæs
+//              Â© Copyright 1997 by Martin DjernÃ¦s
 //
 // ..................................................................
 // 25 May 1997 - MD : Initial Date
@@ -350,7 +350,7 @@ end;
 Procedure TmdURLLabel.SetCaption(Value : TCaption);
 Begin
   FCaptionChanged := True;     // Set flag that caption is set by user
-  Inherited Caption := Value;  // Set the "real" caption variabel
+  Inherited Caption := Value;  // Set the "real" caption variable
 end;
 
 Procedure TmdURLLabel.SetURLCaption(Value : TCaption);
