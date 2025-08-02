@@ -1,16 +1,17 @@
 ﻿/// <summary>
-/// This unit defines the TGrowthCurvePlantRoots class, which in addition to its parent class,
-/// models the growth of plant roots in terms of various parameters such as root depth, root length, and growth rates.
-/// It also includes the calculation root length density and effective root length,
-/// as well as handling different growth models for root depth development.
-/// The class also supports options for root ageing and depth growth choices.
+/// This unit defines the TGrowthCurvePlantRoots class, which extends its parent class to
+/// model the growth of plant roots. It evaluates parameters such as root depth, root
+/// length and the associated growth rates. The unit also calculates root length density
+/// and effective root length and provides several models for the development of root
+/// depth. Optional features include root ageing and different choices for depth growth.
 /// </summary>
 /// <remarks>
-/// The TGrowthCurvePlantRoots class extends the TGrowthCurvePlant class and provides
-/// specific implementations for root growth dynamics. It includes properties for root depth,
-/// root length, and growth parameters, as well as methods for initializing and calculating
-/// growth rates based on the current state of the plant and environmental conditions.
-/// </remarks>  
+/// TGrowthCurvePlantRoots inherits from TGrowthCurvePlant and provides specific
+/// implementations for root growth dynamics. It exposes properties for root depth,
+/// root length and growth parameters, as well as methods for initialising and
+/// calculating growth rates based on the current state of the plant and the prevailing
+/// environmental conditions.
+/// </remarks>
 
 unit UGrowthCurvePlantRoots;
 
@@ -29,7 +30,7 @@ uses
 type
 
 
-/// <summary> TGrowthCurvePlantRoots class extends TGrowthCurvePlant to model root growth dynamics </summary>
+/// <summary> TGrowthCurvePlantRoots extends TGrowthCurvePlant to model root growth dynamics. </summary>
   TGrowthCurvePlantRoots = class(TGrowthCurvePlant)
 
   private
@@ -47,65 +48,66 @@ type
     Root_Matrix: array[1..Max_Comp, 1..MaxAgeCl] of real;
     n_age_cl: integer;
 
-    /// <summary> Active duration of root growth </summary>
+    /// <summary>Active duration of root growth.</summary>
     ActiveDuration: TPar;
 
-    /// <summary> Array of root length densities [cm.cm-3] </summary>
-    Wld_arr: TSoilVarArray; // Wurzellängendichten [cm.cm-3]
+    /// <summary>Array of root length densities [cm.cm-3].</summary>
+    Wld_arr: TSoilVarArray; // Root length densities [cm.cm-3]
 
-/// <summary> Array of root lengths [cm.cm-2] </summary>
-    WL_arr: TSoilVarArray; // Wurzellängen [cm.cm-2]
-/// <summary> Array of effective root length densities [cm.cm-3] </summary>
-    EffWld_arr: TsoilVarArray; // effective root length density []
-/// <summary> Array of effective root lengths [cm.cm-2] </summary>    
-    effWL_arr: TSoilVarArray; // active root length [cm.cm-2]
+    /// <summary>Array of root lengths [cm.cm-2].</summary>
+    WL_arr: TSoilVarArray; // Root lengths [cm.cm-2]
+    /// <summary>Array of effective root length densities [cm.cm-3].</summary>
+    EffWld_arr: TsoilVarArray; // Effective root length density [cm.cm-3]
+    /// <summary>Array of effective root lengths [cm.cm-2].</summary>
+    effWL_arr: TSoilVarArray; // Active root length [cm.cm-2]
 
-/// <summary> number of potential rooted soil layers </summary>
+/// <summary>Number of potential rooted soil layers.</summary>
     N_Rootcomp: TVar;
 
-/// <summary> Array of soil depths for each root component [cm] </summary>    
+/// <summary>Soil depth for each root component [cm].</summary>    
     Tiefe: TSoilExtArray;
 
-/// <summary> rooting at planting/sowing depth [cm] </summary>
-    zr_0: TPar; // Wurzeltiefe zur Pflanzung / Aussaat [cm]
+/// <summary>Root depth at planting or sowing [cm].</summary>
+    zr_0: TPar;
 
-/// <summary> maximum rooting depth [cm] </summary>
-    zr_max: TPar; // maximale Wurzeltiefe [cm]
+/// <summary>Maximum rooting depth [cm].</summary>
+    zr_max: TPar;
+    /// <summary>Root length at planting or sowing [cm].</summary>
+    WL_0: TPar;
+    /// <summary>Maximum root length [cm].</summary>
+    WL_max: TPar;
 
-    WL_0: TPar; // Wurzell�nge zur Pflanzung / Aussaat [cm]
-    WL_max: TPar; // maximale Wurzell�nge [cm]
-
-/// <summary> growth rate parameter for root depth development [cm.d-1.�C] </summary>
-    k_z: TPar; // Wachstumsratenparameter f�r Tiefenentwicklung [cm]
-/// <summary> growth rate parameter for root depth development in an exponential phase [cm.d-1.�C] </summary>
+/// <summary>Growth-rate parameter for root depth development [cm.d-1.°C].</summary>
+    k_z: TPar;
+/// <summary>Growth-rate parameter for root depth in an exponential phase [cm.d-1.°C].</summary>
     k_za: TPar;
 
-/// <summary> growth rate parameter for root length development phase [cm.d-1.�C] </summary>
+/// <summary>Growth-rate parameter for root length development [cm.d-1.°C].</summary>
     k_Wl: TPar;
 
-/// <summary> Parameter for the vertical distribution of root length, Ratio of RLD at z=0 and RLD at z=zr [-] </summary>    
+/// <summary>Parameter for the vertical distribution of root length; ratio of RLD at z=0 to RLD at z=zr [-].</summary>    
     K_a: TPar;
 
-/// <summary> Base temperature for root growth </summary>
+/// <summary>Base temperature for root growth.</summary>
     TempSumRootBaseTemp: Tpar;
 
-/// <summary> variable for sum of root legnth [cm/cm2] </summary>
-    SRL: TVar; // Sum of root length [cm/cm2]
+/// <summary>Sum of root length [cm.cm-2].</summary>
+    SRL: TVar;
 
- /// <summary> variable for effective root length density [cm/cm2] </summary>
-    SRL_eff: TVar; // Total root length of functional roots (cm.cm-2)
+ /// <summary>Sum of effective root length [cm.cm-2].</summary>
+    SRL_eff: TVar;
 
-/// <summary> state variable for root depth [cm] </summary>
-    zr: TState; // Durchwurzelungstiefe [cm]
+/// <summary>State variable for root depth [cm].</summary>
+    zr: TState;
 
-/// <summary> option to enable root growth </summary>
-    OptWithRoots: TOption; // Option to enable root growth
+/// <summary>Option to enable root growth.</summary>
+    OptWithRoots: TOption;
 
-/// <summary> Option for root depth growth model </summary>
+/// <summary>Option for the root depth growth model.</summary>
     depthgrowthOptStr: Toption;
 
 
-/// <summary> Option for root ageing </summary>
+/// <summary>Option for root ageing.</summary>
     Opt_RootAgeing: TOption;
 
 
