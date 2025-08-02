@@ -159,7 +159,7 @@ type
     pot_Evapo: TVar; // potential Evaporation
     
 /// <summary> potential Evaporation  [mm.d-1] </summary>
-    pot_Evapo_ambient: TVar; // potential Evaporation
+    pot_Evap_ambient: TVar; // potential Evaporation
     
 /// <summary> interception [mm.d-1] </summary>
     interception: TVar; // interception
@@ -368,10 +368,18 @@ begin
 end;
 
 
-/// <summary> function for the calculation of the air pressure based on elevation and temperature </summary>
-/// <param name="Elev">Elevation [m]</param>
-/// <param name="Temp">Temperature [°C]</param>
-/// <returns>Air pressure [hPa]</returns>
+/// <summary>
+///   Calculates atmospheric pressure at a given elevation and temperature using the barometric formula.
+/// </summary>
+/// <param name="Elev">Elevation above sea level in meters [m]</param>
+/// <param name="Temp">Air temperature in degrees Celsius [°C]</param>
+/// <returns>
+///   Atmospheric pressure in hectopascals [hPa]. Typical range: 900–1050 hPa.
+/// </returns>
+/// <remarks>
+///   Formula: p = 1013 * exp(-0.034 * Elev / (Temp + 273))
+///   Reference: Monteith, J.L. (1973). Principles of Environmental Physics.
+/// </remarks>
 function TPenMonteith.pressure_f(Elev, Temp: real): real;
 
 
@@ -720,7 +728,7 @@ begin
            208/max(0.1, wind_speed.v), 70);
   //pETP.v := ET0.v;
 
-  pot_Evapo_ambient.v := Evaporation_f_ambient;
+  pot_Evap_ambient.v := Evaporation_f_ambient;
   pot_Evapo.v := Evaporation_f;
   pTI := pETP.v - pot_Evapo.v;
 
@@ -783,7 +791,7 @@ begin
   if pot_trans.v <= 1E-10 then
     pot_trans.v := 0;
   if pETP_ambient.v > 0 then
-    pot_trans_ambient.v := (pETP_ambient.v - pot_Evapo_ambient.v - interception.v)
+    pot_trans_ambient.v := (pETP_ambient.v - pot_Evap_ambient.v - interception.v)
   else
     pot_trans_ambient.v := 0;
   if pot_trans_ambient.v <= 1E-10 then
@@ -906,16 +914,16 @@ begin
   // water vapour pressure [mbar]
   VarCreate('P', '[mbar]', 0, false, P, 'air pressure');
   // standard air pressure [mbar] calculated aus air temperature and height
-  VarCreate('pETP', '[]', 0, false, pETP, 'potential evporation');
+  VarCreate('pETP', '[mm.d-1]', 0, false, pETP, 'potential evaporation');
   // potential evapotranspiration [mm.d-1]
-  VarCreate('ET0', '[]', 0, false, ET0, 'reference evapotranspiration short grass (FAO)');
+  VarCreate('ET0', '[mm.d-1]', 0, false, ET0, 'reference evapotranspiration short grass (FAO)');
   // potential evapotranspiration [mm.d-1]
-  VarCreate('pETP_ambient', '[]', 0, false, pETP_ambient, 'potential evapotranspiration ohne CO2 Einfluss');
+  VarCreate('pETP_ambient', '[mm.d-1]', 0, false, pETP_ambient, 'potential evapotranspiration ohne CO2 Einfluss');
   // potential evapotranspiration [mm.d-1]
   VarCreate('PotTrans', '[mm/d]', 0, false, pot_trans, 'potential plant transpiration');
-  VarCreate('potTrans_ambient', '[mm/d]', 0, false, pot_trans_ambient, 'potential transpiration under ambient CO2'); // potential transpiration [mm.d-1]
+  VarCreate('PotTrans_ambient', '[mm/d]', 0, false, pot_trans_ambient, 'potential transpiration under ambient CO2'); // potential transpiration [mm.d-1]
   VarCreate('PotEvap', '[mm/d]', 0, false, pot_Evapo, 'potential soil evaporation rate'); // potential Evaporation
-  VarCreate('pot_Evapo_ambient', '[mm/d]', 0, false, pot_Evapo_ambient);  // potential Evaporation
+  VarCreate('pot_Evap_ambient', '[mm/d]', 0, false, pot_Evap_ambient);  // potential Evaporation
   VarCreate('interception', '[mm/d]', 0, false, interception, 'daily interception rate');  // interception
   VarCreate('NetRain', '[mm/d]', 0, false, net_rain, 'rain - interception'); // precipitation rate-interception
   VarCreate('ra', '[s/m]', 0, false, ra, 'aerodynamic resistance');
@@ -924,10 +932,12 @@ begin
   VarCreate('NetRad', '[W.m-2]', 0, false, netRad, 'net radiation'); // net radiation [W.m-2]
   VarCreate('k_GlobRad', '[-]', 0, false, k_GlobRad, 'actual extinction coefficient for global radiation, can be from parameter or from external crop model');  // extinction coefficient for GlobRad
   VarCreate('rc0_Var', '[s.m-1]', 0, false, rc0_Var, 'rc0 value as used for calculation (from parameter or plant model)');
-  VarCreate('rc0_ambient', '[s.m-1]', 0, false, rc0_ambient, 'rc0 value without CO2 effect');
+  rc0_Var.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/Evapotranspiration/Documentation/TPenMonteith.html#co2-effect-on-canopy-resistance';
+  VarCreate('rc0_ambient', '[s.m-1]', 0, false, rc0_ambient, 'stomata resistance at good water supply without CO2 effect');
   VarCreate('CO2TransDiff', '[mm/d]', 0, false, CO2TransDiff, 'CO2 induced reduction of pot_trans');
   VarCreate('relCO2TransDiff', '[-]', 0, false, relCO2TransDiff, 'rel. CO2 induced reduction of pot_trans');
-  VarCreate('CO2pp', '[ppm]', 400, false, CO2pp, 'external CO2 concentration https://agronomykiel.github.io/HUME/Components/Evapotranspiration/Documentation/TPenMonteith.html#co_2-concentration');
+  // Documentation: https://agronomykiel.github.io/HUME/Components/Evapotranspiration/Documentation/TPenMonteith.html#co_2-concentration
+    VarCreate('CO2pp', '[ppm]', 400, false, CO2pp, 'external CO2 concentration');
 
 end;
 

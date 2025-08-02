@@ -1286,21 +1286,41 @@
         </devnotes>
       </procedure>
       <function name="Evaporation_f" visibility="protected" file="UPenMonteith.pas" line="61">
+        <devnotes>
+           <summary>
+           Empirical function for determining soil evaporation under a plant canopy
+           according to Duynisveld (1983) S.22.
+           </summary>
+        </devnotes>
         <parameters>
           <retval type="Double" />
         </parameters>
       </function>
       <function name="Evaporation_f_ambient" visibility="protected" file="UPenMonteith.pas" line="62">
+        <devnotes>
+           <summary>
+             Empirical function for determining evaporation of a soil under a plant canopy
+             according to Duynisveld (1983) S.22
+           </summary>
+        </devnotes>
         <parameters>
           <retval type="Double" />
         </parameters>
       </function>
       <function name="pressure_f" visibility="protected" file="UPenMonteith.pas" line="63">
         <devnotes>
-           <summary> function for the calculation of the air pressure based on elevation and temperature </summary>
-           <param name="Elev">Elevation [m]</param>
-           <param name="Temp">Temperature [°C]</param>
-           <returns>Air pressure [hPa]</returns>
+           <summary>
+             Calculates atmospheric pressure at a given elevation and temperature using the barometric formula.
+           </summary>
+           <param name="Elev">Elevation above sea level in meters [m]</param>
+           <param name="Temp">Air temperature in degrees Celsius [°C]</param>
+           <returns>
+             Atmospheric pressure in hectopascals [hPa]. Typical range: 900–1050 hPa.
+           </returns>
+           <remarks>
+             Formula: p = 1013 * exp(-0.034 * Elev / (Temp + 273))
+             Reference: Monteith, J.L. (1973). Principles of Environmental Physics.
+           </remarks>
         </devnotes>
         <parameters>
           <parameter name="Elev" type="Double" />
@@ -1396,14 +1416,72 @@
         </devnotes>
       </field>
       <procedure name="CreateOptions" visibility="private" file="UPenMonteith.pas" line="80">
+        <devnotes>
+           <summary> Create all options </summary>
+           <remarks>
+             The options include the aerodynamic resistance function, CO2 effect option,
+             and external CO2 option.
+             Each option is created with a specific default value and description.     
+             The aerodynamic resistance function can be either Penman-Monteith or Thom-Oliver.
+             The CO2 effect option can be either &quot;NoCO2Effect&quot; or &quot;WithCO2Effect&quot;.
+             The external CO2 option can be either &quot;externalCO2&quot; or &quot;internalCO2&quot;.
+           </remarks>  
+        </devnotes>
       </procedure>
       <procedure name="CreatePars" visibility="private" file="UPenMonteith.pas" line="81">
+        <devnotes>
+           <summary> Create all parameters </summary>
+           <remarks>
+             The parameters include elevation, canopy resistance at good water supply,
+             extinction coefficient for global radiation, specific interception capacity,      
+             measurement height of meteorological variables, CO2 threshold, and relative increase
+             of canopy resistance with CO2.
+             Each parameter is created with a specific unit, default value, and description.
+           </remarks>
+        </devnotes>
       </procedure>
       <procedure name="CreateVars" visibility="private" file="UPenMonteith.pas" line="82">
+        <devnotes>
+           <summary> Create all variables </summary>
+           <remarks>
+             The variables include vapour pressure, air pressure, potential evapotranspiration,
+             reference evapotranspiration, potential plant transpiration, potential soil evaporation,
+             interception, net rain, aerodynamic resistance, canopy resistance, net radiation,     
+             extinction coefficient for global radiation, and CO2-induced reductions in transpiration.
+             Each variable is created with a specific unit and description.
+             The CO2pp variable is initialized with a default value of 400 ppm.
+           </remarks>
+        </devnotes>
       </procedure>
       <procedure name="CreateExterns" visibility="private" file="UPenMonteith.pas" line="83">
+        <devnotes>
+           <summary> Create all externals </summary>
+           <remarks>
+             The externals are the average daily temperature, global radiation,
+             saturation deficit, wind speed, crop height, leaf area index, rainfall rate,
+             and external CO2 concentration.
+             Each external is created with a specific unit and description.
+           </remarks>  
+        </devnotes>
       </procedure>
       <procedure name="Calc_rc0" visibility="private" file="UPenMonteith.pas" line="84">
+        <devnotes>
+           <summary> Calculate the stomata resistance at good water supply </summary>
+           <param name="Plant_rc0">stomata resistance at good water supply [s/m]</param>
+           <param name="CO2pp">CO2 partial pressure [ppm]</param>
+           <param name="CiThreshold">threshold for Ci [ppm]</param>
+           <param name="relRc0Inc_CO2">relative increase of rc0 with CO2</param>
+           <param name="CO2effect">if true, CO2 effect is considered</param>
+           <remarks>
+             The stomata resistance at good water supply is calculated based on the plant's
+             stomata resistance, the CO2 partial pressure, and a threshold for Ci.
+             If the CO2 effect is enabled, the stomata resistance is adjusted based on the relative
+             increase of rc0 with CO2 and the difference between the CO2 partial pressure and
+             the Ci threshold.
+             The result is stored in the rc0_Var variable, which represents the stomata
+             resistance at good water supply with the CO2 effect applied.
+           </remarks>    
+        </devnotes>
         <parameters>
           <parameter name="Plant_rc0" type="Double" />
           <parameter name="CO2pp" type="Double" />
@@ -1426,6 +1504,9 @@
         </parameters>
       </function>
       <function name="Calc_psychro" visibility="private" file="UPenMonteith.pas" line="87">
+        <devnotes>
+           <summary> calculation of the psychrometer constant </summary>
+        </devnotes>
         <parameters>
           <parameter name="P" type="Double" />
           <parameter name="Temp" type="Double" />
@@ -1433,8 +1514,33 @@
         </parameters>
       </function>
       <procedure name="Calc_ra" visibility="private" file="UPenMonteith.pas" line="88">
+        <devnotes>
+           <summary> Calculate the aerodynamic resistance </summary>
+           <remarks>
+             If the crop height is less than or equal to zero, the aerodynamic resistance is calculated
+             using a minimum height of 0.05 m.
+             Otherwise, it uses the actual crop height.
+           </remarks>
+        </devnotes>
       </procedure>
       <procedure name="Calc_potTrans" visibility="private" file="UPenMonteith.pas" line="89">
+        <devnotes>
+           <summary> Calculate the potential transpiration </summary>
+           <remarks>
+             The potential transpiration is calculated as the difference between the potential evapotranspiration
+             and the potential evaporation, minus the interception.
+             If the potential evapotranspiration is less than or equal to zero, the potential
+             transpiration is set to zero.
+             If the potential evapotranspiration at ambient CO2 is greater than zero, the
+             potential transpiration at ambient CO2 is calculated similarly.
+             The CO2TransDiff variable is calculated as the difference between the potential transpiration
+             and the potential transpiration at ambient CO2, adjusted for interception.
+             The relative CO2TransDiff is calculated as the ratio of CO2TransDiff to
+             the sum of potential transpiration and interception.
+             If the potential transpiration is greater than zero, the relative CO2TransDiff is
+             calculated; otherwise, it is set to zero.
+           </remarks>  
+        </devnotes>
       </procedure>
       <field name="Elev" type="TPar" visibility="public" size="4" offset="668" file="UPenMonteith.pas" line="93">
         <devnotes>
@@ -1551,7 +1657,7 @@
            <summary> potential Evaporation [mm.d-1] </summary>
         </devnotes>
       </field>
-      <field name="pot_Evapo_ambient" type="TVar" visibility="public" size="4" offset="760" file="UPenMonteith.pas" line="162">
+      <field name="pot_Evap_ambient" type="TVar" visibility="public" size="4" offset="760" file="UPenMonteith.pas" line="162">
         <devnotes>
            <summary> potential Evaporation  [mm.d-1] </summary>
         </devnotes>
@@ -1638,22 +1744,22 @@
       </field>
       <procedure name="CalcVars" visibility="public" procflags="override" file="UPenMonteith.pas" line="212">
         <devnotes>
-           <summary> calculation of variables </summary>
+           <summary> Calculation of the variables in each time step </summary>
         </devnotes>
       </procedure>
       <procedure name="CalcRates" visibility="public" procflags="override" file="UPenMonteith.pas" line="215">
         <devnotes>
-           <summary> calculation of rates </summary>
+           <summary> Calculation of the rates in each time step </summary>
         </devnotes>
       </procedure>
       <procedure name="CreateAll" visibility="public" procflags="override" file="UPenMonteith.pas" line="218">
         <devnotes>
-           <summary> create all variables, parameters and externals </summary>
+           <summary> Create all components </summary>
         </devnotes>
       </procedure>
       <procedure name="Init" visibility="public" procflags="override" file="UPenMonteith.pas" line="221">
         <devnotes>
-           <summary> initialization of parameters and states </summary>
+           <summary> Initialization of the model </summary>
         </devnotes>
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
@@ -1661,7 +1767,7 @@
       </procedure>
       <procedure name="SetPlantModel" visibility="public" procflags="override" file="UPenMonteith.pas" line="224">
         <devnotes>
-           <summary> set the plant model from which the LAI and CropHeight are taken </summary>
+           <summary> Set the plant model and link LAI and crop height external variables to the plant model </summary>
         </devnotes>
         <parameters>
           <parameter name="NewPlantmodel" type="TAbstractPlant" />
@@ -1784,6 +1890,9 @@
       </property>
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="UPenMonteith.pas" line="942">
+  <procedure name="Register" visibility="public" file="UPenMonteith.pas" line="991">
+    <devnotes>
+       <summary> Register the TPenMonteith component on the page Simulation </summary>
+    </devnotes>
   </procedure>
 </namespace>

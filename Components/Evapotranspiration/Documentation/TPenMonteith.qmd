@@ -66,16 +66,59 @@ sigma <- 4.903e-9 # Stefan-Boltzmann-Constant in [MJ m-2 d-1 K-4]
 # Summary
 
 ```{r}
+doc <- read_xml(fn_xml_docu)
+
+```
+
+```{r}
+library(xml2)
+library(stringr)
+
+
+# Find the <namespace name="UPenMonteith">
+ns_node <- xml_find_first(doc, './/devnotes')
+
+# Extract relevant devnotes subfields
+summary_text <- xml_text(xml_find_first(ns_node, ".//summary"))
+author_text <- xml_text(xml_find_first(ns_node, ".//author"))
+timestamp_text <- xml_text(xml_find_first(ns_node, ".//Timestamp"))
+purpose_text <- xml_text(xml_find_first(ns_node, ".//Purpose"))
+
+# Extract reference items
+references <- xml_find_all(ns_node, ".//References/item")
+reference_list <- paste0("- ", xml_text(references), collapse = "\n")
+
+# Combine into markdown string
+md_text <- paste0(
+  "### Summary\n",
+  summary_text, "\n\n",
+  "### Author\n",
+  author_text, "\n\n",
+  "### Timestamp\n",
+  timestamp_text, "\n\n",
+  "### References\n",
+  reference_list, "\n\n",
+  "### Purpose\n",
+  purpose_text
+)
+
+# Show markdown
+cat(md_text)
+
+```
+
+`r md_text`
+
+```{r}
 #| echo: false
 #| message: false
 #| warning: false
 
-doc <- read_xml(fn_xml_docu)
 
 classes <- xml_find_all(doc, ".//class")
 
 # Extract <devnotes> content and class names
-result <- data.frame(
+classes_df <- data.frame(
   class_name = xml_attr(classes, "name"),
   devnotes   = sapply(classes, function(class_node) {
     devnotes_node <- xml_find_first(class_node, "./devnotes")
@@ -83,19 +126,40 @@ result <- data.frame(
   }),
   stringsAsFactors = FALSE
 )
+
+out_text <- ""
+for (i in 1:nrow(classes_df)){
+#  i <- 1
+  out_text <- (paste0(out_text, 
+  paste0(classes_df$class_name[i], " \n ", paste=(classes_df$devnotes[i]), collapse = ", ")))
+}
+
 ```
+
+The unit defines the following classes:
+
+`r out_text`.
 
 ```{r}
-#| echo: false
-#| message: false
-#| warning: false
-#| results: asis
-#cat(result$devnotes, sep="\n\n")
+classes_nodes <- xml_find_all(doc, ".//class")
+# Extract relevant information into a data frame
+classes_df <- data.frame(
+  name = xml_attr(classes_nodes, "name"),
+  type = xml_attr(classes_nodes, "type"),
+  summary = sapply(classes_nodes, function(node) {
+    summary_node <- xml_find_first(node, ".//summary")
+    if (!is.na(summary_node)) xml_text(summary_node) else NA_character_
+  }),
+  value = sapply(classes_nodes, function(node) {
+    value_node <- xml_find_first(node, "value")
+    if (!is.na(value_node)) xml_text(value_node) else NA_character_
+  }),
+  stringsAsFactors = FALSE
+)
+
 
 
 ```
-
-`r result$devnotes`
 
 ```{r}
 
@@ -183,6 +247,76 @@ enum_df <- data.frame(
 
 
 ```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+
+# Find the class node
+class_node <- xml_find_first(doc, './/class[@name="TPenMonteith"]')
+
+# Get all <function> nodes inside this class
+fun_nodes <- xml_find_all(class_node, ".//function")
+
+# Build the data frame
+fun_df <- data.frame(
+  name = xml_attr(fun_nodes, "name"),
+  visibility = xml_attr(fun_nodes, "visibility"),
+  parameters = sapply(fun_nodes, function(fn) {
+    params <- xml_find_all(fn, ".//parameters/parameter")
+    if (length(params) == 0) return("")
+    paste(
+      sapply(params, function(p) {
+        paste0(xml_attr(p, "name"), ": ", xml_attr(p, "type"))
+      }),
+      collapse = "; "
+    )
+  }),
+  summary = sapply(fun_nodes, function(fn) {
+    summary_node <- xml_find_first(fn, ".//devnotes/summary")
+    if (!is.na(summary_node)) xml_text(summary_node) else NA_character_
+  }),
+  ParSummary = sapply(fun_nodes, function(fn) {
+    param_nodes <- xml_find_all(fn, ".//devnotes/param")
+    if (length(param_nodes) == 0) return("")
+    paste(
+      sapply(param_nodes, function(p) {
+        pname <- xml_attr(p, "name")
+        ptext <- xml_text(p)
+        paste0(pname, ": ", trimws(ptext))
+      }),
+      collapse = "; "
+    )
+  }),
+  stringsAsFactors = FALSE
+)
+
+# Show the result
+#print(fun_df)
+
+```
+
+```{r}
+#| tbl-cap: Functions of class TPenMonteith
+#| label: tbl-TPenMonteithFunctionsTable
+#| echo: false
+#| message: false
+#| warning: false
+
+
+kable(fun_df, escape = FALSE, col.names = c("Name", "Visibility", "Parameters", "Summary", "Parameter Summary")) %>%
+  kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "10em") %>%
+  column_spec(3, width = "20em") %>%
+  column_spec(4, width = "30em") %>%
+  column_spec(5, width = "30em")
+
+
+```
+
 ```{r}
 # Find the <class> node for TPenMonteith
 class_node <- xml_find_first(doc, './/class[@name="TPenMonteith"]')
@@ -269,13 +403,9 @@ fun_df <- data.frame(
 )
 ```
 
-
-
 ## Descendence
 
-The class TPenMonteith is derived from:
-`r paste(ancestor_names, collapse = " <- ")`
-
+The class TPenMonteith is derived from: `r paste(ancestor_names, collapse = " <- ")`
 
 ## State variables
 
