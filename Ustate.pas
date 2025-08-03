@@ -44,191 +44,167 @@ uses
   sysutils;
 
 type
- /// setting all floating points to double as a standard  
-  real = double;    
+  /// <summary>Setting all floating points to double as a standard.</summary>
+  real = double;
 
-/// enumeration type to for pointer, imortan for external state variables and external values, where the name of a state variable can mean either the state or the rate of change
- TExValue = (RateField, StateField); 
-
-  {* -----------------------------------------------------------------
-    CLASS     THumeEntity
-    ANCESTOR  TPersistent
-    PURPOSE   Abstracted basic class for TVar and TExternV,
-    provides basic funtionality for variables (parameters,
-    state variables) and external "driving forces"
-    ------------------------------------------------------------------ }
+  /// <summary>Enumeration type for pointers, important for external state variables and external values where the name of a state variable can refer to the state or its rate of change.</summary>
+  TExValue = (RateField, StateField);
 
   {$IFDEF NONVISUAL}
   THumeEntity = class(TObject)
   {$ELSE}
 
- /// <summary> THumeEntity is the base class for all objects representing either numerical values (states, variables, parameters, constants) or Options.
- /// If the destination is a console app it is derived from TObject.
- /// For the use of within the IDE/GUI applications it is derived from the TPersistent class. </summary>
+  /// <summary>THumeEntity is the base class for all objects representing either numerical values (states, variables, parameters, constants) or options.</summary>
+  /// <remarks>Provides basic functionality for variables (parameters, state variables) and external "driving forces". If the destination is a console app it derives from TObject; otherwise it derives from TPersistent for IDE/GUI use.</remarks>
    THumeEntity = class(TPersistent)
   {$ENDIF}
 
   private
-    /// Name field
+    /// <summary>Name field.</summary>
     N { ame }: string;
-    /// Field for comments/explanation
+    /// <summary>Field for comments/explanation.</summary>
     FComment: string;
-    /// private field for the name of the Entity
+    /// <summary>Private field for the name of the Entity.</summary>
     fName: string;
-    /// field submodel to which the Entity belongs
+    /// <summary>Field submodel to which the Entity belongs.</summary>
     fSubmod: string;
-    /// field documentation link
+    /// <summary>Field documentation link.</summary>
     fDocuWebLink: string;
   public
-    /// units of the entity
+    /// <summary>Units of the entity.</summary>
     U { nits }: string;
-    /// indicates if the entity is indexed (array)
+    /// <summary>Indicates if the entity is indexed (array).</summary>
     Indexed: boolean;
-    /// lower bound for indexed entities
+    /// <summary>Lower bound for indexed entities.</summary>
     lowerbound: integer;
-    /// upper bound for indexed entities
+    /// <summary>Upper bound for indexed entities.</summary>
     upperbound: integer;
-    /// flag for initialisation from file
+    /// <summary>Flag for initialisation from file.</summary>
     ReadFromIniFile: boolean;
-    /// flag for output to text file
+    /// <summary>Flag for output to text file.</summary>
     WriteToFile: boolean;
-    /// flag for output to Ini file
+    /// <summary>Flag for output to Ini file.</summary>
     WriteToIniFile: boolean;
-    /// flag for selection for output
+    /// <summary>Flag for selection for output.</summary>
     SelForSensOut : boolean;
-    /// flag for initialisation from file, false indicates need for alternative initialisation
+    /// <summary>Flag for initialisation from file; false indicates need for alternative initialisation.</summary>
     WasReadFromFile: boolean;
   published
-    /// Name of the object
-    property Name: string read N write N;  
-    /// Name of the submodule
-    property SubModName: string read fSubmod write fSubmod; 
-    /// Comment or description
+    /// <summary>Name of the object.</summary>
+    property Name: string read N write N;
+    /// <summary>Name of the submodule.</summary>
+    property SubModName: string read fSubmod write fSubmod;
+    /// <summary>Comment or description.</summary>
     property Comment: string read FComment write FComment;
-    /// DocuWebLink
+    /// <summary>DocuWebLink.</summary>
     property DocuWebLink: string read fDocuWebLink write fDocuWebLink;
-    /// Flag indicating whether to write output to a text file
+    /// <summary>Flag indicating whether to write output to a text file.</summary>
     property Opt_writetoFile: boolean read WriteToFile write WriteToFile;
-    /// Flag indicating selection for sensitivity analysis output
-    property Opt_SelForSensOut : boolean read SelForSensOut write SelForSensOut; 
-    /// Units associated with the object
-    property Units: string read U write U; 
+    /// <summary>Flag indicating selection for sensitivity analysis output.</summary>
+    property Opt_SelForSensOut : boolean read SelForSensOut write SelForSensOut;
+    /// <summary>Units associated with the object.</summary>
+    property Units: string read U write U;
   end;
 
 /// <summary> TOption is a class representing an option with a string value and a list of possible options. </summary>
   TOption = class(THumeEntity)
   private
-    /// the private field for the option string
+    /// <summary>The private field for the option string.</summary>
     fOption: string;
-    
-    /// getter for the option string
+
+    /// <summary>Getter for the option string.</summary>
     function getOption: string;
 
-    /// setter for the option string
+    /// <summary>Setter for the option string.</summary>
     procedure setOption(const Option: string);
   public
     
-    /// default string/option for the option
+    /// <summary>Default string/option for the option.</summary>
     DefaultString: string;
-    /// a list of possible options
+    /// <summary>A list of possible options.</summary>
     OptionList: TStringList;
-    
-    /// the constructor initializes the option with a name, default value, and comment
+
+    /// <summary>Initializes the option with a name, default value, and comment.</summary>
     constructor create(name: string; Default: string; c: string);
     destructor Destroy; override;
   published
 
-    /// property to access the option string
+    /// <summary>Property to access the option string.</summary>
     property Option: string read getOption write setOption;
 
   end;
 
-  {* -----------------------------------------------------------------
-    CLASS     THumeNumEntity
-    ANCESTOR  TPersistent
-    PURPOSE   Abstracted basic class for TVar and TExternV,
-    provides basic funtionality for variables (parameters,
-    state variables) and external "driving forces"
-    ------------------------------------------------------------------ }
-
-/// <summary> THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.
-/// It extends THumeEntity with properties for numerical values, units, and flags for plotting and output. </summary>
+  /// <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+  /// <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
   THumeNumEntity = class(THumeEntity)
 
   private
-    /// number of digits
+    /// <summary>Number of digits.</summary>
     FDigits: integer;
-    /// number of after comma digits
+    /// <summary>Number of digits after the decimal separator.</summary>
     FPrecision: integer;
-    /// getter for the numerical value
+    /// <summary>Getter for the numerical value.</summary>
     function get_value: real; virtual;
-    /// setter for the numerical value
+    /// <summary>Setter for the numerical value.</summary>
     procedure set_value(value: real); virtual;
   public
-    /// private field with numerical value of the entity
+    /// <summary>Private field with numerical value of the entity.</summary>
     fv: real;
-    /// units of the numerical value
+    /// <summary>Units of the numerical value.</summary>
     U { nits }: string;
 
-    /// default value for parameters, states (Ini value)
+    /// <summary>Default value for parameters or states (initial value).</summary>
     DefaultValue: real;
-    /// flag for graphical output
+    /// <summary>Flag for graphical output.</summary>
     PlotToGraph: boolean;
-    /// flag for selection to global output file
+    /// <summary>Flag for selection to global output file.</summary>
     fGlobalOutput:boolean;
-    /// flag for extra output of final values in file
+    /// <summary>Flag for extra output of final values in file.</summary>
     WriteFinalValue: boolean;
-    /// flag if measured data are available
+    /// <summary>Flag indicating if measured data are available.</summary>
     IsMeasured: boolean;
-    /// writes the declaration code for entity into source code file
+    /// <summary>Writes the declaration code for the entity into a source code file.</summary>
     procedure write_declaration(var f: textfile);
-    /// writes the property code for entity into source code file
+    /// <summary>Writes the property code for the entity into a source code file.</summary>
     procedure write_property(var f: textfile);
-    /// writes the creation code for entity into source code file
+    /// <summary>Writes the creation code for the entity into a source code file.</summary>
     procedure write_Create(var f: textfile); virtual;
 
   published
     constructor create;
-    /// property for optional plotting to graph
+    /// <summary>Property for optional plotting to graph.</summary>
     property Opt_PlotToGraph: boolean read PlotTograpH write PlotTograpH;
-    
-    /// property for the optional output of final values
+
+    /// <summary>Property for the optional output of final values.</summary>
     property Opt_WriteFinalValue
       : boolean read WriteFinalValue write WriteFinalValue;
-    
-    /// property for the digits used in output
-    /// (default is 2 digits)
+
+    /// <summary>Property for the digits used in output.</summary>
+    /// <remarks>Default is 2 digits.</remarks>
     property Digits: integer read FDigits write FDigits;
-    
-    /// property for the precision of the numerical value
+
+    /// <summary>Property for the precision of the numerical value.</summary>
     property Precision: integer read FPrecision write FPrecision;
 
-    /// property for the flag indicating if the entity is written to a global output file
+    /// <summary>Property for the flag indicating if the entity is written to a global output file.</summary>
     property GlobalOutput: boolean read fGlobalOutput write fGlobalOutput;
-    
-    /// property for the numerical value of the entity
+
+    /// <summary>Property for the numerical value of the entity.</summary>
     property v: real read get_value write set_value;
 
   end;
 
-  {* -----------------------------------------------------------------
-    CLASS     TVar
-    ANCESTOR  THumeEntity
-    PURPOSE   Model variables, therefore enhanced by "value" element.
-    Basic class for TPar and TState.
-    ------------------------------------------------------------------ }
-
-/// <summary> TVar is a class representing a variable, i.e. a value that can be calculated for each time step in the model from other variables, state variables or parameters.
-/// It extends THumeNumEntity and provides methods for self writing of source code for its initialization, rate calculation. </summary>
+  /// <summary>TVar is a class representing a variable, i.e. a value that can be calculated for each time step in the model from other variables, state variables or parameters.</summary>
+  /// <remarks>Extends THumeNumEntity and provides methods for automatic source code generation for initialization and rate calculation.</remarks>
   TVar = class(THumeNumEntity)
   private
     function get_value: real; override;
     procedure set_value(value: real); override;
 
   public
-    /// String containing source code for rate calculation
+    /// <summary>String containing source code for rate calculation.</summary>
     RateSTring: string;
-    /// String containing source code for intialisation
+    /// <summary>String containing source code for initialization.</summary>
     IniString: String;
     procedure write_Create(var f: textfile); override;
     procedure write_Init(var f: textfile);
@@ -236,115 +212,116 @@ type
     procedure write_RInit(var f: textfile);
     procedure write_RRate(var f: textfile);
   published
-  /// constructor procedure to create a variable with name, units, value and comment
+    /// <summary>Creates a variable with name, units, value and comment.</summary>
+    /// <param name="na">Name of the variable.</param>
+    /// <param name="un">Units of the variable.</param>
+    /// <param name="va">Initial value of the variable.</param>
+    /// <param name="c">Comment or description.</param>
     constructor create(na, un: string; va: real; c: string);
   end;
 
-  {* -----------------------------------------------------------------
-    CLASS     TPar
-    ANCESTOR  TVar
-    PURPOSE   Parameter variable, therefore enhanced by "error" element
-    and an option flag for optimization.
-    ------------------------------------------------------------------ }
-
-/// <summary> TPar is a class representing a parameter variable in the model, which can be selected for optimization or sensitivity analysis.
-/// It extends TVar and adds properties for maximum and minimum expected values, error, and selection flags. </summary>
+  /// <summary>TPar is a class representing a parameter variable in the model, which can be selected for optimization or sensitivity analysis.</summary>
+  /// <remarks>Extends TVar and adds properties for maximum and minimum expected values, error, and selection flags.</remarks>
 
   TPar = class(TVar)
   private
-    /// maximum expected value added 12.01.05 for GA optimisation   hk
+    /// <summary>Maximum expected value (added 12.01.05 for GA optimisation).</summary>
     fmax: real;
-    /// minimum expected value
+    /// <summary>Minimum expected value.</summary>
     fmin: real;
 
     public
-    
-    /// selected for optimization?
+
+    /// <summary>Selected for optimization?</summary>
     SelForOpt: boolean;
-    
-    /// selected for sensitivity analysis?
+
+    /// <summary>Selected for sensitivity analysis?</summary>
     SelForSens: boolean;
-    
-    /// uncertainty value
+
+    /// <summary>Uncertainty value.</summary>
     error: real;
 
   public
     
-    /// constructor procedure to create a parameter with name, units, value, error and comment
+    /// <summary>Creates a parameter with name, units, value, error and comment.</summary>
+    /// <param name="na">Name of the parameter.</param>
+    /// <param name="un">Units of the parameter.</param>
+    /// <param name="va">Initial value of the parameter.</param>
+    /// <param name="error">Uncertainty value.</param>
+    /// <param name="c">Comment or description.</param>
     constructor create(na, un: string; va, error: real; c: string);
   published
-
-  /// property for selectgion for sensitivity analysis
+    /// <summary>Property for selection for sensitivity analysis.</summary>
     property opt_SelForSens: boolean read SelForSens write SelForSens;
     property max:real read fmax write fmax;
     property min:real read fmin write fmax;
 
   end;
 
-  {* -----------------------------------------------------------------
-    CLASS     TState
-    ANCESTOR  TVar
-    PURPOSE   State variable, therefore enhanced by "rate of change" element
-    ------------------------------------------------------------------ }
-
-/// <summary> TState is a class representing a state variable in the model, which has an initial value and a rate of change.
-/// It extends TVar and provides a constructor for creating state variables with initial value, change rate, and comment. </summary>
+  /// <summary>TState is a class representing a state variable in the model, which has an initial value and a rate of change.</summary>
+  /// <remarks>Extends TVar and provides a constructor for creating state variables with initial value, change rate, and comment.</remarks>
   TState = class(TVar)
 
   public
-    /// initial value
+    /// <summary>Initial value.</summary>
     iv : real;
-    /// change rate of state variable
+    /// <summary>Change rate of state variable.</summary>
     c { hange }: real;
 
 
-    /// constructor procedure to create a state variable with name, units, initial value, change rate and comment
+    /// <summary>Creates a state variable with name, units, initial value, change rate and comment.</summary>
+    /// <param name="na">Name of the state variable.</param>
+    /// <param name="un">Units of the state variable.</param>
+    /// <param name="va">Initial value.</param>
+    /// <param name="cr">Change rate.</param>
+    /// <param name="comm">Comment or description.</param>
     constructor create(na, un: string; va, cr: real; comm  : string);
 
   end;
 
-  {* -----------------------------------------------------------------
-    CLASS     TExternV
-    ANCESTOR  THumeEntity
-    PURPOSE
-    ------------------------------------------------------------------ }
-
-/// <summary> TExternV is a class representing an external variable in the model. Values of model elements outside a submodel are called "external variables". They can be made accessible by adressing a pointer for that value.
-/// The default method for setting the link to the external variable is to search for it in the model by its name.
-/// It extends THumeNumEntity and provides methods for getting and setting the value, as well as creating the external variable with a name, units, and an external value type. </summary>
+  /// <summary>TExternV is a class representing an external variable in the model. Values of model elements outside a submodel are called "external variables" and can be accessed via pointers.</summary>
+  /// <remarks>The default method for setting the link to the external variable is to search for it in the model by its name. Extends THumeNumEntity and provides methods for getting and setting the value, as well as creating the external variable with a name, units, and an external value type.</remarks>
   TExternV = class(THumeNumEntity)
 
   private
-  /// private field indicating if the external variable is searched for in the model
-  /// if not, it is assumed to be set by connecting two submodels by a direct link
+    /// <summary>Indicates if the external variable is searched for in the model. If not, it is assumed to be set by connecting two submodels by a direct link.</summary>
     fSearch: boolean;
 
- /// private field external value   
+    /// <summary>External value type.</summary>
     f_Ex: TExValue;
 
- /// private field for conversion factor   
+    /// <summary>Conversion factor.</summary>
     Conversion_f: real;
 
-/// <summary> private field for the source of the external variable, e.g. a file or a submodel </summary>    
+    /// <summary>Source of the external variable, e.g. a file or a submodel.</summary>
     fSource: string;
 
-/// getter for the numerical value of the external variable
+    /// <summary>Getter for the numerical value of the external variable.</summary>
     function get_value: real; override;
-/// setter for the numerical value of the external variable    
+    /// <summary>Setter for the numerical value of the external variable.</summary>
     procedure set_value(value: real); override;
 
   public
     F_N: string;
     f_v: ^real;
 
+    /// <summary>Creates an external variable with a name, units, external value type, and comment.</summary>
+    /// <param name="Nname">Name of the external variable.</param>
+    /// <param name="NUnits">Units of the external variable.</param>
+    /// <param name="ExV">Type of external value.</param>
+    /// <param name="c">Comment or description.</param>
     constructor create(Nname, NUnits: string; ExV: TExValue; c: string);
     // function v:real;
     // function get_value:real;
     procedure setPointer(NewPointer: Pointer);
   published
+    /// <summary>Type of external value.</summary>
     property Ex: TExValue read f_Ex write f_Ex;
+    /// <summary>Flag indicating if the external variable is searched for in the model.</summary>
     property Search: boolean read fSearch write fSearch;
+    /// <summary>Conversion factor.</summary>
     property C_f: real read Conversion_f write Conversion_f;
+    /// <summary>Source of the external variable.</summary>
     property Source: string read fSource write fSource;
     // property Link : THumeEntity read f_link;
 
@@ -385,18 +362,13 @@ begin
   fGlobalOutput := false;
 end;
 
+constructor TVar.create(na, un: string; va: real; c: string);
 
-{*------------------------------------------------------------------------------
-  CLASS   TVar
-  METHOD  create
-  PURPOSE Instantiates Variable object
-
-   @param na  Name of Variable
-   @param un  Units of Variable
-   @param va  Floating point value
-   @param c   Comment/Explanation string
- -------------------------------------------------------------------------------}
-
+/// <summary>Instantiates a variable object.</summary>
+/// <param name="na">Name of the variable.</param>
+/// <param name="un">Units of the variable.</param>
+/// <param name="va">Floating point value.</param>
+/// <param name="c">Comment or explanation string.</param>
 constructor TVar.create(na, un: string; va: real; c: string);
 
 begin
@@ -567,17 +539,14 @@ begin
 end;
 
 
+constructor TPar.create(na, un: string; va, error: real; c: string);
 
-{* *****************************************************************
-  CLASS   TPar
-  METHOD  create
-  PURPOSE Instantiates Parameter object
-  INPUT   na,          // Name
-  un: string;  // Units
-  va,          // Value
-  error: real  // Error
-  ****************************************************************** }
-
+/// <summary>Instantiates a parameter object.</summary>
+/// <param name="na">Name of the parameter.</param>
+/// <param name="un">Units of the parameter.</param>
+/// <param name="va">Initial value.</param>
+/// <param name="error">Error value.</param>
+/// <param name="c">Comment or description.</param>
 constructor TPar.create(na, un: string; va, error: real; c: string);
 
 begin
@@ -595,17 +564,14 @@ begin
 
 
 end;
+constructor TState.create(na, un: string; va, cr: real; comm: string);
 
-{* *****************************************************************
-  CLASS   TState
-  METHOD  create
-  PURPOSE Instantiates state variable object
-  INPUT   na,          // Name
-  un: string;  // Units
-  va,          // Value
-  cr: real     // Rate of change
-  ****************************************************************** }
-
+/// <summary>Instantiates a state variable object.</summary>
+/// <param name="na">Name of the state variable.</param>
+/// <param name="un">Units of the state variable.</param>
+/// <param name="va">Initial value.</param>
+/// <param name="cr">Rate of change.</param>
+/// <param name="comm">Comment or description.</param>
 constructor TState.create(na, un: string; va, cr: real; comm: string);
 
 begin
@@ -613,14 +579,13 @@ begin
   c := cr;
   ReadFromIniFile := true; // read from Ini file
 end;
+constructor TExternV.create(Nname, NUnits: string; ExV: TExValue; c: string);
 
-{* *****************************************************************
-  CLASS   TExternV
-  METHOD  create
-  PURPOSE Instantiates external variable object
-  INPUT   Nname, Nunits :string; ExV: TExValue
-  ****************************************************************** }
-
+/// <summary>Instantiates an external variable object.</summary>
+/// <param name="Nname">Name of the external variable.</param>
+/// <param name="NUnits">Units of the external variable.</param>
+/// <param name="ExV">Type of external value.</param>
+/// <param name="c">Comment or description.</param>
 constructor TExternV.create(Nname, NUnits: string; ExV: TExValue; c: string);
 
 begin
@@ -634,14 +599,7 @@ begin
   Comment := c;
 end;
 
-{* *****************************************************************
-  CLASS   TExternV
-  METHOD  v
-  PURPOSE Delivers external "value" result
-  OUTPUT  real
-  ****************************************************************** }
-
-{ function TExternV.v:real;
+  { function TExternV.v:real;
 
   begin
   If f_v <> nil then
@@ -669,14 +627,10 @@ begin
   if f_v <> nil then
     f_v^ := value;
 end;
+procedure TExternV.setPointer(NewPointer: Pointer);
 
-{* *****************************************************************
-  CLASS   TExternV
-  METHOD  SetPointer
-  PURPOSE Set pointer of "value" variable
-  INPUT   NewPointer:Pointer
-  ****************************************************************** }
-
+/// <summary>Set pointer of the "value" variable.</summary>
+/// <param name="NewPointer">Pointer to the external value.</param>
 procedure TExternV.setPointer(NewPointer: Pointer);
 begin
   if NewPointer <> nil then
