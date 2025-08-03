@@ -2,194 +2,183 @@
 <namespace name="UGrowthCurvePlant" platform="Win32">
   <devnotes>
      <summary>
-     Simulates logistic, monomolecular, Gompertz, or Richards growth. It is mainly used for describing/interpolation the crop parameters
-     such as LAI, DM, CropHeight, and ShootN over time which are needed to simulate soil water and soil nitrogen.No license found. Thereby it depends on 
-     the experimental data to which the growth curve is fitted or typically temporally even denser observed data which then dan be used for interpolation.
+     Simulates logistic, monomolecular, Gompertz, or Richards growth. It is mainly used for describing or interpolating the crop parameters
+     such as LAI, DM, CropHeight, and ShootN over time, which are needed to simulate soil water and soil nitrogen. The approach depends on
+     the experimental data to which the growth curve is fitted or on temporally dense observations that can be used for interpolation.
      </summary>
      <remarks>
-     <para>
-     Required external variables:
-       - Temperature (Temp)
-     </para>
-     <para>
-     Required parameters:
-       - Growth rate [1/d] (rgr)
-       - Maximum LAI [m2/m2] (max)
-       - Base temperature [°C] (BaseTemp)
-       - Richards form parameter (Richards_m)
-       - Planting date [d] (SowingDate)
-       - Harvest date [d] (HarvestDate)
-     </para>
-     <para>
-     State variables:
-       - Temperature sum [°C] (TSum)
-     </para>
-     <para>
-     Options:
-       - Growth type [logistic, monomolecular, Gompertz, Richards, linear, expo-linear, LogIntDecay, Log_Decay, IntPol] (CurveType) 
-     </para>
+       <author>
+         Henning Kage &amp; Agronomy Group, University of Kiel
+       </author>
+       <Timestamp>
+         First edited: 6.10.89
+         Last edited: 02.08.25
+       </Timestamp>
+       <References>
+           <item>Kage, H., Kochler, M., Stutzel, H., 2000. Root growth of cauliflower (Brassica oleracea L. botrytis) under unstressed conditions: Measurement and modelling. Plant Soil 223, 131–145.</item>
+       </References>
      </remarks>
   </devnotes>
-  <const name="Logistisch" type="TGrowth" file="UGrowthCurvePlant.pas" line="44">
+  <const name="Logistisch" type="TGrowth" file="UGrowthCurvePlant.pas" line="33">
     <value>
       Logistisch
     </value>
   </const>
-  <const name="LogIntBased" type="TGrowth" file="UGrowthCurvePlant.pas" line="44">
+  <const name="LogIntBased" type="TGrowth" file="UGrowthCurvePlant.pas" line="33">
     <value>
       LogIntBased
     </value>
   </const>
-  <const name="Monomolekular" type="TGrowth" file="UGrowthCurvePlant.pas" line="44">
+  <const name="Monomolekular" type="TGrowth" file="UGrowthCurvePlant.pas" line="33">
     <value>
       Monomolekular
     </value>
   </const>
-  <const name="Gompertz" type="TGrowth" file="UGrowthCurvePlant.pas" line="44">
+  <const name="Gompertz" type="TGrowth" file="UGrowthCurvePlant.pas" line="33">
     <value>
       Gompertz
     </value>
   </const>
-  <const name="Richards" type="TGrowth" file="UGrowthCurvePlant.pas" line="44">
+  <const name="Richards" type="TGrowth" file="UGrowthCurvePlant.pas" line="33">
     <value>
       Richards
     </value>
   </const>
-  <const name="Linear" type="TGrowth" file="UGrowthCurvePlant.pas" line="44">
+  <const name="Linear" type="TGrowth" file="UGrowthCurvePlant.pas" line="33">
     <value>
       Linear
     </value>
   </const>
-  <const name="expolinear" type="TGrowth" file="UGrowthCurvePlant.pas" line="44">
+  <const name="expolinear" type="TGrowth" file="UGrowthCurvePlant.pas" line="33">
     <value>
       expolinear
     </value>
   </const>
-  <const name="LogIntDecay" type="TGrowth" file="UGrowthCurvePlant.pas" line="45">
+  <const name="LogIntDecay" type="TGrowth" file="UGrowthCurvePlant.pas" line="34">
     <value>
       LogIntDecay
     </value>
   </const>
-  <const name="Log_Decay" type="TGrowth" file="UGrowthCurvePlant.pas" line="45">
+  <const name="Log_Decay" type="TGrowth" file="UGrowthCurvePlant.pas" line="34">
     <value>
       Log_Decay
     </value>
   </const>
-  <const name="IntPol" type="TGrowth" file="UGrowthCurvePlant.pas" line="45">
+  <const name="IntPol" type="TGrowth" file="UGrowthCurvePlant.pas" line="34">
     <value>
       IntPol
     </value>
   </const>
-  <const name="LAI" type="TStateVars" file="UGrowthCurvePlant.pas" line="48">
+  <const name="LAI" type="TStateVars" file="UGrowthCurvePlant.pas" line="37">
     <value>
       LAI
     </value>
   </const>
-  <const name="DM" type="TStateVars" file="UGrowthCurvePlant.pas" line="48">
+  <const name="DM" type="TStateVars" file="UGrowthCurvePlant.pas" line="37">
     <value>
       DM
     </value>
   </const>
-  <const name="CropHeight" type="TStateVars" file="UGrowthCurvePlant.pas" line="48">
+  <const name="CropHeight" type="TStateVars" file="UGrowthCurvePlant.pas" line="37">
     <value>
       CropHeight
     </value>
   </const>
-  <const name="ShootN" type="TStateVars" file="UGrowthCurvePlant.pas" line="48">
+  <const name="ShootN" type="TStateVars" file="UGrowthCurvePlant.pas" line="37">
     <value>
       ShootN
     </value>
   </const>
-  <const name="BaseTemp" type="TParameters" file="UGrowthCurvePlant.pas" line="52">
+  <const name="BaseTemp" type="TParameters" file="UGrowthCurvePlant.pas" line="41">
     <value>
       BaseTemp
     </value>
   </const>
-  <const name="rgr" type="TParameters" file="UGrowthCurvePlant.pas" line="52">
+  <const name="rgr" type="TParameters" file="UGrowthCurvePlant.pas" line="41">
     <value>
       rgr
     </value>
   </const>
-  <const name="gr" type="TParameters" file="UGrowthCurvePlant.pas" line="52">
+  <const name="gr" type="TParameters" file="UGrowthCurvePlant.pas" line="41">
     <value>
       gr
     </value>
   </const>
-  <const name="Capacity" type="TParameters" file="UGrowthCurvePlant.pas" line="52">
+  <const name="Capacity" type="TParameters" file="UGrowthCurvePlant.pas" line="41">
     <value>
       Capacity
     </value>
   </const>
-  <const name="Richards_f" type="TParameters" file="UGrowthCurvePlant.pas" line="52">
+  <const name="Richards_f" type="TParameters" file="UGrowthCurvePlant.pas" line="41">
     <value>
       Richards_f
     </value>
   </const>
-  <const name="IniValue" type="TParameters" file="UGrowthCurvePlant.pas" line="52">
+  <const name="IniValue" type="TParameters" file="UGrowthCurvePlant.pas" line="41">
     <value>
       IniValue
     </value>
   </const>
-  <enum name="TGrowth" file="UGrowthCurvePlant.pas" line="44">
+  <enum name="TGrowth" file="UGrowthCurvePlant.pas" line="33">
     <devnotes>
        <summary>
        Defines the types of growth curves/interpolation methods available.
        </summary>
     </devnotes>
-    <element value="0" name="Logistisch" file="UGrowthCurvePlant.pas" line="44" />
-    <element value="1" name="LogIntBased" file="UGrowthCurvePlant.pas" line="44" />
-    <element value="2" name="Monomolekular" file="UGrowthCurvePlant.pas" line="44" />
-    <element value="3" name="Gompertz" file="UGrowthCurvePlant.pas" line="44" />
-    <element value="4" name="Richards" file="UGrowthCurvePlant.pas" line="44" />
-    <element value="5" name="Linear" file="UGrowthCurvePlant.pas" line="44" />
-    <element value="6" name="expolinear" file="UGrowthCurvePlant.pas" line="44" />
-    <element value="7" name="LogIntDecay" file="UGrowthCurvePlant.pas" line="45" />
-    <element value="8" name="Log_Decay" file="UGrowthCurvePlant.pas" line="45" />
-    <element value="9" name="IntPol" file="UGrowthCurvePlant.pas" line="45" />
+    <element value="0" name="Logistisch" file="UGrowthCurvePlant.pas" line="33" />
+    <element value="1" name="LogIntBased" file="UGrowthCurvePlant.pas" line="33" />
+    <element value="2" name="Monomolekular" file="UGrowthCurvePlant.pas" line="33" />
+    <element value="3" name="Gompertz" file="UGrowthCurvePlant.pas" line="33" />
+    <element value="4" name="Richards" file="UGrowthCurvePlant.pas" line="33" />
+    <element value="5" name="Linear" file="UGrowthCurvePlant.pas" line="33" />
+    <element value="6" name="expolinear" file="UGrowthCurvePlant.pas" line="33" />
+    <element value="7" name="LogIntDecay" file="UGrowthCurvePlant.pas" line="34" />
+    <element value="8" name="Log_Decay" file="UGrowthCurvePlant.pas" line="34" />
+    <element value="9" name="IntPol" file="UGrowthCurvePlant.pas" line="34" />
   </enum>
-  <enum name="TStateVars" file="UGrowthCurvePlant.pas" line="48">
+  <enum name="TStateVars" file="UGrowthCurvePlant.pas" line="37">
     <devnotes>
        <summary>  Enumeration type for the state variables used in the growth curve plant model</summary>    
     </devnotes>
-    <element value="0" name="LAI" file="UGrowthCurvePlant.pas" line="48" />
-    <element value="1" name="DM" file="UGrowthCurvePlant.pas" line="48" />
-    <element value="2" name="CropHeight" file="UGrowthCurvePlant.pas" line="48" />
-    <element value="3" name="ShootN" file="UGrowthCurvePlant.pas" line="48" />
+    <element value="0" name="LAI" file="UGrowthCurvePlant.pas" line="37" />
+    <element value="1" name="DM" file="UGrowthCurvePlant.pas" line="37" />
+    <element value="2" name="CropHeight" file="UGrowthCurvePlant.pas" line="37" />
+    <element value="3" name="ShootN" file="UGrowthCurvePlant.pas" line="37" />
   </enum>
-  <enum name="TParameters" file="UGrowthCurvePlant.pas" line="52">
+  <enum name="TParameters" file="UGrowthCurvePlant.pas" line="41">
     <devnotes>
-       <summary>   Enumeration type for the parameters used in the growth curve plant model</summary>
-      / <remarks> be aware that th meaning of the parameters depends on the growth curve type</remarks>
+       <summary>Enumeration type for the parameters used in the growth curve plant model.</summary>
+       <remarks>Be aware that the meaning of the parameters depends on the growth curve type.</remarks>
     </devnotes>
-    <element value="0" name="BaseTemp" file="UGrowthCurvePlant.pas" line="52" />
-    <element value="1" name="rgr" file="UGrowthCurvePlant.pas" line="52" />
-    <element value="2" name="gr" file="UGrowthCurvePlant.pas" line="52" />
-    <element value="3" name="Capacity" file="UGrowthCurvePlant.pas" line="52" />
-    <element value="4" name="Richards_f" file="UGrowthCurvePlant.pas" line="52" />
-    <element value="5" name="IniValue" file="UGrowthCurvePlant.pas" line="52" />
+    <element value="0" name="BaseTemp" file="UGrowthCurvePlant.pas" line="41" />
+    <element value="1" name="rgr" file="UGrowthCurvePlant.pas" line="41" />
+    <element value="2" name="gr" file="UGrowthCurvePlant.pas" line="41" />
+    <element value="3" name="Capacity" file="UGrowthCurvePlant.pas" line="41" />
+    <element value="4" name="Richards_f" file="UGrowthCurvePlant.pas" line="41" />
+    <element value="5" name="IniValue" file="UGrowthCurvePlant.pas" line="41" />
   </enum>
-  <const name="Statenames" type=":1" visibility="public" file="UGrowthCurvePlant.pas" line="57">
+  <const name="Statenames" type=":1" visibility="public" file="UGrowthCurvePlant.pas" line="46">
     <devnotes>
        <summary>  Array of state variable names for the growth curve plant model</summary>
     </devnotes>
   </const>
-  <const name="StateUnits" type=":2" visibility="public" file="UGrowthCurvePlant.pas" line="59">
+  <const name="StateUnits" type=":2" visibility="public" file="UGrowthCurvePlant.pas" line="48">
     <devnotes>
        <summary>  Array of state variable units for the growth curve plant model</summary>  
     </devnotes>
   </const>
-  <const name="Parnames" type=":3" visibility="public" file="UGrowthCurvePlant.pas" line="62">
+  <const name="Parnames" type=":3" visibility="public" file="UGrowthCurvePlant.pas" line="51">
     <devnotes>
        <summary>  Array of parameter names for the growth curve plant model</summary>  
     </devnotes>
   </const>
-  <const name="ParUnits" type=":4" visibility="public" file="UGrowthCurvePlant.pas" line="67">
+  <const name="ParUnits" type=":4" visibility="public" file="UGrowthCurvePlant.pas" line="56">
     <devnotes>
-       <summary>  Array of parameter units for the growth curve plant model</summary>
-       <remarks> be aware that the the units can not defined independently from the state variables</remarks>    
+       <summary>Array of parameter units for the growth curve plant model.</summary>
+       <remarks>Be aware that these units depend on the associated state variables.</remarks>
     </devnotes>
   </const>
-  <const name="MaxVals" type="Integer" file="UGrowthCurvePlant.pas" line="71">
+  <const name="MaxVals" type="Integer" file="UGrowthCurvePlant.pas" line="60">
     <devnotes>
        <summary>Maximum number of data points for interpolation</summary>
     </devnotes>
@@ -197,12 +186,12 @@
       $2710
     </value>
   </const>
-  <class name="TGrowthCurvePlant" file="UGrowthCurvePlant.pas" line="85">
+  <class name="TGrowthCurvePlant" file="UGrowthCurvePlant.pas" line="74">
     <devnotes>
        <summary>
-       Plant model that simulates growth curves based on logistic, monomolecular, Gompertz, or Richards growth.
-       It calculates growth rates based on temperature and other parameters, and integrates these rates
-       over time to update state variables such as LAI, DM, CropHeight, and ShootN.
+       Plant model that simulates growth curves based on logistic, monomolecular, Gompertz, Richards,
+       linear, or expo-linear growth. It calculates growth rates based on temperature and other parameters
+       and integrates these rates over time to update state variables such as LAI, DM, CropHeight, and ShootN.
        </summary>
        <remarks>
        This class extends TAbstractPlant and provides methods for calculating growth rates, integrating state variables,
@@ -1455,31 +1444,30 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fEmergence" type="Boolean" visibility="private" size="1" offset="928" file="UGrowthCurvePlant.pas" line="90">
+      <field name="fEmergence" type="Boolean" visibility="private" size="1" offset="928" file="UGrowthCurvePlant.pas" line="79">
         <devnotes>
-           <summary>Indicates if the plant has emerged</summary>
-           <remarks>This boolean flag is set to true when the plant has emerged from the soil</remarks>
+           <summary>Indicates if the plant has emerged.</summary>
+           <remarks>This flag is set to true when the plant has emerged from the soil.</remarks>
         </devnotes>
       </field>
-      <field name="IntPolVals" visibility="protected" size="640064" offset="936" file="UGrowthCurvePlant.pas" line="94">
+      <field name="IntPolVals" visibility="protected" size="640064" offset="936" file="UGrowthCurvePlant.pas" line="83">
         <devnotes>
-           <summary>Interpolation values for state variables containing records of time and value</summary>
+           <summary>Interpolation values for state variables, storing time and value pairs.</summary>
         </devnotes>
-        <array name="IntPolVals" visibility="protected" file="UGrowthCurvePlant.pas" line="94">
-          <array name="IntPolVals" visibility="protected" low="0" high="10000" file="UGrowthCurvePlant.pas" line="94">
+        <array name="IntPolVals" visibility="protected" file="UGrowthCurvePlant.pas" line="83">
+          <array name="IntPolVals" visibility="protected" low="0" high="10000" file="UGrowthCurvePlant.pas" line="83">
             <element type=":TGrowthCurvePlant.:1" />
           </array>
         </array>
       </field>
-      <field name="fWithNUptake" type="Boolean" visibility="protected" size="1" offset="641000" file="UGrowthCurvePlant.pas" line="100">
+      <field name="fWithNUptake" type="Boolean" visibility="protected" size="1" offset="641000" file="UGrowthCurvePlant.pas" line="89">
         <devnotes>
-           <summary>Indicates if nitrogen uptake should be simulated </summary>    
+           <summary>Indicates if nitrogen uptake should be simulated.</summary>
         </devnotes>
       </field>
-      <function name="CalcGrowthRate" visibility="protected" file="UGrowthCurvePlant.pas" line="104">
+      <function name="CalcGrowthRate" visibility="protected" file="UGrowthCurvePlant.pas" line="92">
         <devnotes>
-           <summary> function to calculate the growth rate based on the current state, temperature, and parameters depending
-           on the type of growth curve</summary>
+           <summary>Calculates the growth rate based on the current state, temperature, and curve-specific parameters.</summary>
         </devnotes>
         <parameters>
           <parameter name="ActValue" type="Double" />
@@ -1494,7 +1482,7 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="GetLAI" visibility="protected" procflags="override" file="UGrowthCurvePlant.pas" line="110">
+      <function name="GetLAI" visibility="protected" procflags="override" file="UGrowthCurvePlant.pas" line="98">
         <devnotes>
            <summary>Getter for the Leaf Area Index (LAI)</summary>
            <returns>Leaf Area Index as a THumeNumEntity</returns>
@@ -1509,7 +1497,7 @@
           </retval>
         </parameters>
       </function>
-      <function name="GetCropHeight" visibility="protected" procflags="override" file="UGrowthCurvePlant.pas" line="115">
+      <function name="GetCropHeight" visibility="protected" procflags="override" file="UGrowthCurvePlant.pas" line="103">
         <devnotes>
            <summary>Getter for the Crop Height</summary>
            <returns>Crop Height as a THumeNumEntity</returns>
@@ -1524,7 +1512,7 @@
           </retval>
         </parameters>
       </function>
-      <function name="GetNUptakeRate" visibility="protected" procflags="override" file="UGrowthCurvePlant.pas" line="120">
+      <function name="GetNUptakeRate" visibility="protected" procflags="override" file="UGrowthCurvePlant.pas" line="108">
         <devnotes>
            <summary>Getter for the Nitrogen uptake rate</summary>
            <returns>Nitrogen uptake rate as a THumeNumEntity</returns>
@@ -1539,112 +1527,110 @@
           </retval>
         </parameters>
       </function>
-      <field name="plantIsGrowing" type="Boolean" visibility="public" size="1" offset="641001" file="UGrowthCurvePlant.pas" line="125">
+      <field name="plantIsGrowing" type="Boolean" visibility="public" size="1" offset="641001" file="UGrowthCurvePlant.pas" line="113">
         <devnotes>
            <summary>Indicates if the plant is currently growing</summary>
            <remarks>This boolean flag is set to true when the plant is actively growing, false otherwise.</remarks>
         </devnotes>
       </field>
-      <field name="Temp" type="TExternV" visibility="public" size="4" offset="641004" file="UGrowthCurvePlant.pas" line="128">
+      <field name="Temp" type="TExternV" visibility="public" size="4" offset="641004" file="UGrowthCurvePlant.pas" line="116">
         <devnotes>
            Pointer to external temperature variable of type TExternV
         </devnotes>
       </field>
-      <field name="TSum" type="TState" visibility="public" size="4" offset="641008" file="UGrowthCurvePlant.pas" line="130">
+      <field name="TSum" type="TState" visibility="public" size="4" offset="641008" file="UGrowthCurvePlant.pas" line="118">
         <devnotes>
            <summary> Temperature sum state variable</summary>    
         </devnotes>
       </field>
-      <field name="TSum_DM" type="TState" visibility="public" size="4" offset="641012" file="UGrowthCurvePlant.pas" line="133">
+      <field name="TSum_DM" type="TState" visibility="public" size="4" offset="641012" file="UGrowthCurvePlant.pas" line="121">
         <devnotes>
            <summary> Temperature sum state variable for dry matter</summary>    
         </devnotes>
       </field>
-      <field name="Harvestindex" type="TPar" visibility="public" size="4" offset="641016" file="UGrowthCurvePlant.pas" line="134" />
-      <field name="C_cont_Res" type="TPar" visibility="public" size="4" offset="641020" file="UGrowthCurvePlant.pas" line="135" />
-      <field name="N_Harvestindex" type="TPar" visibility="public" size="4" offset="641024" file="UGrowthCurvePlant.pas" line="136" />
-      <field name="StateVars" visibility="public" size="16" offset="641028" file="UGrowthCurvePlant.pas" line="139">
+      <field name="Harvestindex" type="TPar" visibility="public" size="4" offset="641016" file="UGrowthCurvePlant.pas" line="122" />
+      <field name="C_cont_Res" type="TPar" visibility="public" size="4" offset="641020" file="UGrowthCurvePlant.pas" line="123" />
+      <field name="N_Harvestindex" type="TPar" visibility="public" size="4" offset="641024" file="UGrowthCurvePlant.pas" line="124" />
+      <field name="StateVars" visibility="public" size="16" offset="641028" file="UGrowthCurvePlant.pas" line="127">
         <devnotes>
            <summary>Array of state variables for the growth model</summary>
         </devnotes>
-        <array name="StateVars" visibility="public" file="UGrowthCurvePlant.pas" line="139">
+        <array name="StateVars" visibility="public" file="UGrowthCurvePlant.pas" line="127">
           <element type="TState" />
         </array>
       </field>
-      <field name="CurveTypes" visibility="public" size="4" offset="641044" file="UGrowthCurvePlant.pas" line="142">
+      <field name="CurveTypes" visibility="public" size="4" offset="641044" file="UGrowthCurvePlant.pas" line="130">
         <devnotes>
            <summary>Array of growth curve types for each state variable</summary>    
         </devnotes>
-        <array name="CurveTypes" visibility="public" file="UGrowthCurvePlant.pas" line="142">
+        <array name="CurveTypes" visibility="public" file="UGrowthCurvePlant.pas" line="130">
           <element type="TGrowth" />
         </array>
       </field>
-      <field name="CurveOptions" visibility="public" size="16" offset="641048" file="UGrowthCurvePlant.pas" line="146">
+      <field name="CurveOptions" visibility="public" size="16" offset="641048" file="UGrowthCurvePlant.pas" line="134">
         <devnotes>
            <summary>Array of curve options for each state variable</summary>
            <remarks>Options are the user interface to define the type of growth curve used for each state variable.</remarks> 
         </devnotes>
-        <array name="CurveOptions" visibility="public" file="UGrowthCurvePlant.pas" line="146">
+        <array name="CurveOptions" visibility="public" file="UGrowthCurvePlant.pas" line="134">
           <element type="TOption" />
         </array>
       </field>
-      <field name="CurveSwitches" visibility="public" size="4" offset="641064" file="UGrowthCurvePlant.pas" line="147">
-        <array name="CurveSwitches" visibility="public" file="UGrowthCurvePlant.pas" line="147">
+      <field name="CurveSwitches" visibility="public" size="4" offset="641064" file="UGrowthCurvePlant.pas" line="135">
+        <array name="CurveSwitches" visibility="public" file="UGrowthCurvePlant.pas" line="135">
           <element type="Boolean" />
         </array>
       </field>
-      <field name="GrowthRates" visibility="public" size="16" offset="641068" file="UGrowthCurvePlant.pas" line="150">
+      <field name="GrowthRates" visibility="public" size="16" offset="641068" file="UGrowthCurvePlant.pas" line="138">
         <devnotes>
            <summary>Array of variable changes for each state variable</summary>    
         </devnotes>
-        <array name="GrowthRates" visibility="public" file="UGrowthCurvePlant.pas" line="150">
+        <array name="GrowthRates" visibility="public" file="UGrowthCurvePlant.pas" line="138">
           <element type="TVar" />
         </array>
       </field>
-      <field name="Parameters" visibility="public" size="96" offset="641084" file="UGrowthCurvePlant.pas" line="153">
+      <field name="Parameters" visibility="public" size="96" offset="641084" file="UGrowthCurvePlant.pas" line="141">
         <devnotes>
            <summary>Two dimensional Array of parameters for each state variable</summary>
         </devnotes>
-        <array name="Parameters" visibility="public" file="UGrowthCurvePlant.pas" line="153">
-          <array name="Parameters" visibility="public" file="UGrowthCurvePlant.pas" line="153">
+        <array name="Parameters" visibility="public" file="UGrowthCurvePlant.pas" line="141">
+          <array name="Parameters" visibility="public" file="UGrowthCurvePlant.pas" line="141">
             <element type="TPar" />
           </array>
         </array>
       </field>
-      <field name="TempSumEmerge" type="TPar" visibility="public" size="4" offset="641180" file="UGrowthCurvePlant.pas" line="157">
+      <field name="TempSumEmerge" type="TPar" visibility="public" size="4" offset="641180" file="UGrowthCurvePlant.pas" line="145">
         <devnotes>
            <summary>Temperature sum for emergence</summary>    
         </devnotes>
       </field>
-      <field name="SoilNUptakeGrowthRate" type="TExternV" visibility="public" size="4" offset="641184" file="UGrowthCurvePlant.pas" line="159" />
-      <field name="SumSoilNUptakeGrowth" type="TState" visibility="public" size="4" offset="641188" file="UGrowthCurvePlant.pas" line="160" />
-      <procedure name="CalcRates" visibility="public" procflags="override" file="UGrowthCurvePlant.pas" line="163">
+      <field name="SoilNUptakeGrowthRate" type="TExternV" visibility="public" size="4" offset="641184" file="UGrowthCurvePlant.pas" line="147" />
+      <field name="SumSoilNUptakeGrowth" type="TState" visibility="public" size="4" offset="641188" file="UGrowthCurvePlant.pas" line="148" />
+      <procedure name="CalcRates" visibility="public" procflags="override" file="UGrowthCurvePlant.pas" line="151">
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="override" file="UGrowthCurvePlant.pas" line="164">
+      <procedure name="Integrate" visibility="public" procflags="override" file="UGrowthCurvePlant.pas" line="152">
         <devnotes>
-           <summary> after the sowing date, initialize state variables with initial values</summary>
+           <summary>After sowing and before harvest, initialize state variables with their initial values.</summary>
         </devnotes>
       </procedure>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="UGrowthCurvePlant.pas" line="165">
+      <procedure name="CreateAll" visibility="public" procflags="override" file="UGrowthCurvePlant.pas" line="153">
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="UGrowthCurvePlant.pas" line="167">
+      <procedure name="Init" visibility="public" procflags="override" file="UGrowthCurvePlant.pas" line="155">
         <devnotes>
-           <summary>Create state variable with name, units, initial value and comment date</summary>
-           <summary>Create options for curve type with name, default value and comment</summary>   
-           <summary>Create variable with name, units, initial value and comment</summary>
-           
-          
+           <summary>Create state variable with name, units, initial value, and optional comment.</summary>
+           <summary>Create options for curve type with name, default value, and comment.</summary>
+           <summary>Create variable with name, units, initial value, and comment.</summary>
         </devnotes>
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <property name="withNUptake" visibility="published" read="fWithNUptake" write="fWithNUptake" type="Boolean" file="UGrowthCurvePlant.pas" line="170" />
-      <property name="Ex_Temp" visibility="published" read="Temp" write="Temp" type="TExternV" file="UGrowthCurvePlant.pas" line="171" />
-      <property name="Par_LAImax" visibility="published" type="TPar" file="UGrowthCurvePlant.pas" line="172" />
-      <property name="Par_TempsumEmerge" visibility="published" read="TempSumEmerge" write="TempSumEmerge" type="TPar" file="UGrowthCurvePlant.pas" line="174" />
+      <property name="withNUptake" visibility="published" read="fWithNUptake" write="fWithNUptake" type="Boolean" file="UGrowthCurvePlant.pas" line="158" />
+      <property name="Ex_Temp" visibility="published" read="Temp" write="Temp" type="TExternV" file="UGrowthCurvePlant.pas" line="159" />
+      <property name="Par_LAImax" visibility="published" type="TPar" file="UGrowthCurvePlant.pas" line="160" />
+      <property name="Par_TempsumEmerge" visibility="published" read="TempSumEmerge" write="TempSumEmerge" type="TPar" file="UGrowthCurvePlant.pas" line="162" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="UGrowthCurvePlant.pas" line="502">
+  <procedure name="Register" visibility="public" file="UGrowthCurvePlant.pas" line="486">
   </procedure>
 </namespace>

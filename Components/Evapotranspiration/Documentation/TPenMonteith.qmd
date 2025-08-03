@@ -46,6 +46,7 @@ library(xml2)
 library(ggpmisc)
 library(tidyr)
 library(stringr)
+library(tools)
 
 options("citation_format" = "pandoc")
 
@@ -55,6 +56,8 @@ options("citation_format" = "pandoc")
 #| include: false
 fn_source <- "Q:/HUME/HUME/Components/Evapotranspiration/UPenMonteith.pas"
 fn_xml_docu <- "Q:/HUME/HUME/XML_Delphi_Docu/UPenMonteith.xml"
+
+NameSource <- file_path_sans_ext(basename(fn_source))
 
 
 #fn_xml <- "Q:/OSR/Project/OSRGrowth/xml_docu/UPenMonteith.xml"
@@ -98,20 +101,17 @@ reference_list <- paste0("- ", xml_text(references), collapse = "\n")
 
 # Combine into markdown string
 md_text <- paste0(
-  "## Summary\n",
+  "## Short Info\n",
   summary_text, "\n\n",
   "## Author\n",
   author_text, "\n\n",
   "## Timestamp\n",
   timestamp_text, "\n\n",
-  "## References\n",
+  "## Key References\n",
   reference_list, "\n\n",
   "## Purpose\n",
   purpose_text
 )
-
-# Show markdown
-#cat(md_text)
 
 ```
 
@@ -143,16 +143,22 @@ out_text <- ""
 for (i in 1:nrow(classes_df)){
 #  i <- 1
   out_text <- (paste0(out_text, 
-  paste0(classes_df$class_name[i], " \n ", paste=(classes_df$devnotes[i]), collapse = ", ")))
+  paste0(classes_df$class_name[i], " \n\n\n ", paste=(classes_df$devnotes[i]), collapse = ", ")))
 }
 
 ```
 
-The unit defines the following classes:
+The unit `r NameSource`  defines the following classes:
 
 `r out_text`
 
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| include: false
+
+
 classes_nodes <- xml_find_all(doc, ".//class")
 # Extract relevant information into a data frame
 classes_df <- data.frame(
@@ -174,6 +180,11 @@ classes_df <- data.frame(
 ```
 
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| include: false
+
 # Find TPenMonteith class node
 class_node <- xml_find_first(doc, ".//class[@name='TPenMonteith']")
 
@@ -196,6 +207,12 @@ property_df <- data.frame(
 ```
 
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| include: false
+
+
 # Extract <field> elements under <members>
 #field_nodes <- xml_find_all(class_node, ".//members/field")
 field_nodes <- xml_find_all(class_node, ".//field")
@@ -216,31 +233,136 @@ field_df <- data.frame(
 )
 ```
 
-## Constants
+
+## Descendence
+
+The class TPenMonteith is derived from: `r paste(ancestor_names, collapse = " <- ")`
+
+
+# Submodel objects
+
+Dynamic system model consists according to the Forrester approach of state variable, parameters, variables and external driving forces. This is implemented in Hume by dynamic lists, whicht contents is given in the following 
+
+## State variables
 
 ```{r}
-# Find all <const> nodes
-const_nodes <- xml_find_all(doc, ".//const")
-
-# Extract relevant information into a data frame
-const_df <- data.frame(
-  name = xml_attr(const_nodes, "name"),
-  type = xml_attr(const_nodes, "type"),
-  summary = sapply(const_nodes, function(node) {
-    summary_node <- xml_find_first(node, ".//summary")
-    if (!is.na(summary_node)) xml_text(summary_node) else NA_character_
-  }),
-  value = sapply(const_nodes, function(node) {
-    value_node <- xml_find_first(node, "value")
-    if (!is.na(value_node)) xml_text(value_node) else NA_character_
-  }),
-  stringsAsFactors = FALSE
-)
+#| message: false
+#| warning: false
+#| include: false
+#fn <- "Q:/SimProject/project/PenMonteith1.csv"
+fn <- "csv_Hume_Docu/PenMonteith1.csv"
+df <- read.delim(fn, header = TRUE, sep = ";")
+df.state <- df %>% filter(SubModel == "PenMonteith1", EntityType == "State") %>% dplyr::select(EntityName, Units, Value, Comment)
+names(df.state) <- c("State variable", "Units", "InitialValue", "Description")
 ```
+
+
+The class TPenMonteith has `r trunc(nrow(df.state))` following state variable(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.state)
+```
+
+
+
+## Parameters
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+
+df.par <- df %>% filter(SubModel == "PenMonteith1", EntityType == "Parameter") %>% dplyr::select(EntityName, Units, Value, Comment)
+names(df.par) <- c("Parameter", "Units", "Value", "Description")
+
+```
+
+The class TPenMonteith has `r trunc(nrow(df.par))` following parameter(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.par,  escape = FALSE)
+```
+
+## Variables
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+
+df.var <- df %>% filter(SubModel == "PenMonteith1", EntityType == "Variable") %>% dplyr::select(EntityName, Units, Comment)
+names(df.var) <- c("Variable", "Units", "Description")
+
+```
+
+The class TPenMonteith has `r trunc(nrow(df.var))` following variable(s).
+
+```{r}
+kable(df.var,  escape = FALSE)
+```
+
+## External variables
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+
+df.ext <- df %>% filter(SubModel == "PenMonteith1", EntityType == "ExtVar") %>% dplyr::select(EntityName, Units, Comment, Option)
+names(df.ext) <- c("External variable", "Units", "Description", "Source")
+
+```
+
+The class TPenMonteith has `r trunc(nrow(df.ext))` following external variable(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.ext,  escape = FALSE)
+```
+
+## Options
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+
+df.opt <- df %>% filter(SubModel == "PenMonteith1",EntityType == "Option" ) %>% dplyr::select(EntityName, Units, Comment)
+names(df.opt) <- c("Option", "Units", "Description")
+
+```
+
+The class TPenMonteith has `r trunc(nrow(df.opt))` following option(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.opt,  escape = FALSE)
+```
+
+
+# Further source code documentation
+
+The following section includes information extracted from the XML documentation of the class TPenMonteith. It includes constants, enumerations and functions.
+
 
 ## Enumerations
 
 ```{r}
+#| label: Enumerations
+#| echo: false
+#| message: false
+#| warning: false
+#| include: false
 # Find all <enum> nodes
 enum_nodes <- xml_find_all(doc, ".//enum")
 
@@ -260,6 +382,55 @@ enum_df <- data.frame(
 )
 
 
+```
+
+Within the unit (`r trunc(nrow(enum_df))`) enumeration types are defined :
+
+```{r}
+#| label: tbl-TPenMonteithEnumerationsTable
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: Enumerations of unit UPenMonteith
+
+
+kable(enum_df, escape = FALSE, col.names = c("Name", "Summary", "Elements")) %>%
+  kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "30em") %>%
+  column_spec(3, width = "30em")
+
+```
+
+
+
+
+## Constants
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| include: false
+#| 
+
+# Find all <const> nodes
+const_nodes <- xml_find_all(doc, ".//const")
+
+# Extract relevant information into a data frame
+const_df <- data.frame(
+  name = xml_attr(const_nodes, "name"),
+  type = xml_attr(const_nodes, "type"),
+  summary = sapply(const_nodes, function(node) {
+    summary_node <- xml_find_first(node, ".//summary")
+    if (!is.na(summary_node)) xml_text(summary_node) else NA_character_
+  }),
+  value = sapply(const_nodes, function(node) {
+    value_node <- xml_find_first(node, "value")
+    if (!is.na(value_node)) xml_text(value_node) else NA_character_
+  }),
+  stringsAsFactors = FALSE
+)
 ```
 
 
@@ -348,114 +519,9 @@ kable(fun_df, escape = FALSE, col.names = c("Name", "Visibility", "Parameters", 
 
 ```
 
-## Descendence
 
-The class TPenMonteith is derived from: `r paste(ancestor_names, collapse = " <- ")`
 
-## State variables
-
-```{r}
-#| message: false
-#| warning: false
-#| include: false
-#fn <- "Q:/SimProject/project/PenMonteith1.csv"
-fn <- "csv_Hume_Docu/PenMonteith1.csv"
-df <- read.delim(fn, header = TRUE, sep = ";")
-df.state <- df %>% filter(SubModel == "PenMonteith1", EntityType == "State") %>% dplyr::select(EntityName, Units, Value, Comment)
-names(df.state) <- c("State variable", "Units", "InitialValue", "Description")
-```
-
-The class TPenMonteith has `r trunc(nrow(df.state))` following state variable(s).
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-kable(df.state)
-```
-
-## Parameters
-
-```{r}
-#| message: false
-#| warning: false
-#| include: false
-
-df.par <- df %>% filter(SubModel == "PenMonteith1", EntityType == "Parameter") %>% dplyr::select(EntityName, Units, Value, Comment)
-names(df.par) <- c("Parameter", "Units", "Value", "Description")
-
-```
-
-The class TPenMonteith has `r trunc(nrow(df.par))` following parameter(s).
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-kable(df.par,  escape = FALSE)
-```
-
-## Variables
-
-```{r}
-#| message: false
-#| warning: false
-#| include: false
-
-df.var <- df %>% filter(SubModel == "PenMonteith1", EntityType == "Variable") %>% dplyr::select(EntityName, Units, Comment)
-names(df.var) <- c("Variable", "Units", "Description")
-
-```
-
-The class TPenMonteith has `r trunc(nrow(df.var))` following variable(s).
-
-```{r}
-kable(df.var,  escape = FALSE)
-```
-
-## External variables
-
-```{r}
-#| message: false
-#| warning: false
-#| include: false
-
-df.ext <- df %>% filter(SubModel == "PenMonteith1", EntityType == "ExtVar") %>% dplyr::select(EntityName, Units, Comment, Option)
-names(df.ext) <- c("External variable", "Units", "Description", "Source")
-
-```
-
-The class TPenMonteith has `r trunc(nrow(df.ext))` following external variable(s).
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-kable(df.ext,  escape = FALSE)
-```
-
-## Options
-
-```{r}
-#| message: false
-#| warning: false
-#| include: false
-
-df.opt <- df %>% filter(SubModel == "PenMonteith1",EntityType == "Option" ) %>% dplyr::select(EntityName, Units, Comment)
-names(df.opt) <- c("Option", "Units", "Description")
-
-```
-
-The class TPenMonteith has `r trunc(nrow(df.opt))` following option(s).
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-kable(df.opt,  escape = FALSE)
-```
-
-## Scientific Background
+# Scientific Background
 
 Evaporation of a plant canopy depends like dry matter production on the amount of intercepted radiant energy but also on the vapour pressure deficit of the ambient air. One of the most fundamental methods to calculate the evaporation rate of a closed plant canopy is the Penman-Monteith equation [@Monteith1973]:
 

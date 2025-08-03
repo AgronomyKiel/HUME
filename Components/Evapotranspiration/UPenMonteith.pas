@@ -8,7 +8,7 @@
 ///   </author>
 ///   <Timestamp>
 ///     First edited: 6.10.89
-///     Last edited: 16.1.95
+///     Last edited: 02.08.25
 ///   </Timestamp>
 ///   <References>
 ///       <item>van Bavel, C.H.M. (1966). Potential evaporation: The Combination Concept and its Experimental Verification. Water Resour.Res. (1966) 2, 455-467</item>
@@ -30,7 +30,7 @@ uses
   UMod, UState, classes, UAbstractPlant, Math;
 
 const
-/// <summary> latent heat of water evaporation at 10 °C [J/kg] </summary>
+/// <summary> latent heat for water evaporation at 10 °C in [J/Kg] </summary>
   l_h_v_water = 2.477 * 1E6;  
 
 /// <summary> ratio of the molecular weight of water to the molecular weight of dry air </summary>
@@ -41,7 +41,7 @@ const
 
 type
 
-/// <summary> source of extinction coefficient or rc0 </summary>
+/// <summary> Source of extinction coefficient / rc0 </summary>
   TSource = (fromParameter, fromPlantModel);
 
 /// <summary> Options for ra calculation </summary>
@@ -90,22 +90,22 @@ type
 
   public
 /// <summary> height above sea level [m] </summary>
-    Elev: TPar; // height above sea level [m]
+    Elev: TPar; // height avove sea level [m]
 
 /// <summary> stomata resistance at "good water supply" [s.m-1] </summary>
-    rc0: TPar; // stomata resistance at "good water supply" [s.m-1]
+    rc0: TPar; // stomata resistance at "good water supply"
     
 /// <summary> extinction coefficient for global radiation [-] </summary>
     exk_GlobRad: TPar; // extinction coefficient for global radiation [-]
     
 /// <summary> specific interception capacity per unit leaf area index [mm/LAI] </summary>
-    sic: TPar; // specific interception capacity per unit LAI [mm/LAI]
+    sic: TPar; // specific interception capazity per unit LAI [mm/LAI] }
     
 /// <summary> threshold for CO2 partial pressure [ppm] </summary>
-    CiThreshold: TPar; // threshold for CO2 partial pressure [ppm]
+    CiThreshold: TPar; // Schwellwert for CO2 partial pressure [ppm]
     
-/// <summary> relative increase of rc0 through CO2 [1/ppm] </summary>
-    relRc0Inc_CO2: TPar;  // relative increase of rc0 through CO2 [1/ppm]
+/// <summary> relative increase of rc0 trough CO2 [1/ppm] </summary>
+    relRc0Inc_CO2: TPar;  // relative increase of rc0 trough CO2 [1/ppm]
     
 /// <summary> measurement height of the parameters [m] </summary>
     measure_height: TPar; // measurement height of meteorological parameters [m]
@@ -132,13 +132,13 @@ type
     rain: TExternV; // precipitation rate [mm/d]
     
 /// <summary> external CO2 partial pressure [ppm] </summary>
-    ExCO2pp: TExternV; // external CO2 partial pressure
+    ExCO2pp: TExternV; // Extenal CO2 partial pressure
 
-/// <summary> standard air pressure [mbar] calculated from air temperature and elevation </summary>
-    P: TVar; // standard air pressure [mbar] calculated from air temperature and elevation
+/// <summary> standard air pressure [mbar] calculated from air temperature and height </summary>
+    P: TVar; // standard air pressure [mbar] calculated aus air temperature and height
     
-/// <summary> water vapor pressure [mbar] </summary>
-    VapPress: TVar; // water vapor pressure [mbar]
+/// <summary> water vapour pressure [mbar] </summary>
+    VapPress: TVar; // water vapour pressure [mbar]
     
 /// <summary> potential evapotranspiration [mm.d-1] </summary>
     pETP: TVar; // potential evapotranspiration [mm.d-1]
@@ -149,17 +149,17 @@ type
 /// <summary> potential evapotranspiration no CO2 effect [mm.d-1] </summary>
     pETP_ambient: TVar; // potential evapotranspiration no CO2 effect [mm.d-1]
     
-/// <summary> potential transpiration [mm.d-1] </summary>
+/// <summary> potential transpiration/interception [mm.d-1] </summary>
     pot_trans: TVar; // potential transpiration [mm.d-1]
     
-/// <summary> potential transpiration at ambient CO2 [mm.d-1] </summary>
-    pot_trans_ambient: TVar; // potential transpiration at ambient CO2 [mm.d-1]
+/// <summary> potential transpiration/interception at ambient CO2 [mm.d-1] </summary>
+    pot_trans_ambient: TVar; // potential transpiration [mm.d-1]
     
-/// <summary> potential evaporation [mm.d-1] </summary>
-    pot_Evapo: TVar; // potential evaporation
+/// <summary> potential Evaporation [mm.d-1] </summary>
+    pot_Evapo: TVar; // potential Evaporation
     
-/// <summary> potential evaporation at ambient CO2 [mm.d-1] </summary>
-    pot_Evapo_ambient: TVar; // potential evaporation at ambient CO2
+/// <summary> potential Evaporation  [mm.d-1] </summary>
+    pot_Evapo_ambient: TVar; // potential Evaporation
     
 /// <summary> interception [mm.d-1] </summary>
     interception: TVar; // interception
@@ -180,13 +180,13 @@ type
     rc: TVar; // canopy resistance [s.m-1]
     
 /// <summary> canopy resistance at ambient CO2 [s.m-1] </summary>
-    rc_ambient: TVar; // canopy resistance at ambient CO2 [s.m-1]
+    rc_ambient: TVar; // canopy resistance at abmient CO2 [s.m-1]
     
 /// <summary> stomata resistance at good water supply with effects of co2 [s.m-1] </summary>
     rc0_Var: TVar; // stomata resistance at good water supply with effects of co2 [s.m-1]
     
-/// <summary> stomata resistance at good water supply without effects of CO2 [s.m-1] </summary>
-    rc0_ambient: TVar; // stomata resistance at good water supply without effects of CO2 [s.m-1]
+/// <summary> stomata resistance at good water supply without effects of co2 [s.m-1] </summary>
+    rc0_ambient: TVar; // stomata resistance at good water supply with effects of co2 [s.m-1]
     
 /// <summary> difference in potential transpiration due to CO2 effect [mm.d-1] </summary>
     CO2TransDiff: TVar; // difference in transpiration due to CO2 effect
@@ -195,18 +195,18 @@ type
     relCO2TransDiff: TVar; // relative difference in transpiration due to CO2 effect
     
 /// <summary> CO2 partial pressure [ppm] </summary>
-    CO2pp : TVar; // CO2 partial pressure [ppm]
+    CO2pp : TVar; //
 
 /// <summary> option for ra(u,CropHeight)-function </summary>
-    f_ra_Option: TOption;   // option for ra(u,CropHeight)-function
+    f_ra_Option: TOption;   // Option for ra(u,CropHeight)-function dn
     
 /// <summary> option for CO2 effect </summary>
-    OptWithCO2: TOption;    // option for CO2 effect
-/// <summary> option for external CO2 concentration </summary>
-    OptExCO2 : TOption;    // option for external CO2 concentration
+    OptWithCO2: TOption;    // Option for CO2 effect
+/// <summary> option for external CO2-concentration </summary>
+    OptExCO2 : TOption;    // Option for external CO2-concentration
 
 /// <summary> interception storage [mm] </summary>
-    int_stor: TState; // interception storage [mm]
+    int_stor: TState; // Interzeptionsspeicher [mm]
     
 /// <summary> calculation of variables </summary>
     procedure CalcVars; override; // calculation of variables
@@ -245,7 +245,7 @@ type
     Property Par_Exk_Glob: TPar read exk_GlobRad write exk_GlobRad;
 /// <summary> elevation above sea level [m] </summary>
     Property Par_Elev: TPar read Elev write Elev;
-/// <summary> specific interception capacity per unit leaf area index [mm/LAI] </summary>
+/// <summary> specific interception capacity per unit BFI [mm/BFI] </summary>
     Property Par_SIC: TPar read sic write sic;
 /// <summary> measurement height of the parameters [m] </summary>
     Property Par_measure_height: TPar read measure_height write measure_height;
@@ -257,19 +257,19 @@ type
     Property Var_ET0: TVar read ET0 write ET0;
 /// <summary> potential transpiration [mm.d-1] </summary>
     Property Var_PotTrans: TVar read pot_trans write pot_trans;
-/// <summary> potential evaporation [mm.d-1] </summary>
+/// <summary> potential Evaporation </summary>
     Property Var_PotEvap: TVar read pot_Evapo write pot_Evapo;
-/// <summary> interception [mm.d-1] </summary>
+/// <summary> interception </summary>
     Property Var_interzeption: TVar read interception write interception;
-/// <summary> net precipitation (rain minus interception) [mm.d-1] </summary>
+/// <summary> precipitation rate-interception </summary>
     Property Var_NetRain: TVar read net_rain write net_rain;
 /// <summary> aerodynamic resistance [s.m-1] </summary>
     Property Var_ra: TVar read ra write ra;
 /// <summary> net radiation [W.m-2] </summary>
     Property Var_NetRad: TVar read netRad write netRad;
-/// <summary> option for source of extinction coefficient </summary>
+/// <summary> Option for Source of extinction coefficient </summary>
     Property Opt_Exk_Glob: TSource read fExkOpt write fExkOpt;
-/// <summary> option for source of rc0 </summary>
+/// <summary> Option for Source of extinction coefficient </summary>
     Property Opt_rc0: TSource read frc0Opt write frc0Opt;
   end;
 
@@ -347,31 +347,39 @@ var
   COSLD:real;
   DSINBE:real;
 begin
-{ solar declination as a function of day of year }
+  { Deklination der Sonne als Funktion der Jahreszeit (DAY) }
   X := arcsin(SIN(23.45 * RAD) * COS(2. * PI * (DAY + 10) / 365));
   DEC := X * -1;
-{ intermediate values SINLD, COSLD and AOB }
+  { Zwischenwerte SINLD, COSLD und AOB }
   SINLD := SIN(RAD * LAT) * SIN(DEC);
   COSLD := COS(RAD * LAT) * COS(DEC);
   AOB := SINLD / COSLD;
-{ day length (DAYL) and photoperiodic day length (DAYLP) }
+  {Tageslaenge (DAYL) und photoperiodische Tageslaenge (DAYLP) }
   X := ARCSIN(AOB);
   DAYL := 12.0 * (1 + 2 * X / PI);
   //   X:=arcsin((-SIN(-4*RAD)+SINLD)/COSLD);
   //   DAYLP:=12.0*(1+2*X/PI);
-{ solar angle - integration }
+  { Sonnenwinkel - Integration }
   DSINB := 3600 * (DAYL * SINLD + 24 * COSLD * SQRT(1 - AOB * AOB) / PI);
   DSINBE := 3600 * (DAYL * (SINLD + 0.4 * (SINLD * SINLD + COSLD * COSLD * 0.5)) + 12.0 * COSLD * (2.0 + 3.0 * 0.4 * SINLD) * SQRT(1 - AOB * AOB) / PI);
-{ solar constant (SC) and daily extraterrestrial radiation (ANGOT) }
+  { Solarkonstante (SC) und taegliche extraterrestrische Strahlung (ANGOT) }
   SC := 1370 * (1 + 0.033 * COS(2 * PI * DAY / 365));
   ANGOT := SC * DSINB;
 end;
 
 
-/// <summary> function for the calculation of the air pressure based on elevation and temperature </summary>
-/// <param name="Elev">Elevation [m]</param>
-/// <param name="Temp">Temperature [°C]</param>
-/// <returns>Air pressure [hPa]</returns>
+/// <summary>
+///   Calculates atmospheric pressure at a given elevation and temperature using the barometric formula.
+/// </summary>
+/// <param name="Elev">Elevation above sea level in meters [m]</param>
+/// <param name="Temp">Air temperature in degrees Celsius [°C]</param>
+/// <returns>
+///   Atmospheric pressure in hectopascals [hPa]. Typical range: 900–1050 hPa.
+/// </returns>
+/// <remarks>
+///   Formula: p = 1013 * exp(-0.034 * Elev / (Temp + 273))
+///   Reference: Monteith, J.L. (1973). Principles of Environmental Physics.
+/// </remarks>
 function TPenMonteith.pressure_f(Elev, Temp: real): real;
 
 
@@ -380,16 +388,15 @@ begin
 end;
 
 /// <summary>
-/// calculation of aerodynamic resistance
-/// </summary>
+/// calcuation of aerodynamisc resistance </summary>
 /// <param name="wind_speed">average wind speed [m/s]</param>
 /// <param name="crop_height">crop height [m]</param>
 /// <returns>aerodynamic resistance [s/m]</returns>
 function TPenMonteith.ra_f(wind_speed, crop_height: real): real;
 
 const
-/// <summary> von Karman constant [-] </summary>
-  Karman_const = 0.41; // von Karman constant [-]
+/// <summary> von Karman-constant [-] </summary>
+  Karman_const = 0.41; // von Karman-Konstante [-] 
 
 var
   z0: real;
@@ -397,7 +404,8 @@ var
 
   
 /// <summary> calculation of the roughness factor </summary>
-/// <param name="crop_height">plant height [m]</param>
+/// </summary>
+/// <param name="crop_height">Plant height [m]</param>
   function roughness_f(crop_height: real): real;
 
   begin
@@ -449,13 +457,13 @@ end;
 { ----------------------------------------------------------------------- }
 
 
-/// <summary> function for the calculation of the Penman-Monteith evapotranspiration </summary>
+/// <summary> function for the calculation of the penman-monteith evapotranspiration </summary>
 /// <param name="Temp">air temperature [°C]</param>
 /// <param name="Sat_def">saturation deficit of the air [mbar]</param>
 /// <param name="Net_beam">net radiation [J/m2*s]</param>
 /// <param name="delta">slope of the saturation vapor pressure curve [mbar/K]</param>
 /// <param name="gamma">psychrometer constant [mbar/K]</param>
-/// <param name="l_h_v_water">latent heat of water evaporation at 10°C [J/kg]</param>
+/// <param name="l_h_v_water">latent heat of water evaporation at 10°C [J/Kg]</param>
 /// <param name="ra">aerodynamic resistance [s/m]</param>
 /// <param name="rc">bulk-Stomata resistance [s/m]</param>
 /// <returns>potential evapotranspiration [kg/(m2*d)]</returns>
@@ -464,8 +472,8 @@ function TPenMonteith.Penman(Temp, Sat_def, Net_beam, delta, gamma,
 
 
 const
-/// <summary> specific heat of air at constant pressure [J/(kg*K)] </summary>
-  cp = 1005.0;
+/// <summary> specific heat of air at constant pressure [J/(Kg*K)] </summary>
+  cp = 1005.0; 
 
 var
   
@@ -686,8 +694,8 @@ begin
             fCO2effect);
   rc.v := Calc_rc(rc0_Var.v, ExLAI.v);
   Calc_ra;
-  // calculation of net radiation using empirical function
-  // fitted from daily measured net radiation (W/m2) to global radiation (W/m2)
+  // calcuation of net radiation using empirical function
+  // gefitted aus Tagesdaten gemessener net radiation (W/m2) zu Globalstahlung (W/m2)
  // GlobRad_w_m2 := GlobRad.v*1e6/86400;
 //  netRad.v := max(0, 0.6494 * (GlobRad_w_m2) - 18.417);
   netRad.v := max(0, 0.6494 * (GlobRad.v) - 18.417);
@@ -703,7 +711,12 @@ begin
 
   delta := delta_f(es, Temp.v);
 
-  // calculate potential evapotranspiration at ambient CO2 using canopy resistance without elevated CO2
+//???
+//@title: Calculation of pETPambient
+//@Var: pETP_ambient
+//@Description: The calculation of the pETP_ambient value is based on the canopy resistance under
+//@.. non elevated CO2
+//???
 
   pETP_ambient.v := Penman(Temp.v, Sat_def.v, netRad.v, delta, gamma, l_h_v_water,
     ra.v, rc_ambient.v);
@@ -715,7 +728,7 @@ begin
            208/max(0.1, wind_speed.v), 70);
   //pETP.v := ET0.v;
 
-  pot_Evapo_ambient.v := Evaporation_f_ambient;
+  PotEvap_ambient.v := Evaporation_f_ambient;
   pot_Evapo.v := Evaporation_f;
   pTI := pETP.v - pot_Evapo.v;
 
@@ -778,7 +791,7 @@ begin
   if pot_trans.v <= 1E-10 then
     pot_trans.v := 0;
   if pETP_ambient.v > 0 then
-    pot_trans_ambient.v := (pETP_ambient.v - pot_Evapo_ambient.v - interception.v)
+    pot_trans_ambient.v := (pETP_ambient.v - PotEvap_ambient.v - interception.v)
   else
     pot_trans_ambient.v := 0;
   if pot_trans_ambient.v <= 1E-10 then
@@ -821,7 +834,7 @@ begin
   else if (LAI >= 2) and (LAI < 6) then
     result := rc0 / 2 - (rc0 / 2 - rc0 / 3) * ((LAI - 2) / 4)
   else
-    // according to Stockle (reference needed)
+    // according to Stockle (????)
     result := rc0 / 3;
   if result < 0.1 then
     result := 0.1;
@@ -871,22 +884,22 @@ procedure TPenMonteith.CreateExterns;
 begin
   ExternVCreate('TMPM', '[°C]', StateField, Temp, 'average daily temperature');
   // air temperature [°C]
-  ExternVCreate('GlobRad', '[W.m-2]', StateField, GlobRad, 'global radiation [W.m-2]');
+  ExternVCreate('GlobRad', '[W.m-2]', StateField, GlobRad, 'gobal radiation in [W.m-2]');
   ExternVCreate('Sat_def', '[hPa]', StateField, Sat_def, 'saturation deficit [hPa]');
   ExternVCreate('Wind', '[m.s-1]', StateField, wind_speed, 'wind speed');
   // wind speed [m.s-1]
   ExternVCreate('CropHeight', '[m]', StateField, ExCropHeight, 'crop height');
-  // plant height [m]
+  // plant height [cm]
   ExternVCreate('LAI', '[-]', StateField, ExLAI, 'leaf area index');
   // leaf area index []
   ExternVCreate('rain', '[mm.d-1]', StateField, rain, 'rainfall rate');
-  ExternVCreate('ExCO2pp', '[ppm]', StateField, ExCO2pp, 'external CO2 concentration');
+  ExternVCreate('ExCO2pp', '[ppm]', StateField, ExCO2pp, 'External CO2 concentration');
 end;
 
 
 /// <summary> Create all variables </summary>
 /// <remarks>
-///   The variables include vapor pressure, air pressure, potential evapotranspiration,
+///   The variables include vapour pressure, air pressure, potential evapotranspiration,
 ///   reference evapotranspiration, potential plant transpiration, potential soil evaporation,
 ///   interception, net rain, aerodynamic resistance, canopy resistance, net radiation,     
 ///   extinction coefficient for global radiation, and CO2-induced reductions in transpiration.
@@ -897,33 +910,33 @@ end;
 procedure TPenMonteith.CreateVars;
 begin
   // precipitation rate [mm/d]
-  VarCreate('VapPress', '[mbar]', 0, false, VapPress, 'saturated vapor pressure');
-  // water vapor pressure [mbar]
+  VarCreate('VapPress', '[mbar]', 0, false, VapPress, 'saturated vapour pressure');
+  // water vapour pressure [mbar]
   VarCreate('P', '[mbar]', 0, false, P, 'air pressure');
-  // standard air pressure [mbar] calculated from air temperature and elevation
-  VarCreate('pETP', '[]', 0, false, pETP, 'potential evaporation');
+  // standard air pressure [mbar] calculated aus air temperature and height
+  VarCreate('pETP', '[mm.d-1]', 0, false, pETP, 'potential evaporation');
   // potential evapotranspiration [mm.d-1]
-  VarCreate('ET0', '[]', 0, false, ET0, 'reference evapotranspiration short grass (FAO)');
+  VarCreate('ET0', '[mm.d-1]', 0, false, ET0, 'reference evapotranspiration short grass (FAO)');
   // potential evapotranspiration [mm.d-1]
-  VarCreate('pETP_ambient', '[]', 0, false, pETP_ambient, 'potential evapotranspiration without CO2 effect');
+  VarCreate('pETP_ambient', '[mm.d-1]', 0, false, pETP_ambient, 'potential evapotranspiration ohne CO2 Einfluss');
   // potential evapotranspiration [mm.d-1]
   VarCreate('PotTrans', '[mm/d]', 0, false, pot_trans, 'potential plant transpiration');
-  VarCreate('potTrans_ambient', '[mm/d]', 0, false, pot_trans_ambient, 'potential transpiration under ambient CO2'); // potential transpiration [mm.d-1]
-  VarCreate('PotEvap', '[mm/d]', 0, false, pot_Evapo, 'potential soil evaporation rate'); // potential evaporation
-  VarCreate('pot_Evapo_ambient', '[mm/d]', 0, false, pot_Evapo_ambient,
-    'potential soil evaporation rate under ambient CO2');  // potential evaporation
+  VarCreate('PotTrans_ambient', '[mm/d]', 0, false, pot_trans_ambient, 'potential transpiration under ambient CO2'); // potential transpiration [mm.d-1]
+  VarCreate('PotEvap', '[mm/d]', 0, false, pot_Evapo, 'potential soil evaporation rate'); // potential Evaporation
+  VarCreate('PotEvap_ambient', '[mm/d]', 0, false, PotEvap_ambient,'potential evaporation undder ambient CO2');  // potential Evaporation
   VarCreate('interception', '[mm/d]', 0, false, interception, 'daily interception rate');  // interception
-  VarCreate('NetRain', '[mm/d]', 0, false, net_rain, 'net precipitation (rain minus interception)'); // net precipitation
+  VarCreate('NetRain', '[mm/d]', 0, false, net_rain, 'rain - interception'); // precipitation rate-interception
   VarCreate('ra', '[s/m]', 0, false, ra, 'aerodynamic resistance');
   VarCreate('rc', '[s/m]', 0, false, rc, 'canopy resistance');
-  VarCreate('rc_ambient', '[s/m]', 0, false, rc_ambient, 'canopy resistance under ambient CO2');
+  VarCreate('rc_ambient', '[s/m]', 0, false, rc_ambient, 'canopy resistance under abient CO2');
   VarCreate('NetRad', '[W.m-2]', 0, false, netRad, 'net radiation'); // net radiation [W.m-2]
   VarCreate('k_GlobRad', '[-]', 0, false, k_GlobRad, 'actual extinction coefficient for global radiation, can be from parameter or from external crop model');  // extinction coefficient for GlobRad
   VarCreate('rc0_Var', '[s.m-1]', 0, false, rc0_Var, 'rc0 value as used for calculation (from parameter or plant model)');
-  VarCreate('rc0_ambient', '[s.m-1]', 0, false, rc0_ambient, 'rc0 value without CO2 effect');
+  VarCreate('rc0_ambient', '[s.m-1]', 0, false, rc0_ambient, 'stomata resistance at good water supply without CO2 effect');
   VarCreate('CO2TransDiff', '[mm/d]', 0, false, CO2TransDiff, 'CO2 induced reduction of pot_trans');
   VarCreate('relCO2TransDiff', '[-]', 0, false, relCO2TransDiff, 'rel. CO2 induced reduction of pot_trans');
-  VarCreate('CO2pp', '[ppm]', 400, false, CO2pp, 'external CO2 concentration https://agronomykiel.github.io/HUME/Components/Evapotranspiration/Documentation/TPenMonteith.html#co_2-concentration');
+  // Documentation: https://agronomykiel.github.io/HUME/Components/Evapotranspiration/Documentation/TPenMonteith.html#co_2-concentration
+    VarCreate('CO2pp', '[ppm]', 400, false, CO2pp, 'external CO2 concentration');
 
 end;
 
@@ -938,8 +951,8 @@ end;
 
 procedure TPenMonteith.CreatePars;
 begin
-  ParCreate('Elev', '[m]', 50, Elev, 'Height above sea level');
-  ParCreate('rc0', '[s.m-1]', 50, rc0, 'canopy resistance at "good water supply", note that if a plant component is coupled to TPenMonteith this value is used'); // stomata resistance at "good water supply"
+  ParCreate('Elev', '[m]', 50, Elev, 'Heigt above sea level');
+  ParCreate('rc0', '[s.m-1]', 50, rc0, 'canopy resistance at "good water supply", note that if a plant component is coupled to TPenMonteith this value is used'); // Stomatawiderstand bei "guter Wasserversorgung"
   ParCreate('exk_GlobRad', '[-]', 0.5, exk_GlobRad, 'extinction coefficient for global radiation');
   ParCreate('SIC', '[mm.m-2.m-2]', 0.15, sic, 'specific interception capacity');
   ParCreate('measure_height', '[m]', 2, measure_height, 'Measurement height of meteorological variables [m]');
@@ -959,7 +972,7 @@ end;
 
 procedure TPenMonteith.CreateOptions;
 begin
-  // interception storage [mm]
+  // Interzeptionsspeicher [mm]
   OptCreate('ra_Option', 'PenmanMonteith', f_ra_Option, 'Option for ra(u, CropHeight)-function');
   f_ra_Option.OptionList.Add('PenmanMonteith');
   f_ra_Option.OptionList.Add('ThomOliver');
