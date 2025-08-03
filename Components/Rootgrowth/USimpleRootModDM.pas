@@ -1,15 +1,15 @@
 ﻿unit USimpleRootModDM;
 
-/// a unit to model root growth in a simple way based on daily growth rates of fine root DM
-/// a negative exponential root disribution with depth is assumed
-/// root ageing is implemented by a simple box car approach
-/// see also:
-/// Kage, H., Kochler, M. & Stützel, H. 
-/// Root growth of cauliflower (Brassica oleracea L. botrytis) ander unstressed conditions: Measurement and modelling. 
-/// Plant and Soil 223, 133–147 (2000). https://doi.org/10.1023/A:1004866823128 
-
-
-/// effects of soil texture and soil bulk density class on root growth are implemented according to the KA5 classification
+/// <summary>
+/// Models root growth using daily fine-root dry matter increments and assumes a negative exponential root distribution with depth.
+/// Root aging is simulated with a simple box-car approach.
+/// </summary>
+/// <remarks>
+/// Reference: Kage, H., Kochler, M. & Stützel, H. Root growth of cauliflower (Brassica oleracea L. botrytis) under unstressed conditions: Measurement and modelling. Plant and Soil 223, 133–147 (2000). https://doi.org/10.1023/A:1004866823128
+/// </remarks>
+/// <remarks>
+/// Effects of soil texture and bulk density on root growth follow the KA5 classification.
+/// </remarks>
 interface
 
 uses
@@ -23,120 +23,145 @@ uses
 
 type
 
-{/**
- * @class TSimpleRootModDM
- * @brief The main class for the root growth model.
- *
- * This class represents the root growth model in the HUME system. It is a subclass of TPlantRelatedSubMod.
- * The class contains various properties and methods related to root growth and root length density calculations.
- * It also includes a coupled soil water model and a list of texture effects.
- */
-...}
-/// the main class for the root growth model
+/// <summary>
+/// Main class for the root growth model. Represents the root growth model in the HUME system and subclasses TPlantRelatedSubMod.
+/// Provides properties and methods for root growth and root length density calculations and includes a coupled soil water model and a list of texture effects.
+/// </summary>
 TSimpleRootModDM = class(TPlantRelatedSubMod)
 
 private
 
-fName_WL : string; /// the name prefix for the variables
+  /// <summary>Prefix for variable names.</summary>
+  fName_WL : string;
 
-// private field for the coupled soil water model
+  /// <summary>Coupled soil water model.</summary>
   fRootedSoilWatermodel : TSoilWaterModelR;
 
+  /// <summary>List of texture effects initialized at component creation.</summary>
+  fTextureEffectList : TStringlist;
 
-fTextureEffectList : TStringlist; /// a list of texture effects filled at creation of the component
-fRootGrowthAfterEmergence : boolean; ///
+  /// <summary>True if root growth starts only after emergence.</summary>
+  fRootGrowthAfterEmergence : boolean;
 
-/// set the prefix name
-Procedure set_Name_WL(const Name_WL: string);
+  /// <summary>Sets the variable name prefix.</summary>
+  procedure Set_Name_WL(const Name_WL: string);
 
 
 protected
-  RootDepthInc  : TRootingdepthIncrease;  /// field for the option of rooting depth increase 
-
+  /// <summary>Option controlling rooting depth increase.</summary>
+  RootDepthInc  : TRootingdepthIncrease;
 
   OldDMFineRoot : real;
 
-  function WLD_z_t_f ( z1, z2: real): real; virtual; /// function to calculate the root length density between two depths
-  procedure SetPlantModel(NewPlantmodel: TAbstractPlant); override; /// procedure to set the plant model
+  /// <summary>Calculates root length density between two depths.</summary>
+  function WLD_z_t_f(z1, z2: real): real; virtual;
+  /// <summary>Assigns the plant model.</summary>
+  procedure SetPlantModel(NewPlantmodel: TAbstractPlant); override;
 
 
-public
-  depthgrowthOptStr : Toption; /// Toption object for the depth growth model
+  public
+    /// <summary>Option defining the depth growth model.</summary>
+    depthgrowthOptStr : Toption;
 
-  Wld_arr : TSoilVarArray;    /// root length densities [cm.cm-3]
-  EffWld_arr : TsoilVarArray; /// effective root length density []
-  WL_arr  : TSoilVarArray;    /// root legnth per layer [cm.cm-2]
-  effWL_arr : TSoilVarArray;  /// active root length [cm.cm-2]
+    /// <summary>Root length densities [cm.cm-3].</summary>
+    Wld_arr : TSoilVarArray;
+    /// <summary>Effective root length density [].</summary>
+    EffWld_arr : TsoilVarArray;
+    /// <summary>Root length per layer [cm.cm-2].</summary>
+    WL_arr  : TSoilVarArray;
+    /// <summary>Active root length [cm.cm-2].</summary>
+    effWL_arr : TSoilVarArray;
 
-  N_Rootcomp,               ///  maximum number of rooted compartiments
+    /// <summary>Maximum number of rooted compartments.</summary>
+    N_Rootcomp,
 
-  WLD_0_15, /// root length density in the first 15 cm
-  WLD_15_30,
-  WLD_30_45,
-  WLD_45_60,
-  WLD_60_75,
-  WLD_75_90,
-  WLD_90_105,
-  WLD_105_120,
+    /// <summary>Root length density in the first 15 cm.</summary>
+    WLD_0_15,
+    WLD_15_30,
+    WLD_30_45,
+    WLD_45_60,
+    WLD_60_75,
+    WLD_75_90,
+    WLD_90_105,
+    WLD_105_120,
 
-  WLD_0_30,
-  WLD_30_60,
-  WLD_60_90,
-  WLD_90_120,
-  WLD_120_150,
-  WLD_0_150,
+    WLD_0_30,
+    WLD_30_60,
+    WLD_60_90,
+    WLD_90_120,
+    WLD_120_150,
+    WLD_0_150,
 
-  effWLD_0_30, /// effective root length density in the first 30 cm, i.e. after substractin dead/inactive roots
-  effWLD_30_60,
-  effWLD_60_90,
-  effWLD_90_120,
-  effWLD_120_150,
+    /// <summary>Effective root length density in the first 30 cm, i.e., after subtracting dead or inactive roots.</summary>
+    effWLD_0_30,
+    effWLD_30_60,
+    effWLD_60_90,
+    effWLD_90_120,
+    effWLD_120_150,
 
-  WLD_0_10,
-  WLD_10_20,
-  WLD_20_30,
-  WLD_30_40,
-  WLD_40_50,
-  WLD_50_60,
-  WLD_60_70,
-  WLD_70_80,
-  WLD_80_90,
-  WLD_90_100 : TVar;
+    WLD_0_10,
+    WLD_10_20,
+    WLD_20_30,
+    WLD_30_40,
+    WLD_40_50,
+    WLD_50_60,
+    WLD_60_70,
+    WLD_70_80,
+    WLD_80_90,
+    WLD_90_100 : TVar;
 
-  Root_Matrix : array[1..Max_Comp, 1..MaxAgeCl] of real;
-  n_age_cl    : integer;
+    /// <summary>Root matrix storing age-classed root length per soil compartment.</summary>
+    Root_Matrix : array[1..Max_Comp, 1..MaxAgeCl] of real;
+    n_age_cl    : integer;
 
-  Tiefe : TSoilExtArray;
+    Tiefe : TSoilExtArray;
 
-  zr0    : TPar;            /// Wurzeldepth zur Pflanzung / Aussaat [cm]
+    /// <summary>Rooting depth at planting/sowing [cm].</summary>
+    zr0    : TPar;
 
-  k_za   : TPar;            /// relative root depth increase in optional exponential phase [cm.cm-1.Cd-1]
-  k_zb   : TPar;            /// Wurzelwachstum je Grad-Tag im linearen Teil
-  Zrmax   : TPar;            /// maximum Wurzeldepth [cm]
-  TempSumRootBaseTemp : TPar;  /// Base temperature for root growth
-  sp_RL                     /// specific root length [cm/g DM]
-,
-  ratio                     /// ratio WLD0 / WLDzr
-,
-  ActiveDuration            /// time of root activity
- : Tpar;
+    /// <summary>Relative rooting depth increase in optional exponential phase [cm.cm-1.Cd-1].</summary>
+    k_za   : TPar;
+    /// <summary>Root growth per degree-day in the linear phase.</summary>
+    k_zb   : TPar;
+    /// <summary>Maximum rooting depth [cm].</summary>
+    Zrmax   : TPar;
+    /// <summary>Base temperature for root growth.</summary>
+    TempSumRootBaseTemp : TPar;
+    /// <summary>Specific root length [cm g⁻¹ DM].</summary>
+    sp_RL
+  ,
+    /// <summary>Ratio WLD0 / WLDzr.</summary>
+    ratio
+  ,
+    /// <summary>Duration of root activity.</summary>
+    ActiveDuration
+   : Tpar;
 
-  TempSumR : TState;         /// Temperatur sum for root growth
-  zr : TState;               /// rooting depth (cm)
-  SRL,
-  SRL_eff : TVar;            /// Total "effective" root length (cm.cm-2)
+    /// <summary>Temperature sum for root growth.</summary>
+    TempSumR : TState;
+    /// <summary>Rooting depth (cm).</summary>
+    zr : TState;
+    SRL,
+    /// <summary>Total effective root length (cm cm-2).</summary>
+    SRL_eff : TVar;
 
-  Temp,               /// air temperature in 2m
-  DMFineRoot,         /// Dry matter of fine roots (g/m2)
+    /// <summary>Air temperature at 2 m.</summary>
+    Temp,
+    /// <summary>Dry matter of fine roots (g/m2).</summary>
+    DMFineRoot,
 
-  DMroot_inc : TExternV;    /// Daily DM growth rate of fine roots [g/m2/d]
-  EmergenceDay : TExternV;   ///
+    /// <summary>Daily DM growth rate of fine roots [g/m2/d].</summary>
+    DMroot_inc : TExternV;
+    /// <summary>Day of emergence.</summary>
+    EmergenceDay : TExternV;
 
-  SowingDate,
-  HarvestDate : TPar;
+    SowingDate,
+    HarvestDate : TPar;
 
-  TextureEffect: TOption; /// option for texture effect on root growth
-  RootGrowthAfterEmergence: TOption; /// If true root growth starts not earlier than after emergence
+    /// <summary>Option for texture effects on root growth.</summary>
+    TextureEffect: TOption;
+    /// <summary>If true, root growth does not start before emergence.</summary>
+    RootGrowthAfterEmergence: TOption;
 
 
 
@@ -274,26 +299,23 @@ begin
 
 end;
 
-/// Calculates the value of root length density
-///
-/// \param wld0 The initial value of WLD.
-/// \param a The coefficient a.
-/// \param z The value of z.
-/// \return The calculated value of root length density.
-function WLD_z_f(wld0, a, z: real): real;
+  /// <summary>Calculates root length density.</summary>
+  /// <param name="wld0">Initial value of WLD.</param>
+  /// <param name="a">Coefficient describing exponential decrease with depth.</param>
+  /// <param name="z">Depth below ground surface [cm].</param>
+  /// <returns>The calculated value of root length density.</returns>
+  function WLD_z_f(wld0, a, z: real): real;
 begin
   WLD_z_f := wld0 * exp(-a * z);
 end;
 
 
 
-/// <summary>
-/// Calculates the value of WLD_z_t_f.
-/// </summary>
-/// <param name="z1">The first input value.</param>
-/// <param name="z2">The second input value.</param>
-/// <returns>The calculated value of WLD_z_t_f.</returns>
-function TSimpleRootModDM.WLD_z_t_f(z1, z2  : real): real;
+  /// <summary>Calculates average root length density between two depths.</summary>
+  /// <param name="z1">Lower depth boundary [cm].</param>
+  /// <param name="z2">Upper depth boundary [cm].</param>
+  /// <returns>Average root length density between z1 and z2.</returns>
+  function TSimpleRootModDM.WLD_z_t_f(z1, z2  : real): real;
 
 var
   WLD0,
@@ -420,7 +442,7 @@ begin
   fTextureEffectList := TStringlist.Create;
   fTextureEffectList.CaseSensitive := false;
 
-/// create a texture effect object, create an index string and add the object to the lis
+// create a texture effect object, create an index string and add the object to the list
 NewTextureEffect := TTextureEffect.create('gS', 'LD1' , 9, 0.75);
 txtndx_str :=   NewTextureEffect.TextureClass + '_' +NewTextureEffect.LD;
 fTextureEffectList.AddObject(txtndx_str, NewTextureEffect);
@@ -709,7 +731,7 @@ var
 begin
   If (sowingdate = nil) or (Globtime.v >= SowingDate.v) then begin
     if root_matrix[1,1] <= 0.0 then begin
-      SRL.v := DMFineRoot.v*sp_RL.v/1e4; /// sum of root length in cm/cm2
+      SRL.v := DMFineRoot.v*sp_RL.v/1e4; // sum of root length in cm/cm2
   {    for i := 1 to trunc(n_Rootcomp.v) do
         WLD_arr[i].v := WLD_z_t_f ( depth[i-1].v, depth[i].v);
 
@@ -720,23 +742,23 @@ begin
 
   Texturefactor := 1; // default value
   if (TextureEffect.Option = 'true') and (self.RootedSoilWaterModel <> NIL) then begin
-    /// get number of rooted compartments
+    // get number of rooted compartments
     act_rooted_comps := 0;
     for i  := 1 to RootedSoilWaterModel.act_n_comp do
       if Wld_arr[i].v > 0.0 then
         act_rooted_comps := i;
 
-    /// get texture and LD (bulk density class) of rooted compartments and calculate texture factor
+    // get texture and LD (bulk density class) of rooted compartments and calculate texture factor
     act_texture := self.RootedSoilWaterModel.Texture[act_rooted_comps];
     act_texture_str := GetEnumName(typeInfo(TTextureClass), Ord(act_texture)); // string from typee
 
     act_LD := RootedSoilWaterModel.LD[act_rooted_comps];
     act_LD_str :=    GetEnumName(typeInfo(TLDClass), Ord(act_LD));
 
-    /// construct index string
+    // construct index string
     TexLD_str := act_texture_str +'_' + act_LD_str;
 
-    /// retrieve texture effect from lis
+    // retrieve texture effect from list
     Texture_ndx := fTextureEffectList.IndexOf(TexLD_str);
     if  Texture_ndx <> -1 then begin
       act_Texture_effect := TTextureEffect(fTextureEffectList.Objects[Texture_ndx]);
