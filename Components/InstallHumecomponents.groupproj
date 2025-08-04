@@ -12,6 +12,9 @@
         <Projects Include="PlantComponents\PackageGrowthCurvePlantRootsDM.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="ISIP_Components\ISIP_Components.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +50,23 @@
     <Target Name="PackageGrowthCurvePlantRootsDM:Make">
         <MSBuild Projects="PlantComponents\PackageGrowthCurvePlantRootsDM.dproj" Targets="Make"/>
     </Target>
+    <Target Name="ISIP_Components">
+        <MSBuild Projects="ISIP_Components\ISIP_Components.dproj"/>
+    </Target>
+    <Target Name="ISIP_Components:Clean">
+        <MSBuild Projects="ISIP_Components\ISIP_Components.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ISIP_Components:Make">
+        <MSBuild Projects="ISIP_Components\ISIP_Components.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="SoilWaterPackage;CeresSubModels;PackageGrowthCurvePlantRootsDM"/>
+        <CallTarget Targets="SoilWaterPackage;CeresSubModels;PackageGrowthCurvePlantRootsDM;ISIP_Components"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="SoilWaterPackage:Clean;CeresSubModels:Clean;PackageGrowthCurvePlantRootsDM:Clean"/>
+        <CallTarget Targets="SoilWaterPackage:Clean;CeresSubModels:Clean;PackageGrowthCurvePlantRootsDM:Clean;ISIP_Components:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="SoilWaterPackage:Make;CeresSubModels:Make;PackageGrowthCurvePlantRootsDM:Make"/>
+        <CallTarget Targets="SoilWaterPackage:Make;CeresSubModels:Make;PackageGrowthCurvePlantRootsDM:Make;ISIP_Components:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

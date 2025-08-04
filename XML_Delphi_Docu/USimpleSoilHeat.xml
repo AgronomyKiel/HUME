@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="USimpleSoilHeat" platform="Win32">
-  <class name="TSimpleSoilHeat" file="USimpleSoilHeat.pas" line="12">
+  <class name="TSimpleSoilHeat" file="USimpleSoilHeat.pas" line="11">
     <ancestor name="TAbstractSoilHeat" namespace="UAbstractSoilHeat">
       <methodref name="Init" visibility="public" procflags="override">
       </methodref>
@@ -16,10 +16,13 @@
         <ancestor name="TPlantRelatedSubMod" namespace="UAbstractPlant">
           <methodref name="GetIsPlantModelset" visibility="protected">
           </methodref>
-          <methodref name="SetPlantModel" visibility="public" procflags="virtual" />
-          <methodref name="Init" visibility="public" procflags="override" />
+          <methodref name="SetPlantModel" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Init" visibility="public" procflags="override">
+          </methodref>
           <propertyref name="IsPlantModelSet" visibility="public" />
-          <propertyref name="PlantModel" visibility="published" />
+          <propertyref name="PlantModel" visibility="published">
+          </propertyref>
           <ancestor name="TSubmodel" namespace="UMod">
             <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
             </methodref>
@@ -1196,43 +1199,43 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="WCapa" type="TSoilArray" visibility="private" size="416" offset="2776" file="USimpleSoilHeat.pas" line="17" />
-      <field name="fClay" type="Double" visibility="private" size="8" offset="3192" file="USimpleSoilHeat.pas" line="18" />
-      <field name="lower" type="TSoilArray" visibility="private" size="416" offset="3200" file="USimpleSoilHeat.pas" line="20" />
-      <field name="diag" type="TSoilArray" visibility="private" size="416" offset="3616" file="USimpleSoilHeat.pas" line="20" />
-      <field name="upper" type="TSoilArray" visibility="private" size="416" offset="4032" file="USimpleSoilHeat.pas" line="20" />
-      <field name="b_vektor" type="TSoilArray" visibility="private" size="416" offset="4448" file="USimpleSoilHeat.pas" line="20" />
-      <procedure name="UpperBoundary" visibility="private" file="USimpleSoilHeat.pas" line="21">
+      <field name="WCapa" type="TSoilArray" visibility="private" size="416" offset="2776" file="USimpleSoilHeat.pas" line="15" />
+      <field name="fClay" type="Double" visibility="private" size="8" offset="3192" file="USimpleSoilHeat.pas" line="16" />
+      <field name="lower" type="TSoilArray" visibility="private" size="416" offset="3200" file="USimpleSoilHeat.pas" line="18" />
+      <field name="diag" type="TSoilArray" visibility="private" size="416" offset="3616" file="USimpleSoilHeat.pas" line="18" />
+      <field name="upper" type="TSoilArray" visibility="private" size="416" offset="4032" file="USimpleSoilHeat.pas" line="18" />
+      <field name="b_vektor" type="TSoilArray" visibility="private" size="416" offset="4448" file="USimpleSoilHeat.pas" line="18" />
+      <procedure name="UpperBoundary" visibility="private" file="USimpleSoilHeat.pas" line="19">
       </procedure>
-      <procedure name="MiddleLayers" visibility="private" file="USimpleSoilHeat.pas" line="22">
+      <procedure name="MiddleLayers" visibility="private" file="USimpleSoilHeat.pas" line="20">
       </procedure>
-      <procedure name="LowerBoundary" visibility="private" file="USimpleSoilHeat.pas" line="23">
+      <procedure name="LowerBoundary" visibility="private" file="USimpleSoilHeat.pas" line="21">
       </procedure>
-      <procedure name="CalcConductivities" visibility="private" file="USimpleSoilHeat.pas" line="24">
+      <procedure name="CalcConductivities" visibility="private" file="USimpleSoilHeat.pas" line="22">
       </procedure>
-      <field name="fSoilWaterModel" type="TSoilWaterMod" visibility="protected" size="4" offset="4864" file="USimpleSoilHeat.pas" line="27" />
-      <field name="SpecWeight" type="TPar" visibility="public" size="4" offset="4868" file="USimpleSoilHeat.pas" line="30" />
-      <field name="ClayContent" type="TPar" visibility="public" size="4" offset="4872" file="USimpleSoilHeat.pas" line="31" />
-      <field name="GPV" type="TPar" visibility="public" size="4" offset="4876" file="USimpleSoilHeat.pas" line="32" />
-      <field name="Theta" type="TSoilExtArray" visibility="public" size="208" offset="4880" file="USimpleSoilHeat.pas" line="34" />
-      <field name="Lambda" type="TSoilVarArray" visibility="public" size="212" offset="5088" file="USimpleSoilHeat.pas" line="35" />
-      <field name="AirTemp" type="TExternV" visibility="public" size="4" offset="5300" file="USimpleSoilHeat.pas" line="36" />
-      <procedure name="Init" visibility="public" procflags="override" file="USimpleSoilHeat.pas" line="37">
+      <field name="fSoilWaterModel" type="TSoilWaterMod" visibility="protected" size="4" offset="4864" file="USimpleSoilHeat.pas" line="25" />
+      <field name="SpecWeight" type="TPar" visibility="public" size="4" offset="4868" file="USimpleSoilHeat.pas" line="28" />
+      <field name="ClayContent" type="TPar" visibility="public" size="4" offset="4872" file="USimpleSoilHeat.pas" line="28" />
+      <field name="GPV" type="TPar" visibility="public" size="4" offset="4876" file="USimpleSoilHeat.pas" line="28" />
+      <field name="Theta" type="TSoilExtArray" visibility="public" size="208" offset="4880" file="USimpleSoilHeat.pas" line="29" />
+      <field name="Lambda" type="TSoilVarArray" visibility="public" size="212" offset="5088" file="USimpleSoilHeat.pas" line="30" />
+      <field name="AirTemp" type="TExternV" visibility="public" size="4" offset="5300" file="USimpleSoilHeat.pas" line="31" />
+      <procedure name="Init" visibility="public" procflags="override" file="USimpleSoilHeat.pas" line="32">
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="USimpleSoilHeat.pas" line="38">
+      <procedure name="CreateAll" visibility="public" procflags="override" file="USimpleSoilHeat.pas" line="33">
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="USimpleSoilHeat.pas" line="39">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="USimpleSoilHeat.pas" line="34">
       </procedure>
-      <property name="Par_Dichte" visibility="published" read="SpecWeight" write="SpecWeight" type="TPar" file="USimpleSoilHeat.pas" line="42" />
-      <property name="Par_Tongehalt" visibility="published" read="ClayContent" write="ClayContent" type="TPar" file="USimpleSoilHeat.pas" line="43" />
-      <property name="Par_GPV" visibility="published" read="GPV" write="GPV" type="TPar" file="USimpleSoilHeat.pas" line="44" />
-      <property name="ExAirTemp" visibility="published" read="AirTemp" write="AirTemp" type="TExternV" file="USimpleSoilHeat.pas" line="45" />
-      <property name="SoilWaterModel" visibility="published" read="fSoilWaterModel" write="fSoilWaterModel" type="TSoilWaterMod" file="USimpleSoilHeat.pas" line="46" />
+      <property name="Par_Dichte" visibility="published" read="SpecWeight" write="SpecWeight" type="TPar" file="USimpleSoilHeat.pas" line="37" />
+      <property name="Par_Tongehalt" visibility="published" read="ClayContent" write="ClayContent" type="TPar" file="USimpleSoilHeat.pas" line="38" />
+      <property name="Par_GPV" visibility="published" read="GPV" write="GPV" type="TPar" file="USimpleSoilHeat.pas" line="39" />
+      <property name="ExAirTemp" visibility="published" read="AirTemp" write="AirTemp" type="TExternV" file="USimpleSoilHeat.pas" line="40" />
+      <property name="SoilWaterModel" visibility="published" read="fSoilWaterModel" write="fSoilWaterModel" type="TSoilWaterMod" file="USimpleSoilHeat.pas" line="41" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="USimpleSoilHeat.pas" line="229">
+  <procedure name="Register" visibility="public" file="USimpleSoilHeat.pas" line="222">
   </procedure>
 </namespace>

@@ -799,7 +799,7 @@
       </property>
     </members>
   </class>
-  <class name="TSoilNitrogen" file="USoilNitrogen.pas" line="11">
+  <class name="TSoilNitrogen" file="USoilNitrogen.pas" line="12">
     <ancestor name="TSoilWaterModelR" namespace="URootedSoil">
       <methodref name="setWithRoots" visibility="private" />
       <methodref name="CreateOptionsRootedSoil" visibility="private" />
@@ -1036,10 +1036,13 @@
           <ancestor name="TPlantRelatedSubMod" namespace="UAbstractPlant">
             <methodref name="GetIsPlantModelset" visibility="protected">
             </methodref>
-            <methodref name="SetPlantModel" visibility="public" procflags="virtual" />
-            <methodref name="Init" visibility="public" procflags="override" />
+            <methodref name="SetPlantModel" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Init" visibility="public" procflags="override">
+            </methodref>
             <propertyref name="IsPlantModelSet" visibility="public" />
-            <propertyref name="PlantModel" visibility="published" />
+            <propertyref name="PlantModel" visibility="published">
+            </propertyref>
             <ancestor name="TSubmodel" namespace="UMod">
               <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
               </methodref>
@@ -2217,140 +2220,140 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="ConcOld" type="TSoilArray" visibility="private" size="416" offset="19024" file="USoilNitrogen.pas" line="14" />
-      <field name="fTransferNminss" type="Boolean" visibility="private" size="1" offset="19440" file="USoilNitrogen.pas" line="15" />
-      <field name="NminStart" type="Double" visibility="private" size="8" offset="19448" file="USoilNitrogen.pas" line="16" />
-      <field name="NFlowInt" type="TSoilArray" visibility="private" size="416" offset="19456" file="USoilNitrogen.pas" line="17">
+      <field name="ConcOld" type="TSoilArray" visibility="private" size="416" offset="19024" file="USoilNitrogen.pas" line="15" />
+      <field name="fTransferNminss" type="Boolean" visibility="private" size="1" offset="19440" file="USoilNitrogen.pas" line="16" />
+      <field name="NminStart" type="Double" visibility="private" size="8" offset="19448" file="USoilNitrogen.pas" line="17" />
+      <field name="NFlowInt" type="TSoilArray" visibility="private" size="416" offset="19456" file="USoilNitrogen.pas" line="19">
         <devnotes>
            nitrate amount in soil profile at simulation start [Kg N/ha]
         </devnotes>
       </field>
-      <procedure name="InitSoilNVectors" visibility="protected" file="USoilNitrogen.pas" line="21">
+      <procedure name="InitSoilNVectors" visibility="protected" file="USoilNitrogen.pas" line="23">
         <devnotes>
            Nitratflüsse during internal time steps [Kg N/ha*d] ///
         </devnotes>
       </procedure>
-      <field name="NitrateAmount" type="TSoilStateArray" visibility="public" size="208" offset="19872" file="USoilNitrogen.pas" line="24" />
-      <field name="NConc" type="TSoilVarArray" visibility="public" size="212" offset="20080" file="USoilNitrogen.pas" line="25">
+      <field name="NitrateAmount" type="TSoilStateArray" visibility="public" size="208" offset="19872" file="USoilNitrogen.pas" line="26" />
+      <field name="NConc" type="TSoilVarArray" visibility="public" size="212" offset="20080" file="USoilNitrogen.pas" line="28">
         <devnotes>
            Nitrat menge im Kompartiment [Kg N/ha]
         </devnotes>
       </field>
-      <field name="Nsink" type="TSoilVarArray" visibility="public" size="212" offset="20292" file="USoilNitrogen.pas" line="26">
+      <field name="Nsink" type="TSoilVarArray" visibility="public" size="212" offset="20292" file="USoilNitrogen.pas" line="30">
         <devnotes>
            Nitrate Concentration [Kg NO3-N/cm H2O]
         </devnotes>
       </field>
-      <field name="NetMin" type="TSoilVarArray" visibility="public" size="212" offset="20504" file="USoilNitrogen.pas" line="27">
+      <field name="NetMin" type="TSoilVarArray" visibility="public" size="212" offset="20504" file="USoilNitrogen.pas" line="32">
         <devnotes>
            Sink term [Kg N/ha*d }
         </devnotes>
       </field>
-      <field name="NFlow" type="TSoilVarArray" visibility="public" size="212" offset="20716" file="USoilNitrogen.pas" line="28">
+      <field name="NFlow" type="TSoilVarArray" visibility="public" size="212" offset="20716" file="USoilNitrogen.pas" line="34">
         <devnotes>
            Source term [Kg N/ha*d }
         </devnotes>
       </field>
-      <field name="CumSumUptake" type="TState" visibility="public" size="4" offset="20928" file="USoilNitrogen.pas" line="29">
+      <field name="CumSumUptake" type="TState" visibility="public" size="4" offset="20928" file="USoilNitrogen.pas" line="36">
         <devnotes>
            Nitrate flows [Kg N/ha*d] }
         </devnotes>
       </field>
-      <field name="CumSumMinera" type="TState" visibility="public" size="4" offset="20932" file="USoilNitrogen.pas" line="30">
+      <field name="CumSumMinera" type="TState" visibility="public" size="4" offset="20932" file="USoilNitrogen.pas" line="38">
         <devnotes>
            cumulative sum of soil N uptake
         </devnotes>
       </field>
-      <field name="CumSumNitrateLeaching" type="TState" visibility="public" size="4" offset="20936" file="USoilNitrogen.pas" line="31">
+      <field name="CumSumNitrateLeaching" type="TState" visibility="public" size="4" offset="20936" file="USoilNitrogen.pas" line="40">
         <devnotes>
            cumulative sum of soil N mineralisation
         </devnotes>
       </field>
-      <field name="Nmin0_10" type="TVar" visibility="public" size="4" offset="20940" file="USoilNitrogen.pas" line="32">
+      <field name="Nmin0_10" type="TVar" visibility="public" size="4" offset="20940" file="USoilNitrogen.pas" line="42">
         <devnotes>
            Sum of nitrate leaching
         </devnotes>
       </field>
-      <field name="Nmin0_30" type="TVar" visibility="public" size="4" offset="20944" file="USoilNitrogen.pas" line="33" />
-      <field name="Nmin30_60" type="TVar" visibility="public" size="4" offset="20948" file="USoilNitrogen.pas" line="34" />
-      <field name="Nmin60_90" type="TVar" visibility="public" size="4" offset="20952" file="USoilNitrogen.pas" line="35" />
-      <field name="Nmin90_120" type="TVar" visibility="public" size="4" offset="20956" file="USoilNitrogen.pas" line="36" />
-      <field name="Nmin0_90" type="TVar" visibility="public" size="4" offset="20960" file="USoilNitrogen.pas" line="37" />
-      <field name="Nmin0_60" type="TVar" visibility="public" size="4" offset="20964" file="USoilNitrogen.pas" line="38" />
-      <field name="LongTermNBalance" type="TVar" visibility="public" size="4" offset="20968" file="USoilNitrogen.pas" line="39" />
-      <field name="DailyNBalance" type="TState" visibility="public" size="4" offset="20972" file="USoilNitrogen.pas" line="40">
+      <field name="Nmin0_30" type="TVar" visibility="public" size="4" offset="20944" file="USoilNitrogen.pas" line="43" />
+      <field name="Nmin30_60" type="TVar" visibility="public" size="4" offset="20948" file="USoilNitrogen.pas" line="44" />
+      <field name="Nmin60_90" type="TVar" visibility="public" size="4" offset="20952" file="USoilNitrogen.pas" line="45" />
+      <field name="Nmin90_120" type="TVar" visibility="public" size="4" offset="20956" file="USoilNitrogen.pas" line="46" />
+      <field name="Nmin0_90" type="TVar" visibility="public" size="4" offset="20960" file="USoilNitrogen.pas" line="47" />
+      <field name="Nmin0_60" type="TVar" visibility="public" size="4" offset="20964" file="USoilNitrogen.pas" line="48" />
+      <field name="LongTermNBalance" type="TVar" visibility="public" size="4" offset="20968" file="USoilNitrogen.pas" line="49" />
+      <field name="DailyNBalance" type="TState" visibility="public" size="4" offset="20972" file="USoilNitrogen.pas" line="51">
         <devnotes>
            long term nitrogen computational balance
         </devnotes>
       </field>
-      <field name="TotalNBalance" type="TState" visibility="public" size="4" offset="20976" file="USoilNitrogen.pas" line="41">
+      <field name="TotalNBalance" type="TState" visibility="public" size="4" offset="20976" file="USoilNitrogen.pas" line="53">
         <devnotes>
            daily nitrogen computational balance
         </devnotes>
       </field>
-      <field name="SumNmin" type="TVar" visibility="public" size="4" offset="20980" file="USoilNitrogen.pas" line="42">
+      <field name="SumNmin" type="TVar" visibility="public" size="4" offset="20980" file="USoilNitrogen.pas" line="55">
         <devnotes>
            cumulative N balance
         </devnotes>
       </field>
-      <field name="NitrateLeachingRate" type="TVar" visibility="public" size="4" offset="20984" file="USoilNitrogen.pas" line="43">
+      <field name="NitrateLeachingRate" type="TVar" visibility="public" size="4" offset="20984" file="USoilNitrogen.pas" line="57">
         <devnotes>
            Sum of Nmin-nitrate
         </devnotes>
       </field>
-      <field name="Dispersion_length" type="TPar" visibility="public" size="4" offset="20988" file="USoilNitrogen.pas" line="44">
+      <field name="Dispersion_length" type="TPar" visibility="public" size="4" offset="20988" file="USoilNitrogen.pas" line="59">
         <devnotes>
            Leachingrate as daily average
         </devnotes>
       </field>
-      <field name="Imp_factor" type="TPar" visibility="public" size="4" offset="20992" file="USoilNitrogen.pas" line="45">
+      <field name="Imp_factor" type="TPar" visibility="public" size="4" offset="20992" file="USoilNitrogen.pas" line="61">
         <devnotes>
            Dispersion length
         </devnotes>
       </field>
-      <field name="LeachingStartDay" type="TPar" visibility="public" size="4" offset="20996" file="USoilNitrogen.pas" line="46">
+      <field name="LeachingStartDay" type="TPar" visibility="public" size="4" offset="20996" file="USoilNitrogen.pas" line="63">
         <devnotes>
            relative &quot;implicitness&quot; of calculation procedure
         </devnotes>
       </field>
-      <field name="LeachingEndDay" type="TPar" visibility="public" size="4" offset="21000" file="USoilNitrogen.pas" line="46" />
-      <field name="SelectedLeachingPeriod" type="TOption" visibility="public" size="4" offset="21004" file="USoilNitrogen.pas" line="47" />
-      <field name="Groundwaterconc" type="TExternV" visibility="public" size="4" offset="21008" file="USoilNitrogen.pas" line="48">
+      <field name="LeachingEndDay" type="TPar" visibility="public" size="4" offset="21000" file="USoilNitrogen.pas" line="63" />
+      <field name="SelectedLeachingPeriod" type="TOption" visibility="public" size="4" offset="21004" file="USoilNitrogen.pas" line="65" />
+      <field name="Groundwaterconc" type="TExternV" visibility="public" size="4" offset="21008" file="USoilNitrogen.pas" line="67">
         <devnotes>
            Option for restricting Leaching accumulation to a certain period
         </devnotes>
       </field>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="USoilNitrogen.pas" line="49">
+      <procedure name="CreateAll" visibility="public" procflags="override" file="USoilNitrogen.pas" line="68">
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="USoilNitrogen.pas" line="50">
+      <procedure name="Init" visibility="public" procflags="override" file="USoilNitrogen.pas" line="69">
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRatesAndIntegrate" visibility="public" procflags="override" file="USoilNitrogen.pas" line="51">
+      <procedure name="CalcRatesAndIntegrate" visibility="public" procflags="override" file="USoilNitrogen.pas" line="70">
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="USoilNitrogen.pas" line="52">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="USoilNitrogen.pas" line="71">
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="override" file="USoilNitrogen.pas" line="53">
+      <procedure name="Integrate" visibility="public" procflags="override" file="USoilNitrogen.pas" line="72">
       </procedure>
-      <procedure name="update_Nmin_Values" visibility="public" file="USoilNitrogen.pas" line="54">
+      <procedure name="update_Nmin_Values" visibility="public" file="USoilNitrogen.pas" line="73">
       </procedure>
-      <property name="Var_Nmin0_10" visibility="published" read="Nmin0_10" write="Nmin0_10" type="TVar" file="USoilNitrogen.pas" line="58" />
-      <property name="Var_Nmin0_30" visibility="published" read="Nmin0_30" write="Nmin0_30" type="TVar" file="USoilNitrogen.pas" line="59" />
-      <property name="Var_Nmin30_60" visibility="published" read="Nmin30_60" write="Nmin30_60" type="TVar" file="USoilNitrogen.pas" line="60" />
-      <property name="Var_Nmin60_90" visibility="published" read="Nmin60_90" write="Nmin60_90" type="TVar" file="USoilNitrogen.pas" line="61" />
-      <property name="Var_Nmin90_120" visibility="published" read="Nmin90_120" write="Nmin90_120" type="TVar" file="USoilNitrogen.pas" line="62" />
-      <property name="Var_Nmin0_60" visibility="published" read="Nmin0_60" write="Nmin0_60" type="TVar" file="USoilNitrogen.pas" line="63" />
-      <property name="Var_Nmin0_90" visibility="published" read="Nmin0_90" write="Nmin0_90" type="TVar" file="USoilNitrogen.pas" line="64" />
-      <property name="Var_SumNmin" visibility="published" read="SumNmin" write="SumNmin" type="TVar" file="USoilNitrogen.pas" line="65" />
-      <property name="Var_SumDrain" visibility="published" read="CumSumNitrateLeaching" write="CumSumNitrateLeaching" type="TState" file="USoilNitrogen.pas" line="66" />
-      <property name="Var_DrainageNFlow" visibility="published" read="NitrateLeachingRate" write="NitrateLeachingRate" type="TVar" file="USoilNitrogen.pas" line="67" />
-      <property name="Var_NBalance" visibility="published" read="LongTermNBalance" write="LongTermNBalance" type="TVar" file="USoilNitrogen.pas" line="68" />
-      <property name="Var_DailyNBalance" visibility="published" read="DailyNBalance" write="DailyNBalance" type="TState" file="USoilNitrogen.pas" line="69" />
-      <property name="Par_Imp_factor" visibility="published" read="Imp_factor" write="Imp_factor" type="TPar" file="USoilNitrogen.pas" line="70" />
-      <property name="Opt_TransferNMinsToNextINI" visibility="published" read="fTransferNminss" write="fTransferNminss" type="Boolean" file="USoilNitrogen.pas" line="71" />
+      <property name="Var_Nmin0_10" visibility="published" read="Nmin0_10" write="Nmin0_10" type="TVar" file="USoilNitrogen.pas" line="77" />
+      <property name="Var_Nmin0_30" visibility="published" read="Nmin0_30" write="Nmin0_30" type="TVar" file="USoilNitrogen.pas" line="78" />
+      <property name="Var_Nmin30_60" visibility="published" read="Nmin30_60" write="Nmin30_60" type="TVar" file="USoilNitrogen.pas" line="79" />
+      <property name="Var_Nmin60_90" visibility="published" read="Nmin60_90" write="Nmin60_90" type="TVar" file="USoilNitrogen.pas" line="80" />
+      <property name="Var_Nmin90_120" visibility="published" read="Nmin90_120" write="Nmin90_120" type="TVar" file="USoilNitrogen.pas" line="81" />
+      <property name="Var_Nmin0_60" visibility="published" read="Nmin0_60" write="Nmin0_60" type="TVar" file="USoilNitrogen.pas" line="82" />
+      <property name="Var_Nmin0_90" visibility="published" read="Nmin0_90" write="Nmin0_90" type="TVar" file="USoilNitrogen.pas" line="83" />
+      <property name="Var_SumNmin" visibility="published" read="SumNmin" write="SumNmin" type="TVar" file="USoilNitrogen.pas" line="84" />
+      <property name="Var_SumDrain" visibility="published" read="CumSumNitrateLeaching" write="CumSumNitrateLeaching" type="TState" file="USoilNitrogen.pas" line="85" />
+      <property name="Var_DrainageNFlow" visibility="published" read="NitrateLeachingRate" write="NitrateLeachingRate" type="TVar" file="USoilNitrogen.pas" line="87" />
+      <property name="Var_NBalance" visibility="published" read="LongTermNBalance" write="LongTermNBalance" type="TVar" file="USoilNitrogen.pas" line="89" />
+      <property name="Var_DailyNBalance" visibility="published" read="DailyNBalance" write="DailyNBalance" type="TState" file="USoilNitrogen.pas" line="90" />
+      <property name="Par_Imp_factor" visibility="published" read="Imp_factor" write="Imp_factor" type="TPar" file="USoilNitrogen.pas" line="91" />
+      <property name="Opt_TransferNMinsToNextINI" visibility="published" read="fTransferNminss" write="fTransferNminss" type="Boolean" file="USoilNitrogen.pas" line="92" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="USoilNitrogen.pas" line="587">
+  <procedure name="Register" visibility="public" file="USoilNitrogen.pas" line="642">
   </procedure>
 </namespace>

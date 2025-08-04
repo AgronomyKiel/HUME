@@ -1,70 +1,117 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<namespace name="UlayeredSoil" platform="Win32">
-  <const name="RR" type="TTexture_version" file="UlayeredSoil.pas" line="18">
+<namespace name="USimplePlant" platform="Win32">
+  <const name="Tref" type="Integer" file="USimplePlant.pas" line="14">
     <value>
-      RR
+      $14
     </value>
   </const>
-  <const name="KA" type="TTexture_version" file="UlayeredSoil.pas" line="18">
+  <const name="AvDays" type="Integer" file="USimplePlant.pas" line="15">
     <value>
-      KA
+      $5
+    </value>
+  </const>
+  <const name="NoResp" type="TRespOptions" file="USimplePlant.pas" line="20">
+    <value>
+      NoResp
+    </value>
+  </const>
+  <const name="MaintResp" type="TRespOptions" file="USimplePlant.pas" line="20">
+    <value>
+      MaintResp
+    </value>
+  </const>
+  <const name="No_Roots" type="TRootOptions" file="USimplePlant.pas" line="21">
+    <value>
+      No_Roots
+    </value>
+  </const>
+  <const name="Roots" type="TRootOptions" file="USimplePlant.pas" line="21">
+    <value>
+      Roots
     </value>
   </const>
   <type name="real" type="Double" file="System.pas" line="12" />
-  <array name="TSoilStateArray" low="0" high="51" file="UlayeredSoil.pas" line="10">
-    <element type="TState" />
-  </array>
-  <array name="TSoilVarArray" low="0" high="52" file="UlayeredSoil.pas" line="12">
-    <devnotes>
-       basic array type for soil layer state variables
-    </devnotes>
-    <element type="TVar">
-      <devnotes>
-         basic array type for soil layer state variables
-      </devnotes>
-    </element>
-  </array>
-  <array name="TSoilExtArray" low="0" high="51" file="UlayeredSoil.pas" line="14">
-    <devnotes>
-       basic array type for soil layer variables
-    </devnotes>
-    <element type="TExternV">
-      <devnotes>
-         basic array type for soil layer variables
-      </devnotes>
-    </element>
-  </array>
-  <array name="TSoilArray" low="0" high="51" file="UlayeredSoil.pas" line="16">
-    <devnotes>
-       basic array type for soil layer external variables
-    </devnotes>
-    <element type="Double">
-      <devnotes>
-         basic array type for soil layer external variables
-      </devnotes>
-    </element>
-  </array>
-  <enum name="TTexture_version" file="UlayeredSoil.pas" line="18">
-    <devnotes>
-       basic array type for soil layer floating point fields
-    </devnotes>
-    <element value="0" name="RR" file="UlayeredSoil.pas" line="18" />
-    <element value="1" name="KA" file="UlayeredSoil.pas" line="18" />
+  <enum name="TRespOptions" file="USimplePlant.pas" line="20">
+    <element value="0" name="NoResp" file="USimplePlant.pas" line="20" />
+    <element value="1" name="MaintResp" file="USimplePlant.pas" line="20" />
   </enum>
-  <class name="TLayeredSoil" file="UlayeredSoil.pas" line="21">
-    <devnotes>
-       type for pedotransfer function RR= Rote Reihe
-    </devnotes>
-    <ancestor name="TPlantRelatedSubMod" namespace="UAbstractPlant">
-      <methodref name="GetIsPlantModelset" visibility="protected">
+  <enum name="TRootOptions" file="USimplePlant.pas" line="21">
+    <element value="0" name="No_Roots" file="USimplePlant.pas" line="21" />
+    <element value="1" name="Roots" file="USimplePlant.pas" line="21" />
+  </enum>
+  <class name="TSimplePlant" file="USimplePlant.pas" line="24">
+    <ancestor name="TAbstractPlant" namespace="UAbstractPlant">
+      <methodref name="setNextCrop" visibility="protected" procflags="virtual" />
+      <methodref name="GetLAI" visibility="protected" procflags="abstract virtual" />
+      <methodref name="SetLai" visibility="protected" procflags="abstract virtual" />
+      <methodref name="GetCropHeight" visibility="protected" procflags="abstract virtual" />
+      <methodref name="SetCropHeight" visibility="protected" procflags="abstract virtual" />
+      <methodref name="GetNUptakeRate" visibility="protected" procflags="abstract virtual" />
+      <methodref name="SetNUptakeRate" visibility="protected" procflags="abstract virtual" />
+      <methodref name="GetWLD" visibility="protected" procflags="abstract virtual" />
+      <methodref name="GetSumRootLength" visibility="protected" procflags="abstract virtual" />
+      <methodref name="GetSumRootLength_eff" visibility="protected" procflags="abstract virtual" />
+      <methodref name="SetWLD" visibility="protected" procflags="abstract virtual" />
+      <methodref name="getExtCoeffPAR" visibility="protected" procflags="virtual" />
+      <methodref name="getExtCoeffGlobRad" visibility="protected" procflags="virtual" />
+      <methodref name="getrc0" visibility="protected" procflags="virtual" />
+      <methodref name="getPsi2" visibility="protected" procflags="virtual" />
+      <methodref name="getWeff" visibility="protected" procflags="virtual" />
+      <methodref name="getDM_c" visibility="protected" procflags="virtual" />
+      <methodref name="setDM_c" visibility="protected" procflags="abstract virtual" />
+      <methodref name="SetDMprodModel" visibility="protected" procflags="virtual" />
+      <methodref name="setSoilNitrogenMod" visibility="protected" procflags="virtual" />
+      <methodref name="SetSowingDate" visibility="public" procflags="virtual" />
+      <methodref name="Integrate" visibility="public" procflags="override">
       </methodref>
-      <methodref name="SetPlantModel" visibility="protected" procflags="virtual">
-      </methodref>
+      <methodref name="CalcRates" visibility="public" procflags="override" />
+      <methodref name="CreateAll" visibility="public" procflags="override" />
       <methodref name="Init" visibility="public" procflags="override">
       </methodref>
-      <propertyref name="IsPlantModelSet" visibility="public" />
-      <propertyref name="PlantModel" visibility="published">
+      <propertyref name="ExtCoeffPAR" visibility="public">
       </propertyref>
+      <propertyref name="ExtCoeffGlobRad" visibility="public">
+      </propertyref>
+      <propertyref name="rc0" visibility="public">
+      </propertyref>
+      <propertyref name="Psi2" visibility="public">
+      </propertyref>
+      <propertyref name="Weff" visibility="public">
+      </propertyref>
+      <propertyref name="p_WLD" visibility="public">
+      </propertyref>
+      <propertyref name="p_SumRootLength" visibility="public">
+      </propertyref>
+      <propertyref name="p_SumRootLength_eff" visibility="public">
+      </propertyref>
+      <propertyref name="p_LAI" visibility="public">
+      </propertyref>
+      <propertyref name="p_CropHeight" visibility="public">
+      </propertyref>
+      <propertyref name="p_TotalDryMatterGR" visibility="public">
+      </propertyref>
+      <propertyref name="p_NUptakeRate" visibility="public">
+      </propertyref>
+      <propertyref name="SoilMinMod" visibility="published">
+      </propertyref>
+      <propertyref name="SoilLayerMod" visibility="published">
+      </propertyref>
+      <propertyref name="EvapModel" visibility="published">
+      </propertyref>
+      <propertyref name="DMprodModel" visibility="published">
+      </propertyref>
+      <propertyref name="SoilNitrogenMod" visibility="published">
+      </propertyref>
+      <propertyref name="Par_SowingDate" visibility="published" />
+      <propertyref name="Par_HarvestDate" visibility="published" />
+      <propertyref name="NextCrop" visibility="published" />
+      <propertyref name="Rotationlength" visibility="published" />
+      <propertyref name="St_C_Residues" visibility="published" />
+      <propertyref name="St_N_Residues" visibility="published" />
+      <propertyref name="St_DMtotal" visibility="published" />
+      <propertyref name="St_DMFineRoot" visibility="published" />
+      <propertyref name="SetNewDates" visibility="published" />
+      <propertyref name="withRoots" visibility="published" />
       <ancestor name="TSubmodel" namespace="UMod">
         <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
         </methodref>
@@ -1239,93 +1286,101 @@
       </ancestor>
     </ancestor>
     <members>
-      <procedure name="LayerInit" visibility="protected" procflags="virtual" file="UlayeredSoil.pas" line="27">
-        <parameters>
-          <parameter name="max_Tiefe" type="Double" />
-          <parameter name="potenz_f" type="Double" />
-          <parameter name="n_comp" type="Byte" />
-        </parameters>
+      <field name="TotalDryMatter" type="TState" visibility="public" size="4" offset="928" file="USimplePlant.pas" line="30" />
+      <field name="DMStem" type="TState" visibility="public" size="4" offset="932" file="USimplePlant.pas" line="32" />
+      <field name="DMLeaf" type="TState" visibility="public" size="4" offset="936" file="USimplePlant.pas" line="33" />
+      <field name="DMGreenLeaf" type="TState" visibility="public" size="4" offset="940" file="USimplePlant.pas" line="34" />
+      <field name="DMsenLeaf" type="TState" visibility="public" size="4" offset="944" file="USimplePlant.pas" line="35" />
+      <field name="DMabortedLeaf" type="TState" visibility="public" size="4" offset="948" file="USimplePlant.pas" line="36" />
+      <field name="DMGen" type="TState" visibility="public" size="4" offset="952" file="USimplePlant.pas" line="37" />
+      <field name="DMRoot" type="TState" visibility="public" size="4" offset="956" file="USimplePlant.pas" line="38" />
+      <field name="DMTapRoot" type="TState" visibility="public" size="4" offset="960" file="USimplePlant.pas" line="39" />
+      <field name="DMFineRoot" type="TState" visibility="public" size="4" offset="964" file="USimplePlant.pas" line="40" />
+      <field name="DMVeg" type="TState" visibility="public" size="4" offset="968" file="USimplePlant.pas" line="41" />
+      <field name="DMShoot" type="TState" visibility="public" size="4" offset="972" file="USimplePlant.pas" line="42" />
+      <field name="CropHeight" type="TState" visibility="public" size="4" offset="976" file="USimplePlant.pas" line="43" />
+      <field name="AssiToStem" type="TVar" visibility="public" size="4" offset="980" file="USimplePlant.pas" line="45" />
+      <field name="AssiToLeaf" type="TVar" visibility="public" size="4" offset="984" file="USimplePlant.pas" line="46" />
+      <field name="AssiToGen" type="TVar" visibility="public" size="4" offset="988" file="USimplePlant.pas" line="47" />
+      <field name="AssiToFineRoot" type="TVar" visibility="public" size="4" offset="992" file="USimplePlant.pas" line="48" />
+      <field name="AssiToTapRoot" type="TVar" visibility="public" size="4" offset="996" file="USimplePlant.pas" line="49" />
+      <field name="AssiToShoot" type="TVar" visibility="public" size="4" offset="1000" file="USimplePlant.pas" line="50" />
+      <field name="StemGrowthRespiration" type="TVar" visibility="public" size="4" offset="1004" file="USimplePlant.pas" line="51" />
+      <field name="StemMaintRespiration" type="TVar" visibility="public" size="4" offset="1008" file="USimplePlant.pas" line="52" />
+      <field name="LeafGrowthRespiration" type="TVar" visibility="public" size="4" offset="1012" file="USimplePlant.pas" line="53" />
+      <field name="LeafMaintRespiration" type="TVar" visibility="public" size="4" offset="1016" file="USimplePlant.pas" line="54" />
+      <field name="GenGrowthRespiration" type="TVar" visibility="public" size="4" offset="1020" file="USimplePlant.pas" line="55" />
+      <field name="GenMaintRespiration" type="TVar" visibility="public" size="4" offset="1024" file="USimplePlant.pas" line="56" />
+      <field name="FineRootGrowthRespiration" type="TVar" visibility="public" size="4" offset="1028" file="USimplePlant.pas" line="57" />
+      <field name="FineRootMaintRespiration" type="TVar" visibility="public" size="4" offset="1032" file="USimplePlant.pas" line="58" />
+      <field name="TapRootGrowthRespiration" type="TVar" visibility="public" size="4" offset="1036" file="USimplePlant.pas" line="59" />
+      <field name="TapRootMaintRespiration" type="TVar" visibility="public" size="4" offset="1040" file="USimplePlant.pas" line="60" />
+      <field name="SLA" type="TVar" visibility="public" size="4" offset="1044" file="USimplePlant.pas" line="61" />
+      <field name="SLAav" type="TVar" visibility="public" size="4" offset="1048" file="USimplePlant.pas" line="62" />
+      <field name="Teff" type="TVar" visibility="public" size="4" offset="1052" file="USimplePlant.pas" line="63" />
+      <field name="rgrPlant" type="TVar" visibility="public" size="4" offset="1056" file="USimplePlant.pas" line="64" />
+      <field name="rgrPlantav" type="TVar" visibility="public" size="4" offset="1060" file="USimplePlant.pas" line="65" />
+      <field name="AssiFlow" type="TExternV" visibility="public" size="4" offset="1064" file="USimplePlant.pas" line="67" />
+      <field name="Temp" type="TExternV" visibility="public" size="4" offset="1068" file="USimplePlant.pas" line="68" />
+      <field name="MaintCoeffLeaf" type="TPar" visibility="public" size="4" offset="1072" file="USimplePlant.pas" line="72" />
+      <field name="MaintCoeffStem" type="TPar" visibility="public" size="4" offset="1076" file="USimplePlant.pas" line="73" />
+      <field name="MaintCoeffGen" type="TPar" visibility="public" size="4" offset="1080" file="USimplePlant.pas" line="74" />
+      <field name="MaintCoeffFineRoot" type="TPar" visibility="public" size="4" offset="1084" file="USimplePlant.pas" line="75" />
+      <field name="MaintCoeffTapRoot" type="TPar" visibility="public" size="4" offset="1088" file="USimplePlant.pas" line="76" />
+      <field name="Q10" type="TPar" visibility="public" size="4" offset="1092" file="USimplePlant.pas" line="77" />
+      <field name="SowingDate" type="TPar" visibility="public" size="4" offset="1096" file="USimplePlant.pas" line="79" />
+      <field name="HarvestDate" type="TPar" visibility="public" size="4" offset="1100" file="USimplePlant.pas" line="80" />
+      <field name="RespOptions" type="TRespOptions" visibility="public" size="1" offset="1104" file="USimplePlant.pas" line="81" />
+      <field name="RootOptions" type="TRootOptions" visibility="public" size="1" offset="1105" file="USimplePlant.pas" line="82" />
+      <procedure name="calcDMChange" visibility="public" file="USimplePlant.pas" line="85">
       </procedure>
-      <field name="n_comp" type="Integer" visibility="public" size="4" offset="656" file="UlayeredSoil.pas" line="30" />
-      <field name="MaxProfileDepth" type="TPar" visibility="public" size="4" offset="660" file="UlayeredSoil.pas" line="32">
-        <devnotes>
-           Zahl der berechneten Schichten [n]}
-        </devnotes>
-      </field>
-      <field name="Power_f" type="TPar" visibility="public" size="4" offset="664" file="UlayeredSoil.pas" line="34">
-        <devnotes>
-           Tiefe bis zu der berechnet wird [cm]}
-        </devnotes>
-      </field>
-      <field name="dz" type="Double" visibility="public" size="8" offset="672" file="UlayeredSoil.pas" line="36">
-        <devnotes>
-           power factor for uneven layer thickness
-        </devnotes>
-      </field>
-      <field name="Dist" type="TSoilArray" visibility="public" size="416" offset="680" file="UlayeredSoil.pas" line="38">
-        <devnotes>
-           thickness of layer}
-        </devnotes>
-      </field>
-      <field name="Thick" type="TSoilArray" visibility="public" size="416" offset="1096" file="UlayeredSoil.pas" line="40">
-        <devnotes>
-           Vektor der Abstaende der Kompartimentmittelpunkte [cm] }
-        </devnotes>
-      </field>
-      <field name="Depth" type="TSoilVarArray" visibility="public" size="212" offset="1512" file="UlayeredSoil.pas" line="42">
-        <devnotes>
-           Vektor der Kompartimentdicken [cm] }
-        </devnotes>
-      </field>
-      <field name="upper_w_f" type="TSoilArray" visibility="public" size="416" offset="1728" file="UlayeredSoil.pas" line="44">
-        <devnotes>
-           Abstand der unteren Kompartimentgrenze von der Bodenoberfläche in [cm] }
-        </devnotes>
-      </field>
-      <field name="lower_w_f" type="TSoilArray" visibility="public" size="416" offset="2144" file="UlayeredSoil.pas" line="46">
-        <devnotes>
-           Wichtungsfaktoren zur Errechnung der mittleren Leitfähigkeit zwischen 2 Kompartimenten }
-        </devnotes>
-      </field>
-      <field name="Texture_versionOption" type="TOption" visibility="public" size="4" offset="2560" file="UlayeredSoil.pas" line="48">
-        <devnotes>
-           dito
-        </devnotes>
-      </field>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="UlayeredSoil.pas" line="51">
-        <devnotes>
-           Version of pedotransfer function to be used
-        </devnotes>
+      <procedure name="Integrate" visibility="public" procflags="override" file="USimplePlant.pas" line="86">
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="UlayeredSoil.pas" line="53">
-        <parameters>
-          <parameter name="GlobMod" type="TMod" paramflags="var" />
-        </parameters>
+      <procedure name="CreateAll" visibility="public" procflags="override" file="USimplePlant.pas" line="87">
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="UlayeredSoil.pas" line="55">
-      </procedure>
-      <property name="parMaxTiefe" visibility="published" read="MaxProfileDepth" write="MaxProfileDepth" type="TPar" file="UlayeredSoil.pas" line="58" />
-      <property name="p_NComp" visibility="published" read="n_comp" write="n_comp" type="Integer" file="UlayeredSoil.pas" line="59" />
+      <property name="St_CropHeight" visibility="published" read="CropHeight" write="CropHeight" type="TState" file="USimplePlant.pas" line="92" />
+      <property name="St_TotaldryMatter" visibility="published" read="TotalDryMatter" write="TotalDryMatter" type="TState" file="USimplePlant.pas" line="93" />
+      <property name="St_DMShoot" visibility="published" read="DMShoot" write="DMShoot" type="TState" file="USimplePlant.pas" line="94" />
+      <property name="St_DMLeaf" visibility="published" read="DMLeaf" write="DMLeaf" type="TState" file="USimplePlant.pas" line="96" />
+      <property name="St_DMStem" visibility="published" read="DMStem" write="DMStem" type="TState" file="USimplePlant.pas" line="97" />
+      <property name="St_DMGen" visibility="published" read="DMGen" write="DMGen" type="TState" file="USimplePlant.pas" line="99" />
+      <property name="St_DMveg" visibility="published" read="DMVeg" write="DMVeg" type="TState" file="USimplePlant.pas" line="100" />
+      <property name="St_DMroot" visibility="published" read="DMRoot" write="DMRoot" type="TState" file="USimplePlant.pas" line="101" />
+      <property name="St_DMTapRoot" visibility="published" read="DMTapRoot" write="DMTapRoot" type="TState" file="USimplePlant.pas" line="102" />
+      <property name="St_DMFineRoot" visibility="published" read="DMFineRoot" write="DMFineRoot" type="TState" file="USimplePlant.pas" line="103" />
+      <property name="St_DMGreenLeaf" visibility="published" read="DMGreenLeaf" write="DMGreenLeaf" type="TState" file="USimplePlant.pas" line="104" />
+      <property name="St_DMSenLeaf" visibility="published" read="DMsenLeaf" write="DMsenLeaf" type="TState" file="USimplePlant.pas" line="105" />
+      <property name="Ex_Temp" visibility="published" read="Temp" write="Temp" type="TExternV" file="USimplePlant.pas" line="107" />
+      <property name="Ex_AssiFlow" visibility="published" read="AssiFlow" write="AssiFlow" type="TExternV" file="USimplePlant.pas" line="108" />
+      <property name="Par_MaintCoeffLeaf" visibility="published" read="MaintCoeffLeaf" write="MaintCoeffLeaf" type="TPar" file="USimplePlant.pas" line="110" />
+      <property name="Par_MaintCoeffStem" visibility="published" read="MaintCoeffStem" write="MaintCoeffStem" type="TPar" file="USimplePlant.pas" line="111" />
+      <property name="Par_MaintCoeffGen" visibility="published" read="MaintCoeffGen" write="MaintCoeffGen" type="TPar" file="USimplePlant.pas" line="112" />
+      <property name="Par_MaintCoeffFineRoot" visibility="published" read="MaintCoeffFineRoot" write="MaintCoeffFineRoot" type="TPar" file="USimplePlant.pas" line="113" />
+      <property name="Par_MaintCoeffTapRoot" visibility="published" read="MaintCoeffTapRoot" write="MaintCoeffTapRoot" type="TPar" file="USimplePlant.pas" line="114" />
+      <property name="Par_Q10" visibility="published" read="Q10" write="Q10" type="TPar" file="USimplePlant.pas" line="115" />
+      <property name="Par_SowingDate" visibility="published" read="SowingDate" write="SowingDate" type="TPar" file="USimplePlant.pas" line="117" />
+      <property name="Par_HarvestDate" visibility="published" read="HarvestDate" write="HarvestDate" type="TPar" file="USimplePlant.pas" line="118" />
+      <property name="Var_AssiToStem" visibility="published" read="AssiToStem" write="AssiToStem" type="TVar" file="USimplePlant.pas" line="120" />
+      <property name="Var_AssiToLeaf" visibility="published" read="AssiToLeaf" write="AssiToLeaf" type="TVar" file="USimplePlant.pas" line="121" />
+      <property name="Var_AssiToGen" visibility="published" read="AssiToGen" write="AssiToGen" type="TVar" file="USimplePlant.pas" line="122" />
+      <property name="Var_AssiToFineRoot" visibility="published" read="AssiToFineRoot" write="AssiToFineRoot" type="TVar" file="USimplePlant.pas" line="123" />
+      <property name="Var_AssiToTapRoot" visibility="published" read="AssiToTapRoot" write="AssiToTapRoot" type="TVar" file="USimplePlant.pas" line="124" />
+      <property name="Var_AssiToShoot" visibility="published" read="AssiToShoot" write="AssiToShoot" type="TVar" file="USimplePlant.pas" line="125" />
+      <property name="Var_StemGrowthRespiration" visibility="published" read="StemGrowthRespiration" write="StemGrowthRespiration" type="TVar" file="USimplePlant.pas" line="126" />
+      <property name="Var_StemMaintRespiration" visibility="published" read="StemMaintRespiration" write="StemMaintRespiration" type="TVar" file="USimplePlant.pas" line="127" />
+      <property name="Var_LeafGrowthRespiration" visibility="published" read="LeafGrowthRespiration" write="LeafGrowthRespiration" type="TVar" file="USimplePlant.pas" line="128" />
+      <property name="Var_LeafMaintRespiration" visibility="published" read="LeafMaintRespiration" write="LeafMaintRespiration" type="TVar" file="USimplePlant.pas" line="129" />
+      <property name="Var_GenGrowthRespiration" visibility="published" read="GenGrowthRespiration" write="GenGrowthRespiration" type="TVar" file="USimplePlant.pas" line="130" />
+      <property name="Var_GenMaintRespiration" visibility="published" read="GenMaintRespiration" write="GenMaintRespiration" type="TVar" file="USimplePlant.pas" line="131" />
+      <property name="Var_FineRootGrowthRespiration" visibility="published" read="FineRootGrowthRespiration" write="FineRootGrowthRespiration" type="TVar" file="USimplePlant.pas" line="132" />
+      <property name="Var_TapRootGrowthRespiration" visibility="published" read="TapRootGrowthRespiration" write="TapRootGrowthRespiration" type="TVar" file="USimplePlant.pas" line="133" />
+      <property name="Var_FineRootMaintRespiration" visibility="published" read="FineRootMaintRespiration" write="FineRootMaintRespiration" type="TVar" file="USimplePlant.pas" line="134" />
+      <property name="Var_TapRootMaintRespiration" visibility="published" read="TapRootMaintRespiration" write="TapRootMaintRespiration" type="TVar" file="USimplePlant.pas" line="135" />
+      <property name="Var_SLA" visibility="published" read="SLA" write="SLA" type="TVar" file="USimplePlant.pas" line="136" />
+      <property name="Var_SLAav" visibility="published" read="SLAav" write="SLAav" type="TVar" file="USimplePlant.pas" line="137" />
+      <property name="Var_Teff" visibility="published" read="Teff" write="Teff" type="TVar" file="USimplePlant.pas" line="138" />
+      <property name="Opt_Respiration" visibility="published" read="RespOptions" write="RespOptions" type="TRespOptions" file="USimplePlant.pas" line="142" />
+      <property name="Opt_Root" visibility="published" read="RootOptions" write="RootOptions" type="TRootOptions" file="USimplePlant.pas" line="143" />
     </members>
   </class>
-  <function name="trdiag" visibility="public" file="UlayeredSoil.pas" line="194">
-    <parameters>
-      <parameter name="rep" type="Boolean" />
-      <parameter name="max_n" type="Integer" />
-      <parameter name="min_n" type="Integer" />
-      <parameter name="lower" type="TSoilArray" paramflags="var" />
-      <parameter name="diag" type="TSoilArray" paramflags="var" />
-      <parameter name="upper" type="TSoilArray" paramflags="var" />
-      <parameter name="b" type="TSoilArray" paramflags="var" />
-      <retval type="Byte" />
-    </parameters>
-  </function>
-  <function name="ndx_str" visibility="public" file="UlayeredSoil.pas" line="282">
-    <parameters>
-      <parameter name="i" type="Integer" />
-      <retval type="string" />
-    </parameters>
-  </function>
-  <procedure name="Register" visibility="public" file="UlayeredSoil.pas" line="290">
-  </procedure>
 </namespace>

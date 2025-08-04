@@ -239,6 +239,10 @@ end;
 /// Exchanges data with <c>TF_SubmodelEditor</c> form and starts design-time editing.
 /// </summary>
 procedure TSubModelEditor.Edit;
+
+const
+  csv_docu_dir = 'Q:\HUME\HUME\csv_Hume_Docu';
+
 var
   FormSubModelEditor: TF_SubmodelEditor;
   params: TPar;
@@ -252,14 +256,18 @@ var
   actExVar : TExternV;
   actVar, actConst : TVar;
   actOption: TOption;
-  userdir, line : string;
+  userdir,  line : string;
   l,m,n,o: Integer;
 
 
 begin
-
-  userdir := (BorlandIDEServices as IOTAModuleServices).GetActiveProject.FileName;
-  userdir := extractfilepath(userdir);
+  if Directoryexists(csv_docu_dir) then
+    userdir := csv_docu_dir
+  else
+  begin
+    userdir := (BorlandIDEServices as IOTAModuleServices).GetActiveProject.FileName;
+    userdir := extractfilepath(userdir);
+  end;
 //  userdir := extractFilePath( getActiveProject.fileName ) ;
   // creates submodel editor form
   f := TStreamWriter.Create(userdir+TSubModel(component).name+'.csv', false, TEncoding.UTF8);

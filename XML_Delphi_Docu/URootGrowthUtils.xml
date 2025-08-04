@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="URootGrowthUtils" platform="Win32">
+  <const name="MaxAgeCl" type="Integer" file="URootGrowthUtils.pas" line="7">
+    <devnotes>
+       <summary> maximum number of root age cohorts. Dayly root growth is divided into these age classes </summary>
+    </devnotes>
+    <value>
+      $1F4
+    </value>
+  </const>
+  <const name="linear" type="TRootingdepthIncrease" file="URootGrowthUtils.pas" line="14">
+    <value>
+      linear
+    </value>
+  </const>
+  <const name="expolinear" type="TRootingdepthIncrease" file="URootGrowthUtils.pas" line="14">
+    <value>
+      expolinear
+    </value>
+  </const>
+  <const name="monomolecular" type="TRootingdepthIncrease" file="URootGrowthUtils.pas" line="14">
+    <value>
+      monomolecular
+    </value>
+  </const>
+  <type name="real" type="Double" file="System.pas" line="12" />
+  <enum name="TRootingdepthIncrease" file="URootGrowthUtils.pas" line="14">
+    <devnotes>
+       Enumeration of options for the increase of rooting depth.
+       The options include linear and expolinear.
+    </devnotes>
+    <element value="0" name="linear" file="URootGrowthUtils.pas" line="14" />
+    <element value="1" name="expolinear" file="URootGrowthUtils.pas" line="14" />
+    <element value="2" name="monomolecular" file="URootGrowthUtils.pas" line="14" />
+  </enum>
+  <class name="TTextureEffect" file="URootGrowthUtils.pas" line="20">
+    <devnotes>
+       <summary>
+       Represents a texture effect for root growth.
+       </summary>
+    </devnotes>
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public" procflags="inline">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="QualifiedClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitScope" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+      <methodref name="GetDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <propertyref name="Disposed" visibility="protected">
+      </propertyref>
+    </ancestor>
+    <members>
+      <field name="fTextureClass" type="string" visibility="private" size="4" offset="4" file="URootGrowthUtils.pas" line="22" />
+      <field name="fLD" type="string" visibility="private" size="4" offset="8" file="URootGrowthUtils.pas" line="23" />
+      <field name="fWeff" type="Double" visibility="private" size="8" offset="16" file="URootGrowthUtils.pas" line="25" />
+      <field name="frelWeff" type="Double" visibility="private" size="8" offset="24" file="URootGrowthUtils.pas" line="26" />
+      <constructor name="Create" visibility="public" file="URootGrowthUtils.pas" line="38">
+        <devnotes>
+           <summary>
+           Constructor for TTextureeffect class.
+           </summary>
+           <param name="TextureClass">The texture class.</param>
+           <param name="LD">The LD value.</param>
+           <param name="Weff">The Weff value.</param>
+           <param name="relWeff">The relative Weff value.</param>
+        </devnotes>
+        <parameters>
+          <parameter name="TextureClass" type="string" />
+          <parameter name="LD" type="string" />
+          <parameter name="Weff" type="Double" />
+          <parameter name="relWeff" type="Double" />
+        </parameters>
+      </constructor>
+      <property name="TextureClass" visibility="published" read="fTextureClass" write="fTextureClass" type="string" default="0" file="URootGrowthUtils.pas" line="41" />
+      <property name="LD" visibility="published" read="fLD" write="fLD" type="string" default="0" file="URootGrowthUtils.pas" line="42" />
+      <property name="Weff" visibility="published" read="fWeff" write="fWeff" type="Double" default="0" file="URootGrowthUtils.pas" line="43" />
+      <property name="relWeff" visibility="published" read="frelWeff" write="frelWeff" type="Double" default="0" file="URootGrowthUtils.pas" line="44" />
+    </members>
+  </class>
+  <function name="monomo_f" visibility="public" file="URootGrowthUtils.pas" line="56">
+    <parameters>
+      <parameter name="Pmax" type="Double" />
+      <parameter name="P0" type="Double" />
+      <parameter name="k" type="Double" />
+      <parameter name="t" type="Double" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="Logist_f" visibility="public" file="URootGrowthUtils.pas" line="62">
+    <parameters>
+      <parameter name="Wmax" type="Double" />
+      <parameter name="W0" type="Double" />
+      <parameter name="k" type="Double" />
+      <parameter name="Tsum" type="Double" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="WLD_z_f" visibility="public" file="URootGrowthUtils.pas" line="69">
+    <parameters>
+      <parameter name="wld0" type="Double" />
+      <parameter name="a" type="Double" />
+      <parameter name="z" type="Double" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+</namespace>

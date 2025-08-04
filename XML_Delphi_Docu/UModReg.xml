@@ -1,6 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="UModReg" platform="Win32">
-  <class name="TGMFilenameProperty" file="UModReg.pas" line="21">
+  <class name="TGMFilenameProperty" file="UModReg.pas" line="18">
+    <devnotes>
+       <summary>
+       Property editor for the <c>TMod</c> class. Displays a file open dialog
+       for selecting the control file by overriding <see cref="M:UModReg.TGMFilenameProperty.GetAttributes"/>.
+       </summary>
+    </devnotes>
     <ancestor name="TStringProperty" namespace="DesignEditors">
       <methodref name="AllEqual" visibility="public" procflags="override">
       </methodref>
@@ -248,16 +254,34 @@
       </ancestor>
     </ancestor>
     <members>
-      <procedure name="Edit" visibility="public" procflags="override" file="UModReg.pas" line="23">
+      <procedure name="Edit" visibility="public" procflags="override" file="UModReg.pas" line="21">
+        <devnotes>
+           <summary>
+           Property editor for the <c>TMod</c> class. Displays a file open dialog for
+           the name of the control file (all <c>TMyFileName</c> properties).
+           </summary>
+        </devnotes>
       </procedure>
-      <function name="GetAttributes" visibility="public" procflags="override" file="UModReg.pas" line="24">
+      <function name="GetAttributes" visibility="public" procflags="override" file="UModReg.pas" line="23">
+        <devnotes>
+           <summary>
+           Describes the property so the Object Inspector provides the appropriate controls.
+           </summary>
+        </devnotes>
         <parameters>
           <retval type="TPropertyAttributes" />
         </parameters>
       </function>
     </members>
   </class>
-  <class name="TGMPathProperty" file="UModReg.pas" line="34">
+  <class name="TGMPathProperty" file="UModReg.pas" line="31">
+    <devnotes>
+       <summary>
+       Property editor for the <c>TMod</c> class. Displays a directory selection
+       dialog for editing path properties by overriding
+       <see cref="M:UModReg.TGMPathProperty.GetAttributes"/>.
+       </summary>
+    </devnotes>
     <ancestor name="TStringProperty" namespace="DesignEditors">
       <methodref name="AllEqual" visibility="public" procflags="override">
       </methodref>
@@ -505,9 +529,20 @@
       </ancestor>
     </ancestor>
     <members>
-      <procedure name="Edit" visibility="public" procflags="override" file="UModReg.pas" line="36">
+      <procedure name="Edit" visibility="public" procflags="override" file="UModReg.pas" line="34">
+        <devnotes>
+           <summary>
+           Property editor for the <c>TMod</c> class. Displays a directory change
+           dialog for editing path properties.
+           </summary>
+        </devnotes>
       </procedure>
-      <function name="GetAttributes" visibility="public" procflags="override" file="UModReg.pas" line="37">
+      <function name="GetAttributes" visibility="public" procflags="override" file="UModReg.pas" line="36">
+        <devnotes>
+           <summary>
+           Describes the property so the Object Inspector provides the appropriate controls.
+           </summary>
+        </devnotes>
         <parameters>
           <retval type="TPropertyAttributes" />
         </parameters>
@@ -515,6 +550,9 @@
     </members>
   </class>
   <class name="TModEditor" file="UModReg.pas" line="66">
+    <devnotes>
+       <summary>Component editor for <c>TMod</c>; starts design-time editing.</summary>
+    </devnotes>
     <ancestor name="TComponentEditor" namespace="DesignEditors">
       <interfaces>
         <implements name="IComponentEditor" />
@@ -648,11 +686,22 @@
       </ancestor>
     </ancestor>
     <members>
-      <procedure name="Edit" visibility="public" procflags="override" file="UModReg.pas" line="67">
+      <procedure name="Edit" visibility="public" procflags="override" file="UModReg.pas" line="68">
+        <devnotes>
+           <summary>
+           Exchanges data with <c>TModelEdit</c> form and starts design-time editing.
+           </summary>
+        </devnotes>
       </procedure>
     </members>
   </class>
-  <class name="TSubModelEditor" file="UModReg.pas" line="77">
+  <class name="TSubModelEditor" file="UModReg.pas" line="75">
+    <devnotes>
+       <summary>
+       Component editor for <c>TSubModel</c>. Exchanges data with
+       <c>TF_SubmodelEditor</c> and starts design-time editing.
+       </summary>
+    </devnotes>
     <ancestor name="TComponentEditor" namespace="DesignEditors">
       <interfaces>
         <implements name="IComponentEditor" />
@@ -786,10 +835,19 @@
       </ancestor>
     </ancestor>
     <members>
-      <procedure name="Edit" visibility="public" procflags="override" file="UModReg.pas" line="78">
+      <procedure name="Edit" visibility="public" procflags="override" file="UModReg.pas" line="77">
+        <devnotes>
+           <summary>
+           Exchanges data with <c>TF_SubmodelEditor</c> form and starts design-time editing.
+           </summary>
+        </devnotes>
       </procedure>
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="UModReg.pas" line="596">
+  <procedure name="Register" visibility="public" file="UModReg.pas" line="580">
+    <devnotes>
+       <summary>Registers TMod and TSubModel components for design-time editing.</summary>
+       <summary>Registers TMod and TSubModel components for design-time editing.</summary>
+    </devnotes>
   </procedure>
 </namespace>

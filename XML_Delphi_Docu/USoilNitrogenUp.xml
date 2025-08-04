@@ -265,10 +265,13 @@
             <ancestor name="TPlantRelatedSubMod" namespace="UAbstractPlant">
               <methodref name="GetIsPlantModelset" visibility="protected">
               </methodref>
-              <methodref name="SetPlantModel" visibility="public" procflags="virtual" />
-              <methodref name="Init" visibility="public" procflags="override" />
+              <methodref name="SetPlantModel" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="Init" visibility="public" procflags="override">
+              </methodref>
               <propertyref name="IsPlantModelSet" visibility="public" />
-              <propertyref name="PlantModel" visibility="published" />
+              <propertyref name="PlantModel" visibility="published">
+              </propertyref>
               <ancestor name="TSubmodel" namespace="UMod">
                 <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
                 </methodref>
@@ -1448,116 +1451,116 @@
     </ancestor>
     <members>
       <field name="fplantNDemand" type="Double" visibility="private" size="8" offset="21016" file="USoilNitrogenUp.pas" line="16" />
-      <procedure name="SetPlantModel" visibility="protected" procflags="override" file="USoilNitrogenUp.pas" line="20">
+      <procedure name="SetPlantModel" visibility="protected" procflags="override" file="USoilNitrogenUp.pas" line="19">
         <parameters>
           <parameter name="NewPlantModel" type="TAbstractPlant" />
         </parameters>
       </procedure>
-      <field name="ActNUptake" type="TVar" visibility="public" size="4" offset="21024" file="USoilNitrogenUp.pas" line="23" />
+      <field name="ActNUptake" type="TVar" visibility="public" size="4" offset="21024" file="USoilNitrogenUp.pas" line="22" />
       <field name="MaxNUptake" type="TVar" visibility="public" size="4" offset="21028" file="USoilNitrogenUp.pas" line="24">
         <devnotes>
            actual N uptake rate averaged over day
         </devnotes>
       </field>
-      <field name="MassFlow" type="TVar" visibility="public" size="4" offset="21032" file="USoilNitrogenUp.pas" line="25">
+      <field name="MassFlow" type="TVar" visibility="public" size="4" offset="21032" file="USoilNitrogenUp.pas" line="26">
         <devnotes>
            maximum N uptake rate averaged over day
         </devnotes>
       </field>
-      <field name="NUptake" type="TSoilVarArray" visibility="public" size="212" offset="21036" file="USoilNitrogenUp.pas" line="26">
+      <field name="NUptake" type="TSoilVarArray" visibility="public" size="212" offset="21036" file="USoilNitrogenUp.pas" line="28">
         <devnotes>
            sum of apparent mass flow transport to roots kg N/ha/d
         </devnotes>
       </field>
-      <field name="WInflux" type="TSoilArray" visibility="public" size="416" offset="21248" file="USoilNitrogenUp.pas" line="27">
+      <field name="WInflux" type="TSoilArray" visibility="public" size="416" offset="21248" file="USoilNitrogenUp.pas" line="30">
         <devnotes>
            N uptake per day kg N/ha/d
         </devnotes>
       </field>
-      <field name="NInflux_WL" type="TVar" visibility="public" size="4" offset="21664" file="USoilNitrogenUp.pas" line="28">
+      <field name="NInflux_WL" type="TVar" visibility="public" size="4" offset="21664" file="USoilNitrogenUp.pas" line="32">
         <devnotes>
            water influx per unit root length [cm3/cm/d]
         </devnotes>
       </field>
-      <field name="NInflux_WL_eff" type="TVar" visibility="public" size="4" offset="21668" file="USoilNitrogenUp.pas" line="29">
+      <field name="NInflux_WL_eff" type="TVar" visibility="public" size="4" offset="21668" file="USoilNitrogenUp.pas" line="34">
         <devnotes>
            nitrate influx per unit root length
         </devnotes>
       </field>
-      <field name="SumSoilNUptake" type="TState" visibility="public" size="4" offset="21672" file="USoilNitrogenUp.pas" line="31">
+      <field name="SumSoilNUptake" type="TState" visibility="public" size="4" offset="21672" file="USoilNitrogenUp.pas" line="37">
         <devnotes>
            nitrate influx per unit root effective length
         </devnotes>
       </field>
-      <field name="SoilNUptakeGrowth" type="TState" visibility="public" size="4" offset="21676" file="USoilNitrogenUp.pas" line="32">
+      <field name="SoilNUptakeGrowth" type="TState" visibility="public" size="4" offset="21676" file="USoilNitrogenUp.pas" line="39">
         <devnotes>
           
         </devnotes>
       </field>
-      <field name="SumPlantNDemand" type="TState" visibility="public" size="4" offset="21680" file="USoilNitrogenUp.pas" line="33">
+      <field name="SumPlantNDemand" type="TState" visibility="public" size="4" offset="21680" file="USoilNitrogenUp.pas" line="41">
         <devnotes>
           
         </devnotes>
       </field>
-      <field name="Cmin" type="TPar" visibility="public" size="4" offset="21684" file="USoilNitrogenUp.pas" line="36">
+      <field name="Cmin" type="TPar" visibility="public" size="4" offset="21684" file="USoilNitrogenUp.pas" line="44">
         <devnotes>
            sum of nitrate uptake from soil
         </devnotes>
       </field>
-      <field name="not_av_N" type="TPar" visibility="public" size="4" offset="21688" file="USoilNitrogenUp.pas" line="37">
+      <field name="not_av_N" type="TPar" visibility="public" size="4" offset="21688" file="USoilNitrogenUp.pas" line="46">
         <devnotes>
            minimal nitrate concentration, substracted from actual concentration [kg/cm water]
         </devnotes>
       </field>
-      <field name="RootRad" type="TPar" visibility="public" size="4" offset="21692" file="USoilNitrogenUp.pas" line="38">
+      <field name="RootRad" type="TPar" visibility="public" size="4" offset="21692" file="USoilNitrogenUp.pas" line="48">
         <devnotes>
            not plant available part of nitrate [kg N/10 cm]
         </devnotes>
       </field>
-      <field name="Max_Wl_Nuptake" type="TPar" visibility="public" size="4" offset="21696" file="USoilNitrogenUp.pas" line="39">
+      <field name="Max_Wl_Nuptake" type="TPar" visibility="public" size="4" offset="21696" file="USoilNitrogenUp.pas" line="50">
         <devnotes>
            root radius [cm]
         </devnotes>
       </field>
-      <field name="Ex_PlantNDemand" type="TExternV" visibility="public" size="4" offset="21700" file="USoilNitrogenUp.pas" line="41">
+      <field name="Ex_PlantNDemand" type="TExternV" visibility="public" size="4" offset="21700" file="USoilNitrogenUp.pas" line="53">
         <devnotes>
            maximum value for N uptake per unit root length [kg/cm/d]
         </devnotes>
       </field>
-      <field name="SRL" type="TExternV" visibility="public" size="4" offset="21704" file="USoilNitrogenUp.pas" line="42">
+      <field name="SRL" type="TExternV" visibility="public" size="4" offset="21704" file="USoilNitrogenUp.pas" line="55">
         <devnotes>
            plant N demand [g N/m²/d]
         </devnotes>
       </field>
-      <field name="SRL_eff" type="TExternV" visibility="public" size="4" offset="21708" file="USoilNitrogenUp.pas" line="43">
+      <field name="SRL_eff" type="TExternV" visibility="public" size="4" offset="21708" file="USoilNitrogenUp.pas" line="57">
         <devnotes>
            sum or root length cm/cm2
         </devnotes>
       </field>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="USoilNitrogenUp.pas" line="45">
+      <procedure name="CreateAll" visibility="public" procflags="override" file="USoilNitrogenUp.pas" line="60">
         <devnotes>
            effective sum or root length cm/cm2
         </devnotes>
       </procedure>
-      <procedure name="CalcRatesAndIntegrate" visibility="public" procflags="override" file="USoilNitrogenUp.pas" line="46">
+      <procedure name="CalcRatesAndIntegrate" visibility="public" procflags="override" file="USoilNitrogenUp.pas" line="61">
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="USoilNitrogenUp.pas" line="47">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="USoilNitrogenUp.pas" line="62">
         <devnotes>
            Summe maximale N-Aufnahmerate im internen Zeitschritt
         </devnotes>
       </procedure>
-      <property name="Par_Cmin" visibility="published" read="Cmin" write="Cmin" type="TPar" file="USoilNitrogenUp.pas" line="51" />
-      <property name="Par_Not_av_N" visibility="published" read="not_av_N" write="not_av_N" type="TPar" file="USoilNitrogenUp.pas" line="52" />
-      <property name="Par_RootRad" visibility="published" read="RootRad" write="RootRad" type="TPar" file="USoilNitrogenUp.pas" line="54" />
-      <property name="Var_MaxNuptake" visibility="published" read="MaxNUptake" write="MaxNUptake" type="TVar" file="USoilNitrogenUp.pas" line="55" />
-      <property name="Var_ActNUptake" visibility="published" read="ActNUptake" write="ActNUptake" type="TVar" file="USoilNitrogenUp.pas" line="56" />
-      <property name="Var_Massflow" visibility="published" read="MassFlow" write="MassFlow" type="TVar" file="USoilNitrogenUp.pas" line="57" />
-      <property name="Ex_PlantNUptake" visibility="published" read="Ex_PlantNDemand" write="Ex_PlantNDemand" type="TExternV" file="USoilNitrogenUp.pas" line="59" />
-      <property name="Ex_SRL" visibility="published" read="SRL" write="SRL" type="TExternV" file="USoilNitrogenUp.pas" line="61" />
-      <property name="Ex_SRL_eff" visibility="published" read="SRL_eff" write="SRL_eff" type="TExternV" file="USoilNitrogenUp.pas" line="62" />
-      <property name="St_SumSoilNUptake" visibility="published" read="SumSoilNUptake" write="SumSoilNUptake" type="TState" file="USoilNitrogenUp.pas" line="64" />
+      <property name="Par_Cmin" visibility="published" read="Cmin" write="Cmin" type="TPar" file="USoilNitrogenUp.pas" line="66" />
+      <property name="Par_Not_av_N" visibility="published" read="not_av_N" write="not_av_N" type="TPar" file="USoilNitrogenUp.pas" line="67" />
+      <property name="Par_RootRad" visibility="published" read="RootRad" write="RootRad" type="TPar" file="USoilNitrogenUp.pas" line="69" />
+      <property name="Var_MaxNuptake" visibility="published" read="MaxNUptake" write="MaxNUptake" type="TVar" file="USoilNitrogenUp.pas" line="70" />
+      <property name="Var_ActNUptake" visibility="published" read="ActNUptake" write="ActNUptake" type="TVar" file="USoilNitrogenUp.pas" line="71" />
+      <property name="Var_Massflow" visibility="published" read="MassFlow" write="MassFlow" type="TVar" file="USoilNitrogenUp.pas" line="72" />
+      <property name="Ex_PlantNUptake" visibility="published" read="Ex_PlantNDemand" write="Ex_PlantNDemand" type="TExternV" file="USoilNitrogenUp.pas" line="74" />
+      <property name="Ex_SRL" visibility="published" read="SRL" write="SRL" type="TExternV" file="USoilNitrogenUp.pas" line="76" />
+      <property name="Ex_SRL_eff" visibility="published" read="SRL_eff" write="SRL_eff" type="TExternV" file="USoilNitrogenUp.pas" line="77" />
+      <property name="St_SumSoilNUptake" visibility="published" read="SumSoilNUptake" write="SumSoilNUptake" type="TState" file="USoilNitrogenUp.pas" line="79" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="USoilNitrogenUp.pas" line="364">
+  <procedure name="Register" visibility="public" file="USoilNitrogenUp.pas" line="419">
   </procedure>
 </namespace>
