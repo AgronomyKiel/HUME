@@ -11,29 +11,28 @@ uses
    toolsAPI ;
 
 type
-  (* -----------------------------------------------------------------
-    CLASS     TGMFilenameProperty
-    ANCESTOR  TStringProperty
-    PURPOSE   Property editor for the TMod Class. Displays an File Open Dialog
-    for the name of the Control file by overriding the function GetAttributes
-    ------------------------------------------------------------------ *)
-
+  /// <summary>
+  /// Property editor for the <c>TMod</c> class. Displays a file open dialog
+  /// for selecting the control file by overriding <see cref="GetAttributes"/>.
+  /// </summary>
   TGMFilenameProperty = class(TStringProperty)
   public
+    /// <summary>Edit the value using a file open dialog.</summary>
     procedure Edit; override;
+    /// <summary>Return the attribute set for the property.</summary>
     function GetAttributes: TPropertyAttributes; override;
   end;
 
-  (* -----------------------------------------------------------------
-    CLASS     TGMPathProperty
-    ANCESTOR  TStringProperty
-    PURPOSE   Property editor for the TMod Class. Displays an DirChange Dialog
-    for the changing directory properties by overriding the function GetAttributes
-    ------------------------------------------------------------------ *)
-
+  /// <summary>
+  /// Property editor for the <c>TMod</c> class. Displays a directory selection
+  /// dialog for editing path properties by overriding
+  /// <see cref="GetAttributes"/>.
+  /// </summary>
   TGMPathProperty = class(TStringProperty)
   public
+    /// <summary>Edit the value using a directory selection dialog.</summary>
     procedure Edit; override;
+    /// <summary>Return the attribute set for the property.</summary>
     function GetAttributes: TPropertyAttributes; override;
   end;
 
@@ -63,35 +62,32 @@ type
     function GetAttributes: TPropertyAttributes; override;
     end; }
 
+  /// <summary>Component editor for <c>TMod</c>; starts design-time editing.</summary>
   TModEditor = class(TComponentEditor)
+    /// <summary>Exchanges data with <c>TModelEdit</c> and starts editing.</summary>
     procedure Edit; override;
   end;
 
-  (* -----------------------------------------------------------------
-    CLASS     TSubModelEditor
-    ANCESTOR  TComponentEditor
-    PURPOSE   Exchanges data with TF_SubmodelEditor form and
-    starts designtime editing
-    ------------------------------------------------------------------ *)
-
+  /// <summary>
+  /// Component editor for <c>TSubModel</c>. Exchanges data with
+  /// <c>TF_SubmodelEditor</c> and starts design-time editing.
+  /// </summary>
   TSubModelEditor = class(TComponentEditor)
+    /// <summary>Starts the submodel editor and stores changes.</summary>
     procedure Edit; override;
   end;
 
+/// <summary>Registers TMod and TSubModel components for design-time editing.</summary>
 procedure Register;
-// Registers TMod and TSubModel Components for designtime editing
 
 implementation
 
 uses Classes, UMod, ModLink, UTextFileH, vcl.Dialogs, SysUtils, UState, vcl.Forms,
   vcl.FileCtrl, UModUtils;
 
-(* *****************************************************************
-  CLASS   TModEditor
-  METHOD  Edit
-  PURPOSE Exchanges data with TModelEdit form and starts designtime editing
-  ****************************************************************** *)
-
+/// <summary>
+/// Exchanges data with <c>TModelEdit</c> form and starts design-time editing.
+/// </summary>
 procedure TModEditor.Edit;
 
 var
@@ -239,12 +235,9 @@ begin
   FormModelEditor := nil;
 end;
 
-(* *****************************************************************
-  CLASS   TSubModelEditor
-  METHOD  Edit
-  PURPOSE Exchanges data with TF_SubmodelEditor form and starts designtime editing
-  ****************************************************************** *)
-
+/// <summary>
+/// Exchanges data with <c>TF_SubmodelEditor</c> form and starts design-time editing.
+/// </summary>
 procedure TSubModelEditor.Edit;
 var
   FormSubModelEditor: TF_SubmodelEditor;
@@ -524,13 +517,10 @@ end;
   ExForm.SetExVList(GetValue);
   end; }
 
-(* *****************************************************************
-  CLASS   TGMFilenameProperty
-  METHOD  Edit
-  PURPOSE Property editor for the TMod Class. Displays an File Open Dialog
-  for the name of the Control file (resp. all TMyFileName properties)
-  ****************************************************************** *)
-
+/// <summary>
+/// Property editor for the <c>TMod</c> class. Displays a file open dialog for
+/// the name of the control file (all <c>TMyFileName</c> properties).
+/// </summary>
 procedure TGMFilenameProperty.Edit;
 var
   MPFileOpen: TOpenDialog;
@@ -549,24 +539,18 @@ begin
   end;
 end;
 
-(* *****************************************************************
-  CLASS   TGMFilenameProperty
-  METHOD  GetAttributes
-  PURPOSE Describes the property so the Object Inspector provides the appropriate controls.
-  ****************************************************************** *)
-
+/// <summary>
+/// Describes the property so the Object Inspector provides the appropriate controls.
+/// </summary>
 function TGMFilenameProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog, paRevertable];
 end;
 
-(* *****************************************************************
-  CLASS   TGMPathProperty
-  METHOD  Edit
-  PURPOSE Property editor for the TMod Class. Displays an DirChange Dialog
-  for the changing directory properties (resp. all TPath properties)
-  ****************************************************************** *)
-
+/// <summary>
+/// Property editor for the <c>TMod</c> class. Displays a directory change
+/// dialog for editing path properties.
+/// </summary>
 procedure TGMPathProperty.Edit;
 var
   Dir: string;
@@ -576,23 +560,15 @@ begin
     SetValue(Dir);
 end;
 
-(* *****************************************************************
-  CLASS   TGMPathProperty
-  METHOD  GetAttributes
-  PURPOSE Describes the property so the Object Inspector provides the appropriate controls.
-  ****************************************************************** *)
-
+/// <summary>
+/// Describes the property so the Object Inspector provides the appropriate controls.
+/// </summary>
 function TGMPathProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog, paRevertable];
 end;
 
-(* *****************************************************************
-  CLASS   -
-  METHOD  Register
-  PURPOSE Registers TMod and TSubModel Components for designtime editing
-  ****************************************************************** *)
-
+/// <summary>Registers TMod and TSubModel components for design-time editing.</summary>
 procedure Register;
 begin
   // Registers PropertyEditors for use in Object inspector
