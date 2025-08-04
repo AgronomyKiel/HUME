@@ -241,7 +241,7 @@ The class TPenMonteith is derived from: `r paste(ancestor_names, collapse = " <-
 
 # Submodel objects
 
-Dynamic system model consists according to the Forrester approach of state variable, parameters, variables and external driving forces. This is implemented in Hume by dynamic lists, whicht contents is given in the following 
+Dynamic system model consists according to the Forrester approach of state variable, parameters, variables and external driving forces. This is implemented in Hume by dynamic lists, which contents is given in the following sections.
 
 ## State variables
 
@@ -386,6 +386,7 @@ enum_df <- data.frame(
 
 Within the unit (`r trunc(nrow(enum_df))`) enumeration types are defined :
 
+
 ```{r}
 #| label: tbl-TPenMonteithEnumerationsTable
 #| echo: false
@@ -402,10 +403,11 @@ kable(enum_df, escape = FALSE, col.names = c("Name", "Summary", "Elements")) %>%
 
 ```
 
-
-
+The enumeration types are used to internally define options for different process formulation. By setting an TOption object
 
 ## Constants
+
+
 
 ```{r}
 #| echo: false
@@ -431,8 +433,29 @@ const_df <- data.frame(
   }),
   stringsAsFactors = FALSE
 )
+
+const_df <- const_df %>% filter(!(type %in% enum_df$name))
+
 ```
 
+
+The following internal constants are defined within the Unit 
+
+```{r}
+#| label: tbl-TPenMonteithConstantsTable
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: Constants of unit UPenMonteith
+
+
+kable(const_df, escape = FALSE, col.names = c("Name", "Type", "Summary", "Value")) %>%
+  kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "10em") %>%
+  column_spec(3, width = "30em") %>%
+  column_spec(4, width = "20em")
+```
 
 ## Functions
 
@@ -517,6 +540,73 @@ kable(fun_df, escape = FALSE, col.names = c("Name", "Visibility", "Parameters", 
   column_spec(5, width = "30em")
 
 
+```
+
+
+
+### Procedures
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+
+# Find the class node
+class_node <- xml_find_first(doc, './/class[@name="TPenMonteith"]')
+
+# Get all <function> nodes inside this class
+proc_nodes <- xml_find_all(class_node, ".//procedure")
+
+# Build the data frame
+proc_df <- data.frame(
+  name = xml_attr(proc_nodes, "name"),
+  visibility = xml_attr(proc_nodes, "visibility"),
+  parameters = sapply(proc_nodes, function(fn) {
+    params <- xml_find_all(fn, ".//parameters/parameter")
+    if (length(params) == 0) return("")
+    paste(
+      sapply(params, function(p) {
+        paste0(xml_attr(p, "name"), ": ", xml_attr(p, "type"))
+      }),
+      collapse = "; "
+    )
+  }),
+  summary = sapply(proc_nodes, function(fn) {
+    summary_node <- xml_find_first(fn, ".//devnotes/summary")
+    if (!is.na(summary_node)) xml_text(summary_node) else NA_character_
+  }),
+  ParSummary = sapply(proc_nodes, function(fn) {
+    param_nodes <- xml_find_all(fn, ".//devnotes/param")
+    if (length(param_nodes) == 0) return("")
+    paste(
+      sapply(param_nodes, function(p) {
+        pname <- xml_attr(p, "name")
+        ptext <- xml_text(p)
+        paste0(pname, ": ", trimws(ptext))
+      }),
+      collapse = "; "
+    )
+  }),
+  stringsAsFactors = FALSE
+)
+
+# Show the result
+#print(proc_df)
+
+```
+
+
+The procedures defined in the class TPenMonteith are:
+
+```{r}
+#| label: tbl-TPenMonteithFunctionsTableSimple
+#| echo: true
+#| message: false
+#| warning: false
+#| tbl-cap: Functions of class TPenMonteith
+
+paged_table(proc_df)
 ```
 
 

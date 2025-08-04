@@ -11,7 +11,7 @@
        </author>
        <Timestamp>
          First edited: 6.10.89
-         Last edited: 16.1.95
+         Last edited: 02.08.25
        </Timestamp>
        <References>
            <item>van Bavel, C.H.M. (1966). Potential evaporation: The Combination Concept and its Experimental Verification. Water Resour.Res. (1966) 2, 455-467</item>
@@ -27,7 +27,7 @@
   </devnotes>
   <const name="l_h_v_water" type="Extended" file="UPenMonteith.pas" line="34">
     <devnotes>
-       <summary> latent heat of water evaporation at 10 °C [J/kg] </summary>
+       <summary> latent heat for water evaporation at 10 °C in [J/Kg] </summary>
     </devnotes>
     <value>
       2.477e+06
@@ -41,12 +41,12 @@
       0.622
     </value>
   </const>
-  <const name="c_p" type="Integer" file="UPenMonteith.pas" line="40">
+  <const name="c_p" type="Comp" file="UPenMonteith.pas" line="40">
     <devnotes>
        <summary> specific heat of air at constant pressure [J/kg/K] </summary>
     </devnotes>
     <value>
-      $3ED
+      1005
     </value>
   </const>
   <const name="fromParameter" type="TSource" file="UPenMonteith.pas" line="45">
@@ -71,7 +71,7 @@
   </const>
   <enum name="TSource" file="UPenMonteith.pas" line="45">
     <devnotes>
-       <summary> source of extinction coefficient or rc0 </summary>
+       <summary> Source of extinction coefficient / rc0 </summary>
     </devnotes>
     <element value="0" name="fromParameter" file="UPenMonteith.pas" line="45" />
     <element value="1" name="fromPlantModel" file="UPenMonteith.pas" line="45" />
@@ -1309,10 +1309,18 @@
       </function>
       <function name="pressure_f" visibility="protected" file="UPenMonteith.pas" line="63">
         <devnotes>
-           <summary> function for the calculation of the air pressure based on elevation and temperature </summary>
-           <param name="Elev">Elevation [m]</param>
-           <param name="Temp">Temperature [°C]</param>
-           <returns>Air pressure [hPa]</returns>
+           <summary>
+             Calculates atmospheric pressure at a given elevation and temperature using the barometric formula.
+           </summary>
+           <param name="Elev">Elevation above sea level in meters [m]</param>
+           <param name="Temp">Air temperature in degrees Celsius [°C]</param>
+           <returns>
+             Atmospheric pressure in hectopascals [hPa]. Typical range: 900–1050 hPa.
+           </returns>
+           <remarks>
+             Formula: p = 1013 * exp(-0.034 * Elev / (Temp + 273))
+             Reference: Monteith, J.L. (1973). Principles of Environmental Physics.
+           </remarks>
         </devnotes>
         <parameters>
           <parameter name="Elev" type="Double" />
@@ -1351,8 +1359,7 @@
       <function name="ra_f" visibility="protected" file="UPenMonteith.pas" line="66">
         <devnotes>
            <summary>
-           calculation of aerodynamic resistance
-           </summary>
+           calcuation of aerodynamisc resistance </summary>
            <param name="wind_speed">average wind speed [m/s]</param>
            <param name="crop_height">crop height [m]</param>
            <returns>aerodynamic resistance [s/m]</returns>
@@ -1365,13 +1372,13 @@
       </function>
       <function name="Penman" visibility="protected" file="UPenMonteith.pas" line="67">
         <devnotes>
-           <summary> function for the calculation of the Penman-Monteith evapotranspiration </summary>
+           <summary> function for the calculation of the penman-monteith evapotranspiration </summary>
            <param name="Temp">air temperature [°C]</param>
            <param name="Sat_def">saturation deficit of the air [mbar]</param>
            <param name="Net_beam">net radiation [J/m2*s]</param>
            <param name="delta">slope of the saturation vapor pressure curve [mbar/K]</param>
            <param name="gamma">psychrometer constant [mbar/K]</param>
-           <param name="l_h_v_water">latent heat of water evaporation at 10°C [J/kg]</param>
+           <param name="l_h_v_water">latent heat of water evaporation at 10°C [J/Kg]</param>
            <param name="ra">aerodynamic resistance [s/m]</param>
            <param name="rc">bulk-Stomata resistance [s/m]</param>
            <returns>potential evapotranspiration [kg/(m2*d)]</returns>
@@ -1437,7 +1444,7 @@
         <devnotes>
            <summary> Create all variables </summary>
            <remarks>
-             The variables include vapor pressure, air pressure, potential evapotranspiration,
+             The variables include vapour pressure, air pressure, potential evapotranspiration,
              reference evapotranspiration, potential plant transpiration, potential soil evaporation,
              interception, net rain, aerodynamic resistance, canopy resistance, net radiation,     
              extinction coefficient for global radiation, and CO2-induced reductions in transpiration.
@@ -1562,7 +1569,7 @@
       </field>
       <field name="relRc0Inc_CO2" type="TPar" visibility="public" size="4" offset="688" file="UPenMonteith.pas" line="108">
         <devnotes>
-           <summary> relative increase of rc0 through CO2 [1/ppm] </summary>
+           <summary> relative increase of rc0 trough CO2 [1/ppm] </summary>
         </devnotes>
       </field>
       <field name="measure_height" type="TPar" visibility="public" size="4" offset="692" file="UPenMonteith.pas" line="111">
@@ -1612,12 +1619,12 @@
       </field>
       <field name="P" type="TVar" visibility="public" size="4" offset="728" file="UPenMonteith.pas" line="138">
         <devnotes>
-           <summary> standard air pressure [mbar] calculated from air temperature and elevation </summary>
+           <summary> standard air pressure [mbar] calculated from air temperature and height </summary>
         </devnotes>
       </field>
       <field name="VapPress" type="TVar" visibility="public" size="4" offset="732" file="UPenMonteith.pas" line="141">
         <devnotes>
-           <summary> water vapor pressure [mbar] </summary>
+           <summary> water vapour pressure [mbar] </summary>
         </devnotes>
       </field>
       <field name="pETP" type="TVar" visibility="public" size="4" offset="736" file="UPenMonteith.pas" line="144">
@@ -1637,22 +1644,22 @@
       </field>
       <field name="pot_trans" type="TVar" visibility="public" size="4" offset="748" file="UPenMonteith.pas" line="153">
         <devnotes>
-           <summary> potential transpiration [mm.d-1] </summary>
+           <summary> potential transpiration/interception [mm.d-1] </summary>
         </devnotes>
       </field>
       <field name="pot_trans_ambient" type="TVar" visibility="public" size="4" offset="752" file="UPenMonteith.pas" line="156">
         <devnotes>
-           <summary> potential transpiration at ambient CO2 [mm.d-1] </summary>
+           <summary> potential transpiration/interception at ambient CO2 [mm.d-1] </summary>
         </devnotes>
       </field>
-      <field name="pot_Evapo" type="TVar" visibility="public" size="4" offset="756" file="UPenMonteith.pas" line="159">
+      <field name="pot_Evap" type="TVar" visibility="public" size="4" offset="756" file="UPenMonteith.pas" line="159">
         <devnotes>
-           <summary> potential evaporation [mm.d-1] </summary>
+           <summary> potential Evaporation [mm.d-1] </summary>
         </devnotes>
       </field>
-      <field name="pot_Evapo_ambient" type="TVar" visibility="public" size="4" offset="760" file="UPenMonteith.pas" line="162">
+      <field name="pot_Evap_ambient" type="TVar" visibility="public" size="4" offset="760" file="UPenMonteith.pas" line="162">
         <devnotes>
-           <summary> potential evaporation at ambient CO2 [mm.d-1] </summary>
+           <summary> potential Evaporation  [mm.d-1] </summary>
         </devnotes>
       </field>
       <field name="interception" type="TVar" visibility="public" size="4" offset="764" file="UPenMonteith.pas" line="165">
@@ -1697,7 +1704,7 @@
       </field>
       <field name="rc0_ambient" type="TVar" visibility="public" size="4" offset="796" file="UPenMonteith.pas" line="189">
         <devnotes>
-           <summary> stomata resistance at good water supply without effects of CO2 [s.m-1] </summary>
+           <summary> stomata resistance at good water supply without effects of co2 [s.m-1] </summary>
         </devnotes>
       </field>
       <field name="CO2TransDiff" type="TVar" visibility="public" size="4" offset="800" file="UPenMonteith.pas" line="192">
@@ -1727,7 +1734,7 @@
       </field>
       <field name="OptExCO2" type="TOption" visibility="public" size="4" offset="820" file="UPenMonteith.pas" line="206">
         <devnotes>
-           <summary> option for external CO2 concentration </summary>
+           <summary> option for external CO2-concentration </summary>
         </devnotes>
       </field>
       <field name="int_stor" type="TState" visibility="public" size="4" offset="824" file="UPenMonteith.pas" line="209">
@@ -1818,7 +1825,7 @@
       </property>
       <property name="Par_SIC" visibility="published" read="sic" write="sic" type="TPar" file="UPenMonteith.pas" line="249">
         <devnotes>
-           <summary> specific interception capacity per unit leaf area index [mm/LAI] </summary>
+           <summary> specific interception capacity per unit BFI [mm/BFI] </summary>
         </devnotes>
       </property>
       <property name="Par_measure_height" visibility="published" read="measure_height" write="measure_height" type="TPar" file="UPenMonteith.pas" line="251">
@@ -1846,19 +1853,19 @@
            <summary> potential transpiration [mm.d-1] </summary>
         </devnotes>
       </property>
-      <property name="Var_PotEvap" visibility="published" read="pot_Evapo" write="pot_Evapo" type="TVar" file="UPenMonteith.pas" line="261">
+      <property name="Var_PotEvap" visibility="published" read="pot_Evap" write="pot_Evap" type="TVar" file="UPenMonteith.pas" line="261">
         <devnotes>
-           <summary> potential evaporation [mm.d-1] </summary>
+           <summary> potential Evaporation </summary>
         </devnotes>
       </property>
       <property name="Var_interzeption" visibility="published" read="interception" write="interception" type="TVar" file="UPenMonteith.pas" line="263">
         <devnotes>
-           <summary> interception [mm.d-1] </summary>
+           <summary> interception </summary>
         </devnotes>
       </property>
       <property name="Var_NetRain" visibility="published" read="net_rain" write="net_rain" type="TVar" file="UPenMonteith.pas" line="265">
         <devnotes>
-           <summary> net precipitation (rain minus interception) [mm.d-1] </summary>
+           <summary> precipitation rate-interception </summary>
         </devnotes>
       </property>
       <property name="Var_ra" visibility="published" read="ra" write="ra" type="TVar" file="UPenMonteith.pas" line="267">
@@ -1873,17 +1880,17 @@
       </property>
       <property name="Opt_Exk_Glob" visibility="published" read="fExkOpt" write="fExkOpt" type="TSource" file="UPenMonteith.pas" line="271">
         <devnotes>
-           <summary> option for source of extinction coefficient </summary>
+           <summary> Option for Source of extinction coefficient </summary>
         </devnotes>
       </property>
       <property name="Opt_rc0" visibility="published" read="frc0Opt" write="frc0Opt" type="TSource" file="UPenMonteith.pas" line="273">
         <devnotes>
-           <summary> option for source of rc0 </summary>
+           <summary> Option for Source of extinction coefficient </summary>
         </devnotes>
       </property>
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="UPenMonteith.pas" line="977">
+  <procedure name="Register" visibility="public" file="UPenMonteith.pas" line="984">
     <devnotes>
        <summary> Register the TPenMonteith component on the page Simulation </summary>
     </devnotes>

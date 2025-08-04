@@ -37,7 +37,7 @@ const
   MW_ratio = 0.622;
 
 /// <summary> specific heat of air at constant pressure [J/kg/K] </summary>
-  c_p = 1005;        
+  c_p = 1005.0;
 
 type
 
@@ -94,91 +94,91 @@ type
 
 /// <summary> stomata resistance at "good water supply" [s.m-1] </summary>
     rc0: TPar; // stomata resistance at "good water supply"
-    
+
 /// <summary> extinction coefficient for global radiation [-] </summary>
     exk_GlobRad: TPar; // extinction coefficient for global radiation [-]
-    
+
 /// <summary> specific interception capacity per unit leaf area index [mm/LAI] </summary>
     sic: TPar; // specific interception capazity per unit LAI [mm/LAI] }
-    
+
 /// <summary> threshold for CO2 partial pressure [ppm] </summary>
     CiThreshold: TPar; // Schwellwert for CO2 partial pressure [ppm]
-    
+
 /// <summary> relative increase of rc0 trough CO2 [1/ppm] </summary>
     relRc0Inc_CO2: TPar;  // relative increase of rc0 trough CO2 [1/ppm]
-    
+
 /// <summary> measurement height of the parameters [m] </summary>
     measure_height: TPar; // measurement height of meteorological parameters [m]
 
 /// <summary> Temperature [°C] </summary>
     Temp: TExternV; // Temperature [°C]
-    
+
 /// <summary> Global radiation [W.m-2] </summary>
     GlobRad: TExternV; // global radiation [W.m-2]
-    
+
 /// <summary> saturation deficit [mbar] </summary>
     Sat_def: TExternV; // saturation deficit [mbar]
-    
+
 /// <summary> wind speed [m.s-1] </summary>
     wind_speed: TExternV; // wind speed [m.s-1]
-    
+
 /// <summary> plant height [m] </summary>
     ExCropHeight: TExternV; // plant height [m]
-    
+
 /// <summary> leaf area index [] </summary>
     ExLAI: TExternV; // leaf area index []
-    
+
 /// <summary> external precipitation rate [mm/d] </summary>
     rain: TExternV; // precipitation rate [mm/d]
-    
+
 /// <summary> external CO2 partial pressure [ppm] </summary>
     ExCO2pp: TExternV; // Extenal CO2 partial pressure
 
 /// <summary> standard air pressure [mbar] calculated from air temperature and height </summary>
     P: TVar; // standard air pressure [mbar] calculated aus air temperature and height
-    
+
 /// <summary> water vapour pressure [mbar] </summary>
     VapPress: TVar; // water vapour pressure [mbar]
-    
+
 /// <summary> potential evapotranspiration [mm.d-1] </summary>
     pETP: TVar; // potential evapotranspiration [mm.d-1]
 
 /// <summary> reference evapotranspiration according to FAO [mm.d-1] </summary>
     ET0: TVar; // potential reference (FAO) evapotranspiration
-    
+
 /// <summary> potential evapotranspiration no CO2 effect [mm.d-1] </summary>
     pETP_ambient: TVar; // potential evapotranspiration no CO2 effect [mm.d-1]
-    
+
 /// <summary> potential transpiration/interception [mm.d-1] </summary>
     pot_trans: TVar; // potential transpiration [mm.d-1]
-    
+
 /// <summary> potential transpiration/interception at ambient CO2 [mm.d-1] </summary>
     pot_trans_ambient: TVar; // potential transpiration [mm.d-1]
-    
+
 /// <summary> potential Evaporation [mm.d-1] </summary>
-    pot_Evapo: TVar; // potential Evaporation
-    
+    pot_Evap: TVar; // potential Evaporation
+
 /// <summary> potential Evaporation  [mm.d-1] </summary>
-    pot_Evapo_ambient: TVar; // potential Evaporation
-    
+    pot_Evap_ambient: TVar; // potential Evaporation
+
 /// <summary> interception [mm.d-1] </summary>
     interception: TVar; // interception
-    
+
 /// <summary> net precipitation rate [mm.d-1] </summary>
     net_rain: TVar; // precipitation rate-interception
-    
+
 /// <summary> net radiation [W.m-2] </summary>
     netRad: TVar; // net radiation
 
 /// <summary> extinction coefficient for GlobRad [-] </summary>
     k_GlobRad: TVar; // extinction coefficient for GlobRad
-    
+
 /// <summary> aerodynamic resistance [s.m-1] </summary>
     ra: TVar; // aerodynamic resistance [s.m-1]
-    
+
 /// <summary> canopy resistance [s.m-1] </summary>
     rc: TVar; // canopy resistance [s.m-1]
-    
+
 /// <summary> canopy resistance at ambient CO2 [s.m-1] </summary>
     rc_ambient: TVar; // canopy resistance at abmient CO2 [s.m-1]
     
@@ -219,7 +219,7 @@ type
     
 /// <summary> initialization of parameters and states </summary>
     procedure Init(var GlobMod: Tmod); override; // initialization of parameters and states
-    
+
 /// <summary> set the plant model from which the LAI and CropHeight are taken </summary>
     procedure SetPlantModel(NewPlantmodel: TAbstractPlant); override; // set the plant model from which the LAI and CropHeight are taken
 
@@ -258,7 +258,7 @@ type
 /// <summary> potential transpiration [mm.d-1] </summary>
     Property Var_PotTrans: TVar read pot_trans write pot_trans;
 /// <summary> potential Evaporation </summary>
-    Property Var_PotEvap: TVar read pot_Evapo write pot_Evapo;
+    Property Var_PotEvap: TVar read pot_Evap write pot_Evap;
 /// <summary> interception </summary>
     Property Var_interzeption: TVar read interception write interception;
 /// <summary> precipitation rate-interception </summary>
@@ -506,7 +506,7 @@ procedure TPenMonteith.Calc_Interception;
 
 var
   /// <summary>maximum interception capacity [mm]</summary>
-  max_int_cap, 
+  max_int_cap,
   /// <summary>actual interception capacity [mm]</summary>
   act_int_cap
   : real;
@@ -711,12 +711,6 @@ begin
 
   delta := delta_f(es, Temp.v);
 
-//???
-//@title: Calculation of pETPambient
-//@Var: pETP_ambient
-//@Description: The calculation of the pETP_ambient value is based on the canopy resistance under
-//@.. non elevated CO2
-//???
 
   pETP_ambient.v := Penman(Temp.v, Sat_def.v, netRad.v, delta, gamma, l_h_v_water,
     ra.v, rc_ambient.v);
@@ -728,9 +722,9 @@ begin
            208/max(0.1, wind_speed.v), 70);
   //pETP.v := ET0.v;
 
-  PotEvap_ambient.v := Evaporation_f_ambient;
-  pot_Evapo.v := Evaporation_f;
-  pTI := pETP.v - pot_Evapo.v;
+  Pot_Evap_ambient.v := Evaporation_f_ambient;
+  pot_Evap.v := Evaporation_f;
+  pTI := pETP.v - pot_Evap.v;
 
   Calc_Interception;
   Calc_potTrans;
@@ -785,13 +779,13 @@ end;
 procedure TPenMonteith.Calc_potTrans;
 begin
   if pETP.v > 0 then
-    pot_trans.v := (pETP.v - pot_Evapo.v - interception.v)
+    pot_trans.v := (pETP.v - pot_Evap.v - interception.v)
   else
     pot_trans.v := 0;
   if pot_trans.v <= 1E-10 then
     pot_trans.v := 0;
   if pETP_ambient.v > 0 then
-    pot_trans_ambient.v := (pETP_ambient.v - PotEvap_ambient.v - interception.v)
+    pot_trans_ambient.v := (pETP_ambient.v - Pot_Evap_ambient.v - interception.v)
   else
     pot_trans_ambient.v := 0;
   if pot_trans_ambient.v <= 1E-10 then
@@ -922,8 +916,8 @@ begin
   // potential evapotranspiration [mm.d-1]
   VarCreate('PotTrans', '[mm/d]', 0, false, pot_trans, 'potential plant transpiration');
   VarCreate('PotTrans_ambient', '[mm/d]', 0, false, pot_trans_ambient, 'potential transpiration under ambient CO2'); // potential transpiration [mm.d-1]
-  VarCreate('PotEvap', '[mm/d]', 0, false, pot_Evapo, 'potential soil evaporation rate'); // potential Evaporation
-  VarCreate('PotEvap_ambient', '[mm/d]', 0, false, PotEvap_ambient,'potential evaporation undder ambient CO2');  // potential Evaporation
+  VarCreate('PotEvap', '[mm/d]', 0, false, pot_Evap, 'potential soil evaporation rate'); // potential Evaporation
+  VarCreate('PotEvap_ambient', '[mm/d]', 0, false, Pot_Evap_ambient,'potential evaporation undder ambient CO2');  // potential Evaporation
   VarCreate('interception', '[mm/d]', 0, false, interception, 'daily interception rate');  // interception
   VarCreate('NetRain', '[mm/d]', 0, false, net_rain, 'rain - interception'); // precipitation rate-interception
   VarCreate('ra', '[s/m]', 0, false, ra, 'aerodynamic resistance');

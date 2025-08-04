@@ -4,7 +4,7 @@
 ///    Defines core data types and classes for representing state variables, parameters, and external variables in a crop simulation model.
 ///    Provides a standardized way to handle variables that change over time (states), fixed model parameters, and variables imported from other modules or the environment.
 ///  </summary>
-///  <details>
+///  <remarks>
 ///    <item>
 ///      <desc>TState</desc>
 ///      <info>Type or class for state variables (e.g., leaf area, biomass) updated during simulation.</info>
@@ -25,7 +25,7 @@
 ///      <desc>TVAR</desc>
 ///      <info>General-purpose variable type, often for intermediate or calculated values.</info>
 ///    </item>
-///  </details>
+///  </remarks>
 unit UState;
 {$IFDEF LINUX}
 {$DEFINE NONVISUAL}
@@ -362,7 +362,6 @@ begin
   fGlobalOutput := false;
 end;
 
-constructor TVar.create(na, un: string; va: real; c: string);
 
 /// <summary>Instantiates a variable object.</summary>
 /// <param name="na">Name of the variable.</param>
@@ -539,7 +538,6 @@ begin
 end;
 
 
-constructor TPar.create(na, un: string; va, error: real; c: string);
 
 /// <summary>Instantiates a parameter object.</summary>
 /// <param name="na">Name of the parameter.</param>
@@ -564,7 +562,6 @@ begin
 
 
 end;
-constructor TState.create(na, un: string; va, cr: real; comm: string);
 
 /// <summary>Instantiates a state variable object.</summary>
 /// <param name="na">Name of the state variable.</param>
@@ -579,7 +576,6 @@ begin
   c := cr;
   ReadFromIniFile := true; // read from Ini file
 end;
-constructor TExternV.create(Nname, NUnits: string; ExV: TExValue; c: string);
 
 /// <summary>Instantiates an external variable object.</summary>
 /// <param name="Nname">Name of the external variable.</param>
@@ -627,7 +623,6 @@ begin
   if f_v <> nil then
     f_v^ := value;
 end;
-procedure TExternV.setPointer(NewPointer: Pointer);
 
 /// <summary>Set pointer of the "value" variable.</summary>
 /// <param name="NewPointer">Pointer to the external value.</param>
