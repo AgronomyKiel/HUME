@@ -296,7 +296,10 @@ type
 
   published
 
-   property Var_c : TVar read c write c; // Define Value
+   /// <summary>
+   /// Photoperiodic influence factor (0..1).
+   /// </summary>
+   property Var_c : TVar read c write c;
 
    /// <summary>
     /// development rate during istage 1
@@ -347,7 +350,7 @@ type
    /// <summary>
     /// vernalisation factor
     /// </summary>
-   property Var_k_v : TVar read k_v write k_v; // Define Value
+   property Var_k_v : TVar read k_v write k_v;
    
    /// <summary>
     /// relative development rate effect of photoperiod
@@ -359,7 +362,10 @@ type
     /// </summary>
    property Var_rdr_v : TVar read rdr_v write rdr_v;
 
-   property Var_tempsumemergence : TVar read tempsumemergence write tempsumemergence; // Define Value
+   /// <summary>
+   /// Temperature sum from emergence to EC30.
+   /// </summary>
+   property Var_tempsumemergence : TVar read tempsumemergence write tempsumemergence;
    property Var_tsuminc : TVar read Teff write Teff;
    property Var_zstage : TVar read zstage write zstage;
    property Var_vernf : TVar read vernf write vernf;
@@ -390,9 +396,18 @@ type
    property Ex_dayofyear : TExternV read dayofyear write dayofyear;
    property Ex_TMPM : TExternV read TMPM write TMPM;
 
-   property Par_p9 : TPar read p9 write p9; // Define Value
-   property Par_p4 : TPar read p4 write p4; // Define Value
-   property Par_p5 : TPar read p5 write p5; // Define Value
+   /// <summary>
+   /// Thermal time from germination to seedling emergence (°Cd).
+   /// </summary>
+   property Par_p9 : TPar read p9 write p9;
+   /// <summary>
+   /// Thermal time between pre-anthesis ear growth and start of grain filling (°Cd).
+   /// </summary>
+   property Par_p4 : TPar read p4 write p4;
+   /// <summary>
+   /// Thermal time between start of grain filling and maturity (°Cd).
+   /// </summary>
+   property Par_p5 : TPar read p5 write p5;
    property Par_minLeaf_number : TPar read minLeaf_number write minLeaf_number;
    property Par_plastochron : TPar read plastochron write plastochron;
    property Par_phint : TPar read phint write phint;
@@ -401,10 +416,22 @@ type
    property PAR_sowingdate: TPar read sowingdate write sowingdate;
    property PAR_MaxVernDays: TPar read MaxVernDays write MaxVernDays;
    property PAR_MaxPhotoperiod: TPar read MaxPhotoperiod write MaxPhotoperiod;
-   property PAR_VernMinTemp: TPar read VernMinTemp write VernMinTemp;    // minimum vernalisation temperature
-   property PAR_VernOptTemp1: TPar read VernOptTemp1 write VernOptTemp1;   // temperature where vernalisation is starting to be optimal
-   property PAR_VernOptTemp2: TPar read VernOptTemp2 write VernOptTemp2;   // temperature where vernalisation is ending to be optimal
-   property PAR_VernMaxTemp: TPar read VernMaxTemp write VernMaxTemp;     // temperature where vernalisation is getting zero
+   /// <summary>
+   /// Minimum vernalisation temperature.
+   /// </summary>
+   property PAR_VernMinTemp: TPar read VernMinTemp write VernMinTemp;
+   /// <summary>
+   /// Temperature where vernalisation starts to be optimal.
+   /// </summary>
+   property PAR_VernOptTemp1: TPar read VernOptTemp1 write VernOptTemp1;
+   /// <summary>
+   /// Temperature where vernalisation ends being optimal.
+   /// </summary>
+   property PAR_VernOptTemp2: TPar read VernOptTemp2 write VernOptTemp2;
+   /// <summary>
+   /// Temperature where vernalisation effect becomes zero.
+   /// </summary>
+   property PAR_VernMaxTemp: TPar read VernMaxTemp write VernMaxTemp;
 
    property Opt_DataIniMethod : TOption read DataInitMethod write DataInitMethod;
    property Opt_ReCalcSowingDate : boolean read fReCalcSowingDate write fReCalcSowingDate;
