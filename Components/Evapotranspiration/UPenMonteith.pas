@@ -47,7 +47,10 @@ type
   /// <summary> Options for ra calculation </summary>
   T_ra_Funct = (PenmanMonteith, ThomOliver);
 
-  /// <summary> The class TPenMonteith implements the Penman-Monteith equation. This equation is a widely used method for estimating evapotranspiration (ET). It combines the principles of energy balance and mass transfer to calculate ET. The FAO (Food and Agriculture Organization) version of this equation is specifically designed for estimating reference evapotranspiration (ETo) from a hypothetical reference surface </summary>
+  /// <summary> The class TPenMonteith implements the Penman-Monteith equation. This equation is a widely used method for estimating evapotranspiration (ET).
+  /// It combines the principles of energy balance and mass transfer to calculate ET.
+  /// The FAO (Food and Agriculture Organization) version of this equation is specifically designed for estimating
+  /// reference evapotranspiration (ETo) from a hypothetical reference surface </summary>
   TPenMonteith = class(TPlantRelatedSubMod)
   protected
 

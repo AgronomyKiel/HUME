@@ -1,59 +1,6 @@
 ﻿/// <summary>
 /// Module for leaf area development and senescence
-/// 
-/// ## Purpose
-/// 
-/// - **Simulates wheat leaf area growth and senescence** (aging, drought, nitrogen, and light effects).
-/// - Calculates **Leaf Area Index (LAI)**, **green leaf area**, **senescence rates**, and **distribution of leaf area/mass** across four canopy layers.
-/// - Integrates with other modules (e.g., dry matter, environmental variables).
-/// 
-/// ## Key Components
-/// 
-/// ### 1. **Class Definition**
-/// - `THumeWheatLeafArea = class(TSubmodel)`
-/// - Contains fields for state variables, parameters, external variables, and options.
-/// 
-/// ### 2. **Main Variables**
-/// - **State Variables**: LAI, PLA (plant leaf area), PLSC (single leaf areas), SENLA (senescent area), CUMPH (cumulative phyllochrons), etc.
-/// - **Parameters**: maxPLALR (max senescence rate), aSLA/bSLA (SLA parameters), Icrit (critical radiation), etc.
-/// - **External Variables**: GROLF (leaf growth rate), ISTAGE (growth stage), plants (plant density), TMPM/TMPMN/TMPMX (temperatures), etc.
-/// - **Options**: For drought, senescence type, and whether to use age/light/drought-dependent senescence.
-/// 
-/// ### 3. **Core Methods**
-/// - `createAll`: Initializes all variables, states, parameters, and options.
-/// - `Init`: Sets initial values and options.
-/// - `CalcRates`: Calculates rates of change for all variables.
-/// - `Integrate`: Updates state variables for the next time step.
-/// - **Senescence Calculation**: Multiple methods for different senescence drivers (age, N, light, drought).
-/// - **Leaf Layer Distribution**: Allocates leaf area/mass to four canopy layers.
-/// - **Radiation and Water Calculations**: Computes intercepted PAR, transpiration, and interception.
-/// 
-/// ### 4. **Senescence Logic**
-/// - **Age-dependent**: Based on leaf age and phyllochron.
-/// - **N-dependent**: Based on specific leaf nitrogen (SLN).
-/// - **Light-dependent**: Based on 10-day average radiation.
-/// - **Drought-dependent**: Based on transpiration ratios and sustainable LAI.
-/// 
-/// ### 5. **Leaf Area Growth**
-/// - **Single Leaf Growth**: Only the youngest leaf grows at a time.
-/// - **SLA Calculation**: Specific leaf area changes with LAI and growth stage.
-/// 
-/// ### 6. **Layered Canopy**
-/// - **Four layers**: Top to bottom, with distribution functions for mass and area.
-/// - **PAR Calculation**: Incident PAR on each layer is computed.
-/// 
-/// ## Usage
-/// 
-/// - **Part of a larger crop simulation**: Interacts with other modules (e.g., dry matter, environmental conditions).
-/// - **Highly parameterized**: Many parameters and options for flexibility.
-/// - **Object-oriented**: Designed for reuse and extension.
-/// 
-/// ## Summary
-/// 
-/// This file is a **comprehensive, object-oriented module** for simulating wheat leaf area dynamics, including growth, senescence, and environmental responses, with detailed physiological and environmental modeling. It is suitable for research or advanced crop modeling applications.
-/// 
-/// <remarks>
-
+/// </summary>
 unit UHumeWheatLeafArea;
 
 
@@ -83,60 +30,6 @@ type
 /// <summary>
 /// Module for leaf area development and senescence
 /// </summary>
-/// <remarks>
-/// 
-/// ## Purpose
-/// 
-/// - **Simulates wheat leaf area growth and senescence** (aging, drought, nitrogen, and light effects).
-/// - Calculates **Leaf Area Index (LAI)**, **green leaf area**, **senescence rates**, and **distribution of leaf area/mass** across four canopy layers.
-/// - Integrates with other modules (e.g., dry matter, environmental variables).
-/// 
-/// ## Key Components
-/// 
-/// ### 1. **Class Definition**
-/// - `THumeWheatLeafArea = class(TSubmodel)`
-/// - Contains fields for state variables, parameters, external variables, and options.
-/// 
-/// ### 2. **Main Variables**
-/// - **State Variables**: LAI, PLA (plant leaf area), PLSC (single leaf areas), SENLA (senescent area), CUMPH (cumulative phyllochrons), etc.
-/// - **Parameters**: maxPLALR (max senescence rate), aSLA/bSLA (SLA parameters), Icrit (critical radiation), etc.
-/// - **External Variables**: GROLF (leaf growth rate), ISTAGE (growth stage), plants (plant density), TMPM/TMPMN/TMPMX (temperatures), etc.
-/// - **Options**: For drought, senescence type, and whether to use age/light/drought-dependent senescence.
-/// 
-/// ### 3. **Core Methods**
-/// - `createAll`: Initializes all variables, states, parameters, and options.
-/// - `Init`: Sets initial values and options.
-/// - `CalcRates`: Calculates rates of change for all variables.
-/// - `Integrate`: Updates state variables for the next time step.
-/// - **Senescence Calculation**: Multiple methods for different senescence drivers (age, N, light, drought).
-/// - **Leaf Layer Distribution**: Allocates leaf area/mass to four canopy layers.
-/// - **Radiation and Water Calculations**: Computes intercepted PAR, transpiration, and interception.
-/// 
-/// ### 4. **Senescence Logic**
-/// - **Age-dependent**: Based on leaf age and phyllochron.
-/// - **N-dependent**: Based on specific leaf nitrogen (SLN).
-/// - **Light-dependent**: Based on 10-day average radiation.
-/// - **Drought-dependent**: Based on transpiration ratios and sustainable LAI.
-/// 
-/// ### 5. **Leaf Area Growth**
-/// - **Single Leaf Growth**: Only the youngest leaf grows at a time.
-/// - **SLA Calculation**: Specific leaf area changes with LAI and growth stage.
-/// 
-/// ### 6. **Layered Canopy**
-/// - **Four layers**: Top to bottom, with distribution functions for mass and area.
-/// - **PAR Calculation**: Incident PAR on each layer is computed.
-/// 
-/// ## Usage
-/// 
-/// - **Part of a larger crop simulation**: Interacts with other modules (e.g., dry matter, environmental conditions).
-/// - **Highly parameterized**: Many parameters and options for flexibility.
-/// - **Object-oriented**: Designed for reuse and extension.
-/// 
-/// ## Summary
-/// 
-/// This file is a **comprehensive, object-oriented module** for simulating wheat leaf area dynamics, including growth, senescence, and environmental responses, with detailed physiological and environmental modeling. It is suitable for research or advanced crop modeling applications.
-/// 
-/// </remarks>
   THumeWheatLeafArea = class(TSubmodel)
   private
     p5_:         real;

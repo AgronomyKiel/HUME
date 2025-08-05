@@ -3,150 +3,44 @@
   <devnotes>
      <summary>
      Module for leaf area development and senescence
-     
-     ## Purpose
-     
-     - **Simulates wheat leaf area growth and senescence** (aging, drought, nitrogen, and light effects).
-     - Calculates **Leaf Area Index (LAI)**, **green leaf area**, **senescence rates**, and **distribution of leaf area/mass** across four canopy layers.
-     - Integrates with other modules (e.g., dry matter, environmental variables).
-     
-     ## Key Components
-     
-     ### 1. **Class Definition**
-     - `THumeWheatLeafArea = class(TSubmodel)`
-     - Contains fields for state variables, parameters, external variables, and options.
-     
-     ### 2. **Main Variables**
-     - **State Variables**: LAI, PLA (plant leaf area), PLSC (single leaf areas), SENLA (senescent area), CUMPH (cumulative phyllochrons), etc.
-     - **Parameters**: maxPLALR (max senescence rate), aSLA/bSLA (SLA parameters), Icrit (critical radiation), etc.
-     - **External Variables**: GROLF (leaf growth rate), ISTAGE (growth stage), plants (plant density), TMPM/TMPMN/TMPMX (temperatures), etc.
-     - **Options**: For drought, senescence type, and whether to use age/light/drought-dependent senescence.
-     
-     ### 3. **Core Methods**
-     - `createAll`: Initializes all variables, states, parameters, and options.
-     - `Init`: Sets initial values and options.
-     - `CalcRates`: Calculates rates of change for all variables.
-     - `Integrate`: Updates state variables for the next time step.
-     - **Senescence Calculation**: Multiple methods for different senescence drivers (age, N, light, drought).
-     - **Leaf Layer Distribution**: Allocates leaf area/mass to four canopy layers.
-     - **Radiation and Water Calculations**: Computes intercepted PAR, transpiration, and interception.
-     
-     ### 4. **Senescence Logic**
-     - **Age-dependent**: Based on leaf age and phyllochron.
-     - **N-dependent**: Based on specific leaf nitrogen (SLN).
-     - **Light-dependent**: Based on 10-day average radiation.
-     - **Drought-dependent**: Based on transpiration ratios and sustainable LAI.
-     
-     ### 5. **Leaf Area Growth**
-     - **Single Leaf Growth**: Only the youngest leaf grows at a time.
-     - **SLA Calculation**: Specific leaf area changes with LAI and growth stage.
-     
-     ### 6. **Layered Canopy**
-     - **Four layers**: Top to bottom, with distribution functions for mass and area.
-     - **PAR Calculation**: Incident PAR on each layer is computed.
-     
-     ## Usage
-     
-     - **Part of a larger crop simulation**: Interacts with other modules (e.g., dry matter, environmental conditions).
-     - **Highly parameterized**: Many parameters and options for flexibility.
-     - **Object-oriented**: Designed for reuse and extension.
-     
-     ## Summary
-     
-     This file is a **comprehensive, object-oriented module** for simulating wheat leaf area dynamics, including growth, senescence, and environmental responses, with detailed physiological and environmental modeling. It is suitable for research or advanced crop modeling applications.
-     
-     <remarks>
+     </summary>
   </devnotes>
-  <const name="MaxLeafNumber" type="Integer" file="UHumeWheatLeafArea.pas" line="70">
+  <const name="MaxLeafNumber" type="Integer" file="UHumeWheatLeafArea.pas" line="17">
     <value>
       $19
     </value>
   </const>
-  <const name="cwt3" type="TSenescence" file="UHumeWheatLeafArea.pas" line="76">
+  <const name="cwt3" type="TSenescence" file="UHumeWheatLeafArea.pas" line="23">
     <value>
       cwt3
     </value>
   </const>
-  <const name="concentration" type="TSenescence" file="UHumeWheatLeafArea.pas" line="76">
+  <const name="concentration" type="TSenescence" file="UHumeWheatLeafArea.pas" line="23">
     <value>
       concentration
     </value>
   </const>
-  <enum name="TSenescence" file="UHumeWheatLeafArea.pas" line="76">
+  <enum name="TSenescence" file="UHumeWheatLeafArea.pas" line="23">
     <devnotes>
        <summary>
        Type for senescence type
        </summary>
     </devnotes>
-    <element value="0" name="cwt3" file="UHumeWheatLeafArea.pas" line="76" />
-    <element value="1" name="concentration" file="UHumeWheatLeafArea.pas" line="76" />
+    <element value="0" name="cwt3" file="UHumeWheatLeafArea.pas" line="23" />
+    <element value="1" name="concentration" file="UHumeWheatLeafArea.pas" line="23" />
   </enum>
-  <type name="TnLeafLayer" type="shortint" loBound="1" hiBound="4" file="UHumeWheatLeafArea.pas" line="81">
+  <type name="TnLeafLayer" type="shortint" loBound="1" hiBound="4" file="UHumeWheatLeafArea.pas" line="28">
     <devnotes>
        <summary>
        Type 4 leaf layers
        </summary>  
     </devnotes>
   </type>
-  <class name="THumeWheatLeafArea" file="UHumeWheatLeafArea.pas" line="140">
+  <class name="THumeWheatLeafArea" file="UHumeWheatLeafArea.pas" line="33">
     <devnotes>
        <summary>
        Module for leaf area development and senescence
        </summary>
-       <remarks>
-       
-       ## Purpose
-       
-       - **Simulates wheat leaf area growth and senescence** (aging, drought, nitrogen, and light effects).
-       - Calculates **Leaf Area Index (LAI)**, **green leaf area**, **senescence rates**, and **distribution of leaf area/mass** across four canopy layers.
-       - Integrates with other modules (e.g., dry matter, environmental variables).
-       
-       ## Key Components
-       
-       ### 1. **Class Definition**
-       - `THumeWheatLeafArea = class(TSubmodel)`
-       - Contains fields for state variables, parameters, external variables, and options.
-       
-       ### 2. **Main Variables**
-       - **State Variables**: LAI, PLA (plant leaf area), PLSC (single leaf areas), SENLA (senescent area), CUMPH (cumulative phyllochrons), etc.
-       - **Parameters**: maxPLALR (max senescence rate), aSLA/bSLA (SLA parameters), Icrit (critical radiation), etc.
-       - **External Variables**: GROLF (leaf growth rate), ISTAGE (growth stage), plants (plant density), TMPM/TMPMN/TMPMX (temperatures), etc.
-       - **Options**: For drought, senescence type, and whether to use age/light/drought-dependent senescence.
-       
-       ### 3. **Core Methods**
-       - `createAll`: Initializes all variables, states, parameters, and options.
-       - `Init`: Sets initial values and options.
-       - `CalcRates`: Calculates rates of change for all variables.
-       - `Integrate`: Updates state variables for the next time step.
-       - **Senescence Calculation**: Multiple methods for different senescence drivers (age, N, light, drought).
-       - **Leaf Layer Distribution**: Allocates leaf area/mass to four canopy layers.
-       - **Radiation and Water Calculations**: Computes intercepted PAR, transpiration, and interception.
-       
-       ### 4. **Senescence Logic**
-       - **Age-dependent**: Based on leaf age and phyllochron.
-       - **N-dependent**: Based on specific leaf nitrogen (SLN).
-       - **Light-dependent**: Based on 10-day average radiation.
-       - **Drought-dependent**: Based on transpiration ratios and sustainable LAI.
-       
-       ### 5. **Leaf Area Growth**
-       - **Single Leaf Growth**: Only the youngest leaf grows at a time.
-       - **SLA Calculation**: Specific leaf area changes with LAI and growth stage.
-       
-       ### 6. **Layered Canopy**
-       - **Four layers**: Top to bottom, with distribution functions for mass and area.
-       - **PAR Calculation**: Incident PAR on each layer is computed.
-       
-       ## Usage
-       
-       - **Part of a larger crop simulation**: Interacts with other modules (e.g., dry matter, environmental conditions).
-       - **Highly parameterized**: Many parameters and options for flexibility.
-       - **Object-oriented**: Designed for reuse and extension.
-       
-       ## Summary
-       
-       This file is a **comprehensive, object-oriented module** for simulating wheat leaf area dynamics, including growth, senescence, and environmental responses, with detailed physiological and environmental modeling. It is suitable for research or advanced crop modeling applications.
-       
-       </remarks>
     </devnotes>
     <ancestor name="TSubmodel" namespace="UMod">
       <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
@@ -1321,68 +1215,68 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="p5_" type="Double" visibility="private" size="8" offset="648" file="UHumeWheatLeafArea.pas" line="142" />
-      <field name="fSenescence" type="TSenescence" visibility="private" size="1" offset="656" file="UHumeWheatLeafArea.pas" line="144">
+      <field name="p5_" type="Double" visibility="private" size="8" offset="648" file="UHumeWheatLeafArea.pas" line="35" />
+      <field name="fSenescence" type="TSenescence" visibility="private" size="1" offset="656" file="UHumeWheatLeafArea.pas" line="37">
         <devnotes>
            senescence type either cwt3 (Ceres Wheat 3) or concentration
         </devnotes>
       </field>
-      <field name="avTransIntRatio_arr" visibility="private" size="80" offset="664" file="UHumeWheatLeafArea.pas" line="147">
+      <field name="avTransIntRatio_arr" visibility="private" size="80" offset="664" file="UHumeWheatLeafArea.pas" line="40">
         <devnotes>
            array for calculation of average transpiration interception ratio over 10 days
         </devnotes>
-        <array name="avTransIntRatio_arr" visibility="private" low="1" high="10" file="UHumeWheatLeafArea.pas" line="147">
+        <array name="avTransIntRatio_arr" visibility="private" low="1" high="10" file="UHumeWheatLeafArea.pas" line="40">
           <element type="Double" />
         </array>
       </field>
-      <field name="fUseAgeDependentLeafSenescence" type="Boolean" visibility="private" size="1" offset="744" file="UHumeWheatLeafArea.pas" line="149">
+      <field name="fUseAgeDependentLeafSenescence" type="Boolean" visibility="private" size="1" offset="744" file="UHumeWheatLeafArea.pas" line="42">
         <devnotes>
            private field for optional use of age dependent leaf senescence
         </devnotes>
       </field>
-      <field name="fUseLightDependentLeafSenescence" type="Boolean" visibility="private" size="1" offset="745" file="UHumeWheatLeafArea.pas" line="152">
+      <field name="fUseLightDependentLeafSenescence" type="Boolean" visibility="private" size="1" offset="745" file="UHumeWheatLeafArea.pas" line="45">
         <devnotes>
            private field for optional use of light dependent leaf senescence
         </devnotes>
       </field>
-      <field name="fUseDroughtDependentLeafSenescence" type="Boolean" visibility="private" size="1" offset="746" file="UHumeWheatLeafArea.pas" line="155">
+      <field name="fUseDroughtDependentLeafSenescence" type="Boolean" visibility="private" size="1" offset="746" file="UHumeWheatLeafArea.pas" line="48">
         <devnotes>
            private field for optional use of drought dependent leaf senescence
         </devnotes>
       </field>
-      <procedure name="SetLaiLayers" visibility="private" file="UHumeWheatLeafArea.pas" line="156">
+      <procedure name="SetLaiLayers" visibility="private" file="UHumeWheatLeafArea.pas" line="49">
       </procedure>
-      <procedure name="CalcSingleLeafGrowth" visibility="private" file="UHumeWheatLeafArea.pas" line="157">
+      <procedure name="CalcSingleLeafGrowth" visibility="private" file="UHumeWheatLeafArea.pas" line="50">
       </procedure>
-      <procedure name="CalcLeafNumberOnMainStem" visibility="private" file="UHumeWheatLeafArea.pas" line="158">
+      <procedure name="CalcLeafNumberOnMainStem" visibility="private" file="UHumeWheatLeafArea.pas" line="51">
       </procedure>
-      <procedure name="SetSingleLeafGrowthRatesToZero" visibility="private" file="UHumeWheatLeafArea.pas" line="159">
+      <procedure name="SetSingleLeafGrowthRatesToZero" visibility="private" file="UHumeWheatLeafArea.pas" line="52">
       </procedure>
-      <procedure name="InitializeLeafAreaOfFirstLeafAtEmergence" visibility="private" file="UHumeWheatLeafArea.pas" line="160">
+      <procedure name="InitializeLeafAreaOfFirstLeafAtEmergence" visibility="private" file="UHumeWheatLeafArea.pas" line="53">
       </procedure>
-      <procedure name="SumUpSingleLeafAreas" visibility="private" file="UHumeWheatLeafArea.pas" line="161">
+      <procedure name="SumUpSingleLeafAreas" visibility="private" file="UHumeWheatLeafArea.pas" line="54">
       </procedure>
-      <procedure name="CalcCERESAgeDependenLeafSenescence" visibility="private" file="UHumeWheatLeafArea.pas" line="162">
+      <procedure name="CalcCERESAgeDependenLeafSenescence" visibility="private" file="UHumeWheatLeafArea.pas" line="55">
         <parameters>
           <parameter name="PLALR_a" type="Double" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcNdependentLeafSenescence" visibility="private" file="UHumeWheatLeafArea.pas" line="163">
+      <procedure name="CalcNdependentLeafSenescence" visibility="private" file="UHumeWheatLeafArea.pas" line="56">
         <parameters>
           <parameter name="PLALR_n" type="Double" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcLightDependendLeafSenescence" visibility="private" file="UHumeWheatLeafArea.pas" line="164">
+      <procedure name="CalcLightDependendLeafSenescence" visibility="private" file="UHumeWheatLeafArea.pas" line="57">
         <parameters>
           <parameter name="PLALR_l" type="Double" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcDroughtDependentLeafSenescence" visibility="private" file="UHumeWheatLeafArea.pas" line="165">
+      <procedure name="CalcDroughtDependentLeafSenescence" visibility="private" file="UHumeWheatLeafArea.pas" line="58">
         <parameters>
           <parameter name="PLALR_d" type="Double" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="Calc_rc" visibility="private" file="UHumeWheatLeafArea.pas" line="166">
+      <procedure name="Calc_rc" visibility="private" file="UHumeWheatLeafArea.pas" line="59">
         <parameters>
           <parameter name="exLAI" type="Double" />
           <parameter name="ro" type="Extended" paramflags="var" />
@@ -1390,7 +1284,7 @@
           <parameter name="rc" type="Extended" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="Calc_pETP" visibility="private" file="UHumeWheatLeafArea.pas" line="167">
+      <procedure name="Calc_pETP" visibility="private" file="UHumeWheatLeafArea.pas" line="60">
         <parameters>
           <parameter name="ro" type="Extended" />
           <parameter name="rc" type="Extended" />
@@ -1402,7 +1296,7 @@
           <parameter name="gamma_" type="Double" />
         </parameters>
       </procedure>
-      <procedure name="CalcInterception" visibility="private" file="UHumeWheatLeafArea.pas" line="168">
+      <procedure name="CalcInterception" visibility="private" file="UHumeWheatLeafArea.pas" line="61">
         <parameters>
           <parameter name="int_stor_" type="Extended" />
           <parameter name="exLAI" type="Double" />
@@ -1410,12 +1304,12 @@
           <parameter name="interception_" type="Extended" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcEvenTransIntRatio" visibility="private" file="UHumeWheatLeafArea.pas" line="169">
+      <procedure name="CalcEvenTransIntRatio" visibility="private" file="UHumeWheatLeafArea.pas" line="62">
       </procedure>
-      <procedure name="CalcRadiationAverage" visibility="private" file="UHumeWheatLeafArea.pas" line="170">
+      <procedure name="CalcRadiationAverage" visibility="private" file="UHumeWheatLeafArea.pas" line="63">
       </procedure>
-      <field name="fDroughtImpact" type="TDroughtImpact" visibility="protected" size="1" offset="747" file="UHumeWheatLeafArea.pas" line="173" />
-      <function name="s_LAI" visibility="protected" file="UHumeWheatLeafArea.pas" line="175">
+      <field name="fDroughtImpact" type="TDroughtImpact" visibility="protected" size="1" offset="747" file="UHumeWheatLeafArea.pas" line="66" />
+      <function name="s_LAI" visibility="protected" file="UHumeWheatLeafArea.pas" line="68">
         <parameters>
           <parameter name="Temp_" type="Double" />
           <parameter name="Sat_def_" type="Double" />
@@ -1428,7 +1322,7 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="calcPotSLA" visibility="protected" file="UHumeWheatLeafArea.pas" line="177">
+      <function name="calcPotSLA" visibility="protected" file="UHumeWheatLeafArea.pas" line="70">
         <devnotes>
            <summary>
            Calculates the potential specific leaf area (SLA) based on the given parameters.
@@ -1447,465 +1341,465 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="calcGAI" visibility="protected" file="UHumeWheatLeafArea.pas" line="178">
+      <function name="calcGAI" visibility="protected" file="UHumeWheatLeafArea.pas" line="71">
         <parameters>
           <parameter name="EC" type="Double" />
           <parameter name="LAI" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <procedure name="setleaf_arr" visibility="protected" file="UHumeWheatLeafArea.pas" line="179">
+      <procedure name="setleaf_arr" visibility="protected" file="UHumeWheatLeafArea.pas" line="72">
         <parameters>
           <parameter name="PLALR_" type="Double" />
         </parameters>
       </procedure>
-      <procedure name="calcSenescence" visibility="protected" file="UHumeWheatLeafArea.pas" line="180">
+      <procedure name="calcSenescence" visibility="protected" file="UHumeWheatLeafArea.pas" line="73">
       </procedure>
-      <field name="senratesLA" visibility="public" size="200" offset="752" file="UHumeWheatLeafArea.pas" line="185">
+      <field name="senratesLA" visibility="public" size="200" offset="752" file="UHumeWheatLeafArea.pas" line="78">
         <devnotes>
            senescence rates leaf area of individual leaves
         </devnotes>
-        <array name="senratesLA" visibility="public" low="1" high="25" file="UHumeWheatLeafArea.pas" line="185">
+        <array name="senratesLA" visibility="public" low="1" high="25" file="UHumeWheatLeafArea.pas" line="78">
           <element type="Double" />
         </array>
       </field>
-      <field name="senratesDM" visibility="public" size="200" offset="952" file="UHumeWheatLeafArea.pas" line="188">
+      <field name="senratesDM" visibility="public" size="200" offset="952" file="UHumeWheatLeafArea.pas" line="81">
         <devnotes>
            senescence rates dry matter of individual leaves
         </devnotes>
-        <array name="senratesDM" visibility="public" low="1" high="25" file="UHumeWheatLeafArea.pas" line="188">
+        <array name="senratesDM" visibility="public" low="1" high="25" file="UHumeWheatLeafArea.pas" line="81">
           <element type="Double" />
         </array>
       </field>
-      <field name="LAImax" type="TVar" visibility="public" size="4" offset="1152" file="UHumeWheatLeafArea.pas" line="191">
+      <field name="LAImax" type="TVar" visibility="public" size="4" offset="1152" file="UHumeWheatLeafArea.pas" line="84">
         <devnotes>
            maximum LAI simulated
         </devnotes>
       </field>
-      <field name="GPLA" type="TVar" visibility="public" size="4" offset="1156" file="UHumeWheatLeafArea.pas" line="193">
+      <field name="GPLA" type="TVar" visibility="public" size="4" offset="1156" file="UHumeWheatLeafArea.pas" line="86">
         <devnotes>
            GPLA is the plant green leaf area (PLA - SENLA) [cm2/plant]
         </devnotes>
       </field>
-      <field name="LN_" type="TVar" visibility="public" size="4" offset="1160" file="UHumeWheatLeafArea.pas" line="195">
+      <field name="LN_" type="TVar" visibility="public" size="4" offset="1160" file="UHumeWheatLeafArea.pas" line="88">
         <devnotes>
            Leaf number of the primary tiller [n]
         </devnotes>
       </field>
-      <field name="PLAG" type="TVar" visibility="public" size="4" offset="1164" file="UHumeWheatLeafArea.pas" line="197">
+      <field name="PLAG" type="TVar" visibility="public" size="4" offset="1164" file="UHumeWheatLeafArea.pas" line="90">
         <devnotes>
            The rate of expansion of leaf area on one plant [cm2/day]
         </devnotes>
       </field>
-      <field name="PLAGMS" type="TVar" visibility="public" size="4" offset="1168" file="UHumeWheatLeafArea.pas" line="199">
+      <field name="PLAGMS" type="TVar" visibility="public" size="4" offset="1168" file="UHumeWheatLeafArea.pas" line="92">
         <devnotes>
            plant leaf area growth rate on the main stem (PLAGMS)
         </devnotes>
       </field>
-      <field name="PLALR" type="TVar" visibility="public" size="4" offset="1172" file="UHumeWheatLeafArea.pas" line="201">
+      <field name="PLALR" type="TVar" visibility="public" size="4" offset="1172" file="UHumeWheatLeafArea.pas" line="94">
         <devnotes>
            Plant leaf area loss rate [cm2/(plant*d)]
         </devnotes>
       </field>
-      <field name="PLSCGR" visibility="public" size="100" offset="1176" file="UHumeWheatLeafArea.pas" line="203">
+      <field name="PLSCGR" visibility="public" size="100" offset="1176" file="UHumeWheatLeafArea.pas" line="96">
         <devnotes>
             Leaf area growth rate of single leaves
         </devnotes>
-        <array name="PLSCGR" visibility="public" low="1" high="25" file="UHumeWheatLeafArea.pas" line="203">
+        <array name="PLSCGR" visibility="public" low="1" high="25" file="UHumeWheatLeafArea.pas" line="96">
           <element type="TVar" />
         </array>
       </field>
-      <field name="V1" type="TVar" visibility="public" size="4" offset="1276" file="UHumeWheatLeafArea.pas" line="206">
+      <field name="V1" type="TVar" visibility="public" size="4" offset="1276" file="UHumeWheatLeafArea.pas" line="99">
         <devnotes>
            source limited leaf growth rate
         </devnotes>
       </field>
-      <field name="V2" type="TVar" visibility="public" size="4" offset="1280" file="UHumeWheatLeafArea.pas" line="209">
+      <field name="V2" type="TVar" visibility="public" size="4" offset="1280" file="UHumeWheatLeafArea.pas" line="102">
         <devnotes>
            sink limited leaf growth rate
         </devnotes>
       </field>
-      <field name="GAI" type="TVar" visibility="public" size="4" offset="1284" file="UHumeWheatLeafArea.pas" line="212">
+      <field name="GAI" type="TVar" visibility="public" size="4" offset="1284" file="UHumeWheatLeafArea.pas" line="105">
         <devnotes>
            green area index
         </devnotes>
       </field>
-      <field name="potSLA" type="TVar" visibility="public" size="4" offset="1288" file="UHumeWheatLeafArea.pas" line="215">
+      <field name="potSLA" type="TVar" visibility="public" size="4" offset="1288" file="UHumeWheatLeafArea.pas" line="108">
         <devnotes>
            average specific leaf area of canopy [square cm/g]
         </devnotes>
       </field>
-      <field name="avSLA" type="TVar" visibility="public" size="4" offset="1292" file="UHumeWheatLeafArea.pas" line="218">
+      <field name="avSLA" type="TVar" visibility="public" size="4" offset="1292" file="UHumeWheatLeafArea.pas" line="111">
         <devnotes>
            average specific leaf area of canopy [square cm/g]
         </devnotes>
       </field>
-      <field name="avIcrop" type="TVar" visibility="public" size="4" offset="1296" file="UHumeWheatLeafArea.pas" line="221">
+      <field name="avIcrop" type="TVar" visibility="public" size="4" offset="1296" file="UHumeWheatLeafArea.pas" line="114">
         <devnotes>
            ten day average irradiation (I) 
         </devnotes>
       </field>
-      <field name="PLALR_a" type="TVar" visibility="public" size="4" offset="1300" file="UHumeWheatLeafArea.pas" line="224">
+      <field name="PLALR_a" type="TVar" visibility="public" size="4" offset="1300" file="UHumeWheatLeafArea.pas" line="117">
         <devnotes>
            age induced pot. leaf senescence rate
         </devnotes>
       </field>
-      <field name="PLALR_d" type="TVar" visibility="public" size="4" offset="1304" file="UHumeWheatLeafArea.pas" line="226">
+      <field name="PLALR_d" type="TVar" visibility="public" size="4" offset="1304" file="UHumeWheatLeafArea.pas" line="119">
         <devnotes>
            drought induced pot. leaf senescence rate
         </devnotes>
       </field>
-      <field name="PLALR_n" type="TVar" visibility="public" size="4" offset="1308" file="UHumeWheatLeafArea.pas" line="228">
+      <field name="PLALR_n" type="TVar" visibility="public" size="4" offset="1308" file="UHumeWheatLeafArea.pas" line="121">
         <devnotes>
            pot. leaf senescence rate induced by N limitation (during grain filling)
         </devnotes>
       </field>
-      <field name="PLALR_l" type="TVar" visibility="public" size="4" offset="1312" file="UHumeWheatLeafArea.pas" line="230">
+      <field name="PLALR_l" type="TVar" visibility="public" size="4" offset="1312" file="UHumeWheatLeafArea.pas" line="123">
         <devnotes>
            low radiation induced leaf senescence
         </devnotes>
       </field>
-      <field name="LAI" type="TState" visibility="public" size="4" offset="1316" file="UHumeWheatLeafArea.pas" line="233">
+      <field name="LAI" type="TState" visibility="public" size="4" offset="1316" file="UHumeWheatLeafArea.pas" line="126">
         <devnotes>
            Leaf area index [m2/m2]
         </devnotes>
       </field>
-      <field name="PLA" type="TState" visibility="public" size="4" offset="1320" file="UHumeWheatLeafArea.pas" line="235">
+      <field name="PLA" type="TState" visibility="public" size="4" offset="1320" file="UHumeWheatLeafArea.pas" line="128">
         <devnotes>
            Plant leaf area  [cm2/plant]
         </devnotes>
       </field>
-      <field name="PLSC" visibility="public" size="100" offset="1324" file="UHumeWheatLeafArea.pas" line="237">
+      <field name="PLSC" visibility="public" size="100" offset="1324" file="UHumeWheatLeafArea.pas" line="130">
         <devnotes>
             Leaf area of single leaves
         </devnotes>
-        <array name="PLSC" visibility="public" low="1" high="25" file="UHumeWheatLeafArea.pas" line="237">
+        <array name="PLSC" visibility="public" low="1" high="25" file="UHumeWheatLeafArea.pas" line="130">
           <element type="TState" />
         </array>
       </field>
-      <field name="SENLA" type="TState" visibility="public" size="4" offset="1424" file="UHumeWheatLeafArea.pas" line="241">
+      <field name="SENLA" type="TState" visibility="public" size="4" offset="1424" file="UHumeWheatLeafArea.pas" line="134">
         <devnotes>
             Area of leaf that senesces from a tiller on a given day - [cm2/d]
         </devnotes>
       </field>
-      <field name="CUMPH" type="TState" visibility="public" size="4" offset="1428" file="UHumeWheatLeafArea.pas" line="243">
+      <field name="CUMPH" type="TState" visibility="public" size="4" offset="1428" file="UHumeWheatLeafArea.pas" line="136">
         <devnotes>
            cumulative phyllochrons since emergence [-]
         </devnotes>
       </field>
-      <field name="SUMDTT5" type="TState" visibility="public" size="4" offset="1432" file="UHumeWheatLeafArea.pas" line="245">
+      <field name="SUMDTT5" type="TState" visibility="public" size="4" offset="1432" file="UHumeWheatLeafArea.pas" line="138">
         <devnotes>
            cumulative degree days during istage 5
         </devnotes>
       </field>
-      <field name="maxPLALR" type="TPar" visibility="public" size="4" offset="1436" file="UHumeWheatLeafArea.pas" line="249">
+      <field name="maxPLALR" type="TPar" visibility="public" size="4" offset="1436" file="UHumeWheatLeafArea.pas" line="142">
         <devnotes>
            maximum senescence rate  [cm2/(plant*d)]
         </devnotes>
       </field>
-      <field name="aSLA" type="TPar" visibility="public" size="4" offset="1440" file="UHumeWheatLeafArea.pas" line="251">
+      <field name="aSLA" type="TPar" visibility="public" size="4" offset="1440" file="UHumeWheatLeafArea.pas" line="144">
         <devnotes>
            intercept specific leaf area due to shading [cm2/g]
         </devnotes>
       </field>
-      <field name="bSLA" type="TPar" visibility="public" size="4" offset="1444" file="UHumeWheatLeafArea.pas" line="253">
+      <field name="bSLA" type="TPar" visibility="public" size="4" offset="1444" file="UHumeWheatLeafArea.pas" line="146">
         <devnotes>
            slope specific leaf area due to shading [cm2/(g*LAI)]
         </devnotes>
       </field>
-      <field name="maxSLA" type="TPar" visibility="public" size="4" offset="1448" file="UHumeWheatLeafArea.pas" line="255">
+      <field name="maxSLA" type="TPar" visibility="public" size="4" offset="1448" file="UHumeWheatLeafArea.pas" line="148">
         <devnotes>
            initial and maximum SLA [cm2/g]
         </devnotes>
       </field>
-      <field name="PSENLeaf1" type="TPar" visibility="public" size="4" offset="1452" file="UHumeWheatLeafArea.pas" line="257">
+      <field name="PSENLeaf1" type="TPar" visibility="public" size="4" offset="1452" file="UHumeWheatLeafArea.pas" line="150">
         <devnotes>
            Parameter for leaf senescence between ISTAGE 2 and 4
         </devnotes>
       </field>
-      <field name="PSENLeaf2" type="TPar" visibility="public" size="4" offset="1456" file="UHumeWheatLeafArea.pas" line="259">
+      <field name="PSENLeaf2" type="TPar" visibility="public" size="4" offset="1456" file="UHumeWheatLeafArea.pas" line="152">
         <devnotes>
            Parameter for leaf senescence
         </devnotes>
       </field>
-      <field name="fGAI" type="TPar" visibility="public" size="4" offset="1460" file="UHumeWheatLeafArea.pas" line="260" />
-      <field name="SLN" type="TExternV" visibility="public" size="4" offset="1464" file="UHumeWheatLeafArea.pas" line="263" />
-      <field name="NLeaf_m2" type="TExternV" visibility="public" size="4" offset="1468" file="UHumeWheatLeafArea.pas" line="265">
+      <field name="fGAI" type="TPar" visibility="public" size="4" offset="1460" file="UHumeWheatLeafArea.pas" line="153" />
+      <field name="SLN" type="TExternV" visibility="public" size="4" offset="1464" file="UHumeWheatLeafArea.pas" line="156" />
+      <field name="NLeaf_m2" type="TExternV" visibility="public" size="4" offset="1468" file="UHumeWheatLeafArea.pas" line="158">
         <devnotes>
            N content of leaves per m2
         </devnotes>
       </field>
-      <field name="GROLF" type="TExternV" visibility="public" size="4" offset="1472" file="UHumeWheatLeafArea.pas" line="267">
+      <field name="GROLF" type="TExternV" visibility="public" size="4" offset="1472" file="UHumeWheatLeafArea.pas" line="160">
         <devnotes>
             growth rate of leaves (g/pl/d)
         </devnotes>
       </field>
-      <field name="ISTAGE" type="TExternV" visibility="public" size="4" offset="1476" file="UHumeWheatLeafArea.pas" line="271">
+      <field name="ISTAGE" type="TExternV" visibility="public" size="4" offset="1476" file="UHumeWheatLeafArea.pas" line="164">
         <devnotes>
             integer growth stage according to ceres
         </devnotes>
       </field>
-      <field name="P5" type="TExternV" visibility="public" size="4" offset="1480" file="UHumeWheatLeafArea.pas" line="273">
+      <field name="P5" type="TExternV" visibility="public" size="4" offset="1480" file="UHumeWheatLeafArea.pas" line="166">
         <devnotes>
            Parameter or length of grain filling period
         </devnotes>
       </field>
-      <field name="plants" type="TExternV" visibility="public" size="4" offset="1484" file="UHumeWheatLeafArea.pas" line="275">
+      <field name="plants" type="TExternV" visibility="public" size="4" offset="1484" file="UHumeWheatLeafArea.pas" line="168">
         <devnotes>
            number of plants (1/m2)
         </devnotes>
       </field>
-      <field name="TMPM" type="TExternV" visibility="public" size="4" offset="1488" file="UHumeWheatLeafArea.pas" line="281">
+      <field name="TMPM" type="TExternV" visibility="public" size="4" offset="1488" file="UHumeWheatLeafArea.pas" line="174">
         <devnotes>
            mean day temperature
         </devnotes>
       </field>
-      <field name="TMPMN" type="TExternV" visibility="public" size="4" offset="1492" file="UHumeWheatLeafArea.pas" line="283">
+      <field name="TMPMN" type="TExternV" visibility="public" size="4" offset="1492" file="UHumeWheatLeafArea.pas" line="176">
         <devnotes>
            minimum day temperature
         </devnotes>
       </field>
-      <field name="TMPMX" type="TExternV" visibility="public" size="4" offset="1496" file="UHumeWheatLeafArea.pas" line="285">
+      <field name="TMPMX" type="TExternV" visibility="public" size="4" offset="1496" file="UHumeWheatLeafArea.pas" line="178">
         <devnotes>
            maximum day temperature
         </devnotes>
       </field>
-      <field name="EC" type="TExternV" visibility="public" size="4" offset="1500" file="UHumeWheatLeafArea.pas" line="290">
+      <field name="EC" type="TExternV" visibility="public" size="4" offset="1500" file="UHumeWheatLeafArea.pas" line="183">
         <devnotes>
            ec stage of crop
         </devnotes>
       </field>
-      <field name="SENL" type="TExternV" visibility="public" size="4" offset="1504" file="UHumeWheatLeafArea.pas" line="292">
+      <field name="SENL" type="TExternV" visibility="public" size="4" offset="1504" file="UHumeWheatLeafArea.pas" line="185">
         <devnotes>
            Senescence rate of leaf dry matter (total) (g/pl/d)
         </devnotes>
       </field>
-      <field name="Phint" type="TExternV" visibility="public" size="4" offset="1508" file="UHumeWheatLeafArea.pas" line="294">
+      <field name="Phint" type="TExternV" visibility="public" size="4" offset="1508" file="UHumeWheatLeafArea.pas" line="187">
         <devnotes>
            Phyllochronintervall [�d]
         </devnotes>
       </field>
-      <field name="TSumInc" type="TExternV" visibility="public" size="4" offset="1512" file="UHumeWheatLeafArea.pas" line="296">
+      <field name="TSumInc" type="TExternV" visibility="public" size="4" offset="1512" file="UHumeWheatLeafArea.pas" line="189">
         <devnotes>
           Tagestemperatur &gt;=0 zur Basistemperatur
         </devnotes>
       </field>
-      <field name="PAR" type="TExternV" visibility="public" size="4" offset="1516" file="UHumeWheatLeafArea.pas" line="297" />
-      <field name="kPAR" type="TExternV" visibility="public" size="4" offset="1520" file="UHumeWheatLeafArea.pas" line="299">
+      <field name="PAR" type="TExternV" visibility="public" size="4" offset="1516" file="UHumeWheatLeafArea.pas" line="190" />
+      <field name="kPAR" type="TExternV" visibility="public" size="4" offset="1520" file="UHumeWheatLeafArea.pas" line="192">
         <devnotes>
            k for PAR
         </devnotes>
       </field>
-      <field name="Icrop" visibility="public" size="80" offset="1528" file="UHumeWheatLeafArea.pas" line="301">
+      <field name="Icrop" visibility="public" size="80" offset="1528" file="UHumeWheatLeafArea.pas" line="194">
         <devnotes>
            array of average radiation for last 10 days [MJ/m²/d]
         </devnotes>
-        <array name="Icrop" visibility="public" low="1" high="10" file="UHumeWheatLeafArea.pas" line="301">
+        <array name="Icrop" visibility="public" low="1" high="10" file="UHumeWheatLeafArea.pas" line="194">
           <element type="Double" />
         </array>
       </field>
-      <field name="OptDroughtimpact" type="TOption" visibility="public" size="4" offset="1608" file="UHumeWheatLeafArea.pas" line="303" />
-      <field name="OptSenescence" type="TOption" visibility="public" size="4" offset="1612" file="UHumeWheatLeafArea.pas" line="304" />
-      <field name="UseAgeDependentLeafSenescence" type="TOption" visibility="public" size="4" offset="1616" file="UHumeWheatLeafArea.pas" line="305" />
-      <field name="UseLightDependentLeafSenescence" type="TOption" visibility="public" size="4" offset="1620" file="UHumeWheatLeafArea.pas" line="306" />
-      <field name="UseDroughtDependentLeafSenescence" type="TOption" visibility="public" size="4" offset="1624" file="UHumeWheatLeafArea.pas" line="307" />
-      <field name="Icrit" type="TPar" visibility="public" size="4" offset="1628" file="UHumeWheatLeafArea.pas" line="310">
+      <field name="OptDroughtimpact" type="TOption" visibility="public" size="4" offset="1608" file="UHumeWheatLeafArea.pas" line="196" />
+      <field name="OptSenescence" type="TOption" visibility="public" size="4" offset="1612" file="UHumeWheatLeafArea.pas" line="197" />
+      <field name="UseAgeDependentLeafSenescence" type="TOption" visibility="public" size="4" offset="1616" file="UHumeWheatLeafArea.pas" line="198" />
+      <field name="UseLightDependentLeafSenescence" type="TOption" visibility="public" size="4" offset="1620" file="UHumeWheatLeafArea.pas" line="199" />
+      <field name="UseDroughtDependentLeafSenescence" type="TOption" visibility="public" size="4" offset="1624" file="UHumeWheatLeafArea.pas" line="200" />
+      <field name="Icrit" type="TPar" visibility="public" size="4" offset="1628" file="UHumeWheatLeafArea.pas" line="203">
         <devnotes>
            critical radiation value for leaf area index
         </devnotes>
       </field>
-      <field name="f1_SLA" type="TPar" visibility="public" size="4" offset="1632" file="UHumeWheatLeafArea.pas" line="312">
+      <field name="f1_SLA" type="TPar" visibility="public" size="4" offset="1632" file="UHumeWheatLeafArea.pas" line="205">
         <devnotes>
            parameter for SLA calculation
         </devnotes>
       </field>
-      <field name="f2_SLA" type="TPar" visibility="public" size="4" offset="1636" file="UHumeWheatLeafArea.pas" line="314">
+      <field name="f2_SLA" type="TPar" visibility="public" size="4" offset="1636" file="UHumeWheatLeafArea.pas" line="207">
         <devnotes>
            parameter for SLA calculation
         </devnotes>
       </field>
-      <field name="kTransPAR" type="TPar" visibility="public" size="4" offset="1640" file="UHumeWheatLeafArea.pas" line="316">
+      <field name="kTransPAR" type="TPar" visibility="public" size="4" offset="1640" file="UHumeWheatLeafArea.pas" line="209">
         <devnotes>
            PAR transmission coefficient
         </devnotes>
       </field>
-      <field name="critSLNtot" type="TPar" visibility="public" size="4" offset="1644" file="UHumeWheatLeafArea.pas" line="321">
+      <field name="critSLNtot" type="TPar" visibility="public" size="4" offset="1644" file="UHumeWheatLeafArea.pas" line="214">
         <devnotes>
            Minium observed 95er
         </devnotes>
       </field>
-      <field name="TRcrit" type="TPar" visibility="public" size="4" offset="1648" file="UHumeWheatLeafArea.pas" line="324">
+      <field name="TRcrit" type="TPar" visibility="public" size="4" offset="1648" file="UHumeWheatLeafArea.pas" line="217">
         <devnotes>
            transpiration ratio critical
         </devnotes>
       </field>
-      <field name="relLayerM_Int" visibility="public" size="12" offset="1652" file="UHumeWheatLeafArea.pas" line="325">
-        <array name="relLayerM_Int" visibility="public" low="1" high="3" file="UHumeWheatLeafArea.pas" line="325">
+      <field name="relLayerM_Int" visibility="public" size="12" offset="1652" file="UHumeWheatLeafArea.pas" line="218">
+        <array name="relLayerM_Int" visibility="public" low="1" high="3" file="UHumeWheatLeafArea.pas" line="218">
           <element type="TPar" />
         </array>
       </field>
-      <field name="relLayerA_Int" visibility="public" size="12" offset="1664" file="UHumeWheatLeafArea.pas" line="326">
-        <array name="relLayerA_Int" visibility="public" low="1" high="3" file="UHumeWheatLeafArea.pas" line="326">
+      <field name="relLayerA_Int" visibility="public" size="12" offset="1664" file="UHumeWheatLeafArea.pas" line="219">
+        <array name="relLayerA_Int" visibility="public" low="1" high="3" file="UHumeWheatLeafArea.pas" line="219">
           <element type="TPar" />
         </array>
       </field>
-      <field name="relLayerM_S" visibility="public" size="12" offset="1676" file="UHumeWheatLeafArea.pas" line="327">
-        <array name="relLayerM_S" visibility="public" low="1" high="3" file="UHumeWheatLeafArea.pas" line="327">
+      <field name="relLayerM_S" visibility="public" size="12" offset="1676" file="UHumeWheatLeafArea.pas" line="220">
+        <array name="relLayerM_S" visibility="public" low="1" high="3" file="UHumeWheatLeafArea.pas" line="220">
           <element type="TPar" />
         </array>
       </field>
-      <field name="relLayerA_S" visibility="public" size="12" offset="1688" file="UHumeWheatLeafArea.pas" line="328">
-        <array name="relLayerA_S" visibility="public" low="1" high="3" file="UHumeWheatLeafArea.pas" line="328">
+      <field name="relLayerA_S" visibility="public" size="12" offset="1688" file="UHumeWheatLeafArea.pas" line="221">
+        <array name="relLayerA_S" visibility="public" low="1" high="3" file="UHumeWheatLeafArea.pas" line="221">
           <element type="TPar" />
         </array>
       </field>
-      <field name="sumLAL" type="TVar" visibility="public" size="4" offset="1700" file="UHumeWheatLeafArea.pas" line="330" />
-      <field name="sumMLAL" type="TVar" visibility="public" size="4" offset="1704" file="UHumeWheatLeafArea.pas" line="331" />
-      <field name="fdsen" type="TVar" visibility="public" size="4" offset="1708" file="UHumeWheatLeafArea.pas" line="332" />
-      <field name="sumPLsc" type="TVar" visibility="public" size="4" offset="1712" file="UHumeWheatLeafArea.pas" line="335">
+      <field name="sumLAL" type="TVar" visibility="public" size="4" offset="1700" file="UHumeWheatLeafArea.pas" line="223" />
+      <field name="sumMLAL" type="TVar" visibility="public" size="4" offset="1704" file="UHumeWheatLeafArea.pas" line="224" />
+      <field name="fdsen" type="TVar" visibility="public" size="4" offset="1708" file="UHumeWheatLeafArea.pas" line="225" />
+      <field name="sumPLsc" type="TVar" visibility="public" size="4" offset="1712" file="UHumeWheatLeafArea.pas" line="228">
         <devnotes>
            sum of single leaf areas
         </devnotes>
       </field>
-      <field name="MLAL" visibility="public" size="16" offset="1716" file="UHumeWheatLeafArea.pas" line="337">
+      <field name="MLAL" visibility="public" size="16" offset="1716" file="UHumeWheatLeafArea.pas" line="230">
         <devnotes>
            green leaf mass of layer
         </devnotes>
-        <array name="MLAL" visibility="public" low="1" high="4" file="UHumeWheatLeafArea.pas" line="337">
+        <array name="MLAL" visibility="public" low="1" high="4" file="UHumeWheatLeafArea.pas" line="230">
           <element type="TVar" />
         </array>
       </field>
-      <field name="LAL" visibility="public" size="16" offset="1732" file="UHumeWheatLeafArea.pas" line="339">
+      <field name="LAL" visibility="public" size="16" offset="1732" file="UHumeWheatLeafArea.pas" line="232">
         <devnotes>
             Leaf area of a lamina i
         </devnotes>
-        <array name="LAL" visibility="public" low="1" high="4" file="UHumeWheatLeafArea.pas" line="339">
+        <array name="LAL" visibility="public" low="1" high="4" file="UHumeWheatLeafArea.pas" line="232">
           <element type="TVar" />
         </array>
       </field>
-      <field name="DSsen" type="TVar" visibility="public" size="4" offset="1748" file="UHumeWheatLeafArea.pas" line="340" />
-      <field name="LLsen" type="TVar" visibility="public" size="4" offset="1752" file="UHumeWheatLeafArea.pas" line="341" />
-      <field name="Nsen" type="TVar" visibility="public" size="4" offset="1756" file="UHumeWheatLeafArea.pas" line="342" />
-      <field name="evenTransIntRatio" type="TVar" visibility="public" size="4" offset="1760" file="UHumeWheatLeafArea.pas" line="345">
+      <field name="DSsen" type="TVar" visibility="public" size="4" offset="1748" file="UHumeWheatLeafArea.pas" line="233" />
+      <field name="LLsen" type="TVar" visibility="public" size="4" offset="1752" file="UHumeWheatLeafArea.pas" line="234" />
+      <field name="Nsen" type="TVar" visibility="public" size="4" offset="1756" file="UHumeWheatLeafArea.pas" line="235" />
+      <field name="evenTransIntRatio" type="TVar" visibility="public" size="4" offset="1760" file="UHumeWheatLeafArea.pas" line="238">
         <devnotes>
            smoothed transpiration interception ratio
         </devnotes>
       </field>
-      <field name="PotTrans" type="TExternV" visibility="public" size="4" offset="1764" file="UHumeWheatLeafArea.pas" line="348">
+      <field name="PotTrans" type="TExternV" visibility="public" size="4" offset="1764" file="UHumeWheatLeafArea.pas" line="241">
         <devnotes>
            potential transpiration [mm/d]
         </devnotes>
       </field>
-      <field name="LFWT_m2" type="TExternV" visibility="public" size="4" offset="1768" file="UHumeWheatLeafArea.pas" line="351">
+      <field name="LFWT_m2" type="TExternV" visibility="public" size="4" offset="1768" file="UHumeWheatLeafArea.pas" line="244">
         <devnotes>
            Leaf dry matter per m2 [g/m2]
         </devnotes>
       </field>
-      <field name="LFWT_pl" type="TExternV" visibility="public" size="4" offset="1772" file="UHumeWheatLeafArea.pas" line="354">
+      <field name="LFWT_pl" type="TExternV" visibility="public" size="4" offset="1772" file="UHumeWheatLeafArea.pas" line="247">
         <devnotes>
            Leaf dry matter per plant [g/plant]
         </devnotes>
       </field>
-      <field name="interception" type="TExternV" visibility="public" size="4" offset="1776" file="UHumeWheatLeafArea.pas" line="357">
+      <field name="interception" type="TExternV" visibility="public" size="4" offset="1776" file="UHumeWheatLeafArea.pas" line="250">
         <devnotes>
            interception rate [mm/d]
         </devnotes>
       </field>
-      <field name="ActTrans" type="TExternV" visibility="public" size="4" offset="1780" file="UHumeWheatLeafArea.pas" line="360">
+      <field name="ActTrans" type="TExternV" visibility="public" size="4" offset="1780" file="UHumeWheatLeafArea.pas" line="253">
         <devnotes>
            Actual transpiration [mm/d]
         </devnotes>
       </field>
-      <field name="GlobRad" type="TExternV" visibility="public" size="4" offset="1784" file="UHumeWheatLeafArea.pas" line="363">
+      <field name="GlobRad" type="TExternV" visibility="public" size="4" offset="1784" file="UHumeWheatLeafArea.pas" line="256">
         <devnotes>
            Global radiation [MJ/m2/d]
         </devnotes>
       </field>
-      <field name="exk_GlobRad" type="TExternV" visibility="public" size="4" offset="1788" file="UHumeWheatLeafArea.pas" line="366">
+      <field name="exk_GlobRad" type="TExternV" visibility="public" size="4" offset="1788" file="UHumeWheatLeafArea.pas" line="259">
         <devnotes>
            extinction coefficient of global radiation [-]
         </devnotes>
       </field>
-      <field name="TransRatio" type="TExternV" visibility="public" size="4" offset="1792" file="UHumeWheatLeafArea.pas" line="369">
+      <field name="TransRatio" type="TExternV" visibility="public" size="4" offset="1792" file="UHumeWheatLeafArea.pas" line="262">
         <devnotes>
            ratio of actual to potential transpiration [-]
         </devnotes>
       </field>
-      <field name="TransIntRatio" type="TExternV" visibility="public" size="4" offset="1796" file="UHumeWheatLeafArea.pas" line="372">
+      <field name="TransIntRatio" type="TExternV" visibility="public" size="4" offset="1796" file="UHumeWheatLeafArea.pas" line="265">
         <devnotes>
            ratio of actual to potential transpiration interception [-]
         </devnotes>
       </field>
-      <field name="NetRain" type="TExternV" visibility="public" size="4" offset="1800" file="UHumeWheatLeafArea.pas" line="375">
+      <field name="NetRain" type="TExternV" visibility="public" size="4" offset="1800" file="UHumeWheatLeafArea.pas" line="268">
         <devnotes>
            net rainfall (rainfall - interception) [-]
         </devnotes>
       </field>
-      <field name="Rad_Int" type="TExternV" visibility="public" size="4" offset="1804" file="UHumeWheatLeafArea.pas" line="378">
+      <field name="Rad_Int" type="TExternV" visibility="public" size="4" offset="1804" file="UHumeWheatLeafArea.pas" line="271">
         <devnotes>
            radiation intercepted by the canopy [W/m2]
         </devnotes>
       </field>
-      <field name="EC_lgend" type="TExternV" visibility="public" size="4" offset="1808" file="UHumeWheatLeafArea.pas" line="381">
+      <field name="EC_lgend" type="TExternV" visibility="public" size="4" offset="1808" file="UHumeWheatLeafArea.pas" line="274">
         <devnotes>
            EC stage at which leaf growth stops
         </devnotes>
       </field>
-      <field name="NcLAL" visibility="public" size="16" offset="1812" file="UHumeWheatLeafArea.pas" line="383">
-        <array name="NcLAL" visibility="public" low="1" high="4" file="UHumeWheatLeafArea.pas" line="383">
+      <field name="NcLAL" visibility="public" size="16" offset="1812" file="UHumeWheatLeafArea.pas" line="276">
+        <array name="NcLAL" visibility="public" low="1" high="4" file="UHumeWheatLeafArea.pas" line="276">
           <element type="TExternV" />
         </array>
       </field>
-      <field name="ra" type="TExternV" visibility="public" size="4" offset="1828" file="UHumeWheatLeafArea.pas" line="386">
+      <field name="ra" type="TExternV" visibility="public" size="4" offset="1828" file="UHumeWheatLeafArea.pas" line="279">
         <devnotes>
            areodynamic resistance [-]
         </devnotes>
       </field>
-      <field name="Sat_def" type="TExternV" visibility="public" size="4" offset="1832" file="UHumeWheatLeafArea.pas" line="389">
+      <field name="Sat_def" type="TExternV" visibility="public" size="4" offset="1832" file="UHumeWheatLeafArea.pas" line="282">
         <devnotes>
            Saturation deficit [-]
         </devnotes>
       </field>
-      <field name="P" type="TExternV" visibility="public" size="4" offset="1836" file="UHumeWheatLeafArea.pas" line="392">
+      <field name="P" type="TExternV" visibility="public" size="4" offset="1836" file="UHumeWheatLeafArea.pas" line="285">
         <devnotes>
            air pressure [-]
         </devnotes>
       </field>
-      <field name="sic" type="TExternV" visibility="public" size="4" offset="1840" file="UHumeWheatLeafArea.pas" line="395">
+      <field name="sic" type="TExternV" visibility="public" size="4" offset="1840" file="UHumeWheatLeafArea.pas" line="288">
         <devnotes>
            specific interception capacity [mm/m2]
         </devnotes>
       </field>
-      <field name="int_stor" type="TExternV" visibility="public" size="4" offset="1844" file="UHumeWheatLeafArea.pas" line="398">
+      <field name="int_stor" type="TExternV" visibility="public" size="4" offset="1844" file="UHumeWheatLeafArea.pas" line="291">
         <devnotes>
            interception storage [-]
         </devnotes>
       </field>
-      <field name="rain" type="TExternV" visibility="public" size="4" offset="1848" file="UHumeWheatLeafArea.pas" line="401">
+      <field name="rain" type="TExternV" visibility="public" size="4" offset="1848" file="UHumeWheatLeafArea.pas" line="294">
         <devnotes>
            precipitation [mm/d]
         </devnotes>
       </field>
-      <field name="rc0" type="TExternV" visibility="public" size="4" offset="1852" file="UHumeWheatLeafArea.pas" line="404">
+      <field name="rc0" type="TExternV" visibility="public" size="4" offset="1852" file="UHumeWheatLeafArea.pas" line="297">
         <devnotes>
            canopy resistance under well watered conditions [-]
         </devnotes>
       </field>
-      <field name="gamma" type="Double" visibility="public" size="8" offset="1856" file="UHumeWheatLeafArea.pas" line="406" />
-      <field name="delta" type="Double" visibility="public" size="8" offset="1864" file="UHumeWheatLeafArea.pas" line="407" />
-      <field name="LAIs" type="Double" visibility="public" size="8" offset="1872" file="UHumeWheatLeafArea.pas" line="408" />
-      <field name="PARi" visibility="public" size="16" offset="1880" file="UHumeWheatLeafArea.pas" line="409">
-        <array name="PARi" visibility="public" low="1" high="4" file="UHumeWheatLeafArea.pas" line="409">
+      <field name="gamma" type="Double" visibility="public" size="8" offset="1856" file="UHumeWheatLeafArea.pas" line="299" />
+      <field name="delta" type="Double" visibility="public" size="8" offset="1864" file="UHumeWheatLeafArea.pas" line="300" />
+      <field name="LAIs" type="Double" visibility="public" size="8" offset="1872" file="UHumeWheatLeafArea.pas" line="301" />
+      <field name="PARi" visibility="public" size="16" offset="1880" file="UHumeWheatLeafArea.pas" line="302">
+        <array name="PARi" visibility="public" low="1" high="4" file="UHumeWheatLeafArea.pas" line="302">
           <element type="TState" />
         </array>
       </field>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="UHumeWheatLeafArea.pas" line="412">
+      <procedure name="CreateAll" visibility="public" procflags="override" file="UHumeWheatLeafArea.pas" line="305">
         <devnotes>
             amount of PAR incident on the surface of lamina i
            method for creating all variables, states and parameters
         </devnotes>
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="UHumeWheatLeafArea.pas" line="415">
+      <procedure name="Init" visibility="public" procflags="override" file="UHumeWheatLeafArea.pas" line="308">
         <devnotes>
            method for initializing the module
         </devnotes>
@@ -1913,54 +1807,54 @@
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="UHumeWheatLeafArea.pas" line="418">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="UHumeWheatLeafArea.pas" line="311">
         <devnotes>
            method for calculating all rates
         </devnotes>
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="override" file="UHumeWheatLeafArea.pas" line="421">
+      <procedure name="Integrate" visibility="public" procflags="override" file="UHumeWheatLeafArea.pas" line="314">
         <devnotes>
            method for integrating all state variables
         </devnotes>
       </procedure>
-      <property name="Var_GPLA" visibility="published" read="GPLA" write="GPLA" type="TVar" file="UHumeWheatLeafArea.pas" line="426" />
-      <property name="Var_LN_" visibility="published" read="LN_" write="LN_" type="TVar" file="UHumeWheatLeafArea.pas" line="427" />
-      <property name="Var_PLAG" visibility="published" read="PLAG" write="PLAG" type="TVar" file="UHumeWheatLeafArea.pas" line="428" />
-      <property name="Var_PLAGMS" visibility="published" read="PLAGMS" write="PLAGMS" type="TVar" file="UHumeWheatLeafArea.pas" line="429" />
-      <property name="Var_PLALR" visibility="published" read="PLALR" write="PLALR" type="TVar" file="UHumeWheatLeafArea.pas" line="430" />
-      <property name="Var_V1" visibility="published" read="V1" write="V1" type="TVar" file="UHumeWheatLeafArea.pas" line="431" />
-      <property name="Var_V2" visibility="published" read="V2" write="V2" type="TVar" file="UHumeWheatLeafArea.pas" line="432" />
-      <property name="St_LAI" visibility="published" read="LAI" write="LAI" type="TState" file="UHumeWheatLeafArea.pas" line="434" />
-      <property name="St_PLA" visibility="published" read="PLA" write="PLA" type="TState" file="UHumeWheatLeafArea.pas" line="435" />
-      <property name="St_SENLA" visibility="published" read="SENLA" write="SENLA" type="TState" file="UHumeWheatLeafArea.pas" line="436" />
-      <property name="St_CUMPH" visibility="published" read="CUMPH" write="CUMPH" type="TState" file="UHumeWheatLeafArea.pas" line="437" />
-      <property name="Ex_GROLF" visibility="published" read="GROLF" write="GROLF" type="TExternV" file="UHumeWheatLeafArea.pas" line="439" />
-      <property name="Ex_ISTAGE" visibility="published" read="ISTAGE" write="ISTAGE" type="TExternV" file="UHumeWheatLeafArea.pas" line="441" />
-      <property name="Ex_Phint" visibility="published" read="Phint" write="Phint" type="TExternV" file="UHumeWheatLeafArea.pas" line="442" />
-      <property name="Ex_P5" visibility="published" read="P5" write="P5" type="TExternV" file="UHumeWheatLeafArea.pas" line="443" />
-      <property name="Ex_plants" visibility="published" read="plants" write="plants" type="TExternV" file="UHumeWheatLeafArea.pas" line="444" />
-      <property name="Ex_TMPM" visibility="published" read="TMPM" write="TMPM" type="TExternV" file="UHumeWheatLeafArea.pas" line="447" />
-      <property name="Ex_TMPMN" visibility="published" read="TMPMN" write="TMPMN" type="TExternV" file="UHumeWheatLeafArea.pas" line="448" />
-      <property name="Ex_TMPMX" visibility="published" read="TMPMX" write="TMPMX" type="TExternV" file="UHumeWheatLeafArea.pas" line="449" />
-      <property name="Ex_TSumInc" visibility="published" read="TSumInc" write="TSumInc" type="TExternV" file="UHumeWheatLeafArea.pas" line="450" />
-      <property name="opt_DroughtImpact" visibility="published" read="fDroughtImpact" write="fDroughtImpact" type="TDroughtImpact" file="UHumeWheatLeafArea.pas" line="451" />
-      <property name="Ex_rc0" visibility="published" read="rc0" write="rc0" type="TExternV" file="UHumeWheatLeafArea.pas" line="453" />
-      <property name="Ex_rain" visibility="published" read="rain" write="rain" type="TExternV" file="UHumeWheatLeafArea.pas" line="454" />
-      <property name="Ex_sic" visibility="published" read="sic" write="sic" type="TExternV" file="UHumeWheatLeafArea.pas" line="455" />
-      <property name="Ex_Sint_stor" visibility="published" read="int_stor" write="int_stor" type="TExternV" file="UHumeWheatLeafArea.pas" line="456" />
-      <property name="Ex_P" visibility="published" read="P" write="P" type="TExternV" file="UHumeWheatLeafArea.pas" line="457" />
-      <property name="Ex_Sat_def" visibility="published" read="Sat_def" write="Sat_def" type="TExternV" file="UHumeWheatLeafArea.pas" line="458" />
-      <property name="Ex_ra" visibility="published" read="ra" write="ra" type="TExternV" file="UHumeWheatLeafArea.pas" line="459" />
-      <property name="Ex_Rad_Int" visibility="published" read="Rad_Int" write="Rad_Int" type="TExternV" file="UHumeWheatLeafArea.pas" line="460" />
-      <property name="Ex_NetRain" visibility="published" read="NetRain" write="NetRain" type="TExternV" file="UHumeWheatLeafArea.pas" line="461" />
-      <property name="Ex_TransRatio" visibility="published" read="TransRatio" write="TransRatio" type="TExternV" file="UHumeWheatLeafArea.pas" line="462" />
-      <property name="Ex_TransIntRatio" visibility="published" read="TransIntRatio" write="TransIntRatio" type="TExternV" file="UHumeWheatLeafArea.pas" line="463" />
-      <property name="Ex_exk_GlobRad" visibility="published" read="exk_GlobRad" write="exk_GlobRad" type="TExternV" file="UHumeWheatLeafArea.pas" line="464" />
-      <property name="Ex_ActTrans" visibility="published" read="ActTrans" write="ActTrans" type="TExternV" file="UHumeWheatLeafArea.pas" line="465" />
-      <property name="Ex_interception" visibility="published" read="interception" write="interception" type="TExternV" file="UHumeWheatLeafArea.pas" line="466" />
-      <property name="Ex_PotTrans" visibility="published" read="PotTrans" write="PotTrans" type="TExternV" file="UHumeWheatLeafArea.pas" line="467" />
+      <property name="Var_GPLA" visibility="published" read="GPLA" write="GPLA" type="TVar" file="UHumeWheatLeafArea.pas" line="319" />
+      <property name="Var_LN_" visibility="published" read="LN_" write="LN_" type="TVar" file="UHumeWheatLeafArea.pas" line="320" />
+      <property name="Var_PLAG" visibility="published" read="PLAG" write="PLAG" type="TVar" file="UHumeWheatLeafArea.pas" line="321" />
+      <property name="Var_PLAGMS" visibility="published" read="PLAGMS" write="PLAGMS" type="TVar" file="UHumeWheatLeafArea.pas" line="322" />
+      <property name="Var_PLALR" visibility="published" read="PLALR" write="PLALR" type="TVar" file="UHumeWheatLeafArea.pas" line="323" />
+      <property name="Var_V1" visibility="published" read="V1" write="V1" type="TVar" file="UHumeWheatLeafArea.pas" line="324" />
+      <property name="Var_V2" visibility="published" read="V2" write="V2" type="TVar" file="UHumeWheatLeafArea.pas" line="325" />
+      <property name="St_LAI" visibility="published" read="LAI" write="LAI" type="TState" file="UHumeWheatLeafArea.pas" line="327" />
+      <property name="St_PLA" visibility="published" read="PLA" write="PLA" type="TState" file="UHumeWheatLeafArea.pas" line="328" />
+      <property name="St_SENLA" visibility="published" read="SENLA" write="SENLA" type="TState" file="UHumeWheatLeafArea.pas" line="329" />
+      <property name="St_CUMPH" visibility="published" read="CUMPH" write="CUMPH" type="TState" file="UHumeWheatLeafArea.pas" line="330" />
+      <property name="Ex_GROLF" visibility="published" read="GROLF" write="GROLF" type="TExternV" file="UHumeWheatLeafArea.pas" line="332" />
+      <property name="Ex_ISTAGE" visibility="published" read="ISTAGE" write="ISTAGE" type="TExternV" file="UHumeWheatLeafArea.pas" line="334" />
+      <property name="Ex_Phint" visibility="published" read="Phint" write="Phint" type="TExternV" file="UHumeWheatLeafArea.pas" line="335" />
+      <property name="Ex_P5" visibility="published" read="P5" write="P5" type="TExternV" file="UHumeWheatLeafArea.pas" line="336" />
+      <property name="Ex_plants" visibility="published" read="plants" write="plants" type="TExternV" file="UHumeWheatLeafArea.pas" line="337" />
+      <property name="Ex_TMPM" visibility="published" read="TMPM" write="TMPM" type="TExternV" file="UHumeWheatLeafArea.pas" line="340" />
+      <property name="Ex_TMPMN" visibility="published" read="TMPMN" write="TMPMN" type="TExternV" file="UHumeWheatLeafArea.pas" line="341" />
+      <property name="Ex_TMPMX" visibility="published" read="TMPMX" write="TMPMX" type="TExternV" file="UHumeWheatLeafArea.pas" line="342" />
+      <property name="Ex_TSumInc" visibility="published" read="TSumInc" write="TSumInc" type="TExternV" file="UHumeWheatLeafArea.pas" line="343" />
+      <property name="opt_DroughtImpact" visibility="published" read="fDroughtImpact" write="fDroughtImpact" type="TDroughtImpact" file="UHumeWheatLeafArea.pas" line="344" />
+      <property name="Ex_rc0" visibility="published" read="rc0" write="rc0" type="TExternV" file="UHumeWheatLeafArea.pas" line="346" />
+      <property name="Ex_rain" visibility="published" read="rain" write="rain" type="TExternV" file="UHumeWheatLeafArea.pas" line="347" />
+      <property name="Ex_sic" visibility="published" read="sic" write="sic" type="TExternV" file="UHumeWheatLeafArea.pas" line="348" />
+      <property name="Ex_Sint_stor" visibility="published" read="int_stor" write="int_stor" type="TExternV" file="UHumeWheatLeafArea.pas" line="349" />
+      <property name="Ex_P" visibility="published" read="P" write="P" type="TExternV" file="UHumeWheatLeafArea.pas" line="350" />
+      <property name="Ex_Sat_def" visibility="published" read="Sat_def" write="Sat_def" type="TExternV" file="UHumeWheatLeafArea.pas" line="351" />
+      <property name="Ex_ra" visibility="published" read="ra" write="ra" type="TExternV" file="UHumeWheatLeafArea.pas" line="352" />
+      <property name="Ex_Rad_Int" visibility="published" read="Rad_Int" write="Rad_Int" type="TExternV" file="UHumeWheatLeafArea.pas" line="353" />
+      <property name="Ex_NetRain" visibility="published" read="NetRain" write="NetRain" type="TExternV" file="UHumeWheatLeafArea.pas" line="354" />
+      <property name="Ex_TransRatio" visibility="published" read="TransRatio" write="TransRatio" type="TExternV" file="UHumeWheatLeafArea.pas" line="355" />
+      <property name="Ex_TransIntRatio" visibility="published" read="TransIntRatio" write="TransIntRatio" type="TExternV" file="UHumeWheatLeafArea.pas" line="356" />
+      <property name="Ex_exk_GlobRad" visibility="published" read="exk_GlobRad" write="exk_GlobRad" type="TExternV" file="UHumeWheatLeafArea.pas" line="357" />
+      <property name="Ex_ActTrans" visibility="published" read="ActTrans" write="ActTrans" type="TExternV" file="UHumeWheatLeafArea.pas" line="358" />
+      <property name="Ex_interception" visibility="published" read="interception" write="interception" type="TExternV" file="UHumeWheatLeafArea.pas" line="359" />
+      <property name="Ex_PotTrans" visibility="published" read="PotTrans" write="PotTrans" type="TExternV" file="UHumeWheatLeafArea.pas" line="360" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="UHumeWheatLeafArea.pas" line="1496">
+  <procedure name="Register" visibility="public" file="UHumeWheatLeafArea.pas" line="1389">
   </procedure>
 </namespace>

@@ -2,7 +2,7 @@
 
 unit Development; // Kopfzeile
 
-interface  // bestimmt, was in der Unit von außen zugänglich ist
+interface  // bestimmt, was in der Unit von auï¿½en zugï¿½nglich ist
 
 uses // Benennung von Units (Prozedurbibliotheken), die von der aktuellen Unit
 // verwendet werden
@@ -11,11 +11,11 @@ uses // Benennung von Units (Prozedurbibliotheken), die von der aktuellen Unit
 
   UMod, UState, Math;
 
-type   //Typdekleration des Formularobjektes (enthält alle Komponenten,
-//die auf dem Formular angeordnet sind, sowie die zum Formular gehörenden
+type   //Typdekleration des Formularobjektes (enthï¿½lt alle Komponenten,
+//die auf dem Formular angeordnet sind, sowie die zum Formular gehï¿½renden
 //Prozeduren)
 
-  TDataInitMethod = (EC_Date, Days_to_EC);  // Varianten für Dateninput
+  TDataInitMethod = (EC_Date, Days_to_EC);  // Varianten fï¿½r Dateninput
   TOptTSumInternode = (constant, daylength);
 
   TDevelopment = class(TSubmodel)
@@ -42,14 +42,22 @@ type   //Typdekleration des Formularobjektes (enthält alle Komponenten,
     { Protected-Deklarationen }
   public
     { Public-Deklarationen }
-    devrates1,    // developmet rate during istage 1
-    devrates2,    // developmet rate during istage 2
-    devrates3,    // developmet rate during istage 3
-    devrates4,    // developmet rate during istage 4
-    devrates5,    // developmet rate during istage 5
-    devrates6,    // developmet rate during istage 6
-    devrates9,    // developmet rate during istage 9
-    dvs10,        // xstage times 10, for convenience of plotting
+    /// <summary>developmet rate during istage 1</summary>
+      devrates1,
+      /// <summary>developmet rate during istage 2</summary>
+      devrates2,
+      /// <summary>developmet rate during istage 3</summary>
+      devrates3,
+      /// <summary>developmet rate during istage 4</summary>
+      devrates4,
+      /// <summary>developmet rate during istage 5</summary>
+      devrates5,
+      /// <summary>developmet rate during istage 6</summary>
+      devrates6,
+      /// <summary>developmet rate during istage 9</summary>
+      devrates9,
+      /// <summary>xstage times 10, for convenience of plotting</summary>
+      dvs10,
     istage,
 
     //   Phenologicalstages in integer values
@@ -112,7 +120,7 @@ type   //Typdekleration des Formularobjektes (enthält alle Komponenten,
 
     inL_MS      // initial leaf number on main stem
        : TState;
-    inl_MS_xstage2 : TVar;// Anzahl nicht ausgebildeter Blätter zum Zeitpunkt Xstage 2
+    inl_MS_xstage2 : TVar;// Anzahl nicht ausgebildeter Blï¿½tter zum Zeitpunkt Xstage 2
     
     daylengthp, // photoperiodic daylength
     TMPM,       // mean air temperature
@@ -126,9 +134,9 @@ type   //Typdekleration des Formularobjektes (enthält alle Komponenten,
                 //(degree days) between successive leaf and tiller appearances
     p3,         // End of leaf growth and beginning of ear growth to end of pre-anthesis ear growth
     p4,         // thermal time between Pre-anthesis ear growth to beginning of
-                // grain filling (anthesis occurs during this phase)in°Cd
-    p5,         // thermal time between beginning of grain fill and maturity in°Cd
-    p9,         // thermal timen from germination to seedling emergence in °Cd
+                // grain filling (anthesis occurs during this phase)inï¿½Cd
+    p5,         // thermal time between beginning of grain fill and maturity inï¿½Cd
+    p9,         // thermal timen from germination to seedling emergence in ï¿½Cd
     tBase,      // base temperature
     Internode,  // Multiplikator des Phyllochronintervalls in der Schossenphase
     sowingdate,
@@ -138,7 +146,7 @@ type   //Typdekleration des Formularobjektes (enthält alle Komponenten,
 
 
 
-    TSumInternode, // te´mperature sumd between two internodes
+    TSumInternode, // teï¿½mperature sumd between two internodes
     minLeaf_number,
     MaxVernDays,    // maximum number of vernalisation days which increase developmental rate
     MaxPhotoperiod, // maximum daylength which increase developmental rate
@@ -224,7 +232,7 @@ type   //Typdekleration des Formularobjektes (enthält alle Komponenten,
     { Published-Deklarationen }
 
   end;  // bis hier Deklarationen, die von anderen Units oder dem Programm
-        //genutzt werden können
+        //genutzt werden kï¿½nnen
 
 procedure Register;
 
@@ -234,9 +242,9 @@ uses UModUtils, DateUtils;
 
 procedure TDevelopment.createall;
 begin
-  inherited createAll;//Möglichkeit, die Methoden des Vorgängermodells
-  //aufzurufen, so daß mit einer einzigen Anweisung die ganze Funktionalität der
-  // Vorgängermethoden übernommen werden
+  inherited createAll;//Mï¿½glichkeit, die Methoden des Vorgï¿½ngermodells
+  //aufzurufen, so daï¿½ mit einer einzigen Anweisung die ganze Funktionalitï¿½t der
+  // Vorgï¿½ngermethoden ï¿½bernommen werden
    VarCreate('c', '', 0, true, c); // Define Value
    VarCreate('devrates1', '', 0, true, devrates1);
    VarCreate('devrates2', '', 0, true, devrates2);
@@ -278,8 +286,8 @@ begin
    VarCreate('DOY_BegStemElong','[DOY]', 0, true, DOY_BegStemElong, 'DOY for begin stem elongation');
    VarCreate('DOY_BegFlower',   '[DOY]', 0, true, DOY_BegFlower, 'DOY for begin of flowering');
    VarCreate('DOY_PhysRipe',    '[DOY]', 0, true, DOY_PhysRipe, 'DOY for physiological ripeness');
-   VarCreate('TSumInternode_opt',    '[°Cd]', 0, true, TSumInternode_opt, 'a function of phint and day length');
-   VarCreate('ph39_opt',    '[°Cd]', 0, true, ph39_opt, 'a function of phint and day length');
+   VarCreate('TSumInternode_opt',    '[ï¿½Cd]', 0, true, TSumInternode_opt, 'a function of phint and day length');
+   VarCreate('ph39_opt',    '[ï¿½Cd]', 0, true, ph39_opt, 'a function of phint and day length');
 
 
 
@@ -300,31 +308,31 @@ begin
    Parcreate('p1d', '', 2.76 ,p1d);  //aktualisiert nach John-Manuskript 29.Jan.09
    Parcreate('p1v', '', 2.84  ,p1v);  //aktualisiert nach John-Manuskript 29.Jan.09
    Parcreate('sdepth', 'cm', 3 ,sdepth);
-   Parcreate('phint', '°Cd', 91.74,phint); //aktualisiert nach John-Manuskript 29.Jan.09
+   Parcreate('phint', 'ï¿½Cd', 91.74,phint); //aktualisiert nach John-Manuskript 29.Jan.09
    Parcreate('tBase', '', 0,tBase);
    Parcreate('sowingdate', 'doy', 300, sowingdate);
-   Parcreate('p3', '°Cd', 183.48, p3);
-   Parcreate('p4', '°Cd', 200, p4);
+   Parcreate('p3', 'ï¿½Cd', 183.48, p3);
+   Parcreate('p4', 'ï¿½Cd', 200, p4);
    Parcreate('p5', '-', 11.67, p5);//aktualisiert nach John-Manuskript 29.Jan.09
-   ParCreate('p9', '°Cd', 139.9, p9);  //aktualisiert nach John-Manuskript 29.Jan.09
-   ParCreate('plastochron', '°Cd', 68.3914	, plastochron); //aktualisiert am 17.01.
+   ParCreate('p9', 'ï¿½Cd', 139.9, p9);  //aktualisiert nach John-Manuskript 29.Jan.09
+   ParCreate('plastochron', 'ï¿½Cd', 68.3914	, plastochron); //aktualisiert am 17.01.
    ParCreate('Ini_inLMS', 'n', 4, Ini_inLMS); //aktualisiert am 17.01. nach Kage 2012
-   ParCreate('TSumInternode', '°Cd', 97.09, TSumInternode); //aktualisiert nach John-Manuskript 29.Jan.09
+   ParCreate('TSumInternode', 'ï¿½Cd', 97.09, TSumInternode); //aktualisiert nach John-Manuskript 29.Jan.09
    ParCreate('minLeaf_number', '', 7, minLeaf_number);
    ParCreate('Internode', '', 3, Internode);
    ParCreate('MaxVernDays', 'd', 50, MaxVernDays);
    ParCreate('MaxPhotoperiod', 'h', 20, MaxPhotoperiod);
-   ParCreate('VernMinTemp', '°C', -0.5, VernMinTemp);
-   ParCreate('VernOptTemp1', '°C', 0.5, VernOptTemp1);
-   ParCreate('VernOptTemp2', '°C', 6, VernOptTemp2);
-   ParCreate('VernMaxTemp', '°C', 18, VernMaxTemp);
+   ParCreate('VernMinTemp', 'ï¿½C', -0.5, VernMinTemp);
+   ParCreate('VernOptTemp1', 'ï¿½C', 0.5, VernOptTemp1);
+   ParCreate('VernOptTemp2', 'ï¿½C', 6, VernOptTemp2);
+   ParCreate('VernMaxTemp', 'ï¿½C', 18, VernMaxTemp);
    ParCreate('Ph39', '-', 101.56, Ph39); //aktualisiert nach John-Manuskript 29.Jan.09
    ParCreate(' xstage_fin_leaf_prim', '-',1.78171 ,  xstage_fin_leaf_prim); // neu angepasst 17.01.
    ParCreate('fdl', '-', 0, fdl);
 
    ExternVCreate('daylengthp',  'h', ratefield, daylengthp);
    ExternVCreate('dayofyear',  'n', statefield, dayofyear);
-   ExternVCreate('TMPM',  '[°C]', ratefield, TMPM);
+   ExternVCreate('TMPM',  '[ï¿½C]', ratefield, TMPM);
 
    OptCreate('DataInitMethod', 'EC_date', DataInitMethod);
    DataInitMethod.OptionList.Add('EC_date');
@@ -372,7 +380,7 @@ begin
     nL_MS.comment :=   'number of leaves on main stem';
     TSumEC30.comment :=   'Temperature sum since EC30';
     inL_MS.comment :=   'initial leaf number on main stem';
-    inl_MS_xstage2 .comment :=   'Anzahl nicht ausgebildeter Blätter zum Zeitpunkt Xstage 2';
+    inl_MS_xstage2 .comment :=   'Anzahl nicht ausgebildeter Blï¿½tter zum Zeitpunkt Xstage 2';
 
     daylengthp.comment :=   'photoperiodic daylength';
     TMPM.comment :=   'mean air temperature';
@@ -385,16 +393,16 @@ begin
     phint.comment :=   'the phyllochron interval, the interval in thermal time'+
                 '(degree days) between successive leaf and tiller appearances';
     p4.comment :=   'thermal time between Pre-anthesis ear growth to beginning of'+
-                ' grain filling (anthesis occurs during this phase)in°Cd';
-    p5.comment :=   'thermal time between beginning of grain fill and maturity in°Cd';
-    p9.comment :=   'thermal timen from germination to seedling emergence in °Cd';
+                ' grain filling (anthesis occurs during this phase)inï¿½Cd';
+    p5.comment :=   'thermal time between beginning of grain fill and maturity inï¿½Cd';
+    p9.comment :=   'thermal timen from germination to seedling emergence in ï¿½Cd';
     tBase.comment :=   'base temperature';
     Internode.comment :=   'Multiplikator des Phyllochronintervalls in der Schossphase';
     sowingdate.comment :=   '';
     plastochron.comment :=   'interval in thermal time between leaf initiation';
     xstage_fin_leaf_prim.comment :=   'xstage an dem kiene weiteren leaf primordien angelegt werden';
 
-    TSumInternode.comment :=   'te´mperature sumd between two internodes';
+    TSumInternode.comment :=   'teï¿½mperature sumd between two internodes';
     minLeaf_number.comment :=   '';
     MaxVernDays.comment :=   'maximum number of vernalisation days which increase developmental rate';
     MaxPhotoperiod.comment :=   'maximum daylength which increase developmental rate';
@@ -465,7 +473,7 @@ begin
 
 
 
-  //*.v= Value; *.c=change =Änderungsrate
+  //*.v= Value; *.c=change =ï¿½nderungsrate
 
   c.v := p1d.V*0.002;            // photoperiodical factor unscaled
   k_v.v := (p1v.v+0.55)/183;     // vernalisation factor unscaled
@@ -643,10 +651,10 @@ if (xstage.v>=0)and(xstage.v<2) then
      If EC.v < 37 then
        EC.c     := tsuminc.v/TSumInternode_opt.v // EC stage change according to the inverse of the temperature sum between the appearance of two internodes
     else
-       EC.c := min(2*tsuminc.v/Ph39_opt.v,40-EC.v);// 40-EC.v beschränkt das Entw.rate auf über 40 springt  min(tsuminc.v/Phint.v,40-EC.v);
+       EC.c := min(2*tsuminc.v/Ph39_opt.v,40-EC.v);// 40-EC.v beschrï¿½nkt das Entw.rate auf ï¿½ber 40 springt  min(tsuminc.v/Phint.v,40-EC.v);
 
      (* If (EC.v+EC.c*Globtime.c<39) and (xstage.v+Devrates2.v*globtime.c>3) then
-       devrates2.v :=0;*)     //WENN DIESE BEDINGUNG ENTFÄLLT WIRD XSTAGE NICHT ANGEHALTEN WENN ec 39 NOCH NICHT ERRREICHT WURDE UND SOMIT LÄUFT EC BERECHNUNG MIT NÄCHSTER DEVRATE WEITER
+       devrates2.v :=0;*)     //WENN DIESE BEDINGUNG ENTFï¿½LLT WIRD XSTAGE NICHT ANGEHALTEN WENN ec 39 NOCH NICHT ERRREICHT WURDE UND SOMIT Lï¿½UFT EC BERECHNUNG MIT Nï¿½CHSTER DEVRATE WEITER
     (*If (EC.v >= 37) and (xstage.v<2) then
     EC.c := min(2*tsuminc.v/Ph39.v,40-EC.v);//min(tsuminc.v/Phint.v,40-EC.v);
       (*If (EC.v+EC.c*Globtime.c<39) and (xstage.v+Devrates2.v*globtime.c>3) then
@@ -739,7 +747,7 @@ begin
   If (EC.v >= 13.5) and (EC.v < 20) then  // Tillering starts after 4. leaf appears
     EC.v := EC.v+7.5;                     // EC = 21 when first tiller emerged
   If (xSTAGE.v >=2) and (EC.v < 30) then
-    EC.v :=30;                          //Spitzenährchen "terminal spikelet" = EC 30
+    EC.v :=30;                          //Spitzenï¿½hrchen "terminal spikelet" = EC 30
 
    // if the number of visible leaves reaches the number of initialised leaves (minus 2, for collar and ?)
    // the flag leaves appears and we have EC-Stage 37!!
