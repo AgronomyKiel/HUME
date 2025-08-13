@@ -100,11 +100,6 @@ type
   TMod = class;
 
 
-  { * -----------------------------------------------------------------
-    CLASS     TMarquardOptions
-    ANCESTOR  TPersistent
-    PURPOSE   Options for the Marquard-Method used for parameter estimation
-    ------------------------------------------------------------------ }
 
 /// <summary> Options for the Marquard-Method used for parameter estimation
 /// it is descended either from Tobject if compiled for command line application or from
@@ -151,12 +146,6 @@ type
     property OptOption: TOptOption read FOptOption write FOptOption;
   end;
 
-  { * ----------------------------------------------------------------
-    CLASS     TSensitivityOptions
-    ANCESTOR  TPersistent
-    PURPOSE   Simple class to save options for Sensitivity analysis
-    used within the TMod class
-    ------------------------------------------------------------------ }
 
 /// <summary> Simple class to save options for Sensitivity analysis </summary>
 {$IFDEF NONVISUAL}
@@ -230,13 +219,6 @@ type
  /// <summary> Abstract base class for a model component </summary>
   TSubmodel = class; /// abstract base type for a model component, forward declaration
 
-  { * -----------------------------------------------------------------
-    CLASS     TMod
-    ANCESTOR  TGraphicControl
-    PURPOSE   Basic model integrator and control module:
-    Provides routines for simulation process control,
-    parameter estimation and statistical quality control
-    ------------------------------------------------------------------ }
 
 
 /// <summary> Base type for the central model component
@@ -700,12 +682,6 @@ type
   end;
   // end of Object TMod
 
-  { * -----------------------------------------------------------------
-    CLASS     TSubmodel
-    ANCESTOR  TGraphicControl
-    PURPOSE   Base class of all sub-models: Provides routines for
-    initialization, input and ouput and integration
-    ------------------------------------------------------------------ }
 
 /// <summary> Base class of all sub-models. Provides methods for initialisation, input, output and integration. Acestor is
 /// TObject if compiled for command line application or from TGraphicControl if compiled for GUI application </summary>
@@ -1083,12 +1059,7 @@ type
   end;
 
   // end of object TSubModel
-  { * -----------------------------------------------------------------
-    CLASS     TModEditor
-    ANCESTOR  TComponentEditor
-    PURPOSE   Exchanges data with TModelEdit form and
-    starts designtime editing
-    ------------------------------------------------------------------ }
+/// <summary> Exchanges data with TModelEdit form and starts designtime editing </summary>
 
   { [
     TModEditor = class(TcomponentEditor)
@@ -1152,12 +1123,7 @@ begin
   OptOption := optOnlyActIni;
 end;
 
-{ * *****************************************************************
-  CLASS   TSensitivityOptions
-  METHOD  create
-  PURPOSE Create an TSensitivityOptions instance to save options for
-  Sensitivity analysis used within the TMod class
-  ****************************************************************** }
+/// <summary> Create an TSensitivityOptions instance to save options for Sensitivity analysis used within the TMod class </summary>
 
 constructor TSensitivityOptions.create(Model: TMod);
 var
@@ -1182,38 +1148,24 @@ begin
 
 end;
 
-/// <summary>
-/// CLASS   TSensitivityOptions
-/// METHOD  SetMaxValue
-/// PURPOSE Sets maximum value during sensitivity analysis
-/// INPUT   const MAxValue: real
-/// </summary>
-
+/// <summary> Sets maximum value during sensitivity analysis </summary>
+/// <param name="MaxValue"> real </param>
 procedure TSensitivityOptions.SetMAxValue(const MaxValue: real);
 begin
   FMaxValue := MaxValue;
   FDPar := (FMaxValue - FMinValue) / (FSteps - 1);
 end;
 
-/// <summary>
-/// CLASS   TSensitivityOptions
-/// METHOD  SetMinValue
-/// PURPOSE Sets minimum value during sensitivity analysis
-/// INPUT   const MinValue: real
-/// </summary>
-
+/// <summary> Sets minimum value during sensitivity analysis </summary>
+/// <param name="MinValue"> real </param>
 procedure TSensitivityOptions.SetMinValue(const MinValue: real);
 begin
   FMinValue := MinValue;
   FDPar := (FMaxValue - FMinValue) / (FSteps - 1);
 end;
 
-{ * *****************************************************************
-  CLASS   TSensitivityOptions
-  METHOD  SetSteps
-  PURPOSE Sets number of steps of sensitivity analysis
-  INPUT   const Steps: integer
-  ****************************************************************** }
+/// <summary> Sets number of steps of sensitivity analysis </summary>
+/// <param name="Steps"> integer </param>
 
 procedure TSensitivityOptions.SetSteps(const Steps: Integer);
 begin
@@ -1224,11 +1176,7 @@ end;
 
 {$IFNDEF NONVISUAL}
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  Paint
-  PURPOSE Method for showing object on the screen
-  ****************************************************************** }
+/// <summary> Method for showing object on the screen </summary>
 
 
 {procedure TMod.Paint;
@@ -1302,12 +1250,8 @@ end;
 {$ENDIF}
 
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  Get_ControlFileFn
-  PURPOSE Gets name of Control file (published for use in object inspector)
-  OUTPUT  TMyFileName
-  ****************************************************************** }
+/// <summary> Gets name of Control file (published for use in object inspector) </summary>
+/// <returns> TMyFileName </returns>
 
 function TMod.Get_ControlFileFn: string;//TMyFileName;
 
@@ -1390,17 +1334,9 @@ else
   end;
 end;
 
-/// <summary>
-/// CLASS   TMod
-/// METHOD  Set_ControlFileFN
-/// PURPOSE Sets name of control Ini file (published for use in object inspector)
-///         and reads or creates Ini files
-/// <param name="NewCtrlFileFN"> Name of control Ini file </param>
-/// <remarks>
-/// If no control files are existing they will be created
-/// </remarks>
-/// </summary>
-
+/// <summary> Sets name of control Ini file (published for use in object inspector) and reads or creates Ini files </summary>
+/// <param name="newFN"> Name of control Ini file </param>
+/// <remarks> If no control files are existing they will be created </remarks>
 procedure TMod.Set_ControlFileFN(newFN:string);
 
 var
@@ -1417,14 +1353,6 @@ begin
 end;
 
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  setPropFromIniFile
-  PURPOSE Set properties from Ini file for a submodel
-  INPUT  strList: TStringList; List of all THumeNumEntity objects
-         submodname: string; Name of submodel
-  COMMENT
- ****************************************************************** }
 
 /// <summary> Set the plot and output properties from Ini file for entities in a stringlist of a submodel </summary>
 /// <param name="strList"> List of all THumeNumEntity objects </param>
@@ -1475,12 +1403,8 @@ begin
     Result := TSubmodel(SubModStrList.objects[index])
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  Set_TimeStep
-  PURPOSE Set time step for model integration
-  INPUT   const TimeStep: real
-  ****************************************************************** }
+/// <summary> Set time step for model integration </summary>
+/// <param name="TimeStep"> real </param>
 
 procedure TMod.Set_TimeStep(const TimeStep: real);
 begin
@@ -1488,12 +1412,8 @@ begin
   Time.c := TimeStep;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  Set_StartTime
-  PURPOSE Sets start time of simulation
-  INPUT   const StartTime: TDateTime
-  ****************************************************************** }
+/// <summary> Sets start time of simulation </summary>
+/// <param name="StartTime"> TDateTime </param>
 
 procedure TMod.Set_StartTime(const StartTime: TDateTime);
 begin
@@ -1501,24 +1421,14 @@ begin
   Time.v := StartTime;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  Set_EndTime
-  PURPOSE Sets end time of simulation
-  INPUT   const EndTime: TDateTime
-  ****************************************************************** }
+/// <summary> Sets end time of simulation </summary>
+/// <param name="EndTime"> TDateTime </param>
 
 procedure TMod.Set_EndTime(const EndTime: TDateTime);
 begin
   FEndTime := EndTime;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  init
-  PURPOSE Initialize state, parameter and weather files; init time
-  settings; resort submodels
-  ****************************************************************** }
 
 /// <summary> Initialize state, parameter and weather files; init time settings; resort submodels </summary>
 procedure TMod.Init;
@@ -1573,11 +1483,6 @@ begin
   else writeln('No ActIniFile');
   end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  InitAllsubMods
-  PURPOSE Call inititalisation methods of sub-models
-  ****************************************************************** }
 
 /// <summary> Call inititalisation methods of sub-models </summary>
 procedure TMod.InitAllSubMods;
@@ -1594,12 +1499,6 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  Create
-  PURPOSE Calls inherited TGssraphicControl.create and  initializes
-  properties, lists and files
-  ****************************************************************** }
 
 /// <summary> Calls inherited create and  initializes properties, lists and files </summary>
 {$IFNDEF NONVISUAL}
@@ -1786,11 +1685,6 @@ begin
 end;
 
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  WriteAllNames
-  PURPOSE For all submodels write state and rate names to output files
-  ****************************************************************** }
 
 /// <summary>
 /// Call methods for calculation of variables of all active submodels
@@ -1813,11 +1707,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  UpdateAll
-  PURPOSE For each submodel do update using measured values
-  ****************************************************************** }
+/// <summary> For each submodel do update using measured values </summary>
 
 procedure TMod.UpdateAll;
 var
@@ -1834,11 +1724,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  SaveRates
-  PURPOSE For each submodel save rates to output files
-  ****************************************************************** }
+/// <summary> For each submodel save rates to output files </summary>
 
 procedure TMod.SaveRates;
 var
@@ -1858,11 +1744,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  SaveStates
-  PURPOSE For each submodel save states to output files
-  ****************************************************************** }
+/// <summary> For each submodel save states to output files </summary>
 
 procedure TMod.SaveStates;
 var
@@ -1883,11 +1765,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  SaveFinalStates
-  PURPOSE For all submodels write state values to final output file
-  ****************************************************************** }
+/// <summary> For all submodels write state values to final output file </summary>
 
 procedure TMod.SaveFinalStates;
 var
@@ -1909,11 +1787,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  IntegrateAllSubModels
-  PURPOSE For each submodel do integration
-  ****************************************************************** }
+/// <summary> For each submodel do integration </summary>
 
 procedure TMod.integrateAllSubModels;
 var
@@ -1930,11 +1804,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  InitAllExternV
-  PURPOSE For each submodel initialize external variables (setting their pointers)
-  ****************************************************************** }
+/// <summary> For each submodel initialize external variables (setting their pointers) </summary>
 
 function TMod.InitAllExternV: boolean;
 var
@@ -1959,11 +1829,7 @@ begin
   Result := Success;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  CloseAllFiles
-  PURPOSE For each submodel close state and rate output file (_dat.csv/_rat.csv)
-  ****************************************************************** }
+/// <summary> For each submodel close state and rate output file (_dat.csv/_rat.csv) </summary>
 
 procedure TMod.CloseAllFiles;
 var
@@ -1980,11 +1846,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  CloseAllFinalFiles
-  PURPOSE For each submodel close final state output files
-  ****************************************************************** }
+/// <summary> For each submodel close final state output files </summary>
 
 procedure TMod.CloseAllFinalFiles;
 var
@@ -2008,11 +1870,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  CalcAllRates
-  PURPOSE For each submodel calculate rates
-  ****************************************************************** }
+/// <summary> For each submodel calculate rates </summary>
 
 procedure TMod.CalcAllRates;
 
@@ -2046,11 +1904,7 @@ begin
 end;
 
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  AddAllSimValuestoDataSeries
-  PURPOSE For each submodel add simulated values to corresponding measured data
-  ****************************************************************** }
+/// <summary> For each submodel add simulated values to corresponding measured data </summary>
 
 procedure TMod.AddAllSimValuestoDataSeries;
 var
@@ -2101,25 +1955,13 @@ for i := 0 to SubModStrList.count - 1 do begin
 end;
 
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  ClearAllDataSeries
-  PURPOSE For each submodel clear data pair series
-  ****************************************************************** }
+/// <summary> For each submodel clear data pair series </summary>
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  ClearAllDataSeries
-  PURPOSE For each submodel clear data pair series
-  ****************************************************************** }
+/// <summary> For each submodel clear data pair series </summary>
 
 
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  ClearAllDataSeries
-  PURPOSE For each submodel clear data pair series
-  ****************************************************************** }
+/// <summary> For each submodel clear data pair series </summary>
 
 
 procedure TMod.InitAllDataSeries;
@@ -2137,14 +1979,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  Run
-  PURPOSE Run method
-  INPUT
-  OUTPUT
-  COMMENT
-  ****************************************************************** }
+/// <summary> Run method INPUT OUTPUT COMMENT </summary>
 // {$APPTYPE CONSOLE}
 
 /// <summary> Run method, runs the model over the list of ini files </summary>
@@ -2413,14 +2248,7 @@ end;
 
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  RunActIni
-  PURPOSE Run method for actual INI-file only
-  INPUT
-  OUTPUT
-  COMMENT
-  ****************************************************************** }
+/// <summary> Run method for actual INI-file only INPUT OUTPUT COMMENT </summary>
 
 procedure TMod.runActIni;
 begin
@@ -2505,12 +2333,7 @@ begin
   CalcChiSq;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  CalcSensitivity
-  PURPOSE Sensitivity analysis
-  COMMENT Note partial code similarities (resp. redundancies) to TMod.Run
-  ****************************************************************** }
+/// <summary> Sensitivity analysis </summary>
 
 procedure TMod.CalcSensitivity;
 
@@ -3094,11 +2917,7 @@ begin
   // now be actualized and displayed
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  ClearAllDataSeries
-  PURPOSE For each submodel clear data pair series
-  ****************************************************************** }
+/// <summary> For each submodel clear data pair series </summary>
 
 procedure TMod.ClearAllDataSeries;
 var
@@ -3114,11 +2933,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  WriteAll_1_1_Files
-  PURPOSE Output of simulated/measured data pairs to _1_1.csv files for all submodells
-  ****************************************************************** }
+/// <summary> Output of simulated/measured data pairs to _1_1.csv files for all submodells </summary>
 
 procedure TMod.WriteAll_1_1_Files;
 var
@@ -3135,12 +2950,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  CalcAllLinearRegressions
-  PURPOSE For all submodels calculate linear regression statistics
-  COMMENT Called by TMod.Run
-  ****************************************************************** }
+/// <summary> For all submodels calculate linear regression statistics </summary>
 
 procedure TMod.CalcAllLinearRegressions;
 var
@@ -3189,14 +2999,7 @@ begin
   CloseFile(FRegFile);
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  CalcChiSq
-  PURPOSE Calculation of sum of squared differences
-  INPUT
-  OUTPUT
-  COMMENT
-  ****************************************************************** }
+/// <summary> Calculation of sum of squared differences INPUT OUTPUT COMMENT </summary>
 
 procedure TMod.CalcChiSq;
 var
@@ -3235,12 +3038,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  MarquardOptimization
-  PURPOSE Optimization routine
-  COMMENT Called by TFormOpt.StartBtnClick (unit UFormOpt)
-  ****************************************************************** }
+/// <summary> Optimization routine </summary>
 
 procedure TMod.MarquardOptimization(fn: string);
 var
@@ -3271,15 +3069,11 @@ begin
 
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  GetParameter
-  PURPOSE Delivers values of parameter "ParName"
-  INPUT   ParName: string;
-  var Par: TPar;
-  var SubModName: string;
-  var Success: boolean
-  ****************************************************************** }
+/// <summary> Delivers values of parameter "ParName" </summary>
+/// <param name="ParName"> string; </param>
+/// <param name="Par"> TPar; </param>
+/// <param name="SubModName"> string; </param>
+/// <param name="Success"> boolean </param>
 
 procedure TMod.GetParameter(ParName: string; var Par: TPar;
   var SubModname: string; var Success: boolean);
@@ -3304,15 +3098,11 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  GetVariable
-  PURPOSE Delivers values of variable "VarName"
-  INPUT   VarName: string;
-  var Variable: TVar;
-  var SubModName: string;
-  var Success: boolean
-  ****************************************************************** }
+/// <summary> Delivers values of variable "VarName" </summary>
+/// <param name="VarName"> string; </param>
+/// <param name="Variable"> TVar; </param>
+/// <param name="SubModName"> string; </param>
+/// <param name="Success"> boolean </param>
 
 procedure TMod.GetVariable(VarName: string; var Variable: Tvar;
   var SubModname: string; var Success: boolean);
@@ -3337,15 +3127,11 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  GetStateVar
-  PURPOSE Delivers values of state variable "StateName"
-  INPUT   StateName: string;
-  var State: TState;
-  var SubModName: string;
-  var Success: boolean
-  ****************************************************************** }
+/// <summary> Delivers values of state variable "StateName" </summary>
+/// <param name="StateName"> string; </param>
+/// <param name="State"> TState; </param>
+/// <param name="SubModName"> string; </param>
+/// <param name="Success"> boolean </param>
 
 procedure TMod.GetStateVar(StateName: string; var State: TState;
   var SubModname: string; var Success: boolean);
@@ -3370,11 +3156,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  IsFinished
-  PURPOSE Sets TMod.ModelEnd to true if time counter passed endtime of model
-  ****************************************************************** }
+/// <summary> Sets TMod.ModelEnd to true if time counter passed endtime of model </summary>
 
 procedure TMod.IsFinished;
 begin
@@ -3382,11 +3164,7 @@ begin
     ModelEnd := true;
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  IsFinished
-  PURPOSE Sets TMod.ModelEnd to true if time counter passed endtime of model
-  ****************************************************************** }
+/// <summary> Sets TMod.ModelEnd to true if time counter passed endtime of model </summary>
 
 procedure TMod.write_documentation;
 
@@ -3919,25 +3697,17 @@ begin
   OptionIniFile.CaseSensitive := false;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  RegistrateSubMod
-  PURPOSE Adds submodel to TMod's Submodel-String-List
-  INPUT   SubModName: string;
-  var Model: Tmod
-  ****************************************************************** }
+/// <summary> Adds submodel to TMod's Submodel-String-List </summary>
+/// <param name="SubModName"> string; </param>
+/// <param name="Model"> Tmod </param>
 
 procedure TSubmodel.RegistrateSubMod(SubModname: string; var Model: TMod);
 begin
   Model.SubModStrList.AddObject(SubModname, self);
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  Set_GlobMod
-  PURPOSE Initiates submodel according to "global" model (TMod instance)
-  INPUT   Model: TMod
-  ****************************************************************** }
+/// <summary> Initiates submodel according to "global" model (TMod instance) </summary>
+/// <param name="Model"> TMod </param>
 
 procedure TSubmodel.Set_GlobMod(Model: TMod);
 var
@@ -3983,13 +3753,8 @@ begin
     CompIndex := SubModIndex;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  Get_GlobMod
-  PURPOSE Delivers reference to "global" model (TMod instance9 where
-  submodel is registered
-  OUTPUT  TMod
-  ****************************************************************** }
+/// <summary> Delivers reference to "global" model (TMod instance9 where submodel is registered </summary>
+/// <returns> TMod </returns>
 
 function TSubmodel.Get_GlobMod: TMod;
 begin
@@ -4086,13 +3851,8 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  Create
-  PURPOSE Creates TSubModel according to TComponent.create
-  INPUT   AOwner: TComponent
-  COMMENT The TSubmodel class is derived from the TGraphicControl class
-  ****************************************************************** }
+/// <summary> Creates TSubModel according to TComponent.create </summary>
+/// <param name="AOwner"> TComponent </param>
 
 {$IFNDEF NONVISUAL}
 constructor TSubmodel.create(AOwner: TComponent);
@@ -4235,13 +3995,8 @@ begin
     end;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  Init
-  PURPOSE Initialisation method for TSubmodel
-  INPUT   var GlobMod: TMod
-  COMMENT Is being called on creation of application form and on run of simulation
-  ****************************************************************** }
+/// <summary> Initialisation method for TSubmodel </summary>
+/// <param name="GlobMod"> TMod </param>
 
 procedure TSubmodel.Init(var GlobMod: TMod);
 var
@@ -4356,15 +4111,11 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  ParCreate
-  PURPOSE Method for creating and and initialising a TPar variable
-  INPUT   ParName: string;
-  ParUnits: string;
-  DefaultValue: real;
-  var Par: TPar
-  ****************************************************************** }
+/// <summary> Method for creating and and initialising a TPar variable </summary>
+/// <param name="ParName"> string; </param>
+/// <param name="ParUnits"> string; </param>
+/// <param name="DefaultValue"> real; </param>
+/// <param name="Par"> TPar </param>
 
 procedure TSubmodel.ParCreate(ParName: string; ParUnits: string;
   DefaultValue: real; var Par: TPar; comm: string = '');
@@ -4394,14 +4145,10 @@ begin
   RegistrateParameter(Par);
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  OptCreate
-  PURPOSE Method for creating and and initialising a TOption variable
-  INPUT   OptName: string;
-  DefaultOption: string;
-  var Option: TOption
-  ****************************************************************** }
+/// <summary> Method for creating and and initialising a TOption variable </summary>
+/// <param name="OptName"> string; </param>
+/// <param name="DefaultOption"> string; </param>
+/// <param name="Option"> TOption </param>
 
 procedure TSubmodel.OptCreate(OptName: string; Defaultstring: string;
   var Option: TOption; comm: string = '');
@@ -4426,16 +4173,12 @@ begin
 
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  VarCreate
-  PURPOSE Method for creating and and initialising a TVar variable
-  INPUT   VarName: string;
-  VarUnits: string;
-  DefaultValue: real;
-  ReadFromFile: boolean;
-  var Variable: TVar
-  ****************************************************************** }
+/// <summary> Method for creating and and initialising a TVar variable </summary>
+/// <param name="VarName"> string; </param>
+/// <param name="VarUnits"> string; </param>
+/// <param name="DefaultValue"> real; </param>
+/// <param name="ReadFromFile"> boolean; </param>
+/// <param name="Variable"> TVar </param>
 
 procedure TSubmodel.VarCreate(VarName: string; VarUnits: string;
   DefaultValue: real; ReadFromFile: boolean; var Variable: Tvar;
@@ -4466,16 +4209,12 @@ begin
   RegistrateVariable(Variable);
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  StateCreate
-  PURPOSE Method for creating and and initialising a TState variable
-  INPUT   StateName: string;
-  StateUnits: string;
-  DefaultValue: real;
-  ReadFromfile: boolean;
-  var State: TState
-  ****************************************************************** }
+/// <summary> Method for creating and and initialising a TState variable </summary>
+/// <param name="StateName"> string; </param>
+/// <param name="StateUnits"> string; </param>
+/// <param name="DefaultValue"> real; </param>
+/// <param name="ReadFromfile"> boolean; </param>
+/// <param name="State"> TState </param>
 
 procedure TSubmodel.StateCreate(StateName: string; StateUnits: string;
   DefaultValue: real; ReadFromFile: boolean; var State: TState;
@@ -4505,12 +4244,8 @@ begin
   RegistrateStateVar(State);
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  RegistrateOption
-  PURPOSE Registers Option (TOption instance) in option list of submodel
-  INPUT   Par: TOption
-  ****************************************************************** }
+/// <summary> Registers Option (TOption instance) in option list of submodel </summary>
+/// <param name="Par"> TOption </param>
 
 procedure TSubmodel.RegistrateOption(Option: TOption);
 var
@@ -4531,12 +4266,8 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  RegistrateParameter
-  PURPOSE Registers parameter (TPar instance) in parameter list of submodel
-  INPUT   Par: TPar
-  ****************************************************************** }
+/// <summary> Registers parameter (TPar instance) in parameter list of submodel </summary>
+/// <param name="Par"> TPar </param>
 
 procedure TSubmodel.RegistrateParameter(Par: TPar);
 var
@@ -4553,12 +4284,8 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  RegistrateVariable
-  PURPOSE Registers variable (TVar instance) in variable list of submodel
-  INPUT   Variable: TVar
-  ****************************************************************** }
+/// <summary> Registers variable (TVar instance) in variable list of submodel </summary>
+/// <param name="Variable"> TVar </param>
 
 procedure TSubmodel.RegistrateVariable(Variable: Tvar);
 var
@@ -4576,12 +4303,8 @@ begin
 end;
 
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  RegistrateVariable
-  PURPOSE Registers variable (TVar instance) in variable list of submodel
-  INPUT   Variable: TVar
-  ****************************************************************** }
+/// <summary> Registers variable (TVar instance) in variable list of submodel </summary>
+/// <param name="Variable"> TVar </param>
 
 procedure TSubmodel.RegistrateConstant(Constant: Tvar);
 var
@@ -4600,12 +4323,8 @@ end;
 
 
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  RegistrateStateVar
-  PURPOSE Registers state variable (TState instance) in state variable list of submodel
-  INPUT   State: TState
-  ****************************************************************** }
+/// <summary> Registers state variable (TState instance) in state variable list of submodel </summary>
+/// <param name="State"> TState </param>
 
 procedure TSubmodel.RegistrateStateVar(State: TState);
 var
@@ -4642,14 +4361,10 @@ begin
 
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  WriteStateName
-  PURPOSE Write names and units of all variables to output file (_dat.csv)
-  INPUT   var f: text;
-  fn: string;
-  Time: TState
-  ****************************************************************** }
+/// <summary> Write names and units of all variables to output file (_dat.csv) </summary>
+/// <param name="f"> text; </param>
+/// <param name="fn"> string; </param>
+/// <param name="Time"> TState </param>
 
 procedure TSubmodel.WriteStateName(var f: TStreamWriter; fn:string; IniFile: string = '');
 //procedure TSubmodel.WriteStateName(var f: textfile; fn:string);
@@ -4768,14 +4483,10 @@ begin
 end;
 
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  WriteFinalStateName
-  PURPOSE Write names and units of all variables to final output file (_dat.csv)
-  INPUT   var f: text;
-  fn: string;
-  Time: TState
-  ****************************************************************** }
+/// <summary> Write names and units of all variables to final output file (_dat.csv) </summary>
+/// <param name="f"> text; </param>
+/// <param name="fn"> string; </param>
+/// <param name="Time"> TState </param>
 
 //procedure TSubmodel.WriteStateName(var f: TStreamWriter; fn:string; IniFile: string = '');
 procedure TSubmodel.WriteFinalStateName(IniFile: string = '');
@@ -4893,13 +4604,9 @@ end;
 
 
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  WriteSensNames
-  PURPOSE Write names and units of all sensitivity steps to output file (_dat.csv)
-  INPUT   Variable: Tvar;
-  var f: text
-  ****************************************************************** }
+/// <summary> Write names and units of all sensitivity steps to output file (_dat.csv) </summary>
+/// <param name="Variable"> Tvar; </param>
+/// <param name="f"> text </param>
 
 procedure TMod.WriteSensNames(Variable: Tvar; var f: text);
 var
@@ -4931,14 +4638,10 @@ begin
   writeln(f);
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  WriteSensValue
-  PURPOSE Writes values from sensitivity analysis to sens_ output files
-  INPUT   Variable: Tvar;
-  Iter: integer;
-  var f_a, f_b: text
-  ****************************************************************** }
+/// <summary> Writes values from sensitivity analysis to sens_ output files </summary>
+/// <param name="Variable"> Tvar; </param>
+/// <param name="Iter"> integer; </param>
+/// <param name="f_a, f_b"> text </param>
 
 procedure TMod.WriteSensValue(Variable: Tvar; Iter: Integer;
   var f_a, f_b: text);
@@ -4959,21 +4662,13 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  Integrate
-  PURPOSE Integration of state variables (Euler method)
-  ****************************************************************** }
+/// <summary> Integration of state variables (Euler method) </summary>
 
 
-{ * *****************************************************************
-  CLASS   Tmod
-  METHOD  InitGlobalOutputList
-  PURPOSE Write names and units of all variables to output file (_dat.csv)
-  INPUT   var f: text;
-  fn: string;
-  Time: TState
-  ****************************************************************** }
+/// <summary> Write names and units of all variables to output file (_dat.csv) </summary>
+/// <param name="f"> text; </param>
+/// <param name="fn"> string; </param>
+/// <param name="Time"> TState </param>
 
 procedure TMod.InitGlobalOutputList;
 
@@ -5009,14 +4704,10 @@ end;
 
 
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  WriteGlobalOutputNames
-  PURPOSE Write names and units of all variables to output file (_dat.csv)
-  INPUT   var f: text;
-  fn: string;
-  Time: TState
-  ****************************************************************** }
+/// <summary> Write names and units of all variables to output file (_dat.csv) </summary>
+/// <param name="f"> text; </param>
+/// <param name="fn"> string; </param>
+/// <param name="Time"> TState </param>
 
 procedure TMod.WriteGlobalOutputNames(fn: string);
 
@@ -5075,11 +4766,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  UpdateValues
-  PURPOSE update Values by measured data
-  ****************************************************************** }
+/// <summary> update Values by measured data </summary>
 
 procedure TSubmodel.UpdateValues;
 var
@@ -5116,14 +4803,10 @@ begin
 end;
 
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  SaveGlobalOutput
-  PURPOSE Writes values of state, parameter and external variables to output files
-  INPUT   var f: text;
-  fn: string;
-  Time: TState
-  ****************************************************************** }
+/// <summary> Writes values of state, parameter and external variables to output files </summary>
+/// <param name="f"> text; </param>
+/// <param name="fn"> string; </param>
+/// <param name="Time"> TState </param>
 
 procedure TMod.SaveGlobalOutput(IniFile: string);
 var
@@ -5157,15 +4840,10 @@ end;
 
 
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  SaveState
-  PURPOSE Writes values of state, parameter and external variables to output files
-  INPUT   var f: text;
-  fn: string;
-  Time: TState
-  COMMENT #TS#026 code modified due to problems with separator
-  ****************************************************************** }
+/// <summary> Writes values of state, parameter and external variables to output files </summary>
+/// <param name="f"> text; </param>
+/// <param name="fn"> string; </param>
+/// <param name="Time"> TState </param>
 
 procedure TSubmodel.SaveState(var f: TStreamWriter; IniFile: string);
 //procedure TSubmodel.SaveState(var f: textfile; IniFile: string);
@@ -5231,15 +4909,10 @@ end;
 
 
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  SaveFinalState
-  PURPOSE Writes values of state, parameter and external variables to output files
-  INPUT   var f: text;
-  fn: string;
-  Time: TState
-  COMMENT #TS#026 code modified due to problems with separator
-  ****************************************************************** }
+/// <summary> Writes values of state, parameter and external variables to output files </summary>
+/// <param name="f"> text; </param>
+/// <param name="fn"> string; </param>
+/// <param name="Time"> TState </param>
 
 procedure TSubmodel.SaveFinalState(var f: TStreamWriter; IniFile: string);
 // procedure TSubmodel.SaveFinalState(var f: textfile; IniFile: string);
@@ -5341,14 +5014,10 @@ begin
   RegistrateConstant(Constant);
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  WriteRateName
-  PURPOSE Write names and units of all rate variables to output file (_dat.csv)
-  INPUT   var f: text;
-  fn: string;
-  Time: Tstate
-  ****************************************************************** }
+/// <summary> Write names and units of all rate variables to output file (_dat.csv) </summary>
+/// <param name="f"> text; </param>
+/// <param name="fn"> string; </param>
+/// <param name="Time"> Tstate </param>
 
 procedure TSubmodel.WriteRateName(var f: TStreamWriter; fn: string);
 //procedure TSubmodel.WriteRateName(var f: textfile; fn: string);
@@ -5409,14 +5078,10 @@ begin
 
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  SaveRate
-  PURPOSE Writes values of rate variables to output files
-  INPUT   var f: text;
-  fn: string;
-  Time: Tstate
-  ****************************************************************** }
+/// <summary> Writes values of rate variables to output files </summary>
+/// <param name="f"> text; </param>
+/// <param name="fn"> string; </param>
+/// <param name="Time"> Tstate </param>
 
 procedure TSubmodel.SaveRate(var f: TStreamWriter);
 //procedure TSubmodel.SaveRate(var f: textfile);
@@ -5446,11 +5111,7 @@ begin
 //   writeln(f, line);
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  CalcRates
-  PURPOSE Rate calculation (to be overwritten by derived classes)
-  ****************************************************************** }
+/// <summary> Rate calculation (to be overwritten by derived classes) </summary>
 
 procedure TSubmodel.CalcRates;
 begin
@@ -5461,11 +5122,7 @@ begin
 
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  CalcVars
-  PURPOSE Variable calculation (to be overwritten by derived classes)
-  ****************************************************************** }
+/// <summary> Variable calculation (to be overwritten by derived classes) </summary>
 
 procedure TSubmodel.CalcVars;
 begin
@@ -5473,11 +5130,7 @@ begin
   // ShowMessage(' You did not overwrite Method CalcRates ');
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  Activate
-  PURPOSE Set isActive flag
-  ****************************************************************** }
+/// <summary> Set isActive flag </summary>
 
 procedure TSubmodel.activate;
 begin
@@ -5489,14 +5142,10 @@ begin
   IsActive := false;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  ExternVCreate
-  PURPOSE Method for creating and and initialising a TExternV variable
-  INPUT   Name, Units: string;
-  ExV: TexValue;
-  var ExternV: TexternV
-  ****************************************************************** }
+/// <summary> Method for creating and and initialising a TExternV variable </summary>
+/// <param name="Name, Units"> string; </param>
+/// <param name="ExV"> TexValue; </param>
+/// <param name="ExternV"> TexternV </param>
 
 procedure TSubmodel.ExternVcreate(Name, Units: string; ExV: TexValue;
   var ExternV: TExternV; comm: string = '');
@@ -5512,12 +5161,8 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  ExternVInit
-  PURPOSE Setting pointers of external variables
-  INPUT   model: Tmod
-  ****************************************************************** }
+/// <summary> Setting pointers of external variables </summary>
+/// <param name="model"> Tmod </param>
 
 function TSubmodel.ExternVinit(Model: TMod): boolean;
 var
@@ -5625,11 +5270,7 @@ begin
 
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  AddSimValueToDataSeries
-  PURPOSE Adding simulated values to corresponding measured data
-  ****************************************************************** }
+/// <summary> Adding simulated values to corresponding measured data </summary>
 
 procedure TSubmodel.AddSimValueToDataSeries;
 var
@@ -5681,11 +5322,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  write_1_1_files
-  PURPOSE Output of simulated/measured data pairs to _1_1.csv files
-  ****************************************************************** }
+/// <summary> Output of simulated/measured data pairs to _1_1.csv files </summary>
 
 procedure TSubmodel.write_1_1_files;
 var
@@ -5708,11 +5345,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  CalcLinearRegressions
-  PURPOSE Calculation of linear regression
-  ****************************************************************** }
+/// <summary> Calculation of linear regression </summary>
 
 procedure TSubmodel.CalcLinearRegressions;
 var
@@ -5727,11 +5360,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  ClearDataSeries
-  PURPOSE Clears data pair series
-  ****************************************************************** }
+/// <summary> Clears data pair series </summary>
 
 procedure TSubmodel.ClearDataSeries;
 var
@@ -5749,11 +5378,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  Paint
-  PURPOSE New Paint procedure for TSubmodel (which is derived from TGraphicControl)
-  ****************************************************************** }
+/// <summary> New Paint procedure for TSubmodel (which is derived from TGraphicControl) </summary>
 {$IFNDEF NONVISUAL}
 procedure TSubmodel.Paint;
 var
@@ -5792,12 +5417,7 @@ end;
 
 {$ENDIF}
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  Destroy
-  PURPOSE Remove submodel entry from global TMod instance and call inherited
-  destroy method
-  ****************************************************************** }
+/// <summary> Remove submodel entry from global TMod instance and call inherited destroy method </summary>
 
 procedure TSubmodel.BeforeDestruction;
 var
@@ -5830,11 +5450,7 @@ begin
   end;
 end;
 
-{ * *****************************************************************
-  CLASS   TSubmodel
-  METHOD  DblClick
-  PURPOSE Show Message after doubleclick on TSubmodel during Runtime
-  ****************************************************************** }
+/// <summary> Show Message after doubleclick on TSubmodel during Runtime </summary>
 
 {$IFNDEF NONVISUAL}
 
@@ -6292,11 +5908,7 @@ begin
 
 end;
 
-{ * *****************************************************************
-  CLASS   TMod
-  METHOD  DblClick
-  PURPOSE Shows Message after doubleclick on TMod during Run-time
-  ****************************************************************** }
+/// <summary> Shows Message after doubleclick on TMod during Run-time </summary>
 
 {$IFNDEF NONVISUAL}
 procedure TMod.DblClick;
