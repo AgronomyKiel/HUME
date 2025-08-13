@@ -3,7 +3,7 @@
 ///   Implemtents different methods for vertical soil water transport either with differen veriants
 /// of the potential based water transport or as a simple tipping bucket approach.
 /// </summary>
-unit USoilWaterMod; { Stand 19.4.09, Grundwasser eingebaut - Ulf Böttcher }
+unit USoilWaterMod_save; { Stand 19.4.09, Grundwasser eingebaut - Ulf Böttcher }
 
 interface
 
