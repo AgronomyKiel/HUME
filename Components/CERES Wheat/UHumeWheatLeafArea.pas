@@ -1,6 +1,28 @@
 ﻿/// <summary>
-/// Module for leaf area development and senescence
+/// Module for leaf area development and senescence in wheat crops.
 /// </summary>
+/// <remarks>
+/// <author>
+/// Arnte Ratjen, Henning Kage & Agronomy Group, University of Kiel
+/// </author>
+/// <Timestamp>
+/// First edited: x.x.2003
+/// Last edited: 02.08.25
+/// </Timestamp>
+/// <References>
+/// <item>Ratjen, A.M. (2012). Refined N-Fertilization of Winter Wheat: A model supported approach combining statistical and mechanistic components. 
+/// PhD. thesis, Univ. Kiel.  https://www.pflanzenbau.uni-kiel.de/de/publikationen/dissertationen/dissertationen-als-pdf/dissertation-ratjen-2013.pdf</item>
+/// <item>Ratjen, A.M., Kage, H., 2013. Is mutual shading a decisive factor for differences in overall canopy specific leaf area of winter wheat crops? 
+/// Field Crop. Res. 149, 338–346. https://doi.org/10.1016/j.fcr.2013.05.015.</item>
+/// <item>Ratjen, A.M., Lemaire, G., Kage, H., Plénet, D., Justes, E., 2018. Key variables for simulating leaf area and N status: Biomass based relations versus phenology driven approaches. 
+/// Eur. J. Agron. 100, 110–117. https://doi.org/10.1016/j.eja.2018.04.008.</item>
+/// <item> Ritchie et al. : https://nowlin.css.msu.edu/wheat_book/CHAPTER2.html</item>
+/// </References>
+/// <Purpose>
+/// Calculation of leaf area development and senescence of wheat crops.
+/// </Purpose>
+/// </remarks>
+
 unit UHumeWheatLeafArea;
 
 

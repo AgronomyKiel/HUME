@@ -58,14 +58,15 @@
         <propertyref name="Opt_Psi2" visibility="published" />
         <propertyref name="OptWriteMFPtable" visibility="published" />
         <ancestor name="TSoilWaterMod" namespace="USoilWaterMod">
-          <methodref name="CalcTempFactor" visibility="private" />
+          <methodref name="CalcTempFactor" visibility="private">
+          </methodref>
           <methodref name="CalcConductivities" visibility="private">
           </methodref>
           <methodref name="CapWatSolut" visibility="private">
           </methodref>
-          <methodref name="get_water_contents" visibility="private">
+          <methodref name="get_water_contents" visibility="private" />
+          <methodref name="Diffwater_solut" visibility="private">
           </methodref>
-          <methodref name="Diffwater_solut" visibility="private" />
           <methodref name="Richardswater_solut" visibility="private">
           </methodref>
           <methodref name="Mixedwater_solut" visibility="private">
@@ -84,12 +85,11 @@
           </methodref>
           <methodref name="CalcOverflow" visibility="private">
           </methodref>
-          <methodref name="getNetRain" visibility="private">
-          </methodref>
+          <methodref name="getNetRain" visibility="private" />
           <methodref name="getPotEvap" visibility="private" />
-          <methodref name="CreateParameters" visibility="private" />
-          <methodref name="CreateOptions" visibility="private">
+          <methodref name="CreateParameters" visibility="private">
           </methodref>
+          <methodref name="CreateOptions" visibility="private" />
           <methodref name="CreateStates" visibility="private" />
           <methodref name="CreateVars" visibility="private" />
           <methodref name="InitGenuchtenPars" visibility="private" />
@@ -98,6 +98,7 @@
           <methodref name="InitVectors" visibility="private" />
           <methodref name="SetGenuchtenPars" visibility="private" />
           <methodref name="SetLDPars" visibility="private" />
+          <methodref name="SetLDnumbers" visibility="private" />
           <methodref name="SetLowerBoundaryCondition" visibility="private" />
           <methodref name="SetEvaporationReductionOption" visibility="private" />
           <methodref name="Calc_nFK" visibility="private" />
@@ -113,8 +114,7 @@
           <methodref name="CalcProfile_and_HorizonSums" visibility="private" />
           <methodref name="TransferWGsToNextINI" visibility="private" />
           <methodref name="obere_Randbedingung" visibility="private" />
-          <methodref name="ndx_str" visibility="protected">
-          </methodref>
+          <methodref name="ndx_str" visibility="protected" />
           <methodref name="getTexture" visibility="protected" />
           <methodref name="getLD" visibility="protected" />
           <methodref name="SetPlantModel" visibility="public" procflags="override" />
@@ -149,9 +149,9 @@
           <propertyref name="Opt_TextureClass5" visibility="published" />
           <propertyref name="Opt_TextureClass6" visibility="published" />
           <propertyref name="Opt_TransferWGsToNextINI" visibility="published" />
-          <propertyref name="Opt_Weff" visibility="published" />
-          <propertyref name="Ext_NetRain" visibility="published">
+          <propertyref name="Opt_Weff" visibility="published">
           </propertyref>
+          <propertyref name="Ext_NetRain" visibility="published" />
           <propertyref name="Ex_PotEvap" visibility="published" />
           <propertyref name="Ex_Groundwaterdepth" visibility="published" />
           <propertyref name="Par_nHorizons" visibility="published" />
@@ -161,73 +161,73 @@
           <propertyref name="Par_n1" visibility="published" />
           <propertyref name="Par_lpar1" visibility="published" />
           <propertyref name="Par_alpha1" visibility="published" />
-          <propertyref name="Par_FK1" visibility="published" />
+          <propertyref name="Par_FK1" visibility="published">
+          </propertyref>
           <propertyref name="Par_PWP1" visibility="published">
           </propertyref>
           <propertyref name="Par_nFK1" visibility="published">
           </propertyref>
-          <propertyref name="Par_b_sat2" visibility="published">
-          </propertyref>
+          <propertyref name="Par_b_sat2" visibility="published" />
           <propertyref name="Par_b_rest2" visibility="published" />
           <propertyref name="Par_b_KS2" visibility="published" />
           <propertyref name="Par_n2" visibility="published" />
           <propertyref name="Par_lpar2" visibility="published" />
           <propertyref name="Par_alpha2" visibility="published" />
-          <propertyref name="Par_FK2" visibility="published" />
+          <propertyref name="Par_FK2" visibility="published">
+          </propertyref>
           <propertyref name="Par_PWP2" visibility="published">
           </propertyref>
           <propertyref name="Par_nFK2" visibility="published">
           </propertyref>
-          <propertyref name="Par_b_sat3" visibility="published">
-          </propertyref>
+          <propertyref name="Par_b_sat3" visibility="published" />
           <propertyref name="Par_b_rest3" visibility="published" />
           <propertyref name="Par_b_KS3" visibility="published" />
           <propertyref name="Par_n3" visibility="published" />
           <propertyref name="Par_lpar3" visibility="published" />
           <propertyref name="Par_alpha3" visibility="published" />
-          <propertyref name="Par_FK3" visibility="published" />
+          <propertyref name="Par_FK3" visibility="published">
+          </propertyref>
           <propertyref name="Par_PWP3" visibility="published">
           </propertyref>
           <propertyref name="Par_nFK3" visibility="published">
           </propertyref>
-          <propertyref name="Par_b_sat4" visibility="published">
-          </propertyref>
+          <propertyref name="Par_b_sat4" visibility="published" />
           <propertyref name="Par_b_rest4" visibility="published" />
           <propertyref name="Par_b_KS4" visibility="published" />
           <propertyref name="Par_n4" visibility="published" />
           <propertyref name="Par_lpar4" visibility="published" />
           <propertyref name="Par_alpha4" visibility="published" />
-          <propertyref name="Par_FK4" visibility="published" />
+          <propertyref name="Par_FK4" visibility="published">
+          </propertyref>
           <propertyref name="Par_PWP4" visibility="published">
           </propertyref>
           <propertyref name="Par_nFK4" visibility="published">
           </propertyref>
-          <propertyref name="Par_b_sat5" visibility="published">
-          </propertyref>
+          <propertyref name="Par_b_sat5" visibility="published" />
           <propertyref name="Par_b_rest5" visibility="published" />
           <propertyref name="Par_b_KS5" visibility="published" />
           <propertyref name="Par_n5" visibility="published" />
           <propertyref name="Par_lpar5" visibility="published" />
           <propertyref name="Par_alpha5" visibility="published" />
-          <propertyref name="Par_FK5" visibility="published" />
+          <propertyref name="Par_FK5" visibility="published">
+          </propertyref>
           <propertyref name="Par_PWP5" visibility="published">
           </propertyref>
           <propertyref name="Par_nFK5" visibility="published">
           </propertyref>
-          <propertyref name="Par_b_sat6" visibility="published">
-          </propertyref>
+          <propertyref name="Par_b_sat6" visibility="published" />
           <propertyref name="Par_b_rest6" visibility="published" />
           <propertyref name="Par_b_KS6" visibility="published" />
           <propertyref name="Par_n6" visibility="published" />
           <propertyref name="Par_lpar6" visibility="published" />
           <propertyref name="Par_alpha6" visibility="published" />
-          <propertyref name="Par_FK6" visibility="published" />
+          <propertyref name="Par_FK6" visibility="published">
+          </propertyref>
           <propertyref name="Par_PWP6" visibility="published">
           </propertyref>
           <propertyref name="Par_nFK6" visibility="published">
           </propertyref>
-          <propertyref name="Par_PsiStart1" visibility="published">
-          </propertyref>
+          <propertyref name="Par_PsiStart1" visibility="published" />
           <propertyref name="Par_Weff" visibility="published" />
           <propertyref name="Par_PondMax" visibility="published" />
           <propertyref name="Var_WG0_30" visibility="published" />
@@ -1450,89 +1450,89 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fplantNDemand" type="Double" visibility="private" size="8" offset="21016" file="USoilNitrogenUp.pas" line="16" />
+      <field name="fplantNDemand" type="Double" visibility="private" size="8" offset="21040" file="USoilNitrogenUp.pas" line="16" />
       <procedure name="SetPlantModel" visibility="protected" procflags="override" file="USoilNitrogenUp.pas" line="19">
         <parameters>
           <parameter name="NewPlantModel" type="TAbstractPlant" />
         </parameters>
       </procedure>
-      <field name="ActNUptake" type="TVar" visibility="public" size="4" offset="21024" file="USoilNitrogenUp.pas" line="22" />
-      <field name="MaxNUptake" type="TVar" visibility="public" size="4" offset="21028" file="USoilNitrogenUp.pas" line="24">
+      <field name="ActNUptake" type="TVar" visibility="public" size="4" offset="21048" file="USoilNitrogenUp.pas" line="22" />
+      <field name="MaxNUptake" type="TVar" visibility="public" size="4" offset="21052" file="USoilNitrogenUp.pas" line="24">
         <devnotes>
            actual N uptake rate averaged over day
         </devnotes>
       </field>
-      <field name="MassFlow" type="TVar" visibility="public" size="4" offset="21032" file="USoilNitrogenUp.pas" line="26">
+      <field name="MassFlow" type="TVar" visibility="public" size="4" offset="21056" file="USoilNitrogenUp.pas" line="26">
         <devnotes>
            maximum N uptake rate averaged over day
         </devnotes>
       </field>
-      <field name="NUptake" type="TSoilVarArray" visibility="public" size="212" offset="21036" file="USoilNitrogenUp.pas" line="28">
+      <field name="NUptake" type="TSoilVarArray" visibility="public" size="212" offset="21060" file="USoilNitrogenUp.pas" line="28">
         <devnotes>
            sum of apparent mass flow transport to roots kg N/ha/d
         </devnotes>
       </field>
-      <field name="WInflux" type="TSoilArray" visibility="public" size="416" offset="21248" file="USoilNitrogenUp.pas" line="30">
+      <field name="WInflux" type="TSoilArray" visibility="public" size="416" offset="21272" file="USoilNitrogenUp.pas" line="30">
         <devnotes>
            N uptake per day kg N/ha/d
         </devnotes>
       </field>
-      <field name="NInflux_WL" type="TVar" visibility="public" size="4" offset="21664" file="USoilNitrogenUp.pas" line="32">
+      <field name="NInflux_WL" type="TVar" visibility="public" size="4" offset="21688" file="USoilNitrogenUp.pas" line="32">
         <devnotes>
            water influx per unit root length [cm3/cm/d]
         </devnotes>
       </field>
-      <field name="NInflux_WL_eff" type="TVar" visibility="public" size="4" offset="21668" file="USoilNitrogenUp.pas" line="34">
+      <field name="NInflux_WL_eff" type="TVar" visibility="public" size="4" offset="21692" file="USoilNitrogenUp.pas" line="34">
         <devnotes>
            nitrate influx per unit root length
         </devnotes>
       </field>
-      <field name="SumSoilNUptake" type="TState" visibility="public" size="4" offset="21672" file="USoilNitrogenUp.pas" line="37">
+      <field name="SumSoilNUptake" type="TState" visibility="public" size="4" offset="21696" file="USoilNitrogenUp.pas" line="37">
         <devnotes>
            nitrate influx per unit root effective length
         </devnotes>
       </field>
-      <field name="SoilNUptakeGrowth" type="TState" visibility="public" size="4" offset="21676" file="USoilNitrogenUp.pas" line="39">
+      <field name="SoilNUptakeGrowth" type="TState" visibility="public" size="4" offset="21700" file="USoilNitrogenUp.pas" line="39">
         <devnotes>
           
         </devnotes>
       </field>
-      <field name="SumPlantNDemand" type="TState" visibility="public" size="4" offset="21680" file="USoilNitrogenUp.pas" line="41">
+      <field name="SumPlantNDemand" type="TState" visibility="public" size="4" offset="21704" file="USoilNitrogenUp.pas" line="41">
         <devnotes>
           
         </devnotes>
       </field>
-      <field name="Cmin" type="TPar" visibility="public" size="4" offset="21684" file="USoilNitrogenUp.pas" line="44">
+      <field name="Cmin" type="TPar" visibility="public" size="4" offset="21708" file="USoilNitrogenUp.pas" line="44">
         <devnotes>
            sum of nitrate uptake from soil
         </devnotes>
       </field>
-      <field name="not_av_N" type="TPar" visibility="public" size="4" offset="21688" file="USoilNitrogenUp.pas" line="46">
+      <field name="not_av_N" type="TPar" visibility="public" size="4" offset="21712" file="USoilNitrogenUp.pas" line="46">
         <devnotes>
            minimal nitrate concentration, substracted from actual concentration [kg/cm water]
         </devnotes>
       </field>
-      <field name="RootRad" type="TPar" visibility="public" size="4" offset="21692" file="USoilNitrogenUp.pas" line="48">
+      <field name="RootRad" type="TPar" visibility="public" size="4" offset="21716" file="USoilNitrogenUp.pas" line="48">
         <devnotes>
            not plant available part of nitrate [kg N/10 cm]
         </devnotes>
       </field>
-      <field name="Max_Wl_Nuptake" type="TPar" visibility="public" size="4" offset="21696" file="USoilNitrogenUp.pas" line="50">
+      <field name="Max_Wl_Nuptake" type="TPar" visibility="public" size="4" offset="21720" file="USoilNitrogenUp.pas" line="50">
         <devnotes>
            root radius [cm]
         </devnotes>
       </field>
-      <field name="Ex_PlantNDemand" type="TExternV" visibility="public" size="4" offset="21700" file="USoilNitrogenUp.pas" line="53">
+      <field name="Ex_PlantNDemand" type="TExternV" visibility="public" size="4" offset="21724" file="USoilNitrogenUp.pas" line="53">
         <devnotes>
            maximum value for N uptake per unit root length [kg/cm/d]
         </devnotes>
       </field>
-      <field name="SRL" type="TExternV" visibility="public" size="4" offset="21704" file="USoilNitrogenUp.pas" line="55">
+      <field name="SRL" type="TExternV" visibility="public" size="4" offset="21728" file="USoilNitrogenUp.pas" line="55">
         <devnotes>
            plant N demand [g N/m²/d]
         </devnotes>
       </field>
-      <field name="SRL_eff" type="TExternV" visibility="public" size="4" offset="21708" file="USoilNitrogenUp.pas" line="57">
+      <field name="SRL_eff" type="TExternV" visibility="public" size="4" offset="21732" file="USoilNitrogenUp.pas" line="57">
         <devnotes>
            sum or root length cm/cm2
         </devnotes>

@@ -5,9 +5,9 @@ project:
 
 
 author: "Agronomy and Crop Science Group, Kiel University"
-title: "Hume Documentation"
 
 website:
+  title: "Hume Documentation"
   sidebar:
     style: "docked"
     search: true
@@ -18,18 +18,19 @@ website:
         href: CodeBasisOverview.qmd
       - section: "Sub-models/components"
         contents:
-          - Components/Evapotranspiration/Documentation/TPenMonteith.qmd
-          - Components/Maize/Documentation/TMaizeDevelopment.qmd
-          - Components/CERES Wheat/Documentation/TDevelopment.qmd
-      - section: "Technical PasDoc Documentation"
-        contents:
-          - file: PasDoc/UState/index.html
-            text: "UState"
-          - file: PasDoc/UMod/index.html
-            text: "UMod"
-
-
-
+          - section: "Soil water balance"
+            contents:
+              - Components/Evapotranspiration/Documentation/TPenMonteith.qmd
+          - section: "HumeWheat model"
+            contents:
+              - Components/CERES Wheat/Documentation/TDevelopment.qmd
+              - Components/CERES Wheat/Documentation/THumeWheatLeafArea.qmd
+          - section: "HumeOSR model"
+            contents:
+              - Components/OilseedRape/Documentation/OSR_growth_model.qmd
+          - section: "HumeMaize model"
+            contents:
+              - Components/Maize/Documentation/TMaizeDevelopment.qmd
 format:
   html:
     theme:
@@ -37,6 +38,12 @@ format:
       - brand
     css: styles.css
     toc: true
+    embed-resources: true
+chunk_output_type: all
+
+crossref:
+  eq-prefix: Eq.
+  fig-prefix: Fig.
 
 editor: visual
 
@@ -50,6 +57,10 @@ toc-depth: 4
 toc-location: left
 bibliography: bibliography.bibtex.bib
 csl: european-journal-of-agronomy.csl
+
+html-math-method: katex
+number-sections: true
+
 
 
 

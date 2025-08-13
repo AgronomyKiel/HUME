@@ -1,5 +1,6 @@
 library(tools)
 library(xml2)
+library(dplyr)
 
 
 
@@ -17,7 +18,8 @@ ExtractXMLDocuInformation <- function(fn_xml_docu, ClassName = "TPenMonteith")  
 
   # Extract relevant devnotes subfields for the markdown text
   # from the namespace node
-  summary_text <- xml_text(xml_find_first(ns_node, ".//summary"))
+#  summary_text <- xml_text(xml_find_first(ns_node, ".//summary"))
+  summary_text <- paste0("- ", xml_text(xml_find_first(ns_node, ".//summary")), collapse = "\n")
   author_text <- xml_text(xml_find_first(ns_node, ".//author"))
   timestamp_text <- xml_text(xml_find_first(ns_node, ".//Timestamp"))
 
@@ -213,6 +215,39 @@ ExtractXMLDocuInformation <- function(fn_xml_docu, ClassName = "TPenMonteith")  
 
 }
 
-fn_xml_docu <- "Q:/HUME/HUME/XML_Delphi_Docu/UPenMonteith.xml"
 
-Output <- ExtractXMLDocuInformation(fn_xml_docu, ClassName = "TPenMonteith")
+
+ExtractInformationFromCSV <- function(fn) {
+
+  df <- read.delim(fn, header = TRUE, sep = ";")
+  df.state <- df %>% filter( EntityType == "State") %>% dplyr::select(EntityName, Units, Value, Comment)
+  names(df.state) <- c("State variable", "Units", "InitialValue", "Description")
+
+
+  df.par <- df %>% filter( EntityType == "Parameter") %>% dplyr::select(EntityName, Units, Value, Comment)
+  names(df.par) <- c("Parameter", "Units", "Value", "Description")
+
+  df.var <- df %>% filter( EntityType == "Variable") %>% dplyr::select(EntityName, Units, Comment)
+  names(df.var) <- c("Variable", "Units", "Description")
+
+  df.ext <- df %>% filter( EntityType == "ExtVar") %>% dplyr::select(EntityName, Units, Comment, Option)
+  names(df.ext) <- c("External variable", "Units", "Description", "Source")
+
+  df.opt <- df %>% filter(EntityType == "Option" ) %>% dplyr::select(EntityName, Units, Comment)
+  names(df.opt) <- c("Option", "Units", "Description")
+
+  result <- list(
+    df.state = df.state,
+    df.par = df.par,
+    df.var = df.var,
+    df.ext = df.ext,
+    df.opt = df.opt
+  )
+
+}
+
+
+
+
+
+

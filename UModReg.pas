@@ -241,7 +241,7 @@ end;
 procedure TSubModelEditor.Edit;
 
 const
-  csv_docu_dir = 'Q:\HUME\HUME\csv_Hume_Docu';
+  csv_docu_dir = 'Q:\HUME\HUME\csv_Hume_Docu\';
 
 var
   FormSubModelEditor: TF_SubmodelEditor;

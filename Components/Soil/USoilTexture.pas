@@ -1,10 +1,13 @@
+ï»¿/// <summary>
+/// Contains implementation for derivation of Van Genuchten parameters from texture
+/// classes according to Ad-hoc-AG Boden: VerknÃ¼pfungsregel 1.18, Tabelle 1.
+/// Ulf BÃ¶ttcher, 29.4.09
+/// 1st modification: new values for parameters b_sat, b_rest, alpha and n_par according to DWA-Regelwerk: Arbeitsblatt DWA-A 920-1-Bodenfunktionsansprache
+/// Teil 1: Ableitung von Kennwerten des Bodenwasserhaushalts, Tabelle 16.
+/// Thomas RÃ¤biger, 16.03.2017
+/// </summary>
 unit USoilTexture;
-{contains implementation for derivation of Van Genuchten parameters from texture
- classes according to Ad-hoc-AG Boden: Verknüpfungsregel 1.18, Tabelle 1
- Ulf Böttcher, 29.4.09
- 1st modification: new values for parameters b_sat, b_rest, alpha and n_par according to DWA-Regelwerk: Arbeitsblatt DWA-A 920-1-Bodenfunktionsansprache
-Teil 1: Ableitung von Kennwerten des Bodenwasserhaushalts, Tabelle 16
-Thomas Räbiger, 16.03.2017}
+
 
 
 interface
@@ -12,9 +15,23 @@ uses
   Classes, UState, UGenucht;
 
 type
+/// <summary>
+/// Texture classes according to Bodenkundliche Kartieranleitung 5. Auflage
+/// </summary>
   TTextureClass = (Ss,mS,mSgs,mSfs,fS,fSms,Sl2,Sl3,Sl4,Slu,St2,St3,Su2,Su3,Su4,Ls2,Ls3,Ls4,Lt2,Lt3,Lts,Lu,Uu,Uls,Us,Ut2,Ut3,Ut4,Tt,Tl,Ts2,Ts3,Ts4,Tu2,Tu3,Tu4);
+/// <summary>
+/// bulk density classes according to KA5
+/// </summary>
   TLDClass = (LD1, LD2, LD3, LD4, LD5);
 
+/// <summary>
+/// numerical bulk density as constants
+/// </summary>
+  TLD = (LD13, LD142, LD15, LD164, LD17, OldVersion);
+
+/// <summary>
+/// Option for texture classes
+/// </summary>
   TTextClassOption = class(TOption)
     procedure AddTextureClasses;
   end;
@@ -22,16 +39,27 @@ type
   //TTextClassOption = class(TOption)
   //TTexture_version = class(TOption)
 
+  /// <summary>
+  /// Option for bulk density classes
+  /// </summary>
   TLDClassOption = class(TOption)
     procedure AddLDClasses;
   end;
 
+  /// <summary>
+  /// option for numerical bulk density
+        /// </summary>
+ TLDOption = class(TOption)
+  procedure AddLD;
+ end;
+
 
 procedure setTextClassOption(var ATextureClass: TTextureClass; AOptionVal: string);
 procedure setLDClassOption(var ALDClass: TLDClass; AOptionVal: string);
+procedure setLDOption(var ALD: TLD; AOptionVal: string);
 procedure VanGenuchtenFromTextureClass_RR(GPar: TGenucht; TC: TTextureClass);
 procedure VanGenuchtenFromTextureClass_KA(GPar: TGenucht; TC: TTextureClass);
-function KSFromTextureClass_RR(TC: TTextureClass): real;
+function KSFromTextureClass_RR(TC: TTextureClass; ALD: TLD): real;
 function KSFromTextureClass_KA(TC: TTextureClass): real;
 function ClayFromTexture(TC: TTextureClass): real;
 procedure AddClasses(l: TStrings);
@@ -145,6 +173,21 @@ begin
 end;
 
 
+procedure AddMyLDs(l: TStrings);
+begin
+        l.Add('LD13');
+        l.Add('LD142');
+        l.Add('LD15');
+        l.Add('LD164');
+        l.Add('LD17');
+        l.Add('OldVersion');
+end;
+
+
+procedure TLDOption.AddLD;
+begin
+  AddMyLDs(OptionList);
+end;
 
 procedure setLDClassOption(var ALDClass: TLDClass; AOptionVal: string);
 begin
@@ -156,6 +199,16 @@ begin
 end;
 
 
+procedure setLDOption(var ALD: TLD; AOptionVal: string);
+begin
+  if Uppercase(AOptionVal) = Uppercase('LD13') then ALD := LD13;
+  if Uppercase(AOptionVal) = Uppercase('LD142') then ALD := LD142;
+  if Uppercase(AOptionVal) = Uppercase('LD15') then ALD := LD15;
+  if Uppercase(AOptionVal) = Uppercase('LD164') then ALD := LD164;
+  if Uppercase(AOptionVal) = Uppercase('LD17') then ALD := LD17;
+  if Uppercase(AOptionVal) = Uppercase('OldVersion') then ALD := OldVersion;
+
+end;
 
 
 
@@ -653,50 +706,507 @@ begin
   end; {of case}
 end;
 
-function KSFromTextureClass_RR(TC: TTextureClass): real;
-{Bodenkundliche Kartieranleitung 5. Aufl. Tabelle 76,
- Trockenrohdichte 3}
+/// <summary>
+/// function to set the satauration hydraulic conductivity from texture class and bulk density
+/// </summary>
+/// <param name="TC">Texture class</param>
+/// <param name="ALD">Bulk density class</param>
+/// <returns>Hydraulic conductivity in cm/d</returns>
+
+function KSFromTextureClass_RR(TC: TTextureClass; ALD: TLD): real;
+
 begin
-  case TC of
-    Ss: result := 512.1;
-    mS: result := 507.5;
-    mSgs: result := 507.5;
-    mSfs: result := 507.5;
-    fS: result := 285.1;
-    fSms: result := 285.1;
-    Sl2: result := 192.9;
-    Sl3: result := 89.9;
-    Sl4: result := 141.3;
-    Slu: result := 109.5;
-    St2: result := 420.4;
-    St3: result := 305.8;
-    Su2: result := 285.5;
-    Su3: result := 119.9;
-    Su4: result := 83.3;
-    Ls2: result := 38.4;
-    Ls3: result := 98.2;
-    Ls4: result := 169.9;
-    Lt2: result := 62.5;
-    Lt3: result := 44.3;
-    Lts: result := 52;
-    Lu: result := 82.7;
-    Uu: result := 33.8;
-    Uls: result := 40.2;
-    Us: result := 35.5;
-    Ut2: result := 29.3;
-    Ut3: result := 27.7;
-    Ut4: result := 24.6;
-    Tt: result := 154.7;
-    Tl: result := 172.5;
-    Tu2: result := 178.7;
-    Tu3: result := 123.8;
-    Tu4: result := 88.6;
-    Ts2: result := 249.862;
-    Ts3: result := 118.038;
-    Ts4: result := 322.257;
-    else result := 50.0;
-  end; {of case}
+  case ALD of
+    OldVersion: // 1. Auflage
+      case TC of
+        Ss:
+          result := 512.1;
+        mS:
+          result := 507.5;
+        mSgs:
+          result := 507.5;
+        mSfs:
+          result := 507.5;
+        fS:
+          result := 285.1;
+        fSms:
+          result := 285.1;
+        Sl2:
+          result := 192.9;
+        Sl3:
+          result := 89.9;
+        Sl4:
+          result := 141.3;
+        Slu:
+          result := 109.5;
+        St2:
+          result := 420.4;
+        St3:
+          result := 305.8;
+        Su2:
+          result := 285.5;
+        Su3:
+          result := 119.9;
+        Su4:
+          result := 83.3;
+        Ls2:
+          result := 38.4;
+        Ls3:
+          result := 98.2;
+        Ls4:
+          result := 169.9;
+        Lt2:
+          result := 62.5;
+        Lt3:
+          result := 44.3;
+        Lts:
+          result := 52;
+        Lu:
+          result := 82.7;
+        Uu:
+          result := 33.8;
+        Uls:
+          result := 40.2;
+        Us:
+          result := 35.5;
+        Ut2:
+          result := 29.3;
+        Ut3:
+          result := 27.7;
+        Ut4:
+          result := 24.6;
+        Tt:
+          result := 154.7;
+        Tl:
+          result := 172.5;
+        Tu2:
+          result := 178.7;
+        Tu3:
+          result := 123.8;
+        Tu4:
+          result := 88.6;
+        Ts2:
+          result := 249.862;
+        Ts3:
+          result := 118.038;
+        Ts4:
+          result := 322.257;
+      else
+        result := 50.0;
+      end; { of case TC }
+  end; { of case ALD }
+
+  case ALD of
+    LD13: // 1. Auflage
+      case TC of
+        { Trockenrohdichte 1.3 }
+        Ss:
+          result := 375;
+        mS:
+          result := 375;
+        mSgs:
+          result := 375;
+        mSfs:
+          result := 375;
+        fS:
+          result := 250;
+        fSms:
+          result := 250;
+        Sl2:
+          result := 160;
+        Sl3:
+          result := 100;
+        Sl4:
+          result := 80;
+        Slu:
+          result := 70;
+        St2:
+          result := 180;
+        St3:
+          result := 110;
+        Su2:
+          result := 185;
+        Su3:
+          result := 95;
+        Su4:
+          result := 85;
+        Ls2:
+          result := 50;
+        Ls3:
+          result := 60;
+        Ls4:
+          result := 70;
+        Lt2:
+          result := 40;
+        Lt3:
+          result := 20;
+        Lts:
+          result := 30;
+        Lu:
+          result := 35;
+        Uu:
+          result := 30;
+        Uls:
+          result := 35;
+        Us:
+          result := 30;
+        Ut2:
+          result := 30;
+        Ut3:
+          result := 30;
+        Ut4:
+          result := 30;
+        Tt:
+          result := 10;
+        Tl:
+          result := 20;
+        Tu2:
+          result := 18;
+        Tu3:
+          result := 20;
+        Tu4:
+          result := 25;
+        Ts2:
+          result := 30;
+        Ts3:
+          result := 35;
+        Ts4:
+          result := 50;
+      else
+        result := 20.0;
+      end; { of case TC }
+  end; { of case ALD }
+
+  case ALD of
+    LD142: // 1. Auflage
+      case TC of
+        Ss:
+          result := 335;
+        mS:
+          result := 335;
+        mSgs:
+          result := 335;
+        mSfs:
+          result := 335;
+        fS:
+          result := 195;
+        fSms:
+          result := 195;
+        Sl2:
+          result := 130;
+        Sl3:
+          result := 85;
+        Sl4:
+          result := 78;
+        Slu:
+          result := 68;
+        St2:
+          result := 150;
+        St3:
+          result := 110;
+        Su2:
+          result := 140;
+        Su3:
+          result := 83;
+        Su4:
+          result := 75;
+        Ls2:
+          result := 52;
+        Ls3:
+          result := 57;
+        Ls4:
+          result := 70;
+        Lt2:
+          result := 56;
+        Lt3:
+          result := 30;
+        Lts:
+          result := 35;
+        Lu:
+          result := 35;
+        Uu:
+          result := 27;
+        Uls:
+          result := 35;
+        Us:
+          result := 27;
+        Ut2:
+          result := 35;
+        Ut3:
+          result := 35;
+        Ut4:
+          result := 35;
+        Tt:
+          result := 43;
+        Tl:
+          result := 43;
+        Tu2:
+          result := 43;
+        Tu3:
+          result := 43;
+        Tu4:
+          result := 43;
+        Ts2:
+          result := 47;
+        Ts3:
+          result := 47;
+        Ts4:
+          result := 62;
+      else
+        result := 20.0;
+
+      end; { of case TC }
+  end; { of case ALD }
+
+  case ALD of
+    LD15: // 1. Auflage
+      case TC of
+        { Trockenrohdichte 1.5 }
+        Ss:
+          result := 280;
+        mS:
+          result := 250;
+        mSgs:
+          result := 250;
+        mSfs:
+          result := 250;
+        fS:
+          result := 150;
+        fSms:
+          result := 150;
+        Sl2:
+          result := 100;
+        Sl3:
+          result := 70;
+        Sl4:
+          result := 50;
+        Slu:
+          result := 40;
+        St2:
+          result := 120;
+        St3:
+          result := 60;
+        Su2:
+          result := 125;
+        Su3:
+          result := 60;
+        Su4:
+          result := 55;
+        Ls2:
+          result := 30;
+        Ls3:
+          result := 35;
+        Ls4:
+          result := 40;
+        Lt2:
+          result := 25;
+        Lt3:
+          result := 10;
+        Lts:
+          result := 20;
+        Lu:
+          result := 20;
+        Uu:
+          result := 18;
+        Uls:
+          result := 20;
+        Us:
+          result := 15;
+        Ut2:
+          result := 15;
+        Ut3:
+          result := 15;
+        Ut4:
+          result := 12;
+        Tt:
+          result := 0.5;
+        Tl:
+          result := 3;
+        Tu2:
+          result := 5;
+        Tu3:
+          result := 5;
+        Tu4:
+          result := 5;
+        Ts2:
+          result := 15;
+        Ts3:
+          result := 20;
+        Ts4:
+          result := 30;
+      else
+        result := 20.0;
+
+      end; { of case TC }
+  end; { of case ALD }
+
+  case ALD of
+    LD164: // 1. Auflage
+      case TC of
+        { Trockenrohdichte 1.63-1.65 }
+        Ss:
+          result := 205;
+        mS:
+          result := 205;
+        mSgs:
+          result := 205;
+        mSfs:
+          result := 205;
+        fS:
+          result := 105;
+        fSms:
+          result := 105;
+        Sl2:
+          result := 95;
+        Sl3:
+          result := 53;
+        Sl4:
+          result := 44;
+        Slu:
+          result := 37;
+        St2:
+          result := 92;
+        St3:
+          result := 55;
+        Su2:
+          result := 75;
+        Su3:
+          result := 45;
+        Su4:
+          result := 43;
+        Ls2:
+          result := 30;
+        Ls3:
+          result := 34;
+        Ls4:
+          result := 45;
+        Lt2:
+          result := 38;
+        Lt3:
+          result := 15;
+        Lts:
+          result := 21;
+        Lu:
+          result := 21;
+        Uu:
+          result := 15;
+        Uls:
+          result := 19;
+        Us:
+          result := 12;
+        Ut2:
+          result := 17;
+        Ut3:
+          result := 17;
+        Ut4:
+          result := 18;
+        Tt:
+          result := 13;
+        Tl:
+          result := 13;
+        Tu2:
+          result := 13;
+        Tu3:
+          result := 13;
+        Tu4:
+          result := 13;
+        Ts2:
+          result := 25;
+        Ts3:
+          result := 25;
+        Ts4:
+          result := 30;
+      else
+        result := 20.0;
+
+      end; { of case TC }
+  end; { of case ALD }
+
+  case ALD of
+    LD17: // 1. Auflage
+      case TC of
+        { Trockenrohdichte 1.7 }
+        Ss:
+          result := 150;
+        mS:
+          result := 150;
+        mSgs:
+          result := 150;
+        mSfs:
+          result := 150;
+        fS:
+          result := 90;
+        fSms:
+          result := 90;
+        Sl2:
+          result := 50;
+        Sl3:
+          result := 40;
+        Sl4:
+          result := 30;
+        Slu:
+          result := 20;
+        St2:
+          result := 60;
+        St3:
+          result := 30;
+        Su2:
+          result := 65;
+        Su3:
+          result := 30;
+        Su4:
+          result := 30;
+        Ls2:
+          result := 15;
+        Ls3:
+          result := 20;
+        Ls4:
+          result := 25;
+        Lt2:
+          result := 10;
+        Lt3:
+          result := 3;
+        Lts:
+          result := 5;
+        Lu:
+          result := 8;
+        Uu:
+          result := 4;
+        Uls:
+          result := 7;
+        Us:
+          result := 5;
+        Ut2:
+          result := 3;
+        Ut3:
+          result := 3;
+        Ut4:
+          result := 2;
+        Tt:
+          result := 0.05;
+        Tl:
+          result := 0.5;
+        Tu2:
+          result := 0.5;
+        Tu3:
+          result := 0.5;
+        Tu4:
+          result := 1;
+        Ts2:
+          result := 5;
+        Ts3:
+          result := 8;
+        Ts4:
+          result := 10;
+      else
+        result := 20.0;
+
+      end; { of case TC }
+  end; { of case ALD }
+
 end;
+
+
 
 function KSFromTextureClass_KA(TC: TTextureClass): real;
 {Bodenkundliche Kartieranleitung 5. Aufl. Tabelle 76,
@@ -763,4 +1273,3 @@ begin
 end;
 
 end.
-

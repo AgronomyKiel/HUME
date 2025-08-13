@@ -1,69 +1,80 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="USoilMineralisationNH4" platform="Win32">
-  <const name="Verbruggen" type="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="16">
+  <devnotes>
+     <summary>
+     Sub-Modell zur Beschreibung der Dynamik der Umsetzungen organischer Substanz
+     im Boden.
+     After Verberne et al. 1990: Modelling organic matter dynamics
+     in different soils, Neth.J.agr.Sci., 38, 221-238
+     </summary>
+  </devnotes>
+  <const name="Verbruggen" type="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="18">
     <value>
       Verbruggen
     </value>
   </const>
-  <const name="Petersen" type="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="16">
+  <const name="Petersen" type="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="18">
     <value>
       Petersen
     </value>
   </const>
-  <const name="Zhou" type="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="16">
+  <const name="Zhou" type="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="18">
     <value>
       Zhou
     </value>
   </const>
-  <const name="DAISY" type="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="16">
+  <const name="DAISY" type="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="18">
     <value>
       DAISY
     </value>
   </const>
-  <const name="Mueller" type="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="16">
+  <const name="Mueller" type="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="18">
     <value>
       Mueller
     </value>
   </const>
-  <const name="APSIM" type="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="16">
+  <const name="APSIM" type="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="18">
     <value>
       APSIM
     </value>
   </const>
-  <const name="minp" type="T_ProcessType" file="USoilMineralisationNH4.pas" line="18">
+  <const name="minp" type="T_ProcessType" file="USoilMineralisationNH4.pas" line="20">
     <value>
       minp
     </value>
   </const>
-  <const name="nitp" type="T_ProcessType" file="USoilMineralisationNH4.pas" line="18">
+  <const name="nitp" type="T_ProcessType" file="USoilMineralisationNH4.pas" line="20">
     <value>
       nitp
     </value>
   </const>
-  <const name="denp" type="T_ProcessType" file="USoilMineralisationNH4.pas" line="18">
+  <const name="denp" type="T_ProcessType" file="USoilMineralisationNH4.pas" line="20">
     <value>
       denp
     </value>
   </const>
-  <enum name="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="16">
-    <element value="0" name="Verbruggen" file="USoilMineralisationNH4.pas" line="16" />
-    <element value="1" name="Petersen" file="USoilMineralisationNH4.pas" line="16" />
-    <element value="2" name="Zhou" file="USoilMineralisationNH4.pas" line="16" />
-    <element value="3" name="DAISY" file="USoilMineralisationNH4.pas" line="16" />
-    <element value="4" name="Mueller" file="USoilMineralisationNH4.pas" line="16" />
-    <element value="5" name="APSIM" file="USoilMineralisationNH4.pas" line="16" />
-  </enum>
-  <enum name="T_ProcessType" file="USoilMineralisationNH4.pas" line="18">
+  <enum name="T_f_abiot_calc" file="USoilMineralisationNH4.pas" line="18">
     <devnotes>
-       Options for calculation of f_abiot
+       <summary>Options for calculation of f_abiot</summary>
     </devnotes>
-    <element value="0" name="minp" file="USoilMineralisationNH4.pas" line="18" />
-    <element value="1" name="nitp" file="USoilMineralisationNH4.pas" line="18" />
-    <element value="2" name="denp" file="USoilMineralisationNH4.pas" line="18" />
+    <element value="0" name="Verbruggen" file="USoilMineralisationNH4.pas" line="18" />
+    <element value="1" name="Petersen" file="USoilMineralisationNH4.pas" line="18" />
+    <element value="2" name="Zhou" file="USoilMineralisationNH4.pas" line="18" />
+    <element value="3" name="DAISY" file="USoilMineralisationNH4.pas" line="18" />
+    <element value="4" name="Mueller" file="USoilMineralisationNH4.pas" line="18" />
+    <element value="5" name="APSIM" file="USoilMineralisationNH4.pas" line="18" />
   </enum>
-  <class name="TMinProcess" file="USoilMineralisationNH4.pas" line="21">
+  <enum name="T_ProcessType" file="USoilMineralisationNH4.pas" line="20">
     <devnotes>
-       mineralisation, nitrification, denitrification
+       <summary>mineralisation, nitrification, denitrification</summary>
+    </devnotes>
+    <element value="0" name="minp" file="USoilMineralisationNH4.pas" line="20" />
+    <element value="1" name="nitp" file="USoilMineralisationNH4.pas" line="20" />
+    <element value="2" name="denp" file="USoilMineralisationNH4.pas" line="20" />
+  </enum>
+  <class name="TMinProcess" file="USoilMineralisationNH4.pas" line="23">
+    <devnotes>
+       <summary>class for calculation of a decay process for one pool</summary>
     </devnotes>
     <ancestor name="TObject" namespace="System">
       <methodref name="Create" visibility="public" procflags="constructor">
@@ -142,50 +153,47 @@
       </propertyref>
     </ancestor>
     <members>
-      <field name="Name" type="string" visibility="public" size="4" offset="4" file="USoilMineralisationNH4.pas" line="24">
+      <field name="Name" type="string" visibility="public" size="4" offset="4" file="USoilMineralisationNH4.pas" line="26">
         <devnotes>
-           class for calculation of a decay process for one pool
+           <summary>name of the process</summary>
         </devnotes>
       </field>
-      <field name="k" type="TPar" visibility="public" size="4" offset="8" file="USoilMineralisationNH4.pas" line="26">
+      <field name="k" type="TPar" visibility="public" size="4" offset="8" file="USoilMineralisationNH4.pas" line="28">
         <devnotes>
-           name of the process
+           <summary>decay constant               [1/d]</summary>
         </devnotes>
       </field>
-      <field name="E" type="TPar" visibility="public" size="4" offset="12" file="USoilMineralisationNH4.pas" line="28">
+      <field name="E" type="TPar" visibility="public" size="4" offset="12" file="USoilMineralisationNH4.pas" line="30">
         <devnotes>
-           decay constant               [1/d] }
+           <summary>conversion efficiency        [-]</summary>
         </devnotes>
       </field>
-      <field name="C_flow" type="Double" visibility="public" size="8" offset="16" file="USoilMineralisationNH4.pas" line="30">
+      <field name="C_flow" type="Double" visibility="public" size="8" offset="16" file="USoilMineralisationNH4.pas" line="32">
         <devnotes>
-           conversion efficiency        [-] }
+           <summary>actual C flow rate from (loss from Edukt)</summary>
         </devnotes>
       </field>
-      <field name="CO2_Flow" type="Double" visibility="public" size="8" offset="24" file="USoilMineralisationNH4.pas" line="32">
+      <field name="CO2_Flow" type="Double" visibility="public" size="8" offset="24" file="USoilMineralisationNH4.pas" line="34">
         <devnotes>
-           actual C flow rate from (loss from Edukt)
+           <summary>actual CO2 flow rate</summary>
         </devnotes>
       </field>
-      <field name="Nr" type="Double" visibility="public" size="8" offset="32" file="USoilMineralisationNH4.pas" line="34">
+      <field name="Nr" type="Double" visibility="public" size="8" offset="32" file="USoilMineralisationNH4.pas" line="36">
         <devnotes>
-           actual CO2 flow rate
+           <summary>Mineralisation/immobilisation rate [kg N/(ha*d]</summary>
         </devnotes>
       </field>
-      <field name="Edukt" type="Pools" visibility="public" size="1" offset="40" file="USoilMineralisationNH4.pas" line="36">
+      <field name="Edukt" type="Pools" visibility="public" size="1" offset="40" file="USoilMineralisationNH4.pas" line="38">
         <devnotes>
-           Mineralisation/immobilisation rate [kg N/(ha*d]
+           <summary>educt/substrate of the pool</summary>
         </devnotes>
       </field>
-      <field name="Produkt" type="Pools" visibility="public" size="1" offset="41" file="USoilMineralisationNH4.pas" line="38">
+      <field name="Produkt" type="Pools" visibility="public" size="1" offset="41" file="USoilMineralisationNH4.pas" line="40">
         <devnotes>
-           educt/substrate of the pool
+           <summary>product pool of the process</summary>
         </devnotes>
       </field>
-      <procedure name="init" visibility="public" file="USoilMineralisationNH4.pas" line="42">
-        <devnotes>
-           product pool of the process
-        </devnotes>
+      <procedure name="init" visibility="public" file="USoilMineralisationNH4.pas" line="43">
         <parameters>
           <parameter name="iName" type="string" />
           <parameter name="ik" type="TPar" />
@@ -194,7 +202,7 @@
           <parameter name="iProdukt" type="Pools" />
         </parameters>
       </procedure>
-      <procedure name="Calculate" visibility="public" file="USoilMineralisationNH4.pas" line="44">
+      <procedure name="Calculate" visibility="public" file="USoilMineralisationNH4.pas" line="45">
         <parameters>
           <parameter name="F_abiot" type="Double" />
           <parameter name="f_Nmin" type="Double" />
@@ -206,7 +214,7 @@
       </procedure>
     </members>
   </class>
-  <class name="TSoilMinNH4" file="USoilMineralisationNH4.pas" line="53">
+  <class name="TSoilMinNH4" file="USoilMineralisationNH4.pas" line="54">
     <ancestor name="TAbstractSoilMin" namespace="UAbstractSoilMin">
       <methodref name="CreateAll" visibility="public" procflags="override" />
       <methodref name="Init" visibility="public" procflags="override" />
@@ -1400,31 +1408,28 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="f_abiot_min_Calcmethod" type="T_f_abiot_calc" visibility="private" size="1" offset="712" file="USoilMineralisationNH4.pas" line="56" />
-      <field name="f_abiot_nit_Calcmethod" type="T_f_abiot_calc" visibility="private" size="1" offset="713" file="USoilMineralisationNH4.pas" line="58">
+      <field name="f_abiot_min_Calcmethod" type="T_f_abiot_calc" visibility="private" size="1" offset="712" file="USoilMineralisationNH4.pas" line="58">
         <devnotes>
-           calculation of abiotic influences for mineralisation
+           <summary>calculation of abiotic influences for mineralisation</summary>
         </devnotes>
       </field>
-      <field name="f_abiot_den_Calcmethod" type="T_f_abiot_calc" visibility="private" size="1" offset="714" file="USoilMineralisationNH4.pas" line="60">
+      <field name="f_abiot_nit_Calcmethod" type="T_f_abiot_calc" visibility="private" size="1" offset="713" file="USoilMineralisationNH4.pas" line="60">
         <devnotes>
-           calculation of abiotic influences for nitrification
+           <summary>calculation of abiotic influences for nitrification</summary>
         </devnotes>
       </field>
-      <field name="fTransferPools" type="Boolean" visibility="private" size="1" offset="715" file="USoilMineralisationNH4.pas" line="63">
+      <field name="f_abiot_den_Calcmethod" type="T_f_abiot_calc" visibility="private" size="1" offset="714" file="USoilMineralisationNH4.pas" line="62">
         <devnotes>
-           calculation of abiotic influences for denitrification
+           <summary>calculation of abiotic influences for denitrification</summary>
         </devnotes>
       </field>
-      <field name="fInitFromHumusConc" type="Boolean" visibility="private" size="1" offset="716" file="USoilMineralisationNH4.pas" line="65">
+      <field name="fTransferPools" type="Boolean" visibility="private" size="1" offset="715" file="USoilMineralisationNH4.pas" line="65">
         <devnotes>
-           field for option on transfer of pools to next INI
+           <summary>field for option on transfer of pools to next INI</summary>
         </devnotes>
       </field>
+      <field name="fInitFromHumusConc" type="Boolean" visibility="private" size="1" offset="716" file="USoilMineralisationNH4.pas" line="66" />
       <function name="Calc_f_abiot" visibility="protected" file="USoilMineralisationNH4.pas" line="69">
-        <devnotes>
-          
-        </devnotes>
         <parameters>
           <parameter name="ProcessType" type="T_ProcessType" />
           <parameter name="layer" type="Integer" />
@@ -1432,6 +1437,19 @@
         </parameters>
       </function>
       <function name="calc_f_abiot_Verbruggen" visibility="protected" file="USoilMineralisationNH4.pas" line="70">
+        <devnotes>
+           <summary>
+           Purpose: Calculation of reduction factor for mineralisation dependent on
+           soil moisture and soil temperature, assuming maximal mineralisation.
+           Source: Verbruggen (1985) cited in Groot (1987).
+           Parameters:
+             WC    - volumetric water content [cm3/cm3] (input)
+             Temp  - soil temperature [Â°C] (input)
+             BD    - bulk density [g/cm3] (input)
+           Returns:
+             Min_red_f - reduction factor [-] (output)
+           </summary>
+        </devnotes>
         <parameters>
           <parameter name="WC" type="Double" />
           <parameter name="temp" type="Double" />
@@ -1473,333 +1491,337 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <field name="OrgDepth" type="TPar" visibility="public" size="4" offset="720" file="USoilMineralisationNH4.pas" line="80" />
-      <field name="iBulkDensity" type="TPar" visibility="public" size="4" offset="724" file="USoilMineralisationNH4.pas" line="82">
+      <field name="OrgDepth" type="TPar" visibility="public" size="4" offset="720" file="USoilMineralisationNH4.pas" line="81">
         <devnotes>
-           total depth of organic layer [cm]
+           <summary>total depth of organic layer [cm]</summary>
         </devnotes>
       </field>
-      <field name="BulkDensity" type="TVar" visibility="public" size="4" offset="728" file="USoilMineralisationNH4.pas" line="84">
+      <field name="iBulkDensity" type="TPar" visibility="public" size="4" offset="724" file="USoilMineralisationNH4.pas" line="83">
         <devnotes>
-           inital density of soil
+           <summary>inital density of soil</summary>
         </devnotes>
       </field>
-      <field name="HumusContent" type="TPar" visibility="public" size="4" offset="732" file="USoilMineralisationNH4.pas" line="86">
+      <field name="BulkDensity" type="TVar" visibility="public" size="4" offset="728" file="USoilMineralisationNH4.pas" line="85">
         <devnotes>
-           actual density of soil
+           <summary>actual density of soil</summary>
         </devnotes>
       </field>
-      <field name="MinNmin" type="TPar" visibility="public" size="4" offset="736" file="USoilMineralisationNH4.pas" line="89">
+      <field name="HumusContent" type="TPar" visibility="public" size="4" offset="732" file="USoilMineralisationNH4.pas" line="87">
         <devnotes>
-           Humus content
+           <summary>Humus content</summary>
         </devnotes>
       </field>
-      <field name="kBBf" type="TPar" visibility="public" size="4" offset="740" file="USoilMineralisationNH4.pas" line="91">
+      <field name="MinNmin" type="TPar" visibility="public" size="4" offset="736" file="USoilMineralisationNH4.pas" line="90">
         <devnotes>
-           minimal SMN content
+           <summary>minimal SMN content</summary>
         </devnotes>
       </field>
-      <field name="NH4_Arr" visibility="public" size="80" offset="744" file="USoilMineralisationNH4.pas" line="94">
+      <field name="kBBf" type="TPar" visibility="public" size="4" offset="740" file="USoilMineralisationNH4.pas" line="92">
         <devnotes>
-           &quot;Decay rate&quot; of tillage factor
+           <summary>&quot;Decay rate&quot; of tillage factor</summary>
         </devnotes>
-        <array name="NH4_Arr" visibility="public" low="1" high="20" file="USoilMineralisationNH4.pas" line="94">
+      </field>
+      <field name="NH4_Arr" visibility="public" size="80" offset="744" file="USoilMineralisationNH4.pas" line="95">
+        <devnotes>
+           <summary>sum of ammonia N in each layer</summary>
+        </devnotes>
+        <array name="NH4_Arr" visibility="public" low="1" high="20" file="USoilMineralisationNH4.pas" line="95">
           <element type="TState" />
         </array>
       </field>
-      <field name="Nmin_Arr" visibility="public" size="80" offset="824" file="USoilMineralisationNH4.pas" line="96">
+      <field name="Nmin_Arr" visibility="public" size="80" offset="824" file="USoilMineralisationNH4.pas" line="97">
         <devnotes>
-           sum of ammonia N in each layer
+           <summary>sum of nitrate (external) and ammonia</summary>
         </devnotes>
-        <array name="Nmin_Arr" visibility="public" low="1" high="20" file="USoilMineralisationNH4.pas" line="96">
+        <array name="Nmin_Arr" visibility="public" low="1" high="20" file="USoilMineralisationNH4.pas" line="97">
           <element type="TVar" />
         </array>
       </field>
-      <field name="SumNmin" type="TVar" visibility="public" size="4" offset="904" file="USoilMineralisationNH4.pas" line="98">
+      <field name="SumNmin" type="TVar" visibility="public" size="4" offset="904" file="USoilMineralisationNH4.pas" line="99">
         <devnotes>
-           sum of nitrate (external) and ammonia
+           <summary>sum of Nmin</summary>
         </devnotes>
       </field>
-      <field name="cum_N2O" visibility="public" size="36" offset="908" file="USoilMineralisationNH4.pas" line="100">
+      <field name="cum_N2O" visibility="public" size="36" offset="908" file="USoilMineralisationNH4.pas" line="101">
         <devnotes>
-           sum of Nmin
+           <summary>cumulative N2O loss [kg N ha-1]</summary>
         </devnotes>
-        <array name="cum_N2O" visibility="public" low="1" high="9" file="USoilMineralisationNH4.pas" line="100">
+        <array name="cum_N2O" visibility="public" low="1" high="9" file="USoilMineralisationNH4.pas" line="101">
           <element type="TState" />
         </array>
       </field>
-      <field name="temp" type="TExternV" visibility="public" size="4" offset="944" file="USoilMineralisationNH4.pas" line="103">
+      <field name="temp" type="TExternV" visibility="public" size="4" offset="944" file="USoilMineralisationNH4.pas" line="104">
         <devnotes>
-           cumulative N2O loss [kg N ha-1]
+           <summary>external values</summary>
+           <summary>Mean air temperature</summary>
         </devnotes>
       </field>
-      <field name="Theta_Array" visibility="public" size="36" offset="948" file="USoilMineralisationNH4.pas" line="105">
+      <field name="Theta_Array" visibility="public" size="36" offset="948" file="USoilMineralisationNH4.pas" line="106">
         <devnotes>
-           Mean air temperature
+           <summary>volumetric soil water content [cm3/cm3] , external</summary>
         </devnotes>
-        <array name="Theta_Array" visibility="public" low="1" high="9" file="USoilMineralisationNH4.pas" line="105">
+        <array name="Theta_Array" visibility="public" low="1" high="9" file="USoilMineralisationNH4.pas" line="106">
           <element type="TExternV" />
         </array>
       </field>
-      <field name="NO3_Arr" visibility="public" size="80" offset="984" file="USoilMineralisationNH4.pas" line="107">
+      <field name="NO3_Arr" visibility="public" size="80" offset="984" file="USoilMineralisationNH4.pas" line="108">
         <devnotes>
-           volumetric soil water content [cm3/cm3] , external
+           <summary>soil nitrate [kg N/ha], external</summary>
         </devnotes>
-        <array name="NO3_Arr" visibility="public" low="1" high="20" file="USoilMineralisationNH4.pas" line="107">
+        <array name="NO3_Arr" visibility="public" low="1" high="20" file="USoilMineralisationNH4.pas" line="108">
           <element type="TExternV" />
         </array>
       </field>
       <field name="WFPS_Arr" visibility="public" size="36" offset="1064" file="USoilMineralisationNH4.pas" line="109">
-        <devnotes>
-           soil nitrate [kg N/ha], external
-        </devnotes>
         <array name="WFPS_Arr" visibility="public" low="1" high="9" file="USoilMineralisationNH4.pas" line="109">
           <element type="TVar" />
         </array>
       </field>
-      <field name="WFPS0_30" type="TVar" visibility="public" size="4" offset="1100" file="USoilMineralisationNH4.pas" line="110" />
-      <field name="MinProcesses" visibility="public" size="160" offset="1104" file="USoilMineralisationNH4.pas" line="113">
+      <field name="WFPS0_30" type="TVar" visibility="public" size="4" offset="1100" file="USoilMineralisationNH4.pas" line="111">
         <devnotes>
-           waterfilled pore space 0-30 cm [%%]
+           <summary>waterfilled pore space 0-30 cm [%%]</summary>
         </devnotes>
-        <array name="MinProcesses" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="113">
-          <array name="MinProcesses" visibility="public" file="USoilMineralisationNH4.pas" line="113">
+      </field>
+      <field name="MinProcesses" visibility="public" size="160" offset="1104" file="USoilMineralisationNH4.pas" line="114">
+        <devnotes>
+           <summary>array for iterating the processes</summary>
+        </devnotes>
+        <array name="MinProcesses" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="114">
+          <array name="MinProcesses" visibility="public" file="USoilMineralisationNH4.pas" line="114">
             <element type="TMinProcess" />
           </array>
         </array>
       </field>
-      <field name="CFlowArr" visibility="public" size="160" offset="1264" file="USoilMineralisationNH4.pas" line="115">
+      <field name="CFlowArr" visibility="public" size="160" offset="1264" file="USoilMineralisationNH4.pas" line="116">
         <devnotes>
-           array for iterating the processes
+           <summary>C flows</summary>
         </devnotes>
-        <array name="CFlowArr" visibility="public" file="USoilMineralisationNH4.pas" line="115">
-          <array name="CFlowArr" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="115">
+        <array name="CFlowArr" visibility="public" file="USoilMineralisationNH4.pas" line="116">
+          <array name="CFlowArr" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="116">
             <element type="TVar" />
           </array>
         </array>
       </field>
-      <field name="CO2FlowArr" visibility="public" size="160" offset="1424" file="USoilMineralisationNH4.pas" line="117">
+      <field name="CO2FlowArr" visibility="public" size="160" offset="1424" file="USoilMineralisationNH4.pas" line="118">
         <devnotes>
-           C flows
+           <summary>CO2 flows</summary>
         </devnotes>
-        <array name="CO2FlowArr" visibility="public" file="USoilMineralisationNH4.pas" line="117">
-          <array name="CO2FlowArr" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="117">
+        <array name="CO2FlowArr" visibility="public" file="USoilMineralisationNH4.pas" line="118">
+          <array name="CO2FlowArr" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="118">
             <element type="TVar" />
           </array>
         </array>
       </field>
-      <field name="C_ges" type="TState" visibility="public" size="4" offset="1584" file="USoilMineralisationNH4.pas" line="119">
+      <field name="C_ges" type="TState" visibility="public" size="4" offset="1584" file="USoilMineralisationNH4.pas" line="120">
         <devnotes>
-           CO2 flows
+           <summary>Total C content of the soil [kg/ha]</summary>
         </devnotes>
       </field>
-      <field name="C_ER" type="TState" visibility="public" size="4" offset="1588" file="USoilMineralisationNH4.pas" line="121">
+      <field name="C_ER" type="TState" visibility="public" size="4" offset="1588" file="USoilMineralisationNH4.pas" line="122">
         <devnotes>
-           Total C content of the soil [kg/ha]
+           <summary>C in crop residues    [kg/ha]</summary>
         </devnotes>
       </field>
-      <field name="N_ER" type="TState" visibility="public" size="4" offset="1592" file="USoilMineralisationNH4.pas" line="123">
+      <field name="N_ER" type="TState" visibility="public" size="4" offset="1592" file="USoilMineralisationNH4.pas" line="124">
         <devnotes>
-           C in crop residues    [kg/ha]
+           <summary>N in crop residues    [kg/ha]</summary>
         </devnotes>
       </field>
-      <field name="Added_N" type="TState" visibility="public" size="4" offset="1596" file="USoilMineralisationNH4.pas" line="125">
+      <field name="Added_N" type="TState" visibility="public" size="4" offset="1596" file="USoilMineralisationNH4.pas" line="126">
         <devnotes>
-           N in crop residues    [kg/ha]
+           <summary>Norg / Corg added from Input [kg N/ha]</summary>
         </devnotes>
       </field>
-      <field name="Added_C" type="TState" visibility="public" size="4" offset="1600" file="USoilMineralisationNH4.pas" line="125" />
-      <field name="cum_N2O_nit" type="TState" visibility="public" size="4" offset="1604" file="USoilMineralisationNH4.pas" line="127">
+      <field name="Added_C" type="TState" visibility="public" size="4" offset="1600" file="USoilMineralisationNH4.pas" line="126" />
+      <field name="cum_N2O_nit" type="TState" visibility="public" size="4" offset="1604" file="USoilMineralisationNH4.pas" line="128">
         <devnotes>
-           Norg / Corg added from Input [kg N/ha]
+           <summary>cumulative N2O emissions from nitrification [kg N/ha]</summary>
         </devnotes>
       </field>
-      <field name="cum_N2O_den" type="TState" visibility="public" size="4" offset="1608" file="USoilMineralisationNH4.pas" line="129">
+      <field name="cum_N2O_den" type="TState" visibility="public" size="4" offset="1608" file="USoilMineralisationNH4.pas" line="130">
         <devnotes>
-           cumulative N2O emissions from nitrification [kg N/ha]
+           <summary>cumulative N2O emissions from denitrification [kg N/ha]</summary>
         </devnotes>
       </field>
-      <field name="cum_N2" type="TState" visibility="public" size="4" offset="1612" file="USoilMineralisationNH4.pas" line="131">
+      <field name="cum_N2" type="TState" visibility="public" size="4" offset="1612" file="USoilMineralisationNH4.pas" line="132">
         <devnotes>
-           cumulative N2O emissions from denitrification [kg N/ha]
+           <summary>cumulative N2 emissions [kg N/ha]</summary>
         </devnotes>
       </field>
-      <field name="cum_NOx" type="TState" visibility="public" size="4" offset="1616" file="USoilMineralisationNH4.pas" line="133">
+      <field name="cum_NOx" type="TState" visibility="public" size="4" offset="1616" file="USoilMineralisationNH4.pas" line="134">
         <devnotes>
-           cumulative N2 emissions [kg N/ha]
+           <summary>cumulative NOx emissions [kg N/ha]</summary>
         </devnotes>
       </field>
-      <field name="total_N2O" type="TVar" visibility="public" size="4" offset="1620" file="USoilMineralisationNH4.pas" line="137">
+      <field name="total_N2O" type="TVar" visibility="public" size="4" offset="1620" file="USoilMineralisationNH4.pas" line="138">
         <devnotes>
-           cumulative NOx emissions [kg N/ha]
+           <summary>Total N content of the soil  [kg/ha]</summary>
         </devnotes>
       </field>
-      <field name="N_ges" type="TVar" visibility="public" size="4" offset="1624" file="USoilMineralisationNH4.pas" line="137" />
-      <field name="f_DPM" type="TVar" visibility="public" size="4" offset="1628" file="USoilMineralisationNH4.pas" line="139">
+      <field name="N_ges" type="TVar" visibility="public" size="4" offset="1624" file="USoilMineralisationNH4.pas" line="138" />
+      <field name="f_DPM" type="TVar" visibility="public" size="4" offset="1628" file="USoilMineralisationNH4.pas" line="140">
         <devnotes>
-           Total N content of the soil  [kg/ha]
+           <summary>fraction of decomposable carbon in residues</summary>
         </devnotes>
       </field>
-      <field name="SumMinr" type="TVar" visibility="public" size="4" offset="1632" file="USoilMineralisationNH4.pas" line="141">
+      <field name="SumMinr" type="TVar" visibility="public" size="4" offset="1632" file="USoilMineralisationNH4.pas" line="142">
         <devnotes>
-           fraction of decomposable carbon in residues
+           <summary>cumulative sum of net mineralisation in all layers [kg N/ha]</summary>
         </devnotes>
       </field>
-      <field name="Net_ming" type="TVar" visibility="public" size="4" offset="1636" file="USoilMineralisationNH4.pas" line="143">
+      <field name="Net_ming" type="TVar" visibility="public" size="4" offset="1636" file="USoilMineralisationNH4.pas" line="144">
         <devnotes>
-           cumulative sum of net mineralisation in all layers [kg N/ha]
+           <summary>sum of N in all pools</summary>
         </devnotes>
       </field>
-      <field name="NSumme" type="TVar" visibility="public" size="4" offset="1640" file="USoilMineralisationNH4.pas" line="143" />
-      <field name="CBilanz" type="TVar" visibility="public" size="4" offset="1644" file="USoilMineralisationNH4.pas" line="145">
+      <field name="NSumme" type="TVar" visibility="public" size="4" offset="1640" file="USoilMineralisationNH4.pas" line="144" />
+      <field name="CBilanz" type="TVar" visibility="public" size="4" offset="1644" file="USoilMineralisationNH4.pas" line="146">
         <devnotes>
-           sum of N in all pools
+           <summary>balance of carbon</summary>
         </devnotes>
       </field>
-      <field name="NBilanz" type="TVar" visibility="public" size="4" offset="1648" file="USoilMineralisationNH4.pas" line="147">
+      <field name="NBilanz" type="TVar" visibility="public" size="4" offset="1648" file="USoilMineralisationNH4.pas" line="148">
         <devnotes>
-           balance of carbon
+           <summary>balance of nitrogen</summary>
         </devnotes>
       </field>
-      <field name="CSumme" type="TVar" visibility="public" size="4" offset="1652" file="USoilMineralisationNH4.pas" line="149">
+      <field name="CSumme" type="TVar" visibility="public" size="4" offset="1652" file="USoilMineralisationNH4.pas" line="150">
         <devnotes>
-           balance of nitrogen
+           <summary>sum of N in all pools</summary>
         </devnotes>
       </field>
       <field name="NetMinArr" visibility="public" size="160" offset="1656" file="USoilMineralisationNH4.pas" line="152">
-        <devnotes>
-           sum of N in all pools
-        </devnotes>
         <array name="NetMinArr" visibility="public" file="USoilMineralisationNH4.pas" line="152">
           <array name="NetMinArr" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="152">
             <element type="TVar" />
           </array>
         </array>
       </field>
-      <field name="km_Nmin" type="TPar" visibility="public" size="4" offset="1816" file="USoilMineralisationNH4.pas" line="154" />
-      <field name="k_dpm_biom" type="TPar" visibility="public" size="4" offset="1820" file="USoilMineralisationNH4.pas" line="156">
+      <field name="km_Nmin" type="TPar" visibility="public" size="4" offset="1816" file="USoilMineralisationNH4.pas" line="155">
         <devnotes>
-           Parameter for decreasing decomposition rates under nitrogen shortage
+           <summary>Parameter for decreasing decomposition rates under nitrogen shortage</summary>
         </devnotes>
       </field>
-      <field name="k_rpm_biom" type="TPar" visibility="public" size="4" offset="1824" file="USoilMineralisationNH4.pas" line="158">
+      <field name="k_dpm_biom" type="TPar" visibility="public" size="4" offset="1820" file="USoilMineralisationNH4.pas" line="157">
         <devnotes>
-           decay constant dpm to biom
+           <summary>decay constant dpm to biom</summary>
         </devnotes>
       </field>
+      <field name="k_rpm_biom" type="TPar" visibility="public" size="4" offset="1824" file="USoilMineralisationNH4.pas" line="158" />
       <field name="k_som_biom" type="TPar" visibility="public" size="4" offset="1828" file="USoilMineralisationNH4.pas" line="158" />
       <field name="k_biom_som" type="TPar" visibility="public" size="4" offset="1832" file="USoilMineralisationNH4.pas" line="158" />
       <field name="E_dpm_biom" type="TPar" visibility="public" size="4" offset="1836" file="USoilMineralisationNH4.pas" line="158" />
       <field name="E_rpm_biom" type="TPar" visibility="public" size="4" offset="1840" file="USoilMineralisationNH4.pas" line="158" />
       <field name="E_som_biom" type="TPar" visibility="public" size="4" offset="1844" file="USoilMineralisationNH4.pas" line="158" />
-      <field name="E_biom_som" type="TPar" visibility="public" size="4" offset="1848" file="USoilMineralisationNH4.pas" line="159" />
-      <field name="k_nit" type="TPar" visibility="public" size="4" offset="1852" file="USoilMineralisationNH4.pas" line="159" />
-      <field name="fr_Nloss_nit" type="TPar" visibility="public" size="4" offset="1856" file="USoilMineralisationNH4.pas" line="161">
+      <field name="E_biom_som" type="TPar" visibility="public" size="4" offset="1848" file="USoilMineralisationNH4.pas" line="160">
         <devnotes>
-           nitrification constant
+           <summary>nitrification constant</summary>
         </devnotes>
       </field>
-      <field name="k_den" type="TPar" visibility="public" size="4" offset="1860" file="USoilMineralisationNH4.pas" line="163">
+      <field name="k_nit" type="TPar" visibility="public" size="4" offset="1852" file="USoilMineralisationNH4.pas" line="160" />
+      <field name="fr_Nloss_nit" type="TPar" visibility="public" size="4" offset="1856" file="USoilMineralisationNH4.pas" line="162">
         <devnotes>
-           fraction of N loss during nitrification  in Zhou et al. 2010: Parameter Kn := 0.05
+           <summary>fraction of N loss during nitrification  in Zhou et al. 2010: Parameter Kn := 0.05</summary>
         </devnotes>
       </field>
-      <field name="km_den" type="TPar" visibility="public" size="4" offset="1864" file="USoilMineralisationNH4.pas" line="165">
+      <field name="k_den" type="TPar" visibility="public" size="4" offset="1860" file="USoilMineralisationNH4.pas" line="164">
         <devnotes>
-           denitrification constant
+           <summary>denitrification constant</summary>
         </devnotes>
       </field>
-      <field name="f_biom" type="TPar" visibility="public" size="4" offset="1868" file="USoilMineralisationNH4.pas" line="167">
+      <field name="km_den" type="TPar" visibility="public" size="4" offset="1864" file="USoilMineralisationNH4.pas" line="166">
         <devnotes>
-           Michaelis Menten constant for denitrification
+           <summary>Michaelis Menten constant for denitrification</summary>
         </devnotes>
       </field>
-      <field name="Soil_pH" type="TPar" visibility="public" size="4" offset="1872" file="USoilMineralisationNH4.pas" line="169">
+      <field name="f_biom" type="TPar" visibility="public" size="4" offset="1868" file="USoilMineralisationNH4.pas" line="168">
         <devnotes>
-           fraction of Biomass C to total C  ~ 0.0001;
+           <summary>fraction of Biomass C to total C  ~ 0.0001;</summary>
         </devnotes>
       </field>
-      <field name="WFPS_crit_den" type="TPar" visibility="public" size="4" offset="1876" file="USoilMineralisationNH4.pas" line="171">
+      <field name="Soil_pH" type="TPar" visibility="public" size="4" offset="1872" file="USoilMineralisationNH4.pas" line="170">
         <devnotes>
-           Soil pH for calculation of f_abiot_nit according to Zhou
+           <summary>Soil pH for calculation of f_abiot_nit according to Zhou</summary>
         </devnotes>
       </field>
-      <field name="CritDen_f" type="TPar" visibility="public" size="4" offset="1880" file="USoilMineralisationNH4.pas" line="173">
+      <field name="WFPS_crit_den" type="TPar" visibility="public" size="4" offset="1876" file="USoilMineralisationNH4.pas" line="172">
         <devnotes>
-           critical WFPS for start of denitrification according Mielenz et al. (2016)
+           <summary>critical WFPS for start of denitrification according Mielenz et al. (2016)</summary>
         </devnotes>
       </field>
-      <field name="ResidueIncorp" type="TOption" visibility="public" size="4" offset="1884" file="USoilMineralisationNH4.pas" line="177">
+      <field name="CritDen_f" type="TPar" visibility="public" size="4" offset="1880" file="USoilMineralisationNH4.pas" line="174">
         <devnotes>
-           factor for critical WFPS/WC for start of denitrification according Mielenz et al. (2016)
+           <summary>factor for critical WFPS/WC for start of denitrification according Mielenz et al. (2016)</summary>
         </devnotes>
       </field>
-      <field name="InitFromHumusConc" type="TOption" visibility="public" size="4" offset="1888" file="USoilMineralisationNH4.pas" line="179">
+      <field name="ResidueIncorp" type="TOption" visibility="public" size="4" offset="1884" file="USoilMineralisationNH4.pas" line="178">
         <devnotes>
-           Option if residues are initally incorporated or stay on top
+           <summary>Option if residues are initally incorporated or stay on top</summary>
         </devnotes>
       </field>
-      <field name="InitIOM" type="TOption" visibility="public" size="4" offset="1892" file="USoilMineralisationNH4.pas" line="181">
+      <field name="InitFromHumusConc" type="TOption" visibility="public" size="4" offset="1888" file="USoilMineralisationNH4.pas" line="180">
         <devnotes>
-           Option to init c-Pools from humus content, default is true
+           <summary>Option to init c-Pools from humus content, default is true</summary>
         </devnotes>
       </field>
-      <field name="C_distributionmethod" type="TOption" visibility="public" size="4" offset="1896" file="USoilMineralisationNH4.pas" line="183">
+      <field name="InitIOM" type="TOption" visibility="public" size="4" offset="1892" file="USoilMineralisationNH4.pas" line="182">
         <devnotes>
-           Allocate part of the initial carbon to an inert IOC pool, default is false
+           <summary>Allocate part of the initial carbon to an inert IOC pool, default is false</summary>
         </devnotes>
       </field>
-      <field name="f_abiot_min_Calcmethod_Option" type="TOption" visibility="public" size="4" offset="1900" file="USoilMineralisationNH4.pas" line="184" />
-      <field name="f_abiot_nit_Calcmethod_Option" type="TOption" visibility="public" size="4" offset="1904" file="USoilMineralisationNH4.pas" line="186">
+      <field name="C_distributionmethod" type="TOption" visibility="public" size="4" offset="1896" file="USoilMineralisationNH4.pas" line="183" />
+      <field name="f_abiot_min_Calcmethod_Option" type="TOption" visibility="public" size="4" offset="1900" file="USoilMineralisationNH4.pas" line="185">
         <devnotes>
-           Calculation method for the abiotic factor for mineralisation
+           <summary>Calculation method for the abiotic factor for mineralisation</summary>
         </devnotes>
       </field>
-      <field name="f_abiot_den_Calcmethod_Option" type="TOption" visibility="public" size="4" offset="1908" file="USoilMineralisationNH4.pas" line="188">
+      <field name="f_abiot_nit_Calcmethod_Option" type="TOption" visibility="public" size="4" offset="1904" file="USoilMineralisationNH4.pas" line="187">
         <devnotes>
-           Calculation method for the abiotic factor for nitrification
+           <summary>Calculation method for the abiotic factor for nitrification</summary>
         </devnotes>
       </field>
-      <field name="CN_Residues" type="TVar" visibility="public" size="4" offset="1912" file="USoilMineralisationNH4.pas" line="191">
+      <field name="f_abiot_den_Calcmethod_Option" type="TOption" visibility="public" size="4" offset="1908" file="USoilMineralisationNH4.pas" line="189">
         <devnotes>
-           Calculation method for the abiotic factor for denitrification
+           <summary>Calculation method for the abiotic factor for denitrification</summary>
         </devnotes>
       </field>
-      <field name="CPool" type="TPoolStateArray" visibility="public" size="20" offset="1916" file="USoilMineralisationNH4.pas" line="194">
+      <field name="CN_Residues" type="TVar" visibility="public" size="4" offset="1912" file="USoilMineralisationNH4.pas" line="192">
         <devnotes>
-           C/N ratio in added crop residues
+           <summary>C/N ratio in added crop residues</summary>
         </devnotes>
       </field>
-      <field name="NPool" type="TPoolVarArray" visibility="public" size="20" offset="1936" file="USoilMineralisationNH4.pas" line="196">
+      <field name="CPool" type="TPoolStateArray" visibility="public" size="20" offset="1916" file="USoilMineralisationNH4.pas" line="195">
         <devnotes>
-           array of carbon pools (sum over layers)
+           <summary>array of carbon pools (sum over layers)</summary>
         </devnotes>
       </field>
-      <field name="CN" type="TPoolParArray" visibility="public" size="20" offset="1956" file="USoilMineralisationNH4.pas" line="198">
+      <field name="NPool" type="TPoolVarArray" visibility="public" size="20" offset="1936" file="USoilMineralisationNH4.pas" line="197">
         <devnotes>
-           array of carbon pools (sum over layers)
+           <summary>array of carbon pools (sum over layers)</summary>
         </devnotes>
       </field>
-      <field name="Net_min" visibility="public" size="40" offset="1976" file="USoilMineralisationNH4.pas" line="201">
+      <field name="CN" type="TPoolParArray" visibility="public" size="20" offset="1956" file="USoilMineralisationNH4.pas" line="199">
         <devnotes>
-           array of CN ratios in the pools
+           <summary>array of CN ratios in the pools</summary>
         </devnotes>
-        <array name="Net_min" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="201">
+      </field>
+      <field name="Net_min" visibility="public" size="40" offset="1976" file="USoilMineralisationNH4.pas" line="202">
+        <devnotes>
+           <summary>net mineralisation rate [kg N/ha/d]</summary>
+        </devnotes>
+        <array name="Net_min" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="202">
           <element type="TVar" />
         </array>
       </field>
-      <field name="f_abiot_min" visibility="public" size="40" offset="2016" file="USoilMineralisationNH4.pas" line="203">
+      <field name="f_abiot_min" visibility="public" size="40" offset="2016" file="USoilMineralisationNH4.pas" line="204">
         <devnotes>
-           net mineralisation rate [kg N/ha/d]
+           <summary>abiotic influence factor accounting for temperature and soil water content</summary>
         </devnotes>
-        <array name="f_abiot_min" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="203">
+        <array name="f_abiot_min" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="204">
           <element type="TVar" />
         </array>
       </field>
       <field name="f_abiot_nit" visibility="public" size="40" offset="2056" file="USoilMineralisationNH4.pas" line="205">
-        <devnotes>
-           abiotic influence factor accounting for temperature and soil water content
-        </devnotes>
         <array name="f_abiot_nit" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="205">
           <element type="TVar" />
         </array>
@@ -1809,211 +1831,216 @@
           <element type="TVar" />
         </array>
       </field>
-      <field name="f_Nmin" visibility="public" size="40" offset="2136" file="USoilMineralisationNH4.pas" line="207">
-        <array name="f_Nmin" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="207">
+      <field name="f_Nmin" visibility="public" size="40" offset="2136" file="USoilMineralisationNH4.pas" line="208">
+        <devnotes>
+           <summary>relative factor [0..1] for reducing decomposition rate under nitrogen shortage</summary>
+        </devnotes>
+        <array name="f_Nmin" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="208">
           <element type="TVar" />
         </array>
       </field>
-      <field name="Layerfactor" visibility="public" size="40" offset="2176" file="USoilMineralisationNH4.pas" line="209">
+      <field name="Layerfactor" visibility="public" size="40" offset="2176" file="USoilMineralisationNH4.pas" line="210">
         <devnotes>
-           relative factor [0..1] for reducing decomposition rate under nitrogen shortage
+           <summary>factor to correct decomposition rates in individual soil layers</summary>
         </devnotes>
-        <array name="Layerfactor" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="209">
+        <array name="Layerfactor" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="210">
           <element type="TPar" />
         </array>
       </field>
-      <field name="c_frac" visibility="public" size="40" offset="2216" file="USoilMineralisationNH4.pas" line="211">
+      <field name="c_frac" visibility="public" size="40" offset="2216" file="USoilMineralisationNH4.pas" line="212">
         <devnotes>
-           factor to correct decomposition rates in individual soil layers
+           <summary>fraction of carbon initially within a certain soil layer</summary>
         </devnotes>
-        <array name="c_frac" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="211">
+        <array name="c_frac" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="212">
           <element type="TPar" />
         </array>
       </field>
-      <field name="NPool_i" visibility="public" size="200" offset="2256" file="USoilMineralisationNH4.pas" line="214">
+      <field name="NPool_i" visibility="public" size="200" offset="2256" file="USoilMineralisationNH4.pas" line="215">
         <devnotes>
-           fraction of carbon initially within a certain soil layer
+           <summary>all nitrogen pools, two dimensional Var matrix</summary>
         </devnotes>
-        <array name="NPool_i" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="214">
-          <array name="NPool_i" visibility="public" alias="UAbstractSoilMin.TPoolVarArray" file="USoilMineralisationNH4.pas" line="214">
+        <array name="NPool_i" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="215">
+          <array name="NPool_i" visibility="public" alias="UAbstractSoilMin.TPoolVarArray" file="USoilMineralisationNH4.pas" line="215">
             <element type="TVar" />
           </array>
         </array>
       </field>
-      <field name="CPool_i" visibility="public" size="200" offset="2456" file="USoilMineralisationNH4.pas" line="216">
+      <field name="CPool_i" visibility="public" size="200" offset="2456" file="USoilMineralisationNH4.pas" line="217">
         <devnotes>
-           all nitrogen pools, two dimensional Var matrix
+           <summary>all carbon pools</summary>
         </devnotes>
-        <array name="CPool_i" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="216">
-          <array name="CPool_i" visibility="public" alias="UAbstractSoilMin.TPoolStateArray" file="USoilMineralisationNH4.pas" line="216">
+        <array name="CPool_i" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="217">
+          <array name="CPool_i" visibility="public" alias="UAbstractSoilMin.TPoolStateArray" file="USoilMineralisationNH4.pas" line="217">
             <element type="TState" />
           </array>
         </array>
       </field>
-      <field name="NitrificationRate" visibility="public" size="40" offset="2656" file="USoilMineralisationNH4.pas" line="218">
+      <field name="NitrificationRate" visibility="public" size="40" offset="2656" file="USoilMineralisationNH4.pas" line="219">
         <devnotes>
-           all carbon pools
+           <summary>rate of NO3 production by nitrification</summary>
         </devnotes>
-        <array name="NitrificationRate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="218">
+        <array name="NitrificationRate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="219">
           <element type="TVar" />
         </array>
       </field>
-      <field name="DenitrificationRate" visibility="public" size="40" offset="2696" file="USoilMineralisationNH4.pas" line="220">
+      <field name="DenitrificationRate" visibility="public" size="40" offset="2696" file="USoilMineralisationNH4.pas" line="221">
         <devnotes>
-           rate of NO3 production by nitrification
+           <summary>rate of NO3 consumption by denitrification</summary>
         </devnotes>
-        <array name="DenitrificationRate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="220">
+        <array name="DenitrificationRate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="221">
           <element type="TVar" />
         </array>
       </field>
-      <field name="NetMinRate" visibility="public" size="40" offset="2736" file="USoilMineralisationNH4.pas" line="222">
+      <field name="NetMinRate" visibility="public" size="40" offset="2736" file="USoilMineralisationNH4.pas" line="223">
         <devnotes>
-           rate of NO3 consumption by denitrification
+           <summary>net rate of NO3 production</summary>
         </devnotes>
-        <array name="NetMinRate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="222">
+        <array name="NetMinRate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="223">
           <element type="TExternV" />
         </array>
       </field>
-      <field name="R_N2_N2O" visibility="public" size="40" offset="2776" file="USoilMineralisationNH4.pas" line="225">
+      <field name="R_N2_N2O" visibility="public" size="40" offset="2776" file="USoilMineralisationNH4.pas" line="226">
         <devnotes>
-           net rate of NO3 production
+           <summary>ratio of N2 / N2O from denitrification</summary>
         </devnotes>
-        <array name="R_N2_N2O" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="225">
+        <array name="R_N2_N2O" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="226">
           <element type="TVar" />
         </array>
       </field>
-      <field name="CO2_flux_Arr" visibility="public" size="36" offset="2816" file="USoilMineralisationNH4.pas" line="227">
+      <field name="CO2_flux_Arr" visibility="public" size="36" offset="2816" file="USoilMineralisationNH4.pas" line="228">
         <devnotes>
-           ratio of N2 / N2O from denitrification
+           <summary>CO2 flux rate [kg C ha-1 d-1] from all processes in each layer</summary>
         </devnotes>
-        <array name="CO2_flux_Arr" visibility="public" low="1" high="9" file="USoilMineralisationNH4.pas" line="227">
+        <array name="CO2_flux_Arr" visibility="public" low="1" high="9" file="USoilMineralisationNH4.pas" line="228">
           <element type="TVar" />
         </array>
       </field>
-      <field name="Norg" type="TVar" visibility="public" size="4" offset="2852" file="USoilMineralisationNH4.pas" line="230">
+      <field name="Norg" type="TVar" visibility="public" size="4" offset="2852" file="USoilMineralisationNH4.pas" line="231">
         <devnotes>
-           CO2 flux rate [kg C ha-1 d-1] from all processes in each layer
+           <summary>total amount of organic nitrogen [kg/ha] sum of all other pools and over layers</summary>
         </devnotes>
       </field>
-      <field name="Corg" type="TVar" visibility="public" size="4" offset="2856" file="USoilMineralisationNH4.pas" line="232">
+      <field name="Corg" type="TVar" visibility="public" size="4" offset="2856" file="USoilMineralisationNH4.pas" line="233">
         <devnotes>
-           total amount of organic nitrogen [kg/ha] sum of all other pools and over layers
+           <summary>total amount of organic carbon [kg/ha]</summary>
         </devnotes>
       </field>
-      <field name="NH4_0_10" type="TVar" visibility="public" size="4" offset="2860" file="USoilMineralisationNH4.pas" line="235">
+      <field name="NH4_0_10" type="TVar" visibility="public" size="4" offset="2860" file="USoilMineralisationNH4.pas" line="236">
         <devnotes>
-           total amount of organic carbon [kg/ha]
+           <summary>ammonium in 30cm soil layers [kg N/ha] and layer 0-10cm</summary>
         </devnotes>
       </field>
-      <field name="NH4_0_30" type="TVar" visibility="public" size="4" offset="2864" file="USoilMineralisationNH4.pas" line="235" />
-      <field name="NH4_30_60" type="TVar" visibility="public" size="4" offset="2868" file="USoilMineralisationNH4.pas" line="235" />
-      <field name="NH4_60_90" type="TVar" visibility="public" size="4" offset="2872" file="USoilMineralisationNH4.pas" line="235" />
-      <field name="NH4_0_60" type="TVar" visibility="public" size="4" offset="2876" file="USoilMineralisationNH4.pas" line="235" />
-      <field name="NH4_0_90" type="TVar" visibility="public" size="4" offset="2880" file="USoilMineralisationNH4.pas" line="235" />
-      <field name="Nmin0_10" type="TVar" visibility="public" size="4" offset="2884" file="USoilMineralisationNH4.pas" line="237">
+      <field name="NH4_0_30" type="TVar" visibility="public" size="4" offset="2864" file="USoilMineralisationNH4.pas" line="236" />
+      <field name="NH4_30_60" type="TVar" visibility="public" size="4" offset="2868" file="USoilMineralisationNH4.pas" line="236" />
+      <field name="NH4_60_90" type="TVar" visibility="public" size="4" offset="2872" file="USoilMineralisationNH4.pas" line="236" />
+      <field name="NH4_0_60" type="TVar" visibility="public" size="4" offset="2876" file="USoilMineralisationNH4.pas" line="236" />
+      <field name="NH4_0_90" type="TVar" visibility="public" size="4" offset="2880" file="USoilMineralisationNH4.pas" line="236" />
+      <field name="Nmin0_10" type="TVar" visibility="public" size="4" offset="2884" file="USoilMineralisationNH4.pas" line="238">
         <devnotes>
-           ammonium in 30cm soil layers [kg N/ha] and layer 0-10cm
+           <summary>soil mineral nitrogen in 30cm soil layers [kg N/ha] and layer 0-10cm</summary>
         </devnotes>
       </field>
-      <field name="Nmin0_30" type="TVar" visibility="public" size="4" offset="2888" file="USoilMineralisationNH4.pas" line="237" />
-      <field name="Nmin30_60" type="TVar" visibility="public" size="4" offset="2892" file="USoilMineralisationNH4.pas" line="237" />
-      <field name="Nmin60_90" type="TVar" visibility="public" size="4" offset="2896" file="USoilMineralisationNH4.pas" line="237" />
-      <field name="Nmin0_60" type="TVar" visibility="public" size="4" offset="2900" file="USoilMineralisationNH4.pas" line="237" />
-      <field name="Nmin0_90" type="TVar" visibility="public" size="4" offset="2904" file="USoilMineralisationNH4.pas" line="237" />
-      <field name="NH4_N2O_rate" visibility="public" size="40" offset="2908" file="USoilMineralisationNH4.pas" line="240">
+      <field name="Nmin0_30" type="TVar" visibility="public" size="4" offset="2888" file="USoilMineralisationNH4.pas" line="238" />
+      <field name="Nmin30_60" type="TVar" visibility="public" size="4" offset="2892" file="USoilMineralisationNH4.pas" line="238" />
+      <field name="Nmin60_90" type="TVar" visibility="public" size="4" offset="2896" file="USoilMineralisationNH4.pas" line="238" />
+      <field name="Nmin0_60" type="TVar" visibility="public" size="4" offset="2900" file="USoilMineralisationNH4.pas" line="238" />
+      <field name="Nmin0_90" type="TVar" visibility="public" size="4" offset="2904" file="USoilMineralisationNH4.pas" line="238" />
+      <field name="NH4_N2O_rate" visibility="public" size="40" offset="2908" file="USoilMineralisationNH4.pas" line="241">
         <devnotes>
-           soil mineral nitrogen in 30cm soil layers [kg N/ha] and layer 0-10cm
+           <summary>N2O-N emission rate from nitrification</summary>
         </devnotes>
-        <array name="NH4_N2O_rate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="240">
+        <array name="NH4_N2O_rate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="241">
           <element type="TVar" />
         </array>
       </field>
-      <field name="NH4_NOx_rate" visibility="public" size="40" offset="2948" file="USoilMineralisationNH4.pas" line="242">
+      <field name="NH4_NOx_rate" visibility="public" size="40" offset="2948" file="USoilMineralisationNH4.pas" line="243">
         <devnotes>
-           N2O-N emission rate from nitrification
+           <summary>NOx-N emission rate from nitrification</summary>
         </devnotes>
-        <array name="NH4_NOx_rate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="242">
+        <array name="NH4_NOx_rate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="243">
           <element type="TVar" />
         </array>
       </field>
-      <field name="NO3_N2O_rate" visibility="public" size="40" offset="2988" file="USoilMineralisationNH4.pas" line="244">
+      <field name="NO3_N2O_rate" visibility="public" size="40" offset="2988" file="USoilMineralisationNH4.pas" line="245">
         <devnotes>
-           NOx-N emission rate from nitrification
+           <summary>N2O-N emission rate from denitrification</summary>
         </devnotes>
-        <array name="NO3_N2O_rate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="244">
+        <array name="NO3_N2O_rate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="245">
           <element type="TVar" />
         </array>
       </field>
-      <field name="NO3_N2_rate" visibility="public" size="40" offset="3028" file="USoilMineralisationNH4.pas" line="246">
+      <field name="NO3_N2_rate" visibility="public" size="40" offset="3028" file="USoilMineralisationNH4.pas" line="247">
         <devnotes>
-           N2O-N emission rate from denitrification
+           <summary>N2-N emission rate from denitrification</summary>
         </devnotes>
-        <array name="NO3_N2_rate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="246">
+        <array name="NO3_N2_rate" visibility="public" low="0" high="9" file="USoilMineralisationNH4.pas" line="247">
           <element type="TVar" />
         </array>
       </field>
-      <field name="N2O_flux" type="TVar" visibility="public" size="4" offset="3068" file="USoilMineralisationNH4.pas" line="249">
+      <field name="N2O_flux" type="TVar" visibility="public" size="4" offset="3068" file="USoilMineralisationNH4.pas" line="250">
         <devnotes>
-           N2-N emission rate from denitrification
+           <summary>N2O flux rate [kg N ha-1 d-1]</summary>
         </devnotes>
       </field>
-      <field name="N2_flux" type="TVar" visibility="public" size="4" offset="3072" file="USoilMineralisationNH4.pas" line="251">
+      <field name="N2_flux" type="TVar" visibility="public" size="4" offset="3072" file="USoilMineralisationNH4.pas" line="252">
         <devnotes>
-           N2O flux rate [kg N ha-1 d-1]
+           <summary>N2 flux rate [kg N ha-1 d-1]</summary>
         </devnotes>
       </field>
-      <field name="NOx_flux" type="TVar" visibility="public" size="4" offset="3076" file="USoilMineralisationNH4.pas" line="253">
+      <field name="NOx_flux" type="TVar" visibility="public" size="4" offset="3076" file="USoilMineralisationNH4.pas" line="254">
         <devnotes>
-           N2 flux rate [kg N ha-1 d-1]
+           <summary>NOx flux rate [kg N ha-1 d-1]</summary>
         </devnotes>
       </field>
-      <field name="CO2_flux" type="TVar" visibility="public" size="4" offset="3080" file="USoilMineralisationNH4.pas" line="255">
+      <field name="CO2_flux" type="TVar" visibility="public" size="4" offset="3080" file="USoilMineralisationNH4.pas" line="256">
         <devnotes>
-           NOx flux rate [kg N ha-1 d-1]
+           <summary>CO2 flux rate [kg C ha-1 d-1]</summary>
         </devnotes>
       </field>
-      <field name="TransferPoolsToNextINI" type="TOption" visibility="public" size="4" offset="3084" file="USoilMineralisationNH4.pas" line="258">
-        <devnotes>
-           CO2 flux rate [kg C ha-1 d-1]
-        </devnotes>
-      </field>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="USoilMineralisationNH4.pas" line="260">
-        <devnotes>
-          
-        </devnotes>
+      <field name="TransferPoolsToNextINI" type="TOption" visibility="public" size="4" offset="3084" file="USoilMineralisationNH4.pas" line="258" />
+      <procedure name="CreateAll" visibility="public" procflags="override" file="USoilMineralisationNH4.pas" line="259">
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="USoilMineralisationNH4.pas" line="262">
+      <procedure name="Init" visibility="public" procflags="override" file="USoilMineralisationNH4.pas" line="261">
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="USoilMineralisationNH4.pas" line="263">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="USoilMineralisationNH4.pas" line="262">
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="override" file="USoilMineralisationNH4.pas" line="264">
+      <procedure name="Integrate" visibility="public" procflags="override" file="USoilMineralisationNH4.pas" line="263">
+        <devnotes>
+           <summary>michalis-menten like factor to decrease mineralisation under nitrate shortage</summary>
+           <summary>calculation of factors for abiotic influences</summary>
+           <summary>Calculation of turn-over between the pools</summary>
+        </devnotes>
       </procedure>
-      <procedure name="AddResidues" visibility="public" procflags="override" file="USoilMineralisationNH4.pas" line="266">
+      <procedure name="AddResidues" visibility="public" procflags="override" file="USoilMineralisationNH4.pas" line="265">
         <parameters>
           <parameter name="Carbon" type="Double" />
           <parameter name="nitrogen" type="Double" />
         </parameters>
       </procedure>
-      <procedure name="MixLayers" visibility="public" procflags="override" file="USoilMineralisationNH4.pas" line="267">
+      <procedure name="MixLayers" visibility="public" procflags="override" file="USoilMineralisationNH4.pas" line="266">
+        <devnotes>
+           <summary>$IFNDEF NONVISUAL</summary>
+           <summary>$ENDIF</summary>
+        </devnotes>
         <parameters>
           <parameter name="depth" type="Double" />
         </parameters>
       </procedure>
-      <property name="Par_km_Nmin" visibility="published" read="km_Nmin" write="km_Nmin" type="TPar" file="USoilMineralisationNH4.pas" line="270" />
-      <property name="Par_k_nit" visibility="published" read="k_nit" write="k_nit" type="TPar" file="USoilMineralisationNH4.pas" line="271" />
-      <property name="Par_k_den" visibility="published" read="k_den" write="k_den" type="TPar" file="USoilMineralisationNH4.pas" line="272" />
-      <property name="Ex_Temp" visibility="published" read="temp" write="temp" type="TExternV" file="USoilMineralisationNH4.pas" line="273" />
-      <property name="Var_NetMinG" visibility="published" read="Net_ming" write="Net_ming" type="TVar" file="USoilMineralisationNH4.pas" line="274" />
-      <property name="Var_SumMInr" visibility="published" read="SumMinr" write="SumMinr" type="TVar" file="USoilMineralisationNH4.pas" line="275" />
-      <property name="opt_c_distributionmethod" visibility="published" read="C_distributionmethod" write="C_distributionmethod" type="TOption" file="USoilMineralisationNH4.pas" line="276" />
-      <property name="Opt_TransferPoolsToNextINI" visibility="published" read="fTransferPools" write="fTransferPools" type="Boolean" file="USoilMineralisationNH4.pas" line="278" />
-      <property name="Opt_InitFromHumusConc" visibility="published" read="fInitFromHumusConc" write="fInitFromHumusConc" type="Boolean" file="USoilMineralisationNH4.pas" line="280" />
+      <property name="Par_km_Nmin" visibility="published" read="km_Nmin" write="km_Nmin" type="TPar" file="USoilMineralisationNH4.pas" line="269" />
+      <property name="Par_k_nit" visibility="published" read="k_nit" write="k_nit" type="TPar" file="USoilMineralisationNH4.pas" line="270" />
+      <property name="Par_k_den" visibility="published" read="k_den" write="k_den" type="TPar" file="USoilMineralisationNH4.pas" line="271" />
+      <property name="Ex_Temp" visibility="published" read="temp" write="temp" type="TExternV" file="USoilMineralisationNH4.pas" line="272" />
+      <property name="Var_NetMinG" visibility="published" read="Net_ming" write="Net_ming" type="TVar" file="USoilMineralisationNH4.pas" line="273" />
+      <property name="Var_SumMInr" visibility="published" read="SumMinr" write="SumMinr" type="TVar" file="USoilMineralisationNH4.pas" line="274" />
+      <property name="opt_c_distributionmethod" visibility="published" read="C_distributionmethod" write="C_distributionmethod" type="TOption" file="USoilMineralisationNH4.pas" line="275" />
+      <property name="Opt_TransferPoolsToNextINI" visibility="published" read="fTransferPools" write="fTransferPools" type="Boolean" file="USoilMineralisationNH4.pas" line="277" />
+      <property name="Opt_InitFromHumusConc" visibility="published" read="fInitFromHumusConc" write="fInitFromHumusConc" type="Boolean" file="USoilMineralisationNH4.pas" line="279" />
     </members>
   </class>
-  <variable name="SoilMineralisation" type="TSoilMinNH4" file="USoilMineralisationNH4.pas" line="286" />
-  <procedure name="Register" visibility="public" file="USoilMineralisationNH4.pas" line="1537">
+  <variable name="SoilMineralisation" type="TSoilMinNH4" file="USoilMineralisationNH4.pas" line="285" />
+  <procedure name="Register" visibility="public" file="USoilMineralisationNH4.pas" line="1531">
   </procedure>
 </namespace>

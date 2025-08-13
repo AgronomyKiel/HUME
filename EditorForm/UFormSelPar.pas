@@ -1,4 +1,4 @@
-unit UFormSelPar;
+﻿unit UFormSelPar;
 
 interface
 
@@ -86,6 +86,18 @@ uses
   vcl.Dialogs, Ustate, UMeasValue, UFormRichTExt, IniFiles, UModUtils;
 
 {$R *.DFM}
+
+const
+ fnSensIni = 'SensSettings.ini';
+ SectionSelPar = 'SelPar';
+ KeySelPar = 'SelPar';
+ SectionValues = 'Values';
+ SectionDestPars = 'DSTListBox';
+ KeyActVal = 'ActVal';
+ KeyIniVal = 'IniVal';
+ KeyFinalVal = 'FinalVal';
+ KeySteps = 'Steps';
+
 
 procedure TFormSensOpt.IncludeBtnDataClick(Sender: TObject);
 var
@@ -180,11 +192,15 @@ var
   ActState: TState;
   ActVar: TVar;
   Name, submodname: string;
+  fnSensSettings, userdir : string;
+  IniSensSettings : TMemInifile;
 
 begin
 //  FpropInifile := self.
   SrcListData.clear;
   DstListData.clear;
+
+  // Add all parameters of all submodels to ComboBoxParameter
   for i := 0 to Model.SubModStrList.Count - 1 do begin
     SubMod := TSubModel(Model.SubModStrList.Objects[i]);
     for j := 0 to SubMod.ParStrList.count - 1 do begin
@@ -229,22 +245,56 @@ begin
       end;
     end;
   end;
-  self.EditFinalvalue.Text     := floattostrf(model.SensOpt.MaxValue, ffgeneral, 8,2);
-  self.EditInitialValue.text   := floattostrf(model.SensOpt.MinValue, ffgeneral,8,2);
-  self.SpinEditSensSteps.Value := model.SensOpt.Steps;
+
+  userdir := ExtractFilePath(ParamStr(0));
+  fnSensSettings := userdir+'SensSettings.ini';
+  IniSensSettings := TMemIniFile.Create(fnSensSettings);
+  self.ComboBoxParameter.SelText := IniSensSettings.ReadString(SectionSelPar, KeySelPar, '');
+  self.EditFinalvalue.Text := IniSensSettings.readString(SectionValues, KeyFinalVal, '');
+  self.EditInitialValue.Text := IniSensSettings.readString(SectionValues, KeyIniVal, '');
+  self.EditActualValue.Text := IniSensSettings.readString(SectionValues, KeyActVal, '');
+  self.SpinEditSensSteps.Value := IniSensSettings.ReadInteger(SectionValues, KeySteps,1);
+
+
+
+//  self.EditFinalvalue.Text     := floattostrf(model.SensOpt.MaxValue, ffgeneral, 8,2);
+//  self.EditInitialValue.text   := floattostrf(model.SensOpt.MinValue, ffgeneral,8,2);
+//  self.SpinEditSensSteps.Value := model.SensOpt.Steps;
 end;
 
 procedure TFormSensOpt.FormClose(Sender: TObject;
   var Action: TCloseAction);
 
+var
+  fnSensSettings, userdir : string;
+  IniSensSettings : TMemInifile;
+  i : integer;
+
+
 begin
-  self.ComboBoxParameter.clear;
+  userdir := ExtractFilePath(ParamStr(0));
+  fnSensSettings := userdir+'SensSettings.ini';
+  IniSensSettings := TMemIniFile.Create(fnSensSettings);
+  IniSensSettings.WriteString('SelPar', 'SelPar', self.ComboBoxParameter.SelText);
+  IniSensSettings.WriteFloat('Values', 'ActVal', strToFloat(self.EditActualValue.Text));
+  IniSensSettings.WriteFloat('Values', 'IniVal', strToFloat(self.EditInitialValue.Text));
+  IniSensSettings.WriteFloat('Values', 'FinalVal', strToFloat(self.EditFinalvalue.Text));
+  IniSensSettings.WriteInteger('Values', 'Steps', SpinEditSensSteps.Value);
+
+  for i := 0 to self.DstListData.Items.Count - 1 do
+      IniSensSettings.WriteString('DSTListBox', Format('Item%d', [i]), DstListData.Items[i]);
+
+  IniSensSettings.UpdateFile;
+  IniSensSettings.Free;
+
+
+  {self.ComboBoxParameter.clear;
   self.SrcListData.clear;
 
   self.DstListData.clear;
   self.EditActualValue.Text := '';
   self.EditFinalvalue.text := '';
-  self.editInitialValue.text := '';
+  self.editInitialValue.text := '';   }
 end;
 
 procedure TFormSensOpt.OKBtnClick(Sender: TObject);

@@ -907,23 +907,18 @@ begin
   end;
 end;
 
-/// <summary>**********************************************************************</summary>
+/// <summary>
+/// Purpose: Calculation of reduction factor for mineralisation dependent on
+/// soil moisture and soil temperature, assuming maximal mineralisation.
+/// Source: Verbruggen (1985) cited in Groot (1987).
+/// Parameters:
+///   WC    - volumetric water content [cm3/cm3] (input)
+///   Temp  - soil temperature [°C] (input)
+///   BD    - bulk density [g/cm3] (input)
+/// Returns:
+///   Min_red_f - reduction factor [-] (output)
+/// </summary>
 function TSoilMinNH4.calc_f_abiot_Verbruggen(WC, temp, BD: real): real;
-{ Purpose: Calculation of reduction factor for mineralisation dependent on
-  /// <summary>**********************************************************************</summary>
-  soil moisture and soil temperature, assuming maximal mineralisation
-
-  Quelle: Verbruggen (1985) zit. in Groot (1987)
-
-  Parameter :
-  Name             Inhalt                          Einheit      Typ
-
-  WC               volumetric water content        [cm3/cm3]    I
-  Temp             soil temperature                [øC]         I
-  BD               bulk density                    [g/cm3]      I
-
-  Min_red_f        reduction factor                [-]          O
-  { ********************************************************************** }
 
 const
   RefTemp = 20.0; // Reference temperature [°C]
@@ -1534,11 +1529,10 @@ begin
 end;
 
 procedure Register;
-/// <summary>$IFNDEF NONVISUAL</summary>
 begin
-
-/// <summary>$ENDIF</summary>
+{$IFNDEF NONVISUAL}
   RegisterComponents('Simulation', [TSoilMinNH4]);
+{$ENDIF}
 end;
 
 end.

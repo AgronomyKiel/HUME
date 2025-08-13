@@ -2458,6 +2458,7 @@ begin
   end;
   // central loop of TMod.Run
   repeat
+    CalcAllVars;
     // rate calculation for all submodels
     CalcAllRates;
     // update values from measured data for all submodels if applicable
@@ -2632,6 +2633,7 @@ begin
     // doing the actual simulation (from start to end of model time)
     // for the actual "step" of the chosen sensitivity parameter
     repeat
+      CalcAllVars;
       // calculate rates, integrate, go to next time step
       CalcAllRates;
       UpdateAll;
@@ -2854,6 +2856,7 @@ begin
       // doing the actual simulation (from start to end of model time)
       // for the actual "step" of the chosen sensitivity parameter
       repeat
+        CalcAllVars;
         // calculate rates, integrate, go to next time step
         CalcAllRates;
         UpdateAll;
