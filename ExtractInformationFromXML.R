@@ -19,7 +19,7 @@ ExtractXMLDocuInformation <- function(fn_xml_docu, ClassName = "TPenMonteith")  
   # Extract relevant devnotes subfields for the markdown text
   # from the namespace node
 #  summary_text <- xml_text(xml_find_first(ns_node, ".//summary"))
-  summary_text <- paste0("- ", xml_text(xml_find_first(ns_node, ".//summary")), collapse = "\n")
+  summary_text <- xml_text(xml_find_first(ns_node, ".//summary"))
   author_text <- xml_text(xml_find_first(ns_node, ".//author"))
   timestamp_text <- xml_text(xml_find_first(ns_node, ".//Timestamp"))
 
@@ -31,7 +31,7 @@ ExtractXMLDocuInformation <- function(fn_xml_docu, ClassName = "TPenMonteith")  
   md_text <- paste0(
     "## Short Info\n",
     summary_text, "\n\n",
-    "## Author\n",
+    "## Author(s)\n",
     author_text, "\n\n",
     "## Timestamp\n",
     timestamp_text, "\n\n",

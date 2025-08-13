@@ -1,9 +1,14 @@
-﻿
-/// <summary>
-///   Implemtents different methods for vertical soil water transport either with differen veriants
+﻿/// <summary>
+/// Implemtents different methods for vertical soil water transport either with differen veriants
 /// of the potential based water transport or as a simple tipping bucket approach.
 /// </summary>
-unit USoilWaterMod; { Stand 19.4.09, Grundwasser eingebaut - Ulf Böttcher }
+/// <remarks>
+/// <author>
+/// Henning Kage, Ulf Böttcher & Agronomy Group, University of Kiel
+/// </author>
+/// </remarks>
+
+unit USoilWaterMod;
 
 interface
 
@@ -17,9 +22,6 @@ uses
   System.Diagnostics,
   System.SyncObjs;
 
-type
-  /// <summary>Inifiles redefined to TMemIniFile for using in memory</summary>
-  TMyIniFile = TMemIniFile;
 
 const
   /// <summary>1E-8;      delta for changing water contents</summary>
@@ -30,21 +32,28 @@ const
 type
   /// <summary>TTexture_version = (RR, KA);</summary>
   TVGParsFromTexture = (FromPar, FromTexture);
-  // TKsFromTexture = TVGParsFromTexture;
+
   /// <summary>type for calculaiton options of evaporation</summary>
   Tact_Evaporation = (red_f, inclExfiltration);
+
   /// <summary>type of model for calculating the parameter 'm' within the van Genuchten model</summary>
   Tm_model = (Mualem, Burdine, Vereecken);
+
   /// <summary>type for specifying lower boundary conditions</summary>
   TLowerBoundaryCondition = (NoFlow, FreeFlow, ConstContent, Groundwatertable);
+
   /// <summary>type for specifying computation method</summary>
   TCompMethod = (Capacity, Diffusion, Richards, Mixed, MixedHydrus);
+
   /// <summary>type for specifying computation method for nFK</summary>
   TnFKCalcMethod = (FromParameter, Input);
+
   /// <summary>type for initialization method</summary>
   TIniMethod = (Watercontents, Potentials, Parameter);
+
   /// <summary>Type of soil evaporation reduction function</summary>
   Tred_f = (modifiedBeese, Beese1978);
+
   /// <summary>Type for soil water parameters</summary>
   TSoilWaterParams = array [1 .. max_comp] of TGenucht;
 
@@ -104,11 +113,13 @@ type
     FTextureClass2, FTextureClass3, FTextureClass4, FTextureClass5,
       FTextureClass6: TTextureClass;
 
+    /// <summary>
+    /// soil bulk density classes in Horizon x }
+    /// </summary>
     fLDClass1,
-    { soil bulk density classes in Horizon x }
     FLDClass2, FLDClass3, FLDClass4, FLDClass5, FLDClass6: TLDClass;
 
-    /// <summary>numerical bulk density as constants for each of the six possible soil horizons</summary>  
+    /// <summary>numerical bulk density as constants for each of the six possible soil horizons</summary>
     fLD1, fLD2, fLD3, fLD4, fLD5, fLD6: TLD;
 
     /// <summary>type of m_model used</summary>
@@ -132,13 +143,16 @@ type
 
     /// <summary>Enumeration type variable for initialisation method</summary>
     IniMethod: TIniMethod;
-    /// <summary></summary>
+
+    /// <summary> type of calculation method for plant available soil water </summary>
     nFKCalcMethod: TnFKCalcMethod;
-    /// <summary>Source of Weff</summary>
+
+    /// <summary>Source of effective rooting depth (Weff)</summary>
     fWeffOpt: TSource;
 
     /// <summary>Link to soil temperature model</summary>
     FSoilHeatModel: TAbstractSoilHeat;
+
     /// <summary>Option field, if true water contents are written into the next state ini-File of the control file</summary>
     fTransferWGs: boolean;
     alpha, beta, gamma, Res: TSoilArray;
@@ -201,7 +215,7 @@ type
     procedure obere_Randbedingung;
 
   protected
-    /// <summary>Diffusivit�ten [cm2/d] }</summary>
+    /// <summary>soil water diffusivities [cm2/d] }</summary>
     Dw_arr: TSoilArray;
     /// <summary>specific water capacity</summary>
     c_arr: TSoilArray;
@@ -209,11 +223,11 @@ type
     P: TSoilArray;
     /// <summary>saturated hydraulic conductivities [cm/d]</summary>
     kf: TSoilArray;
-    /// <summary>unges�ttigte hydraulische Leitf�higkeiten [cm/d] }</summary>
+    /// <summary>unsaturated hydraulische Leitf�higkeiten [cm/d] }</summary>
     Ku_arr: TSoilArray;
     /// <summary>Mittelwert der Diffusivit�t zwischen 2 Kompartimenten [cm2/d] }</summary>
     avg_Dw: TSoilArray;
-    /// <summary>Mittelwert der unges�ttigten hydr. Leitf�higkeit zwischen 2 Kompartimenten [cm/d] }</summary>
+    /// <summary>Mittelwert der unsaturated hydr. conductivity zwischen 2 Kompartimenten [cm/d] }</summary>
     avg_Ku: TSoilArray;
     /// <summary>Intermediate variable</summary>
     Dw_fact: TSoilArray;
@@ -243,7 +257,7 @@ type
     function getTexture(i: integer): TTextureClass;
     function getLD(i: integer): TLDClass;
 
-  /// <summary></summary>
+    /// <summary></summary>
   public
     /// <summary>actual number of layers to be calculated, variable in case of groundwater influence</summary>
     act_n_comp: integer;
@@ -252,8 +266,7 @@ type
     akt_bilanz_f: real;
     sum_Bilanz_f: real;
     /// <summary>sum of soil and ponded water [mm]</summary>
-    SW_start,
-    global_WaterBalance, old_global_WaterBalance: real;
+    SW_start, global_WaterBalance, old_global_WaterBalance: real;
     /// <summary>Wassergehaltsvektor [cm3/cm3]</summary>
     theta_arr: TSoilvarArray;
     /// <summary>new soil water contents</summary>
@@ -264,11 +277,11 @@ type
     psi_arr: TSoilvarArray;
     /// <summary>Flussvektor [cm/d]</summary>
     Wflow_arr: TSoilvarArray;
-    /// <summary>Flussvektor [cm/d] f�r internen Zeitschritt</summary>
+    /// <summary>Flussvektor [cm/d] for internen Zeitschritt</summary>
     WflowInt_arr: TSoilvarArray;
     /// <summary>Sinkvektor [cm]</summary>
     Sink_arr: TSoilvarArray;
-    /// <summary>Sinkvektor [cm/d] f�r internen Zeitschritt</summary>
+    /// <summary>Sinkvektor [cm/d] for internen Zeitschritt</summary>
     SinkInt_arr: TSoilvarArray;
     /// <summary>Feldkapazit�t [cm3/cm3]</summary>
     FK_Arr: TSoilArray;
@@ -276,7 +289,7 @@ type
     PWP_Arr: TSoilArray;
     /// <summary>nutzbare Feldkapazit�t [cm3/cm3]</summary>
     nFK_Arr: TSoilArray;
-    /// <summary>Array der Van-Genuchten Parameter f�r jede Schicht</summary>
+    /// <summary>Array der Van-Genuchten Parameter for jede Schicht</summary>
     WPar: TSoilWaterParams;
 
     /// <summary>alte Wasserfl�sse [cm/d]</summary>
@@ -320,17 +333,16 @@ type
     Groundwaterdepth: TExternV;
 
     FTextClass1Option, FTextClass2Option, FTextClass3Option, FTextClass4Option,
-      /// <summary>Options for choosing Parameters for 6 distinct horizons</summary>
-      FTextClass5Option, FTextClass6Option: TTextClassOption;
+    /// <summary>Options for choosing Parameters for 6 distinct horizons</summary>
+    FTextClass5Option, FTextClass6Option: TTextClassOption;
 
     fLDClass1Option, fLDClass2Option, fLDClass3Option, fLDClass4Option,
-      /// <summary>Options for choosing layer density  for 6 distinct horizons</summary>
-      fLDClass5Option, fLDClass6Option: TLDClassOption;
+    /// <summary>Options for choosing layer density  for 6 distinct horizons</summary>
+    fLDClass5Option, fLDClass6Option: TLDClassOption;
 
-      /// <summary>Options for choosing layer density  for 6 distinct horizons</summary>
-     fLD1Option, fLD2Option, fLD3Option, fLD4Option,
-      fLD5Option, fLD6Option: TLDOption;
-
+    /// <summary>Options for choosing layer density  for 6 distinct horizons</summary>
+    fLD1Option, fLD2Option, fLD3Option, fLD4Option, fLD5Option,
+      fLD6Option: TLDOption;
 
     /// <summary>maximale Wassergehalts�nderung pro Zeitschritt</summary>
     max_aenderWG: TPar;
@@ -361,7 +373,7 @@ type
     n_par1: TPar;
     /// <summary>parameter for hydraulic conductivity shape</summary>
     l_par1: TPar;
-    /// <summary>ges�ttigte Leitf�higkeit [cm.d-1]</summary>
+    /// <summary>ges�ttigte conductivity [cm.d-1]</summary>
     Ks1: TPar;
     /// <summary>Feldkapazit�t [cm3/cm3]</summary>
     FK1: TPar;
@@ -381,7 +393,7 @@ type
     n_par2: TPar;
     /// <summary>parameter for hydraulic conductivity shape</summary>
     l_par2: TPar;
-    /// <summary>ges�ttigte Leitf�higkeit [cm.d-1]</summary>
+    /// <summary>ges�ttigte conductivity [cm.d-1]</summary>
     Ks2: TPar;
     /// <summary>Feldkapazit�t [cm3/cm3]</summary>
     FK2: TPar;
@@ -401,7 +413,7 @@ type
     n_par3: TPar;
     /// <summary>parameter for hydraulic conductivity shape</summary>
     l_par3: TPar;
-    /// <summary>ges�ttigte Leitf�higkeit [cm.d-1]</summary>
+    /// <summary>ges�ttigte conductivity [cm.d-1]</summary>
     Ks3: TPar;
     /// <summary>Feldkapazit�t [cm3/cm3]</summary>
     FK3: TPar;
@@ -421,7 +433,7 @@ type
     n_par4: TPar;
     /// <summary>parameter for hydraulic conductivity shape</summary>
     l_par4: TPar;
-    /// <summary>ges�ttigte Leitf�higkeit [cm.d-1]</summary>
+    /// <summary>ges�ttigte conductivity [cm.d-1]</summary>
     Ks4: TPar;
     /// <summary>Feldkapazit�t [cm3/cm3]</summary>
     FK4: TPar;
@@ -441,7 +453,7 @@ type
     n_par5: TPar;
     /// <summary>parameter for hydraulic conductivity shape</summary>
     l_par5: TPar;
-    /// <summary>ges�ttigte Leitf�higkeit [cm.d-1]</summary>
+    /// <summary>ges�ttigte conductivity [cm.d-1]</summary>
     Ks5: TPar;
     /// <summary>Feldkapazit�t [cm3/cm3]</summary>
     FK5: TPar;
@@ -461,7 +473,7 @@ type
     n_par6: TPar;
     /// <summary>parameter for hydraulic conductivity shape</summary>
     l_par6: TPar;
-    /// <summary>ges�ttigte Leitf�higkeit [cm.d-1]</summary>
+    /// <summary>ges�ttigte conductivity [cm.d-1]</summary>
     Ks6: TPar;
     /// <summary>Feldkapazit�t [cm3/cm3]</summary>
     FK6: TPar;
@@ -488,7 +500,7 @@ type
     /// <summary>potentielle Evaporationsrate</summary>
     Pot_Evap: THumeNumEntity;
 
-    /// <summary>Reduktionsfaktor f�r Evaporation</summary>
+    /// <summary>Reduktionsfaktor for Evaporation</summary>
     red_evap: TVAR;
     /// <summary>aktuelle Evaporationsrate</summary>
     Act_Evap: TVAR;
@@ -738,7 +750,7 @@ procedure TSoilWaterMod.update_Wcont_Values;
 var
   i: integer;
 begin
-  // Berechnung der abgeleiteten Wassergehalte f�r verschiedene Bodenschichten
+  // Calculation der abgeleiteten Wassergehalte for verschiedene Bodenschichten
 
   WG0_30.v := (theta_arr[1].v + theta_arr[2].v + theta_arr[3].v) / 3;
   WG30_60.v := (theta_arr[4].v + theta_arr[5].v + theta_arr[6].v) / 3;
@@ -1058,7 +1070,7 @@ procedure TSoilWaterMod.Calc_nFKparsForHorizons;
 
 begin
   begin
-    { Berechnung von FK, PWP und nFK aus van-Genuchten-Parametern mit der Funktion b_psi_f (unit UGenucht) }
+    { Calculation von FK, PWP und nFK aus van-Genuchten-Parametern mit der Funktion b_psi_f (unit UGenucht) }
     Par_FK1.v := WPar[round(HoriNdx1.v)].b_psi_f(power(10, 1.8));
     Par_PWP1.v := WPar[round(HoriNdx1.v)].b_psi_f(power(10, 4.2));
     Par_nFK1.v := Par_FK1.v - Par_PWP1.v;
@@ -1473,15 +1485,13 @@ begin
 
 end;
 
-
-
 procedure TSoilWaterMod.InitVectors;
 var
   i: integer;
 begin
   for i := 0 to max_comp + 1 do
   begin
-    /// <summary>Diffusivit�ten [cm2/d] }</summary>
+    /// <summary>soil water diffusivities [cm2/d] }</summary>
     Dw_arr[i] := 0;
     /// <summary>specific water capacity</summary>
     c_arr[i] := 0;
@@ -1489,11 +1499,11 @@ begin
     P[i] := 0;
     /// <summary>saturated hydraulic conductivities [cm/d]</summary>
     kf[i] := 0;
-    /// <summary>unges�ttigte hydraulische Leitf�higkeiten [cm/d] }</summary>
+    /// <summary>unsaturated hydraulische Leitf�higkeiten [cm/d] }</summary>
     Ku_arr[i] := 0;
     /// <summary>Mittelwert der Diffusivit�t zwischen 2 Kompartimenten [cm2/d] }</summary>
     avg_Dw[i] := 0;
-    /// <summary>Mittelwert der unges�ttigten hydr. Leitf�higkeit zwischen 2 Kompartimenten [cm/d] }</summary>
+    /// <summary>Mittelwert der unsaturatedn hydr. conductivity zwischen 2 Kompartimenten [cm/d] }</summary>
     avg_Ku[i] := 0;
     /// <summary>Intermediate variable</summary>
     Dw_fact[i] := 0;
@@ -1840,8 +1850,7 @@ begin
   fLDClass5Option.AddLDClasses;
   fLDClass6Option.AddLDClasses;
 
-
-/// summary> set options for numerical bulk density classes </summary>
+  /// summary> set options for numerical bulk density classes </summary>
 
   OptCreate('fLD1', 'OldVersion', TOption(fLD1Option),
     'numerical layer density for first horizon');
@@ -1862,7 +1871,6 @@ begin
   fLD4Option.AddLD;
   fLD5Option.AddLD;
   fLD6Option.AddLD;
-
 
   OptCreate('Untere_Randb', 'freeflow', OptUntere_Randb,
     'Option for lower boundary condition, 4 options implemented, constant water content/matrix potential (�ConstContent�), n_comp + 1 keeps constant, (�FreeFlow�) (�NoFlow�)');
@@ -1924,15 +1932,15 @@ begin
     'minimum time step length for internal calculation');
   ParCreate('Itermax ', '[n]', 7, IterMax,
     'minimum number of iterations before time step is adjusted');
-  // Index f�r Bilanzierung
+  // Index for Bilanzierung
   ParCreate('Max_aenderWG', '[cm3/cm3]', 0.001, max_aenderWG,
     'maximum WChange during one internal time step');
-  // Index f�r Bilanzierung
+  // Index for Bilanzierung
   ParCreate('Max_IterError', '[cm3/cm3]', 0.0001, max_IterError,
     'maximum Change of Water content during one (Picard)-Iteration ');
-  // Index f�r Bilanzierung
+  // Index for Bilanzierung
   ParCreate('bil_nr', '[]', 18, bil_nr);
-  // Index f�r Bilanzierung
+  // Index for Bilanzierung
   for i := 1 to n_comp + 1 do
     if WPar[i] = nil then
       WPar[i] := TGenucht.create;
@@ -1949,7 +1957,7 @@ begin
   ParCreate('HoriNdx6', '[-]', 20, HoriNdx6,
     'unterste Schicht des 6. Bodenhorizonts');
   ParCreate('bsat_scaling', '[-]', 1, bsat_scaling,
-    'Skalierungsfaktor f�r bsat (wird in allen Horizonten mit diesem Faktor multipliziert)');
+    'Skalierungsfaktor for bsat (wird in allen Horizonten mit diesem Faktor multipliziert)');
   ParCreate('alpha_scaling', '[-]', 1, alpha_scaling,
     'Parameter for linear scaling of soil hydraulic Parameter alpha');
   ParCreate('b_sat1', '[cm3.cm-3]', 0.4298, b_sat1,
@@ -1957,9 +1965,9 @@ begin
   ParCreate('b_rest1', '[cm3.cm-3]', 0.09, b_rest1,
     'Van Genuchten Parameter b_rest');
   ParCreate('alpha1', '[1/cm]', 0.00677, alpha1,
-    'Van-Genuchten-Parameter alpha f�r den 1. Bodenhorizont');
+    'Van-Genuchten-Parameter alpha for den 1. Bodenhorizont');
   ParCreate('n_par1', '[-]', 1.29494, n_par1,
-    'Van-Genuchten-Parameter n f�r den 1. Bodenhorizont');
+    'Van-Genuchten-Parameter n for den 1. Bodenhorizont');
   ParCreate('l_par1', '[-]', 0.5, l_par1,
     'Van-Genuchten-Parameter l for 1st horizon');
   ParCreate('l_par2', '[-]', 0.5, l_par2,
@@ -2083,7 +2091,7 @@ begin
     FKsFromTexture := FromTexture;
   SetGenuchtenPars; // Init Genuchten Pars
   SetLDPars; // Init LDs
-  SetLDNumbers;  // Init numercial LD classes
+  SetLDnumbers; // Init numercial LD classes
 
   self.max_IterErrorsave := self.max_aenderWG.v;
   Iter_save := trunc(IterMax.v);
@@ -2287,7 +2295,7 @@ var
 
 begin
   InitDailySums_and_Changes(OldSumSoilwater);
-  { Startwert f�r Zeitschrittweiten-Steuerung ist der vorletzte Zeitschritt des vorherigen Tages. }
+  { start value for time step ist der vorletzte Zeitschritt des vorherigen Tages. }
   act_n_comp := n_comp;
   Find_Number_of_computation_Layers;
   repeat
@@ -2335,8 +2343,8 @@ begin
     end
     else }
   // begin // weitere Iterationen
-  // Berechnung der Wasserdiffusivit�t und der unges�ttigten hydraulischen
-  // Leitf�higkeit f�r jedes Kompartiment aus dem Mittelwert der Wassergehalte
+  // Calculation der Wasserdiffusivit�t und der unsaturatedn hydraulischen
+  // conductivity for jedes Kompartiment aus dem Mittelwert der Wassergehalte
   // zu Beginn des Zeitschrittes und zum Ende des Zeitschrittes
 
   { for i := 1 to n_comp + 1 do
@@ -2345,7 +2353,7 @@ begin
     // Dw_arr[i] := WPar[i].Dw_f((theta_neu[i] + theta_arr[i].v) / 2.0);
     // Ku_arr[i] := WPar[i].Ku_b_f((theta_neu[i] + theta_arr[i].v) / 2.0);
 
-    // Version mit C gemittelt �ber Beginn und Ende Zeitschritt und impliziter Berechnung der Leitf�higkeiten
+    // Version mit C gemittelt �ber Beginn und Ende Zeitschritt und impliziter Calculation der Leitf�higkeiten
     // c_arr[i]  := (WPar[i].C_psi_f(psi_neu[i])+WPar[i].C_psi_f(psi_arr[i].v))/2;
     Dw_arr[i] := max(0, WPar[i].Dw_f(max(self.WPar[i].b_rest, theta_new[i])));
     Ku_arr[i] := max(0, WPar[i].Ku_b_f(max(self.WPar[i].b_rest, theta_new[i])));
@@ -2358,7 +2366,7 @@ begin
       Ku_arr[i] := max(0, WPar[i].Ku_b_f(max(WPar[i].b_rest, theta_new[i])));
     end);
 
-  { Berechnung des Mittelwertes der Leitf�higkeit zwischen 2 Kompartimenten }
+  { Calculation des Mittelwertes der conductivity zwischen 2 Kompartimenten }
   for i := 2 to n_comp + 1 do
   begin
     // if (psi_neu[i-1]>(psi_neu[i]+Abst[i])) and // upward flow according to tensions
@@ -2394,7 +2402,7 @@ begin
   avg_Ku[1] := (WPar[1].Ks + Ku_arr[1]) / 2; // aritmethic mean
   avg_Dw[1] := (WPar[1].Dw_f((WPar[1].b_sat + theta_new[1]) / 2));
   // aritmethic mea
-  { Berechnung von Koeffizienten f�r die Aufstellung des Gleichungssystems,
+  { Calculation von Koeffizienten for die Aufstellung des Gleichungssystems,
     Abst.vektor mit dem Index i-1, weil Abstand zwischen erstem und
     zweiten Kompartiment Index 1 hat (verschobene Indizierung }
 
@@ -2472,7 +2480,7 @@ end;
 procedure TSoilWaterMod.GetWaterBalance;
 
 { ********************************************************************** }
-{ Zweck : Berechnung der Massenbilanz und der maximalen Wassergehalts-
+{ Zweck : Calculation der Massenbilanz und der maximalen Wassergehalts-
   �nderung im Simulationszeitschritt
 
   Parameter :
@@ -2573,7 +2581,7 @@ end;
 procedure TSoilWaterMod.get_new_dt;
 
 { ********************************************************************** }
-{ Zweck :  Berechnung der neuen Zeitschrittweite "dt" aufgrund des Verh�ltnisses
+{ Zweck :  Calculation der neuen Zeitschrittweite "dt" aufgrund des Verh�ltnisses
   der maximal erlaubten Wassergehalts�nderung zur maximalen aktuellen
   Wassergehalts�nderung
 
@@ -2629,7 +2637,7 @@ end;
 
 procedure TSoilWaterMod.get_delt_iter_max;
 { ********************************************************************** }
-{ Zweck : Berechnung des maximalen Wassergehaltsunterschiedes in einem
+{ Zweck : Calculation des maximalen Wassergehaltsunterschiedes in einem
   Kompartiment von einem Iterationsschritt zum n�chsten }
 { ********************************************************************** }
 
@@ -2737,7 +2745,7 @@ begin
   if fCompMethod = MixedHydrus then
     MixedHydruswater_solut; // Potentialbasiertes Modell mit Wasserspannungen
 
-  // Berechnung der abgeleiteten Wassergehalte f�r verschiedene Bodenschichten
+  // Calculation der abgeleiteten Wassergehalte for verschiedene Bodenschichten
   update_Wcont_Values;
 
   // CumEvap.c := CumEvap.c +
@@ -2763,7 +2771,7 @@ var
 begin
   if rep = false then
   begin
-    { Berechnung der Wasserspannungen [cm] bei Feldkapazit�t bzw. beim
+    { Calculation der Wasserspannungen [cm] bei Feldkapazit�t bzw. beim
       permanenten Welkepunkt }
     psiWP := power(10, 4.2);
     psiFK := power(10, 1.8);
@@ -3220,7 +3228,7 @@ var
     // avg_ku[0] := sqrt(Wpar[1].ks*Ku_arr[1]);  // geometric mean
     avg_Ku[0] := (WPar[1].Ks + Ku_arr[1]) / 2; // aritmethic mean
 
-    { Berechnung von Koeffizienten f�r die Aufstellung des Gleichungssystems }
+    { Calculation von Koeffizienten for die Aufstellung des Gleichungssystems }
     for i := 1 to n_comp do
     begin
       if c_arr[i] >= 0.0 then { Tritt S�ttigung auf ? }
@@ -3240,7 +3248,7 @@ var
     for i := 1 to n_comp do
       wf[i] := 1;
 
-    { Berechnung der Koeffizienten f�r die Aufstellung des Gleichungssystems }
+    { Calculation der Koeffizienten for die Aufstellung des Gleichungssystems }
 
     if FSoilHeatModel <> nil then
     begin
@@ -3756,7 +3764,7 @@ var
   i: integer;
   psi_top, MaxFlow1: real;
 
-  procedure Leitfaehigkeiten;
+  procedure CalcConductivities;
 
   var
     i: byte;
@@ -3820,7 +3828,7 @@ var
       end; }
   end;
 
-  procedure obere_Randbedingung;
+  procedure CalcUpperBoundary;
 
   const
     AirDryness = 20000;
@@ -3893,7 +3901,7 @@ var
     end;
   end;
 
-  procedure Mittelteil;
+  procedure CalcMainLayers;
   var
     i: integer;
   begin
@@ -3924,7 +3932,7 @@ var
       end; }
   end;
 
-  procedure untere_Randbedingung;
+  procedure CalcLowerBoundary;
   { In diesem Fall ist ein vorgegebener unterer Wassergehalt,
     bzw. eine 0-Gradienten Randbedingung vorgegeben }
 
@@ -3975,7 +3983,7 @@ var
       diag[n_comp] := -P[n_comp] * kf[n_comp - 1] - P[n_comp] * kf[n_comp] + 1; }
   end;
 
-  procedure Loesung_Gleichungssystem;
+  procedure SolveEquationSystem;
   var
     i: byte;
     c: real; // specific soil water capacity [1/cm])
@@ -4093,11 +4101,11 @@ begin { procedure MixedHydruswater_solut }
   success := false;
   iter := 0;
   repeat
-    Leitfaehigkeiten;
-    obere_Randbedingung;
-    Mittelteil;
-    untere_Randbedingung;
-    Loesung_Gleichungssystem;
+    CalcConductivities;
+    CalcUpperBoundary;
+    CalcMainLayers;
+    CalcLowerBoundary;
+    SolveEquationSystem;
     get_delt_iter_max;
 {$IFNDEF NONVISUAL}
     if (DebugForm <> NIL) and Debugmodus then
