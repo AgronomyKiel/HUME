@@ -34,7 +34,7 @@ object FormMod: TFormMod
     Top = 44
     Width = 1090
     Height = 589
-    ActivePage = TabSheetModelDiagram
+    ActivePage = TabSheetParameter
     Align = alClient
     HotTrack = True
     TabOrder = 1
@@ -173,6 +173,7 @@ object FormMod: TFormMod
             BevelWidth = 5
             ReadOnly = True
             TabOrder = 0
+            ExplicitHeight = 25
           end
         end
         object GroupBoxEndtime: TGroupBox
@@ -203,6 +204,7 @@ object FormMod: TFormMod
             Align = alLeft
             TabOrder = 0
             OnChange = EditEndTimeChange
+            ExplicitHeight = 25
           end
           object EndTimePicker: TDateTimePicker
             Left = 101
@@ -244,6 +246,7 @@ object FormMod: TFormMod
             Align = alClient
             TabOrder = 0
             Text = '1'
+            ExplicitHeight = 25
           end
         end
         object GroupBoxStateIniFile: TGroupBox
@@ -312,6 +315,7 @@ object FormMod: TFormMod
             Align = alLeft
             TabOrder = 0
             OnMouseMove = EditStateIniFileNameMouseMove
+            ExplicitHeight = 25
           end
         end
         object GroupBoxPamIniFileName: TGroupBox
@@ -382,6 +386,7 @@ object FormMod: TFormMod
             Align = alLeft
             TabOrder = 0
             OnMouseMove = EditParamIniFileNameMouseMove
+            ExplicitHeight = 25
           end
         end
         object GroupBoxWeatherFile: TGroupBox
@@ -453,6 +458,7 @@ object FormMod: TFormMod
             ShowHint = True
             TabOrder = 0
             OnMouseMove = EditWeatherfileMouseMove
+            ExplicitHeight = 25
           end
         end
         object GroupBoxSaveIniFileChanges: TGroupBox
@@ -581,6 +587,7 @@ object FormMod: TFormMod
           Align = alLeft
           TabOrder = 0
           OnChange = EditStartTimeChange
+          ExplicitHeight = 23
         end
         object DateTimePickerStart: TDateTimePicker
           Left = 101
@@ -2889,14 +2896,14 @@ object FormMod: TFormMod
         object LabelTimeSeriesOption: TLabel
           Left = 255
           Top = 0
-          Width = 96
+          Width = 97
           Height = 24
           Alignment = taCenter
           Caption = '  Time series type  '
           Layout = tlCenter
         end
         object ComboBoxTimeAxisOption: TComboBox
-          Left = 351
+          Left = 352
           Top = 0
           Width = 145
           Height = 23
@@ -2908,7 +2915,7 @@ object FormMod: TFormMod
             'Floating Point')
         end
         object SelectMeasDataCheckBox: TCheckBox
-          Left = 496
+          Left = 497
           Top = 0
           Width = 172
           Height = 24

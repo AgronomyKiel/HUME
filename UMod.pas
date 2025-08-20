@@ -1,4 +1,4 @@
-﻿/// <summary> UMod is a unit that defines the base classes TMod and TSubmodel. TMod can be instantiated directly and is the central control object of a simulation model.No license found
+﻿/// <summary> UMod is a unit that defines the base classes TMod and TSubmodel. TMod can be instantiated directly and is the central control object of a simulation model. No license found
 /// It summarizes the submodels of the simulation model and provides methods for data output, parameter estimation, and sensitivity analysis.
 /// TSubModel is an abstract base class for problem specific submodels. Furthermore some other classes are defined. </summary>
 unit UMod;
@@ -36,7 +36,9 @@ uses
   UFormModelEditor, // HUME: TModelEdit, Designtime formular for editing TMod
   UFormDebugAbstract,
   {$ENDIF}
-  Math;
+  Math,
+    UNamedMatrix // class to represent a names Matrix with rows and cols
+;
 
 type
 
@@ -158,8 +160,12 @@ type
     fMod: TMod;
 
     /// <summary> file variables and names for output of sensitivity analysis </summary>
-    f_a, f_b: array [0 .. 30] of textFile;
-    fn_a, fn_b: array [0 .. 30] of string;
+    fsens_read  : array[0..30] of TStreamReader;
+    fsens_write  : array[0..30] of TStreamwriter;
+//    f_c  : array[0..30] of TStreamReader;
+
+    /// <summary> file names for output of sensitivity analysis </summary>
+    fn_SensRead, fn_SensWrite: array [0 .. 30] of string;
 
     /// <summary> maximum value during sensitivity analysis </summary>
     FMaxValue: real;
@@ -173,8 +179,8 @@ type
 /// <summary> change of parameter per sensitivy setpp </summary>
     FDPar: real;
 
-    /// <summary> Variables selected for output </summary>
-    Sens_f: textFile;
+    /// <summary> Output file for endvalues of variables selected for output </summary>
+    fSens_final: textFile;
 
     /// <summary> output file name for sensitivity data </summary>
     FSens_fn: string;//TMyFileName;
@@ -349,13 +355,12 @@ type
     procedure Set_TimeStep(const TimeStep: real);
 
     /// <summary> Method for writing the names of variables for the sensitivity analysis to a file </summary>
-    procedure WriteSensNames(Variable: Tvar; var f: text);
+    procedure WriteSensNames(Variable: TVar; Varndx:integer;ParamName: String;  SensParValues: array of real);
 
     /// <summary> Method for writing the names of variables for the global output to a file </summary>
     procedure WriteGlobalOutputNames(fn: string);
 
-    /// <summary> Method for writing the names of variables for the global output to a file </summary>
-    procedure WriteSensValue(Variable: Tvar; Iter: Integer; var f_a, f_b: text);
+    procedure WriteAllSensValuesToMatrix(var MatrixStrList: TStringList; row, col:integer);
 
     /// <summary> Method creating an Inifile from scratch</summary>
     procedure CreateIniFiles(OptionInifilefn: string; ParamIniFilefn: string;
@@ -1532,6 +1537,7 @@ begin
   FLMOptions := TMarquardOptions.create;
   SensOpt := TSensitivityOptions.create(self);
 
+
   Separator := ',';
   // initialize model time settings
   Time := TState.create('Time', '[d]', 0.0, 1.0, '');
@@ -1651,7 +1657,6 @@ begin
   for subMod := 0 to SubModStrList.count - 1 do
     // SubModel[SubMod].destroy;
     SubModStrList.Free;
-
   inherited;
 end;
 
@@ -1955,11 +1960,6 @@ for i := 0 to SubModStrList.count - 1 do begin
 end;
 
 
-/// <summary> For each submodel clear data pair series </summary>
-
-/// <summary> For each submodel clear data pair series </summary>
-
-
 
 /// <summary> For each submodel clear data pair series </summary>
 
@@ -2261,6 +2261,7 @@ begin
     chdir(EXE_DIR);
   // clear list of all measurement values
   AllMeasVal.Clear;
+
   // For every submodel clear data pair series
   ClearAllDataSeries;
   // For all submodels write state names to final output file
@@ -2334,80 +2335,108 @@ begin
   CalcChiSq;
 end;
 
-/// <summary> Sensitivity analysis </summary>
+
+/// <summary> implementation of a Sensitivity analysis
+/// the procedure produces two types of output, a endpoint value for the choosen mode
+/// entities and a time series output
+/// </summary>
 
 procedure TMod.CalcSensitivity;
 
 const
   cont_output = true;
+  max_steps = 100;
 
 var
-  i, Iter: Integer;
+  i, j, Iter, step, TimeSteps, ActTimeStep: Integer;
   ActParameterValue: real;
   OldParameterValue: real;
-  ActVar: Tvar;
+  ActVar: TVar;
   rep, Success: boolean;
-  line, dir: string;
-  SubModname, path: string;
+  line, dir, NewColName: string;
+  submodname, path: string;
   TempPar: TPar;
+  SensParValues: array [0 .. max_steps - 1] of real;
+  SensTimeSeriesOutputList: TStringList;
+  f : textfile;
+  fn : string;
+  NewOutputMatrix, ActOutputMatrix: TNamedMatrix<real>;
+
 begin
   // flag false for first loop, flag true for second and following loops
   rep := false;
-  // GetParameter(
-  GetParameter(SensOpt.SelSenspar.Name, TempPar, SubModname, Success);
+
+  // create a string list for time series output for objects of type TNamedMatrix<Double>
+  SensTimeSeriesOutputList := TStringList.create;
+
+  // retrieve the parameter by name
+  GetParameter(SensOpt.SelSenspar.Name, TempPar, submodname, Success);
+
+  // save the initial value of the parameter for later restoring
   OldParameterValue := FSensOptions.SelSenspar.v;
-  // chdir(ExtractFiledir(application.ExeName));
-  // chdir(EXE_DIR);
+
   // start with minimal value as actual value
   ActParameterValue := SensOpt.MinValue;
-  // open output file for sensitivity analysis data (sens.dat)
+
+  // fill an double array with the values of the parameter to be evaluated
+  SensParValues[0] := SensOpt.MinValue;
+  for i := 1 to self.SensOpt.Steps - 1 do
+  begin
+    SensParValues[i] := SensParValues[i - 1] + SensOpt.DPar;
+  end;
+
+  // create and rewrite output file for sensitivity analysis endpoint data (sens.dat)
   if ExtractFilePath(SensOpt.Sens_fn) = '' then
-    // if fileexists(SensOpt.Sens_fn)= false then
     SensOpt.Sens_fn := GM_OutPutPath + '\' + SensOpt.Sens_fn;
-  assignfile(SensOpt.Sens_f, SensOpt.Sens_fn);
-  // reset(SensOpt.Sens_f);
-{$I-}
-  rewrite(SensOpt.Sens_f);
-{$I+}
-  if ioresult = 0 then
-    // first row of output file: write name of selected sensitivity parameter
-    write(SensOpt.Sens_f, SensOpt.SelSenspar.Name, Separator)
-  else
-{$IFNDEF NONVISUAL}
-    ShowMessage(SysErrorMessage(GetLastError));
-{$ENDIF}
-  // first row of output file: write names of selected variables
+  assignfile(SensOpt.fSens_final, SensOpt.Sens_fn);
+  rewrite(SensOpt.fSens_final);
+  // first row of output file: write name of selected sensitivity parameter
+  write(SensOpt.fSens_final, SensOpt.SelSenspar.Name, Separator);
+  // first row of output file for end point values: write names of selected variables
   for i := 0 to SensOpt.FOutList.count - 1 do
   begin
-    ActVar := Tvar(SensOpt.FOutList.objects[i]);
-    write(SensOpt.Sens_f, ActVar.Name, Separator);
+    ActVar := TVar(SensOpt.FOutList.Objects[i]);
+    write(SensOpt.fSens_final, ActVar.Name, Separator);
   end;
-  writeln(SensOpt.Sens_f);
+  writeln(SensOpt.fSens_final);
   // second row of output file: write units of selected sensitivity parameter
-  write(SensOpt.Sens_f, SensOpt.SelSenspar.U, Separator);
+  write(SensOpt.fSens_final, SensOpt.SelSenspar.U, Separator);
   // second row of output file: write units of selected variables
   for i := 0 to SensOpt.FOutList.count - 1 do
   begin
-    ActVar := Tvar(SensOpt.FOutList.objects[i]);
-    write(SensOpt.Sens_f, ActVar.U, Separator);
+    ActVar := TVar(SensOpt.FOutList.Objects[i]);
+    write(SensOpt.fSens_final, ActVar.U, Separator);
   end;
-  writeln(SensOpt.Sens_f);
+  writeln(SensOpt.fSens_final);
 
-  // assign output files for selected variables (_sens_a.csv / _sens_b.csv)
+  // a number of variables can be selected for sensitivity analysis in parallel
+  // assign output files for time series of selected variables (_sens_a.csv / _sens_b.csv)
+
+  // in order to set the matrix dimension the number of output Time steps is calculated
+  TimeSteps := trunc(FEndTime - self.FStartTime + 1);
+
   for i := 0 to SensOpt.FOutList.count - 1 do
   begin
     dir := GM_OutPutPath + '\sens\';
+    // create directory if it does not exist
     if SysUtils.ForceDirectories(dir) then
     begin
-      ActVar := Tvar(SensOpt.FOutList.objects[i]);
-      SensOpt.fn_a[i] := dir + ActVar.Name + '_sens_a.csv';
-      SensOpt.fn_b[i] := dir + ActVar.Name + '_sens_b.csv';
+      // create a new output matrix for each variable
+      NewOutputMatrix := TNamedMatrix<real>.create;
+      NewOutputMatrix.AddCol('Time');
+
+      // set the column names
+      for step := 0 to self.SensOpt.Steps - 1 do  begin
+        NewColName := SensOpt.SelSenspar.Name + '_' +  floatToStr(SensParValues[step]);
+        NewOutputMatrix.AddCol(NewColName);
+      end;
+      // set the size of the matrix
+      NewOutputMatrix.SetSize(TimeSteps, SensOpt.FSteps + 1);
+      // set the size of the matrix
+      SensTimeSeriesOutputList.AddObject(ActVar.Name, NewOutputMatrix);
     end;
-    assignfile(SensOpt.f_a[i], SensOpt.fn_a[i]);
-    assignfile(SensOpt.f_b[i], SensOpt.fn_b[i]);
-    rewrite(SensOpt.f_a[i]);
-    rewrite(SensOpt.f_b[i]);
   end;
+
   if cont_output then
   begin
     WriteAllNames;
@@ -2418,46 +2447,25 @@ begin
   // for each step of sensitivity analysis do...
   for Iter := 1 to SensOpt.Steps do
   begin
-    ParamInifile.WriteFloat(SubModname, SensOpt.SelSenspar.Name, //
-      ActParameterValue); //
-    ParamInifile.UpdateFile; //
+    // write the actual parameter value in the Ini-file
+    ParamInifile.WriteFloat(submodname, SensOpt.SelSenspar.Name, ActParameterValue);
+    ParamInifile.UpdateFile;
 
-    // for all selected variables create _sens_a.csv file
-    // and write variable names into first row
-    for i := 0 to SensOpt.FOutList.count - 1 do
-    begin
-      rewrite(SensOpt.f_a[i]);
-      ActVar := Tvar(SensOpt.FOutList.objects[i]);
-      WriteSensNames(ActVar, SensOpt.f_a[i]);
-    end;
-    // if second step or later the reset _sens_b.csv files
-    if rep then
-    begin
-      for i := 0 to SensOpt.FOutList.count - 1 do
-      begin
-        reset(SensOpt.f_b[i]);
-      end;
-    end;
     // prepare for simulation run, regarding the actual "step" of the
     // chosen sensitivity parameter
-    ActIniFile := TMyIniFile(FIniFiles.objects[0]);
+    ActIniFile := TMyIniFile(FIniFiles.Objects[0]);
     Init(ActIniFile);
     InitAllExternV;
     InitAllSubMods;
     InitAllDataSeries;
     // set parameter value according to step respectively loop count
-    // first loop (see above): ActparameterValue := SensOpt.MinValue;
-    // others (see below): ActParameterValue := ActParameterValue + SensOpt.DPar;
     SensOpt.SelSenspar.v := ActParameterValue;
-    // ActParameterValue := SensOpt.SelSenspar.v;
     // Set weather file pointer to actual time step
     WeatherFile.LocateFor(Time.Name, Time.v);
-    { writeAllSensNames; }
-    // doing the actual simulation (from start to end of model time)
-    // for the actual "step" of the chosen sensitivity parameter
+
+    ActTimeStep := 1;
     repeat
       CalcAllVars;
-      // calculate rates, integrate, go to next time step
       CalcAllRates;
       UpdateAll;
       integrateAllSubModels;
@@ -2469,68 +2477,56 @@ begin
       end;
 
       // write variable values to output files
-      for i := 0 to SensOpt.FOutList.count - 1 do
-      begin
-        ActVar := Tvar(SensOpt.FOutList.objects[i]);
-        WriteSensValue(ActVar, Iter, SensOpt.f_a[i], SensOpt.f_b[i]);
-      end;
+      WriteAllSensValuesToMatrix(SensTimeSeriesOutputList, ActTimeStep, Iter);
       IsFinished;
       // step forward in weather file
       if Time.v >= WeatherFile.getIndexValue(0) then
       begin
         WeatherFile.NextLine;
-        // weatherFile.CalcValues;
       end;
+    inc(ActTimeStep);
     until ModelEnd;
 
+
     // write parameter and variable values to output
-    write(SensOpt.Sens_f, FloatToStrf(ActParameterValue, ffgeneral, 8, 4),
-      Separator);
-    for i := 0 to SensOpt.FOutList.count - 1 do
+    write(SensOpt.fSens_final, FloatToStrf(ActParameterValue, ffgeneral, 8, 4), Separator);
+    for j := 0 to SensOpt.FOutList.count - 1 do
     begin
-      ActVar := Tvar(SensOpt.FOutList.objects[i]);
-      write(SensOpt.Sens_f, FloatToStrf(ActVar.v, ffgeneral, 8, 4), Separator);
+      ActVar := TVar(SensOpt.FOutList.Objects[j]);
+      write(SensOpt.fSens_final, FloatToStrf(ActVar.v, ffgeneral, 8, 4), Separator);
     end;
-    writeln(SensOpt.Sens_f);
+    writeln(SensOpt.fSens_final);
+
+
     // increase value of sensitivity parameter by stepwidth
     ActParameterValue := ActParameterValue + SensOpt.DPar;
 
     // first loop has been done
     rep := true;
-    // output file action: shift lines from sens_a_.csv to _sens_b_.csv
 
-    for i := 0 to SensOpt.FOutList.count - 1 do
-    begin
-      CloseFile(SensOpt.f_a[i]);
-      CloseFile(SensOpt.f_b[i]);
-    end;
-
-    for i := 0 to SensOpt.FOutList.count - 1 do
-    begin
-      // if fileexists(sensOpt.fn_a[i]) then
-      reset(SensOpt.f_a[i]);
-      readln(SensOpt.f_a[i]);
-      readln(SensOpt.f_a[i]);
-      rewrite(SensOpt.f_b[i]);
-      while not eof(SensOpt.f_a[i]) do
-      begin
-        readln(SensOpt.f_a[i], line);
-        writeln(SensOpt.f_b[i], line);
-      end;
-      CloseFile(SensOpt.f_a[i]);
-      CloseFile(SensOpt.f_b[i]);
-    end;
-    { SaveFinalValues;
-      CopyAllSensFiles; }
   end;
   // close output file (sens.dat)
   if cont_output then
     CloseAllFiles;
 
-  CloseFile(SensOpt.Sens_f);
-  ParamInifile.WriteFloat(SubModname, SensOpt.SelSenspar.Name, //
-    OldParameterValue); //
-  ParamInifile.UpdateFile; //
+  CloseFile(SensOpt.fSens_final);
+  ParamInifile.WriteFloat(submodname, SensOpt.SelSenspar.Name, OldParameterValue);
+  ParamInifile.UpdateFile;
+
+  for i := 0 to SensOpt.FOutList.count - 1 do
+  begin
+    ActVar := TVar(SensOpt.FOutList.Objects[i]);
+    fn :=   dir + ActVar.Name + 'Matrix_sens.csv';
+    ActOutputMatrix := TNamedMatrix<real>(SensTimeSeriesOutputList.objects[i]);
+    ActOutputMatrix.WriteToCSV(fn , MyFloatToStr, false);
+  end;
+
+  for step := 0 to SensOpt.FOutList.count - 1 do
+  begin
+    ActOutputMatrix := TNamedMatrix<real>(SensTimeSeriesOutputList.objects[step]);
+    ActOutputMatrix.Free;
+  end;
+  SensTimeSeriesOutputList.Free;
   // This TMod.CalcSensitivity method was called by the procedure
   // TFormSensOpt.ButtonRunSensClick from the unit UFormSelPar.
   // There, to present the sensitivity results, the string grid will
@@ -2847,7 +2843,7 @@ begin
   if ExtractFilePath(SensOpt.Sens_fn) = '' then
     // if fileexists(SensOpt.Sens_fn)= false then
     SensOpt.Sens_fn := GM_OutPutPath + '\' + SensOpt.Sens_fn;
-  assignfile(SensOpt.Sens_f, SensOpt.Sens_fn);
+  assignfile(SensOpt.fSens_final, SensOpt.Sens_fn);
 
   GetParameter(SensOpt.SelSenspar.Name, TempPar, SubModname, Success);
   for i := 0 to self.IniFileNames.count - 1 do
@@ -2867,18 +2863,18 @@ begin
   SensOpt.SelSenspar.SelForOpt := true;
   SensOpt.SelSenspar.v := SensOpt.MinValue;
   // open output file for sensitivity analysis data (sens.dat)
-  assignfile(SensOpt.Sens_f, SensOpt.Sens_fn);
-  rewrite(SensOpt.Sens_f);
+  assignfile(SensOpt.fSens_final, SensOpt.Sens_fn);
+  rewrite(SensOpt.fSens_final);
   // first row of output file: write name of selected sensitivity parameter
-  write(SensOpt.Sens_f, SensOpt.SelSenspar.Name, Separator);
+  write(SensOpt.fSens_final, SensOpt.SelSenspar.Name, Separator);
   // first row of output file: write names of selected variables
-  writeln(SensOpt.Sens_f, 'n', Separator, 'SumSqr', Separator, 'slope',
+  writeln(SensOpt.fSens_final, 'n', Separator, 'SumSqr', Separator, 'slope',
     Separator, 'intercept', Separator, 'r2', Separator, 'RMSE',
     Separator, 'EF');
   // second row of output file: write units of selected sensitivity parameter
-  write(SensOpt.Sens_f, SensOpt.SelSenspar.U, Separator);
+  write(SensOpt.fSens_final, SensOpt.SelSenspar.U, Separator);
   // second row of output file: write units of selected Parameter
-  writeln(SensOpt.Sens_f, '[', SensOpt.SelSenspar.U, ']');
+  writeln(SensOpt.fSens_final, '[', SensOpt.SelSenspar.U, ']');
   // for each step of sensitivity analysis do...
   SaveContOutput := fContOutput;
   fContOutput := NoContOutput;
@@ -2887,9 +2883,9 @@ begin
     run;
     AllMeasVal.LeastSquares;
     // write parameter and variable values to output
-    write(SensOpt.Sens_f, FloatToStrf(SensOpt.SelSenspar.v, ffgeneral, 8, 4),
+    write(SensOpt.fSens_final, FloatToStrf(SensOpt.SelSenspar.v, ffgeneral, 8, 4),
       Separator);
-    writeln(SensOpt.Sens_f, AllMeasVal.count, Separator, AllMeasVal.SumSqrdiff:8
+    writeln(SensOpt.fSens_final, AllMeasVal.count, Separator, AllMeasVal.SumSqrdiff:8
       :4, Separator, AllMeasVal.slope:8:4, Separator, AllMeasVal.intercept:8:4,
       Separator, AllMeasVal.r2:8:4, Separator, AllMeasVal.RMSE:8:4, Separator,
       AllMeasVal.modellingefficiency:6:3);
@@ -2899,7 +2895,7 @@ begin
   fContOutput := SaveContOutput;
   SensOpt.SelSenspar.SelForOpt := false;
   // close output file (sens.dat)
-  CloseFile(SensOpt.Sens_f);
+  CloseFile(SensOpt.fSens_final);
   for i := 0 to IniFileNames.count - 1 do
   begin // rewrite old values to Ini-files
     ActIniFile := TMyIniFile(FIniFiles.objects[i]);
@@ -4611,61 +4607,58 @@ end;
 /// <param name="Variable"> Tvar; </param>
 /// <param name="f"> text </param>
 
-procedure TMod.WriteSensNames(Variable: Tvar; var f: text);
+procedure TMod.WriteSensNames(Variable: TVar; Varndx:integer;ParamName: String;  SensParValues: array of real);
 var
   i: Integer;
-  Caption: string;
+  Caption, line: string;
+  value : real;
 begin
   // output file already opened: _sens_a.csv files
   { rewrite(f); }
   // first row of output file
   // write name of time variable to output
-  write(f, Time.Name, Separator);
+
+
+//  write(f, Time.Name, Separator);
   // write names of all steps of sensitivity analysis to output
+  line := 'Time'+Separator;
   for i := 1 to SensOpt.Steps do
   begin
-    Caption := Variable.Name + '_' + IntToStr(i);
-    write(f, Caption, Separator);
+    Value :=  SensParValues[i];
+    Caption := Variable.Name + '_' + ParamName + '_'+ FloatToStr(SensParValues[i]) ;
+    line := line + Caption + Separator;
   end;
-  // go to second row of output file
-  writeln(f);
-  // write units of time variable to output
-  write(f, Time.U, Separator);
-  // write units of all steps of sensitivity analysis to output
-  for i := 0 to SensOpt.Steps do
-  begin
-    Caption := Variable.U;
-    write(f, Caption, Separator);
-  end;
-  // go to third row of output file - ready to write values...
-  writeln(f);
+  self.SensOpt.fsens_write[Varndx].WriteLine(line); //.fsens_write[i].WriteLine(line),
+
 end;
 
-/// <summary> Writes values from sensitivity analysis to sens_ output files </summary>
-/// <param name="Variable"> Tvar; </param>
-/// <param name="Iter"> integer; </param>
-/// <param name="f_a, f_b"> text </param>
 
-procedure TMod.WriteSensValue(Variable: Tvar; Iter: Integer;
-  var f_a, f_b: text);
+
+procedure TMod.WriteAllSensValuesToMatrix(var MatrixStrList: TStringList; row, col:integer);
 var
   line: string;
+  ActVar : TVar;
+  ActMatrix : TNamedMatrix<real>;
+  i : integer;
+
 begin
-  with Variable do
+
+  // write variable values to output files
+  for i := 0 to SensOpt.FOutList.count - 1 do
   begin
-    if Iter > 1 then
-    begin
-      readln(f_b, line);
-      writeln(f_a, line + FloatToStrf(v, ffgeneral, Precision, Digits),
-        Separator);
-    end
-    else
-      writeln(f_a, FloatToStrf(Time.v, ffgeneral, Time.Precision, Time.Digits),
-        Separator, FloatToStrf(v, ffgeneral, Precision, Digits), Separator);
+
+    ActVar := Tvar(SensOpt.FOutList.Objects[i]);
+    // WriteSensValue(ActVar, Iter, SensOpt.fn_a[i], SensOpt.fn_b[i]);
+    ActMatrix := TNamedMatrix<real>(MatrixStrList.Objects[i]);
+
+    // write the actual time to the first column
+    ActMatrix.Items[row-1, 0] := self.Time.v;
+    // write the actual variable value in to the cell
+    ActMatrix.Items[row-1, col] := ActVar.v;
   end;
 end;
 
-/// <summary> Integration of state variables (Euler method) </summary>
+
 
 
 /// <summary> Write names and units of all variables to output file (_dat.csv) </summary>

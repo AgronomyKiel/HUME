@@ -866,7 +866,7 @@ procedure TPenMonteith.CreateExterns;
 begin
   ExternVCreate('TMPM', '[°C]', StateField, Temp, 'average daily temperature');
   // air temperature [°C]
-  ExternVCreate('GlobRad', '[W.m-2]', StateField, GlobRad,
+  ExternVCreate('Rad_Int', '[W.m-2]', StateField, GlobRad,
     'gobal radiation in [W.m-2]');
   ExternVCreate('Sat_def', '[hPa]', StateField, Sat_def,
     'saturation deficit [hPa]');

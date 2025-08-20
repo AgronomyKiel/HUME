@@ -1342,7 +1342,8 @@ begin
       // if entity.PlotToGraph then
       // entity.WriteToFile := true;
       WriteBool(submodname, entity.Name + '.WriteToFile', entity.writeToFile);
-      WriteBool(submodname, entity.Name + '.SelForSensOut', entity.SelForSensOut);
+// hk 18.08.2025
+//      WriteBool(submodname, entity.Name + '.SelForSensOut', entity.SelForSensOut);
     end;
   end;
   Lmod.fModel.FPropIniFile.UpdateFile;
@@ -1653,17 +1654,17 @@ begin
     if rep = false then
     begin
       NewLine := DelDoubleSpaces(ActWeather.Strings[0]);
-      NewLine := StringReplace(NewLine, ' ', Model.separator,
+      NewLine := StringReplace(NewLine, ' ', Model.Separator,
         [rfReplaceAll, rfIgnoreCase]);
-      NewLine := 'IniFile' + Model.separator + 'WeatherFile' + Model.separator
+      NewLine := 'IniFile' + Model.Separator + 'WeatherFile' + Model.Separator
         + NewLine;
       writeln(AllData, NewLine);
       for lines := 2 to ActWeather.count - 1 do
       begin
         NewLine := DelDoubleSpaces(ActWeather.Strings[lines]);
-        NewLine := StringReplace(NewLine, ' ', Model.separator,
+        NewLine := StringReplace(NewLine, ' ', Model.Separator,
           [rfReplaceAll, rfIgnoreCase]);
-        NewLine := actIniFN + Model.separator + w_fn + Model.separator
+        NewLine := actIniFN + Model.Separator + w_fn + Model.Separator
           + NewLine;
         writeln(AllData, NewLine);
         rep := True;
@@ -1674,9 +1675,9 @@ begin
       for lines := 2 to ActWeather.count - 1 do
       begin
         NewLine := DelDoubleSpaces(ActWeather.Strings[lines]);
-        NewLine := StringReplace(NewLine, ' ', Model.separator,
+        NewLine := StringReplace(NewLine, ' ', Model.Separator,
           [rfReplaceAll, rfIgnoreCase]);
-        NewLine := actIniFN + Model.separator + w_fn + Model.separator
+        NewLine := actIniFN + Model.Separator + w_fn + Model.Separator
           + NewLine;
         writeln(AllData, NewLine);
       end;
@@ -2406,7 +2407,7 @@ begin
           line := ',' + line; }
         ncol := 1;
         for i := 1 to Length(line) do
-          if line[i] = Model.separator then
+          if line[i] = Model.Separator then
             inc(ncol);
         with FormShowFinalValues.AdvStringGrid1 do
         begin
