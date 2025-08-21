@@ -565,7 +565,7 @@ var
   i, actSubModIndex: Integer;
   SubModel: TSubModel;
   Param: TPar;
-  line: string;
+  line, LinkString: string;
 begin
   with AdvStringGridParam do
   begin
@@ -574,7 +574,7 @@ begin
 
     EditParamFileName.Text := Lmod.fModel.ParamInifile.FileName;
     Clear;
-    Rows[0].commatext := 'Name, Unit, Value, Save_to_all_Inis, Info';
+    Rows[0].commatext := 'Name, Unit, Value, Save_to_all_Inis, Info, DocuLink';
     RowCount := 2;
     FixedRows := 1;
 
@@ -587,11 +587,23 @@ begin
       begin
         Param := TPar(SubModel.ParStrList.objects[i]);
         with Param do
-          line := name + ',' + u + ',' + floattoStrF(v, ffgeneral, 6, 3);
-        Rows[i + 1].commatext := line;
+//          line := name + ',' + u + ',' + floattoStrF(v, ffgeneral, 6, 3);
+        cells[0, i+1] := name;
+        cells[1, i+1] := Param.U;
+        cells[2, i+1] := floattoStrF(Param.v, ffgeneral, 6, 3);
+
+
+//        Rows[i + 1].commatext := line;
         AddBitButton(3, i + 1, 20, 20, '', img_savetoall, haCenter, vaCenter);
         if Param.Comment <> '' then
           AddBitButton(4, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
+        if param.DocuWebLink <> '' then begin
+          LinkString := ' <A href="' + Param.DocuWebLink + '"title="'+Param.DocuWebLink+'>Explanation</A>';
+          cells[5, i+1] := LinkString;
+
+        end;
+
+
       end;
     end;
     EditParamFileName.hint := Lmod.fModel.ParamInifile.FileName;

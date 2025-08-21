@@ -910,6 +910,7 @@ object FormMod: TFormMod
         Height = 515
         Cursor = crDefault
         Align = alClient
+        ColCount = 6
         DefaultColWidth = 120
         FixedCols = 2
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goEditing]
@@ -1029,7 +1030,8 @@ object FormMod: TFormMod
           120
           82
           83
-          92)
+          92
+          120)
       end
       object ToolBarParSheet: TToolBar
         AlignWithMargins = True
@@ -1920,6 +1922,7 @@ object FormMod: TFormMod
         Height = 524
         Cursor = crDefault
         Align = alClient
+        ColCount = 6
         DefaultColWidth = 100
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing]
         ScrollBars = ssBoth
@@ -2041,6 +2044,7 @@ object FormMod: TFormMod
           100
           135
           583
+          100
           100
           100)
       end
