@@ -33,9 +33,11 @@ options("citation_format" = "pandoc")
 
 ```{r}
 #| include: false
-fn_source <- "Q:/HUME/HUME/Components/Ceres Wheat/UHumeWheatLeafArea.pas"
-fn_xml_docu <- "Q:/HUME/HUME/XML_Delphi_Docu/UHumeWheatLeafArea.xml"
-fn_csv <- "Q:/HUME/HUME/csv_Hume_Docu/HumeWheatLeafArea1.csv"
+
+
+fn_source <- here("Components/Ceres Wheat/UHumeWheatLeafArea.pas")
+fn_xml_docu <- here("XML_Delphi_Docu/UHumeWheatLeafArea.xml")
+fn_csv <- here("csv_Hume_Docu/HumeWheatLeafArea1.csv")
 
 NameSource <- file_path_sans_ext(basename(fn_source))
 
@@ -497,19 +499,122 @@ $$PLALR_a = PSENLeaf_2 \cdot T_{eff} \cdot GPLA$$ {#eq-PLALRa2}
 
 where $PSENLeaf_1$ is a parameter of the regression equation.
 
-The parameters values $PSENLeaf_2$ and $GPLA$ have defaults of 0.0003 and 0.0006 $cm^2 \cdot °Cd^{-1}$ in the model.
+The parameters values $PSENLeaf_1$ and $PSENLeaf_2$ have defaults of 0.0003 and 0.0006 $cm^2 \cdot °Cd^{-1}$ in the model. From @fig-PSEN1 it becomes obvious that the parameter PSENLeaf_1 is a  sensitive parameter for the leaf area index simulation. It remains to be discussed if values > 0 improve the predictive quality of the model.
+
+
+```{r}
+#| label: fig-LAISens_PSEN1
+#| echo: false
+#| fig-align: center
+#| fig-cap: Sensitivity analysis for effects of the parameter PSEN1 ond simulated Leaf Area Index of winter wheat. Data are from trial 95/2006, N240 as average of the cultivars.
+#| fig-height: 6
+#| fig-width: 10
+#| warning: false
+#| message: false
+
+fn <- here("Components/CERES Wheat/Documentation/Data/PSEN1_LAIMatrix_sens.csv")
+
+df <- read.delim(fn, comment.char = "[", sep=",")
+ParName <- "PSENLeaf1"
+ColNames <- names(df)[grep(ParName, names(df))]
+ColValues <- as.numeric(gsub(paste0(ParName, "_"), "", ColNames))
+df <- df %>% filter(Time>=38620)
+
+
+dfl <- df %>% pivot_longer(cols = -c(Time), names_to = "PSEN1", values_to = "LAI")
+dfl$PSEN1 <- gsub(paste0(ParName, "_"), "", dfl$PSEN1)
+
+dfl$Date <- as.POSIXct(as.numeric(as.character(dfl$Time))*86400, origin="1899-12-30", tz="GMT")
+#dfl <- dfl %>% filter(Time >= 38660)
+
+fn.Data <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_SubLeafAreaSimple1.txt")
+df.data <-  read.delim(fn.Data, comment.char = "[", sep=" ")
+df.data$Date <- as.POSIXct(as.numeric(as.character(df.data$Time))*86400, origin="1899-12-30", tz="GMT")
+df.data <- df.data %>% filter (LAI>0.01)
+
+
+library(RColorBrewer)
+
+
+p <- ggplot()
+p <- p + geom_line(data = dfl, aes(x = Date, y = LAI, color = PSEN1), size = 1.5)
+p <- p + geom_point(data=df.data, aes(x=Date, y=LAI), size=4.5, shape=21, color="darkgrey", fill="darkgreen", alpha=0.6)
+p <- p + labs(x = "Time", y = "Leaf area index", color = "PSEN1")
+p <- p + theme_bw(base_size = 20) +
+  scale_color_aaas() +
+#  scale_color_manual(values = my_colors) +
+  scale_x_datetime(date_labels = "%b", date_breaks = "1 month") +
+  scale_y_continuous(limits = c(0, 6)) +
+  theme(strip.background = element_blank())+
+  theme(legend.position = "bottom")
+p
+
+```
+
+
+
+
+```{r}
+#| label: fig-LAISens_PSEN2
+#| echo: false
+#| fig-align: center
+#| fig-cap: Sensitivity analysis for effects of the parameter PSEN2 ond simulated Leaf Area Index of winter wheat.Data are from trial 95/2006, N240 as average of the cultivars.
+#| fig-height: 6
+#| fig-width: 10
+#| warning: false
+#| message: false
+
+fn <- here("Components/CERES Wheat/Documentation/Data/PSEN2_LAIMatrix_sens.csv")
+
+df <- read.delim(fn, comment.char = "[", sep=",")
+ParName <- "PSENLeaf1"
+ColNames <- names(df)[grep(ParName, names(df))]
+ColValues <- as.numeric(gsub(paste0(ParName, "_"), "", ColNames))
+df <- df %>% filter(Time>=38620)
+
+
+dfl <- df %>% pivot_longer(cols = -c(Time), names_to = "PSEN1", values_to = "LAI")
+dfl$PSEN1 <- gsub(paste0(ParName, "_"), "", dfl$PSEN1)
+
+dfl$Date <- as.POSIXct(as.numeric(as.character(dfl$Time))*86400, origin="1899-12-30", tz="GMT")
+#dfl <- dfl %>% filter(Time >= 38660)
+
+fn.Data <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_SubLeafAreaSimple1.txt")
+df.data <-  read.delim(fn.Data, comment.char = "[", sep=" ")
+df.data$Date <- as.POSIXct(as.numeric(as.character(df.data$Time))*86400, origin="1899-12-30", tz="GMT")
+df.data <- df.data %>% filter (LAI>0.01)
+
+
+library(RColorBrewer)
+
+
+p <- ggplot()
+p <- p + geom_line(data = dfl, aes(x = Date, y = LAI, color = PSEN1), size = 1.5)
+p <- p + geom_point(data=df.data, aes(x=Date, y=LAI), size=4.5, shape=21, color="darkgrey", fill="darkgreen", alpha=0.6)
+p <- p + labs(x = "Time", y = "Leaf area index", color = "PSEN1")
+p <- p + theme_bw(base_size = 20) +
+  scale_color_aaas() +
+#  scale_color_manual(values = my_colors) +
+  scale_x_datetime(date_labels = "%b", date_breaks = "1 month") +
+  scale_y_continuous(limits = c(0, 6)) +
+  theme(strip.background = element_blank())+
+  theme(legend.position = "bottom")
+p
+
+```
+
 
 ### Drought stress
 
-The approach for calculating drought induces leaf senescence is mainly taken from [@Meinke1998].
+The sub model includes an option to calculate drought stress induced leaf senescence. This option is set to true by default, but can be switched off in the options of the model. The option is named `optUseDroughtStressLeafSenescence` and can be set to false if the drought stress induced leaf senescence should not be calculated.
+
+The approach for calculating drought induced leaf senescence is mainly taken from [@Meinke1998].
 
 The base for the calculation of the drought stress is a moving average of the relative TranspirationInterception-ratio, i.e. the ratio of the sum of the actual transpiration and interception to the sum of potential transpiration and interception.
 
-If this average ratio (TransIntRatio~even~) and the actual TransIntRatio are smaller than a threshold value (TR~crit~) drought stress induced leaf senescence is calculated. The threshold value *TR~crit~* is set to 0.62 in the model and therefore lower thand the value used by @Meinke1998 which is 0.8. This means that drought stress induced leaf senescence occurs if the average *and* the actual ratio of actual to potential transpiration+interception is smaller than 0.62.
+If this average ratio (TransIntRatio~even~) and the actual TransIntRatio are smaller than a threshold value (TR~crit~) drought stress induced leaf senescence is calculated. The threshold value *TR~crit~* is set to 0.62 in the model and therefore lower than the value used by @Meinke1998 which is 0.8. This means that drought stress induced leaf senescence occurs if the average *and* the actual ratio of actual to potential transpiration+interception is smaller than 0.62.
 
 In a next step a sustainable leaf area index (LAI~s~) is calculated which gives a ratio of the sum of actual transpiration + interception to the sum of potential transpiration to interception equals the value of TR~crit~.
-
-For this purpose a Newton-Method based iteration algorithm is used.
 
 The daily senescence rate due to drought stress then is calculated from the difference of the actual LAI and the sustainable LAI multiplied with the TransIntRatio divided by 15 (days) times the TransIntRatio~even~ and divided by the number of plants per m^2^, thereby the factor 1e4 converts m^2^ to cm^2^
 
@@ -518,6 +623,8 @@ $$PLALR_d = max\left( 0, \frac{LAI - LAIs} {15} \cdot TransIntRatio_{even} \cdot
 where $LAI$ is the leaf area index, $LAIs$ is the sustainable leaf area index, $TransIntRatio_{even}$ is the moving average of the relative transpiration interception ratio, and $plants$ is the number of plants per square meter.
 
 The sustainable leaf area index is derived from an iterative, numerical solution using the Newton method for solving non-linear equations.
+
+
 
 ### Nitrogen stress / nitrogen induced leaf senescence
 

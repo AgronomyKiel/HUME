@@ -218,7 +218,7 @@ type
     Icrop: Array [1 .. 10] of real;
     // Options
     OptDroughtimpact: TOption;
-    OptSenescence: TOption;
+    OptNSenescenceType: TOption;
     UseAgeDependentLeafSenescence: TOption;
     UseLightDependentLeafSenescence: TOption;
     UseDroughtDependentLeafSenescence: TOption;
@@ -453,25 +453,37 @@ begin
   // Parameters
   ParCreate('fGAI', '[-]', 0.2, fGAI, 'LAI->GAI (94er 2004)');
   ParCreate('maxPLALR', ' %LAI_max', 5, maxPLALR, 'maximum senescence rate');
+  maxPLALR.DocuWebLink :=  'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#nitrogen-stress-nitrogen-induced-leaf-senescence';
   ParCreate('aSLA', '[cm2/g]', 136.69, aSLA,
     'Intercept of function describing effect of shading on average specific leaf area');
+  aSLA.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#calculation-of-slapot';
   ParCreate('bSLA', '[cm2/(g*LAI)]', 14.93, bSLA,
     'Slope of function describing effect of shading on average specific leaf area');
+  bSLA.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#calculation-of-slapot';
   ParCreate('maxSLA', '[cm2/g]', 250, maxSLA,
     'start values of SLA after emgergence');
+  maxSLA.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#calculation-of-slapot';
   ParCreate('PSENLeaf1', '[-]', 0.0003, PSENLeaf1,
     'Parameter for leaf senescence');
+  PSENLeaf1.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#leaf-senescence-in-later-stages-bbch-31-71';
   ParCreate('PSENLeaf2', '[-]', 0.0006, PSENLeaf2,
     'Parameter for leaf senescence');
+  PSENLeaf2.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#leaf-senescence-in-later-stages-bbch-31-71';
   ParCreate('Icrit', '[MJ/(m2*d)]', 0.2, Icrit,
     'critical radiation value for leaf area index');
   ParCreate('f1_SLA', '[-]', -1.1237, f1_SLA,
     'parameter for SLA calculation, change of ');
+  f1_SLA.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#calculation-of-slapot';
   ParCreate('f2_SLA', '[-]', 0.3, f2_SLA, 'parameter for SLA calculation');
+  f2_SLA.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#calculation-of-slapot';
   ParCreate('kTransPAR', '[-]', 0.7, kTransPAR, 'PAR transmission coefficient');
   ParCreate('critSLNtot', '[g N/m²]', 0.8, critSLNtot,
     'critical SLN value for leaf senescense');
+  critSLNtot.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#nitrogen-stress-nitrogen-induced-leaf-senescence';
+
+
   ParCreate('TRCrit', '[-]', 0.8, TRcrit, 'transpiration ratio critical');
+  TRcrit.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#drought-stress';
   ExternVCreate('sln', 'g/m2 leaf', statefield, SLN, 'Specific leaf N content');
   ExternVCreate('NLeaf_m2', 'g/m2', statefield, NLeaf_m2,
     'N content of leaves per m2 ground');
@@ -599,11 +611,13 @@ begin
   OptDroughtimpact.OptionList.Clear;
   OptDroughtimpact.OptionList.Add('DroughtImpact');
   OptDroughtimpact.OptionList.Add('NoDroughtImpact');
-  optCreate('optSenescence', 'Concentration', OptSenescence,
-    'Option for senescence');
-  OptSenescence.OptionList.Clear;
-  OptSenescence.OptionList.Add('CWT3');
-  OptSenescence.OptionList.Add('Concentration');
+  OptCreate('OptNSenescenceType', 'Concentration', OptNSenescenceType,
+    'Option for type of N senescence, CWT3 is N insensitive, CERES Wheat type late leaf senescence');
+  OptNSenescenceType.OptionList.Clear;
+  OptNSenescenceType.OptionList.Add('CWT3');
+  OptNSenescenceType.OptionList.Add('Concentration');
+  OptNSenescenceType.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#nitrogen-stress-nitrogen-induced-leaf-senescence';
+
 
   optCreate('optUseAgeDependentLeafSenescence', 'false',
     UseAgeDependentLeafSenescence,
@@ -902,6 +916,8 @@ begin
   PLALR_n.v := senrate;
 
 // calculation of leaf senescence during ripening according to CERES-Wheat 3
+// independently of N shortage but based on a quadratic function of temperature sum
+// within ISTAGE 5
   if fSenescence = cwt3 then
     If (ISTAGE.v >= 5) and (ISTAGE.v < 6) then
       PLALR_n.v := GPLA.v * 2 * SUMDTT5.v * TSumInc.v / (p5_ * p5_)
@@ -1095,11 +1111,11 @@ begin
   begin
     Icrop[i] := 0;
   end;
-  if OptSenescence.option = 'concentration' then
+  if OptNSenescenceType.option = 'concentration' then
   begin
     fSenescence := concentration;
   end;
-  if OptSenescence.option = 'cwt3' then
+  if OptNSenescenceType.option = 'cwt3' then
   begin
     fSenescence := cwt3;
   end;

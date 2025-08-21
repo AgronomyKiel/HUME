@@ -108,7 +108,6 @@ type
   /// it is descended either from Tobject if compiled for command line application or from
   /// TPersistent if compiled for GUI appplication </summary>
 {$IFDEF NONVISUAL}
-
   TMarquardOptions = class(TObject)
 {$ELSE}
   TMarquardOptions = class(TPersistent)
