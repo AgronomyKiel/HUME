@@ -93,6 +93,12 @@ const
   Path_sep =  '\';
   {$ENDIF}
 
+  /// <summary>file names used by TMod</summary>
+  FNModProperties = 'properties.ini';
+  FNStateIni = 'State.ini';
+  FNParametersXIni = 'Parameters_x.ini';
+  FNOptionsIni = 'Options.ini';
+  FNSuffixResIni = '_res.ini';
 
 
 type
@@ -1272,8 +1278,8 @@ var
       prop_path := ExtractFilePath(ParamStr(0));
 
       // construct path of properties.ini
-      fn := prop_path + 'properties.ini';
-      // fn :=  'properties.ini';
+      fn := prop_path + FNModProperties;
+      // fn :=  FNModProperties;
       // fn := self.FPropIniFile.FileName;
 
       // check if properties.ini exists
@@ -1371,8 +1377,8 @@ var
 
 begin
    //path :=  ExtractFilePath(ParamStr(0));
-   //fn := path+ 'properties.ini';
-   //fn := 'properties.ini';
+   //fn := path+ FNModProperties;
+   //fn := FNModProperties;
    fn := self.FPropIniFile.FileName;
    if (FPropIniFile = nil) then
      FPropIniFile := TMyIniFile.create(fn,  TEncoding.UTF8);
@@ -2000,7 +2006,7 @@ var
 begin
   Get_ControlFileFn();
   if FPropIniFile = nil then
-    FPropIniFile := TMemInifile.Create('properties.ini');
+    FPropIniFile := TMemInifile.Create(FNModProperties);
   SelectionStr := FPropIniFile.ReadString('ModelSettings', 'ContOutput', 'ContOutput');
   fContOutput :=  TContOutput(GetEnumValue(System.TypeInfo(TContOutput), SelectionStr));
 
@@ -2136,10 +2142,10 @@ writeln('Running '+ ExtractFileName(ActIniFile.FileName)+
     begin
 {$IFDEF LINUX}
     iniResFN := GM_OutPutPath + '/' + StripExtension
-      (extractfilename(ActIniFile.Filename)) + '_res.ini';
+      (extractfilename(ActIniFile.Filename)) + FNSuffixResIni;
 {$ELSE}
     iniResFN := GM_OutPutPath + '\' + StripExtension
-      (extractfilename(ActIniFile.Filename)) + '_res.ini';
+      (extractfilename(ActIniFile.Filename)) + FNSuffixResIni;
 {$ENDIF}
 	end;
 
@@ -3446,9 +3452,9 @@ begin
             WriteFloat(Str_SectionName_TimeInit, Str_SectionTopic_SimEnd, 100);
             WriteFloat(Str_SectionName_TimeInit, Str_SectionTopic_TimeStep, 1);
             WriteString(Str_SectionName_FileNames, Str_SectionTopic_StateIniFN,
-              GetCurrentDir + '\State.ini');
+              GetCurrentDir + Path_sep + FNStateIni);
             WriteString(Str_SectionName_FileNames, Str_SectionTopic_ParamIniFN,
-              GetCurrentDir + '\Parameters_x.ini');
+              GetCurrentDir + Path_sep + FNParametersXIni);
             NewInifile.UpDateFile;
           end;
         end;
@@ -3580,7 +3586,7 @@ begin
   begin
   //  if OptionInifilefn = '' then
     begin
-      OptionInifilefn := GetCurrentDir + '\Options.ini';
+      OptionInifilefn := GetCurrentDir + Path_sep + FNOptionsIni;
       ActIniFile.Writestring(Str_SectionName_FileNames,
         FStr_SectionTopic_OptionIniFN, OptionInifilefn);
       ActIniFile.UpdateFile;
@@ -3628,7 +3634,7 @@ begin
   begin
     if StateInifilefn = '' then
     begin
-      StateInifilefn := EXE_DIR + '\State.ini';
+      StateInifilefn := EXE_DIR + Path_sep + FNStateIni;
       ActIniFile.Writestring(Str_SectionName_FileNames,
         Str_SectionTopic_StateIniFN, StateInifilefn);
       ActIniFile.UpdateFile;
