@@ -257,6 +257,10 @@ var
   SelOutVars: TStringList;
   SelVar, SelKey, SelParstr: string;
 
+
+
+
+
 begin
 
   /// <summary> clear the source and destination list data </summary>
