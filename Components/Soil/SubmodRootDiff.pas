@@ -10,92 +10,92 @@ uses
 
 const
   (* -----------------------------------------------------------------------------
-    Problem: sollten diese nicht eher als TOption deklariert werden?
+    Issue: should these rather be declared as TOption?
     ------------------------------------------------------------------------------ *)
-  max_num_roots = 40000; { maximale Zahl der Wurzeln }
+  /// <summary>Maximum number of roots.</summary>
+  max_num_roots = 40000;
 
 type
   (* -----------------------------------------------------------------------------
-    Typdeklaration
+    Type declarations
     ------------------------------------------------------------------------------ *)
-  { Records und Mengen }
-  { Art und Weise der N-Aufnahme durch die Wurzel (Michaelis-Menten (Sättigungskine-
-    tik, fixed_influx meint evtl. Annahme einer festen Senkenstärke, ZeroSink un-
-    begrenzte Senkenstärke (schwarzes Loch) }
+  { Records and sets }
+  /// <summary>
+  /// Mode of nitrogen uptake by the root: Michaelis-Menten (saturation kinetics),
+  /// fixed_influx assumes a constant sink strength, ZeroSink represents unlimited
+  /// sink strength (black hole).
+  /// </summary>
   tUptake_Function = (MM, fixed_influx, ZeroSink);
   TMyFloatPoint = double;
 
   { -------------------------------------------------------------------------------
-    Ein Array, das TPointDoubleTypes speichert, dient zum Einlesen von xy-Koordinaten
-    aus einer Datei. Der Record erweitert den Typ posi aus dem ursprünglichen Modell
-    um die Felder root xi, yi, NInflux ,WInflux und area
+    Array storing TPointDoubleTypes used to read xy coordinates from a file. The
+    record extends the type posi from the original model by the fields root, xi,
+    yi, NInflux, WInflux and area.
     ------------------------------------------------------------------------------ }
   TPointDoubleType = record
-    x, y: double; // Position im kartesischen Koordinatensystem [cm]
-    xi, yi: word; // Indizes auf Rechengrid
-    root: integer; // Eindeutige Nummer für Wurzel
-    NInflux: real; // Nitrate Influx [mol/cm*s]
-    NAmountdt: real; // im internen Zeitschritt aufgenommene NMenge [g]
-    SumNMenge: real;
-    // Was hat die Wurzel kumuliert im externen Zeitschritt aufgenommen [kgN/dt_ext]
+    x, y: double; // Position in Cartesian coordinate system [cm]
+    xi, yi: word; // Indices on computation grid
+    root: integer; // Unique number for root
+    NInflux: real; // Nitrate influx [mol/cm*s]
+    NAmountdt: real; // N amount taken up in the internal time step [g]
+    SumNMenge: real; // Cumulative N amount taken up in the external time step [kgN/dt_ext]
     WInflux: real; // Water influx [cm3/cm/s]
-    area: real; // Fläche Voronoi-Polygon [cm2]
+    area: real; // Area of Voronoi polygon [cm2]
   end;
 
   { Klassen }
   TSRPLight = class(TObject)
-    { abgespeckte speicherschonendere Version eines SRP }
+    { Lean, memory-saving version of an SRP }
   private
     { Private-Deklarationen }
   protected
   public
-    { Public-Deklarationen }
-    x, y, wld: double; // Wurzellängendichte des SRP [cm/cm^3]
+    { Public declarations }
+    x, y, wld: double; // Root length density of the SRP [cm/cm^3]
   end;
 
   TSRP = class(TObject)
-    { auf Vorrat programmiert für eine objektorientierte Implementierung des Einzel-
-      wurzelzylinders (für numerische Lösung) }
+    { Prepared for an object-oriented implementation of the single root cylinder
+      (for numerical solution) }
   private
     { Private-Deklarationen }
-    { TSRP-Instanzen des Einzelwurzelmodells brauchen auch Felder für area und
-      vertex-List, damit - bei Einlesen von Rasterdaten- der Flächeninhalt bestimmt
-      werden kann (mit Voronoi- Polygonen oder alternativ über Aufteilung der Fläche
-      der Rasterzellen auf die darin enthaltenen Wurzeln.
-      Problem: Einheiten }
-    coordRoot: TMyFloatPoint; // Feld für die Koordinaten der Wurzel [cm]
-    area: double; // Oberfläche des Einzelwurzelzylinders [cm^2]
+    { TSRP instances of the single root model also need fields for area and the
+      vertex list so that, when reading raster data, the surface area can be
+      determined (using Voronoi polygons or alternatively by splitting the area of
+      raster cells among the roots contained in them. Units may be an issue) }
+    coordRoot: TMyFloatPoint; // Field for the coordinates of the root [cm]
+    area: double; // Surface area of the single root cylinder [cm^2]
     vertexList: TList; //
-    Cl_mean: double; // Mittlere Nitratkonzentration
-    theta_EWZ: double; // volumetrischer Wassergehalt im EWZ
-    init_NAmount: double; // NMenge im EWZ zu Beginn
+    Cl_mean: double; // Mean nitrate concentration
+    theta_EWZ: double; // Volumetric water content in the EWZ
+    init_NAmount: double; // N amount in the EWZ at the beginning
   public
-    { Public-Deklarationen }
-    { Zugriff auf die Felder: Set und Get-Methoden }
+    { Public declarations }
+    { Access to the fields: set and get methods }
   end;
 
-  { Deklaration Klasse TRasterData.
-    Klasse kapselt das Raster und die Positionen sowie die Anzahl der eingelesenen
-    und randomisierten Daten (WAP). Ermöglicht Anzeige in den 'Tabellenblättern'
-    RasterData und RootDistribution. Klasse realisiert außerdem die Dateizugriffe }
+  { Declaration of class TRasterData.
+    This class encapsulates the raster, positions and the number of read and
+    randomized data (WAP). It enables display in the tabs RasterData and
+    RootDistribution. The class also handles file access }
 
   TRasterData = class(TObject)
-    DescStr: string; { Beschreibung des Datensatzes }
-    Date: TDatetime; { Datum [TDateTime-Format] }
-    NCols: integer; { Anzahl Zeilen }
-    NRows: integer; { Anzahl Spalten }
-    NRoots: integer; { Anzahl Wurzeln }
-    DimCols: double; { Höhe Zeilen [cm] }
-    DimRows: double; { Breite Spalten [cm] }
+    DescStr: string; { Description of the data set }
+    Date: TDatetime; { Date [TDateTime format] }
+    NCols: integer; { Number of rows }
+    NRows: integer; { Number of columns }
+    NRoots: integer; { Number of roots }
+    DimCols: double; { Height of rows [cm] }
+    DimRows: double; { Width of columns [cm] }
 
-    { Arrays Kl. RasterData }
+    { Arrays of class RasterData }
 
-    { Wurzelanzahlen in 10000 Raster(Rechen-)zellen. Array wird benötigt für das
-      Einlesen und die Anzeige der Anzahl von Wurzeln in Gridzellen der Dimension
-      5cm x 5cm }
+    { Root numbers in 10,000 raster (computational) cells. The array is needed for
+      reading and displaying the number of roots in grid cells of dimension
+      5 cm x 5 cm }
     CountArr: array of array of integer;
-    { Speichert Informationen zu sämtlichen Wurzeln im Form von TPointDoubleType-Ein-
-      trägen. }
+    { Stores information on all roots in the form of TPointDoubleType entries }
     PosArr: array [1 .. max_num_roots] of TPointDoubleType;
   private
     { Private-Deklarationen }
@@ -103,26 +103,26 @@ type
     { Protected-Deklarationen }
   public
     { Public-Deklarationen }
-    SubmodRootDiff: TSubmodel; { RasterData kennt das Diffusions-Submodell. }
+    SubmodRootDiff: TSubmodel; { RasterData knows the diffusion submodel }
     // Konstruktor
     constructor create(Submodel: TSubmodel);
-    // Methoden für Dateizugriffe
+    // Methods for file access
     procedure readRasterData(fn: string; var Series: TPointSeries);
     procedure readXYfromFile(Filename: TFilename;
       var Series: TPointSeries); virtual;
     procedure saveRootPositons(SaveDialog: TSaveDialog);
   published
-    { Published-Deklarationen }
-    procedure errasePosArr; { Löscht die Pos-Array-Member }
+    { Published declarations }
+    procedure errasePosArr; { Clears the Pos array members }
   end; { Ende Deklaration TRasterData }
 
   TSubmodRootDiff = class(TSubmodel)
-    { Deklaration Klasse TSubmodRootDiff. Basisklasse für abgeleitete Diff-Modelle }
+    { Deklaration Klasse TSubmodRootDiff. Basisklasse fÃ¼r abgeleitete Diff-Modelle }
   private
     { Private-Deklarationen }
     { Felder }
-    { Funktionalität der Basisklasse: Alle Modelle können Rasterdaten einlesen, Rän-
-      der von der Berechnung ausschließen und die Daten im Hume-Formular in den
+    { FunktionalitÃ¤t der Basisklasse: Alle Modelle kÃ¶nnen Rasterdaten einlesen, RÃ¤n-
+      der von der Berechnung ausschlieÃŸen und die Daten im Hume-Formular in den
       entsprechenden Reitern darstellen. 1D-Modell macht keine Ausgabe im Reiter 3D
       Plot. }
     fMyChart: TChart;
@@ -131,13 +131,13 @@ type
     xyFile: TextFile;
     { Methoden }
     // Hilfsmethoden
-    procedure init_; { Initmethode erweiterbar für Dateizugriffe,
-      die nur einmalig durchgeführt werden sollen. }
+    procedure init_; { Initmethode erweiterbar fÃ¼r Dateizugriffe,
+      die nur einmalig durchgefÃ¼hrt werden sollen. }
   protected
     { Protected-Deklarationen, Zugriff auch von abgeleiteten Klassen. }
-    { Objekt für Darstellung der WAP im Hume-Formular }
+    { Objekt fÃ¼r Darstellung der WAP im Hume-Formular }
     SeriesXY: TPointSeries;
-    Flaeche: real; { Fläche [cm^2] }
+    Flaeche: real; { FlÃ¤che [cm^2] }
     RasterData: TRasterData; { Das Submodel besitzt RasterData }
     initialisiert: boolean; { Variable speichert, ob bereits initialisiert
       wurde. }
@@ -148,59 +148,54 @@ type
     dimensionY, { Hoehe des Rechenfeldes    [cm] }
     gridWidth, { Weite des Rastergitters (aggr. Daten) in x-Richtung [cm] }
     gridHeight, { Weite des Rastergitters (aggr. Daten) in y-Richtung [cm] }
-    Dl, { Diffusionskoeffizient von Nitrat in freiem H20 [cm^2/s] }
-    max_dt, { maximale Zeitschrittweite [s] }
-    theta, { volumetrischer Wassergehalt [cm3/cm3] }
-    Tiefe, { Tiefe der Schicht [cm],
-      Annahme für Mineralisationsberechnung }
-    { Mineralisationsmodell noch nicht vorhanden, wäre aber für beide Modelle zu im-
-      plementieren. }
-    minera, { Mineralisationsrate in [Kg N / ha*d] }
-    Clmin, { Minimale Bodenlösungskonzentration
-      [Mol/l], wird auch für die numerische Lösung im 1D-
-      Modell benötigt, Cave: im Original stand Mikromol/l }
-    { Ränder sind notwendig, damit bei hexagonaler Verteilung der Wurzelaustritts-
-      punkte die Randeffekte ausgeblendet werden können. }
-    verticMargin, { vertikaler Rand [cm] }
-    horizMargin, { horizontaler Rand [cm] }
-    depthLayer, { Tiefe der Schicht bei der Auswertung begonnen
-      werden soll (im 2D-Querschnitt) [cm] }
-    SizeLayer, { Mächtigkeit der Schicht [cm] }
+    Dl, { Diffusion coefficient of nitrate in free H2O [cm^2/s] }
+    max_dt, { Maximum time step width [s] }
+    theta, { Volumetric water content [cm3/cm3] }
+    Tiefe, { Depth of the layer [cm],
+      assumption for mineralization calculation }
+    { Mineralization model not yet available but should be implemented for both models }
+    minera, { Mineralization rate [kg N/ha*d] }
+    Clmin, { Minimum soil solution concentration
+      [Mol/l], also needed for the numerical solution in the 1D model;
+      note: originally in micromol/l }
+    { Margins are necessary so that edge effects can be excluded when the root exit
+      points are hexagonally distributed }
+    verticMargin, { Vertical margin [cm] }
+    horizMargin, { Horizontal margin [cm] }
+    depthLayer, { Depth at which evaluation should begin
+      (in the 2D cross-section) [cm] }
+    SizeLayer, { Thickness of the layer [cm] }
 
-    // Möglichkeit, die Kennzahlen Bodenerschließung durch W. auch als Par. einzulesen
-    ParMRLD, { Mittlere Wurzellängendichte [cm/ccm] }
-    Rad_Wurzel { Radius der Wurzel [cm] }
+    // Option to read root exploration metrics as parameters
+    ParMRLD, { Mean root length density [cm/ccm] }
+    Rad_Wurzel { Radius of the root [cm] }
       : TPar;
     (* -----------------------------------------------------------------------------
       Member HUME-Basisklasse TState (Zustandsvariablen
       ------------------------------------------------------------------------------ *)
-    N_AmountSoil, { NMenge [kg N/ha], auch Grundlage der Berechnung von
-      Konzentrationen in den Rechenelementen vgl. Kage, Diss.
-      S.79, dort wurden Konzentrationen 10,0 Mikromol/l
-      angenommen. }
-    Sum_N_AmountRoots { kumulierte N-Menge, die durch die Wurzeln aufgenommen
-      wurde [kg N/ha], bezogen auf vorg. Tiefe }
+    N_AmountSoil, { N amount [kg N/ha], also basis for calculating concentrations
+      in the calculation elements; see Kage dissertation p.79 where concentrations of
+      10.0 micromol/l were assumed }
+    Sum_N_AmountRoots { Cumulative amount of N taken up by the roots
+      [kg N/ha] for the specified depth }
       : TState;
     (* -----------------------------------------------------------------------------
       Member HUME-Basisklasse TVar (Variablen)
       ------------------------------------------------------------------------------ *)
-    RLD_mean, { Mittl. Wurzellängendichte in einer Schicht [cm/cm^3]
-      berechnet ohne Wurzeln, die sich in den Rändern be-
-      finden. }
-    AreaMiddle, { Mittige Fläche ohne Ränder[cm2] }
-    num_roots, { Anzahl der Wurzeln in Mitte und Rändern[n] }
-    number_consid_roots, { Anzahl Wurzeln, die nicht in Rändern liegen [] }
-    Min_S, { Mineralisationsrate [Mol/cm^3*s] }
-    c_start, { Startkonzentration [mol/cm^3], wird aus der initialen N-Menge
-      berechnet, 1D-Modell kann auch Konzentrationen berech-
-      nen }
-    cl_av, { mittlere Konzentration in der Bodenlösung [Mol/cm^3 }
-    volumen, { Volumen der Bodenschicht mit Rändern [cm3] }
-    De, { Effektiver Diffusionskoeffizient [cm^2/s] }
-    errorReg { Maß für Fehler bei regulärer Verteilung = Anzahl der
-      Wurzeln, die bei der Erzeugung der Gleichverteilung
-      nicht in das Beobachtungsfenster passen in Prozent der
-      gesamten vorhandenen Wurzeln.[%] }
+    RLD_mean, { Mean root length density in a layer [cm/cm^3]
+      calculated without roots located in the margins }
+    AreaMiddle, { Central area without margins [cm2] }
+    num_roots, { Number of roots in center and margins [n] }
+    number_consid_roots, { Number of roots not located in margins [] }
+    Min_S, { Mineralization rate [Mol/cm^3*s] }
+    c_start, { Initial concentration [mol/cm^3], calculated from the initial N amount;
+      the 1D model can also calculate concentrations }
+    cl_av, { Average concentration in the soil solution [Mol/cm^3] }
+    volumen, { Volume of the soil layer including margins [cm3] }
+    De, { Effective diffusion coefficient [cm^2/s] }
+    errorReg { Measure of error for regular distribution = number of roots
+      that do not fit into the observation window when generating the
+      uniform distribution, as a percentage of all roots [%] }
       : TVar;
     (* -----------------------------------------------------------------------------
       Member HUME-Basisklasse TState (Zustandsvariablen). Werden in abgeleiteten
@@ -209,19 +204,18 @@ type
     (* -----------------------------------------------------------------------------
       Member HUME-Basisklasse TOption (Optionen)
       ------------------------------------------------------------------------------ *)
-    IniMethod, { Art der Initialisierung, z.B. Datei, Strukt-Modell }
-    uptake_function, { Art der Aufnahmeberechnung }
-    RootInpDataFileXY, { Pfad und Name der Ini-Datei mit XY-Wurzeldaten }
-    RootInpDataFile, { Pfad und Name der Ini-Datei mit Wurzeldaten
-      als Anzahlen in einem Grid }
-    OutputXY, { Festlegen ob XY-Daten in Datei geschrieben
-      werden }
-    RootXYOutpDataFile { Pfad und Name der Output-Datei für XY-Daten }
+    IniMethod, { Type of initialization, e.g. file or structural model }
+    uptake_function, { Type of uptake calculation }
+    RootInpDataFileXY, { Path and name of the init file with XY root data }
+    RootInpDataFile, { Path and name of the init file with root data
+      as counts in a grid }
+    OutputXY, { Specify whether XY data should be written to a file }
+    RootXYOutpDataFile { Path and name of the output file for XY data }
       : TOption;
 
     { Methoden }
     // Hilfsmethoden
-    { Initialiserung in Abhängigkeit, ob bereits Daten aus Datei eingelesen wurden. }
+    { Initialization depending on whether data has already been read from a file }
     procedure init_eingelesen; virtual;
     procedure fillChartRootDistr;
     procedure fillGridRasterData;
@@ -230,15 +224,14 @@ type
     procedure distributeHexagonCol;
     procedure writeOutputToFile;
     procedure removeMarginRoots;
-    procedure calcNumberConsRoots; { Berechnet die Anzahl der Wurzeln, die sich
-      im Beobachtungsfenster, aber nicht in den
-      Rändern befindet }
-    // Umrechnungen Menge in Konz und zurück
+    procedure calcNumberConsRoots; { Calculates the number of roots that are within
+      the observation window but not in the margins }
+    // Umrechnungen Menge in Konz und zurÃ¼ck
     function Mg_func(Tiefe_cm, theta, Cli_mol_cm3: real): extended;
     function Cl_func(Tiefe_cm, theta, NMenge: real): extended;
   public
     { Public-Deklarationen }
-    hasWritten: boolean; // Schalter für einmaligen Schreibzugriff
+    hasWritten: boolean; // Flag for one-time write access
     procedure createAll; override;
     procedure AddDataValueToDataSeries; override;
     // procedure Init(var GlobModReferenz: TMod); override;
@@ -247,8 +240,8 @@ type
     // Set- und Get-Methoden
     function getRasterData: TRasterData;
   published
-    { Published-Deklarationen }
-    // Veröffentlichung der Eigenschaften im Ojektinspektor.
+    { Published declarations }
+    // Publication of properties in the object inspector.
     property Par_theta: TPar read theta write theta;
     property Par_Tiefe: TPar read Tiefe write Tiefe;
     property Par_volumen: TVar read volumen write volumen;
@@ -263,7 +256,7 @@ type
 var
   { speichert die aus einer Datei eingelesenen Positionen der Wurzeln. Globale
     Variable notwendig, denn wenn PosArr_eingelesen Member eines Objektes ist, kommt
-    es (mir unverständlich) zum Programmabsturz. }
+    es (mir unverstÃ¤ndlich) zum Programmabsturz. }
   PosArr_eingelesen: array [1 .. max_num_roots] of TPointDoubleType;
 
 implementation
@@ -279,9 +272,9 @@ end; // End TRasterData.create
 
 procedure TRasterData.errasePosArr;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE:   TRasterData
-  BESCHREIBUNG: Löscht saemtliche Felder des Pos-Arrays. Anschließend können die
-  Felder mit neuen xy-Werten beschrieben.
+  ASSOCIATED CLASS:   TRasterData
+  DESCRIPTION: Clears all fields of the Pos array so it can be filled with new
+  xy values.
   ------------------------------------------------------------------------------ *)
 var
   i: integer;
@@ -301,11 +294,10 @@ end; // End TRasterData.errasePosArr
 
 procedure TRasterData.readRasterData(fn: string; var Series: TPointSeries);
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE:   TRasterData
-  BESCHREIBUNG:Methode zum Einlesen von AGGREGIERTEN Rasterdaten (Wurzel-ANZAHLEN),
-  die dann der zufälligen Bestimmung von Koordinatenpunkten zugeführt werden.
-  Info Funktionsweise: Bsp.: readln(f, Ncols) Zuweisung des aus f gelesenen Wertes
-  an die Variable Ncols.
+  ASSOCIATED CLASS:   TRasterData
+  DESCRIPTION: Reads aggregated raster data (root counts) which are then used to
+  randomly determine coordinate points. Example of functionality: readln(f, Ncols)
+  assigns the value read from f to the variable Ncols.
   ------------------------------------------------------------------------------ *)
 var
   F: TextFile; { Dateivariable vom Typ Textfile }
@@ -313,7 +305,7 @@ var
   Row, Col, root, AllRoot: integer;
   PointDoubleType: TPointDoubleType;
 begin
-  AssignFile(F, fn); { Datei ausgewählt }
+  AssignFile(F, fn); { Datei ausgewÃ¤hlt }
   Reset(F);
   // Auslesen des Headers
   Readln(F, S); { Erste Zeile der Datei (Header) lesen und
@@ -323,7 +315,7 @@ begin
   Date := StrToFloat(S); { Zweite Zeile: Datum (TDateTime-Format }
   Readln(F, NRows); { Dritte Zeile: Anzahl Zeilen }
   Readln(F, NCols); { Vierte Zeile: Anzahl Spalten }
-  Readln(F, DimRows); { Fünfte Zeile: Höhe Zeilen [cm] }
+  Readln(F, DimRows); { FÃ¼nfte Zeile: HÃ¶he Zeilen [cm] }
   Readln(F, DimCols); { Sechste Zeile: Breite Spalten [cm] }
   // Wiederholtes Lesen der Daten bis zum Ende der Datei
   for Row := 0 to NRows - 1 do
@@ -334,7 +326,7 @@ begin
   end;
   closeFile(F);
   AllRoot := 1; // Beginn bei 1, da PosArr bei 1 beginnt.
-  { Wurzeln in jeder Rasterzelle zufällig verteilen }
+  { Wurzeln in jeder Rasterzelle zufÃ¤llig verteilen }
   for Col := 0 to NCols - 1 do
   begin
     for Row := 0 to NRows - 1 do
@@ -360,16 +352,15 @@ end; // End TRasterData.readRasterData
 procedure TRasterData.readXYfromFile(Filename: TFilename;
   var Series: TPointSeries);
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TRasterData
-  BESCHREIBUNG: Prozedur liest XY-Koordinaten aus einer Datei ein.
-  Das übergebene (call-by-reference!) PointSeries-Objekt wird nach und nach mit
-  den XY-Paaren gefüllt.
+  ASSOCIATED CLASS: TRasterData
+  DESCRIPTION: Reads XY coordinates from a file and successively fills the passed
+  (call-by-reference) PointSeries object with the XY pairs.
   ------------------------------------------------------------------------------ *)
 var
-  F: TextFile; // Dateivariable für Textdateien
+  F: TextFile; // Dateivariable fÃ¼r Textdateien
   s_header,
-  { Variable wird benötigt, da es in einer Textzeile der Datei Werte gibt, die nicht
-    eingelesen, sondern übersprungen werden sollen (vgl. Dateiformat). }
+  { Variable wird benÃ¶tigt, da es in einer Textzeile der Datei Werte gibt, die nicht
+    eingelesen, sondern Ã¼bersprungen werden sollen (vgl. Dateiformat). }
   restString: String;
   { pos_delimiter speichert Position des letzten Begrenzungszeichens im String }
   pos_delimiter: integer;
@@ -377,20 +368,19 @@ var
   i: integer;
 begin
   errasePosArr;
-  // Problem: Brauch ich den Löschvorgang (s.aufgerufene Methode???)
-  // Einlesen aus von Daten Datei:
+  // Issue: Is the clearing step needed (see called method)?
+  // Read data from file:
   try
-    AssignFile(F, Filename); // Verbindet Dateivariable mit Datei
-    Reset(F); // Lesezugriff
-    // Lesen des Headers. Wird verworfen
+    AssignFile(F, Filename); // Link file variable to file
+    Reset(F); // Read access
+    // Read header and discard
     Readln(F, s_header);
     // Lesen der eigentlichen Daten
-    i := 1; // PosArr beginnt bei 0
-    { Problem: Evtl. muss mit 1 initialisiert werden, um korrekte Anzahlen Wurzeln
-      zu erhalten }
+    i := 1; // PosArr starts at 0
+    { Issue: may need to start at 1 to obtain correct root counts }
     NRoots := 0;
-    { Festlegen der Grenzen von PosArr, könnte verwendet werden, wenn man PosArr als
-      dyn. Array implementieren wollte }
+    { Defining bounds of PosArr; could be used if PosArr were implemented as a
+      dynamic array }
     while not Eof(F) do
     begin
       Readln(F, restString);
@@ -403,19 +393,18 @@ begin
     begin
       Readln(F, PointDoubleType.x, PointDoubleType.y, PointDoubleType.root,
         restString);
-      // Abschneiden der Leerzeichen am Stringende:
+      // Remove trailing whitespace:
       restString := TrimRight(restString);
-      { Bestimmung des letzten Leerzeichens im String: }
-      pos_delimiter := LastDelimiter(#9, restString); // #9 ist Leerzeichen
-      // Abschneiden des vorderen Anteils des Strings bis zum letzten Leerzeichen:
+      { Determine position of last delimiter in string }
+      pos_delimiter := LastDelimiter(#9, restString); // #9 is tab
+      // Remove leading part of string up to last delimiter:
       Delete(restString, 1, pos_delimiter);
       PointDoubleType.area := StrToFloat(restString);
-      { Wie beim 2D-Modell müssen auch beim 1D-Modell alle WAP berücksichtigt werden,
-        damit ein geeigneter Flächeninhalt des Voronoi-Polygons berechnet werden kann.
-        Beim 2D-Modell werden dann später lediglich die Aufnahmen der Senken berücksich-
-        tigt, die sich NICHT in den Rändern befinden, beim 1D-Modell werden für die Be-
-        rechnung der Kennzahlen der lognormalen Verteilungsfunktion nur Koordinaten be-
-        rücksichtigt, die sich NICHT in den Rändern befinden. }
+      { As in the 2D model, all WAP must also be considered in the 1D model so that a
+        suitable surface area of the Voronoi polygon can be calculated. In the 2D model
+        only the uptake of sinks not located in the margins is later considered; in the
+        1D model only coordinates not in the margins are used for calculating the
+        parameters of the lognormal distribution function. }
       PosArr[i].x := PointDoubleType.x;
       PosArr[i].y := PointDoubleType.y;
       PosArr[i].root := i;
@@ -423,23 +412,22 @@ begin
       Series.AddXY(PointDoubleType.x, PointDoubleType.y);
       Inc(i);
     end;
-    // Submodell kennt die Anzahl der Wurzeln
+    // Submodel knows the number of roots
     TSubmodRootDiff(SubmodRootDiff).num_roots.v := NRoots;
-    { wg. Wurzel bei 0/0. Die Position dieser Wurzel ist offensichtlich fehlerhaft. }
+    { Due to a root at 0/0. The position of this root is obviously incorrect }
     // ShowMessage(FloatToStr(RasterData.PosArr[1].x));
   except
-    ShowMessage('Fehler beim Zugriff auf Datei');
+    ShowMessage('Error accessing file');
   end;
   closeFile(F);
 end; // End TRasterData.readXYfromFile
 
 procedure TRasterData.saveRootPositons(SaveDialog: TSaveDialog);
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TRasterData
-  BESCHREIBUNG: Bei Einlesen aus Datei mit aggr. Wurzeldaten
-  Speichern der (generierten) zufällig erzeugten Wurzelkoordinaten
-  (unter Berücksichtigung der Zuordnung zu einer 5X5 cm Grid-Zelle in Form von
-  Gleitkommazahlen in einer Datei ab.
+  ASSOCIATED CLASS: TRasterData
+  DESCRIPTION: After reading aggregated root data, saves the generated random
+  root coordinates (considering assignment to a 5x5 cm grid cell) as floating point
+  numbers in a file.
   ------------------------------------------------------------------------------ *)
 var
   F: TextFile;
@@ -449,11 +437,11 @@ begin
   begin
     AssignFile(F, SaveDialog.Filename);
     rewrite(F);
-    { Format wird benötigt für Einlesen in ein externes Programm, dass
-      Voronoi-Polygone berechnet. }
-    // Schreiben des Headers
+    { Format needed for importing into an external program that calculates
+      Voronoi polygons }
+    // Write header
     writeln(F, 'X	 Y	Number	Edge	Species	Radius');
-    // Schreiben der zufällig generierten X und Y-Werte
+    // Write the randomly generated X and Y values
     for root := 1 to NRoots do
       writeln(F, PosArr[root].x, ' ', PosArr[root].y, ' ', root, ' e a 0');
     closeFile(F);
@@ -461,7 +449,7 @@ begin
 end; // End TRasterData.saveRootPositons
 
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TRasterData
+  ZUGEHÃ–RIGE KLASSE: TRasterData
   BESCHREIBUNG: Set- und Get-Methoden
   ------------------------------------------------------------------------------ *)
 
@@ -474,15 +462,15 @@ end; // End TRasterData.saveRootPositons
   ------------------------------------------------------------------------------ *)
 procedure TSubmodRootDiff.createAll;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff
+  ZUGEHÃ–RIGE KLASSE: TSubmodRootDiff
   BESCHREIBUNG:
   Erzeugen und Initialisieren von Zustandsvariablen, Variablen und Parametern.
-  Der erste Parameter des Funktionsaufrufs übergibt einen String, der mit dem Be-
+  Der erste Parameter des Funktionsaufrufs Ã¼bergibt einen String, der mit dem Be-
   zeichner identisch ist und nachdem gesucht werden kann.
-  Der zweite Paramter enthält einen String zur Kennzeichnung der verwendeten
-  Einheit ([-] für dimensionslose Paramter etc.)
-  Der dritte Parameter ist der eigentliche (Fließkomma)-Wert
-  Erläuterung der Bezeichner s. Deklaration.
+  Der zweite Paramter enthÃ¤lt einen String zur Kennzeichnung der verwendeten
+  Einheit ([-] fÃ¼r dimensionslose Paramter etc.)
+  Der dritte Parameter ist der eigentliche (FlieÃŸkomma)-Wert
+  ErlÃ¤uterung der Bezeichner s. Deklaration.
   ------------------------------------------------------------------------------ *)
 begin
   inherited createAll;
@@ -512,9 +500,9 @@ begin
   StateCreate('N_AmountSoil', '[kg N/ha]', 0, false, N_AmountSoil);
   StateCreate('Sum_N_AmountRoots', '[kg N/ha]', 0, false, Sum_N_AmountRoots);
   // Erzeugen und Initialisieren von TVar
-  { Problem/Cave: Variablen werden immer zunächst mit 0 initialisiert, wenn ein
+  { Problem/Cave: Variablen werden immer zunÃ¤chst mit 0 initialisiert, wenn ein
     von 0 unterschiedener Startwert notwendig ist, muss Berechnung und Zuweisung
-    in init geschehen. Besser wäre es solche Variablen dann aber nicht als TVar
+    in init geschehen. Besser wÃ¤re es solche Variablen dann aber nicht als TVar
     zu demklarieren. }
 
   VarCreate('RLD_mean', '[cm/cm^3]', 0, false, RLD_mean);
@@ -542,8 +530,8 @@ begin
   OptCreate('OutputXY', 'no', OutputXY);
   OutputXY.OptionList.add('no');
   OutputXY.OptionList.add('yes');
-  { Pfade für Modellvergleich 1D2D }
-  { Pfade zu ein und Ausgabedateien für beide Sub-Modelle identisch. Beide Sub-Modelle
+  { Pfade fÃ¼r Modellvergleich 1D2D }
+  { Pfade zu ein und Ausgabedateien fÃ¼r beide Sub-Modelle identisch. Beide Sub-Modelle
     gleichzeitig in einem Modelllauf zu haben, macht nur Sinn, wenn vergleichend ge-
     arbeitet wird. }
   OptCreate('RootInpDataFile',
@@ -621,15 +609,15 @@ end; // End TSubmodRootDiff.CreateAll
 
 procedure TSubmodRootDiff.AddDataValueToDataSeries;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff
-  BESCHREIBUNG: Durchführung diverser Initialisierungen
+  ZUGEHÃ–RIGE KLASSE: TSubmodRootDiff
+  BESCHREIBUNG: DurchfÃ¼hrung diverser Initialisierungen
   ------------------------------------------------------------------------------ *)
 var
   i, numberGridCellsX, { Anzahl der Gridzellen in X- und Y-Richtung }
   numberGridCellsY: integer;
 begin
   inherited;
-  // Ausgabedatei für XY-Koord neu schreiben
+  // Ausgabedatei fÃ¼r XY-Koord neu schreiben
 
   AssignFile(xyFile, RootXYOutpDataFile.Option);
   rewrite(xyFile); { Neuanlage oder Ersetzen der Datei, d.h. auch die Datei wird
@@ -642,19 +630,19 @@ begin
   begin
     setLength(RasterData.CountArr[i], trunc(numberGridCellsY));
   end;
-  { Berechnung des Diffusionskoeffizienten der Lösung im Boden aus dem effektiven
-    Diffusionskoeffizienten. Für das Folgende vgl. Diss. Kage, S.43f.:
-    für das 1D-Modell (Nye/Tinker, Solute movement S.299) wird der effektive
-    Diffusionskoeffzient benötigt. Er berechnet sich nach De=Dl*f, wobei
+  { Berechnung des Diffusionskoeffizienten der LÃ¶sung im Boden aus dem effektiven
+    Diffusionskoeffizienten. FÃ¼r das Folgende vgl. Diss. Kage, S.43f.:
+    fÃ¼r das 1D-Modell (Nye/Tinker, Solute movement S.299) wird der effektive
+    Diffusionskoeffzient benÃ¶tigt. Er berechnet sich nach De=Dl*f, wobei
     Dl: Diffusionskoeffizient in freiem Wassser und f der impedance-Faktor ist.
     Es gilt weiterhin folgende Beziehung zwischen theta und dem Impedenzfaktor f:
     (vgl. Kage, S.41 f=3.35*Theta^2 }
   De.v := Dl.v * 3.35 * sqr(theta.v) * theta.v;
-  { Berechnung effektiver Diffusionskoeffizient [cm2/s-1], für 2D-Modell }
+  { Berechnung effektiver Diffusionskoeffizient [cm2/s-1], fÃ¼r 2D-Modell }
   // De.v := Dbf(theta.v)/Theta.v; //alte Implementierung
-  // Initialisierungen von TVar, für die das zu diesem Zeitpunkt Sinn macht:
+  // Initialisierungen von TVar, fÃ¼r die das zu diesem Zeitpunkt Sinn macht:
   Flaeche := dimensionX.v * dimensionY.v;
-  { Fläche der zu untersuchenden Schicht }
+  { FlÃ¤che der zu untersuchenden Schicht }
   volumen.v := Flaeche * Tiefe.v;
   { Berechnung Mineralisationsrate in [Mol/cm3*s] }
   // Min_S.V := minera.v/14*1000/86400*1/(Tiefe.v*1e8);
@@ -665,12 +653,12 @@ begin
   // Init_NAmount_layer.V:=c_start.V*volumen.V*14/1000;
   { Zu den Einheiten:
     [g]    =         Mol/l * l        g/Mol }
-  { Implementierung einer Prüfung auf bereits geschehene Initialisierung. Erlaubt
-    einerseits eine einfache Erweiterung bezüglich einer Initialisierung, die
-    z.B. Dateizugriffe benötigt bzw. Objkete instantiiert. Dies sollte in der Methode
-    _init geschehen. Gleichzeitig sollen die Initialisierungen nur dann durchgeführt
+  { Implementierung einer PrÃ¼fung auf bereits geschehene Initialisierung. Erlaubt
+    einerseits eine einfache Erweiterung bezÃ¼glich einer Initialisierung, die
+    z.B. Dateizugriffe benÃ¶tigt bzw. Objkete instantiiert. Dies sollte in der Methode
+    _init geschehen. Gleichzeitig sollen die Initialisierungen nur dann durchgefÃ¼hrt
     werden, wenn bereits Wurzeln eingelesen wurden
-    Es kann dabei nicht die ursprüngliche Methode von TSubmodell genommen werden,
+    Es kann dabei nicht die ursprÃ¼ngliche Methode von TSubmodell genommen werden,
     da diese Methode mehrfach aufgerufen wird. }
   if IniMethod.Option = 'rasterdatafile' then
   begin
@@ -682,10 +670,10 @@ end; // End TSubmodRootDiff.init
 
 procedure TSubmodRootDiff.init_;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff
-  BESCHREIBUNG: In der Methode werden verschiedene Initialisierungen durchgeführt,
-  die nur einmalig durchgeführt werden sollen (Init-Prozedur des globalen Modells
-  wird mehrfach aufgerufen). Relevant wäre das zum Beispiel beim Erzeugen von Ob-
+  ZUGEHÃ–RIGE KLASSE: TSubmodRootDiff
+  BESCHREIBUNG: In der Methode werden verschiedene Initialisierungen durchgefÃ¼hrt,
+  die nur einmalig durchgefÃ¼hrt werden sollen (Init-Prozedur des globalen Modells
+  wird mehrfach aufgerufen). Relevant wÃ¤re das zum Beispiel beim Erzeugen von Ob-
   jekten oder bei Dateizugriffen.
   Auf Vorrat programmiert, zur Zeit finden keine solchen Zugriffe statt.
   ------------------------------------------------------------------------------ *)
@@ -697,7 +685,7 @@ procedure TSubmodRootDiff.init_eingelesen;
 (* ------------------------------------------------------------------------------
   Beschreibung:
   Berechnet die ANZAHL der Wurzeln, die im Beobachtungsfenster
-  und gleichzeitig NICHT in den Rändern liegen.
+  und gleichzeitig NICHT in den RÃ¤ndern liegen.
   ------------------------------------------------------------------------------ *)
 begin
   calcNumberConsRoots;
@@ -705,18 +693,18 @@ end; // End TSubmodRootDiff.init_eingelesen
 
 procedure TSubmodRootDiff.CalcRates;
 begin
-  { Klasse wird in den abgleiteten Komponenten überschrieben. }
+  { Klasse wird in den abgleiteten Komponenten Ã¼berschrieben. }
 end; // End TSubmodRootDiff.CalcRates
 
 procedure TSubmodRootDiff.Integrate;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE:  TSubmodRootDiff
-  BESCHREIBUNG: Methode wurde überschrieben, um die Zeitschrittweite sukzessive
-  zu verändern.
+  ZUGEHÃ–RIGE KLASSE:  TSubmodRootDiff
+  BESCHREIBUNG: Methode wurde Ã¼berschrieben, um die Zeitschrittweite sukzessive
+  zu verÃ¤ndern.
   ------------------------------------------------------------------------------ *)
 begin
   { inherited auskommentiert, da die Integration in den abgeleiteten Submodellen
-    teilweise mit Hilfe einer analytischen Lösung ausgeführt wird. }
+    teilweise mit Hilfe einer analytischen LÃ¶sung ausgefÃ¼hrt wird. }
   // inherited;
 
 end; // End TSubmodRootDiff.Integrate
@@ -730,7 +718,7 @@ var
   i: integer;
 begin
   SeriesXY.Clear;
-  // Füllen des series-Objekts.
+  // FÃ¼llen des series-Objekts.
   for i := 1 to high(RasterData.PosArr) do
   begin
     if (RasterData.PosArr[i].x <> 0) and (RasterData.PosArr[i].y <> 0) then
@@ -744,18 +732,18 @@ procedure TSubmodRootDiff.fillGridRasterData;
   BESCHREIBUNG:
   Beide Modelle sind in der Lage aggregierte Wurzeldaten in das Formular zu
   schreiben.
-  Methode füllt die aggregierten Wurzeldaten (Anzahl Wurzeln pro Gridzelle
+  Methode fÃ¼llt die aggregierten Wurzeldaten (Anzahl Wurzeln pro Gridzelle
   in das AdvStringGrid des Hume-Formulars.
   ------------------------------------------------------------------------------ *)
 var
   Row, Col, SumRow, SumCol: integer;
 begin
-  // Festlegen Größe des Grids
+  // Festlegen GrÃ¶ÃŸe des Grids
   MyAdvStringGrid.ColCount := RasterData.NCols + 4;
   MyAdvStringGrid.RowCount := RasterData.NRows + 4;
   for Row := 1 to RasterData.NRows do
   begin
-    { Summe für die Zeilen berechnen }
+    { Summe fÃ¼r die Zeilen berechnen }
     SumRow := 0;
     for Col := 1 to RasterData.NCols do
     begin
@@ -767,21 +755,21 @@ begin
   end;
 
   For Col := 1 to RasterData.NCols do
-  begin { Spaltenköpfe schreiben }
+  begin { SpaltenkÃ¶pfe schreiben }
     MyAdvStringGrid.Cells[Col, 0] :=
       IntToStr((Col - 1) * trunc(RasterData.DimCols)) + ' - ' +
       IntToStr(Col * trunc(RasterData.DimCols));
   end;
   For Row := 1 to RasterData.NRows do
-  begin { Zeilenköüfe schreiben }
+  begin { ZeilenkÃ¶Ã¼fe schreiben }
     MyAdvStringGrid.Cells[0, Row] :=
       IntToStr((Row - 1) * trunc(RasterData.DimRows)) + ' - ' +
       IntToStr(Row * trunc(RasterData.DimRows));
   end;
-  { Summe für die Spalten berechnen }
+  { Summe fÃ¼r die Spalten berechnen }
   for Col := 1 to RasterData.NCols do
   begin
-    SumCol := 0; { Summe für die Spalten berechnen }
+    SumCol := 0; { Summe fÃ¼r die Spalten berechnen }
     for Row := 1 to RasterData.NRows do
     begin
       SumCol := SumCol + StrtoInt(MyAdvStringGrid.Cells[Col, Row]);
@@ -793,10 +781,10 @@ end;
 procedure TSubmodRootDiff.writeOutputToFile;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG:
-  Schreibt Koordinaten und Flächeninhalte des PosArrays in eine Datei, im Falle
+  Schreibt Koordinaten und FlÃ¤cheninhalte des PosArrays in eine Datei, im Falle
   eines vorhandenen Strukturmodells bei jedem Zeitschritt, bei statischen Wurzel
-  positionen nur am Beginn des Modelllaufs, für Testzwecke im statischen Fall auch
-  die Positionen der Wurzeln in den Rändern
+  positionen nur am Beginn des Modelllaufs, fÃ¼r Testzwecke im statischen Fall auch
+  die Positionen der Wurzeln in den RÃ¤ndern
   ------------------------------------------------------------------------------ *)
 var
   i, j: integer;
@@ -805,17 +793,17 @@ var
   PosArr_middle: Array of TPointDoubleType;
 begin
   setLength(PosArr_middle, trunc(number_consid_roots.v));
-  { Im Falle des Strukturmodells (dynamische Änderung der Wurzeln-Pos) Ausgabe in
+  { Im Falle des Strukturmodells (dynamische Ã„nderung der Wurzeln-Pos) Ausgabe in
     jedem Zeitschritt }
   if IniMethod.Option = 'SubmodStruct' then
   begin
     j := 0;
     for i := 1 to trunc(RasterData.NRoots) do
     begin
-      // Punkt nicht in den vertikalen Rändern
+      // Punkt nicht in den vertikalen RÃ¤ndern
       if (RasterData.PosArr[i].x >= verticMargin.v) and
         (RasterData.PosArr[i].x <= dimensionX.v - verticMargin.v)
-      // Punkt nicht in den horizontalen Rändern
+      // Punkt nicht in den horizontalen RÃ¤ndern
         and (RasterData.PosArr[i].y >= horizMargin.v) and
         (RasterData.PosArr[i].y <= dimensionY.v - horizMargin.v) then
       begin
@@ -854,10 +842,10 @@ begin
       j := 0;
       for i := 1 to trunc(RasterData.NRoots) do
       begin
-        // Punkt nicht in den vertikalen Rändern
+        // Punkt nicht in den vertikalen RÃ¤ndern
         if (RasterData.PosArr[i].x >= verticMargin.v) and
           (RasterData.PosArr[i].x <= dimensionX.v - verticMargin.v)
-        // Punkt nicht in den horizontalen Rändern
+        // Punkt nicht in den horizontalen RÃ¤ndern
           and (RasterData.PosArr[i].y >= horizMargin.v) and
           (RasterData.PosArr[i].y <= dimensionY.v - horizMargin.v) then
         begin
@@ -887,17 +875,17 @@ begin
         write(xyFile, PosArr_middle[i].area, ' ');
         writeln(xyFile);
       end;
-      // Randständige Punkte
-      write(xyFile, 'Punkte in Rändern:');
+      // RandstÃ¤ndige Punkte
+      write(xyFile, 'Punkte in RÃ¤ndern:');
       writeln(xyFile);
       write(xyFile, 'Lfd.Nr.', ' ', 'X', ' ', 'y', ' ', 'Flaeche', ' ');
       writeln(xyFile);
       for i := 1 to trunc(RasterData.NRoots) do
       begin
-        // Punkt nicht in den vertikalen Rändern
+        // Punkt nicht in den vertikalen RÃ¤ndern
         if (RasterData.PosArr[i].x < verticMargin.v) or
           (RasterData.PosArr[i].x > dimensionX.v - verticMargin.v)
-        // Punkt nicht in den horizontalen Rändern
+        // Punkt nicht in den horizontalen RÃ¤ndern
           or (RasterData.PosArr[i].y < horizMargin.v) or
           (RasterData.PosArr[i].y > dimensionY.v - horizMargin.v) then
         begin
@@ -918,17 +906,17 @@ end;
 procedure TSubmodRootDiff.EqualDistribution;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG:
-  Alle Diffusionsmodelle können ausgehend von eine geg. Verteilung eine gleichför-
+  Alle Diffusionsmodelle kÃ¶nnen ausgehend von eine geg. Verteilung eine gleichfÃ¶r-
   mige Verteilung berechnen.
-  Methode verteilt Punkte ausgehend von einer gegebenen WLD gleichmäßig auf einer
-  Fläche. Das TPointSeries-Objekt der aufrufenden Methode der HUME - GUI wird neu
-  gefüllt, sodass die Darstellung angepasst werden kann. Es wurden zu diesem Zweck
+  Methode verteilt Punkte ausgehend von einer gegebenen WLD gleichmÃ¤ÃŸig auf einer
+  FlÃ¤che. Das TPointSeries-Objekt der aufrufenden Methode der HUME - GUI wird neu
+  gefÃ¼llt, sodass die Darstellung angepasst werden kann. Es wurden zu diesem Zweck
   verschiedene Methoden erstellt, zwischen denen an dieser Stelle einfach umgeschal-
   tet werden kann.
   ------------------------------------------------------------------------------ *)
 var
   radSRP, // Radius SRP
-  AreaSRP // Fläche SRP
+  AreaSRP // FlÃ¤che SRP
     : double;
 begin
   { falls RLD als Paramenter eingelesen wurde, muss noch die Anzahl der Wurzeln im
@@ -940,59 +928,59 @@ begin
     num_roots.v := dimensionX.v * dimensionY.v / AreaSRP;
     RasterData.NRoots := trunc(num_roots.v);
   end;
-  // Füllen von Reihen
+  // FÃ¼llen von Reihen
   distributeHexagonRow;
   calcNumberConsRoots;
-  // Füllen von Spalten
+  // FÃ¼llen von Spalten
   // distributeHexagonCol;
 end; // End TSubmodRootDiff.hexDistribution
 
 procedure TSubmodRootDiff.distributeHexagonRow;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG: Verteilung mit Hilfe von Sechsecken. Es werden dabei nacheinander
-  REIHEN gefüllt. Problem: Um eine bessere Verteilung zu erreichen, müssen die
-  Punkte noch um den halben Radius des Außenkreises verschoben werden.
+  REIHEN gefÃ¼llt. Problem: Um eine bessere Verteilung zu erreichen, mÃ¼ssen die
+  Punkte noch um den halben Radius des AuÃŸenkreises verschoben werden.
   ------------------------------------------------------------------------------ *)
 var
-  { Für die Berechnung der Verteilung werden folgende Radii benötigt. Innen- und
-    Außenkreis beziehen sich auf das regelmäßige Sechseck, in dessen Zentrum sich
+  { FÃ¼r die Berechnung der Verteilung werden folgende Radii benÃ¶tigt. Innen- und
+    AuÃŸenkreis beziehen sich auf das regelmÃ¤ÃŸige Sechseck, in dessen Zentrum sich
     die Wurzel befindet. }
-  AreaObservation, // Fläche Beobachtungsfenster
+  AreaObservation, // FlÃ¤che Beobachtungsfenster
   Rad_IK, // Radius Innenkreis Sechseck
-  Rad_AK, // Radius Außenkreis Sechseck
-  Area_Polygon, // Fläche Sechseck
+  Rad_AK, // Radius AuÃŸenkreis Sechseck
+  Area_Polygon, // FlÃ¤che Sechseck
   pos_x, // Position der Senke in x-Richtung
   pos_y, // Position der Senke in y-Richtung
-  dimx, // Grenze der Berechnungsfläche in x-Richtung
-  dimy, // Grenze der Berechnungsfläche in y-Richtung
-  angel, // 60° im Bogenmaß
-  stretch, // Strecke mit Länge (2xRad_AK - Kante)/2 (vgl. Folie Gleichverteilung
-  edgeHexagon: real; // Kantenlänge 6-Eck
+  dimx, // Grenze der BerechnungsflÃ¤che in x-Richtung
+  dimy, // Grenze der BerechnungsflÃ¤che in y-Richtung
+  angel, // 60Â° im BogenmaÃŸ
+  stretch, // Strecke mit LÃ¤nge (2xRad_AK - Kante)/2 (vgl. Folie Gleichverteilung
+  edgeHexagon: real; // KantenlÃ¤nge 6-Eck
   errorRoot, i, j, number_row: integer;
 
 begin
   inherited;
-  { Berechnung des Flächeninhalts, der einem Sechseck zugeordnet werden soll.
-    Ränder werden erst nach Gleichverteilung abgeschnitten }
+  { Berechnung des FlÃ¤cheninhalts, der einem Sechseck zugeordnet werden soll.
+    RÃ¤nder werden erst nach Gleichverteilung abgeschnitten }
   AreaObservation := dimensionX.v * dimensionY.v;
   Area_Polygon := AreaObservation / num_roots.v;
-  // Umrechung von Gradmaß ins Bogenmaß, vgl. Mathehandbuch S. 336
-  { Winkel im Bogenmaß=Winkel im Gradmaß/360*2Pi }
+  // Umrechung von GradmaÃŸ ins BogenmaÃŸ, vgl. Mathehandbuch S. 336
+  { Winkel im BogenmaÃŸ=Winkel im GradmaÃŸ/360*2Pi }
   angel := 60 / 360 * (2 * Pi);
   // Vgl. Geometriehandbuch
   Rad_AK := sqrt(Area_Polygon / (3 * sin(angel)));
   // alternative Formel: Rad_AK:=sqrt(2/3*(Area_Polygon/sqrt(3)));
-  // Radius Innenkreis entspricht Höhe im Teildreieck, Vgl. Geometriehandbuch
+  // Radius Innenkreis entspricht HÃ¶he im Teildreieck, Vgl. Geometriehandbuch
   Rad_IK := (Rad_AK / 2) * sqrt(3);
-  // Kantenlänge Sechseck entspricht dem Radius des Außenkreises
+  // KantenlÃ¤nge Sechseck entspricht dem Radius des AuÃŸenkreises
   edgeHexagon := Rad_AK;
   stretch := Rad_AK / 2;
-  { Man könnte auch wegen Anschaulichkeit folgendes schreiben:
+  { Man kÃ¶nnte auch wegen Anschaulichkeit folgendes schreiben:
     stretch:=(2*Rad_Ak-edgeHexagon)/2 }
   dimx := dimensionX.v;
   dimy := dimensionY.v;
-  // Füllen des Pos_Arrays:
-  RasterData.errasePosArr; // Löschen alter Einträge. Problem: notwendig???
+  // FÃ¼llen des Pos_Arrays:
+  RasterData.errasePosArr; // LÃ¶schen alter EintrÃ¤ge. Problem: notwendig???
   // number_row:=1;           //Start bei Reihe 1
   number_row := 0; // Start bei Reihe 0
   { Cave: PosArr beginnt bei 1 }
@@ -1008,22 +996,22 @@ begin
       pos_x := ((j * 2 + 1) * Rad_AK + j * edgeHexagon);
       pos_y := Rad_IK * number_row;
       if (pos_x <= dimx) and (pos_y <= dimy) then
-      // Solange der Punkt sich nicht außerhalb der Berechnungsfläche befindet
+      // Solange der Punkt sich nicht auÃŸerhalb der BerechnungsflÃ¤che befindet
       begin
         RasterData.PosArr[i].x := pos_x;
         RasterData.PosArr[i].y := pos_y;
         RasterData.PosArr[i].root := i;
-        { Es wird davon ausgegangen, dass die Fläche des Sechsecks der Fläche des Voronoi-
-          Polygons entspricht. Die Punkte innerhalb der Grenzen des Polygons wären dann
+        { Es wird davon ausgegangen, dass die FlÃ¤che des Sechsecks der FlÃ¤che des Voronoi-
+          Polygons entspricht. Die Punkte innerhalb der Grenzen des Polygons wÃ¤ren dann
           die Punkte, die zur Senke im Mittelpunkt einen kleineren Abstand haben als zu
           allen anderen vorhandenen Senken. }
-        { Dieser Punkt ist nicht ganz konsistent, da man auch das PosArr für die Berech-
-          nungen heranziehen könnte. }
+        { Dieser Punkt ist nicht ganz konsistent, da man auch das PosArr fÃ¼r die Berech-
+          nungen heranziehen kÃ¶nnte. }
         RasterData.PosArr[i].area := Area_Polygon;
       end;
       { Wenn Wurzeln sich nicht mehr im Beobachtungsfenster befinden, bedeutet bei
-        reihenweiser Befüllung, den Fall, dass sich Pos. in y-Richtung ausserhalb der
-        Beobachtungsfläche befindet }
+        reihenweiser BefÃ¼llung, den Fall, dass sich Pos. in y-Richtung ausserhalb der
+        BeobachtungsflÃ¤che befindet }
       if (pos_y > dimy) then
       begin
         Inc(errorRoot);
@@ -1031,11 +1019,11 @@ begin
       Inc(j);
       Inc(i);
       if pos_x > dimx then
-      // Am Ende der Reihe: Wechsel in den Ast für gerade Reihen.
+      // Am Ende der Reihe: Wechsel in den Ast fÃ¼r gerade Reihen.
       begin
         j := 0;
-        { Schritt zurück (Notwendig, da sonst die Felder einer Wurzel im PosArr beim
-          Übergang in die nächste Reihe mit 0 belegt werden }
+        { Schritt zurÃ¼ck (Notwendig, da sonst die Felder einer Wurzel im PosArr beim
+          Ãœbergang in die nÃ¤chste Reihe mit 0 belegt werden }
         dec(i);
         Inc(number_row);
       end;
@@ -1044,10 +1032,10 @@ begin
     // Berechnung gerader Reihen:
     begin
       pos_x := stretch + (j + 1) * edgeHexagon + (j * 2 + 1) * Rad_AK;
-      // Für bessere Verteilung wird
+      // FÃ¼r bessere Verteilung wird
       pos_y := (number_row) * Rad_IK;
       if (pos_x <= dimx) and (pos_y <= dimy) then
-      // Solange der Punkt sich nicht außerhalb der Berechnungsfläche befindet
+      // Solange der Punkt sich nicht auÃŸerhalb der BerechnungsflÃ¤che befindet
       begin
         RasterData.PosArr[i].x := pos_x;
         RasterData.PosArr[i].y := pos_y;
@@ -1055,8 +1043,8 @@ begin
         RasterData.PosArr[i].area := Area_Polygon;
       end;
       { Wenn Wurzeln sich nicht mehr im Beobachtungsfenster befinden, bedeutet bei
-        reihenweiser Befüllung, den Fall, dass sich Pos. in Y-Richtung ausserhalb der
-        Beobachtungsfläche befindet }
+        reihenweiser BefÃ¼llung, den Fall, dass sich Pos. in Y-Richtung ausserhalb der
+        BeobachtungsflÃ¤che befindet }
       if (pos_y > dimy) then
       begin
         Inc(errorRoot);
@@ -1064,7 +1052,7 @@ begin
       Inc(j);
       Inc(i);
       if pos_x > dimx then
-      // Am Ende der Reihe: Wechsel in den Ast für ungerade Reihen.
+      // Am Ende der Reihe: Wechsel in den Ast fÃ¼r ungerade Reihen.
       begin
         j := 0;
         dec(i);
@@ -1078,55 +1066,55 @@ end; // End TSubmodRootDiff.distributeHexagonRow
 procedure TSubmodRootDiff.distributeHexagonCol;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG:
-  Verteilung mit Hilfe von Sechsecken. Es werden dabei nacheinander SPALTEN gefüllt.
-  Die Methode könnte dann vorteilhaft sein, solange Nährstoffaufnahme in SCHICHTEN
+  Verteilung mit Hilfe von Sechsecken. Es werden dabei nacheinander SPALTEN gefÃ¼llt.
+  Die Methode kÃ¶nnte dann vorteilhaft sein, solange NÃ¤hrstoffaufnahme in SCHICHTEN
   berechnet werden soll (dies muss aber noch verifiziert werden.
   Die Verteilung wurde angepasst: X-Werte wurden um einen halben Rad_Ak nach rechts
-  und die y-Werte um einen halben Rad_Ak nach oben verschoben (vgl. Folie Füllen
+  und die y-Werte um einen halben Rad_Ak nach oben verschoben (vgl. Folie FÃ¼llen
   von Spalten 2
   CAVE: Methode nicht upToDate muss noch nach  Vorbild von distributeHexagonRow
   verbessert werden (z.B. Berechnung ErrorReg).
   ------------------------------------------------------------------------------ *)
 var
-  { Für die Berechnung der Verteilung werden folgende Radii benötigt. Innen- und
-    Außenkreis beziehen sich auf das regelmäßige Sechseck, in dessen Zentrum sich
+  { FÃ¼r die Berechnung der Verteilung werden folgende Radii benÃ¶tigt. Innen- und
+    AuÃŸenkreis beziehen sich auf das regelmÃ¤ÃŸige Sechseck, in dessen Zentrum sich
     die Wurzel befindet. }
-  AreaObservation, // Fläche des Beobachtungsfensters
+  AreaObservation, // FlÃ¤che des Beobachtungsfensters
   Rad_IK, // Radius Innenkreis Sechseck
-  Rad_AK, // Radius Außenkreis Sechseck
-  Area_Polygon, // Fläche Sechseck
+  Rad_AK, // Radius AuÃŸenkreis Sechseck
+  Area_Polygon, // FlÃ¤che Sechseck
   pos_x, // Position der Senke in x-Richtung
   pos_y, // Position der Senke in y-Richtung
-  dimx, // Grenze der Berechnungsfläche in x-Richtung
-  dimy, // Grenze der Berechnungsfläche in y-Richtung
-  angel, // 60° im Bogenmaß
-  stretch, // Strecke mit Länge (2xRad_AK - Kante)/2 (vgl. Folie Gleichverteilung
-  { Kantenlänge 6-Eck, entspricht eigentlich Rad_Ak, wurde aus Gründen der Anschau-
+  dimx, // Grenze der BerechnungsflÃ¤che in x-Richtung
+  dimy, // Grenze der BerechnungsflÃ¤che in y-Richtung
+  angel, // 60Â° im BogenmaÃŸ
+  stretch, // Strecke mit LÃ¤nge (2xRad_AK - Kante)/2 (vgl. Folie Gleichverteilung
+  { KantenlÃ¤nge 6-Eck, entspricht eigentlich Rad_Ak, wurde aus GrÃ¼nden der Anschau-
     lichkeit beibehalten. }
   edgeHexagon: real;
   i, j, number_col: integer;
 begin
   inherited;
   AreaObservation := dimensionX.v * dimensionY.v;
-  { Berechnung des Flächeninhalts, der einem Sechseck zugeordnet werden soll: }
+  { Berechnung des FlÃ¤cheninhalts, der einem Sechseck zugeordnet werden soll: }
   Area_Polygon := AreaObservation / num_roots.v;
-  // Umrechung von Gradmaß ins Bogenmaß, vgl. Mathehandbuch S. 336
-  { Winkel im Bogenmaß=Winkel im Gradmaß/360*2Pi }
+  // Umrechung von GradmaÃŸ ins BogenmaÃŸ, vgl. Mathehandbuch S. 336
+  { Winkel im BogenmaÃŸ=Winkel im GradmaÃŸ/360*2Pi }
   angel := 60 / 360 * (2 * Pi);
   // Vgl. Geometriehandbuch
   Rad_AK := sqrt(Area_Polygon / (3 * sin(angel)));
   // alternative Formel: Rad_AK:=sqrt(2/3*(Area_Polygon/sqrt(3)));
-  // Radius Innenkreis entspricht Höhe im Teildreieck, Vgl. Geometriehandbuch
+  // Radius Innenkreis entspricht HÃ¶he im Teildreieck, Vgl. Geometriehandbuch
   Rad_IK := (Rad_AK / 2) * sqrt(3);
-  // Kantenlänge Sechseck entspricht dem Radius des Außenkreises
+  // KantenlÃ¤nge Sechseck entspricht dem Radius des AuÃŸenkreises
   edgeHexagon := Rad_AK;
   stretch := Rad_AK / 2;
-  { Man könnte auch wegen Anschaulichkeit folgendes schreiben:
+  { Man kÃ¶nnte auch wegen Anschaulichkeit folgendes schreiben:
     stretch:=(2*Rad_Ak-edgeHexagon)/2 }
   dimx := self.dimensionX.v;
   dimy := self.dimensionY.v;
-  // Füllen des Pos_Arrays:
-  RasterData.errasePosArr; // Löschen alter Einträge. Problem: notwendig???
+  // FÃ¼llen des Pos_Arrays:
+  RasterData.errasePosArr; // LÃ¶schen alter EintrÃ¤ge. Problem: notwendig???
   // number_col:=1;           //Start bei Spalte 1
   number_col := 0; // Start bei Spalte 0
   j := 0;
@@ -1143,14 +1131,14 @@ begin
       pos_x := pos_x + Rad_AK / 2;
       // y-Werte: verschieben um Rad_Ak/2 nach oben
       pos_y := pos_y - Rad_AK / 2;
-      // Solange der Punkt sich nicht außerhalb der Berechnungsfläche befindet
+      // Solange der Punkt sich nicht auÃŸerhalb der BerechnungsflÃ¤che befindet
       if (pos_x <= dimx) and (pos_y <= dimy) then
       begin
         RasterData.PosArr[i].x := pos_x;
         RasterData.PosArr[i].y := pos_y;
         RasterData.PosArr[i].root := i;
-        { Es wird davon ausgegangen, dass die Fläche des Sechsecks der Fläche des Voronoi-
-          Polygons entspricht. Die Punkte innerhalb der Grenzen des Polygons wären dann
+        { Es wird davon ausgegangen, dass die FlÃ¤che des Sechsecks der FlÃ¤che des Voronoi-
+          Polygons entspricht. Die Punkte innerhalb der Grenzen des Polygons wÃ¤ren dann
           die Punkte, die zur Senke im Mittelpunkt einen kleineren Abstand haben als zu
           allen anderen vorhandenen Senken. }
         RasterData.PosArr[i].area := Area_Polygon;
@@ -1158,10 +1146,10 @@ begin
       Inc(j);
       Inc(i);
       if pos_y > dimy then
-      // Am Ende der Reihe: Wechsel in den Ast für gerade Spalten.
+      // Am Ende der Reihe: Wechsel in den Ast fÃ¼r gerade Spalten.
       begin
         j := 0;
-        dec(i); // Schritt zurück
+        dec(i); // Schritt zurÃ¼ck
         Inc(number_col);
       end;
     end;
@@ -1174,7 +1162,7 @@ begin
       pos_x := pos_x + Rad_AK / 2;
       // y-Werte: verschieben um Rad_Ak/2 nach oben
       pos_y := pos_y - Rad_AK / 2;
-      // Solange der Punkt sich nicht außerhalb der Berechnungsfläche befindet
+      // Solange der Punkt sich nicht auÃŸerhalb der BerechnungsflÃ¤che befindet
       if (pos_x <= dimx) and (pos_y <= dimy) then
       begin
         RasterData.PosArr[i].x := pos_x;
@@ -1185,7 +1173,7 @@ begin
       Inc(j);
       Inc(i);
       if pos_y > dimy then
-      // Am Ende der Reihe: Wechsel in den Ast für ungerade Spalten.
+      // Am Ende der Reihe: Wechsel in den Ast fÃ¼r ungerade Spalten.
       begin
         j := 0;
         dec(i);
@@ -1198,24 +1186,24 @@ end; // End TSubmodRootDiff.distributeHexagonCol
 procedure TSubmodRootDiff.calcNumberConsRoots;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG:
-  Berechnet die Anzahl der gültigen Wurzeln (befinden sich auf dem Beobachtungs-
-  fenster, aber nicht in den Rändern)
+  Berechnet die Anzahl der gÃ¼ltigen Wurzeln (befinden sich auf dem Beobachtungs-
+  fenster, aber nicht in den RÃ¤ndern)
   ------------------------------------------------------------------------------ *)
 var
   rootcount, i: integer;
 begin
   rootcount := 0;
   number_consid_roots.v := 0;
-  // number_consid_roots.V:=RasterData.NRoots; //Zunächst alle Wurzeln akzeptiert.
-  { Bestimmen der Anzahl zu berücksichtigender Wurzeln (für das Festsetzen von
-    Arraygrenzen. Die eingegeb. Parameter für die Ränder sind relative Werte, die
+  // number_consid_roots.V:=RasterData.NRoots; //ZunÃ¤chst alle Wurzeln akzeptiert.
+  { Bestimmen der Anzahl zu berÃ¼cksichtigender Wurzeln (fÃ¼r das Festsetzen von
+    Arraygrenzen. Die eingegeb. Parameter fÃ¼r die RÃ¤nder sind relative Werte, die
     noch in Beziehung zum Beobachtungsfenster dimensionX, dimensionY gesetzt werden. }
   for i := 1 to RasterData.NRoots do
   begin
-    // Punkt nicht in den vertikalen Rändern
+    // Punkt nicht in den vertikalen RÃ¤ndern
     if (RasterData.PosArr[i].x >= verticMargin.v) and
       (RasterData.PosArr[i].x <= dimensionX.v - verticMargin.v)
-    // Punkt nicht in den horizontalen Rändern
+    // Punkt nicht in den horizontalen RÃ¤ndern
       and (RasterData.PosArr[i].y >= horizMargin.v) and
       (RasterData.PosArr[i].y <= dimensionY.v - horizMargin.v) then
     begin
@@ -1229,13 +1217,13 @@ end;
 
 function TSubmodRootDiff.Mg_func(Tiefe_cm, theta, Cli_mol_cm3: real): extended;
 (* ------------------------------------------------------------------------------
-  BESCHREIBUNG: Rückgabewert ist die berechnete N-Menge [kgN/ha], die Funktion
+  BESCHREIBUNG: RÃ¼ckgabewert ist die berechnete N-Menge [kgN/ha], die Funktion
   leistet also die Umrechnung aus der vorhandenen Konzentration (aggregierte Werte)
   ------------------------------------------------------------------------------ *)
 const
   kg_mol = 14 / 1000; { Molgewicht Stickstoff }
 var
-  volumen_cm3, { Volumen von Bodenschicht auf Fläche von 1ha }
+  volumen_cm3, { Volumen von Bodenschicht auf FlÃ¤che von 1ha }
   cm3_ha, n_menge: extended;
 begin
   volumen_cm3 := Tiefe.v * 1E8;
@@ -1246,12 +1234,12 @@ end;
 
 function TSubmodRootDiff.Cl_func(Tiefe_cm, theta, NMenge: real): extended;
 (* ------------------------------------------------------------------------------
-  BESCHREIBUNG: Rückgabewert ist die Konzentration [Mol N/cm^3]
+  BESCHREIBUNG: RÃ¼ckgabewert ist die Konzentration [Mol N/cm^3]
   ------------------------------------------------------------------------------ *)
 const
   kg_mol = 14 / 1000; { Molgewicht Stickstoff }
 var
-  volumen_cm3, { Volumen von Bodenschicht auf Fläche von 1ha }
+  volumen_cm3, { Volumen von Bodenschicht auf FlÃ¤che von 1ha }
   cm3_ha, Cli_mol_cm3: extended;
 
 begin
@@ -1264,24 +1252,24 @@ end;
 procedure TSubmodRootDiff.removeMarginRoots;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG:
-  Entfernt randständige Wurzeln aus dem Pos-Array
+  Entfernt randstÃ¤ndige Wurzeln aus dem Pos-Array
   ------------------------------------------------------------------------------ *)
 var
   i, j: integer;
-  { dynamisches Array, welches temporär die Wurzeln aufnimmt, die nicht in den
-    Ränder liegen. }
+  { dynamisches Array, welches temporÃ¤r die Wurzeln aufnimmt, die nicht in den
+    RÃ¤nder liegen. }
   PosArr_middle: Array of TPointDoubleType;
 begin
-  // Rausschmiss 'ungültiger Wurzeln'
+  // Rausschmiss 'ungÃ¼ltiger Wurzeln'
   setLength(PosArr_middle, trunc(number_consid_roots.v));
   j := 0;
-  // Füllen von PosArr_middle
+  // FÃ¼llen von PosArr_middle
   for i := 1 to trunc(RasterData.NRoots) do
   begin
-    // Punkt nicht in den vertikalen Rändern
+    // Punkt nicht in den vertikalen RÃ¤ndern
     if (RasterData.PosArr[i].x >= verticMargin.v) and
       (RasterData.PosArr[i].x <= dimensionX.v - verticMargin.v)
-    // Punkt nicht in den horizontalen Rändern
+    // Punkt nicht in den horizontalen RÃ¤ndern
       and (RasterData.PosArr[i].y >= horizMargin.v) and
       (RasterData.PosArr[i].y <= dimensionY.v - horizMargin.v) then
     begin
@@ -1296,10 +1284,10 @@ begin
       Inc(j);
     end;
   end;
-  // Löschen des alten PosArr
+  // LÃ¶schen des alten PosArr
   RasterData.errasePosArr;
   j := 1;
-  // Rückschreiben der Werte aus dem temporären PosArr.
+  // RÃ¼ckschreiben der Werte aus dem temporÃ¤ren PosArr.
   for i := 0 to high(PosArr_middle) do
   begin
     RasterData.PosArr[j].x := PosArr_middle[i].x;
