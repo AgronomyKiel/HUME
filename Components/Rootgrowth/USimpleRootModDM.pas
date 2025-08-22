@@ -145,6 +145,11 @@ type
     property RootedSoilWaterModel: TSoilWaterModelR read fRootedSoilWatermodel
       write fRootedSoilWatermodel;
 
+    /// <summary>
+    /// Initializes arrays and variables for root compartments and age classes.
+    /// </summary>
+    procedure InitArraysAndVars;
+
     property Var_SRL: TVar read SRL write SRL;
     property State_zr: TState read zr write zr;
 
@@ -1067,17 +1072,35 @@ begin
   end;
 end;
 
-procedure TSimpleRootModDM.Init(Var GlobMod: Tmod);
+procedure TSimpleRootModDM.InitArraysAndVars;
 var
   i, j: integer;
+begin
+  for i := 1 to trunc(N_Rootcomp.v) do
+  begin
+    Wld_arr[i].v := 0.0;
+    WL_arr[i].v := 0.0;
+    EffWld_arr[i].v := 0.0;
+    effWL_arr[i].v := 0.0;
+  end;
+  for i := 1 to Max_Comp do
+    for j := 1 to MaxAgeCl do
+      Root_Matrix[i, j] := 0.0;
+  n_age_cl := 0;
+end;
 
+/// <summary>
+/// Initializes the root growth module, sets options, links plant model dates, and prepares arrays and variables for simulation.
+/// </summary>
+/// <param name="GlobMod">Global module reference for initialization.</param>
+procedure TSimpleRootModDM.Init(var GlobMod: Tmod);
 begin
   inherited Init(GlobMod);
   if uppercase(depthgrowthOptStr.Option) = uppercase('linear') then
-    RootDepthInc := linear;
-  if uppercase(depthgrowthOptStr.Option) = uppercase('expolinear') then
+    RootDepthInc := linear
+  else if uppercase(depthgrowthOptStr.Option) = uppercase('expolinear') then
     RootDepthInc := expolinear;
-  if uppercase(RootGrowthAfterEmergence.Option) = uppercase('true') then
+  if SameText(RootGrowthAfterEmergence.Option, 'true') then
   begin
     fRootGrowthAfterEmergence := true;
     EmergenceDay.Search := true;
@@ -1087,29 +1110,25 @@ begin
     fRootGrowthAfterEmergence := false;
     EmergenceDay.Search := false;
   end;
-
-  If PlantModel <> nil then
+If PlantModel <> nil then
   begin
     SowingDate := PlantModel.SowingDate;
     HarvestDate := PlantModel.HarvestDate;
+    // Initialize the number of root age classes to zero at simulation start.
+    // This variable is incremented during simulation to track active root age classes.
+    n_age_cl := 0;
+    zr.v := zr0.v;
+    OldDMFineRoot := 0.0;
+    N_Rootcomp.v := 20;
+    InitArraysAndVars;
   end;
-  zr.v := zr0.v;
-  OldDMFineRoot := 0.0;
-  // TempsumR.V := 0.0;
-  for i := 1 to trunc(N_Rootcomp.v) do
-  begin
-    Wld_arr[i].v := 0.0;
-    WL_arr[i].v := 0.0;
-  end;
-  N_Rootcomp.v := 20;
-
-  for i := 1 to Max_Comp do
-    for j := 1 to MaxAgeCl do
-      Root_Matrix[i, j] := 0.0;
-  n_age_cl := 0;
-
 end;
 
+
+/// <summary>
+/// Calculates the rates for root growth and updates root length densities, effective root lengths, and related variables based on current environmental and plant state.
+/// Handles texture effects, rooting depth increments, root aging, and resets variables after harvest.
+/// </summary>
 procedure TSimpleRootModDM.CalcRates;
 
 var
@@ -1220,7 +1239,8 @@ begin
     // If Temp.v>TempSumRootBaseTemp.v then
     // TempSumR.C := (Temp.v-TempSumRootBaseTemp.V)
     // else TempSumr.c := 0.0;
-    inc(n_age_cl);
+    if n_age_cl < MaxAgeCl then
+      inc(n_age_cl);
     SRL_eff.v := 0.0;
     for i := 1 to trunc(N_Rootcomp.v) do
     begin
@@ -1229,13 +1249,13 @@ begin
       WL_alt := Wld_arr[i].v * (Tiefe[i].v - Tiefe[i - 1].v);
       Wld_arr[i].v := WLD_z_t_f(Tiefe[i - 1].v, Tiefe[i].v);
       WL_arr[i].v := Wld_arr[i].v * (Tiefe[i].v - Tiefe[i - 1].v);
-      Root_Matrix[i, 1] := max(0, WL_arr[i].v - WL_alt);
       ActiveRL := 0.0;
-      for j := 1 to trunc(ActiveDuration.v) do
+      for j := 1 to min(trunc(ActiveDuration.v), MaxAgeCl) do
         ActiveRL := ActiveRL + Root_Matrix[i, j];
       // ActiveRL := ActiveRL+            Root_matrix[i,Trunc(ActiveDuration.v)+1]*(ActiveDuration.v -Trunc(ActiveDuration.v));
       effWL_arr[i].v := ActiveRL;
       SRL_eff.v := SRL_eff.v + ActiveRL;
+      EffWld_arr[i].v := ActiveRL / (Tiefe[i].v - Tiefe[i - 1].v);
       EffWld_arr[i].v := ActiveRL / (Tiefe[i].v - Tiefe[i - 1].v);
 
     end;
@@ -1255,13 +1275,30 @@ begin
     WLD_120_150.v := WLD_z_t_f(120, 150);
     WLD_0_150.v := WLD_z_t_f(0, 150);
 
-    effWLD_0_30.v := (EffWld_arr[1].v + EffWld_arr[2].v + EffWld_arr[3].v) / 3;
-    effWLD_30_60.v := (EffWld_arr[4].v + EffWld_arr[5].v + EffWld_arr[6].v) / 3;
-    effWLD_60_90.v := (EffWld_arr[7].v + EffWld_arr[8].v + EffWld_arr[9].v) / 3;
-    effWLD_90_120.v := (EffWld_arr[10].v + EffWld_arr[11].v + EffWld_arr
-      [12].v) / 3;
-    effWLD_120_150.v := (EffWld_arr[13].v + EffWld_arr[14].v + EffWld_arr
-      [15].v) / 3;
+    if trunc(N_Rootcomp.v) >= 3 then
+      effWLD_0_30.v := (EffWld_arr[1].v + EffWld_arr[2].v + EffWld_arr[3].v) / 3
+    else
+      effWLD_0_30.v := 0;
+
+    if trunc(N_Rootcomp.v) >= 6 then
+      effWLD_30_60.v := (EffWld_arr[4].v + EffWld_arr[5].v + EffWld_arr[6].v) / 3
+    else
+      effWLD_30_60.v := 0;
+
+    if trunc(N_Rootcomp.v) >= 9 then
+      effWLD_60_90.v := (EffWld_arr[7].v + EffWld_arr[8].v + EffWld_arr[9].v) / 3
+    else
+      effWLD_60_90.v := 0;
+
+    if trunc(N_Rootcomp.v) >= 12 then
+      effWLD_90_120.v := (EffWld_arr[10].v + EffWld_arr[11].v + EffWld_arr[12].v) / 3
+    else
+      effWLD_90_120.v := 0;
+
+    if trunc(N_Rootcomp.v) >= 15 then
+      effWLD_120_150.v := (EffWld_arr[13].v + EffWld_arr[14].v + EffWld_arr[15].v) / 3
+    else
+      effWLD_120_150.v := 0;
 
   end;
   WLD_0_10.v := Wld_arr[1].v;
@@ -1279,11 +1316,9 @@ begin
   { or (PlantModel.DoHarvest = true) } then
   begin
     zr.v := 0.0;
-    SRL.v := 0.0;
-
     for i := 1 to trunc(N_Rootcomp.v) do
     begin
-      Wld_arr[i].v := 0.0;
+      WLd_arr[i].v := 0.0;
       WL_arr[i].v := 0.0;
       EffWld_arr[i].v := 0.0;
       effWL_arr[i].v := 0.0;
@@ -1291,6 +1326,7 @@ begin
     // IsActive := false;
   end;
 end;
+
 
 procedure TSimpleRootModDM.Integrate;
 

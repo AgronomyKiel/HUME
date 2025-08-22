@@ -598,7 +598,7 @@ begin
         if Param.Comment <> '' then
           AddBitButton(4, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
         if param.DocuWebLink <> '' then begin
-          LinkString := ' <A href="' + Param.DocuWebLink + '"title="'+Param.DocuWebLink+'>Explanation</A>';
+          LinkString := ' <A href="' + Param.DocuWebLink + '" title="' + Param.DocuWebLink + '">Explanation</A>';
           cells[5, i+1] := LinkString;
 
         end;

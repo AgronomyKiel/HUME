@@ -567,14 +567,14 @@ p
 fn <- here("Components/CERES Wheat/Documentation/Data/PSEN2_LAIMatrix_sens.csv")
 
 df <- read.delim(fn, comment.char = "[", sep=",")
-ParName <- "PSENLeaf1"
+ParName <- "PSENLeaf2"
 ColNames <- names(df)[grep(ParName, names(df))]
 ColValues <- as.numeric(gsub(paste0(ParName, "_"), "", ColNames))
 df <- df %>% filter(Time>=38620)
 
 
-dfl <- df %>% pivot_longer(cols = -c(Time), names_to = "PSEN1", values_to = "LAI")
-dfl$PSEN1 <- gsub(paste0(ParName, "_"), "", dfl$PSEN1)
+dfl <- df %>% pivot_longer(cols = -c(Time), names_to = "PSEN2", values_to = "LAI")
+dfl$PSEN2 <- gsub(paste0(ParName, "_"), "", dfl$PSEN2)
 
 dfl$Date <- as.POSIXct(as.numeric(as.character(dfl$Time))*86400, origin="1899-12-30", tz="GMT")
 #dfl <- dfl %>% filter(Time >= 38660)
@@ -589,9 +589,9 @@ library(RColorBrewer)
 
 
 p <- ggplot()
-p <- p + geom_line(data = dfl, aes(x = Date, y = LAI, color = PSEN1), size = 1.5)
+p <- p + geom_line(data = dfl, aes(x = Date, y = LAI, color = PSEN2), size = 1.5)
 p <- p + geom_point(data=df.data, aes(x=Date, y=LAI), size=4.5, shape=21, color="darkgrey", fill="darkgreen", alpha=0.6)
-p <- p + labs(x = "Time", y = "Leaf area index", color = "PSEN1")
+p <- p + labs(x = "Time", y = "Leaf area index", color = "PSEN2")
 p <- p + theme_bw(base_size = 20) +
   scale_color_aaas() +
 #  scale_color_manual(values = my_colors) +
@@ -625,8 +625,11 @@ where $LAI$ is the leaf area index, $LAIs$ is the sustainable leaf area index, $
 The sustainable leaf area index is derived from an iterative, numerical solution using the Newton method for solving non-linear equations.
 
 
-
 ### Nitrogen stress / nitrogen induced leaf senescence
+
+Within the class THumeWheatLeafArea two different options for late leaf area senescence are implemented, which can be selected by the option *OptNSenescenceType*. The option *concentration* calculates the leaf sencescence rate according to the ratio of the actual to the opitmal specific leaf area based N concentration, where as the option *cwt3* uses the classic, N concentration independent algorithm from CERES Wheat.
+
+#### Nitrogen induced late leaf area senescence
 
 The algorithm for nitrogen stress induced leaf senescence is based on the specific leaf nitrogen concentration (SLN) and the critical specific leaf nitrogen concentration (SLNtot~crit~). The daily senescence rate due to nitrogen stress PLALR~n~ is calculated from the difference of the actual LAI and the sustainable LAI multiplied with the ratio of the specific leaf nitrogen concentration to the critical specific leaf nitrogen concentration:
 
@@ -634,11 +637,60 @@ $$PLALR_n = min\left( LAI_{max} \cdot \frac{PLALR_{max}} {100}, LAI \cdot \left(
 
 where $LAI_{max}$ is the maximum leaf area index, $PLALR_{max}$ is the maximum leaf area index loss rate \[%\], standard value is 5%, $SLN$ is the specific leaf nitrogen concentration \[g/m^2^ leaf\], $SLNtot_{crit}$ is the critical specific leaf nitrogen concentration (default 0.8) , and $plants$ is the number of plants per square meter. The factor 1e4 converts m^2^ to cm^2^. This algorithm also induces the leaf senescence during ripening.
 
+
+#### CERES-Wheat based late leaf area senescence
+
 Alternatively, the classical leaf senecescence calculation from the CERES-Wheat model can be used. With this algorithm, the leaf area decline during ripening is controlled by the accumulated temperaturs sum during ISTAGE 5:
 
 $$PLALR_n = GPLA \cdot 2 \cdot SUMDTT_5 \cdot \frac { T_{eff}}{TSum_{GF}^2} $$ {#eq-PLALRn_v2}
 
 where $GPLA$ is the leaf area per plant, $SUMDTT5$ is the accumulated temperature sum during ISTAGE 5, $T_{eff}$ is the temperature sum increment, and $TSum_{GF}^2$ is the value of unscaled parameter P5, giving the length of the grain filling period in degree days. The default value of $P5$ is set to 11.67 in the model. According to the equation #eq-TSumGF the equivalent value of $TSum_{GF}$ is `r 430+11.67*20` \[°Cd\].
+
+The leaf area dynamics of the two algorithms are compared in @fig-LateSenescenceComparison. The CERES-Wheat based algorithm leads to a more smooth leaf area decline during ripeningbut remains at LAI values > 0 at full ripening stage. The N concentration based algorithm, starts obviously later.
+
+
+```{r}
+#| label: fig-LateSenescenceComparison
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-align: center
+#| fig-cap: Comparison of leaf area index dynamics with the CERES-Wheat 2.0 Algorithm and th
+#| fig-height: 6
+#| fig-width: 10
+
+fn <- here("Components/CERES Wheat/Documentation/Data/CWT3_LateSensescence_95_06_N240_HumeWheatLeafArea1_dat.csv")
+fn2 <- here("Components/CERES Wheat/Documentation/Data/Nconc_LateSensescence_95_06_N240_HumeWheatLeafArea1_dat.csv")
+
+
+df <- read.delim(fn, comment.char = "[", sep=",")
+df2 <- read.delim(fn2, comment.char = "[", sep=",")
+df$AgeSenescence <- "CWT3"
+df2$AgeSenescence <- "N Concentration dependent"
+
+df <- rbind(df, df2)
+df <- df %>% select(Time, AgeSenescence, LAI)
+df$Date <- as.POSIXct(as.numeric(as.character(df$Time))*86400, origin="1899-12-30", tz="GMT")
+
+df <- df %>% filter(Time >= 38610)
+
+
+p <- ggplot()
+p <- p + geom_line(data = df, aes(x = Date, y = LAI, color = AgeSenescence), size = 1.5)
+p <- p + labs(x = "Time", y = "Leaf area index", color = "Leaf senescence algorithm")
+p <- p + theme_bw(base_size = 20) +
+  scale_color_aaas() +
+#  scale_color_manual(values = my_colors) +
+  scale_x_datetime(date_labels = "%b", date_breaks = "1 month") +
+  scale_y_continuous(limits = c(0, 5.5)) +
+  theme(strip.background = element_blank()) +
+  theme(legend.position = "bottom")
+p
+
+
+```
+
+
 
 ### Light limitation
 
@@ -696,9 +748,9 @@ As an alternative, the N dynamics of the reproductive canopy is simulated as a f
 
 ## Initial lamina distribution at anthesis
 
-The first necessary step for implementation of the N model is the description of leaf relative tissue distribution between layers, regarded as uniform during vegetative growth (see results). Rain-out-shelter experiments (See Thesis Rajten, Tab.2, Exp.6) were carried out to describe the lamina distribution among leaf layers at anthesis. The method used for leaf partition across layers is described more precisely in Thesis Ratjen Chapter 3. Since leaf distribution follows the light gradient within the canopy it is influenced by LAI. Therefore, the leaf distribution was investigated by plotting the fraction of leaf dry matter, N mass and area of the respective layer against LAI. In order to ensure a sufficient amount of variability in LAI at anthesis, both, water limited and well irrigated treatments were taken into account. The leaf N concentration needed for the calculation of the leaf N distribution was not measured, but estimated as a function of chlorophyll index (Minolta SPAD-502) and leaf size. The estimation function (Fig.I.1) was previously calibrated using data of Exp.4 (same cultivar). The leaf mass Wl\[i\] \[g^.^m^-2^\] and leaf area L\[i\] \[m^2.^m^-2^\] of the first three layers is calculated as a function of LAI:
+The first necessary step for implementation of the N model is the description of leaf relative tissue distribution between layers, regarded as uniform during vegetative growth. Rain-out-shelter experiments (See Thesis Ratjen, Tab.2, Exp.6) were carried out to describe the lamina distribution among leaf layers at anthesis. The method used for leaf partition across layers is described more precisely in Thesis Ratjen Chapter 3. Since leaf distribution follows the light gradient within the canopy it is influenced by LAI. Therefore, the leaf distribution was investigated by plotting the fraction of leaf dry matter, N mass and area of the respective layer against LAI. In order to ensure a sufficient amount of variability in LAI at anthesis, both, water limited and well irrigated treatments were taken into account. The leaf N concentration needed for the calculation of the leaf N distribution was not measured, but estimated as a function of chlorophyll index (Minolta SPAD-502) and leaf size. The estimation function (Fig.I.1) was previously calibrated using data of Exp.4 (same cultivar). The leaf mass Wl\[i\] \[g^.^m^-2^\] and leaf area L\[i\] \[m^2.^m^-2^\] of the first three layers is calculated as a function of LAI:
 
-$${{W}_{l}}_{[i]}={{W}_{leaf}}\cdot (r{{W}_{l}}{{\operatorname{int}}_{[i]}}+r{{W}_{l}}in{{c}_{[i]}}\cdot LAI)$$ {#eq-LA33}
+$$Wl_{i}=W_{leaf}\cdot (r{{W}_{l}}{{\operatorname{int}}_{[i]}}+r{{W}_{l}}in{{c}_{i}}\cdot LAI)$$ {#eq-LA33}
 
 where rWlint\[1-3\] and rWlinc\[1-3\] are dimensionless fit parameters of the distribution.
 

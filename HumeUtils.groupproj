@@ -3,16 +3,16 @@
         <ProjectGuid>{930C42CA-8EB7-478C-9F3B-80151CA6BE2C}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="..\ADV_STRGRD\asgd_Rio.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\..\NumEdit\NumEditPack.dproj">
+        <Projects Include="Q:\NumEdit\NumEditPack.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="TMathImage\Math_Overlay.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="TMathImage\Math_MathImage.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Q:\ADV_STRGRD\asgxlsd_Rio.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -23,23 +23,14 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="asgd_Rio">
-        <MSBuild Projects="..\ADV_STRGRD\asgd_Rio.dproj"/>
-    </Target>
-    <Target Name="asgd_Rio:Clean">
-        <MSBuild Projects="..\ADV_STRGRD\asgd_Rio.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="asgd_Rio:Make">
-        <MSBuild Projects="..\ADV_STRGRD\asgd_Rio.dproj" Targets="Make"/>
-    </Target>
     <Target Name="NumEditPack">
-        <MSBuild Projects="..\..\NumEdit\NumEditPack.dproj"/>
+        <MSBuild Projects="Q:\NumEdit\NumEditPack.dproj"/>
     </Target>
     <Target Name="NumEditPack:Clean">
-        <MSBuild Projects="..\..\NumEdit\NumEditPack.dproj" Targets="Clean"/>
+        <MSBuild Projects="Q:\NumEdit\NumEditPack.dproj" Targets="Clean"/>
     </Target>
     <Target Name="NumEditPack:Make">
-        <MSBuild Projects="..\..\NumEdit\NumEditPack.dproj" Targets="Make"/>
+        <MSBuild Projects="Q:\NumEdit\NumEditPack.dproj" Targets="Make"/>
     </Target>
     <Target Name="Math_Overlay">
         <MSBuild Projects="TMathImage\Math_Overlay.dproj"/>
@@ -59,14 +50,23 @@
     <Target Name="Math_MathImage:Make">
         <MSBuild Projects="TMathImage\Math_MathImage.dproj" Targets="Make"/>
     </Target>
+    <Target Name="asgxlsd_Rio">
+        <MSBuild Projects="Q:\ADV_STRGRD\asgxlsd_Rio.dproj"/>
+    </Target>
+    <Target Name="asgxlsd_Rio:Clean">
+        <MSBuild Projects="Q:\ADV_STRGRD\asgxlsd_Rio.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="asgxlsd_Rio:Make">
+        <MSBuild Projects="Q:\ADV_STRGRD\asgxlsd_Rio.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="asgd_Rio;NumEditPack;Math_Overlay;Math_MathImage"/>
+        <CallTarget Targets="NumEditPack;Math_Overlay;Math_MathImage;asgxlsd_Rio"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="asgd_Rio:Clean;NumEditPack:Clean;Math_Overlay:Clean;Math_MathImage:Clean"/>
+        <CallTarget Targets="NumEditPack:Clean;Math_Overlay:Clean;Math_MathImage:Clean;asgxlsd_Rio:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="asgd_Rio:Make;NumEditPack:Make;Math_Overlay:Make;Math_MathImage:Make"/>
+        <CallTarget Targets="NumEditPack:Make;Math_Overlay:Make;Math_MathImage:Make;asgxlsd_Rio:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

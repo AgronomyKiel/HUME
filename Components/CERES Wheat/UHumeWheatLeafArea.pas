@@ -1378,7 +1378,9 @@ end;
 
 procedure THumeWheatLeafArea.CalcNdependentLeafSenescence(var PLALR_n: real);
 begin
-  // if the actual specific leaf nitrogen concentration is lower than
+  // if the actual specific leaf nitrogen concentration is lower than the
+  // critical sln value
+  //
   if (SLN.v < critSLNtot.v) and (LAI.v > 0) and (SLN.v > 0) then
     PLALR_n := min((LAImax.v * 1E4 / plants.v) * maxPLALR.v / 100,
       (LAI.v * 1E4 / plants.v) * (1 - SLN.v / critSLNtot.v));
