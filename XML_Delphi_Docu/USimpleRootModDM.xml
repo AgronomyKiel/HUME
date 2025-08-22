@@ -14,7 +14,8 @@
       </methodref>
       <methodref name="Init" visibility="public" procflags="override">
       </methodref>
-      <propertyref name="IsPlantModelSet" visibility="public" />
+      <propertyref name="IsPlantModelSet" visibility="public">
+      </propertyref>
       <propertyref name="PlantModel" visibility="published">
       </propertyref>
       <ancestor name="TSubmodel" namespace="UMod">
@@ -32,18 +33,30 @@
         </methodref>
         <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
         </methodref>
-        <methodref name="set_State" visibility="private" procflags="virtual" />
-        <methodref name="get_State" visibility="private" />
-        <methodref name="set_Par" visibility="private" />
-        <methodref name="Get_Par" visibility="private" />
-        <methodref name="set_Var" visibility="private" />
-        <methodref name="Get_Var" visibility="private" />
-        <methodref name="set_Const" visibility="private" />
-        <methodref name="get_Const" visibility="private" />
-        <methodref name="set_Option" visibility="private" />
-        <methodref name="get_Option" visibility="private" />
-        <methodref name="set_ExternVar" visibility="private" />
-        <methodref name="get_ExternVar" visibility="private" />
+        <methodref name="set_State" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="get_State" visibility="private">
+        </methodref>
+        <methodref name="set_Par" visibility="private">
+        </methodref>
+        <methodref name="Get_Par" visibility="private">
+        </methodref>
+        <methodref name="set_Var" visibility="private">
+        </methodref>
+        <methodref name="Get_Var" visibility="private">
+        </methodref>
+        <methodref name="set_Const" visibility="private">
+        </methodref>
+        <methodref name="get_Const" visibility="private">
+        </methodref>
+        <methodref name="set_Option" visibility="private">
+        </methodref>
+        <methodref name="get_Option" visibility="private">
+        </methodref>
+        <methodref name="set_ExternVar" visibility="private">
+        </methodref>
+        <methodref name="get_ExternVar" visibility="private">
+        </methodref>
         <methodref name="InitStates" visibility="private" procflags="virtual">
         </methodref>
         <methodref name="InitParms" visibility="private" procflags="virtual">
@@ -62,10 +75,12 @@
         </methodref>
         <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
         </methodref>
-        <methodref name="UpdateValue" visibility="protected" />
+        <methodref name="UpdateValue" visibility="protected">
+        </methodref>
         <methodref name="Paint" visibility="protected" procflags="override">
         </methodref>
-        <methodref name="Notification" visibility="protected" procflags="virtual" />
+        <methodref name="Notification" visibility="protected" procflags="virtual">
+        </methodref>
         <methodref name="Create" visibility="public" procflags="constructor override">
         </methodref>
         <methodref name="free" visibility="public">
@@ -164,12 +179,18 @@
         </propertyref>
         <propertyref name="OptContOutput" visibility="published">
         </propertyref>
-        <propertyref name="Parent" visibility="published" />
-        <propertyref name="Canvas" visibility="published" />
-        <propertyref name="Visible" visibility="published" />
-        <propertyref name="color" visibility="published" />
-        <propertyref name="DebugForm" visibility="published" />
-        <propertyref name="OnDblclick" visibility="published" />
+        <propertyref name="Parent" visibility="published">
+        </propertyref>
+        <propertyref name="Canvas" visibility="published">
+        </propertyref>
+        <propertyref name="Visible" visibility="published">
+        </propertyref>
+        <propertyref name="color" visibility="published">
+        </propertyref>
+        <propertyref name="DebugForm" visibility="published">
+        </propertyref>
+        <propertyref name="OnDblclick" visibility="published">
+        </propertyref>
         <ancestor name="TGraphicControl" namespace="Vcl.Controls">
           <methodref name="WMPaint" visibility="private" procflags="message">
           </methodref>
@@ -1423,52 +1444,71 @@
       <procedure name="CreateAll" visibility="public" procflags="override" file="USimpleRootModDM.pas" line="135">
       </procedure>
       <procedure name="Init" visibility="public" procflags="override" file="USimpleRootModDM.pas" line="137">
+        <devnotes>
+           <summary>
+           Initializes the root growth module, sets options, links plant model dates, and prepares arrays and variables for simulation.
+           </summary>
+           <param name="GlobMod">Global module reference for initialization.</param>
+        </devnotes>
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
       <procedure name="CalcRates" visibility="public" procflags="override" file="USimpleRootModDM.pas" line="139">
+        <devnotes>
+           <summary>
+           Calculates the rates for root growth and updates root length densities, effective root lengths, and related variables based on current environmental and plant state.
+           Handles texture effects, rooting depth increments, root aging, and resets variables after harvest.
+           </summary>
+        </devnotes>
       </procedure>
       <procedure name="Integrate" visibility="public" procflags="override" file="USimpleRootModDM.pas" line="141">
       </procedure>
       <property name="RootedSoilWaterModel" visibility="published" read="fRootedSoilWatermodel" write="fRootedSoilWatermodel" type="TSoilWaterModelR" file="USimpleRootModDM.pas" line="145" />
-      <property name="Var_SRL" visibility="published" read="SRL" write="SRL" type="TVar" file="USimpleRootModDM.pas" line="148" />
-      <property name="State_zr" visibility="published" read="zr" write="zr" type="TState" file="USimpleRootModDM.pas" line="149" />
-      <property name="Par_BaseTemp" visibility="published" read="TempSumRootBaseTemp" write="TempSumRootBaseTemp" type="TPar" file="USimpleRootModDM.pas" line="151" />
-      <property name="Par_zr0" visibility="published" read="zr0" write="zr0" type="TPar" file="USimpleRootModDM.pas" line="153" />
-      <property name="Par_kza" visibility="published" read="k_za" write="k_za" type="TPar" file="USimpleRootModDM.pas" line="154" />
-      <property name="Par_kzb" visibility="published" read="k_zb" write="k_zb" type="TPar" file="USimpleRootModDM.pas" line="155" />
-      <property name="Par_Ratio" visibility="published" read="ratio" write="ratio" type="TPar" file="USimpleRootModDM.pas" line="156" />
-      <property name="Par_zrmax" visibility="published" read="Zrmax" write="Zrmax" type="TPar" file="USimpleRootModDM.pas" line="157" />
-      <property name="Par_sp_WL" visibility="published" read="sp_RL" write="sp_RL" type="TPar" file="USimpleRootModDM.pas" line="159" />
-      <property name="Par_ActiveDuration" visibility="published" read="ActiveDuration" write="ActiveDuration" type="TPar" file="USimpleRootModDM.pas" line="161" />
-      <property name="Ex_Temp" visibility="published" read="Temp" write="Temp" type="TExternV" file="USimpleRootModDM.pas" line="163" />
-      <property name="Ex_EmergenceDay" visibility="published" read="EmergenceDay" write="EmergenceDay" type="TExternV" file="USimpleRootModDM.pas" line="164" />
-      <property name="Ex_DMFineRoot" visibility="published" read="DMFineRoot" write="DMFineRoot" type="TExternV" file="USimpleRootModDM.pas" line="165" />
-      <property name="Ex_DMRoot_inc" visibility="published" read="DMroot_inc" write="DMroot_inc" type="TExternV" file="USimpleRootModDM.pas" line="166" />
-      <property name="Opt_RootDepthInc" visibility="published" read="RootDepthInc" write="RootDepthInc" type="TRootingdepthIncrease" file="USimpleRootModDM.pas" line="167" />
-      <property name="Name_WL" visibility="published" read="fName_WL" write="Set_Name_WL" type="string" default="0" file="USimpleRootModDM.pas" line="169" />
-      <property name="var_WLD_0_15" visibility="published" read="WLD_0_15" write="WLD_0_15" type="TVar" file="USimpleRootModDM.pas" line="170" />
-      <property name="var_WLD_15_30" visibility="published" read="WLD_15_30" write="WLD_15_30" type="TVar" file="USimpleRootModDM.pas" line="171" />
-      <property name="var_WLD_30_45" visibility="published" read="WLD_30_45" write="WLD_30_45" type="TVar" file="USimpleRootModDM.pas" line="172" />
-      <property name="var_WLD_45_60" visibility="published" read="WLD_45_60" write="WLD_45_60" type="TVar" file="USimpleRootModDM.pas" line="173" />
-      <property name="var_WLD_60_75" visibility="published" read="WLD_60_75" write="WLD_60_75" type="TVar" file="USimpleRootModDM.pas" line="174" />
-      <property name="var_WLD_75_90" visibility="published" read="WLD_75_90" write="WLD_75_90" type="TVar" file="USimpleRootModDM.pas" line="175" />
-      <property name="var_WLD_90_105" visibility="published" read="WLD_90_105" write="WLD_90_105" type="TVar" file="USimpleRootModDM.pas" line="176" />
-      <property name="var_WLD_105_120" visibility="published" read="WLD_105_120" write="WLD_105_120" type="TVar" file="USimpleRootModDM.pas" line="177" />
-      <property name="var_WLD_0_30" visibility="published" read="WLD_0_30" write="WLD_0_30" type="TVar" file="USimpleRootModDM.pas" line="179" />
-      <property name="var_WLD_30_60" visibility="published" read="WLD_30_60" write="WLD_30_60" type="TVar" file="USimpleRootModDM.pas" line="180" />
-      <property name="var_WLD_60_90" visibility="published" read="WLD_60_90" write="WLD_60_90" type="TVar" file="USimpleRootModDM.pas" line="181" />
-      <property name="var_WLD_90_120" visibility="published" read="WLD_90_120" write="WLD_90_120" type="TVar" file="USimpleRootModDM.pas" line="182" />
-      <property name="var_WLD_120_150" visibility="published" read="WLD_120_150" write="WLD_120_150" type="TVar" file="USimpleRootModDM.pas" line="183" />
-      <property name="var_WLD_0_150" visibility="published" read="WLD_0_150" write="WLD_0_150" type="TVar" file="USimpleRootModDM.pas" line="184" />
-      <property name="var_effWLD_0_30" visibility="published" read="effWLD_0_30" write="effWLD_0_30" type="TVar" file="USimpleRootModDM.pas" line="186" />
-      <property name="var_effWLD_30_60" visibility="published" read="effWLD_30_60" write="effWLD_30_60" type="TVar" file="USimpleRootModDM.pas" line="187" />
-      <property name="var_effWLD_60_90" visibility="published" read="effWLD_60_90" write="effWLD_60_90" type="TVar" file="USimpleRootModDM.pas" line="188" />
-      <property name="var_effWLD_90_120" visibility="published" read="effWLD_90_120" write="effWLD_90_120" type="TVar" file="USimpleRootModDM.pas" line="189" />
-      <property name="var_effWLD_120_150" visibility="published" read="effWLD_120_150" write="effWLD_120_150" type="TVar" file="USimpleRootModDM.pas" line="190" />
+      <procedure name="InitArraysAndVars" visibility="published" file="USimpleRootModDM.pas" line="151">
+        <devnotes>
+           <summary>
+           Initializes arrays and variables for root compartments and age classes.
+           </summary>
+        </devnotes>
+      </procedure>
+      <property name="Var_SRL" visibility="published" read="SRL" write="SRL" type="TVar" file="USimpleRootModDM.pas" line="153" />
+      <property name="State_zr" visibility="published" read="zr" write="zr" type="TState" file="USimpleRootModDM.pas" line="154" />
+      <property name="Par_BaseTemp" visibility="published" read="TempSumRootBaseTemp" write="TempSumRootBaseTemp" type="TPar" file="USimpleRootModDM.pas" line="156" />
+      <property name="Par_zr0" visibility="published" read="zr0" write="zr0" type="TPar" file="USimpleRootModDM.pas" line="158" />
+      <property name="Par_kza" visibility="published" read="k_za" write="k_za" type="TPar" file="USimpleRootModDM.pas" line="159" />
+      <property name="Par_kzb" visibility="published" read="k_zb" write="k_zb" type="TPar" file="USimpleRootModDM.pas" line="160" />
+      <property name="Par_Ratio" visibility="published" read="ratio" write="ratio" type="TPar" file="USimpleRootModDM.pas" line="161" />
+      <property name="Par_zrmax" visibility="published" read="Zrmax" write="Zrmax" type="TPar" file="USimpleRootModDM.pas" line="162" />
+      <property name="Par_sp_WL" visibility="published" read="sp_RL" write="sp_RL" type="TPar" file="USimpleRootModDM.pas" line="164" />
+      <property name="Par_ActiveDuration" visibility="published" read="ActiveDuration" write="ActiveDuration" type="TPar" file="USimpleRootModDM.pas" line="166" />
+      <property name="Ex_Temp" visibility="published" read="Temp" write="Temp" type="TExternV" file="USimpleRootModDM.pas" line="168" />
+      <property name="Ex_EmergenceDay" visibility="published" read="EmergenceDay" write="EmergenceDay" type="TExternV" file="USimpleRootModDM.pas" line="169" />
+      <property name="Ex_DMFineRoot" visibility="published" read="DMFineRoot" write="DMFineRoot" type="TExternV" file="USimpleRootModDM.pas" line="170" />
+      <property name="Ex_DMRoot_inc" visibility="published" read="DMroot_inc" write="DMroot_inc" type="TExternV" file="USimpleRootModDM.pas" line="171" />
+      <property name="Opt_RootDepthInc" visibility="published" read="RootDepthInc" write="RootDepthInc" type="TRootingdepthIncrease" file="USimpleRootModDM.pas" line="172" />
+      <property name="Name_WL" visibility="published" read="fName_WL" write="Set_Name_WL" type="string" default="0" file="USimpleRootModDM.pas" line="174" />
+      <property name="var_WLD_0_15" visibility="published" read="WLD_0_15" write="WLD_0_15" type="TVar" file="USimpleRootModDM.pas" line="175" />
+      <property name="var_WLD_15_30" visibility="published" read="WLD_15_30" write="WLD_15_30" type="TVar" file="USimpleRootModDM.pas" line="176" />
+      <property name="var_WLD_30_45" visibility="published" read="WLD_30_45" write="WLD_30_45" type="TVar" file="USimpleRootModDM.pas" line="177" />
+      <property name="var_WLD_45_60" visibility="published" read="WLD_45_60" write="WLD_45_60" type="TVar" file="USimpleRootModDM.pas" line="178" />
+      <property name="var_WLD_60_75" visibility="published" read="WLD_60_75" write="WLD_60_75" type="TVar" file="USimpleRootModDM.pas" line="179" />
+      <property name="var_WLD_75_90" visibility="published" read="WLD_75_90" write="WLD_75_90" type="TVar" file="USimpleRootModDM.pas" line="180" />
+      <property name="var_WLD_90_105" visibility="published" read="WLD_90_105" write="WLD_90_105" type="TVar" file="USimpleRootModDM.pas" line="181" />
+      <property name="var_WLD_105_120" visibility="published" read="WLD_105_120" write="WLD_105_120" type="TVar" file="USimpleRootModDM.pas" line="182" />
+      <property name="var_WLD_0_30" visibility="published" read="WLD_0_30" write="WLD_0_30" type="TVar" file="USimpleRootModDM.pas" line="184" />
+      <property name="var_WLD_30_60" visibility="published" read="WLD_30_60" write="WLD_30_60" type="TVar" file="USimpleRootModDM.pas" line="185" />
+      <property name="var_WLD_60_90" visibility="published" read="WLD_60_90" write="WLD_60_90" type="TVar" file="USimpleRootModDM.pas" line="186" />
+      <property name="var_WLD_90_120" visibility="published" read="WLD_90_120" write="WLD_90_120" type="TVar" file="USimpleRootModDM.pas" line="187" />
+      <property name="var_WLD_120_150" visibility="published" read="WLD_120_150" write="WLD_120_150" type="TVar" file="USimpleRootModDM.pas" line="188" />
+      <property name="var_WLD_0_150" visibility="published" read="WLD_0_150" write="WLD_0_150" type="TVar" file="USimpleRootModDM.pas" line="189" />
+      <property name="var_effWLD_0_30" visibility="published" read="effWLD_0_30" write="effWLD_0_30" type="TVar" file="USimpleRootModDM.pas" line="191" />
+      <property name="var_effWLD_30_60" visibility="published" read="effWLD_30_60" write="effWLD_30_60" type="TVar" file="USimpleRootModDM.pas" line="192" />
+      <property name="var_effWLD_60_90" visibility="published" read="effWLD_60_90" write="effWLD_60_90" type="TVar" file="USimpleRootModDM.pas" line="193" />
+      <property name="var_effWLD_90_120" visibility="published" read="effWLD_90_120" write="effWLD_90_120" type="TVar" file="USimpleRootModDM.pas" line="194" />
+      <property name="var_effWLD_120_150" visibility="published" read="effWLD_120_150" write="effWLD_120_150" type="TVar" file="USimpleRootModDM.pas" line="195" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="USimpleRootModDM.pas" line="1302">
+  <procedure name="Register" visibility="public" file="USimpleRootModDM.pas" line="1338">
   </procedure>
 </namespace>
