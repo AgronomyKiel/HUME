@@ -1,4 +1,4 @@
-unit SubmodRootDiff;
+﻿unit SubmodRootDiff;
 
 interface
 
@@ -9,9 +9,6 @@ uses
   UMod, UState, Diffko, SubmodRootStructureNew;
 
 const
-  (* -----------------------------------------------------------------------------
-    Issue: should these rather be declared as TOption?
-    ------------------------------------------------------------------------------ *)
   /// <summary>Maximum number of roots.</summary>
   max_num_roots = 40000;
 
@@ -64,11 +61,6 @@ type
     x, y, wld: double;
   end;
 
-  TSRP = class(TObject)
-    { Prepared for an object-oriented implementation of the single root cylinder
-      (for numerical solution) }
-  private
-    { Private-Deklarationen }
     { TSRP instances of the single root model also need fields for area and the
       vertex list so that, when reading raster data, the surface area can be
       determined (using Voronoi polygons or alternatively by splitting the area of
