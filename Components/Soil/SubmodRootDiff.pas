@@ -164,56 +164,71 @@ type
     { * -----------------------------------------------------------------------------
       Member HUME base class TPar (parameters)
       ------------------------------------------------------------------------------* }
-    dimensionX, { Width of the computational domain [cm] }
-    dimensionY, { Height of the computational domain [cm] }
-    gridWidth, { Width of the raster grid (aggregated data) in x-direction [cm] }
-    gridHeight, { Width of the raster grid (aggregated data) in y-direction [cm] }
-    Dl, { Diffusion coefficient of nitrate in free H2O [cm^2/s] }
-    max_dt, { Maximum time step width [s] }
-    theta, { Volumetric water content [cm3/cm3] }
-    Tiefe, { Depth of the layer [cm], assumption for mineralization calculation }
-    { Mineralization model not yet available but should be implemented for both models }
-    minera, { Mineralization rate [kg N/ha*d] }
-    Clmin, { Minimum soil solution concentration [Mol/l], also needed for the
-      numerical solution in the 1D model; note: originally in micromol/l }
-    { Margins are necessary so that edge effects can be excluded when the root exit
-      points are hexagonally distributed }
-    verticMargin, { Vertical margin [cm] }
-    horizMargin, { Horizontal margin [cm] }
-    depthLayer, { Depth at which evaluation should begin (in the 2D cross-section) [cm] }
-    SizeLayer, { Thickness of the layer [cm] }
+    /// <summary>Width of the computational domain [cm]</summary>
+    dimensionX: TPar;
+    /// <summary>Height of the computational domain [cm]</summary>
+    dimensionY: TPar;
+    /// <summary>Width of the raster grid (aggregated data) in x-direction [cm]</summary>
+    gridWidth: TPar;
+    /// <summary>Width of the raster grid (aggregated data) in y-direction [cm]</summary>
+    gridHeight: TPar;
+    /// <summary>Diffusion coefficient of nitrate in free H2O [cm^2/s]</summary>
+    Dl: TPar;
+    /// <summary>Maximum time step width [s]</summary>
+    max_dt: TPar;
+    /// <summary>Volumetric water content [cm3/cm3]</summary>
+    theta: TPar;
+    /// <summary>Depth of the layer [cm], assumption for mineralization calculation</summary>
+    Tiefe: TPar;
+    /// <remarks>Mineralization model not yet available but should be implemented for both models</remarks>
+    /// <summary>Mineralization rate [kg N/ha*d]</summary>
+    minera: TPar;
+    /// <summary>Minimum soil solution concentration [Mol/l], also needed for the numerical solution in the 1D model; note: originally in micromol/l</summary>
+    Clmin: TPar;
+    /// <remarks>Margins are necessary so that edge effects can be excluded when the root exit points are hexagonally distributed</remarks>
+    /// <summary>Vertical margin [cm]</summary>
+    verticMargin: TPar;
+    /// <summary>Horizontal margin [cm]</summary>
+    horizMargin: TPar;
+    /// <summary>Depth at which evaluation should begin (in the 2D cross-section) [cm]</summary>
+    depthLayer: TPar;
+    /// <summary>Thickness of the layer [cm]</summary>
+    SizeLayer: TPar;
 
-    // Option to read root exploration metrics as parameters
-    ParMRLD, { Mean root length density [cm/ccm] }
-    Rad_Wurzel { Radius of the root [cm] }
-      : TPar;
+    /// <summary>Mean root length density [cm/ccm]</summary>
+    ParMRLD: TPar;
+    /// <summary>Radius of the root [cm]</summary>
+    Rad_Wurzel: TPar;
     (* -----------------------------------------------------------------------------
       Member HUME base class TState (state variables
       ------------------------------------------------------------------------------ *)
-    N_AmountSoil, { N amount [kg N/ha], also basis for calculating concentrations
-      in the calculation elements; see Kage dissertation p.79 where concentrations of
-      10.0 micromol/l were assumed }
-    Sum_N_AmountRoots { Cumulative amount of N taken up by the roots [kg N/ha] for
-      the specified depth }
-      : TState;
+    /// <summary>N amount [kg N/ha], also basis for calculating concentrations in the calculation elements; see Kage dissertation p.79 where concentrations of 10.0 micromol/l were assumed</summary>
+    N_AmountSoil: TState;
+    /// <summary>Cumulative amount of N taken up by the roots [kg N/ha] for the specified depth</summary>
+    Sum_N_AmountRoots: TState;
     (* -----------------------------------------------------------------------------
       Member HUME base class TVar (variables)
       ------------------------------------------------------------------------------ *)
-    RLD_mean, { Mean root length density in a layer [cm/cm^3] calculated without
-      roots located in the margins }
-    AreaMiddle, { Central area without margins [cm2] }
-    num_roots, { Number of roots in center and margins [n] }
-    number_consid_roots, { Number of roots not located in margins [] }
-    Min_S, { Mineralization rate [Mol/cm^3*s] }
-    c_start, { Initial concentration [mol/cm^3], calculated from the initial N amount;
-      the 1D model can also calculate concentrations }
-    cl_av, { Average concentration in the soil solution [Mol/cm^3] }
-    volumen, { Volume of the soil layer including margins [cm3] }
-    De, { Effective diffusion coefficient [cm^2/s] }
-    errorReg { Measure of error for regular distribution = number of roots that do
-      not fit into the observation window when generating the uniform distribution,
-      as a percentage of all roots [%] }
-      : TVar;
+    /// <summary>Mean root length density in a layer [cm/cm^3] calculated without roots located in the margins</summary>
+    RLD_mean: TVar;
+    /// <summary>Central area without margins [cm2]</summary>
+    AreaMiddle: TVar;
+    /// <summary>Number of roots in center and margins [n]</summary>
+    num_roots: TVar;
+    /// <summary>Number of roots not located in margins []</summary>
+    number_consid_roots: TVar;
+    /// <summary>Mineralization rate [Mol/cm^3*s]</summary>
+    Min_S: TVar;
+    /// <summary>Initial concentration [mol/cm^3], calculated from the initial N amount; the 1D model can also calculate concentrations</summary>
+    c_start: TVar;
+    /// <summary>Average concentration in the soil solution [Mol/cm^3]</summary>
+    cl_av: TVar;
+    /// <summary>Volume of the soil layer including margins [cm3]</summary>
+    volumen: TVar;
+    /// <summary>Effective diffusion coefficient [cm^2/s]</summary>
+    De: TVar;
+    /// <summary>Measure of error for regular distribution = number of roots that do not fit into the observation window when generating the uniform distribution, as a percentage of all roots [%]</summary>
+    errorReg: TVar;
     (* -----------------------------------------------------------------------------
       Member HUME base class TState (state variables). Declared and created in
       derived classes.
@@ -221,13 +236,18 @@ type
     (* -----------------------------------------------------------------------------
       Member HUME base class TOption (options)
       ------------------------------------------------------------------------------ *)
-    IniMethod, { Type of initialization, e.g. file or structural model }
-    uptake_function, { Type of uptake calculation }
-    RootInpDataFileXY, { Path and name of the init file with XY root data }
-    RootInpDataFile, { Path and name of the init file with root data as counts in a grid }
-    OutputXY, { Specify whether XY data should be written to a file }
-    RootXYOutpDataFile { Path and name of the output file for XY data }
-      : TOption;
+    /// <summary>Type of initialization, e.g. file or structural model</summary>
+    IniMethod: TOption;
+    /// <summary>Type of uptake calculation</summary>
+    uptake_function: TOption;
+    /// <summary>Path and name of the init file with XY root data</summary>
+    RootInpDataFileXY: TOption;
+    /// <summary>Path and name of the init file with root data as counts in a grid</summary>
+    RootInpDataFile: TOption;
+    /// <summary>Specify whether XY data should be written to a file</summary>
+    OutputXY: TOption;
+    /// <summary>Path and name of the output file for XY data</summary>
+    RootXYOutpDataFile: TOption;
 
     { Methoden }
     // Helper methods
