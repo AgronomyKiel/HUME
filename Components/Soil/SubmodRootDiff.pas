@@ -59,7 +59,6 @@ type
     { Public declarations }
     /// <summary>Root coordinates [cm] and root length density of the SRP [cm/cm^3]</summary>
     x, y, wld: double;
-  end;
 
     { TSRP instances of the single root model also need fields for area and the
       vertex list so that, when reading raster data, the surface area can be
