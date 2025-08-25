@@ -116,7 +116,7 @@ type
     { Protected declarations }
   public
     { Public declarations }
-    /// <summary>Reference to the diffusion submodel</summary>
+    /// <summary> Reference to the diffusion submodel</summary>
     SubmodRootDiff: TSubmodel;
     /// <summary>Constructor</summary>
     constructor create(Submodel: TSubmodel);

@@ -34,7 +34,7 @@ object FormMod: TFormMod
     Top = 44
     Width = 1090
     Height = 589
-    ActivePage = TabSheetModelDiagram
+    ActivePage = TabSheetGlobal
     Align = alClient
     HotTrack = True
     TabOrder = 1
