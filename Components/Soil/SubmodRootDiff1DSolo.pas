@@ -1,6 +1,6 @@
 unit SubmodRootDiff1DSolo;
 
-{ Solo-Variante des 1D-Diffmodells: erwartet kein Strukturmodell }
+{ Solo variant of the 1D diffusion model: does not expect a structure model }
 interface
 
 uses
@@ -8,30 +8,30 @@ uses
   UMod, SubmodRootDiff, UState, Math, SubmodDiff2DRoots, USubModRoot2DDiffNitrate, U2DSoilBaseClasses;
 
 const
-  { Folgendes sind die Phi(u)-Werte der Standardnormalverteilung:
-    Bsp. für Lesart:
-    z_5-Wert [1.64486] bezeichnet denjenigen u-Wert, der von 5% aller Werte ÜBER
-    SCHRITTEN wird. d.h. 5% aller Werte weichen um mindestens 1.64486 vom Mittelwert
-    ab. Aufgrund der Symmetrie der Standardnormalverteilung gilt für -z_5: 5% aller
-    Werte weichen um -1.64486 vom Mittelwert ab. z_x-Werte entspreichen den Phi(u)-
-    Werten.
-    Problem: meines Erachtens handelt es sich hier um die Phi(u)-Werte, mit denen
-    sich später die KLASSENMITTELWERTE der WLD-Dichteverteilung berechnen lassen.
-    Korrekt??? (Klassengrenzen sind dann jeweils 0,1;0,2 ... 1) }
-  { Ursprüngliche Werte hier auskommentiert
+  { The following are the Phi(u) values of the standard normal distribution:
+    Example for interpretation:
+    z_5 value [1.64486] denotes the u value that is exceeded by 5% of all values.
+    That is, 5% of all values deviate by at least 1.64486 from the mean.
+    Because of the symmetry of the standard normal distribution, for -z_5: 5% of all
+    values deviate by -1.64486 from the mean. z_x values correspond to the Phi(u)
+    values.
+    Issue: In my opinion these are the Phi(u) values that can later be used to
+    calculate the CLASS MEANS of the RLD density distribution.
+    Correct??? (Class boundaries would then be 0.1, 0.2 ... 1) }
+  { Original values commented out here
     z_5  = 1.64486;
     z_15 = 1.03644;
     z_25 = 0.674492;
     z_35 = 0.385322;
     z_45 = 0.125663; }
-  { Mit Excel berechnete Werte: }
+  { Values calculated with Excel: }
   z_5 = 1.6448534756699800;
   z_15 = 1.0364334736256900;
   z_25 = 0.6744895256679870;
   z_35 = 0.3853206036265890;
   z_45 = 0.1256612463220620;
 
-  { Excel-Werte für 20 Klassen: }
+  { Excel values for 20 classes: }
   z_475 = 0.062706777943;
   z_425 = 0.189118426273;
   z_375 = 0.318639363964;
@@ -44,214 +44,208 @@ const
   z_025 = 1.959963984540;
 
 type
-  // Typdeklarationen
-  Pdouble = ^double; // Zeigertyp auf double-Typ, für Verwendung in Listen
+  // Type declarations
+  Pdouble = ^double; // Pointer type to double, for use in lists
 
   // Arrays
-  { Arraytyp für Statusvariablenarrays. Wird benötigt für numerische Lösung.
-    Jeder SRP (bzw. eine Eigenschaft des SRP) wird hier als eine Instanz von TState
-    aufgefasst. Das Array enthält Werte für sämtliche SRP der simulierten Bodenschicht.
-    Problem: Musste von vornherein festgelegt werden auf die maximal erlaubte Anzahl
-    von Wurzeln, da TState-Instanzen in create all erzeugt werden muessen und zu
-    diesem Zeitpunkt sind noch keine Wurzeln eingelesen. Problem 2: Sinnvoller-
-    weise wären dann wohl doch eher die Strategie 'nur' die aggregierten Werte (mRLD
-    und VC) als TState zu deklarieren (wie bisher), da die Einzelwurzelzylinder eine
-    ganze Reihe Eigenschaften haben s TSRP. }
+  { Array type for state-variable arrays. Required for the numerical solution.
+    Each SRP (or a property of the SRP) is treated here as an instance of TState.
+    The array contains values for all SRP of the simulated soil layer.
+    Issue: Had to be defined from the outset to the maximum allowed number of roots,
+    because TState instances must be created in createAll and at that point no roots
+    have been read in yet. Issue 2: It would probably make more sense to declare only
+    the aggregated values (mRLD and VC) as TState (as before), because the individual
+    root cylinders have a whole range of properties as TSRP. }
   // TSRPStateArray  = array [0..max_num_roots-1] of TState;
 
-  // Klassen
+  // Classes
 
   TSubmodRootDiff1DSolo = class(TSubmodRoot2DDiffNitrate)
   private
-    { Private-Deklarationen }
+    { Private declarations }
     fMy2DDiffModel: TSubmodDiff2DRoots;
-    // FELDER
-    // a) notwendig für analytische Lösung
+    // FIELDS
+    // a) required for analytical solution
     WLD_Array: Array of double;
-    { 1-dimensionale Arrays für die Zuordnung von Quartilen einer Normalverteilung
-      bzw. Lognormalverteilung und zugehöriger ZUFALLSVARIABLEN.
-      Es wurde eine Klassierung in 10 Klassen angenommen, d.h. für das Array werden
-      10 Zeilen benötigt. Im ersten Feld des Arrays steht die Zufallsvariable, die zu
-      -z_5 gehört, im letzten Feld die Zufallsvariable, die zu z_5 gehört. Speicherung
-      der Zufallsvariablen in 'Klassenmitte' s.o. }
-    // Array für Normalverteilung
+    { One-dimensional arrays that map the quartiles of a normal or lognormal
+      distribution to the corresponding RANDOM VARIABLES.
+      A classification into 10 classes was assumed, i.e. the array requires 10
+      entries. The first field of the array stores the random variable belonging to
+      -z_5, the last field stores the random variable belonging to z_5. Storage of the
+      random variables at the "class midpoint", see above. }
+    // Array for normal distribution
     ZV_Array_normvert,
-    // Array für Lognormalverteilung
+    // Array for lognormal distribution
     ZV_Array_lognorm,
-    // Array für Standardnormalverteilung
+    // Array for standard normal distribution
     ZV_Array_Stdnorm,
-    // Array für Wichtung (notwendig bei Berechnung aus der Verteilung der Flächen)
+    // Array for weighting (needed when calculating from the distribution of areas)
     weightArr: Array of real;
-    // b) notwendig für numerische Lösung
-    { Die folgenden Listen enthalten für jeden SRP der betrachteten Bodenschicht In-
-      formationen oder bestimmte berechnete Werte. }
-    { Deklaration einer Liste, das zu einen die XY-Koordinaten, zum an-
-      deren die Wurzellängendichten für jede Wurzel speichert. Z.Zt. ohne Verwendung,
-      deshalb auskommentiert }
+    // b) required for numerical solution
+    { The following lists contain information or specific calculated values for each
+      SRP of the soil layer under consideration. }
+    { Declaration of a list that stores the XY coordinates and the root length
+      densities for each root. Currently unused, therefore commented out }
     // WLD_List : TList;
-    { Liste für aktuelle mittlere Nitratkonzentrationen in den SRP. Jedes
-      Listenelement speichert die mittlere Nitratkonz. eines bestimmten SRP. }
+    { List for current average nitrate concentrations in the SRP. Each list element
+      stores the average nitrate concentration of a specific SRP. }
     Cl_mean_List: TList;
-    { Liste für (Wasser) - Volumina für alle SRP (zunächst konstant) Problem: muss bei
-      Implementierung eines dynamischen Modells angepasst werden. }
+    { List for (water) volumes for all SRP (initially constant). Issue: must be
+      adapted when implementing a dynamic model. }
     VolH20_EWZ_List: TList;
-    { Liste speichert die Startwerte der NMengen in den SRP }
-    Init_NAmountEWZList: TList; // brauch ich vielleicht gar nicht
-    { Initiale N-Menge: }
+    { List storing the initial N amounts in the SRP }
+    Init_NAmountEWZList: TList; // maybe I do not need this
+    { Initial N amount: }
     NAmountInit: double;
-    { Array/Liste speichert die aufgenommene N-Mengen (Flüsse) in/aus den Einzel-
-      wurzelzylindern im aktuellen Zeitschritt.
-      Problem: Dynamisches Array oder Liste ist hier wohl nicht möglich,
-      da mit TState-Instanzen gearbeitet werden soll, welche dann AUTOMATISCH durch
-      die HUME-Umgebung INTEGRIERT werden können. TState müssen aber zu Beginn erzeugt
-      werden. }
+    { Array/list storing the absorbed N amounts (fluxes) into/out of the individual
+      root cylinders in the current time step.
+      Issue: A dynamic array or list is probably not possible here because we want to
+      work with TState instances, which can then be INTEGRATED AUTOMATICALLY by the
+      HUME environment. However, TState instances must be created at the beginning. }
     // NAmount_UPEWZArray : TEWZStateArray;
     // NAmount_UPEWZList : TList;
 
-    // METHODEN
-    // a) Methoden für die Berechnung anhand der analytischen Lösung
+    // METHODS
+    // a) Methods for calculation using the analytical solution
     procedure createAnalytic;
     procedure Integrate_Analyt;
-    // Hilfsmethoden
+    // Helper methods
     function Kolmogorov_Smirnov: boolean;
 
     procedure calcRootArea;
     procedure copyPosArrFrom2DDif;
     procedure fillWLDArr;
-    // b) für numerische Lösung
+    // b) for numerical solution
     procedure createNumeric;
-    // Methode für die Berechnung mit Hilfe der Ratengleichung (numerische Lösung)
+    // Method for calculating using the rate equation (numerical solution)
     procedure Calc_numeric;
     procedure transform_Clmin;
     procedure calc_Amount_H20;
     function calc_num_EWZ: real;
     function calc_num_class: real;
-    // c) für beide Verfahren
+    // c) for both approaches
     procedure init_ReadFromFile; override;
-    { Methode für Modellvergleich: Berechnung der N-Menge im Boden bei gegebener
-      Verteilung und Mineralisationsrate }
+    { Method for model comparison: calculate the soil N amount for a given distribution
+      and mineralisation rate }
     procedure calcN_AmountSoilEquil;
   protected
-    { Protected-Deklarationen }
-    { Schalter für Prüfung, ob bereits eine Initialsierung vorgenommen wurde und
-      anschließende Verzweigung }
+    { Protected declarations }
+    { Switch used to check whether initialization has already been performed and then
+      branch accordingly }
     initial_1D: boolean;
     (* -----------------------------------------------------------------------------
       Member HUME-Basisklasse TPar (Parameter)
       Problem: Zuweisung der Variablen in diese Gruppe korrekt?
       ------------------------------------------------------------------------------ *)
-    number_classes, { Anzahl der zu verwendenden Klassen für Berechnung
-      einer klassenspez. Aufnahme }
-    Log_StdAbw_Area, { logtransformierte Standardabweichung der Fläche [cm^2] }
-    Log_Area_mean, { Logtransformierte mittl. Fläche in
-      einer Schicht [cm^2] }
-    ParVC { Variationskoeff der mRLD [%] }
-    { Hinweis: Variationskoeffizient ist nur Eingabeparameter im Voronoi-Modell, da
-      nur hier DIESE aggregierten Werte (Flächen- bzw. WLD- Verteilung) verarbeitet
-      werden können.
-      2D-Modell ist auf XY-Koordinaten der WAP angewiesen
-      Rappolt-Modell arbeitet in der vorhandenen Implementierung mit beobachteten Häufig-
-      keiten und NICHT mit theoretischen Verteilungsfunktionen der kürzesten Distanzen
-      (Diffusionsstrecken). }
+    number_classes, { Number of classes to be used for calculating a class-specific
+      uptake }
+    Log_StdAbw_Area, { Log-transformed standard deviation of the area [cm^2] }
+    Log_Area_mean, { Log-transformed mean area in
+      a layer [cm^2] }
+    ParVC { Coefficient of variation of mRLD [%] }
+    { Note: The coefficient of variation is only an input parameter in the Voronoi
+      model, because only there can THESE aggregated values (area or RLD distribution)
+      be processed.
+      The 2D model depends on the XY coordinates of the WAP.
+      The Rappolt model in the current implementation works with observed frequencies
+      and NOT with theoretical distribution functions of the shortest distances
+      (diffusion paths). }
       : TPar;
 
     (* -----------------------------------------------------------------------------
-      Member HUME-Basisklasse TVar (Variablen) Problem: Einheiten korrekt?
+      Member HUME base class TVar (variables) Issue: units correct?
       ------------------------------------------------------------------------------ *)
-    Area_mean, { Mittlere Fläche [cm^2] }
-    VarKoeff_Area, { Variationskoeffizient der mittleren Fläche [%] }
-    StdAbw_Area, { Standardabweichung der Fläche[cm^2] }
-    Log_RLD_mean, { Logtransformierte mittl. Wurzellängendichte in
-      einer Schicht [cm/cm^3] }
-    Log_StdAbw_RLD, { logtransformierte Standardabweichung der Wurzel-
-      längendichte [cm/cm^3] }
-    VarKoeff_RLD, { Variationskoeffizient der mittleren RLD [%] }
-    StdAbw_RLD, { Standardabweichung der Wurzellängendichte [cm/cm^3] }
+    Area_mean, { Mean area [cm^2] }
+    VarKoeff_Area, { Coefficient of variation of the mean area [%] }
+    StdAbw_Area, { Standard deviation of the area [cm^2] }
+    Log_RLD_mean, { Log-transformed mean root length density in
+      a layer [cm/cm^3] }
+    Log_StdAbw_RLD, { Log-transformed standard deviation of the root
+      length density [cm/cm^3] }
+    VarKoeff_RLD, { Coefficient of variation of the mean RLD [%] }
+    StdAbw_RLD, { Standard deviation of the root length density [cm/cm^3] }
 
-    Varianz, { Varianz der mittleren Wurzellängendichte [cm/cm^3] }
-    VM, { V/M-Verhältnis }
-    Mittl_Flaeche, { Mittelwert der Fläche der Voronoi- Polygone [cm^2]
-      Problem: wird wozu benötigt? }
-    StdAbw_Flaeche, { Standardabweichung von Mittl_Flaeche [cm^2] }
-    // Für numerische Lösung:
-    ClminTransf, { Minimale Bodenlösungskonzentration [ kg N/cm*H20] }
-    ClminTransf_ha, { Minimale Bodenlösungskonzentration [ kg N/ha] }
-    Amount_H20, { Wassermenge in der betrachteten Bodenschicht [l] }
-    Par_AreaMean, { Mittlere Fläche [cm^2] }
-    Par_AreaVC { Variationskoeffizient mittlere Fläche [%] }
+    Varianz, { Variance of the mean root length density [cm/cm^3] }
+    VM, { V/M ratio }
+    Mittl_Flaeche, { Mean area of the Voronoi polygons [cm^2]
+      Issue: what is it needed for? }
+    StdAbw_Flaeche, { Standard deviation of Mittl_Flaeche [cm^2] }
+    // For numerical solution:
+    ClminTransf, { Minimum soil solution concentration [kg N/cm*H20] }
+    ClminTransf_ha, { Minimum soil solution concentration [kg N/ha] }
+    Amount_H20, { Water amount in the soil layer under consideration [l] }
+    Par_AreaMean, { Mean area [cm^2] }
+    Par_AreaVC { Coefficient of variation of mean area [%] }
       : TVar;
 
     (* -----------------------------------------------------------------------------
       Member HUME-Basisklasse TState (Zustandsvariablen)
       ------------------------------------------------------------------------------ *)
-    N_MengeAnteilAn, { Anteilige Stickstoffaufnahme [-] bei Verwendung
-      der analyt. Lösung nach Tinker, Nye Gl.10.28 }
-    N_MengeAnteilNum, { Anteilige Stickstoffaufnahme [-] bei Verwendung
-      der num. Lösung }
-    N_AmountSoilNum { das Solo-1D-Modell hat noch eine Zustandvariable
-      für den Vergleich der Berechnung mit analyt. und
-      num. Lösung }
+    N_MengeAnteilAn, { Fractional nitrogen uptake [-] when using
+      the analytical solution according to Tinker, Nye Eq.10.28 }
+    N_MengeAnteilNum, { Fractional nitrogen uptake [-] when using
+      the numerical solution }
+    N_AmountSoilNum { The solo 1D model has an additional state variable
+      for comparing the calculation with the analytical and
+      numerical solution }
 
       : TState;
     (* -----------------------------------------------------------------------------
       Member HUME-Basisklasse TState (Zustandsvariablen)
       ------------------------------------------------------------------------------ *)
 
-    OperatingMode, { Art und Weise, wie das Modell laufen soll: mit oder
-      ohne 2D-Modell, wichtig für Ausgabe im Formular }
-    calcMethodZV, { Auswahl über Berechnungsmethode:
-      a) mit gleichbleibenden Summenhäufigkeitsintervall
-      b) mit gleichbleibendem Klassenintervall. }
-    integrationMethod, { Auswahl von numerischer oder analyt Kalkulation }
-    RootDistribution, { Festlegen der angenommenen Verteilung der WAP
-      spezifisch für 1D und 2D-Modell, da bei 1D-Modell
-      zusätzlich zwischen Lognormaler und normaler Vertei
-      lung unterschieden wird }
-    CalcMethRLD_VC, { Verschiedene Möglichkeiten der Berechnung der Kenn-
-      zahlen der Wurzelverteilung }
-    CalcMethQuant, { Verschiedene Methoden der Berechnung der Klassenmittel
-      werte der WLD in den zugehörigen Quantilen. }
-    StatN_AmountSoil, { Schalter für Berechnungen bei statischer N-Menge und
-      sich dynamisch verändernder N-Menge
-      Bei dynamischer Veränderung kann nur zeitschrittweise
-      Berechnung eingesetzt werden. Bei der analyt. Lösung
-      bedeutet das, dass eine anteilige Berechnung eigentlich
-      keinen Sinn mehr macht. Lsg: Variable Time ersetzen durch
-      Timestep und multiplikation der anteiligen Aufnahme im
-      Zeitschritt mit der aktuell vorhandenen N-Menge. }
-    compareMode { Schalter mit dem festgelegt wird, ob das 1D-Modell
-      für den Vergleich mit dem 2D-Modell betrieben werden soll
-      = Einstellung 'yes':
-      Es wird lediglich die N-Menge im Boden im  GG-Zustand
-      Influx=Mineralisation berechnet, Aufnahme der Wurzeln
-      wird nicht berechnet (vgl. Diss Kage, Gleichung 3.6.43)
-      oder nicht
-      = Einstellung 'no':
-      Lösung nach Tinker/Nye (Gl. 10.28; Berechnung der
-      Aufnahme der Wurzeln sowie der im Boden vorhandenen
-      N-Mengen aus initial vorhandener N-Menge und Aufnahme
-      der Wurzeln }
+    OperatingMode, { How the model should run: with or without the 2D model,
+      important for the output in the form }
+    calcMethodZV, { Selection of calculation method:
+      a) with constant cumulative frequency interval
+      b) with constant class interval. }
+    integrationMethod, { Choice of numerical or analytical calculation }
+    RootDistribution, { Specify the assumed distribution of the WAP,
+      specific to the 1D and 2D model, because the 1D model
+      additionally distinguishes between lognormal and normal
+      distributions }
+    CalcMethRLD_VC, { Different options for calculating the statistics of the
+      root distribution }
+    CalcMethQuant, { Different methods for calculating the class mean values
+      of the RLD in the associated quantiles. }
+    StatN_AmountSoil, { Switch for calculations with static N amount and with
+      dynamically changing N amount
+      When changing dynamically, only a time step based
+      calculation can be used. With the analytical solution
+      this means that a fractional calculation actually no
+      longer makes sense. Solution: replace variable Time with
+      Timestep and multiply the fractional uptake in the time
+      step by the currently available N amount. }
+    compareMode { Switch used to specify whether the 1D model should be
+      run for comparison with the 2D model
+      = setting 'yes':
+      Only the N amount in the soil at steady state
+      Influx = mineralisation is calculated; root uptake is
+      not calculated (see Kage dissertation, equation 3.6.43)
+      or not
+      = setting 'no':
+      Solution according to Tinker/Nye (Eq. 10.28; calculation of
+      root uptake as well as the N amounts in the soil from the
+      initial N amount and root uptake }
 
     // Compare2DModel
-    { Schalter für den Vergleich mit dem 2D-Modell: Dort wird
-      für die Erzeugung des Steady-States die aufgenommene
-      Menge in jedem Zeitschritt den Zellen wieder hinzugefügt.
-      Bei einem Vergleich der Modelle muss das auch im 1D-
-      Modell geschehen. (Braucht nur das Solo-Modell, da bei
-      dem Gesamtmodell ein solcher Vergleich keine Rolle
-      spielt) Schalter wird derzeit nicht verwendet, }
+    { Switch for comparison with the 2D model: There, to produce the steady
+      state, the absorbed amount is added back to the cells in each time step.
+      When comparing the models this must also happen in the 1D model. (Only the
+      solo model needs this, because in the full model such a comparison does not
+      play a role.) Switch is currently not used }
       : TOption;
 
     procedure calcVar_Analyt;
-    { Hilfsmethoden für analytische Lösung zur Berechnung der Klassenmittelwerte
-      der Wurzellängendichte bei Aufteilen der Normal- bzw Lognormalverteilungskurve
-      in 10 Klassen, es werden also zu den fest vorgegebenen Quartilen die zugehörigen
-      u-Werte bestimmt }
+    { Helper methods for the analytical solution to calculate the class mean values
+      of the root length density when dividing the normal or lognormal distribution
+      curve into 10 classes, i.e. determine the u values corresponding to the
+      predefined quartiles }
     procedure get_normvert_ZV;
     procedure get_lognorm_ZV;
     procedure get_lognorm_ZV_Area;
   public
-    { Public-Deklarationen }
+    { Public declarations }
     procedure createAll; override;
     procedure AddDataValueToDataSeries; override;
     // procedure Init(var GlobMod: TMod); override;
@@ -259,10 +253,10 @@ type
     procedure Integrate; override;
 
   published
-    { Published-Deklarationen }
+    { Published declarations }
     property My2DDiffModel: TSubmodDiff2DRoots read fMy2DDiffModel
       write fMy2DDiffModel;
-  end; // Ende Klassendeklaration TSubmodRootDiff1DSolo
+  end; // End of class declaration TSubmodRootDiff1DSolo
 
 procedure Register;
 
@@ -270,8 +264,7 @@ implementation
 
 procedure Register;
 (* -----------------------------------------------------------------------------
-  Prozedur wird für Komponenten benötigt: Registrierung der Komponenten auf einer
-  Palette.
+  Procedure needed for components: registers the components on a palette.
   ------------------------------------------------------------------------------ *)
 begin
   RegisterComponents('MichasMod', [TSubmodRootDiff1DSolo]);
@@ -281,24 +274,23 @@ end; // End procedure Register
 
 procedure TSubmodRootDiff1DSolo.createAll;
 (* -----------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff1DSolo
-  BESCHREIBUNG: Erzeugen und Initialisieren von Zustandsvariablen, Variablen und
-  Parametern.
-  Der erste Parameter des Funktionsaufrufs übergibt einen String, der mit dem Be-
-  zeichner identisch ist und nachdem gesucht werden kann.
-  Der zweite Parameter enthält einen String zur Kennzeichnung der verwendeten
-  Einheit ([-] für dimensionslose Paramter)
-  Der dritte Parameter ist der eigentliche (Fließkomma)-Wert
-  Erläuterung der Bezeichner s. Deklaration.
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION: Create and initialize state variables, variables, and parameters.
+  The first parameter of the function call passes a string that is identical to the
+  identifier and can therefore be searched for.
+  The second parameter contains a string indicating the unit used ([-] for
+  dimensionless parameters).
+  The third parameter is the actual (floating point) value.
+  See declaration for explanation of the identifiers.
   ------------------------------------------------------------------------------ *)
 begin
   inherited;
-  // Erzeugen der Listen
+  // Create the lists
   Cl_mean_List := TList.Create;
   VolH20_EWZ_List := TList.Create;
   Init_NAmountEWZList := TList.Create;
   initial_1D := false;
-  // Erzeugen und initialisieren von TVar
+  // Create and initialize TVar
   VarCreate('Area_mean', '[cm^2]', 0, false, Area_mean);
   VarCreate('VarKoeff_Area', '[%]', 0, false, VarKoeff_Area);
   VarCreate('StdAbw_Area', '[cm^2]', 0, false, StdAbw_Area);
@@ -311,13 +303,13 @@ begin
   VarCreate('Mittl_Flaeche', '[cm^2]', 0, false, Mittl_Flaeche);
   VarCreate('Par_AreaMean', '[cm^2]', 5, false, Par_AreaMean);
   VarCreate('Par_AreaVC', '[%]', 100, false, Par_AreaVC);
-  // Erzeugen und initialisieren von TPar
+  // Create and initialize TPar
   ParCreate('number_classes', '[-]', 10, number_classes);
-  // 10 Klassen per default
+  // 10 classes by default
   ParCreate('Log_Area_mean', '[cm^2]', 0, Log_Area_mean);
   ParCreate('Log_StdAbw_Area', '[cm^2]', 0, Log_StdAbw_Area);
   ParCreate('ParVC', '[%]', 0, ParVC);
-  // Erzeugen und initialisieren von TState
+  // Create and initialize TState
   StateCreate('N_MengeAnteilAn', '[]', 0, false, N_MengeAnteilAn);
   StateCreate('N_MengeAnteilNum', '[]', 0, false, N_MengeAnteilNum);
   StateCreate('N_AmountSoilNum', '[kg N/ha]', 0, false, N_AmountSoilNum);
@@ -335,18 +327,18 @@ begin
   OptCreate('integrationMethod', 'analytic', integrationMethod);
   integrationMethod.OptionList.Add('analytic');
   integrationMethod.OptionList.Add('numeric');
-  { Für ein Vergleich von analyt. und numerischer Lösung gibt es auch eine Option,
-    die beide Berechnungen durchführt. }
+  { For comparing analytical and numerical solutions there is also an option that
+    performs both calculations. }
   integrationMethod.OptionList.Add('both');
-  { Festlegen der angenommenen Verteilung der WAP }
+  { Define the assumed distribution of the WAP }
   OptCreate('RootDistribution', 'Random', RootDistribution);
   RootDistribution.OptionList.Add('Regular');
   RootDistribution.OptionList.Add('normal');
-  { Falls der Input aus dem Strukturmodell kommt, dann wird Lognormalverteilung
-    angenommen, eigentlich müsste das noch getestet werden. }
+  { If the input comes from the structure model, a lognormal distribution is
+    assumed; this really should still be tested. }
   RootDistribution.OptionList.Add('lognormal');
-  { Festlegen, ob die Kennzahlen RLD und VC aus Voronoi-Polygonen oder aus der
-    Belegung in  den Gitterzellen abgeleitet werden soll. }
+  { Specify whether the statistics RLD and VC should be derived from Voronoi
+    polygons or from the occupancy of the grid cells. }
   OptCreate('CalcMethRLD_VC', 'fromGrid', CalcMethRLD_VC);
   CalcMethRLD_VC.OptionList.Add('voronoi');
   CalcMethRLD_VC.OptionList.Add('fromGrid');
@@ -361,17 +353,16 @@ begin
   { OptCreate('Compare2DModel', 'no', Compare2DModel);
     Compare2DModel.OptionList.Add('yes');
     Compare2DModel.OptionList.Add('no'); }
-  { Problem: es sollte noch differenziert werden, welche Objekte NUR bei der
-    analytischen Lösung verwendet werden sollen mit folgender Auslagerung in eine
-    Prozedur, damit ein eindeutiges Umschalten zwischen den Berechnungsarten
-    übersichtlicher wird. Eher kosmetisches Problem. }
+  { Issue: It should still be differentiated which objects are used ONLY in the
+    analytical solution, outsourcing them to a procedure so that switching between
+    the calculation methods is clearer. Mostly a cosmetic issue. }
   if integrationMethod.Option = 'numeric' then
-  // Fallunterscheidung: Numerische Berechnung
+  // Case distinction: numerical calculation
   begin
     { }
     createNumeric;
   end
-  else // analytische Lösung
+  else // analytical solution
   begin
     createAnalytic;
   end;
@@ -379,10 +370,10 @@ end; // SubmodRootDiff1D.createAll
 
 procedure TSubmodRootDiff1DSolo.createAnalytic;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff1DSolo
-  BESCHREIBUNG: Methode für die Hume-Instanzen, die nur bei Verwendung der analyti-
-  schen Lösung gebraucht werden, dadurch kann einfach zwischen den beiden Berech-
-  nungsvarianten umgeschaltet werden.
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION: Method for the Hume instances that are only needed when using the
+  analytical solution; this allows easy switching between the two calculation
+  variants.
   ------------------------------------------------------------------------------ *)
 begin
 
@@ -390,10 +381,10 @@ end; // End TSubmodRootDiff1DSolo.createAnalytic
 
 procedure TSubmodRootDiff1DSolo.createNumeric;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff1DSolo
-  BESCHREIBUNG: Methode für die Hume-Instanzen, die nur bei Verwendung der numeri-
-  schen Lösung gebraucht werden, dadurch kann einfach zwischen den beiden Berech-
-  nungsvarianten umgeschaltet werden.
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION: Method for the Hume instances that are only needed when using the
+  numerical solution; this allows easy switching between the two calculation
+  variants.
   ------------------------------------------------------------------------------ *)
 var
   i: integer;
@@ -402,44 +393,45 @@ begin
   VarCreate('ClminTransf', '[kg N/cm*H20]', 0, false, ClminTransf);
   VarCreate('ClminTransf_ha', '[kg N/ha]', 0, false, ClminTransf_ha);
   VarCreate('Amount_H20', '[l]', 0, false, Amount_H20);
-  { Erzeugen von Zustandsvariablen für die NMengen, die sich in jedem EWZ befinden.
-    Vgl. auch Anmerkungen in Methode init }
+  { Create state variables for the N amounts contained in each EWZ. See also the
+    notes in method init }
   // for i:=0 to max_num_roots-1 do
   // begin
-  { Problem: Kann auf diese Weise das NAmount_UPEWZArray gefüllt werden??? }
+  { Issue: Can the NAmount_UPEWZArray be populated in this way??? }
   // StateCreate('NAmount_UPEWZ'+InttoStr(i),'[g]', 0, false, NAmount_UPEWZArray[i]);
   // end;
 end;
 
 procedure TSubmodRootDiff1DSolo.AddDataValueToDataSeries;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiffD
-  BESCHREIBUNG: Durchführung diverser Initialisierungen. Cave: init wird mehrfach
-  betreten, deshalb wird jetzt AddDataValueToDataSeries verwendet.
+  ASSOCIATED CLASS: TSubmodRootDiffD
+  DESCRIPTION: Perform various initializations. Caveat: init is entered several
+  times, therefore AddDataValueToDataSeries is used now.
   ------------------------------------------------------------------------------ *)
 var
   i: integer;
-  ASRP_Light: TSRPLight; // Eine Light-version des SRP
-  AVol_H20, // Ein Zeiger auf Var., die Wasservolumina im SRP speichert
-  AInitNAmount, // Ein Zeiger auf Var., die init. N-Menge im SRP speichert
-  AInitNConc // Ein Zeiger auf Var., die init. N-Konz im SRP speichert
+  ASRP_Light: TSRPLight; // A lightweight version of the SRP
+  AVol_H20, // Pointer to the variable storing the water volumes in the SRP
+  AInitNAmount, // Pointer to the variable storing the initial N amount in the SRP
+  AInitNConc // Pointer to the variable storing the initial N concentration in the SRP
     : Pdouble;
 begin
   inherited;
-  // inherited init(GlobMod);      //init jetzt nicht mehr verwendet.
-  // Zwischenspeichern der Ausgangs-N-Menge
+  // inherited init(GlobMod);      // init no longer used.
+  // Cache the initial N amount
   NAmountInit := N_AmountSoil.V;
-  // Initialisieren dyn. Arrays:
-  // a) Längenzuweisung:
+  // Initialize dynamic arrays:
+  // a) Set length:
   setLength(ZV_Array_Stdnorm, trunc(number_classes.V));
   setLength(ZV_Array_normvert, trunc(number_classes.V));
   setLength(ZV_Array_lognorm, trunc(number_classes.V));
   setLength(weightArr, trunc(number_classes.V));
-  { Das Array speichert die Quartile der STANDARDNORMALVERTEILUNG. Aufgrund der
-    Symmetrie der Standardnormalverteilung entsprechen die Werte rechts vom Mittel
-    wert den Werten links  vom Mittelwert (hier mit negativem Vorzeichen). Hinweis:
-    die Werte für z_5 bis z_45 entsprechen den Werten z_55 bis z_95 im Excelmodell. }
-  // wenn 10 Klassen vorhanden
+  { The array stores the quartiles of the STANDARD NORMAL DISTRIBUTION. Because of
+    the symmetry of the standard normal distribution, the values to the right of the
+    mean correspond to the values to the left of the mean (with a negative sign
+    here). Note: the values for z_5 to z_45 correspond to the values z_55 to z_95 in
+    the Excel model. }
+  // when 10 classes are present
   if calcMethodZV.Option = 'equalsumfreq' then
   begin
     if number_classes.V = 10 then
@@ -455,7 +447,7 @@ begin
       ZV_Array_Stdnorm[8] := z_35;
       ZV_Array_Stdnorm[9] := z_45;
     end;
-    // wenn 20 Klassen vorhanden
+    // when 20 classes are present
     if number_classes.V = 20 then
     begin
       ZV_Array_Stdnorm[0] := -z_025;
@@ -482,16 +474,15 @@ begin
   end;
   if self.calcMethodZV.Option = 'equalint' then
   begin
-    // Implementierung fehlt noch.
+    // Implementation still missing.
   end;
   if iniMethod.Option = 'inppar' then
   begin
-    { Wenn mWLD und VC als Parameter eingelesen eingelesen werden, dann müssen die
-      entsprechenden Variablen gesetzt werden. VarKoeff_RLD wird je nach Verteilungs-
-      funktion geg. gändert. }
+    { When mWLD and VC are read in as parameters, the corresponding variables must be
+      set. VarKoeff_RLD is adjusted depending on the distribution function. }
     RLD_mean.V := ParMRLD.V;
     VarKoeff_RLD.V := ParVC.V;
-    // Gilt auch für Kennzahlen der Flächenverteilung
+    // Also applies to statistics of the area distribution
     Area_mean.V := Par_AreaMean.V;
     VarKoeff_Area.V := Par_AreaVC.V;
 
@@ -507,21 +498,21 @@ begin
   begin
     RasterData.readXYfromFile(RootInpDataFileXY.Option, seriesXY);
   end;
-  // Initialisierungen, die unabhängig von den eingelesenen Wurzeldaten sind
-  if integrationMethod.Option = 'numeric' then // nur bei numerischer Lösung
+  // Initializations independent of the imported root data
+  if integrationMethod.Option = 'numeric' then // only for numerical solution
   begin
     transform_Clmin;
   end;
-  // Im Falle der Gleichverteilung muss zunächst das PosArr berechnet werden.
+  // In the case of a uniform distribution the PosArr must first be calculated.
   if RootDistribution.Option = 'regular' then
   begin
     EqualDistribution;
   end;
   if RootDistribution.Option = 'random' then
   begin
-    { da die Submodelle voneinander unabhängige RasterData-Objekte haben, macht ein
-      Modellvergleich nur Sinn, wenn sich das 1D-Modell das PosArr vom 2D-Modell holt }
-    // Berechnen der Anzahl von Wurzeln auf Beobachtungsfläche aus der RLD
+    { Because the submodels have independent RasterData objects, a model comparison
+      only makes sense if the 1D model obtains the PosArr from the 2D model }
+    // Calculate the number of roots in the observation area from the RLD
     if self.My2DDiffModel <> nil then
     begin
       copyPosArrFrom2DDif;
@@ -536,22 +527,21 @@ begin
         TRootPosition(RasterData.PosList.Objects[i]).y := random(trunc(dimensionY.V) - 2) + 2;
       end;
     end;
-    { im Randomfall müssen Flächendaten aus den Koord. berechnet werden }
+    { In the random case, area data must be calculated from the coordinates }
     calcRootArea;
   end;
-  { Falls aus Rasterdata-File eingelesen wurde und KEINE Gleichverteilung generiert
-    wurde, muss das 1D-Modell die Berechnung der Flächen des SRP selbst vornehmen.
-    Im Fall Gleichverteilung wird der Flächeninhalt des SRP bei der Verteilung be-
-    rechnet. }
+  { If data is read from a raster data file and NO uniform distribution was
+    generated, the 1D model must perform the calculation of the SRP areas itself.
+    In the uniform case the area of the SRP is calculated during the distribution. }
   if (iniMethod.Option = 'rasterdatafile') and
     (RootDistribution.Option <> 'regular') then
   begin
     calcRootArea;
   end;
-  { Nach Einlesen und Anpassung der Verteilung werden Wurzeln entfernt, die sich
-    außerhalb des Beobachtungsfensters oder in den Rändern befinden. }
+  { After reading and adjusting the distribution, roots located outside the
+    observation window or in the margins are removed. }
   init_ReadFromFile;
-  // Sicherstellen, das WLD_arr gefüllt wird
+  // Ensure that WLD_arr is populated
   if ((iniMethod.Option = 'inppar') and (RootDistribution.Option = 'lognormal'))
     or ((iniMethod.Option = 'submodstruct') and
     (RootDistribution.Option = 'lognormal')) then
@@ -560,60 +550,59 @@ begin
   end
   else
     fillWLDArr;
-  { Wenn Wurzeldaten eingelesen sind, werden folgenden Initialisierungen, differen-
-    ziert nach numerischer und analytischer Lösung, durchgeführt. }
-  // a) für die analytische Lösung
+  { When root data has been read in, the following initializations are performed,
+    differentiated between numerical and analytical solutions. }
+  // a) for the analytical solution
   if integrationMethod.Option = 'analytic' then
   begin
     calcVar_Analyt;
     if RootDistribution.Option <> 'normal' then
-    { bei angommener Lognormalverteilung, Standardfall }
+    { assuming a lognormal distribution, the standard case }
     begin
-      { Berechnung der Zufallsvariablen (mittlere WLD, Klassenmittelwerte) bei
-        angenommener lognormaler Verteilung }
+      { Calculate the random variables (mean RLD, class mean values) assuming a
+        lognormal distribution }
       if CalcMethQuant.Option = 'fromrld' then
         get_lognorm_ZV
       else
-      // Berechnung der Klassenmittelwerte der WLD aus der Flächenverteilung
+      // Calculate the class mean values of the RLD from the area distribution
       begin
         get_lognorm_ZV_Area;
       end;
     end; // End if Lognormalverteilung
     if RootDistribution.Option = 'regular' then
     begin
-      { Gleichverteilung bedeutet, dass die halbe Abstände zwischen den Senken und
-        damit die Flächeninhalte der einzelnen Senken gleich sind. Standardabweichung
-        der Flächeninhalte ist demnach 0. Für die Berechnung wird allein die mittlere
-        Wurzellängendichte benötigt. Hier sind keine weiteren Initialisierungen notwendig. }
+    { Uniform distribution means that the half-distances between the sinks and thus
+        the areas of the individual sinks are equal. The standard deviation of the
+        areas is therefore 0. Only the mean root length density is required for the
+        calculation. No further initialization is necessary here. }
       VarKoeff_RLD.V := 0;
     end; // End if Gleichverteilung
     if RootDistribution.Option = 'normal' then
     begin
-      { Berechnung der Zufallsvariablen (mittlere WLD, Klassenmittelwerte) bei
-        angenommener Normalverteilung }
+      { Calculate the random variables (mean RLD, class mean values) assuming a
+        normal distribution }
       get_normvert_ZV;
     end; // End if Normalverteilung
   end
   else
-  // b) für die numerische Lösung
+  // b) for the numerical solution
   begin
-    { Erzeugung von Zustandsvariablen für die N-Menge aller EWZ
-      Problem: ist möglicherweise nicht durchführbar, in diesem Fall Anlage des Arrays
-      mit einer festen Anzahl von TState (s. Deklaration von NAmount_UPEWZArray)
-      Das Vorgehen mit dem Erzeugen der Zustandsvariablen in init ist deshalb zunächst
-      auskommentiert. }
+    { Creating state variables for the N amount of all EWZ.
+      Issue: may not be feasible; in that case create the array with a fixed number
+      of TState (see declaration of NAmount_UPEWZArray).
+      The approach of creating the state variables in init is therefore currently
+      commented out. }
     { for i:=0 to RasterData.NRoots-1 do
       begin
       StateCreate('NMengeEWZ'+InttoStr(i),'[g]', 0, false, NMengeEWZ);
       end; }
-    { Berechnung des volumetr. Wassergehalts aller EWZ (zunächst) konstant über die
-      Laufzeit des Modells
-      Probleme: Dynamische Modellierung (hier: Veränderung des Wassergehalts) steht
-      noch aus.
+    { Calculate the volumetric water content of all EWZ (initially) constant over the
+      runtime of the model.
+      Issues: Dynamic modelling (change of water content) still pending.
       //setLength(VolH20_EWZ_Array, RasterData.NRoots-1);
       calc_Amount_H20;
-      { Folgende Zeile wäre notwendig, wenn NAmount_UPEWZArray dynamisch erzeugt werden
-      kann. Wahrscheinlich wäre Liste besser als Array }
+      { The following line would be necessary if NAmount_UPEWZArray can be created
+      dynamically. A list would probably be better than an array }
     // setLength(NAmount_UPEWZArray,RasterData.NRoots-1);
     // setLength(Init_NAmountEWZArray,RasterData.NRoots-1);
     for i := 1 to RasterData.NRoots do
@@ -621,23 +610,23 @@ begin
       new(AVol_H20);
       new(AInitNAmount);
       new(AInitNConc);
-      { Berechnung der H20-Volumina der EWZ [cm3] }
+      { Calculate the H2O volumes of the EWZ [cm3] }
       AVol_H20^ := TRootPosition(RasterData.PosList.Objects[i]).area * theta.V * SizeLayer.V;
-      // Berechnung der NMengen in den EWZ zu Beginn (Startwerte)
+      // Calculate the N amounts in the EWZ at the beginning (initial values)
       AInitNAmount^ := AVol_H20^ * c_start.V;
-      // Einheitliche Konzentration in den EWZ zu Beginn (Startwerte)
+      // Uniform concentration in the EWZ at the beginning (initial values)
       AInitNConc^ := c_start.V;
       VolH20_EWZ_List.Add(AVol_H20);
       Cl_mean_List.Add(AInitNConc);
       Init_NAmountEWZList.Add(AInitNAmount);
-      // NAmount_UPEWZArray[i].V:=0.0; //Zu Beginn noch keine Aufnahme
+      // NAmount_UPEWZArray[i].V:=0.0; // No uptake at the beginning yet
     end;
   end; // End if calcAnalyt=false
-  { Wenn kein 2D-Modell vorhanden, dann kümmert sich das 1D-Modell um eine Ausgabe
-    in das Tabellenobjekt, das die WAP-Querschnitte darstellt, ansonsten übernimmt
-    dies das 2D-Submodell (Ausnahme: falls Parameter gelesen werden und es sich nicht
-    um eine zufällige oder regelmäßige Verteilung handelt, macht eine Ausgabe keinen
-    Sinn, da es zu schwierig/willkürlich ist exakte Wurzelpos. zu berechnen }
+  { If no 2D model is available, the 1D model handles output to the table object that
+    displays the WAP cross-sections; otherwise the 2D submodel takes care of this
+    (exception: if parameters are read and it is neither a random nor a regular
+    distribution, output makes no sense because calculating exact root positions is
+    too difficult/arbitrary) }
   if (My2DDiffModel = nil) and (iniMethod.Option <> 'inppar') and
     (RootDistribution.Option = 'lognormal') then
   begin
@@ -649,54 +638,51 @@ end; // End TSubmodRootDiff1DSolo.Init(var GlobMod: TMod)
 
 procedure TSubmodRootDiff1DSolo.CalcRates;
 (* -----------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff1DSolo
-  BESCHREIBUNG: In der Methode wird die Ablaufsteuerung des Submodells zur Raten-
-  berechnung aufgerufen.
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION: Calls the flow control of the submodel for rate calculation.
   ------------------------------------------------------------------------------ *)
 begin
-  { Implementierung wurde ausgelagert, sodass bei Verwendung der analytischen
-    Lösung die Berechnung mit Hilfe der Ratengleichung auf einfachem Wege ausgeschaltet
-    werden kann (Schalter in createAll). Nur bei Verwendung der numerischen Lösung
-    oder wenn bei Berechnungsarten ausgeführt werden, soll hier die Ratenberechnung
-    stattfinden }
+  { The implementation was outsourced so that when using the analytical solution the
+    rate equation calculation can easily be disabled (switch in createAll). Rate
+    calculation should take place here only when using the numerical solution or
+    when both calculation methods are executed }
   inherited CalcRates;
   De.V := Dl.V * 3.35 * sqr(theta.V);
   if (integrationMethod.Option = 'numeric') or
     (integrationMethod.Option = 'both') then
   begin
-    { Hinweis: inherited kann an verschiedenen Positionen innerhalb einer Methode
-      aufgerufen werden. }
+    { Note: inherited can be called at different positions within a method. }
     Calc_numeric;
   end;
 end; // End  TSubmodRootDiff1DSolo.CalcRates
 
 procedure TSubmodRootDiff1DSolo.Integrate;
 (* ------------------------------------------------------------------------------
-  BESCHREIBUNG: Lösung der Differentialgleichungen.
+  DESCRIPTION: Solve the differential equations.
   ------------------------------------------------------------------------------ *)
 begin
   if StatN_AmountSoil.Option = 'static' then
   begin
     if (integrationMethod.Option = 'analytic') or
-      (integrationMethod.Option = 'both') then // analytische Lösung
+      (integrationMethod.Option = 'both') then // analytical solution
     begin
-      // Berechnung macht nur Sinn, wenn Wurzeln oder Parameterwerte vorhanden
+      // Calculation only makes sense if roots or parameter values are present
       if (num_Roots.V <> 0) then
-        // für Modellvergleich:
+        // for model comparison:
         if compareMode.Option = 'yes' then
         begin
-          // nichts machen
+          // do nothing
         end
         else
           Integrate_Analyt;
     end
-    else // numerische Lösung
+    else // numerical solution
     begin
-      { Bei Verwendung der numerischen Lösung wird automatisch integriert (inherited) }
+      { When using the numerical solution integration happens automatically (inherited) }
       inherited;
     end;
-    { Berechnung der im Boden vorhandenen N-Menge aus der anteilig aufgenommenen N-
-      Menge: }
+    { Calculate the N amount remaining in the soil from the fractionally absorbed N
+      amount: }
     if integrationMethod.Option = 'both' then
     begin
       if compareMode.Option = 'yes' then
@@ -724,102 +710,98 @@ begin
         N_AmountSoilNum.V := NAmountInit - (NAmountInit * N_MengeAnteilNum.V);
     end;
   end
-  else // Annahme einer dynamischen Veränderung des N-Gehalts im Boden
+  else // Assumes a dynamic change of the soil N content
   begin
-    // Implementierung fehlt noch
+    // Implementation still missing
   end;
-  { Wenn kein 2D-Diff-Modell vorhanden, dann Ausgabe von XY-Koordinaten der gültigen
-    Wurzeln (im Beobachtungsfenster, aber nicht im Rand) }
+  { If no 2D diffusion model is available, output the XY coordinates of the valid
+    roots (in the observation window but not at the margin) }
   if (My2DDiffModel = nil) and (OutputXY.Option = 'yes') then
   begin
     writeOutputToFile;
   end;
 end; // End TSubmodRootDiff1DSolo.Integrate
 
-{ Hilfsmethoden }
+{ Helper methods }
 procedure TSubmodRootDiff1DSolo.init_ReadFromFile;
 (* ------------------------------------------------------------------------------
-  BESCHREIBUNG:
-  Initialisierungen und Vorbereitungen die erst sinnvoll sind,
-  wenn Benutzereingaben bzw. zur Laufzeit aus Dateien eingelesene Daten berücksich-
-  tigt werden können.
-  Vor allem Ausschluss von Wurzeln in den Rändern: Problem: für das
-  numerische Modell sollte PosArr_middle in der Methode removeMarginRoots
-  durch eine globale Liste oder ein Array ersetzt werden, welches SRP-Instanzen
-  speichert, die hier dann erzeugt werden.
+  DESCRIPTION:
+  Initialisations and preparations that only make sense once user inputs or data
+  read from files at runtime can be considered.
+  Primarily excludes roots at the margins: Issue: for the numerical model,
+  PosArr_middle in the method removeMarginRoots should be replaced by a global list
+  or array that stores SRP instances created here.
   ------------------------------------------------------------------------------ *)
 begin
   inherited init_ReadFromFile;
-  // removeMarginRoots; //gegf. randständige Wurzeln entfernen
-end; // End TSubmodRootDiff1DSolo.init_eingelesen
+  // removeMarginRoots; // remove marginal roots if necessary
+end; // End TSubmodRootDiff1DSolo.init_ReadFromFile
 
 procedure TSubmodRootDiff1DSolo.calcVar_Analyt;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE:TSubmodRootDiff1DSolo
-  BESCHREIBUNG: Berecnnung (Initialisierung) von Variablen, die für die
-  analytische Lösung benötigt werden (mittlere Wurzellängendichte, Varianz,
-  Standardabweichung, Variationskoeffizient der Wurzellängendichten und den
-  VM-Wert).
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION: Calculation (initialization) of variables needed for the analytical
+  solution (mean root length density, variance, standard deviation, coefficient of
+  variation of the root length densities, and the V/M value).
   ------------------------------------------------------------------------------ *)
 begin
-  { Berechnung der mittleren Wurzellängendichte (im Falle der Ini-Methodem InpPar
-    oder Submodstruct wurde die Wurzellängendichte bereits eingelesen: }
+  { Calculate the mean root length density (if the initialization method is InpPar or
+    Submodstruct the root length density has already been read: }
   if (iniMethod.Option = 'inppar') or (iniMethod.Option = 'submodstruct') then
   begin
-    // nichts machen
+    // do nothing
   end
   else
     RLD_mean.V := mean(WLD_Array);
   if RootDistribution.Option = 'regular' then
   begin
-    // Bei Gleichverteilung sind Standardabweichung etc. = Null
+    // For a uniform distribution the standard deviation etc. are zero
     StdAbw_RLD.V := 0;
-    // Berechnung der Varianz der mittleren WLD
+    // Calculate the variance of the mean RLD
     Varianz.V := 0;
-    // Berechnung des Variationskoeffizienten der mittleren Wurzellängendichte
+    // Calculate the coefficient of variation of the mean root length density
     VarKoeff_RLD.V := 0;
   end;
-  // im folgenden Fällen wurde Variationskoeff als Par. eingelesen
+  // In the following cases the coefficient of variation was read as a parameter
   if ((iniMethod.Option = 'inppar') and (RootDistribution.Option = 'lognormal'))
     or ((iniMethod.Option = 'submodstruct') and
     (RootDistribution.Option = 'lognormal')) then
   begin
     StdAbw_RLD.V := VarKoeff_RLD.V * self.RLD_mean.V / 100;
     Varianz.V := sqr(StdAbw_RLD.V);
-    // auch für Flächenparameter
+    // also for the area parameters
     StdAbw_Area.V := VarKoeff_Area.V * Area_mean.V / 100;
   end
-  // in allen anderen Fällen wurde ein wlDArr erzeugt, aus dem berech. werden kann.
+  // In all other cases a WLD array was created from which calculations can be made.
   else
   begin
-    // nicht im Falle der Gleichverteilung
+    // not in the case of uniform distribution
     if RootDistribution.Option <> 'regular' then
     begin
-      // Berechnung der Standardabweichung der mittleren Wurzellängendichte
+      // Calculate the standard deviation of the mean root length density
       StdAbw_RLD.V := StdDev(WLD_Array);
-      // Berechnung der Varianz der mittleren WLD
+      // Calculate the variance of the mean RLD
       Varianz.V := Math.Variance(WLD_Array);
-      // Berechnung des Variationskoeffizienten der mittleren Wurzellängendichte
+      // Calculate the coefficient of variation of the mean root length density
       VarKoeff_RLD.V := StdAbw_RLD.V / self.RLD_mean.V * 100;
     end;
   end;
-  // Berechnung des V/M-Wertes
+  // Calculate the V/M value
   if RLD_mean.V <> 0 then
   begin
     VM.V := Varianz.V / RLD_mean.V;
-    { Berechnung der Standardabweichung der logtransformierten Werte
-      aus dem Mittelwert und der Standardabweichung der nicht transformierten Werte,
-      Kage }
+    { Calculate the standard deviation of the log-transformed values from the mean
+      and the standard deviation of the non-transformed values, Kage }
     Log_StdAbw_RLD.V :=
       sqrt(ln((StdAbw_RLD.V * StdAbw_RLD.V) / (RLD_mean.V * RLD_mean.V) + 1));
-    { Berechnung des Mittelwertes der log-transformierten Werte aus dem
-      Mittelwert der NICHT transformierten Werte (RLD_mean) und der Standardabweichung
-      der LOG-TRANSFORMIERTEN Werte (SA_ln), Kage }
+    { Calculate the mean of the log-transformed values from the mean of the
+      NON-transformed values (RLD_mean) and the standard deviation of the
+      LOG-TRANSFORMED values (SA_ln), Kage }
     Log_RLD_mean.V := ln(RLD_mean.V) - 0.5 *
       (Log_StdAbw_RLD.V * Log_StdAbw_RLD.V);
-    { Logtransformierte Werte für die Flächenparameter, da diese aus logtransformierten
-      Einzelwerten berechnet werden müssen, finden folgende zwei Zeilen im Modus inppar
-      nicht statt }
+    { Log-transformed values for the area parameters; because these must be
+      calculated from log-transformed individual values, the following two lines do
+      not run in mode inppar }
     if self.iniMethod.Option <> 'inppar' then
     begin
       Log_StdAbw_Area.V :=
@@ -833,29 +815,29 @@ end; // End TSubmodRootDiff1DSolo.calcVar_Analyt
 
 procedure TSubmodRootDiff1DSolo.calcRootArea;
 (* ------------------------------------------------------------------------------
-  BESCHREIBUNG: Füllen des PosArr, Berechnen der Positionen und Flächeninhalte
-  zwei Methoden: Voronoi Polygone, oder anteiliger Flächeninhalt eines Grids, in
-  dem sich Wurzeln befinden.
+  DESCRIPTION: Populate PosArr, calculate the positions and areas.
+  Two methods: Voronoi polygons, or the proportional area of a grid cell in which
+  roots are located.
   ------------------------------------------------------------------------------ *)
 begin
   if (CalcMethRLD_VC.Option = 'voronoi') then
-  // Berechnung aus Voronoi-Polygonen
+  // Calculation from Voronoi polygons
   begin
   end
-  else // Berechnung aus Grid-Belegung
+  else // Calculation from grid occupancy
   begin
   end;
 end;
 
 procedure TSubmodRootDiff1DSolo.copyPosArrFrom2DDif;
 (* ------------------------------------------------------------------------------
-  BESCHREIBUNG:Kopiert das PosArr des 2D-Modells
+  DESCRIPTION: Copies the PosArr of the 2D model
   ------------------------------------------------------------------------------ *)
 var
   RasterData2D: TRasterData;
   i: integer;
 begin
-  if My2DDiffModel <> nil then // sicherheitshalber
+  if My2DDiffModel <> nil then // to be safe
   begin
     RasterData2D := My2DDiffModel.getRasterData;
     RasterData.NRoots := RasterData2D.NRoots;
@@ -877,7 +859,7 @@ end;
 
 procedure TSubmodRootDiff1DSolo.fillWLDArr;
 (* ------------------------------------------------------------------------------
-  BESCHREIBUNG: Füllen des WLD_Arrays
+  DESCRIPTION: Populate the WLD array
   ------------------------------------------------------------------------------ *)
 var
   i, j: integer;
@@ -885,17 +867,17 @@ var
   Area_EqualDistrib: double;
 begin
   setLength(WLD_Array, trunc(number_consid_roots.V));
-  // Zuweisung der Arraygröße
-  j := 1; // PosArr beginnt bei 1
-  { Sonderfall Gleichverteilung: Fläche Einzugsgebiet ist konstant. Es kann aber sein
-    dass das PosArrea Wurzeln enthält für die keine Fläche berechnet wurde, da sie
-    sich in bei der Verteilung auf die Fläche ausserhalb des Beobachtungsfensters be-
-    finden (TVar ErrorReg). Deshalb f. Lösung: }
+  // Set the array length
+  j := 1; // PosArr starts at 1
+  { Special case of uniform distribution: catchment area is constant. However, it can
+    happen that PosArr contains roots for which no area was calculated because they
+    are located outside the observation window when distributing over the area
+    (TVar ErrorReg). Therefore solution: }
   if self.RootDistribution.Option = 'regular' then
   begin
     for i := 0 to trunc(number_consid_roots.V - 1) do
     begin
-      // Berechnung des EWZ-Radius aus der Fläche:
+      // Calculate the EWZ radius from the area:
       Radius := sqrt(TRootPosition(RasterData.PosList.Objects[0]).area / Pi);
       WLD_Array[i] := 1 / (Radius * Radius * Pi);
     end;
@@ -904,8 +886,8 @@ begin
   begin
     for i := 0 to trunc(number_consid_roots.V - 1) do
     begin
-      { Berechnung der Wurzellängendichte aus den Flächeninhalten der Voronoi-Polygone }
-      // Berechnung des EWZ-Radius aus der Fläche:
+      { Calculate the root length density from the areas of the Voronoi polygons }
+      // Calculate the EWZ radius from the area:
       Radius := sqrt(TRootPosition(RasterData.PosList[j]).area / Pi);
       WLD_Array[i] := 1 / (Radius * Radius * Pi);
       inc(j)
@@ -915,32 +897,32 @@ end;
 
 procedure TSubmodRootDiff1DSolo.Integrate_Analyt;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff1DSolo
-  BESCHREIBUNG: Lösung der Differentialgleichungen mit einer analytischen Lösung.
-  Die Gleichung liefert die anteilige N-Aufnahme zu einer bestimmten
-  Simulationszeit für eine geg. Wurzellängendichte.
-  Lit.: Nye, Tinker (2000)Solute movement in the rhizosphere p. 299 Gleichung 10.28
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION: Solve the differential equations with an analytical solution.
+  The equation yields the fractional N uptake at a specific simulation time for a
+  given root length density.
+  Lit.: Nye, Tinker (2000) Solute movement in the rhizosphere p. 299 equation 10.28
   ------------------------------------------------------------------------------ *)
 var
-  // Dynamisches Array für alle anteiligen Aufnahmeraten in den Klassen
+  // Dynamic array for all fractional uptake rates in the classes
   Aufnahme_arr: Array of real;
   i: integer;
   Rad_SRC, sumUptClasses: real;
 begin
   setLength(Aufnahme_arr, trunc(number_classes.V));
   sumUptClasses := 0;
-  { Bei dynamischen Modell (Daten vom Strukturmodell) müssen bestimmte Variablen
-    und die Zufallsvariablen in jedem Zeitschritt neu berechnet werden: }
+  { In the dynamic model (data from the structure model) certain variables and the
+    random variables must be recalculated in every time step: }
   if iniMethod.Option = 'submodstruct' then
   begin
     calcVar_Analyt;
     if RootDistribution.Option = 'lognormal' then
     begin
-      // Berechnung der Klassenmittelwerte der WLD aus den Kennzahlen der WLD -Verteilung
+      // Calculate the class mean values of the RLD from the statistics of the RLD distribution
       if CalcMethQuant.Option = 'fromrld' then
         get_lognorm_ZV
       else
-      // Berechnung der Klassenmittelwerte der WLD aus der Flächenverteilung
+      // Calculate the class mean values of the RLD from the area distribution
       begin
         get_lognorm_ZV_Area;
       end;
@@ -951,28 +933,28 @@ begin
     end;
   end;
 
-  { folgende Fallunterscheidung ist notwendig, da (zumindest bei angenommener Nor-
-    malverteilung) negative Wurzellängendichten auftreten können. }
+  { The following case distinction is necessary because (at least with an assumed
+    normal distribution) negative root length densities can occur. }
   if RootDistribution.Option <> 'normal' then
   begin
     for i := 0 to trunc(number_classes.V - 1) do
     begin
-      // Berechnung des Radius des Einzelwurzelzylinders
+      // Calculate the radius of the single root cylinder
       Rad_SRC := 1 / (sqrt(Pi * ZV_Array_lognorm[i]));
       if iniMethod.Option = 'SubmodStruct' then
-      // Vorgehensweise bei dynam. Simulation (variable RLD/VK in jedem Zeitschritt
+      // Procedure for dynamic simulation (variable RLD/VC in each time step)
       begin
         Aufnahme_arr[i] := Aufnahme_arr[i] +
           (1 - exp((2 * Pi * ZV_Array_lognorm[i] * Globmod.TimeStep * De.V *
           86400) / (ln(1.65 * RootRadius.V / Rad_SRC))));
       end
-      // Vorgehensweise bei statischer Simulation
+      // Procedure for static simulation
       else
         Aufnahme_arr[i] := 1 -
           exp((2 * Pi * ZV_Array_lognorm[i] * Globmod.time.V * De.V * 86400) /
           (ln(1.65 * RootRadius.V / Rad_SRC)));
     end;
-    // Bei der Berechnung der Aufnahmen auf Grundlage der Fläche
+    // When calculating uptake based on area
     if CalcMethQuant.Option = 'fromarea' then
     begin
       for i := 0 to trunc(number_classes.V - 1) do
@@ -981,21 +963,19 @@ begin
       end;
       N_MengeAnteilAn.V := sumUptClasses;
     end
-    { ansonsten Bilden des Mittelwerts sämtlicher anteiliger N-Aufnahmen. Problem:
-      ist möglicherweise falsch, auch bei Berechnung auf Grundlage der RLD brauch ich
-      wohl die Summme }
+    { Otherwise take the mean of all fractional N uptakes. Issue: may be incorrect;
+      even when calculating based on RLD I probably need the sum }
     else
       N_MengeAnteilAn.V := mean(Aufnahme_arr);
   end;
   if RootDistribution.Option = 'normal' then
-  // Problem: Implementierung steht noch aus
+  // Issue: Implementation still pending
   begin
   end;
-  // auch im Falle regular wird alles von der Lognormal-Methode erledigt
+  // Even in the regular case everything is handled by the lognormal method
   { if RootDistribution.Option = 'regular' then
     begin }
-  { Sämtliche Senken mit gleichem Flächeninhalt des EWZ, Standardabweichung der
-    WLD = 0 }
+  { All sinks with the same EWZ area, standard deviation of the RLD = 0 }
   // Rad_EWZ := 1/(sqrt(Pi*RLD_mean.V));
   // N_MengeAnteilAn.V:= 1-exp((2*Pi*RLD_mean.V*Globmod.time.V*
   // De.v*86400)/(ln(1.65*Rad_Wurzel.V/Rad_EWZ)));
@@ -1004,20 +984,20 @@ begin
   Sum_N_AmountRoots.V := N_MengeAnteilAn.V * NAmountInit;
 end;
 
-// Hilfsmethoden für analytische Lösung
-// Hilfsmethoden zur u-Wert-Bestimmung
+// Helper methods for analytical solution
+// Helper methods for determining u values
 
 procedure TSubmodRootDiff1DSolo.get_normvert_ZV;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff1DSolo
-  BESCHREIBUNG: Berechnet aus den in z_quartile gespeichterten u-Werten der
-  Standardnormalverteilung (für die Quartile = Mittelwerte der 10 Klassen) die
-  f(x)-Werte (Werte der Zufallsvariablen) der vorliegenden Normalverteilung.
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION: Uses the u values of the standard normal distribution stored in
+  z_quartile (for the quartiles = mean values of the 10 classes) to compute the
+  f(x) values (random variables) of the current normal distribution.
   ------------------------------------------------------------------------------ *)
 var
   i: integer;
 begin
-  // Berechnung der Zufallsvariablen nur wenn Wurzeln vorhanden
+  // Calculate the random variables only if roots are present
   if RLD_mean.V <> 0 then
   begin
     for i := 0 to trunc(number_classes.V - 1) do
@@ -1029,14 +1009,14 @@ end; // End TSubmodRootDiff1DSolo.get_normvert_ZV
 
 procedure TSubmodRootDiff1DSolo.get_lognorm_ZV;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff1DSolo
-  BESCHREIBUNG: Berechnet für die Quartile (= Mittelwerte der 10 Klassen) die
-  f(x)-Werte (Werte der Zufallsvariablen) der vorliegenden Lognormalverteilung.
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION: Computes the f(x) values (random variables) of the present lognormal
+  distribution for the quartiles (= mean values of the 10 classes).
   ------------------------------------------------------------------------------ *)
 var
   i: integer;
 begin
-  // Berechnung der Zufallsvariablen nur wenn Wurzeln vorhanden
+  // Calculate the random variables only if roots are present
   if RLD_mean.V <> 0 then
   begin
     for i := 0 to trunc(number_classes.V - 1) do
@@ -1049,17 +1029,17 @@ end; // End TSubmodRootDiff1DSolo.get_lognorm_ZV
 
 procedure TSubmodRootDiff1DSolo.get_lognorm_ZV_Area;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff1DSolo
-  BESCHREIBUNG: Berechnet für die Quartile (= Mittelwerte der 10 Klassen) die
-  f(x)-Werte (Werte der Zufallsvariablen) der vorliegenden Lognormalverteilung aus
-  der Flächenverteilung.
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION: Computes the f(x) values (random variables) of the present lognormal
+  distribution from the area distribution for the quartiles (= mean values of the 10
+  classes).
   ------------------------------------------------------------------------------ *)
 var
   i: integer;
-  sumPhiUArea // summe der Phi(u)-Werte der Flächenquantile, für Wichtung
+  sumPhiUArea // sum of the Phi(u) values of the area quantiles, for weighting
     : double;
 begin
-  // Berechnung der Zufallsvariablen nur wenn Wurzeln vorhanden
+  // Calculate the random variables only if roots are present
   sumPhiUArea := 0;
   if RLD_mean.V <> 0 then
   begin
@@ -1070,12 +1050,12 @@ begin
       sumPhiUArea := sumPhiUArea + ZV_Array_lognorm[i];
     end;
   end;
-  // Berechnung der Wichtungsfaktoren
+  // Calculate the weighting factors
   for i := 0 to trunc(number_classes.V - 1) do
   begin
     weightArr[i] := ZV_Array_lognorm[i] / sumPhiUArea;
   end;
-  // Berechnung der WLD aus den Phi(u)-Werten der Fläche
+  // Calculate the RLD from the Phi(u) values of the area
   for i := 0 to trunc(number_classes.V - 1) do
   begin
     ZV_Array_lognorm[i] := 1 / ZV_Array_lognorm[i];
@@ -1084,81 +1064,81 @@ end; // End TSubmodRootDiff1DSolo.get_lognorm_ZV_Area
 
 function TSubmodRootDiff1DSolo.Kolmogorov_Smirnov: boolean;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff1DSolo
-  BESCHREIBUNG: Funktion ist notwendig, da Berechnung der anteiligen Aufnahme in
-  Abhängigkeit von der angenommenen Verteilungsfunktion durchgeführt wird.
-  In der Funktion wird der Kolmogorov Smirnov - Anpassungstest durch-
-  geführt (hier als Test auf eine angenommene Lognormalverteilung)
-  Rückgabewert ist true bei 'bestandenem' Test, false im Falle einer Ablehnung der
-  Nullhypothese (Beobachtete W. entspricht einer Lognormalverteilung)
-  Problem: Sollte eher der K-Wert (stimmt das? ) zurückgegeben werden und dann
-  dieser Wert von der aufrufenden Methode weiter verarbeitet werden?
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION: Needed because fractional uptake is calculated depending on the
+  assumed distribution function.
+  Performs the Kolmogorov-Smirnov goodness-of-fit test (here as a test for an
+  assumed lognormal distribution).
+  Return value is true if the test is "passed", false if the null hypothesis is
+  rejected (observed distribution corresponds to a lognormal distribution).
+  Issue: Should the K value (is that correct?) be returned instead and then processed
+  further by the calling method?
   ------------------------------------------------------------------------------ *)
 begin
-  // Problem: Implementierung
+  // Issue: Implementation
   Result := true;
 end; // End TSubmodRootDiff1DSolo.Kolmogorov_Smirnov
 
-// Hilfsmethoden für numerische Lösung
+// Helper methods for numerical solution
 procedure TSubmodRootDiff1DSolo.Calc_numeric;
 (* ------------------------------------------------------------------------------
-  BESCHREIBUNG: Methode übernimmt die Berechnung der Ratengleichung mit Hilfe der
-  numerischen Lösung
+  DESCRIPTION: Method that performs the rate equation calculation using the numerical
+  solution
   ------------------------------------------------------------------------------ *)
 begin
-  // Berechnung
-  { Hinweis: Für die Berechnung der Summe aller Ratengleichungen wurde folgender-
-    maßen vorgegangen (2 Varianten):
-    a) Berechnung der maximalen Nitratinfluxrate für jeden Einzelwurzelzylinder, d.h.
-    es wurden die Raten sämtlicher Wurzeln berechnet. Die Einzelergebnisse wurden
-    danach aufsummiert (Methode calc_num_EWZ)
-    b) Berechnung mit Hilfe der durchschnittlichen WLD in den Klassen, die schon bei
-    der Verwendung der analytischen Lösung benutzt wurden und Multiplikation des Er-
-    gebnisses mit der Anzahl der Wurzeln in den Klassen (Methode calc_num_Class).
-    Hier evtl. bessere Performance und Vergleichbarkeit mit der analytischen Lösung.
-    Problem: Überlegung korrekt?
-    Je nach Bedarf kann die eine oder die andere Methode auskommentiert werden.
-    Möglich wäre auch weitere Option }
-  { Problem: Müsste hier stehen  N_MengeAnteil.C:=NMenge.c+calc_num_EWZ; (eher nicht) }
+  // Calculation
+  { Note: The sum of all rate equations was calculated in the following ways
+    (two variants):
+    a) Calculate the maximum nitrate influx rate for each individual root cylinder,
+    i.e. calculate the rates of all roots. The individual results are then summed
+    (method calc_num_EWZ).
+    b) Calculate using the average RLD in the classes already used with the
+    analytical solution and multiply the result by the number of roots in the classes
+    (method calc_num_Class). Possibly better performance and comparability with the
+    analytical solution.
+    Issue: Is this consideration correct?
+    Depending on requirements one method or the other can be commented out.
+    Another option would also be possible }
+  { Issue: Should this be N_MengeAnteil.C:=NMenge.c+calc_num_EWZ; (probably not) }
   N_MengeAnteilNum.C := calc_num_EWZ;
   // N_MengeAnteilNum.C:=calc_num_class;
 end; // End TSubmodRootDiff1DSolo.Calc_numeric
 
 function TSubmodRootDiff1DSolo.calc_num_EWZ: real;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff1DSolo
-  BESCHREIBUNG: Berechnung der maximalen Nitratinfluxrate für jeden
-  Einzelwurzelzylinder, d.h. es wurden die Raten sämtlicher Wurzeln berechnet.
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION: Calculate the maximum nitrate influx rate for each individual root
+  cylinder, i.e. calculate the rates of all roots.
   ------------------------------------------------------------------------------ *)
 var
   i, j: integer;
-  Nitrat_Flux_EWZ, // Nitratinflux in Einzelwurzelzylinder
-  Sum_Nitrate_flux, // Summe der Nitratinfluxrate aller EWZ
-  Db, // Produkt aus Pufferung und effektivem Diffusionskoeffizienten
-  dist: real; // Radius des EWZ.
-  AClmean: double; // wg. Dereferenzieren des Zeigers
+  Nitrat_Flux_EWZ, // Nitrate influx in the individual root cylinder
+  Sum_Nitrate_flux, // Sum of the nitrate influx rate of all EWZ
+  Db, // Product of buffering and effective diffusion coefficient
+  dist: real; // Radius of the EWZ
+  AClmean: double; // due to dereferencing the pointer
 
 begin
-  { Problem: Berechnung korrekt? }
-  { Diss. Kage: Db ist das Produkt aus Pufferung und Effektivem Diffusionskoeffi-
-    zienten und demnach Db=De*theta, da für nicht sorbierte Ionen gilt: b=theta. }
+  { Issue: Is the calculation correct? }
+  { Kage dissertation: Db is the product of buffering and effective diffusion
+    coefficient and thus Db = De * theta, because for non-sorbed ions b = theta. }
   Db := De.V * theta.V * 86400;
-  j := 1; // PosArr beginnt bei 1
-  // Berechnung der aktuellen Konzentrationen für die jeweiligen EWZ
+  j := 1; // PosArr starts at 1
+  // Calculate the current concentrations for the respective EWZ
   for i := 0 to trunc(RasterData.NRoots) - 1 do
   begin
-    { Konzentration in der Bodenlösung berechnet sich aus der Ausgangs-N-Menge im
-      aktuellen Zeitschritt abzüglich der aufgenommenen NMenge (= Summe aller
-      integrierten Flüsse im EWZ) Problem: korrekt, Kann man Konzentrationen so einfach
-      voneinander abziehen, oder muss zuerst wieder in Mengen umgerechnet werden? }
+    { Concentration in the soil solution is calculated from the initial N amount in
+      the current time step minus the absorbed N amount (= sum of all integrated
+      fluxes in the EWZ). Issue: is this correct? Can concentrations simply be
+      subtracted from each other, or must they first be converted back to amounts? }
     { Cl_mean_Array[i]:=Cl_mean_Array[i]-(NAmount_UPEWZArray[i].V/
       VolH20_EWZ_Array[i]); }
   end;
-  // Ratenberechnung für alle Wurzeln
+  // Rate calculation for all roots
   for i := 0 to RasterData.NRoots - 1 do
   begin
     dist := sqrt(TRootPosition(RasterData.PosList.Objects[j]).area / Pi);
-    // Berechnung des Radius des EWZ
+    // Calculate the EWZ radius
     AClmean := Pdouble(Cl_mean_List.items[i])^;
     Nitrat_Flux_EWZ := ((AClmean - Clmin.V) * 2 * Pi * Db) /
       (ln(dist / (1.65 * self.RootRadius.V))); // Kage Diss, S.57, Gl.3.6.30
@@ -1171,13 +1151,13 @@ end; // End TSubmodRootDiff1DSolo.calc_num_EWZ
 
 function TSubmodRootDiff1DSolo.calc_num_class: real;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff1DSolo
-  BESCHREIBUNG:
-  Berechnung der Nährstoffaufnahme rate mit Hilfe der durchschnittlichen WLD in
-  den Klassen, die schon bei der Verwendung der analytischen Lösung benutzt wurden
-  und Multiplikation des Ergebnisses mit der Anzahl der Wurzeln in den Klassen
-  Hier evtl. bessere Performance und Vergleichbarkeit mit der analytischen Lösung.
-  Problem: Implementierung
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION:
+  Calculate the nutrient uptake rate using the average RLD in the classes already
+  used with the analytical solution and multiply the result by the number of roots in
+  the classes.
+  Possibly better performance and comparability with the analytical solution.
+  Issue: Implementation pending.
   ------------------------------------------------------------------------------ *)
 begin
 
@@ -1185,31 +1165,33 @@ end; // End TSubmodRootDiff1DSolo.calc_num_class
 
 procedure TSubmodRootDiff1DSolo.transform_Clmin;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff1DSolo
-  BESCHREIBUNG: Umrechnung der Bodenlösungskonzentration in mol/l in andere
-  Einheiten. Problem: Umrechnung kontrollieren.
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION: Convert the soil solution concentration from mol/l into other units.
+  Issue: verify conversion.
   ------------------------------------------------------------------------------ *)
 begin
-  // Umrechnung von [Mikromol/l] in [Kg/l]
+  // Convert from [micromol/l] to [kg/l]
   ClminTransf.V := Clmin.V * 14 / 1E-9;
-  // Umrechnung in [KG/ha]
+  // Convert to [kg/ha]
   ClminTransf_ha.V := ClminTransf.V / 1E-7;
 end; // End TSubmodRootDiff1DSolo.transform_Clmin
 
 procedure TSubmodRootDiff1DSolo.calc_Amount_H20;
 (* ------------------------------------------------------------------------------
-  ZUGEHÖRIGE KLASSE: TSubmodRootDiff1DSolo
-  BESCHREIBUNG: Berechnung der Ausgangswassermenge in der betrachteten Bodenschicht
+  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+  DESCRIPTION: Calculate the initial water amount in the soil layer under
+  consideration
   ------------------------------------------------------------------------------ *)
 begin
-  { Wassermenge in der betrachteten Bodenschicht (theta wird zunächst als konstant
-    angenommen) }
+  { Water amount in the soil layer under consideration (theta is initially assumed
+    to be constant) }
   Amount_H20.V := volume.V * theta.V;
 end; // End TSubmodRootDiff1DSolo.calc_Amount_H20
 
 procedure TSubmodRootDiff1DSolo.calcN_AmountSoilEquil;
 (* ------------------------------------------------------------------------------
-  BESCHREIBUNG: Berechnung der N-Menge im Boden gemäß Gleichung 3.6.43 Diss. Kage
+  DESCRIPTION: Calculate the N amount in the soil according to equation 3.6.43 of
+  the Kage dissertation
   ------------------------------------------------------------------------------ *)
 var
   i: integer;
@@ -1219,12 +1201,12 @@ begin
   Db := De.V * theta.V;
   for i := 0 to trunc(number_classes.V - 1) do
   begin
-    // Aus der WLD muss der Radius (Klassengrenze) berechnet werden:
+    // The radius (class boundary) must be calculated from the RLD:
     classBorder := sqrt(1 / (ZV_Array_lognorm[i] * Pi));
     cl_avClass := Clmin.V - (Min_s.V * (sqr(classBorder) - sqr(RootRadius.V)) /
       (4 * Db)) + (Min_s.V * sqr(classBorder) / (2 * Db) *
       ln(classBorder / RootRadius.V));
-    // Wichtung
+    // Weighting
     cl_avClass := cl_avClass * weightArr[i];
     cl_av.V := cl_av.V + cl_avClass;
   end;
