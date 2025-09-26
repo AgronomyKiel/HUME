@@ -268,14 +268,6 @@ procedure Register;
 
 implementation
 
-procedure Register;
-(* -----------------------------------------------------------------------------
-  Prozedur wird für Komponenten benötigt: Registrierung der Komponenten auf einer
-  Palette.
-  ------------------------------------------------------------------------------ *)
-begin
-  RegisterComponents('MichasMod', [TSubmodRootDiff1DSolo]);
-end; // End procedure Register
 
 { TSubmodRootDiff1DSolo }
 
@@ -1230,5 +1222,16 @@ begin
   end;
   N_AmountSoil.V := Mg_func(Depth.V, theta.V, cl_av.V);
 end;
+
+
+procedure Register;
+(* -----------------------------------------------------------------------------
+  Prozedur wird für Komponenten benötigt: Registrierung der Komponenten auf einer
+  Palette.
+  ------------------------------------------------------------------------------ *)
+begin
+  RegisterComponents('Soil2D', [TSubmodRootDiff1DSolo]);
+end; // End procedure Register
+
 
 end.

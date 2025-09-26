@@ -12,7 +12,6 @@ uses
   VCLTee.Chart, VCLTee.Series,   AdvGrid, MathImge,
   UMod, UState, Diffko, SubmodRootStructureNew;
 
-
 //const
   /// <summary>Maximum number of roots.</summary>
 //  max_num_roots = 40000;
@@ -29,7 +28,6 @@ colorarray: array [0 .. 11] of TColor = ($00CB9F74, $00D8AD49, $00E6C986,
   levelsarray: array [0 .. 11] of MathFloat = (-4, -2.5, -2, -1.5, -1, -0.5, 0,
     0.5, 1, 1.5, 2, 2.5);
 
-
 type
 
 /// <summary>Floating point type for coordinates</summary>
@@ -40,7 +38,6 @@ type
 
   /// <summary>Problem: the dynamic implementation was removed again due to difficulties with array boundaries.</summary>
     array_type = array [0 .. dim_max + 1] of real;
-
 
   /// <summary>
   /// Mode of nitrogen uptake by the root: Michaelis-Menten (saturation kinetics),

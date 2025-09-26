@@ -160,6 +160,10 @@ type
 
   //  PosArr_FromFile: array [1 .. max_num_roots] of TRootPosition;
 
+procedure Register;
+
+
+
 implementation
 
 
@@ -1321,6 +1325,18 @@ begin
     MyMathImage.RePaint;
   end;
 end;
+
+
+
+procedure Register;
+(* -----------------------------------------------------------------------------
+Prozedur wird für Komponenten benötigt: Registrierung der Komponenten auf einer
+Palette.
+------------------------------------------------------------------------------*)
+begin
+  RegisterComponents('Soil2D', [TSubmodRoot2DDiffNitrate]);
+end;//End Register
+
 
 
 end.
