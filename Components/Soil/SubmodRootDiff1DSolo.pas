@@ -262,16 +262,6 @@ procedure Register;
 
 implementation
 
-<<<<<<< HEAD
-=======
-procedure Register;
-(* -----------------------------------------------------------------------------
-  Procedure needed for components: registers the components on a palette.
-  ------------------------------------------------------------------------------ *)
-begin
-  RegisterComponents('MichasMod', [TSubmodRootDiff1DSolo]);
-end; // End procedure Register
->>>>>>> 968aaa0c2804687754e71693eaa9450ecef95288
 
 { TSubmodRootDiff1DSolo }
 
