@@ -320,6 +320,59 @@ begin
   NitrateUptakeFunction.OptionList.add('ZeroSink');
   NitrateUptakeFunction.OptionList.add('ConstInflux');
   NitrateUptakeFunction.OptionList.add('MM');
+
+  OptCreate('ContGrowth', 'no', ContGrowth);
+  ContGrowth.OptionList.add('yes');
+  ContGrowth.OptionList.add('no');
+
+  OptCreate('ShowConc', 'True', ShowConc);
+  ShowConc.OptionList.add('true');
+  ShowConc.OptionList.add('false');
+
+  OptCreate('CalcModeSteadyState', 'withoutMargin', CalcModeSteadyState);
+  CalcModeSteadyState.OptionList.add('withMargin');
+  CalcModeSteadyState.OptionList.add('withoutMargin');
+
+  OptCreate('SteadyState', 'no', SteadyState);
+  SteadyState.OptionList.add('yes');
+  SteadyState.OptionList.add('no');
+
+  OptCreate('RootDistribution', 'Random', RootDistribution);
+  RootDistribution.OptionList.add('Random');
+  RootDistribution.OptionList.add('Regular');
+  RootDistribution.OptionList.add('FromSource');
+
+  OptCreate('DelMarginRoots', 'no', DelMarginRoots);
+  DelMarginRoots.OptionList.add('yes');
+  DelMarginRoots.OptionList.add('no');
+
+  OptCreate('writeConcField', 'no', writeConcField);
+  writeConcField.OptionList.add('no');
+  writeConcField.OptionList.add('yes');
+
+  OptCreate('writeSinkCellFile', 'no', writeSinkCellFile);
+  writeSinkCellFile.OptionList.add('no');
+  writeSinkCellFile.OptionList.add('yes');
+
+  OptCreate('OutputSink', 'no', OutputSink);
+  OutputSink.OptionList.add('no');
+  OutputSink.OptionList.add('yes');
+
+  OptCreate('ConcFieldDataFile',
+    'Q:\Kohl\DiffModell\IniFilesAusgaben\concField.csv', ConcFieldDataFile);
+  ConcFieldDataFile.OptionList.add
+    ('Q:\Kohl\DiffModell\IniFilesAusgaben\concField.csv');
+
+  OptCreate('SinkCellFileFile',
+    'Q:\Kohl\DiffModell\IniFilesAusgaben\SinkFile.csv', SinkCellFileFile);
+  SinkCellFileFile.OptionList.add
+    ('Q:\Kohl\DiffModell\IniFilesAusgaben\SinkFile.csv');
+
+  OptCreate('RootSinkOutpDataFile',
+    'Q:\Kohl\DiffModell\IniFilesAusgaben\in.dat', RootSinkOutpDataFile);
+  RootSinkOutpDataFile.OptionList.add
+    ('Q:\Kohl\DiffModell\IniFilesAusgaben\in.dat');
+
   OptCreate('OutputXY', 'no', OutputXY);
   OutputXY.OptionList.add('no');
   OutputXY.OptionList.add('yes');
