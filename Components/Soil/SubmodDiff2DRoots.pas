@@ -6,82 +6,25 @@ uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, math,
   UMod, UState, Diffko, SubmodRootStructureNew, MathImge,
-  SubmodRootDiff;
+  U2DSoilBaseClasses;
 
-const
-  dim_max = 10000; { largest index, required for the vectors during the
-    flux calculation }
-  colorarray: array [0 .. 11] of TColor = ($00CB9F74, $00D8AD49, $00E6C986,
-    $00F2E3C1, $00DAF0C4, $00A6E089, $0086D560, $0065CFB5, $008DC5FC, $0075D5FD,
-    $0078E1ED, $00ACEDF4);
-  levelsarray: array [0 .. 11] of MathFloat = (-4, -2.5, -2, -1.5, -1, -0.5, 0,
-    0.5, 1, 1.5, 2, 2.5);
 
 type
   (* -----------------------------------------------------------------------------
     Type declarations
     ------------------------------------------------------------------------------ *)
-  { Arrays }
-  { Problem: the dynamic implementation was removed again due to difficulties
-    with array boundaries. }
-  array_type = array [0 .. dim_max + 1] of real;
+/// <summary>Arrays</summary>
 
-  { Klassen }
-  TSubmodDiff2DRoots = class(TSubModRootDiff)
-    { Declaration of class TSubmodRootDiff2D. This class performs the
-      calculations for the root function model. }
+/// <summary>Klassen</summary>
+  TSubmodDiff2DRoots = class(TBaseSubmodRootDiff)
+    /// <summary>Declaration of class TSubmodRootDiff2D. This class performs the calculations for the root function model.</summary>
   private
-    { Private declarations }
-    ContPosx, // Fixed position of the container center.
-    ContPosy,
-    { Field stores whether the output file for sink influx has been created.
-      This should be done anew before each model run -> FileWasCreated is set to
-      false in init. In CalcRates the file is created once and the flag is set to
-      true }
 
-    SumOfInternalTimeSteps: double;
-    FileWasCreated: boolean;
-    SinkCellFileWasCreated: boolean;
-    fMyMathImage: TMathImage;
-    ColorSurface: TColorSurface;
-    TSRPLightList: TList; // List with TSRPLight instances
-    (* -----------------------------------------------------------------------------
-      The following fields relate to the computational elements and are accessed
-      by several methods (therefore they are not local variables).
-      If they should be displayed in HUME in any form, a declaration as TVar
-      would be appropriate.
-      Problem: units
-      ------------------------------------------------------------------------------ *)
-    vol_Element, { volume of a computational element [cm3] }
-    wm, { water amount of a computational element [cm3] }
-    min_c, { minimum concentration in the grid [mol/cm3] }
-    max_c { maximum concentration in the grid }
-      : double;
-    (* -----------------------------------------------------------------------------
-      C_xy: array for concentrations in the computational elements.
-      { In x_arr and y_arr are the 'midpoint coordinates of the grid cells' }
-      c_xy was declared as a dynamic array (see NG, p.65 ff) because the size of
-      the array should be declared with values of dim_x and dim_y (number of
-      computational elements in the x and y directions) that are assigned later.
-      ------------------------------------------------------------------------------ *)
-    C_xy: array of array of double;
-    x_arr, y_arr: array of double;
-    Diffuptake: double;
+
     procedure clearLists;
     procedure calcRootPosAsIndex;
     procedure updateFromStructModell;
     // Methods for flux calculation
-    procedure zweid_solut(dt_globmod: real);
-    // Helper methods
-    procedure InitConc;
-    procedure createSteadyState(DiffSteadyState: double);
-    function avg_conz: double;
-    function influx_fVar(Imax, Km, ClAv, x, Db: double): double;
-
-    function calcAmountUptakeRoots: double;
-    function calcActArdt: double;
-    function convertConcToAmount(i: integer): double;
-    procedure writeUptakeSinkToFile;
     function FileExists(FileName: string): boolean;
     // Methods for container growth:
     procedure testForContBorder(var start_, ende_: integer;
@@ -89,40 +32,59 @@ type
     function calcAbsValue2D(vect: r2): double;
     function vectorSubtrakt2D(vect2, vect1: r2): r2;
   protected
-    { Protected declarations, also accessible from derived classes }
+/// <summary>Protected declarations, also accessible from derived classes</summary>
 
     { * -----------------------------------------------------------------------------
       Member of HUME base class TPar (parameters)
       ------------------------------------------------------------------------------* }
-    Ar, { uptake rate [Kg N/ha*d] }
-    Km, { Michaelis-Menten constant [mol/cm3] }
-    dim_x, { number of elements in X-direction }
-    dim_y, { number of elements in Y-direction }
-    ini_dt, { initial internal time step [s] }
-    ContRad { radius of the container in container mode }
+    /// <summary>uptake rate [Kg N/ha*d]</summary>
+    Ar,
+    /// <summary>Michaelis-Menten constant [mol/cm3]</summary>
+    Km,
+    /// <summary>number of elements in X-direction</summary>
+    dim_x,
+    /// <summary>number of elements in Y-direction</summary>
+    dim_y,
+    /// <summary>initial internal time step [s]</summary>
+    ini_dt,
+    /// <summary>radius of the container in container mode</summary>
+    ContRad
       : TPar;
     { * -----------------------------------------------------------------------------
       Member of HUME base class TVar
       ------------------------------------------------------------------------------* }
-    dim_xMiddle, { number of central elements in X-direction }
-    dim_yMiddle, { number of central elements in Y-direction }
-    Distance, { half mean distance between roots [cm] }
-    dx, { grid width in X-direction [cm] }
-    dy, { grid width in Y-direction [cm] }
-    int_dt, { variable for the internal time step [s] }
-    Flaeche, { area of middle and margins [cm2] }
-    c_av, { mean concentration [mol/cm3] }
-    Imax, { maximum influx [mol/cm*s] }
+    /// <summary>number of central elements in X-direction</summary>
+    dim_xMiddle,
+    /// <summary>number of central elements in Y-direction</summary>
+    dim_yMiddle,
+    /// <summary>half mean distance between roots [cm]</summary>
+    Distance,
+    /// <summary>grid width in X-direction [cm]</summary>
+    dx,
+    /// <summary>grid width in Y-direction [cm]</summary>
+    dy,
+    /// <summary>variable for the internal time step [s]</summary>
+    int_dt,
+    /// <summary>area of middle and margins [cm2]</summary>
+    Flaeche,
+    /// <summary>mean concentration [mol/cm3]</summary>
+    c_av,
+    /// <summary>maximum influx [mol/cm*s]</summary>
+    Imax,
     wl, { root lengths per square meter [cm/(area*depth)]
       problem: maybe TState? }
-    wl_ha, { root lengths per hectare [cm/ha] problem: check unit }
-    ActAr, { current uptake rate [kg N/ha/d] }
-    ActArFromConc { current uptake rate [kg N/ha/d] due to concentration change }
+    /// <summary>root lengths per hectare [cm/ha] problem: check unit</summary>
+    wl_ha,
+    /// <summary>current uptake rate [kg N/ha/d]</summary>
+    ActAr,
+    /// <summary>current uptake rate [kg N/ha/d] due to concentration change</summary>
+    ActArFromConc
       : TVar;
     { * -----------------------------------------------------------------------------
       Member of HUME base class TState (state variables)
       ------------------------------------------------------------------------------* }
-    Bilanz_f { balance error }
+    /// <summary>balance error</summary>
+    Bilanz_f
       : TState;
     (* -----------------------------------------------------------------------------
       Member of HUME base class TOption (options)
@@ -145,12 +107,14 @@ type
       individual sinks }
     SinkCellFileFile, { path and name of the output file for nutrient
       uptake of individual sinks }
-    DelMarginRoots, { deletes boundary roots from PosArr }
-    ContGrowth { switch for growth in pots }
+    /// <summary>deletes boundary roots from PosArr</summary>
+    DelMarginRoots,
+    /// <summary>switch for growth in pots</summary>
+    ContGrowth
       : TOption;
 
   public
-    { Public declarations }
+/// <summary>Public declarations</summary>
     procedure createAll; override;
     procedure AddDataValueToDataSeries; override;
     procedure CalcRates; override;
@@ -158,15 +122,19 @@ type
     procedure Get_Sink(x_loc, y_loc: word; var s: real);
     procedure get_minGrid(x_loc, y_loc: word; var s: real);
     // Helper method
-    procedure showActConc; { current concentrations can be output via a form }
+    /// <summary>current concentrations can be output via a form</summary>
+    procedure showActConc;
   published
-    { Published declarations }
+/// <summary>Published declarations</summary>
     // Published properties
     property par_ini_dt: TPar read ini_dt write ini_dt;
-    property var_dx: TVar read dx write dx; { grid width in X-direction [cm] }
-    property var_dy: TVar read dy write dy; { grid width in Y-direction [cm] }
+    /// <summary>grid width in X-direction [cm]</summary>
+    property var_dx: TVar read dx write dx;
+    /// <summary>grid width in Y-direction [cm]</summary>
+    property var_dy: TVar read dy write dy;
     property MyMathImage: TMathImage read fMyMathImage write fMyMathImage;
-  end; { end declaration TSubmodRootDiff2D }
+  /// <summary>end declaration TSubmodRootDiff2D</summary>
+  end;
 
 procedure Register;
 
@@ -209,8 +177,8 @@ var
   numerator // numerator in equation 3.6.33, Kage's dissertation
     : double;
 begin
-  numerator := Km + (sqr(x) * Imax / ((sqr(x) - sqr(Rad_Wurzel.v)) * 2 * pi *
-    Db)) * ln(x / Rad_Wurzel.v) - Imax / (4 * pi * Db);
+  numerator := Km + (sqr(x) * Imax / ((sqr(x) - sqr(RootRadius.v)) * 2 * pi *
+    Db)) * ln(x / RootRadius.v) - Imax / (4 * pi * Db);
   cla := clmin.v + (-ClAv + numerator) / 2;
   cla := cla + sqrt(sqr(ClAv + numerator) / 4 + ClAv * Km);
   influx := Imax * (cla - clmin.v) / (Km + (cla - clmin.v));
@@ -239,7 +207,8 @@ begin
   TSRPLightList := TList.Create;
   // Lognormalverteilung per default.
   // Erzeugen und initialisieren von TPar
-  ParCreate('Ar', '[kg N/ha*d]', 0, Ar); { Aufnahmerate  [Kg N/ha*d] }
+  /// <summary>Aufnahmerate  [Kg N/ha*d]</summary>
+  ParCreate('Ar', '[kg N/ha*d]', 0, Ar);
   ParCreate('Km', '[mikromol/l]', 0, Km);
   ParCreate('ini_dt', '[s]', 3600, ini_dt);
   ParCreate('dim_x', '[n]', 500, dim_x);
@@ -377,7 +346,8 @@ begin
   for i := 1 to trunc(dim_y.v) + 1 do
     y_arr[i] := y_arr[i - 1] + dy.v;
 
-  vol_Element := dx.v * dy.v; { volume of a computational element [cm3] }
+  /// <summary>volume of a computational element [cm3]</summary>
+  vol_Element := dx.v * dy.v;
   wm := theta.v * vol_Element; { water amount of a computational element
     [cm3*cm3] }
   { Calculation of the initial concentration contained in the computational
@@ -385,16 +355,16 @@ begin
     computational elements, whether in the middle or at the edges, have the same
     concentration. Calculation is ok. }
   InitConc;
-  N_amountsoil.v := Mg_func(Tiefe.v, theta.v, c_start.v); // Debuggen
+  N_amountsoil.v := Mg_func(Depth.v, theta.v, c_start.v); // Debuggen
   c_av.v := avg_conz;
   // N_AmountSoil.v := mg_func(Tiefe.v, Theta.v, c_av.v);//Debuggen
   int_dt.v := ini_dt.v; // Zuweisung der Startzeitschrittweite ...
   Flaeche.v := DimensionX.v * DimensionY.v;
-  { Area of the layer to be examined including margins }
-  volumen.v := Flaeche.v * Tiefe.v;
-  { Volume of the considered soil layer [cm3] }
-  { Calculation of mineralization rate in [Mol/cm^3*s] }
-  Min_S.v := minera.v / 14 * 1000 / 86400 * 1 / (Tiefe.v * 1E8);
+/// <summary>Area of the layer to be examined including margins</summary>
+  Volume.v := Flaeche.v * Depth.v;
+/// <summary>Volume of the considered soil layer [cm3]</summary>
+/// <summary>Calculation of mineralization rate in [Mol/cm^3*s]</summary>
+  Min_S.v := minera.v / 14 * 1000 / 86400 * 1 / (Depth.v * 1E8);
   // initialize visualization of nutrient uptake
   If ((MyMathImage <> nil) and (ShowConc.Option = 'true')) then
   begin
@@ -465,7 +435,7 @@ begin
   if DelMarginRoots.Option = 'yes' then
     removeMarginRoots;
   calcNumberConsRoots;
-  { Various derived values should only consider roots that are not in the margins }
+/// <summary>Various derived values should only consider roots that are not in the margins</summary>
   if RootDistribution.Option = 'Regular' then
   begin
     AreaMiddle.v := 1 / RLD_mean.v * number_consid_roots.v;
@@ -486,7 +456,7 @@ begin
   { Calculation of root length in [cm] relative to depth. It is assumed that the
     parallel arranged linear structures have no curvature. The number of
     considered central roots is extrapolated to the entire observation area }
-  wl.v := number_consid_roots.v / AreaMiddle.v * 1E4 * Tiefe.v;
+  wl.v := number_consid_roots.v / AreaMiddle.v * 1E4 * Depth.v;
   wl_ha.v := wl.v * 1E4;
   { alternatively: consider all roots:
     wl.v:= RLD_mean.v*Flaeche.v*Tiefe.v;
@@ -494,9 +464,9 @@ begin
     1e8 = centimeters per ha }
   If wl_ha.v > 0.0 then
   begin
-    { Calculation seems correct see manuscript hanging register compare 1D2D }
+/// <summary>Calculation seems correct see manuscript hanging register compare 1D2D</summary>
     Imax.v := Ar.v / 14 * 1000 / 86400 / wl_ha.v;
-    { Calculation of influx rate [mol/(cm/s)] }
+/// <summary>Calculation of influx rate [mol/(cm/s)]</summary>
     // Imax.V := Ar.v*1000/(14*86400*WL_ha.v);  //Debuggen
   end
   else
@@ -521,7 +491,7 @@ begin
 
   // NAmountGridzell:=N_AmountSoil.V*1000/(dim_x.v*dim_y.v*10000*vol_Element);  //g N/cm3
   // NAmountGridzell/(theta.v*14*Tiefe.V);   //mol/cm^3
-  c_start.v := self.Cl_func(Tiefe.v, theta.v, N_amountsoil.v);
+  c_start.v := self.Cl_func(Depth.v, theta.v, N_amountsoil.v);
   // c_start.v := NAmountGridzell/(theta.v*Tiefe.v*1e8*14)*1000; //old implementation
   For x_ndx := 0 to trunc(dim_x.v + 1) do
   begin
@@ -552,7 +522,7 @@ begin
   conc := 0.0;
   if CalcModeSteadyState.Option = 'withMargin' then
   begin
-    { Edge rows and columns are included }
+/// <summary>Edge rows and columns are included</summary>
     for i := 1 to trunc(dim_x.v) - 1 do
       for j := 1 to trunc(dim_y.v) - 1 do
       begin
@@ -563,7 +533,7 @@ begin
         If C_xy[i, j] < min_c then
           min_c := C_xy[i, j];
       end;
-    { Average: divide by the total number of elements }
+/// <summary>Average: divide by the total number of elements</summary>
     conc := conc / (dim_x.v * dim_y.v);
   end
   else // when margins should not be considered
@@ -582,7 +552,7 @@ begin
         If C_xy[i, j] < min_c then
           min_c := C_xy[i, j];
       end;
-    { Average: divide by the total number of central elements }
+/// <summary>Average: divide by the total number of central elements</summary>
   conc := conc / ((numbLastElemX - numb1stElemX) *
     (numbLastElemY - numb1stElemY));
   end;
@@ -596,7 +566,7 @@ procedure TSubmodDiff2DRoots.createSteadyState(DiffSteadyState: double);
 var
   i, j: integer;
 begin
-  { the total absorbed amount is evenly distributed across all computational elements }
+// the total absorbed amount is evenly distributed across all computational elements
   for i := 0 to trunc(dim_x.v + 1) do
     for j := 0 to trunc(dim_y.v + 1) do
     begin
@@ -613,24 +583,33 @@ var
   { The following arrays are declared with a size of dim_max (largest index).
     From the fluxes, a tridiagonal matrix with main and secondary diagonals is
     formed (see Scholl/Drews: linear algebra) }
-  B_vektor, { solution vector }
-  lower, { lower diagonal }
-  diag, { middle diagonal }
-  upper, { upper diagonal }
-  Sink, { sink terms }
-  u_vektor, { concentration vector below }
-  z_vektor, { z_vektor : central vector to be calculated }
-  o_vektor: array_type; { concentration vector above }
+  /// <summary>solution vector</summary>
+  B_vektor,
+  /// <summary>lower diagonal</summary>
+  lower,
+  /// <summary>middle diagonal</summary>
+  diag,
+  /// <summary>upper diagonal</summary>
+  upper,
+  /// <summary>sink terms</summary>
+  Sink,
+  /// <summary>concentration vector below</summary>
+  u_vektor,
+  /// <summary>z_vektor : central vector to be calculated</summary>
+  z_vektor,
+  /// <summary>concentration vector above</summary>
+  o_vektor: array_type;
   { Note: since array_type also starts at 0 in the original, nothing needs to be
     changed here }
   Result, i: word;
   Df: real;
-  x_ndx, y_ndx: integer; { loop variables for grid elements }
+  /// <summary>loop variables for grid elements</summary>
+  x_ndx, y_ndx: integer;
 
   SinkCellFile: Textfile;
   SinkCellFileName: string;
 
-  procedure eine_Zeile(o_vektor, Sink: array_type; dim_z, Start, Ende: word;
+  procedure CalcOneLine(o_vektor, Sink: array_type; dim_z, Start, Ende: word;
     var u_vektor, z_vektor: array_type);
   (* -----------------------------------------------------------------------------
     PARENT method: TSubModDiff2D_k.zweid_solut
@@ -665,7 +644,7 @@ var
 
     Procedure Mittelteil(Start, Ende: integer);
     (* ------------------------------------------------------------------------------
-      PARENT method: helper procedure eine_Zeile
+      PARENT method: helper procedure CalcOneLine
       DESCRIPTION: Solves the diffusion equation for two-dimensional coordinates
       (grid) using an alternating direction implicit approach?
       Boundary condition: no transport across grid boundaries (no flow)
@@ -685,7 +664,7 @@ var
       end;
     end; // End Mittelteil
 
-    Procedure rechter_Rand(Ende: integer);
+    Procedure RightBoundary(Ende: integer);
     (* ------------------------------------------------------------------------------
       PARENT method: helper procedure eine_Zeile
       ------------------------------------------------------------------------------ *)
@@ -708,7 +687,7 @@ var
 
     end; // End rechter Rand
 
-    procedure Loesung_Gleichungssystem;
+    procedure SolveEquationSystem;
     (* ------------------------------------------------------------------------------
       PARENT method: helper procedure eine_Zeile
       DESCRIPTION: Calls the function trdiag in TRDIAG.pas. The function solves a
@@ -762,8 +741,8 @@ var
     end;
     linker_Rand(Start);
     Mittelteil(Start, Ende);
-    rechter_Rand(Ende);
-    Loesung_Gleichungssystem;
+    RightBoundary(Ende);
+    SolveEquationSystem;
   end; // End eine_Zeile (correct?)
 
 (* -----------------------------------------------------------------------------
@@ -772,7 +751,8 @@ var
 var
   start_, ende_: integer;
 begin
-  Df := int_dt.v / 2 * 1 / wm; { computation factor for half time step }
+  /// <summary>computation factor for half time step</summary>
+  Df := int_dt.v / 2 * 1 / wm;
   { Setup of the system of equations with an IMPLICIT formulation for y and
     an EXPLICIT formulation for x }
   // iterate over all computational elements (except the 1 cell wide margins)
@@ -792,13 +772,13 @@ begin
     end;
     if ContGrowth.Option = 'no' then
     begin
-      eine_Zeile(o_vektor, Sink, trunc(dim_x.v), 1, trunc(dim_x.v), u_vektor,
+      CalcOneLine(o_vektor, Sink, trunc(dim_x.v), 1, trunc(dim_x.v), u_vektor,
         z_vektor);
     end
     else // set new outer boundary conditions
     begin
       testForContBorder(start_, ende_, i, y_ndx, true);
-      eine_Zeile(o_vektor, Sink, trunc(dim_x.v), start_, ende_, u_vektor,
+      CalcOneLine(o_vektor, Sink, trunc(dim_x.v), start_, ende_, u_vektor,
         z_vektor);
     end;
     for i := 1 to trunc(dim_x.v) do
@@ -823,13 +803,13 @@ begin
     end;
     if ContGrowth.Option = 'no' then
     begin
-      eine_Zeile(o_vektor, Sink, trunc(dim_y.v), 1, trunc(dim_y.v), u_vektor,
+      CalcOneLine(o_vektor, Sink, trunc(dim_y.v), 1, trunc(dim_y.v), u_vektor,
         z_vektor);
     end
     else // set new outer boundary conditions
     begin
       testForContBorder(start_, ende_, x_ndx, i, true);
-      eine_Zeile(o_vektor, Sink, trunc(dim_y.v), start_, ende_, u_vektor,
+      CalcOneLine(o_vektor, Sink, trunc(dim_y.v), start_, ende_, u_vektor,
         z_vektor);
     end;
     for i := 1 to trunc(dim_y.v) do
@@ -930,16 +910,16 @@ begin
           reformulation to In). It assumes that Cl_min corresponds to the
           concentration at the root surface and can become zero }
         NUptake := (C_xy[x_loc, y_loc] - clmin.v) * 2 * pi * Db /
-          (-1 / 2 + (sqr(x) / (sqr(x) - sqr(Rad_Wurzel.v)) *
-          ln(x / Rad_Wurzel.v)));
+          (-1 / 2 + (sqr(x) / (sqr(x) - sqr(RootRadius.v)) *
+          ln(x / RootRadius.v)));
 
-      { Alternative calculation 4 (after Moncayo, Eq. 19 and 20): }
+/// <summary>Alternative calculation 4 (after Moncayo, Eq. 19 and 20):</summary>
       { Nuptake :=
         De_SinkGrid*C_xy[x_loc-1, y_loc]/(ln(x/Rad_Wurzel.v)*x)*(Pi*Rad_Wurzel.V/2)+
         De_SinkGrid*C_xy[x_loc+1, y_loc]/(ln(x/Rad_Wurzel.v)*x)*(Pi*Rad_Wurzel.V/2)+
         De_SinkGrid*C_xy[x_loc, y_loc-1]/(ln(x/Rad_Wurzel.v)*x)*(Pi*Rad_Wurzel.V/2)+
         De_SinkGrid*C_xy[x_loc, y_loc+1]/(ln(x/Rad_Wurzel.v)*x)*(Pi*Rad_Wurzel.V/2); }
-      { Implementation with Cl_min }
+/// <summary>Implementation with Cl_min</summary>
       { ZeroSink     : In_arr[pos] := De.v*(C_xy[x_loc-1, y_loc]-clmin.v)/
         dx.v*dy.v+De.v*(C_xy[x_loc+1, y_loc]-clmin.v)/dx.v*dy.v
         +De.v*(C_xy[x_loc, y_loc-1]-clmin.v)/dy.v*dx.v+De.v*
@@ -955,7 +935,7 @@ begin
       else
         SumUptake := NUptake;
       // calculate cumulative N uptake for the sinks
-      { Problem: there is still a conceptual error here }
+/// <summary>Problem: there is still a conceptual error here</summary>
       NAmountRootdt := RasterData.PosArr[i].NInflux * 14 / 1000 * int_dt.v;
       // NAmountRootdt:=RasterData.PosArr[i].NInflux*14/1000*86400/int_dt.V;
       RasterData.PosArr[i].NAmountdt := NAmountRootdt;
@@ -963,7 +943,7 @@ begin
         NAmountRootdt;
     end;
   end;
-  { Mineralization }
+/// <summary>Mineralization</summary>
   s := s - SumUptake;
 end;
 
@@ -975,7 +955,8 @@ procedure TSubmodDiff2DRoots.get_minGrid(x_loc, y_loc: word; var s: real);
 var
   pos: word;
 begin
-  s := Min_S.v * vol_Element; { sink term from mineralization [mol/s] }
+  /// <summary>sink term from mineralization [mol/s]</summary>
+  s := Min_S.v * vol_Element;
 end;
 
 procedure TSubmodDiff2DRoots.CalcRates;
@@ -988,17 +969,19 @@ var
   ConcField, UptakeFile: Textfile;
   i, j: integer;
   last_dt,
-  { difference between concBefore and conc }
+/// <summary>difference between concBefore and conc</summary>
   concBegin, // average concentration before calculating fluxes [mol/cm^3]
   ConcAfter, { average concentration after calculating fluxes [mol/cm^3]
     and before redistributing absorbed concentrations to the computational
     elements }
   // SumOfInternalTimeSteps,
-  sumNAmountRootsdt { N amount taken up by all valid roots in the time step }
+  /// <summary>N amount taken up by all valid roots in the time step</summary>
+  sumNAmountRootsdt
     : real;
   TimeStepAdaption: boolean;
 begin
-  inherited CalcRates; { nothing happens in the base model (no inherited call) }
+  /// <summary>nothing happens in the base model (no inherited call)</summary>
+  inherited CalcRates;
   ConcFieldName := ConcFieldDataFile.Option;
   // Communication with the structural model and display of WAP in MathImNutrUptake
   // create new file with outputs for the sinks:
@@ -1035,7 +1018,7 @@ begin
       int_dt.v := int_dt.v * 1.1; // increase time step
     If int_dt.v > globtime.C * 86400 then
       int_dt.v := globtime.C * 86400;
-    { Has the end of the day been exceeded with the new time step? }
+/// <summary>Has the end of the day been exceeded with the new time step?</summary>
     If SumOfInternalTimeSteps + int_dt.v > globtime.C * 86400 then
     begin
       last_dt := int_dt.v; // save old time step length
@@ -1056,7 +1039,7 @@ begin
     { If a steady-state condition should be generated, the constant concentration
       is restored in every time step }
     ConcAfter := avg_conz;
-    ActArFromConc.v := ActArFromConc.v + Mg_func(Tiefe.v, theta.v,
+    ActArFromConc.v := ActArFromConc.v + Mg_func(Depth.v, theta.v,
       concBegin - ConcAfter);
     { For the calculation of the current uptake rate only roots not in the
       margins are considered }
@@ -1118,7 +1101,7 @@ begin
   // nothing happens in the base class and no inherited call
   n_me_alt := N_amountsoil.v;
   c_av.v := avg_conz; // average concentration
-  N_amountsoil.v := Mg_func(Tiefe.v, theta.v, c_av.v);
+  N_amountsoil.v := Mg_func(Depth.v, theta.v, c_av.v);
 end; // End TSubmodRootDiff2D.Integrate
 
 procedure TSubmodDiff2DRoots.clearLists;
@@ -1137,7 +1120,7 @@ procedure TSubmodDiff2DRoots.calcRootPosAsIndex;
   ------------------------------------------------------------------------------ *)
 var
   i: integer;
-  { To restore the original values after rounding, they must be stored temporarily }
+/// <summary>To restore the original values after rounding, they must be stored temporarily</summary>
   xTemp, yTemp: double;
 begin
   for i := 1 to trunc(Num_Roots.v) do
@@ -1245,7 +1228,7 @@ var
     are output }
   PosArr_middle: Array of TPointDoubleType;
 begin
-  { If file not yet existing, create it }
+/// <summary>If file not yet existing, create it</summary>
   if not FileExists(RootSinkOutpDataFile.Option) then
   begin
     assignfile(UptakeFile, RootSinkOutpDataFile.Option);
@@ -1302,14 +1285,16 @@ function TSubmodDiff2DRoots.FileExists(FileName: string): boolean;
 var
   F: file;
 begin
-{$I-}
+/// <summary>$I-</summary>
   assignfile(F, FileName);
-  FileMode := 0; { open file read-only }
+  /// <summary>open file read-only</summary>
+  FileMode := 0;
   Reset(F);
   closefile(F);
-{$I+}
+/// <summary>$I+</summary>
   FileExists := (IOResult = 0) and (FileName <> '');
-end; { FileExists }
+/// <summary>FileExists</summary>
+end;
 
 function TSubmodDiff2DRoots.calcAmountUptakeRoots: double;
 (* ------------------------------------------------------------------------------
@@ -1352,8 +1337,8 @@ var
   ha: integer;
   NAmountRoot: double;
 begin
-  { N influx in [mol/cm/s] }
-  NAmountRoot := RasterData.PosArr[i].NInflux * kg_mol * Tiefe.v * int_dt.v;
+/// <summary>N influx in [mol/cm/s]</summary>
+  NAmountRoot := RasterData.PosArr[i].NInflux * kg_mol * Depth.v * int_dt.v;
   Result := NAmountRoot;
 end;
 

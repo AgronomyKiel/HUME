@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>U2DSoilBaseClasses</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="PasDoc 0.16.0-snapshot">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<div class="container"><div class="navigation">
+<ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
+<h1 class="unit">Unit U2DSoilBaseClasses</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section">Constants</div><div class="one_section">Variables</div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p>
+ defines some base classes for 2 dimensional water and nitrate transport equations </p>
+<span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
+<span id="PasDoc-Classes"></span><h3 class="cio">Classes, Interfaces, Objects and Records</h3>
+<table class="classestable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html"><code>TBaseSubmodRootDiff</code></a></td>
+<td class="itemdesc">Declaration of class TSubmodRootDiff. Base class for derived diffusion models Functionality of the base class: all models can read raster data, exclude margins from calculations and display the data in the appropriate tabs of the Hume form. The 1D model does not output in the 3D plot tab. </td>
+</tr>
+<tr class="list2">
+<td class="itemname">Class&nbsp;<a class="bold" href="U2DSoilBaseClasses.TRasterData.html"><code>TRasterData</code></a></td>
+<td class="itemdesc"> Declaration of class TRasterData. This class encapsulates the raster, positions and the number of read and randomized data (WAP). It enables display in the tabs RasterData and RootDistribution. The class also handles file access. </td>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="U2DSoilBaseClasses.TRootPosition.html"><code>TRootPosition</code></a></td>
+<td class="itemdesc"> Defines an object for storing the information of a single root object x and y are the floating point type coordinate xi and yi are the index integers for the cell of a 2-D grid object the root object is located </td>
+</tr>
+<tr class="list2">
+<td class="itemname">Class&nbsp;<a class="bold" href="U2DSoilBaseClasses.TSRPLight.html"><code>TSRPLight</code></a></td>
+<td class="itemdesc">Lean, memory-saving version of an SRP used in the 2d diffusion model for interface with the structural root model TSRP instances of the single root model also need fields for area and the vertex list so that, when reading raster data, the surface area can be determined (using Voronoi polygons or alternatively by splitting the area of raster cells among the roots contained in them. Units may be an issue) </td>
+</tr>
+</table>
+<span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code>function <strong><a href="U2DSoilBaseClasses.html#Cl_func-real-real-real-">Cl_func</a></strong>(Tiefe_cm, theta, NMenge: <a href="U2DSoilBaseClasses.html#real">real</a>): <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a href="U2DSoilBaseClasses.html#Mg_func-real-real-real-">Mg_func</a></strong>(Tiefe_cm, theta, Cli_mol_cm3: <a href="U2DSoilBaseClasses.html#real">real</a>): <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.html#real">real</a></strong> = double;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.html#TMyFloatPoint">TMyFloatPoint</a></strong> = double;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Functions and Procedures</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Cl_func-real-real-real-"></span><code>function <strong>Cl_func</strong>(Tiefe_cm, theta, NMenge: <a href="U2DSoilBaseClasses.html#real">real</a>): <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Returns the concentration [Mol N/cm&circ;3]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Mg_func-real-real-real-"></span><code>function <strong>Mg_func</strong>(Tiefe_cm, theta, Cli_mol_cm3: <a href="U2DSoilBaseClasses.html#real">real</a>): <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+ Returns the calculated N amount [kgN/ha]; converts the existing concentration (aggregated values). </p>
+</td></tr>
+</table>
+<h3 class="detail">Types</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="real"></span><code><strong>real</strong> = double;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+re defines a floating point type</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TMyFloatPoint"></span><code><strong>TMyFloatPoint</strong> = double;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+const &lt;summary&gt;Maximum number of roots.&lt;/summary&gt; max_num_roots = 40000; &lt;summary&gt;Floating point type for coordinates&lt;/summary&gt;</p>
+</td></tr>
+</table>
+<hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0-snapshot</a>. </em>
+</span>
+</div></div></body></html>

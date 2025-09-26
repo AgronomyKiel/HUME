@@ -1,4 +1,6 @@
-﻿unit SubmodRootDiff;
+﻿/// <summary>Base class for diffusion models</summary>
+
+unit SubmodRootDiff;
 
 interface
 
@@ -6,266 +8,21 @@ uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, math,  VCLTee.TeeProcs, VCLTee.TeEngine,
   VCLTee.Chart, VCLTee.Series,   AdvGrid,
-  UMod, UState, Diffko, SubmodRootStructureNew;
+  UMod, UState, Diffko, SubmodRootStructureNew, U2DSoilBaseClasses;
 
-const
-  /// <summary>Maximum number of roots.</summary>
-  max_num_roots = 40000;
 
 type
-  (* -----------------------------------------------------------------------------
-    Type declarations
-    ------------------------------------------------------------------------------ *)
-  { Records and sets }
-  /// <summary>
-  /// Mode of nitrogen uptake by the root: Michaelis-Menten (saturation kinetics),
-  /// fixed_influx assumes a constant sink strength, ZeroSink represents unlimited
-  /// sink strength (black hole).
-  /// </summary>
-  tUptake_Function = (MM, fixed_influx, ZeroSink);
-  TMyFloatPoint = double;
 
-  { -------------------------------------------------------------------------------
-    Array storing TPointDoubleTypes used to read xy coordinates from a file. The
-    record extends the type posi from the original model by the fields root, xi,
-    yi, NInflux, WInflux and area.
-    ------------------------------------------------------------------------------ }
-  TPointDoubleType = record
-    /// <summary>Position in Cartesian coordinate system [cm]</summary>
-    x, y: double;
-    /// <summary>Indices on computation grid</summary>
-    xi, yi: word;
-    /// <summary>Unique number for root</summary>
-    root: integer;
-    /// <summary>Nitrate influx [mol/cm*s]</summary>
-    NInflux: real;
-    /// <summary>N amount taken up in the internal time step [g]</summary>
-    NAmountdt: real;
-    /// <summary>Cumulative N amount taken up in the external time step [kgN/dt_ext]</summary>
-    SumNMenge: real;
-    /// <summary>Water influx [cm3/cm/s]</summary>
-    WInflux: real;
-    /// <summary>Area of Voronoi polygon [cm2]</summary>
-    area: real;
-  end;
 
-  { Classes }
-  TSRPLight = class(TObject)
-    { Lean, memory-saving version of an SRP }
+  /// <summary>Declaration of class TSubmodRootDiff. Base class for derived diffusion models</summary>
+  TSubmodRootDiff = class(TBaseSubmodRootDiff)
   private
-    { Private declarations }
+
+
   protected
+
   public
-    { Public declarations }
-    /// <summary>Root coordinates [cm] and root length density of the SRP [cm/cm^3]</summary>
-    x, y, wld: double;
-
-    { TSRP instances of the single root model also need fields for area and the
-      vertex list so that, when reading raster data, the surface area can be
-      determined (using Voronoi polygons or alternatively by splitting the area of
-      raster cells among the roots contained in them. Units may be an issue) }
-    /// <summary>Field for the coordinates of the root [cm]</summary>
-    coordRoot: TMyFloatPoint;
-    /// <summary>Surface area of the single root cylinder [cm^2]</summary>
-    area: double;
-    /// <summary>List of polygon vertices</summary>
-    vertexList: TList;
-    /// <summary>Mean nitrate concentration</summary>
-    Cl_mean: double;
-    /// <summary>Volumetric water content in the EWZ</summary>
-    theta_EWZ: double;
-    /// <summary>N amount in the EWZ at the beginning</summary>
-    init_NAmount: double;
-  public
-    { Public declarations }
-    { Access to the fields: set and get methods }
-  end;
-
-  { Declaration of class TRasterData.
-    This class encapsulates the raster, positions and the number of read and
-    randomized data (WAP). It enables display in the tabs RasterData and
-    RootDistribution. The class also handles file access }
-
-  TRasterData = class(TObject)
-    /// <summary>Description of the data set</summary>
-    DescStr: string;
-    /// <summary>Date [TDateTime format]</summary>
-    Date: TDatetime;
-    /// <summary>Number of rows</summary>
-    NCols: integer;
-    /// <summary>Number of columns</summary>
-    NRows: integer;
-    /// <summary>Number of roots</summary>
-    NRoots: integer;
-    /// <summary>Height of rows [cm]</summary>
-    DimCols: double;
-    /// <summary>Width of columns [cm]</summary>
-    DimRows: double;
-
-    { Arrays of class RasterData }
-
-    { Root numbers in 10,000 raster (computational) cells. The array is needed for
-      reading and displaying the number of roots in grid cells of dimension
-      5 cm x 5 cm }
-    CountArr: array of array of integer;
-    { Stores information on all roots in the form of TPointDoubleType entries }
-    PosArr: array [1 .. max_num_roots] of TPointDoubleType;
-  private
-    { Private declarations }
-  protected
-    { Protected declarations }
-  public
-    { Public declarations }
-    /// <summary> Reference to the diffusion submodel</summary>
-    SubmodRootDiff: TSubmodel;
-    /// <summary>Constructor</summary>
-    constructor create(Submodel: TSubmodel);
-    /// <summary>Reads aggregated raster data and generates random positions</summary>
-    procedure readRasterData(fn: string; var Series: TPointSeries);
-    /// <summary>Reads XY coordinates from a file</summary>
-    procedure readXYfromFile(Filename: TFilename;
-      var Series: TPointSeries); virtual;
-    /// <summary>Saves generated root coordinates to a file</summary>
-    procedure saveRootPositons(SaveDialog: TSaveDialog);
-  published
-    { Published declarations }
-    /// <summary>Clears the Pos array members</summary>
-    procedure errasePosArr;
-  end; { Ende Deklaration TRasterData }
-
-  TSubmodRootDiff = class(TSubmodel)
-    { Declaration of class TSubmodRootDiff. Base class for derived diffusion models }
-  private
-    { Private declarations }
-    { Fields }
-    { Functionality of the base class: all models can read raster data, exclude
-      margins from calculations and display the data in the appropriate tabs of the
-      Hume form. The 1D model does not output in the 3D plot tab. }
-    fMyChart: TChart;
-    fMyAdvStringGrid: TAdvStringGrid;
-    fMyStructModel: TSubmodRootStrucNew;
-    xyFile: TextFile;
-    { Methoden }
-    // Helper methods
-    /// <summary>Initialization method extendable for file operations that should
-    /// only be executed once.</summary>
-    procedure init_;
-  protected
-    { Protected declarations, also accessible by derived classes }
-    { Object for displaying the WAP in the Hume form }
-    SeriesXY: TPointSeries;
-    /// <summary>Area [cm²]</summary>
-    Flaeche: real;
-    /// <summary>RasterData instance owned by the submodel</summary>
-    RasterData: TRasterData;
-    /// <summary>Indicates whether initialization has already occurred</summary>
-    initialisiert: boolean;
-    { * -----------------------------------------------------------------------------
-      Member HUME base class TPar (parameters)
-      ------------------------------------------------------------------------------* }
-    /// <summary>Width of the computational domain [cm]</summary>
-    dimensionX: TPar;
-    /// <summary>Height of the computational domain [cm]</summary>
-    dimensionY: TPar;
-    /// <summary>Width of the raster grid (aggregated data) in x-direction [cm]</summary>
-    gridWidth: TPar;
-    /// <summary>Width of the raster grid (aggregated data) in y-direction [cm]</summary>
-    gridHeight: TPar;
-    /// <summary>Diffusion coefficient of nitrate in free H2O [cm^2/s]</summary>
-    Dl: TPar;
-    /// <summary>Maximum time step width [s]</summary>
-    max_dt: TPar;
-    /// <summary>Volumetric water content [cm3/cm3]</summary>
-    theta: TPar;
-    /// <summary>Depth of the layer [cm], assumption for mineralization calculation</summary>
-    Tiefe: TPar;
-    /// <remarks>Mineralization model not yet available but should be implemented for both models</remarks>
-    /// <summary>Mineralization rate [kg N/ha*d]</summary>
-    minera: TPar;
-    /// <summary>Minimum soil solution concentration [Mol/l], also needed for the numerical solution in the 1D model; note: originally in micromol/l</summary>
-    Clmin: TPar;
-    /// <remarks>Margins are necessary so that edge effects can be excluded when the root exit points are hexagonally distributed</remarks>
-    /// <summary>Vertical margin [cm]</summary>
-    verticMargin: TPar;
-    /// <summary>Horizontal margin [cm]</summary>
-    horizMargin: TPar;
-    /// <summary>Depth at which evaluation should begin (in the 2D cross-section) [cm]</summary>
-    depthLayer: TPar;
-    /// <summary>Thickness of the layer [cm]</summary>
-    SizeLayer: TPar;
-
-    /// <summary>Mean root length density [cm/ccm]</summary>
-    ParMRLD: TPar;
-    /// <summary>Radius of the root [cm]</summary>
-    Rad_Wurzel: TPar;
-    (* -----------------------------------------------------------------------------
-      Member HUME base class TState (state variables
-      ------------------------------------------------------------------------------ *)
-    /// <summary>N amount [kg N/ha], also basis for calculating concentrations in the calculation elements; see Kage dissertation p.79 where concentrations of 10.0 micromol/l were assumed</summary>
-    N_AmountSoil: TState;
-    /// <summary>Cumulative amount of N taken up by the roots [kg N/ha] for the specified depth</summary>
-    Sum_N_AmountRoots: TState;
-    (* -----------------------------------------------------------------------------
-      Member HUME base class TVar (variables)
-      ------------------------------------------------------------------------------ *)
-    /// <summary>Mean root length density in a layer [cm/cm^3] calculated without roots located in the margins</summary>
-    RLD_mean: TVar;
-    /// <summary>Central area without margins [cm2]</summary>
-    AreaMiddle: TVar;
-    /// <summary>Number of roots in center and margins [n]</summary>
-    num_roots: TVar;
-    /// <summary>Number of roots not located in margins []</summary>
-    number_consid_roots: TVar;
-    /// <summary>Mineralization rate [Mol/cm^3*s]</summary>
-    Min_S: TVar;
-    /// <summary>Initial concentration [mol/cm^3], calculated from the initial N amount; the 1D model can also calculate concentrations</summary>
-    c_start: TVar;
-    /// <summary>Average concentration in the soil solution [Mol/cm^3]</summary>
-    cl_av: TVar;
-    /// <summary>Volume of the soil layer including margins [cm3]</summary>
-    volumen: TVar;
-    /// <summary>Effective diffusion coefficient [cm^2/s]</summary>
-    De: TVar;
-    /// <summary>Measure of error for regular distribution = number of roots that do not fit into the observation window when generating the uniform distribution, as a percentage of all roots [%]</summary>
-    errorReg: TVar;
-    (* -----------------------------------------------------------------------------
-      Member HUME base class TState (state variables). Declared and created in
-      derived classes.
-      ------------------------------------------------------------------------------ *)
-    (* -----------------------------------------------------------------------------
-      Member HUME base class TOption (options)
-      ------------------------------------------------------------------------------ *)
-    /// <summary>Type of initialization, e.g. file or structural model</summary>
-    IniMethod: TOption;
-    /// <summary>Type of uptake calculation</summary>
-    uptake_function: TOption;
-    /// <summary>Path and name of the init file with XY root data</summary>
-    RootInpDataFileXY: TOption;
-    /// <summary>Path and name of the init file with root data as counts in a grid</summary>
-    RootInpDataFile: TOption;
-    /// <summary>Specify whether XY data should be written to a file</summary>
-    OutputXY: TOption;
-    /// <summary>Path and name of the output file for XY data</summary>
-    RootXYOutpDataFile: TOption;
-
-    { Methoden }
-    // Helper methods
-    { Initialization depending on whether data has already been read from a file }
-    procedure init_eingelesen; virtual;
-    procedure fillChartRootDistr;
-    procedure fillGridRasterData;
-    procedure EqualDistribution;
-    procedure distributeHexagonRow;
-    procedure distributeHexagonCol;
-    procedure writeOutputToFile;
-    procedure removeMarginRoots;
-    procedure calcNumberConsRoots; { Calculates the number of roots that are within
-      the observation window but not in the margins }
-    // Conversions between amount and concentration
-    function Mg_func(Tiefe_cm, theta, Cli_mol_cm3: real): extended;
-    function Cl_func(Tiefe_cm, theta, NMenge: real): extended;
-  public
-    { Public-Deklarationen }
+    /// <summary>Public declarations</summary>
     /// <summary>Flag for one-time write access</summary>
     hasWritten: boolean;
     procedure createAll; override;
@@ -276,241 +33,35 @@ type
     // Set and get methods
     function getRasterData: TRasterData;
   published
-    { Published declarations }
+    /// <summary>Published declarations</summary>
     // Publication of properties in the object inspector.
-    property Par_theta: TPar read theta write theta;
-    property Par_Tiefe: TPar read Tiefe write Tiefe;
-    property Par_volumen: TVar read volumen write volumen;
-    property MyChart: TChart read fMyChart write fMyChart;
-    property MyAdvStringGrid: TAdvStringGrid read fMyAdvStringGrid
-      write fMyAdvStringGrid;
-    property MyStructModel: TSubmodRootStrucNew read fMyStructModel
-      write fMyStructModel;
 
   end; { Ende Deklaration TSubmodRootDiff }
 
 var
-  { Stores the root positions read from a file. A global variable is necessary,
-    because when PosArr_eingelesen is a member of an object, an unexplained crash
-    occurs. }
-  PosArr_eingelesen: array [1 .. max_num_roots] of TPointDoubleType;
+  /// <summary>
+  /// Stores the root positions read from a file. A global variable is necessary,
+  /// because when PosArr_eingelesen is a member of an object, an unexplained crash
+  /// occurs.
+  /// </summary>
 
 implementation
 
-(* -----------------------------------------------------------------------------
-  Implementation of the methods of TRasterData
-  ------------------------------------------------------------------------------ *)
-constructor TRasterData.create(Submodel: TSubmodel);
-begin
-  { The RasterData instance knows its submodel }
-  SubmodRootDiff := Submodel;
-end; // End TRasterData.create
 
-procedure TRasterData.errasePosArr;
-(* ------------------------------------------------------------------------------
-  ASSOCIATED CLASS:   TRasterData
-  DESCRIPTION: Clears all fields of the Pos array so it can be filled with new
-  xy values.
-  ------------------------------------------------------------------------------ *)
-var
-  i: integer;
-begin
-  for i := 1 to high(PosArr) do
-  begin
-    PosArr[i].x := 0;
-    PosArr[i].y := 0;
-    PosArr[i].xi := 0;
-    PosArr[i].yi := 0;
-    PosArr[i].root := 0;
-    PosArr[i].NInflux := 0;
-    PosArr[i].WInflux := 0;
-    PosArr[i].area := 0;
-  end;
-end; // End TRasterData.errasePosArr
-
-procedure TRasterData.readRasterData(fn: string; var Series: TPointSeries);
-(* ------------------------------------------------------------------------------
-  ASSOCIATED CLASS:   TRasterData
-  DESCRIPTION: Reads aggregated raster data (root counts) which are then used to
-  randomly determine coordinate points. Example of functionality: readln(f, Ncols)
-  assigns the value read from f to the variable Ncols.
-  ------------------------------------------------------------------------------ *)
-var
-  F: TextFile; { File variable for text files }
-  S: string;
-  Row, Col, root, AllRoot: integer;
-  PointDoubleType: TPointDoubleType;
-begin
-  AssignFile(F, fn); { File selected }
-  Reset(F);
-  // Read the header
-  Readln(F, S); { Read and discard first line of the file (header) }
-  DescStr := S; { -> DescStr: description of the data set }
-  Readln(F, S);
-  Date := StrToFloat(S); { Second line: date (TDateTime format) }
-  Readln(F, NRows); { Third line: number of rows }
-  Readln(F, NCols); { Fourth line: number of columns }
-  Readln(F, DimRows); { Fifth line: row height [cm] }
-  Readln(F, DimCols); { Sixth line: column width [cm] }
-  // Repeatedly read data until end of file
-  for Row := 0 to NRows - 1 do
-  begin { Read root counts into CountArr }
-    for Col := 0 to NCols - 1 do
-      read(F, CountArr[Col, Row]);
-    Readln(F); // New line
-  end;
-  closeFile(F);
-  AllRoot := 1; // Start at 1 because PosArr begins at 1.
-  { Randomly distribute roots in each grid cell }
-  for Col := 0 to NCols - 1 do
-  begin
-    for Row := 0 to NRows - 1 do
-    begin
-      { Exactly as many roots are assigned to PosArr as were read into CountArr. }
-      for root := 1 to CountArr[Col, Row] do
-      begin
-        // randomize;     // [What does Randomize do?]
-        PosArr[AllRoot].x := (Col) * DimCols + Random * DimCols;
-        PosArr[AllRoot].y := (Row) * DimRows + Random * DimRows;
-        PosArr[AllRoot].root := AllRoot;
-        Series.AddXY(PosArr[AllRoot].x, PosArr[AllRoot].y);
-        Inc(AllRoot);
-      end;
-    end;
-  end;
-  { The model and the RasterData object know the total number of roots }
-  TSubmodRootDiff(SubmodRootDiff).num_roots.v := AllRoot - 1;
-  self.NRoots := AllRoot - 1;
-end; // End TRasterData.readRasterData
-
-procedure TRasterData.readXYfromFile(Filename: TFilename;
-  var Series: TPointSeries);
-(* ------------------------------------------------------------------------------
-  ASSOCIATED CLASS: TRasterData
-  DESCRIPTION: Reads XY coordinates from a file and successively fills the passed
-  (call-by-reference) PointSeries object with the XY pairs.
-  ------------------------------------------------------------------------------ *)
-var
-  // File variable for text files
-  F: TextFile;
-  s_header,
-  { Variable needed because some values in a text line must be skipped
-    (see file format) }
-  restString: String;
-  { pos_delimiter stores the position of the last delimiter in the string }
-  pos_delimiter: integer;
-  PointDoubleType: TPointDoubleType;
-  i: integer;
-begin
-  errasePosArr;
-  // Issue: Is the clearing step needed (see called method)?
-  // Read data from file:
-  try
-    AssignFile(F, Filename); // Link file variable to file
-    Reset(F); // Read access
-    // Read header and discard
-    Readln(F, s_header);
-    // Read the actual data
-    i := 1; // PosArr starts at 0
-    { Issue: may need to start at 1 to obtain correct root counts }
-    NRoots := 0;
-    { Defining bounds of PosArr; could be used if PosArr were implemented as a
-      dynamic array }
-    while not Eof(F) do
-    begin
-      Readln(F, restString);
-      Inc(NRoots);
-    end;
-    Reset(F); // Reset file pointer to beginning
-    // Read the header and discard it
-    Readln(F, s_header);
-    while not Eof(F) do
-    begin
-      Readln(F, PointDoubleType.x, PointDoubleType.y, PointDoubleType.root,
-        restString);
-      // Remove trailing whitespace:
-      restString := TrimRight(restString);
-      { Determine position of last delimiter in string }
-      pos_delimiter := LastDelimiter(#9, restString); // #9 is tab
-      // Remove leading part of string up to last delimiter:
-      Delete(restString, 1, pos_delimiter);
-      PointDoubleType.area := StrToFloat(restString);
-      { As in the 2D model, all WAP must also be considered in the 1D model so that a
-        suitable surface area of the Voronoi polygon can be calculated. In the 2D model
-        only the uptake of sinks not located in the margins is later considered; in the
-        1D model only coordinates not in the margins are used for calculating the
-        parameters of the lognormal distribution function. }
-      PosArr[i].x := PointDoubleType.x;
-      PosArr[i].y := PointDoubleType.y;
-      PosArr[i].root := i;
-      PosArr[i].area := PointDoubleType.area;
-      Series.AddXY(PointDoubleType.x, PointDoubleType.y);
-      Inc(i);
-    end;
-    // Submodel knows the number of roots
-    TSubmodRootDiff(SubmodRootDiff).num_roots.v := NRoots;
-    { Due to a root at 0/0. The position of this root is obviously incorrect }
-    // ShowMessage(FloatToStr(RasterData.PosArr[1].x));
-  except
-    ShowMessage('Error accessing file');
-  end;
-  closeFile(F);
-end; // End TRasterData.readXYfromFile
-
-procedure TRasterData.saveRootPositons(SaveDialog: TSaveDialog);
-(* ------------------------------------------------------------------------------
-  ASSOCIATED CLASS: TRasterData
-  DESCRIPTION: After reading aggregated root data, saves the generated random
-  root coordinates (considering assignment to a 5x5 cm grid cell) as floating point
-  numbers in a file.
-  ------------------------------------------------------------------------------ *)
-var
-  F: TextFile;
-  root: integer;
-begin
-  If SaveDialog.Execute then
-  begin
-    AssignFile(F, SaveDialog.Filename);
-    rewrite(F);
-    { Format needed for importing into an external program that calculates
-      Voronoi polygons }
-    // Write header
-    writeln(F, 'X	 Y	Number	Edge	Species	Radius');
-    // Write the randomly generated X and Y values
-    for root := 1 to NRoots do
-      writeln(F, PosArr[root].x, ' ', PosArr[root].y, ' ', root, ' e a 0');
-    closeFile(F);
-  end;
-end; // End TRasterData.saveRootPositons
-
-(* ------------------------------------------------------------------------------
-  ASSOCIATED CLASS: TRasterData
-  DESCRIPTION: Set and get methods
-  ------------------------------------------------------------------------------ *)
-
-(* -----------------------------------------------------------------------------
-  TRasterData Ende
-  ------------------------------------------------------------------------------ *)
-
-(* -----------------------------------------------------------------------------
-  Implementierung TSubmodRootDiff
-  ------------------------------------------------------------------------------ *)
+/// <summary>Implementierung TSubmodRootDiff</summary>
+/// <summary>
+/// Creates and initializes state variables, variables and parameters. The first
+/// parameter of the function call passes a string identical to the identifier and
+/// can be searched for. The second parameter contains a string indicating the
+/// unit used ([-] for dimensionless parameters, etc.). The third parameter is the
+/// actual floating-point value. For an explanation of the identifiers, see the
+/// declaration.
+/// </summary>
 procedure TSubmodRootDiff.createAll;
-(* ------------------------------------------------------------------------------
-  ASSOCIATED CLASS: TSubmodRootDiff
-  DESCRIPTION:
-  Creates and initializes state variables, variables and parameters.
-  The first parameter of the function call passes a string identical to the
-  identifier and can be searched for.
-  The second parameter contains a string indicating the unit used ([-] for
-  dimensionless parameters, etc.).
-  The third parameter is the actual floating-point value.
-  For an explanation of the identifiers, see the declaration.
-  ------------------------------------------------------------------------------ *)
 begin
   inherited createAll;
   SeriesXY := TPointSeries.create(self);
-  initialisiert := false;
+  initialised := false;
   RasterData := TRasterData.create(self);
   // Create and initialize TPar
   ParCreate('dimensionX', '[cm]', 100, dimensionX);
@@ -519,7 +70,7 @@ begin
   ParCreate('gridHeight', '[cm]', 5, gridHeight);
   ParCreate('max_dt', '[s]', 0, max_dt);
   ParCreate('theta', '[cm3/cm3]', 0.2, theta);
-  ParCreate('Tiefe', '[cm]', 10, Tiefe);
+  ParCreate('Tiefe', '[cm]', 10, Depth);
   // [0 = no mineralization]
   ParCreate('Minera', '[kg N/ha*d]', 0, minera);
   ParCreate('Dl', '[cm^2/s]', 1.92E-5, Dl);
@@ -530,7 +81,7 @@ begin
   ParCreate('depthLayer', '[cm]', 0, depthLayer);
   ParCreate('SizeLayer', '[cm]', 10, SizeLayer);
   ParCreate('ParMRLD', '[cm/ccm]', 0, ParMRLD);
-  ParCreate('Rad_Wurzel', '[cm]', 0, Rad_Wurzel);
+  ParCreate('RootRadius', '[cm]', 0, RootRadius);
   // Create and initialize TState
   StateCreate('N_AmountSoil', '[kg N/ha]', 0, false, N_AmountSoil);
   StateCreate('Sum_N_AmountRoots', '[kg N/ha]', 0, false, Sum_N_AmountRoots);
@@ -546,7 +97,7 @@ begin
   VarCreate('Min_s', '[Mol/cm^3*s]', 0, false, Min_S);
   VarCreate('c_start', '[Mol/cm^3]', 0, false, c_start);
   VarCreate('cl_av', '[Mol/cm^3]', 0, false, cl_av);
-  VarCreate('volumen ', '[cm/m^3]', 0, false, volumen);
+  VarCreate('volumen ', '[cm/m^3]', 0, false, Volume);
   VarCreate('errorReg ', '[%]', 0, false, errorReg);
   VarCreate('De ', '[cm^2/s]', 0, false, De);
   // Create and initialize TOption
@@ -640,11 +191,8 @@ begin
 
 end; // End TSubmodRootDiff.CreateAll
 
+/// <summary>Performs various initializations</summary>
 procedure TSubmodRootDiff.AddDataValueToDataSeries;
-(* ------------------------------------------------------------------------------
-  ASSOCIATED CLASS: TSubmodRootDiff
-  DESCRIPTION: Performs various initializations
-  ------------------------------------------------------------------------------ *)
 var
   i: integer;
   // Number of grid cells in X and Y direction
@@ -673,12 +221,12 @@ begin
   { Calculation of effective diffusion coefficient [cm2/s] for the 2D model }
   // De.v := Dbf(theta.v)/Theta.v; //alte Implementierung
   // Initialize TVar where appropriate at this stage
-  Flaeche := dimensionX.v * dimensionY.v;
+  Area := dimensionX.v * dimensionY.v;
   { Area of the layer under investigation }
-  volumen.v := Flaeche * Tiefe.v;
+  Volume.v := Area * Depth.v;
   { Calculation of mineralization rate in [Mol/cm3*s] }
   // Min_S.V := minera.v/14*1000/86400*1/(Tiefe.v*1e8);
-  Min_S.v := minera.v * 1000 / (14 * 86400 * Tiefe.v * 1E8);
+  Min_S.v := minera.v * 1000 / (14 * 86400 * Depth.v * 1E8);
   { Calculation of the initial N amount in the soil layer from the concentration.
     Issue: Should theta be multiplied here because the concentration refers only to
     the volume of water contained in the soil? }
@@ -694,28 +242,26 @@ begin
   begin
     // init_;
     // init_eingelesen wird von den abgeleiteten Methoden mit inherited aufgerufen.
-    initialisiert := true;
+    initialised := true;
   end;
 end; // End TSubmodRootDiff.init
 
+/// <summary>
+/// Performs various initializations that should be executed only once (the global
+/// model's init procedure is called multiple times). This is relevant, for example,
+/// when creating objects or accessing files. Currently no such access occurs, but
+/// the structure is prepared for it.
+/// </summary>
 procedure TSubmodRootDiff.init_;
-(* ------------------------------------------------------------------------------
-  ASSOCIATED CLASS: TSubmodRootDiff
-  DESCRIPTION: Performs various initializations that should be executed only once
-  (the global model's init procedure is called multiple times). This is relevant,
-  for example, when creating objects or accessing files. Currently no such access
-  occurs, but the structure is prepared for it.
-  ------------------------------------------------------------------------------ *)
 begin
 
 end; // End TSubmodRootDiff.init_
 
+/// <summary>
+/// Calculates the number of roots that are in the observation window and
+/// simultaneously NOT in the margins.
+/// </summary>
 procedure TSubmodRootDiff.init_eingelesen;
-(* ------------------------------------------------------------------------------
-  DESCRIPTION:
-  Calculates the number of roots that are in the observation window
-  and simultaneously NOT in the margins.
-  ------------------------------------------------------------------------------ *)
 begin
   calcNumberConsRoots;
 end; // End TSubmodRootDiff.init_eingelesen
@@ -725,11 +271,8 @@ begin
   { Class is overridden in derived components. }
 end; // End TSubmodRootDiff.CalcRates
 
+/// <summary>Method overridden to successively change the time step width.</summary>
 procedure TSubmodRootDiff.Integrate;
-(* ------------------------------------------------------------------------------
-  ASSOCIATED CLASS:  TSubmodRootDiff
-  DESCRIPTION: Method overridden to successively change the time step width.
-  ------------------------------------------------------------------------------ *)
 begin
   { inherited is commented out because integration in the derived submodels is
     partially performed using an analytical solution. }
@@ -737,10 +280,8 @@ begin
 
 end; // End TSubmodRootDiff.Integrate
 
+/// <summary>Both models can display roots in the RootDistribution tab.</summary>
 procedure TSubmodRootDiff.fillChartRootDistr;
-(* ------------------------------------------------------------------------------
-  DESCRIPTION: Both models can display roots in the RootDistribution tab.
-  ------------------------------------------------------------------------------ *)
 var
   i: integer;
 begin
@@ -754,13 +295,12 @@ begin
   MyChart.AddSeries(SeriesXY);
 end;
 
+/// <summary>
+/// Both models can write aggregated root data to the form. The method fills the
+/// aggregated root data (number of roots per grid cell) into the AdvStringGrid of
+/// the Hume form.
+/// </summary>
 procedure TSubmodRootDiff.fillGridRasterData;
-(* ------------------------------------------------------------------------------
-  DESCRIPTION:
-  Both models can write aggregated root data to the form.
-  The method fills the aggregated root data (number of roots per grid cell)
-  into the AdvStringGrid of the Hume form.
-  ------------------------------------------------------------------------------ *)
 var
   Row, Col, SumRow, SumCol: integer;
 begin
@@ -804,14 +344,13 @@ begin
   end;
 end;
 
+/// <summary>
+/// Writes coordinates and areas of PosArr to a file. With a structural model, output
+/// occurs at each time step; with static root positions only at the start of the
+/// model run. For testing in the static case, the positions of roots in the margins
+/// are also written.
+/// </summary>
 procedure TSubmodRootDiff.writeOutputToFile;
-(* ------------------------------------------------------------------------------
-  DESCRIPTION:
-  Writes coordinates and areas of PosArr to a file. With a structural model,
-  output occurs at each time step; with static root positions only at the start
-  of the model run. For testing in the static case, the positions of roots in
-  the margins are also written.
-  ------------------------------------------------------------------------------ *)
 var
   i, j: integer;
   { Only sinks that are not in the margin and observation window are output.
@@ -929,15 +468,14 @@ begin
 
 end;
 
+/// <summary>
+/// All diffusion models can compute a uniform distribution from a given one. The
+/// method distributes points based on a given WLD evenly over an area. The
+/// TPointSeries object of the calling HUME GUI method is refilled so the display
+/// can be updated. Different methods were created for this purpose and can be
+/// switched here.
+/// </summary>
 procedure TSubmodRootDiff.EqualDistribution;
-(* ------------------------------------------------------------------------------
-  DESCRIPTION:
-  All diffusion models can compute a uniform distribution from a given one.
-  The method distributes points based on a given WLD evenly over an area.
-  The TPointSeries object of the calling HUME GUI method is refilled so the
-  display can be updated. Different methods were created for this purpose and
-  can be switched here.
-  ------------------------------------------------------------------------------ *)
 var
   radSRP, // Radius SRP
   AreaSRP // Fläche SRP
@@ -959,12 +497,12 @@ begin
   // distributeHexagonCol;
 end; // End TSubmodRootDiff.hexDistribution
 
+/// <summary>
+/// Distribution using hexagons. Rows are filled sequentially. For better
+/// distribution the points still need to be shifted by half the radius of the
+/// circumscribed circle.
+/// </summary>
 procedure TSubmodRootDiff.distributeHexagonRow;
-(* ------------------------------------------------------------------------------
-  DESCRIPTION: Distribution using hexagons. Rows are filled sequentially.
-  For better distribution the points still need to be shifted by half the
-  radius of the circumscribed circle.
-  ------------------------------------------------------------------------------ *)
 var
   { The following radii are required to compute the distribution. The inscribed
     and circumscribed circles refer to the regular hexagon with the root at its
@@ -1085,16 +623,15 @@ begin
   errorReg.v := errorRoot / num_roots.v * 100;
 end; // End TSubmodRootDiff.distributeHexagonRow
 
+/// <summary>
+/// Distribution using hexagons. Columns are filled sequentially. The method may be
+/// advantageous when nutrient uptake in layers is calculated (this still needs
+/// verification). The distribution was adjusted: X-values were shifted half a Rad_AK
+/// to the right and Y-values half a Rad_AK upward (see slide Filling columns 2).
+/// CAVE: method not up to date and should be improved based on distributeHexagonRow
+/// (e.g., calculation of ErrorReg).
+/// </summary>
 procedure TSubmodRootDiff.distributeHexagonCol;
-(* ------------------------------------------------------------------------------
-  DESCRIPTION:
-  Distribution using hexagons. Columns are filled sequentially.
-  The method may be advantageous when nutrient uptake in layers is calculated
-  (this still needs verification). The distribution was adjusted: X-values were
-  shifted half a Rad_AK to the right and Y-values half a Rad_AK upward (see
-  slide Filling columns 2). CAVE: method not up to date and should be improved
-  based on distributeHexagonRow (e.g., calculation of ErrorReg).
-  ------------------------------------------------------------------------------ *)
 var
   { The following radii are required to compute the distribution. The inscribed
     and circumscribed circles refer to the regular hexagon with the root at its
@@ -1201,12 +738,11 @@ begin
   end;
 end; // End TSubmodRootDiff.distributeHexagonCol
 
+/// <summary>
+/// Calculates the number of valid roots (located in the observation window but
+/// not in the margins).
+/// </summary>
 procedure TSubmodRootDiff.calcNumberConsRoots;
-(* ------------------------------------------------------------------------------
-  DESCRIPTION:
-  Calculates the number of valid roots (located in the observation window but
-  not in the margins)
-  ------------------------------------------------------------------------------ *)
 var
   rootcount, i: integer;
 begin
@@ -1233,27 +769,25 @@ begin
   // showMessage(self.SubModName+': '+floatToStr(number_consid_roots.V));
 end;
 
+/// <summary>
+/// Returns the calculated N amount [kgN/ha]; converts the existing concentration
+/// (aggregated values).
+/// </summary>
 function TSubmodRootDiff.Mg_func(Tiefe_cm, theta, Cli_mol_cm3: real): extended;
-(* ------------------------------------------------------------------------------
-  DESCRIPTION: Returns the calculated N amount [kgN/ha]; converts the existing
-  concentration (aggregated values)
-  ------------------------------------------------------------------------------ *)
 const
   kg_mol = 14 / 1000; { Molecular weight of nitrogen }
 var
   volumen_cm3, { Volume of soil layer on an area of 1 ha }
   cm3_ha, n_menge: extended;
 begin
-  volumen_cm3 := Tiefe.v * 1E8;
+  volumen_cm3 := Depth.v * 1E8;
   cm3_ha := theta * volumen_cm3; { Water content on one hectare }
   n_menge := Cli_mol_cm3 * kg_mol * cm3_ha;
   Result := n_menge;
 end;
 
+/// <summary>Returns the concentration [Mol N/cm^3]</summary>
 function TSubmodRootDiff.Cl_func(Tiefe_cm, theta, NMenge: real): extended;
-(* ------------------------------------------------------------------------------
-  DESCRIPTION: Returns the concentration [Mol N/cm^3]
-  ------------------------------------------------------------------------------ *)
 const
   kg_mol = 14 / 1000; { Molecular weight of nitrogen }
 var
@@ -1261,17 +795,14 @@ var
   cm3_ha, Cli_mol_cm3: extended;
 
 begin
-  volumen_cm3 := Tiefe.v * 1E8;
+  volumen_cm3 := Depth.v * 1E8;
   cm3_ha := theta * volumen_cm3; { Water content on one hectare }
   Cli_mol_cm3 := NMenge / (kg_mol * cm3_ha);
   Result := Cli_mol_cm3;
 end;
 
+/// <summary>Removes roots located in the margins from the Pos array</summary>
 procedure TSubmodRootDiff.removeMarginRoots;
-(* ------------------------------------------------------------------------------
-  DESCRIPTION:
-  Removes roots located in the margins from the Pos array
-  ------------------------------------------------------------------------------ *)
 var
   i, j: integer;
   { Dynamic array that temporarily stores roots not located in the margins }

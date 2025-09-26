@@ -6,7 +6,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs,
-  UMod, SubmodRootDiff, UState, AdvGrid;
+  UMod, SubmodRootDiff, U2DSoilBaseClasses, USubmodRoot2dDiffNitrate, UState, AdvGrid;
 
 type
   // Zeigertypen
@@ -14,13 +14,9 @@ type
   // Arrays
   r2 = array [0 .. 1] of double; // Vektor im Punktraum
 
-  // Klassen
-  TMyFloatPoint = class(TObject)
-    x, y: double;
-  end;
 
   TRandomPoint = class(TObject)
-    RandomPointPos: TMyFloatPoint;
+    RandomPointPos: TRootPosition;
     shortestDist, { Kürzeste Distanz [cm] }
     shortDist_m, { Kürzeste Distanz [m] }
     quadShortDist_m, { Quadrierte kürzeste Distanz [m] }
@@ -31,7 +27,7 @@ type
     constructor create;
   end;
 
-  TSubmodRootDiff1DRapp = class(TSubmodRootDiff)
+  TSubmodRootDiff1DRapp = class(TSubmodRoot2DDiffNitrate)
   private
     { Private-Deklarationen }
     ArrayHasFilled: boolean; { Schalter erlaubt einmalige Berechnung der ein
@@ -242,7 +238,7 @@ begin
   // De und nicht Db
   De.V := Dl.V * 3.35 * sqr(theta.V);
   // zero-Sink bedeutet k=1
-  if self.uptake_function.Option = 'zerosink' then
+  if NitrateuptakeFunction.Option = 'zerosink' then
     K.V := 1;
   // Speichern der Menge N, die sich initial im Boden befindet
   initAmountNSoil := N_AmountSoil.V;
@@ -288,7 +284,7 @@ begin
     EqualDistribution;
   end;
   { Bestimmung von Wurzeln, die sich nicht in den Rändern befinden }
-  init_eingelesen;
+  init_ReadFromFile;
   if (RootDistribution.Option <> 'regular') or (iniMethod.Option = 'xyfile')
   then
   // in bestimmmten Fällen muss RLD neu berechnet werden.
@@ -298,7 +294,7 @@ begin
   // Youngs-Gardner: Transformierte Werte (andere Einheiten)
   // Skalierung auf m/m^3 es werden nur mittlere Wurzeln berücksichtigt
   RLD_m := number_consid_roots.V / AreaMiddle.V * 10000;
-  RadWurzel_m := Rad_Wurzel.V / 100;
+  RadWurzel_m := RootRadius.V / 100;
   De_m := De.V / (100 * 100);
   v_s.V := Pi * RLD_m * sqr(RadWurzel_m);
   tau_s.V := (K.V + theta.V) / (Pi * RLD_m * De_m);
@@ -377,7 +373,7 @@ begin
     begin
       RLD := 1 / (Pi * sqr(relFrequencyArr[0][i]));
       uptakeArr[i] := 1 - exp(2 * Pi * RLD * Globmod.time.V * De.V * 86400 /
-        (ln(1.65 * Rad_Wurzel.V / relFrequencyArr[0][i])));
+        (ln(1.65 * RootRadius.V / relFrequencyArr[0][i])));
       // Wichtung
       uptakeArr[i] := uptakeArr[i] * weightArr[i];
     end;
@@ -458,11 +454,11 @@ begin
     ARandomPoint := RandomPointList.items[i];
     RandomPointKoord[0] := ARandomPoint.RandomPointPos.x;
     RandomPointKoord[1] := ARandomPoint.RandomPointPos.y;
-    for j := 1 to high(RasterData.PosArr) do
+    for j := 0 to RasterData.PosList.Count-1 do
     begin
       { Es werden alle Wurzeln berücksichtigt }
-      WAPKoord[0] := RasterData.PosArr[j].x;
-      WAPKoord[1] := RasterData.PosArr[j].y;
+      WAPKoord[0] := TRootPosition(RasterData.PosList.Objects[j]).x;
+      WAPKoord[1] := TRootPosition(RasterData.PosList.Objects[j]).y;
       distNew := calcDistance(WAPKoord, RandomPointKoord);
       if distNew < distOld then
       begin
@@ -474,10 +470,10 @@ begin
     { Erweiterung des Ansatzes: Es werden nur Strecken bis zu den Grenzen berücksich-
       tigt. Rand selbst gehört zur Beobachtungsfläche }
     // Wenn der Punkt in den Rändern liegt
-    if (RasterData.PosArr[indexNearestWAP].x < verticMargin.V) or
-      (RasterData.PosArr[indexNearestWAP].x > dimensionX.V - verticMargin.V) or
-      (RasterData.PosArr[indexNearestWAP].y < horizMargin.V) or
-      (RasterData.PosArr[indexNearestWAP].y < dimensiony.V - horizMargin.V) then
+    if (TRootPosition(RasterData.PosList.Objects[indexNearestWAP]).x < verticMargin.V) or
+      (TRootPosition(RasterData.PosList.Objects[indexNearestWAP]).x > dimensionX.V - verticMargin.V) or
+      (TRootPosition(RasterData.PosList.Objects[indexNearestWAP]).y < horizMargin.V) or
+      (TRootPosition(RasterData.PosList.Objects[indexNearestWAP]).y < dimensiony.V - horizMargin.V) then
     begin
       ARandomPoint.shortestDist := CalcBorderDist(ARandomPoint,
         indexNearestWAP);
@@ -1154,14 +1150,14 @@ begin
   for i := 0 to numb_classesDist - 1 do
   begin
     cl_avClass := clmin.V - Min_s.V *
-      (sqr(absFrequencyArr[0][i]) - sqr(Rad_Wurzel.V)) / (4 * Db) + Min_s.V *
+      (sqr(absFrequencyArr[0][i]) - sqr(RootRadius.V)) / (4 * Db) + Min_s.V *
       sqr(absFrequencyArr[0][i]) / (2 * Db) *
-      ln(absFrequencyArr[0][i] / Rad_Wurzel.V);
+      ln(absFrequencyArr[0][i] / RootRadius.V);
     // Wichtung
     cl_avClass := cl_avClass * weightArr[i];
     cl_av.V := cl_av.V + cl_avClass;
   end;
-  N_AmountSoil.V := Mg_func(tiefe.V, theta.V, cl_av.V);
+  N_AmountSoil.V := Mg_func( Depth.v, theta.V, cl_av.V);
 end;
 
 procedure TSubmodRootDiff1DRapp.calcArr;
@@ -1210,7 +1206,7 @@ end;
 constructor TRandomPoint.create;
 begin
   inherited;
-  RandomPointPos := TMyFloatPoint.create;
+  RandomPointPos := TRootPosition.create;
 end;
 
 end.

@@ -5,7 +5,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, vcl.Dialogs,
-  UMod, SubmodRootDiff, UState, Math, SubmodDiff2DRoots;
+  UMod, SubmodRootDiff, UState, Math, SubmodDiff2DRoots, USubModRoot2DDiffNitrate, U2DSoilBaseClasses;
 
 const
   { Folgendes sind die Phi(u)-Werte der Standardnormalverteilung:
@@ -61,11 +61,7 @@ type
 
   // Klassen
 
-  TMyFloatPoint = class(TObject)
-    x, y: double;
-  end;
-
-  TSubmodRootDiff1DSolo = class(TSubmodRootDiff)
+  TSubmodRootDiff1DSolo = class(TSubmodRoot2DDiffNitrate)
   private
     { Private-Deklarationen }
     fMy2DDiffModel: TSubmodDiff2DRoots;
@@ -131,7 +127,7 @@ type
     function calc_num_EWZ: real;
     function calc_num_class: real;
     // c) für beide Verfahren
-    procedure init_eingelesen; override;
+    procedure init_ReadFromFile; override;
     { Methode für Modellvergleich: Berechnung der N-Menge im Boden bei gegebener
       Verteilung und Mineralisationsrate }
     procedure calcN_AmountSoilEquil;
@@ -536,8 +532,8 @@ begin
         num_Roots.V := RLD_mean.V * dimensionX.V * dimensionY.V;
       for i := 1 to trunc(num_Roots.V) do
       begin
-        RasterData.PosArr[i].x := random(trunc(dimensionX.V) - 2) + 2;
-        RasterData.PosArr[i].y := random(trunc(dimensionY.V) - 2) + 2;
+        TRootPosition(RasterData.PosList.Objects[i]).x := random(trunc(dimensionX.V) - 2) + 2;
+        TRootPosition(RasterData.PosList.Objects[i]).y := random(trunc(dimensionY.V) - 2) + 2;
       end;
     end;
     { im Randomfall müssen Flächendaten aus den Koord. berechnet werden }
@@ -554,7 +550,7 @@ begin
   end;
   { Nach Einlesen und Anpassung der Verteilung werden Wurzeln entfernt, die sich
     außerhalb des Beobachtungsfensters oder in den Rändern befinden. }
-  init_eingelesen;
+  init_ReadFromFile;
   // Sicherstellen, das WLD_arr gefüllt wird
   if ((iniMethod.Option = 'inppar') and (RootDistribution.Option = 'lognormal'))
     or ((iniMethod.Option = 'submodstruct') and
@@ -626,7 +622,7 @@ begin
       new(AInitNAmount);
       new(AInitNConc);
       { Berechnung der H20-Volumina der EWZ [cm3] }
-      AVol_H20^ := RasterData.PosArr[i].area * theta.V * Tiefe.V;
+      AVol_H20^ := TRootPosition(RasterData.PosList.Objects[i]).area * theta.V * SizeLayer.V;
       // Berechnung der NMengen in den EWZ zu Beginn (Startwerte)
       AInitNAmount^ := AVol_H20^ * c_start.V;
       // Einheitliche Konzentration in den EWZ zu Beginn (Startwerte)
@@ -741,7 +737,7 @@ begin
 end; // End TSubmodRootDiff1DSolo.Integrate
 
 { Hilfsmethoden }
-procedure TSubmodRootDiff1DSolo.init_eingelesen;
+procedure TSubmodRootDiff1DSolo.init_ReadFromFile;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG:
   Initialisierungen und Vorbereitungen die erst sinnvoll sind,
@@ -753,7 +749,7 @@ procedure TSubmodRootDiff1DSolo.init_eingelesen;
   speichert, die hier dann erzeugt werden.
   ------------------------------------------------------------------------------ *)
 begin
-  inherited init_eingelesen;
+  inherited init_ReadFromFile;
   // removeMarginRoots; //gegf. randständige Wurzeln entfernen
 end; // End TSubmodRootDiff1DSolo.init_eingelesen
 
@@ -865,15 +861,15 @@ begin
     RasterData.NRoots := RasterData2D.NRoots;
     for i := 0 to RasterData.NRoots do
     begin
-      RasterData.PosArr[i].x := RasterData2D.PosArr[i].x;
-      RasterData.PosArr[i].y := RasterData2D.PosArr[i].y;
-      RasterData.PosArr[i].xi := RasterData2D.PosArr[i].xi;
-      RasterData.PosArr[i].yi := RasterData2D.PosArr[i].yi;
-      RasterData.PosArr[i].root := RasterData2D.PosArr[i].root;
-      RasterData.PosArr[i].NInflux := RasterData2D.PosArr[i].NInflux;
-      RasterData.PosArr[i].SumNMenge := RasterData2D.PosArr[i].SumNMenge;
-      RasterData.PosArr[i].WInflux := RasterData2D.PosArr[i].WInflux;
-      RasterData.PosArr[i].area := RasterData2D.PosArr[i].area;
+      TRootPosition(RasterData.PosList.Objects[i]).x := TRootPosition(RasterData2D.PosList.Objects[i]).x;
+      TRootPosition(RasterData.PosList.Objects[i]).y := TRootPosition(RasterData2D.PosList.Objects[i]).y;
+      TRootPosition(RasterData.PosList.Objects[i]).xi := TRootPosition(RasterData2D.PosList.Objects[i]).xi;
+      TRootPosition(RasterData.PosList.Objects[i]).yi := TRootPosition(RasterData2D.PosList.Objects[i]).yi;
+      TRootPosition(RasterData.PosList.Objects[i]).root := TRootPosition(RasterData2D.PosList.Objects[i]).root;
+      TRootPosition(RasterData.PosList.Objects[i]).NInflux := TRootPosition(RasterData2D.PosList.Objects[i]).NInflux;
+      TRootPosition(RasterData.PosList.Objects[i]).SumNAmount := TRootPosition(RasterData2D.PosList.Objects[i]).SumNAmount;
+      TRootPosition(RasterData.PosList.Objects[i]).WInflux := TRootPosition(RasterData2D.PosList.Objects[i]).WInflux;
+      TRootPosition(RasterData.PosList.Objects[i]).area := TRootPosition(RasterData2D.PosList.Objects[i]).area;
     end;
   end;
   num_Roots.V := RasterData.NRoots;
@@ -900,7 +896,7 @@ begin
     for i := 0 to trunc(number_consid_roots.V - 1) do
     begin
       // Berechnung des EWZ-Radius aus der Fläche:
-      Radius := sqrt(RasterData.PosArr[1].area / Pi);
+      Radius := sqrt(TRootPosition(RasterData.PosList.Objects[0]).area / Pi);
       WLD_Array[i] := 1 / (Radius * Radius * Pi);
     end;
   end
@@ -910,7 +906,7 @@ begin
     begin
       { Berechnung der Wurzellängendichte aus den Flächeninhalten der Voronoi-Polygone }
       // Berechnung des EWZ-Radius aus der Fläche:
-      Radius := sqrt(RasterData.PosArr[j].area / Pi);
+      Radius := sqrt(TRootPosition(RasterData.PosList[j]).area / Pi);
       WLD_Array[i] := 1 / (Radius * Radius * Pi);
       inc(j)
     end;
@@ -929,7 +925,7 @@ var
   // Dynamisches Array für alle anteiligen Aufnahmeraten in den Klassen
   Aufnahme_arr: Array of real;
   i: integer;
-  Rad_EWZ, sumUptClasses: real;
+  Rad_SRC, sumUptClasses: real;
 begin
   setLength(Aufnahme_arr, trunc(number_classes.V));
   sumUptClasses := 0;
@@ -962,19 +958,19 @@ begin
     for i := 0 to trunc(number_classes.V - 1) do
     begin
       // Berechnung des Radius des Einzelwurzelzylinders
-      Rad_EWZ := 1 / (sqrt(Pi * ZV_Array_lognorm[i]));
+      Rad_SRC := 1 / (sqrt(Pi * ZV_Array_lognorm[i]));
       if iniMethod.Option = 'SubmodStruct' then
       // Vorgehensweise bei dynam. Simulation (variable RLD/VK in jedem Zeitschritt
       begin
         Aufnahme_arr[i] := Aufnahme_arr[i] +
           (1 - exp((2 * Pi * ZV_Array_lognorm[i] * Globmod.TimeStep * De.V *
-          86400) / (ln(1.65 * Rad_Wurzel.V / Rad_EWZ))));
+          86400) / (ln(1.65 * RootRadius.V / Rad_SRC))));
       end
       // Vorgehensweise bei statischer Simulation
       else
         Aufnahme_arr[i] := 1 -
           exp((2 * Pi * ZV_Array_lognorm[i] * Globmod.time.V * De.V * 86400) /
-          (ln(1.65 * Rad_Wurzel.V / Rad_EWZ)));
+          (ln(1.65 * RootRadius.V / Rad_SRC)));
     end;
     // Bei der Berechnung der Aufnahmen auf Grundlage der Fläche
     if CalcMethQuant.Option = 'fromarea' then
@@ -1161,11 +1157,11 @@ begin
   // Ratenberechnung für alle Wurzeln
   for i := 0 to RasterData.NRoots - 1 do
   begin
-    dist := sqrt(RasterData.PosArr[j].area / Pi);
+    dist := sqrt(TRootPosition(RasterData.PosList.Objects[j]).area / Pi);
     // Berechnung des Radius des EWZ
     AClmean := Pdouble(Cl_mean_List.items[i])^;
     Nitrat_Flux_EWZ := ((AClmean - Clmin.V) * 2 * Pi * Db) /
-      (ln(dist / (1.65 * self.Rad_Wurzel.V))); // Kage Diss, S.57, Gl.3.6.30
+      (ln(dist / (1.65 * self.RootRadius.V))); // Kage Diss, S.57, Gl.3.6.30
     // NAmount_UPEWZArray[i].C:=Nitrat_Flux_EWZ;
     Sum_Nitrate_flux := Sum_Nitrate_flux + Nitrat_Flux_EWZ;
     inc(j);
@@ -1208,7 +1204,7 @@ procedure TSubmodRootDiff1DSolo.calc_Amount_H20;
 begin
   { Wassermenge in der betrachteten Bodenschicht (theta wird zunächst als konstant
     angenommen) }
-  Amount_H20.V := volumen.V * theta.V;
+  Amount_H20.V := volume.V * theta.V;
 end; // End TSubmodRootDiff1DSolo.calc_Amount_H20
 
 procedure TSubmodRootDiff1DSolo.calcN_AmountSoilEquil;
@@ -1225,14 +1221,14 @@ begin
   begin
     // Aus der WLD muss der Radius (Klassengrenze) berechnet werden:
     classBorder := sqrt(1 / (ZV_Array_lognorm[i] * Pi));
-    cl_avClass := Clmin.V - (Min_s.V * (sqr(classBorder) - sqr(Rad_Wurzel.V)) /
+    cl_avClass := Clmin.V - (Min_s.V * (sqr(classBorder) - sqr(RootRadius.V)) /
       (4 * Db)) + (Min_s.V * sqr(classBorder) / (2 * Db) *
-      ln(classBorder / Rad_Wurzel.V));
+      ln(classBorder / RootRadius.V));
     // Wichtung
     cl_avClass := cl_avClass * weightArr[i];
     cl_av.V := cl_av.V + cl_avClass;
   end;
-  N_AmountSoil.V := Mg_func(Tiefe.V, theta.V, cl_av.V);
+  N_AmountSoil.V := Mg_func(Depth.V, theta.V, cl_av.V);
 end;
 
 end.

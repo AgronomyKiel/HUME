@@ -50,11 +50,11 @@
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
-<td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#fn_a">fn_a</a></strong>: array [0 .. 30] of string;</code></td>
+<td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#fn_SensRead">fn_SensRead</a></strong>: array [0 .. 30] of string;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
-<td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#fn_b">fn_b</a></strong>: array [0 .. 30] of string;</code></td>
+<td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#fn_SensWrite">fn_SensWrite</a></strong>: array [0 .. 30] of string;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -62,31 +62,31 @@
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
-<td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#FSteps">FSteps</a></strong>: Integer;</code></td>
+<td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#fSens_final">fSens_final</a></strong>: textFile;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
-<td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#f_a">f_a</a></strong>: array [0 .. 30] of textFile;</code></td>
+<td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#fsens_read">fsens_read</a></strong>: array [0 .. 30] of TStreamReader;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
-<td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#f_b">f_b</a></strong>: array [0 .. 30] of textFile;</code></td>
+<td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#fsens_write">fsens_write</a></strong>: array [0 .. 30] of TStreamwriter;</code></td>
 </tr>
 <tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#FSteps">FSteps</a></strong>: Integer;</code></td>
+</tr>
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#MultSens_fn_cont">MultSens_fn_cont</a></strong>: string;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#MultSens_fn_final">MultSens_fn_final</a></strong>: string;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#SelSenspar">SelSenspar</a></strong>: TPar;</code></td>
-</tr>
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
-<td class="itemcode"><code><strong><a href="UMod.TSensitivityOptions.html#Sens_f">Sens_f</a></strong>: textFile;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
@@ -190,18 +190,22 @@ TMyFileName;</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
-<td class="itemcode"><span id="fn_a"></span><code><strong>fn_a</strong>: array [0 .. 30] of string;</code></td>
+<td class="itemcode"><span id="fn_SensRead"></span><code><strong>fn_SensRead</strong>: array [0 .. 30] of string;</code></td>
 </tr>
 <tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
+<p>
+f_c : array[0..30] of TStreamReader; &lt;summary&gt; file names for output of sensitivity analysis &lt;/summary&gt;</p>
+</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
-<td class="itemcode"><span id="fn_b"></span><code><strong>fn_b</strong>: array [0 .. 30] of string;</code></td>
+<td class="itemcode"><span id="fn_SensWrite"></span><code><strong>fn_SensWrite</strong>: array [0 .. 30] of string;</code></td>
 </tr>
 <tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
+<p>
+f_c : array[0..30] of TStreamReader; &lt;summary&gt; file names for output of sensitivity analysis &lt;/summary&gt;</p>
+</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -216,31 +220,39 @@ TMyFileName;</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="fSens_final"></span><code><strong>fSens_final</strong>: textFile;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ Output file for endvalues of variables selected for output </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="fsens_read"></span><code><strong>fsens_read</strong>: array [0 .. 30] of TStreamReader;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ file variables and names for output of sensitivity analysis </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="fsens_write"></span><code><strong>fsens_write</strong>: array [0 .. 30] of TStreamwriter;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
 <td class="itemcode"><span id="FSteps"></span><code><strong>FSteps</strong>: Integer;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
  Steps of sensitivity analysis </p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
-<td class="itemcode"><span id="f_a"></span><code><strong>f_a</strong>: array [0 .. 30] of textFile;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
- file variables and names for output of sensitivity analysis </p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
-<td class="itemcode"><span id="f_b"></span><code><strong>f_b</strong>: array [0 .. 30] of textFile;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
- file variables and names for output of sensitivity analysis </p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -271,16 +283,6 @@ TMyFileName;</p>
 Sets number of steps of sensitivity analysis </p>
 </td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
-<td class="itemcode"><span id="Sens_f"></span><code><strong>Sens_f</strong>: textFile;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
- Variables selected for output </p>
-</td></tr>
-</table>
 <h3 class="detail">Methods</h3>
 <table class="detail wide_list">
 <tr class="list">
@@ -289,13 +291,7 @@ Sets number of steps of sensitivity analysis </p>
 </tr>
 <tr><td colspan="2">
 <p>
-</p>
-
-<ul class="paragraph_spacing">
-  <li><p><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong>* CLASS TSensitivityOptions METHOD create PURPOSE Create an TSensitivityOptions instance to save options for Sensitivity analysis used within the TMod class <strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong>**</p></li>
-</ul>
-
-<p></p>
+ Create an TSensitivityOptions instance to save options for Sensitivity analysis used within the TMod class </p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -305,7 +301,14 @@ Sets number of steps of sensitivity analysis </p>
 </tr>
 <tr><td colspan="2">
 <p>
- CLASS TSensitivityOptions METHOD SetMaxValue PURPOSE Sets maximum value during sensitivity analysis INPUT const MAxValue: real </p>
+ Sets maximum value during sensitivity analysis </p>
+<p>
+ </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>MaxValue</dt>
+<dd>real</dd>
+</dl>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -315,7 +318,14 @@ Sets number of steps of sensitivity analysis </p>
 </tr>
 <tr><td colspan="2">
 <p>
- CLASS TSensitivityOptions METHOD SetMinValue PURPOSE Sets minimum value during sensitivity analysis INPUT const MinValue: real </p>
+ Sets minimum value during sensitivity analysis </p>
+<p>
+ </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>MinValue</dt>
+<dd>real</dd>
+</dl>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -325,13 +335,14 @@ Sets number of steps of sensitivity analysis </p>
 </tr>
 <tr><td colspan="2">
 <p>
-</p>
-
-<ul class="paragraph_spacing">
-  <li><p><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong>* CLASS TSensitivityOptions METHOD SetSteps PURPOSE Sets number of steps of sensitivity analysis INPUT const Steps: integer <strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong><strong></strong>**</p></li>
-</ul>
-
-<p></p>
+ Sets number of steps of sensitivity analysis </p>
+<p>
+ </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>Steps</dt>
+<dd>integer</dd>
+</dl>
 </td></tr>
 </table>
 <h3 class="detail">Properties</h3>
