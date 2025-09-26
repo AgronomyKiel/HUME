@@ -272,11 +272,24 @@ begin
   ParCreate('Ar', '[kg N/ha*d]', 0, Ar);
   ParCreate('Km', '[mikromol/l]', 0, Km);
   ParCreate('Clmin', '[mikromol/l]', 0, Clmin, 'minimum Nitrate concentration');
+  ParCreate('dim_x', '[n]', 500, dim_x);
+  ParCreate('dim_y', '[n]', 500, dim_y);
+  ParCreate('ini_dt', '[s]', 3600, ini_dt);
+  ParCreate('ContRad', '[cm]', 10, ContRad, 'radius of the container in container mode');
+  // Erzeugen und initialisieren von TVar
+  VarCreate('Distance', '[cm]', 0, false, Distance);
+  VarCreate('dx', '[cm]', 0, true, dx);
+  VarCreate('dy', '[cm]', 0, true, dy);
+  VarCreate('Flaeche', '[cm2]', 0, false, Flaeche);
   VarCreate('ActArFromConc', '[kg N/(ha*d)]', 0, false, ActArFromConc);
   VarCreate('int_dt', '[s]', 0, false, int_dt);
   VarCreate('c_av', '[mol/cm3]', 0, false, c_av);
   VarCreate('Imaxa', '[mol/cm/s]', 0, false, Imax);
+  VarCreate('wl', '[cm/(Flaeche*Tiefe)]', 0, false, wl);
+  VarCreate('wl_ha', '[cm/ha]', 0, false, wl_ha);
   VarCreate('ActAr', '[kg N/(ha*d)]', 0, false, ActAr);
+  VarCreate('dim_xMiddle', '[-]', 0, false, dim_xMiddle);
+  VarCreate('dim_yMiddle', '[-]', 0, false, dim_yMiddle);
   // Erzeugen und initialisieren von TState
   StateCreate('Bilanz_f', '[kg N/ha]', 0, false, Bilanz_f);
   // Erzeugen und initialisieren von TOption

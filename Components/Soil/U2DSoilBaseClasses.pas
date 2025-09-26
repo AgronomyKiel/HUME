@@ -686,6 +686,8 @@ begin
   ParCreate('ContRad', '[cm]', 10, ContRad, 'radius of the container in container mode');
   // Create and initialize TState
 
+  VarCreate('dx', '[cm]', 0, false, dx);
+  VarCreate('dy', '[cm]', 0, false, dy);
   VarCreate('RLD_mean', '[cm/cm^3]', 0, false, RLD_mean);
   VarCreate('AreaMiddle', '[cm2]', 0, false, AreaMiddle);
   VarCreate('num_roots', '[-]', 0, false, num_roots);
@@ -694,6 +696,7 @@ begin
   VarCreate('theta', '[cm3/cm3]', 0, false, theta, 'actual volumetric water content');
   VarCreate('errorReg', '[%]', 0, false, errorReg);
   VarCreate('int_dt', '[d]', 0, false, int_dt);
+  VarCreate('wl_ha', '[cm/ha]', 0, false, wl_ha);
 
   VarCreate('dim_xMiddle', '[d]', 0, false, dim_xMiddle);
   VarCreate('dim_yMiddle', '[d]', 0, false, dim_yMiddle);
