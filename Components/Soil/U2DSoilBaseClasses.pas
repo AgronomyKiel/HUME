@@ -408,6 +408,12 @@ type
     /// <summary>Fills the AdvStringGrid with aggregated raster data</summary>
     procedure fillGridRasterData;
 
+    /// <summary>
+    ///   Applies parameter-based initialization logic that can be shared across
+    ///   derived diffusion submodels.
+    /// </summary>
+    procedure ApplyParameterRootInitialization; virtual;
+
     /// <summary>Distributes roots evenly across the grid</summary>
     procedure CalcEqualDistribution;
 
@@ -838,15 +844,20 @@ begin
     RasterData.readXYfromFile(RootInpDataFileXY.Option, seriesXY);
   end;
 
-  if iniMethod.Option = 'inppar' then
-  begin
-    CalcEqualDistribution;
-  end;
+  ApplyParameterRootInitialization;
   calcNumberConsRoots;
 
  //init_eingelesen wird von den abgeleiteten Methoden mit inherited aufgerufen.
  initialised := true;
 
+end;
+
+procedure TBaseSubmodRootDiff.ApplyParameterRootInitialization;
+begin
+  if iniMethod.Option = 'inppar' then
+  begin
+    CalcEqualDistribution;
+  end;
 end;
 
 

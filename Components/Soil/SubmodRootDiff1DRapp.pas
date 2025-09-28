@@ -277,13 +277,9 @@ begin
     // ini-Methode inppar kann nur mit hexagonaler Verteilung verwendet werden:
     RootDistribution.Option := 'regular';
     // Gilt auch für Kennzahlen der Flächenverteilung
-    if RootDistribution.Option = 'regular' then
-      num_Roots.V := RLD_mean.V * dimensionX.V * dimensiony.V;
   end;
-  if RootDistribution.Option = 'regular' then
-  begin
-    CalcEqualDistribution;
-  end;
+
+  ApplyParameterRootInitialization;
 
   if (RootDistribution.Option <> 'regular') or (iniMethod.Option = 'xyfile')
   then
