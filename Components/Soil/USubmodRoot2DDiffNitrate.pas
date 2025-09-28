@@ -1,4 +1,4 @@
-﻿unit USubmodRoot2DDiffNitrate;
+unit USubmodRoot2DDiffNitrate;
 
  {$J+}
 interface
@@ -125,7 +125,7 @@ type
     /// Helper to apply shared initialization logic for parameter-based
     /// configurations in derived classes.
     /// </summary>
-    procedure ApplyParameterRootInitialization; virtual;
+    procedure ApplyParameterRootInitialization; override;
 
   public
     /// <summary>Public declarations</summary>
@@ -447,7 +447,7 @@ begin
   end;
 
   if RootDistribution.Option = 'regular' then
-    CalcEqualDistribution;
+    inherited ApplyParameterRootInitialization;
 end;
 
 
