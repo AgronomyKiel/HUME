@@ -1,4 +1,4 @@
-﻿unit USubmodRoot2DDiffNitrate;
+unit USubmodRoot2DDiffNitrate;
 
  {$J+}
 interface
