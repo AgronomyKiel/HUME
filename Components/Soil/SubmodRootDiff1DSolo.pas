@@ -480,18 +480,15 @@ begin
 
     if RootDistribution.Option = 'regular' then
       VarKoeff_RLD.V := 0;
-    num_Roots.V := RLD_mean.V * dimensionX.V * dimensionY.V;
   end;
+
+  ApplyParameterRootInitialization;
   // Initializations independent of the imported root data
   if integrationMethod.Option = 'numeric' then // only for numerical solution
   begin
     transform_Clmin;
   end;
   // In the case of a uniform distribution the PosArr must first be calculated.
-  if RootDistribution.Option = 'regular' then
-  begin
-    CalcEqualDistribution;
-  end;
   if RootDistribution.Option = 'random' then
   begin
     { Because the submodels have independent RasterData objects, a model comparison
@@ -1186,7 +1183,7 @@ end;
 
 procedure Register;
 (* -----------------------------------------------------------------------------
-  Prozedur wird für Komponenten benötigt: Registrierung der Komponenten auf einer
+  Prozedur wird fÃ¼r Komponenten benÃ¶tigt: Registrierung der Komponenten auf einer
   Palette.
   ------------------------------------------------------------------------------ *)
 begin

@@ -121,6 +121,12 @@ type
     /// <summary>switch for growth in pots</summary>
     ContGrowth : TOption;
 
+    /// <summary>
+    /// Helper to apply shared initialization logic for parameter-based
+    /// configurations in derived classes.
+    /// </summary>
+    procedure ApplyParameterRootInitialization; virtual;
+
   public
     /// <summary>Public declarations</summary>
     /// <summary>Flag for one-time write access</summary>
@@ -429,6 +435,19 @@ begin
     have already been read. The original TSubmodel method cannot be used because it
     is called multiple times. }
 
+end;
+
+procedure TSubmodRoot2DDiffNitrate.ApplyParameterRootInitialization;
+begin
+  if iniMethod.Option = 'inppar' then
+  begin
+    RLD_mean.V := ParMRLD.V;
+    if RootDistribution.Option = 'regular' then
+      num_roots.V := RLD_mean.V * dimensionX.V * dimensionY.V;
+  end;
+
+  if RootDistribution.Option = 'regular' then
+    CalcEqualDistribution;
 end;
 
 
