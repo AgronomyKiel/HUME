@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, math,
-  UMod, UState, Diffko, SubmodRootStructureNew, MathImge,
+  UMod, UState, Diffko,  MathImge,
   U2DSoilBaseClasses;
 
 

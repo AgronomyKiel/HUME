@@ -5,7 +5,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, vcl.Dialogs,
-  UMod, SubmodRootDiff, UState, Math, SubmodDiff2DRoots, USubModRoot2DDiffNitrate, U2DSoilBaseClasses;
+  UMod, UState, Math, USubModRoot2DDiffNitrate, U2DSoilBaseClasses;
 
 const
   { The following are the Phi(u) values of the standard normal distribution:
@@ -63,7 +63,7 @@ type
   TSubmodRootDiff1DSolo = class(TSubmodRoot2DDiffNitrate)
   private
     { Private declarations }
-    fMy2DDiffModel: TSubmodDiff2DRoots;
+    fMy2DDiffModel: TSubmodRoot2DDiffNitrate;
     // FIELDS
     // a) required for analytical solution
     WLD_Array: Array of double;
@@ -123,8 +123,7 @@ type
     procedure calc_Amount_H20;
     function calc_num_EWZ: real;
     function calc_num_class: real;
-    // c) for both approaches
-    procedure init_ReadFromFile; override;
+
     { Method for model comparison: calculate the soil N amount for a given distribution
       and mineralisation rate }
     procedure calcN_AmountSoilEquil;
@@ -247,14 +246,14 @@ type
   public
     { Public declarations }
     procedure createAll; override;
-    procedure AddDataValueToDataSeries; override;
-    // procedure Init(var GlobMod: TMod); override;
+    //procedure AddDataValueToDataSeries; override;
+    procedure Init(var GlobMod: TMod); override;
     procedure CalcRates; override;
     procedure Integrate; override;
 
   published
     { Published declarations }
-    property My2DDiffModel: TSubmodDiff2DRoots read fMy2DDiffModel
+    property My2DDiffModel: TSubmodRoot2DDiffNitrate read fMy2DDiffModel
       write fMy2DDiffModel;
   end; // End of class declaration TSubmodRootDiff1DSolo
 
@@ -395,7 +394,7 @@ begin
   // end;
 end;
 
-procedure TSubmodRootDiff1DSolo.AddDataValueToDataSeries;
+procedure TSubmodRootDiff1DSolo.Init(var GlobMod: TMod);
 (* ------------------------------------------------------------------------------
   ASSOCIATED CLASS: TSubmodRootDiffD
   DESCRIPTION: Perform various initializations. Caveat: init is entered several
@@ -410,7 +409,7 @@ var
     : Pdouble;
 begin
   inherited;
-  // inherited init(GlobMod);      // init no longer used.
+
   // Cache the initial N amount
   NAmountInit := N_AmountSoil.V;
   // Initialize dynamic arrays:
@@ -483,14 +482,6 @@ begin
       VarKoeff_RLD.V := 0;
     num_Roots.V := RLD_mean.V * dimensionX.V * dimensionY.V;
   end;
-  if iniMethod.Option = 'rasterdatafile' then
-  begin
-    RasterData.readRasterData(RootInpDataFile.Option, seriesXY);
-  end;
-  if iniMethod.Option = 'xyfile' then
-  begin
-    RasterData.readXYfromFile(RootInpDataFileXY.Option, seriesXY);
-  end;
   // Initializations independent of the imported root data
   if integrationMethod.Option = 'numeric' then // only for numerical solution
   begin
@@ -499,7 +490,7 @@ begin
   // In the case of a uniform distribution the PosArr must first be calculated.
   if RootDistribution.Option = 'regular' then
   begin
-    EqualDistribution;
+    CalcEqualDistribution;
   end;
   if RootDistribution.Option = 'random' then
   begin
@@ -533,7 +524,7 @@ begin
   end;
   { After reading and adjusting the distribution, roots located outside the
     observation window or in the margins are removed. }
-  init_ReadFromFile;
+
   // Ensure that WLD_arr is populated
   if ((iniMethod.Option = 'inppar') and (RootDistribution.Option = 'lognormal'))
     or ((iniMethod.Option = 'submodstruct') and
@@ -715,20 +706,6 @@ begin
   end;
 end; // End TSubmodRootDiff1DSolo.Integrate
 
-{ Helper methods }
-procedure TSubmodRootDiff1DSolo.init_ReadFromFile;
-(* ------------------------------------------------------------------------------
-  DESCRIPTION:
-  Initialisations and preparations that only make sense once user inputs or data
-  read from files at runtime can be considered.
-  Primarily excludes roots at the margins: Issue: for the numerical model,
-  PosArr_middle in the method removeMarginRoots should be replaced by a global list
-  or array that stores SRP instances created here.
-  ------------------------------------------------------------------------------ *)
-begin
-  inherited init_ReadFromFile;
-  // removeMarginRoots; // remove marginal roots if necessary
-end; // End TSubmodRootDiff1DSolo.init_ReadFromFile
 
 procedure TSubmodRootDiff1DSolo.calcVar_Analyt;
 (* ------------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 ﻿unit USubmodRoot2DDiffNitrate;
 
+ {$J+}
 interface
 
 uses
@@ -28,7 +29,6 @@ type
     fMyMathImage: TMathImage;
     ColorSurface: TColorSurface;
 
-    procedure init_;
     procedure zweid_solut(dt_globmod: real);
     // Helper methods
     procedure InitConc;
@@ -120,15 +120,6 @@ type
     DelMarginRoots: TOption;
     /// <summary>switch for growth in pots</summary>
     ContGrowth : TOption;
-
-
-
-    /// <summary>Methods</summary>
-    // Helper methods
-    /// <summary>Initialization depending on whether data has already been read from a file</summary>
-    procedure init_ReadFromFile; override;
- //   procedure writeOutputToFile; override;
-    // Conversions between amount and concentration
 
   public
     /// <summary>Public declarations</summary>
@@ -406,7 +397,7 @@ begin
   numberGridCellsX := trunc(dimensionX.v / gridWidth.v);
   numberGridCellsY := trunc(dimensionY.v / self.gridHeight.v);
   setLength(RasterData.CountArr, trunc(numberGridCellsX));
-  for i := 0 to high(RasterData.CountArr) do
+  for i := 0 to high(RasterData.CountArr)-1 do
   begin
     setLength(RasterData.CountArr[i], trunc(numberGridCellsY));
   end;
@@ -437,35 +428,8 @@ begin
     done in the _init method. Initializations should only be performed when roots
     have already been read. The original TSubmodel method cannot be used because it
     is called multiple times. }
-  if IniMethod.Option = 'rasterdatafile' then
-  begin
-    // init_;
-    // init_eingelesen wird von den abgeleiteten Methoden mit inherited aufgerufen.
-    initialised := true;
-  end;
-end; // End TSubmodRootDiff.init
 
-/// <summary>
-/// Performs various initializations that should be executed only once (the global
-/// model's init procedure is called multiple times). This is relevant, for example,
-/// when creating objects or accessing files. Currently no such access occurs, but
-/// the structure is prepared for it.
-/// </summary>
-procedure TSubmodRoot2DDiffNitrate.init_;
-begin
-
-end; // End TSubmodRootDiff.init_
-
-/// <summary>
-/// Calculates the number of roots that are in the observation window and
-/// simultaneously NOT in the margins.
-/// </summary>
-procedure TSubmodRoot2DDiffNitrate.init_ReadFromFile;
-begin
-  calcNumberConsRoots;
-end; // End TSubmodRootDiff.init_eingelesen
-
-
+end;
 
 
 procedure TSubmodRoot2DDiffNitrate.zweid_solut(dt_globmod: real);
@@ -1284,6 +1248,12 @@ procedure TSubmodRoot2DDiffNitrate.showActConc;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG: Zeigt die aktuelle Konzentration im TMathImage an
   ------------------------------------------------------------------------------ *)
+
+const
+  levelsarray: array [0 .. 11] of MathFloat = (-4, -2.5, -2, -1.5, -1, -0.5, 0,
+    0.5, 1, 1.5, 2, 2.5);
+
+
 var
   i, j, k: integer;
   thiscolor: TColor;

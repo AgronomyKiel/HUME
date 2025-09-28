@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, math,
   UMod, UState, Diffko, SubmodRootStructureNew, MathImge,
-  SubmodRootDiff, SubModDiff2DRoots, U2DSoilBaseClasses;
+  U2DSoilBaseClasses;
 
 const
   /// <summary>largest index, required for the vectors during the flux calculation</summary>

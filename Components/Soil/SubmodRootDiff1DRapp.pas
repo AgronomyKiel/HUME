@@ -6,7 +6,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs,
-  UMod, SubmodRootDiff, U2DSoilBaseClasses, USubmodRoot2dDiffNitrate, UState, AdvGrid;
+  UMod, U2DSoilBaseClasses, USubmodRoot2dDiffNitrate, UState, AdvGrid;
 
 type
   // Zeigertypen
@@ -29,10 +29,15 @@ type
 
   TSubmodRootDiff1DRapp = class(TSubmodRoot2DDiffNitrate)
   private
+
+    widthMiddle, heigthMiddle, RLD_m, { Wurzellängendichte [m/m^3] }
+  RadWurzel_m, { Wurzelradius [m] }
+  De_m { Effektiver Diffusionskoeffizient [m^2/s] }
+    : double;
+
     { Private-Deklarationen }
     ArrayHasFilled: boolean; { Schalter erlaubt einmalige Berechnung der ein
       schlägigen Arrays }
-    numb_classesDist: integer; { Anzahl der Klassen versch. Distanzintervalle }
     x1_temp, // Zwischenspeichern der Range für die Nullstellensuche
     x2_temp: double;
     RandomPointList: TList; // Liste mit zufällig verteilten Punkten
@@ -91,6 +96,7 @@ type
     function bessy0(x: real): real;
     function bessy1(x: real): real;
   protected
+    numb_classesDist: integer; { Anzahl der Klassen versch. Distanzintervalle }
     { Protected-Deklarationen }
     (* -----------------------------------------------------------------------------
       Hume-Variablen
@@ -143,7 +149,7 @@ type
     { Public-Deklarationen }
     procedure createAll; override;
     // procedure Init(var GlobModReferenz: TMod); override;
-    procedure AddDataValueToDataSeries; override;
+    procedure init(var GlobMod: TMod); override;
     procedure CalcRates; override;
     procedure Integrate; override;
   published
@@ -156,7 +162,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('MichasMod', [TSubmodRootDiff1DRapp]);
+  RegisterComponents('Soil2D', [TSubmodRootDiff1DRapp]);
 end;
 
 { TSubmodRootDiff1DRapp }
@@ -214,18 +220,17 @@ begin
 
 end;
 
-procedure TSubmodRootDiff1DRapp.AddDataValueToDataSeries;
+
+procedure TSubmodRootDiff1DRapp.init(var GlobMod: TMod);
 var
-  i: integer;
+  i : integer;
   ARandomPoint: TRandomPoint;
-  widthMiddle, heigthMiddle, RLD_m, { Wurzellängendichte [m/m^3] }
-  RadWurzel_m, { Wurzelradius [m] }
-  De_m { Effektiver Diffusionskoeffizient [m^2/s] }
-    : double;
+
 begin
   inherited;
   // Festlegen Arraygrenzen
   numb_classesDist := trunc(strtoint(numb_classes_dist.Option));
+//  numb_classesDist := trunc(strtoint(numb_classes_dist.Option));
   setLength(absFrequencyArr, 2, numb_classesDist);
   setLength(relFrequencyArr, 2, numb_classesDist);
   setLength(quadAbsFrequencyArr, 2, numb_classesDist);
@@ -255,15 +260,15 @@ begin
   AreaMiddle.V := widthMiddle * heigthMiddle;
   resetLists;
   randomize;
-  for i := 0 to trunc(numb_RandomPoints.V) do
+  for i := 0 to trunc(numb_RandomPoints.V)-1 do
   begin
     ARandomPoint := TRandomPoint.create;
     ARandomPoint.RandomPointPos.x := Random * widthMiddle + verticMargin.V;
     ARandomPoint.RandomPointPos.y := Random * heigthMiddle + horizMargin.V;
     RandomPointList.add(ARandomPoint);
   end;
-  // Einlesen von Daten
-  if iniMethod.Option = 'inppar' then
+
+    if iniMethod.Option = 'inppar' then
   begin
     { Wenn mWLD und VC als Parameter eingelesen eingelesen werden, dann müssen die
       entsprechenden Variablen gesetzt werden. VarKoeff_RLD wird je nach Verteilungs-
@@ -275,16 +280,11 @@ begin
     if RootDistribution.Option = 'regular' then
       num_Roots.V := RLD_mean.V * dimensionX.V * dimensiony.V;
   end;
-  if iniMethod.Option = 'xyfile' then
-  begin
-    RasterData.readXYfromFile(RootInpDataFileXY.Option, SeriesXY);
-  end;
   if RootDistribution.Option = 'regular' then
   begin
-    EqualDistribution;
+    CalcEqualDistribution;
   end;
-  { Bestimmung von Wurzeln, die sich nicht in den Rändern befinden }
-  init_ReadFromFile;
+
   if (RootDistribution.Option <> 'regular') or (iniMethod.Option = 'xyfile')
   then
   // in bestimmmten Fällen muss RLD neu berechnet werden.
@@ -300,6 +300,8 @@ begin
   tau_s.V := (K.V + theta.V) / (Pi * RLD_m * De_m);
 
 end;
+
+
 
 procedure TSubmodRootDiff1DRapp.Integrate;
 var

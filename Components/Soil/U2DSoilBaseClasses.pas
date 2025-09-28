@@ -25,8 +25,6 @@ const
 colorarray: array [0 .. 11] of TColor = ($00CB9F74, $00D8AD49, $00E6C986,
     $00F2E3C1, $00DAF0C4, $00A6E089, $0086D560, $0065CFB5, $008DC5FC, $0075D5FD,
     $0078E1ED, $00ACEDF4);
-  levelsarray: array [0 .. 11] of MathFloat = (-4, -2.5, -2, -1.5, -1, -0.5, 0,
-    0.5, 1, 1.5, 2, 2.5);
 
 type
 
@@ -45,66 +43,6 @@ type
   /// sink strength (black hole).
   /// </summary>
   TUptake_Function = (MM, fixed_influx, ZeroSink);
-
-
-   /// <summary>Classes</summary>
-  TSRPLightNitrate = class(TSRPLight)
-    /// <summary>Lean, memory-saving version of an SRP</summary>
-  private
-    /// <summary>Private declarations</summary>
-
-  protected
-  public
-    /// <summary>Mean nitrate concentration</summary>
-    Cl_mean: double;
-    /// <summary>N amount in the EWZ at the beginning</summary>
-    init_NAmount: double;
-  public
-    /// <summary>Public declarations</summary>
-    /// <summary>Access to the fields: set and get methods</summary>
-  end;
-
-
-
-
-  /// <summary>
-  ///   Defines an object for storing the information of
-  ///  a single root object
-  ///  x and y are the floating point type coordinate
-  ///  xi and yi are the index integers for the cell of a 2-D grid object
-  ///  the root object is located
-  /// </summary>
-  TRootPosition = class(TObject)
-    x: real;
-    y: real;
-    xi, yi: integer;
-    root: integer;
-
-    /// <summary>
-    ///  the area of the single root cylinder [cm²]
-    /// </summary>
-    area : real;
-
-    /// <summary>
-    /// the nitrate influx rate of that root [mol/cm/s]
-    /// </summary>
-    NInflux : real;
-    
-    /// <summary>
-    /// the water influx rate of that root [cm3/cm/s]
-    /// </summary>
-    WInflux: real;
-    
-    /// <summary>
-    /// the sum of nitrate nitrogen [mol]
-    /// </summary>
-    SumNAmount: real;
-    
-    /// <summary>
-    /// the nitrate uptake rate [mol/s]
-    /// </summary>
-    NAmountdt : real;
-  end;
 
 
   /// <summary>Lean, memory-saving version of an SRP
@@ -129,19 +67,82 @@ type
 
     /// <summary>Root length density of the SRP [cm/cm^3]</summary>
     RLD : real;
- 
+
     /// <summary>Field for the coordinates of the root [cm]</summary>
     coordRoot: TMyFloatPoint;
-    
+
     /// <summary>Surface area of the single root cylinder [cm^2]</summary>
     area: double;
-    
+
     /// <summary>List of polygon vertices</summary>
     vertexList: TList;
   public
     /// <summary>Public declarations</summary>
     /// <summary>Access to the fields: set and get methods</summary>
   end;
+
+   /// <summary>TSRPLight plus some extra fields for nitrate transport calculations </summary>
+  TSRPLightNitrate = class(TSRPLight)
+  private
+
+  protected
+  public
+    /// <summary>Mean nitrate concentration</summary>
+    Cl_mean: double;
+    /// <summary>N amount in the EWZ at the beginning</summary>
+    init_NAmount: double;
+  public
+    /// <summary>Public declarations</summary>
+    /// <summary>Access to the fields: set and get methods</summary>
+  end;
+
+
+  /// <summary>
+  ///   Defines an object for storing the information of
+  ///  a single root object
+  ///  x and y are the floating point type coordinate
+  ///  xi and yi are the index integers for the cell of a 2-D grid object
+  ///  the root object is located
+  /// </summary>
+  TRootPosition = class(TObject)
+    x: real;
+    y: real;
+    xi, yi: integer;
+    root: integer;
+
+    /// <summary>
+    ///  the area of the single root cylinder [cm²]
+    /// </summary>
+    area : real;
+
+    /// <summary>
+    /// the nitrate influx rate of that root [mol/cm/s]
+    /// </summary>
+    NInflux : real;
+
+    /// <summary>
+    /// the water influx rate of that root [cm3/cm/s]
+    /// </summary>
+    WInflux: real;
+
+    /// <summary>
+    /// the sum of nitrate nitrogen [mol]
+    /// </summary>
+    SumNAmount: real;
+
+    /// <summary>
+    /// the nitrate uptake rate [mol/s]
+    /// </summary>
+    NAmountdt : real;
+  end;
+
+
+/// <summary>
+///   forward declaration
+/// </summary>
+  TBaseSubmodRootDiff = class;
+
+
 
   /// <summary>
   /// Declaration of class TRasterData. This class encapsulates the raster,
@@ -174,7 +175,9 @@ type
     /// <summary>Arrays of class RasterData</summary>
 
     /// <summary>
-    /// Root numbers in 10,000 raster (computational) cells. The array is needed for
+    /// Root numbers in the raster (computational) cells.
+    /// There can be more than one root per cell
+    /// The array is needed for
     /// reading and displaying the number of roots in grid cells
     /// </summary>
     CountArr: array of array of integer;
@@ -188,15 +191,15 @@ type
   public
     { Public declarations }
     /// <summary> Reference to the diffusion submodel</summary>
-    SubmodRootDiff: TSubmodel;
+    SubmodRootDiff: TBaseSubmodRootDiff;
 
     /// <summary>Constructor</summary>
-    constructor create(Submodel: TSubmodel);
+    constructor create(Submodel: TBaseSubmodRootDiff);
 
     /// <summary>Reads aggregated raster data and generates random positions</summary>
     procedure readRasterData(fn: string; var Series: TPointSeries);
 
-    /// <summary>Reads XY coordinates from a file</summary>
+    /// <summary>Reads exact XY coordinates from a file</summary>
     procedure readXYfromFile(Filename: TFilename;
       var Series: TPointSeries); virtual;
 
@@ -381,6 +384,7 @@ type
 
 
 
+
     dim_xMiddle: TVar; { Zahl der MITTIGEN Elemente in X-Richtung }
     dim_yMiddle: TVar; { Zahl der MITTIGEN Elemente in Y-Richtung }
 
@@ -399,16 +403,13 @@ type
     /// <summary>Path and name of the output file for XY data</summary>
     RootXYOutpDataFile: TOption;
 
-    /// <summary>Initialization depending on whether data has already been read from a file</summary>
-    procedure init_ReadFromFile; virtual;
-
     /// <summary>Fills the chart with root distribution data</summary>
     procedure fillChartRootDistr;
     /// <summary>Fills the AdvStringGrid with aggregated raster data</summary>
     procedure fillGridRasterData;
 
     /// <summary>Distributes roots evenly across the grid</summary>
-    procedure EqualDistribution;
+    procedure CalcEqualDistribution;
 
     /// <summary>Distributes roots in a hexagonal pattern</summary>
     procedure distributeHexagonRow;
@@ -476,7 +477,7 @@ implementation
 /// <summary>
 /// Implementation of the methods of TRasterData
 /// </summary>
-constructor TRasterData.create(Submodel: TSubmodel);
+constructor TRasterData.create(Submodel: TBaseSubmodRootDiff);
 var
   i: integer;
 begin
@@ -484,6 +485,10 @@ begin
   SubmodRootDiff := Submodel;
   PosList := TStringlist.create;
 end;
+
+
+
+
 
 
 /// <summary>
@@ -499,6 +504,7 @@ var
   NewRoot : TRootPosition;
 
 begin
+  PosList.Clear;
   AssignFile(F, fn); { File selected }
   Reset(F);
   // Read the header
@@ -518,7 +524,7 @@ begin
     Readln(F); // New line
   end;
   closeFile(F);
-  AllRoot := 1; // Start at 1 because PosArr begins at 1.
+  AllRoot := 0; // Start at 0 because PosArr begins at 0.
   { Randomly distribute roots in each grid cell }
   for Col := 0 to NCols - 1 do
   begin
@@ -539,8 +545,8 @@ begin
     end;
   end;
   { The model and the RasterData object know the total number of roots }
-  TBaseSubmodRootDiff(SubmodRootDiff).num_roots.v := AllRoot - 1;
-  self.NRoots := AllRoot - 1;
+  TBaseSubmodRootDiff(SubmodRootDiff).num_roots.v := AllRoot;
+  self.NRoots := AllRoot;
 end;
 
 /// <summary>
@@ -581,9 +587,13 @@ begin
       Readln(F, restString);
       Inc(NRoots);
     end;
+    self.SubmodRootDiff.num_roots.v := NRoots;
+    self.SubmodRootDiff.RasterData.NRoots := NRoots;
+
     Reset(F); // Reset file pointer to beginning
     // Read the header and discard it
     Readln(F, s_header);
+    NRoots := 0;
     while not Eof(F) do
     begin
       NewRoot := TRootPosition.create;
@@ -608,7 +618,7 @@ begin
       inc(NRoots);
     end;
     // Submodel knows the number of roots
-    TBaseSubmodRootDiff(SubmodRootDiff).num_roots.v := NRoots;
+
     { Due to a root at 0/0. The position of this root is obviously incorrect }
     // ShowMessage(FloatToStr(RasterData.PosArr[1].x));
   except
@@ -669,7 +679,7 @@ begin
   ParCreate('gridWidth', '[cm]', 5, gridWidth);
   ParCreate('gridHeight', '[cm]', 5, gridHeight);
   ParCreate('max_dt', '[s]', 0, max_dt);
-  ParCreate('theta', '[cm3/cm3]', 0.2, IniTheta, 'initial volumetric water content');
+  ParCreate('IniTheta', '[cm3/cm3]', 0.2, IniTheta, 'initial volumetric water content');
   ParCreate('Tiefe', '[cm]', 10, Depth);
   { Note: the original value was in micromol/l }
   ParCreate('verticMargin', '[cm]', 0, verticMargin);
@@ -792,6 +802,7 @@ var
   i: integer;
   // Number of grid cells in X and Y direction
   numberGridCellsX, numberGridCellsY: integer;
+
 begin
   inherited;
   // Rewrite output file for XY coordinates
@@ -811,26 +822,33 @@ begin
   area := dimensionX.v * dimensionY.v;
   { Area of the layer under investigation }
   Volume.v := area * Depth.v;
+  theta.v := IniTheta.v;
   { Implementation of a check for previous initialization. This allows easy extension
     for initializations requiring file access or object instantiation. This should be
     done in the _init method. Initializations should only be performed when roots
     have already been read. The original TSubmodel method cannot be used because it
     is called multiple times. }
-  if IniMethod.Option = 'rasterdatafile' then
+
+  if iniMethod.Option = 'rasterdatafile' then
   begin
-    //init_eingelesen wird von den abgeleiteten Methoden mit inherited aufgerufen.
-    initialised := true;
+    RasterData.readRasterData(RootInpDataFile.Option, seriesXY);
   end;
+  if iniMethod.Option = 'xyfile' then
+  begin
+    RasterData.readXYfromFile(RootInpDataFileXY.Option, seriesXY);
+  end;
+
+  if iniMethod.Option = 'inppar' then
+  begin
+    CalcEqualDistribution;
+  end;
+  calcNumberConsRoots;
+
+ //init_eingelesen wird von den abgeleiteten Methoden mit inherited aufgerufen.
+ initialised := true;
+
 end;
 
-/// <summary>
-/// Calculates the number of roots that are in the observation window and
-/// simultaneously NOT in the margins.
-/// </summary>
-procedure TBaseSubmodRootDiff.init_ReadFromFile;
-begin
-  calcNumberConsRoots;
-end;
 
 procedure TBaseSubmodRootDiff.CalcRates;
 begin
@@ -932,7 +950,7 @@ begin
   if IniMethod.Option = 'SubmodStruct' then
   begin
     j := 0;
-    for i := 1 to trunc(RasterData.NRoots) do
+    for i := 0 to trunc(RasterData.NRoots)-1 do
       ActRoot := TRootPosition(self.RasterData.PosList.Objects[i]);
     begin
       // Point not in vertical margins
@@ -975,7 +993,7 @@ begin
     while Not hasWritten do
     begin
       j := 0;
-      for i := 1 to trunc(RasterData.NRoots) do
+      for i := 0 to trunc(RasterData.NRoots)-1 do
       begin
         // Point not in vertical margins
       ActRoot := TRootPosition(self.RasterData.PosList.Objects[i]);
@@ -1016,7 +1034,7 @@ begin
       writeln(xyFile);
       write(xyFile, 'Lfd.Nr.', ' ', 'X', ' ', 'y', ' ', 'Flaeche', ' ');
       writeln(xyFile);
-      for i := 1 to trunc(RasterData.NRoots) do
+      for i := 0 to trunc(RasterData.NRoots)-1 do
       begin
         ActRoot := TRootPosition(self.RasterData.PosList.Objects[i]);
 
@@ -1048,7 +1066,7 @@ end;
 /// can be updated. Different methods were created for this purpose and can be
 /// switched here.
 /// </summary>
-procedure TBaseSubmodRootDiff.EqualDistribution;
+procedure TBaseSubmodRootDiff.CalcEqualDistribution;
 var
   radSRP, // Radius SRP
   AreaSRP // Fl�che SRP
@@ -1056,18 +1074,14 @@ var
 begin
   { If RLD is read as a parameter, the number of roots in the observation window
     still has to be calculated }
-  if IniMethod.Option = 'inppar' then
-  begin
-    radSRP := 1 / sqrt(Pi * ParMRLD.v);
-    AreaSRP := Pi * sqr(radSRP);
-    num_roots.v := dimensionX.v * dimensionY.v / AreaSRP;
-    RasterData.NRoots := trunc(num_roots.v);
-  end;
+  radSRP := 1 / sqrt(Pi * ParMRLD.v);
+  AreaSRP := Pi * sqr(radSRP);
+  num_roots.v := dimensionX.v * dimensionY.v / AreaSRP;
+  RasterData.NRoots := trunc(num_roots.v);
   // Fill rows
   distributeHexagonRow;
-  calcNumberConsRoots;
   // Fill columns
-  // distributeHexagonCol;
+  distributeHexagonCol;
 end;
 
 /// <summary>
@@ -1123,10 +1137,10 @@ begin
   number_row := 0; // Start at row 0
   { Caveat: PosArr begins at 1 }
   j := 0;
-  i := 1;
+  i := 0;
   errorRoot := 0;
   errorReg.v := 0;
-  while i <= trunc(num_roots.v) do
+  while i <= trunc(num_roots.v)-1 do
   begin
     if (number_row mod 2 <> 0) then // odd rows
     begin
@@ -1136,7 +1150,8 @@ begin
       if (pos_x <= dimx) and (pos_y <= dimy) then
       // As long as the point remains within the calculation area
       begin
-        NewPosition.create;
+        NewPosition := TRootPosition.create;
+//        NewPosition.create;
         NewPosition.x := pos_x;
         NewPosition.x := pos_y;
         NewPosition.root := i;
@@ -1179,7 +1194,7 @@ begin
       if (pos_x <= dimx) and (pos_y <= dimy) then
       // As long as the point remains within the calculation area
       begin
-        NewPosition.create;
+        NewPosition := TRootPosition.create;
         NewPosition.x := pos_x;
         NewPosition.x := pos_y;
         NewPosition.root := i;
@@ -1264,8 +1279,8 @@ begin
   number_col := 0; // Start at column 0
   j := 0;
   { Caveat: PosArr begins at 1 }
-  i := 1;
-  while i <= trunc(num_roots.v) do
+  i := 0;
+  while i <= trunc(num_roots.v)-1 do
   begin
     if (number_col mod 2 <> 0) then // odd columns
     begin
@@ -1316,7 +1331,7 @@ begin
       // As long as the point remains within the calculation area
       if (pos_x <= dimx) and (pos_y <= dimy) then
       begin
-        NewPosition.create;
+        NewPosition := TRootPosition.create;
         NewPosition.x := pos_x;
         NewPosition.x := pos_y;
         NewPosition.root := i;
@@ -1354,7 +1369,7 @@ begin
   { Determine the number of roots to consider (for setting array bounds).
     The input parameters for the margins are relative values that must be
     related to the observation window dimensionX, dimensionY. }
-  for i := 1 to RasterData.NRoots do
+  for i := 0 to RasterData.NRoots-1 do
   begin
     // Point not in vertical margins
 //    if (TRootPosition(RasterData.PosList.objects[i]).x >= verticMargin.v) and
@@ -1386,7 +1401,7 @@ begin
   setLength(PosArr_middle, trunc(number_consid_roots.v));
   j := 0;
   // Fill PosArr_middle
-  for i := 1 to trunc(RasterData.NRoots) do
+  for i := 0 to trunc(RasterData.NRoots)-1 do
   begin
     // Point not in vertical margins
     if (TRootPosition(RasterData.PosList.objects[i]).x >= verticMargin.v) and
@@ -1648,7 +1663,7 @@ var
     gespeichert werden }
   xTemp, yTemp: double;
 begin
-  for i := 1 to trunc(Num_Roots.v) do
+  for i := 0 to trunc(Num_Roots.v)-1 do
   begin
     xTemp := TRootPosition(RasterData.PosList.Objects[i]).x;
     yTemp := TRootPosition(RasterData.PosList.Objects[i]).y;
