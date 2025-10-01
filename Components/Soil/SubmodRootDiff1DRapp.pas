@@ -14,7 +14,9 @@ type
   // Arrays
   r2 = array [0 .. 1] of double; // Vektor im Punktraum
 
-
+  /// <summary>
+  ///  class for random points
+  /// </summary>
   TRandomPoint = class(TObject)
     RandomPointPos: TRootPosition;
     shortestDist, { Kürzeste Distanz [cm] }
@@ -268,25 +270,18 @@ begin
     RandomPointList.add(ARandomPoint);
   end;
 
-    if iniMethod.Option = 'inppar' then
+ if iniMethod.Option = 'inppar' then
   begin
     { Wenn mWLD und VC als Parameter eingelesen eingelesen werden, dann müssen die
       entsprechenden Variablen gesetzt werden. VarKoeff_RLD wird je nach Verteilungs-
       funktion geg. gändert. }
-    RLD_mean.V := ParMRLD.V;
+
     // ini-Methode inppar kann nur mit hexagonaler Verteilung verwendet werden:
     RootDistribution.Option := 'regular';
     // Gilt auch für Kennzahlen der Flächenverteilung
   end;
 
-  ApplyParameterRootInitialization;
 
-  if (RootDistribution.Option <> 'regular') or (iniMethod.Option = 'xyfile')
-  then
-  // in bestimmmten Fällen muss RLD neu berechnet werden.
-  begin
-    RLD_mean.V := number_consid_roots.V / AreaMiddle.V
-  end;
   // Youngs-Gardner: Transformierte Werte (andere Einheiten)
   // Skalierung auf m/m^3 es werden nur mittlere Wurzeln berücksichtigt
   RLD_m := number_consid_roots.V / AreaMiddle.V * 10000;

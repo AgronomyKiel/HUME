@@ -1,4 +1,4 @@
-unit SubmodRootDiff1DSolo;
+﻿unit SubmodRootDiff1DSolo;
 
 { Solo variant of the 1D diffusion model: does not expect a structure model }
 interface
@@ -107,7 +107,6 @@ type
 
     // METHODS
     // a) Methods for calculation using the analytical solution
-    procedure createAnalytic;
     procedure Integrate_Analyt;
     // Helper methods
     function Kolmogorov_Smirnov: boolean;
@@ -115,8 +114,6 @@ type
     procedure calcRootArea;
     procedure copyPosArrFrom2DDif;
     procedure fillWLDArr;
-    // b) for numerical solution
-    procedure createNumeric;
     // Method for calculating using the rate equation (numerical solution)
     procedure Calc_numeric;
     procedure transform_Clmin;
@@ -295,6 +292,10 @@ begin
   VarCreate('Mittl_Flaeche', '[cm^2]', 0, false, Mittl_Flaeche);
   VarCreate('Par_AreaMean', '[cm^2]', 5, false, Par_AreaMean);
   VarCreate('Par_AreaVC', '[%]', 100, false, Par_AreaVC);
+  VarCreate('ClminTransf', '[kg N/cm*H20]', 0, false, ClminTransf);
+  VarCreate('ClminTransf_ha', '[kg N/ha]', 0, false, ClminTransf_ha);
+  VarCreate('Amount_H20', '[l]', 0, false, Amount_H20);
+
   // Create and initialize TPar
   ParCreate('number_classes', '[-]', 10, number_classes);
   // 10 classes by default
@@ -348,51 +349,9 @@ begin
   { Issue: It should still be differentiated which objects are used ONLY in the
     analytical solution, outsourcing them to a procedure so that switching between
     the calculation methods is clearer. Mostly a cosmetic issue. }
-  if integrationMethod.Option = 'numeric' then
-  // Case distinction: numerical calculation
-  begin
-    { }
-    createNumeric;
-  end
-  else // analytical solution
-  begin
-    createAnalytic;
-  end;
 end; // SubmodRootDiff1D.createAll
 
-procedure TSubmodRootDiff1DSolo.createAnalytic;
-(* ------------------------------------------------------------------------------
-  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
-  DESCRIPTION: Method for the Hume instances that are only needed when using the
-  analytical solution; this allows easy switching between the two calculation
-  variants.
-  ------------------------------------------------------------------------------ *)
-begin
 
-end; // End TSubmodRootDiff1DSolo.createAnalytic
-
-procedure TSubmodRootDiff1DSolo.createNumeric;
-(* ------------------------------------------------------------------------------
-  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
-  DESCRIPTION: Method for the Hume instances that are only needed when using the
-  numerical solution; this allows easy switching between the two calculation
-  variants.
-  ------------------------------------------------------------------------------ *)
-var
-  i: integer;
-begin
-  { TVar }
-  VarCreate('ClminTransf', '[kg N/cm*H20]', 0, false, ClminTransf);
-  VarCreate('ClminTransf_ha', '[kg N/ha]', 0, false, ClminTransf_ha);
-  VarCreate('Amount_H20', '[l]', 0, false, Amount_H20);
-  { Create state variables for the N amounts contained in each EWZ. See also the
-    notes in method init }
-  // for i:=0 to max_num_roots-1 do
-  // begin
-  { Issue: Can the NAmount_UPEWZArray be populated in this way??? }
-  // StateCreate('NAmount_UPEWZ'+InttoStr(i),'[g]', 0, false, NAmount_UPEWZArray[i]);
-  // end;
-end;
 
 procedure TSubmodRootDiff1DSolo.Init(var GlobMod: TMod);
 (* ------------------------------------------------------------------------------
@@ -482,7 +441,6 @@ begin
       VarKoeff_RLD.V := 0;
   end;
 
-  ApplyParameterRootInitialization;
   // Initializations independent of the imported root data
   if integrationMethod.Option = 'numeric' then // only for numerical solution
   begin
@@ -586,7 +544,7 @@ begin
       dynamically. A list would probably be better than an array }
     // setLength(NAmount_UPEWZArray,RasterData.NRoots-1);
     // setLength(Init_NAmountEWZArray,RasterData.NRoots-1);
-    for i := 1 to RasterData.NRoots do
+    for i := 0 to RasterData.NRoots-1 do
     begin
       new(AVol_H20);
       new(AInitNAmount);

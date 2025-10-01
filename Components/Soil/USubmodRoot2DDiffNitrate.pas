@@ -1,4 +1,4 @@
-unit USubmodRoot2DDiffNitrate;
+﻿unit USubmodRoot2DDiffNitrate;
 
  {$J+}
 interface
@@ -42,6 +42,17 @@ type
     procedure writeNitrateUptakeSinkToFile;
 
   protected
+
+/// <summary> C_xy: array for concentrations in the computational elements.
+/// c_xy was declared as a dynamic array (see NG, p.65 ff) because the size of
+///      the array should be declared with values of dim_x and dim_y (number of
+///      computational elements in the x and y directions) that are assigned later.
+/// </summary>
+
+    C_xy: array of array of double;
+
+
+
     /// <summary>Protected declarations, also accessible by derived classes</summary>
     ///
     /// <summary>uptake rate [Kg N/ha*d]</summary>
@@ -60,6 +71,10 @@ type
     Km: TPar;
 
 
+    /// <summary>
+    /// anfängliche interne Zeitschrittweite [s]
+    /// </summary>
+    ini_dt: TPar; {  }
 
     /// <remarks>Margins are necessary so that edge effects can be excluded when the root exit points are hexagonally distributed</remarks>
 
@@ -121,20 +136,15 @@ type
     /// <summary>switch for growth in pots</summary>
     ContGrowth : TOption;
 
-    /// <summary>
-    /// Helper to apply shared initialization logic for parameter-based
-    /// configurations in derived classes.
-    /// </summary>
-    procedure ApplyParameterRootInitialization; override;
 
   public
     /// <summary>Public declarations</summary>
     /// <summary>Flag for one-time write access</summary>
     procedure createAll; override;
-    procedure AddDataValueToDataSeries; override;
     // procedure Init(var GlobModReferenz: TMod); override;
     procedure CalcRates; override;
     procedure Integrate; override;
+    procedure Init(var GlobMod: TMod); override;
     procedure Get_Sink(x_loc, y_loc: word; var s: real);
     procedure get_minGrid(x_loc, y_loc: word; var s: real);
     // Helper method
@@ -295,6 +305,10 @@ begin
   ParCreate('Clmin', '[mol/l]', 0, Clmin);
   ParCreate('Km', '[mikromol/l]', 0, Km, '');
 
+  ParCreate('ini_dt', '[s]', 3600, ini_dt);
+  ParCreate('dim_x', '[n]', 500, dim_x);
+  ParCreate('dim_y', '[n]', 500, dim_y);
+
   // Create and initialize TState
   StateCreate('N_AmountSoil', '[kg N/ha]', 0, false, N_AmountSoil);
   StateCreate('Sum_N_AmountRoots', '[kg N/ha]', 0, false, Sum_N_AmountRoots);
@@ -321,6 +335,7 @@ begin
   NitrateUptakeFunction.OptionList.add('ZeroSink');
   NitrateUptakeFunction.OptionList.add('ConstInflux');
   NitrateUptakeFunction.OptionList.add('MM');
+
 
   OptCreate('ContGrowth', 'no', ContGrowth);
   ContGrowth.OptionList.add('yes');
@@ -386,69 +401,6 @@ begin
 
 
 end; // End TSubmodRootDiff.CreateAll
-
-/// <summary>Performs various initializations</summary>
-procedure TSubmodRoot2DDiffNitrate.AddDataValueToDataSeries;
-var
-  i: integer;
-  // Number of grid cells in X and Y direction
-  numberGridCellsX, numberGridCellsY: integer;
-begin
-  inherited;
-  // Rewrite output file for XY coordinates
-
-  AssignFile(xyFile, RootXYOutpDataFile.Option);
-  rewrite(xyFile); { Create or replace the file; it is rewritten for each model run }
-  closeFile(xyFile);
-  numberGridCellsX := trunc(dimensionX.v / gridWidth.v);
-  numberGridCellsY := trunc(dimensionY.v / self.gridHeight.v);
-  setLength(RasterData.CountArr, trunc(numberGridCellsX));
-  for i := 0 to high(RasterData.CountArr)-1 do
-  begin
-    setLength(RasterData.CountArr[i], trunc(numberGridCellsY));
-  end;
-  { Calculation of the diffusion coefficient of the solution in soil from the
-    effective diffusion coefficient. See Kage dissertation p.43f.: for the 1D model
-    (Nye/Tinker, Solute movement p.299) the effective diffusion coefficient is needed.
-    It is calculated as De = Dl * f, where Dl is the diffusion coefficient in free
-    water and f is the impedance factor. The relationship between theta and f is
-    given by f = 3.35 * Theta^2 (Kage, p.41). }
-  De.v := Dl.v * 3.35 * sqr(theta.v) * theta.v;
-  { Calculation of effective diffusion coefficient [cm2/s] for the 2D model }
-  // De.v := Dbf(theta.v)/Theta.v; //alte Implementierung
-  // Initialize TVar where appropriate at this stage
-  Area := dimensionX.v * dimensionY.v;
-  { Area of the layer under investigation }
-  Volume.v := Area * Depth.v;
-  { Calculation of mineralization rate in [Mol/cm3*s] }
-  // Min_S.V := minera.v/14*1000/86400*1/(Tiefe.v*1e8);
-  Min_S.v := minera.v * 1000 / (14 * 86400 * Depth.v * 1E8);
-  { Calculation of the initial N amount in the soil layer from the concentration.
-    Issue: Should theta be multiplied here because the concentration refers only to
-    the volume of water contained in the soil? }
-  // Init_NAmount_layer.V:=c_start.V*volumen.V*14/1000;
-  { About the units:
-    [g] = Mol/l * l * g/Mol }
-  { Implementation of a check for previous initialization. This allows easy extension
-    for initializations requiring file access or object instantiation. This should be
-    done in the _init method. Initializations should only be performed when roots
-    have already been read. The original TSubmodel method cannot be used because it
-    is called multiple times. }
-
-end;
-
-procedure TSubmodRoot2DDiffNitrate.ApplyParameterRootInitialization;
-begin
-  if iniMethod.Option = 'inppar' then
-  begin
-    RLD_mean.V := ParMRLD.V;
-    if RootDistribution.Option = 'regular' then
-      num_roots.V := RLD_mean.V * dimensionX.V * dimensionY.V;
-  end;
-
-  if RootDistribution.Option = 'regular' then
-    inherited ApplyParameterRootInitialization;
-end;
 
 
 procedure TSubmodRoot2DDiffNitrate.zweid_solut(dt_globmod: real);
@@ -739,7 +691,7 @@ begin
   NUptake := 0.0;
   SumUptake := 0.0;
   De_SinkGrid := De.v / theta.v;
-  for i := 1 to trunc(Num_Roots.v) do
+  for i := 0 to trunc(Num_Roots.v)-1 do
   begin
     // test whether a sink exists in the computational element, then calculate uptake
     if ((TRootPosition(RasterData.PosList.Objects[i]).xi = x_loc) and (TRootPosition(RasterData.PosList.Objects[i]).yi = y_loc))
@@ -988,6 +940,132 @@ begin
       C_xy[x_ndx, y_ndx] := c_start.v;
     end;
   end;
+end;
+
+
+procedure TSubmodRoot2DDiffNitrate.Init(var GlobMod: TMod);
+
+var
+  DimXMiddle, // Dimension der mittigen Fläche in x-Richtung [cm]
+  DimYMiddle // Dimension der mittigen Fläche in y-Richtung [cm]
+    : double;
+  i: integer;
+
+begin
+  inherited;
+
+  ContPosx := 50;
+  ContPosy := 50;
+  SinkCellFileWasCreated := false;
+  FileWasCreated := false;
+  hasWritten := false;
+  // Listen leeren
+  self.RasterData.PosList.clear;
+  { Keine dynamische Verbindung zwischen 2D-Diffmodell und Strukturmodell in den
+    Verteilungsvarianten regular oder random }
+  if (iniMethod.Option = 'submodstruct') and
+    (RootDistribution.Option <> 'fromsource') then
+  begin
+    RootDistribution.Option := 'fromsource';
+    // showMessage('Strukturmodell setzt Einstellung lognormal voraus.Wurde umgestellt.');
+  end;
+  inherited;
+  { AddDataValueToDataSeries ersetzt nun die Methode init. Ursprünglich wurde Init
+    der übergeordneten Klasse wird mit dem übergebenen Globalmodell aufgerufen. }
+  // inherited init(GlobModReferenz);
+  (* -----------------------------------------------------------------------------
+    c_xy: Festlegen der Arraygröße mit SetLength. Es wird ein mehrdimensionales
+    Array deklariert. Cave: Dynamische Arrays beginnen immer bei 0.
+    ------------------------------------------------------------------------------ *)
+  // Rechenelementebezogene Operationen
+  SetLength(C_xy, trunc(dim_x.v + 2), trunc(dim_y.v + 2));
+  SetLength(x_arr, trunc(dim_x.v) + 2);
+  SetLength(y_arr, trunc(dim_y.v) + 2);
+  dx.v := DimensionX.v / dim_x.v;
+  dy.v := DimensionY.v / dim_y.v;
+  DimXMiddle := DimensionX.v - 2 * verticMargin.v;
+  DimYMiddle := DimensionY.v - 2 * horizMargin.v;
+  // Berechnung der Anzahl der mittigen Rechenelemente
+  dim_xMiddle.v := DimXMiddle / dx.v;
+  dim_yMiddle.v := DimYMiddle / dy.v;
+  AreaMiddle.v := DimXMiddle * DimYMiddle;
+  x_arr[0] := dx.v / 2;
+  for i := 1 to trunc(dim_x.v) + 1 do
+    x_arr[i] := x_arr[i - 1] + dx.v;
+  y_arr[0] := dy.v / 2;
+  for i := 1 to trunc(dim_y.v) + 1 do
+    y_arr[i] := y_arr[i - 1] + dy.v;
+
+  vol_Element := dx.v * dy.v; { Volumen eines Rechenelements [cm3] }
+  wm := theta.v * vol_Element; { Wassermenge eines Rechenelements
+    [cm3*cm3 }
+  { Berechnung der initial in den Rechenelementen enthaltenen Konzentration aus
+    der initialen N-Menge im Boden. Zu diesem Zeitpunkt haben sämtliche Rechenelemente, egal
+    ob in der Mitte oder in den Rändern die gleichen Konz. Berechnung o.k. }
+  InitConc;
+  N_amountsoil.v := Mg_func(Depth.v, theta.v, c_start.v); // Debuggen
+  c_av.v := avg_conz;
+  // N_AmountSoil.v := mg_func(Tiefe.v, Theta.v, c_av.v);//Debuggen
+  int_dt.v := ini_dt.v; // Zuweisung der Startzeitschrittweite ...
+
+  Area.v := DimensionX.v * DimensionY.v;
+  { Fläche der zu untersuchenden Schicht
+    mit Rändern. }
+  volume.v := Area.v * Depth.v;
+  { Volumen der betrachteten Bodenschicht[cm3] }
+  { Berechnung Mineralisationsrate in [Mol/cm^3*s] }
+  Min_S.v := minera.v / 14 * 1000 / 86400 * 1 / (Depth.v * 1E8);
+  // Initialisieren der Visuallisierung der Nährstoffaufnahme
+
+
+    { Ausschluss der Ränder; sollte nicht durchgeführt werden, da die Wurzeln zwar
+    vorhanden sein und auch Aufnahme durchführen sollten, aber nicht berücksichtigt
+    werden sollten }
+  if DelMarginRoots.Option = 'yes' then
+    removeMarginRoots;
+  calcNumberConsRoots;
+
+
+  If ((MyMathImage <> nil) and (ShowConc.Option = 'true')) then
+  begin
+    MyMathImage.d3WorldX1 := x_arr[1];
+    MyMathImage.d3WorldXW := x_arr[trunc(dim_x.v)];
+    MyMathImage.d3WorldY1 := y_arr[1];
+    MyMathImage.d3WorldYW := y_arr[trunc(dim_y.v)];
+    MyMathImage.d3Worldz1 := 0; // min_c;
+    MyMathImage.d3WorldzW := max_c * 1.2;
+
+    If ColorSurface = nil then
+      ColorSurface := TColorSurface.Create(trunc(dim_x.v) - 1,
+        trunc(dim_y.v) - 1)
+    else
+    begin
+      ColorSurface.Free;
+      ColorSurface := TColorSurface.Create(trunc(dim_x.v) - 1,
+        trunc(dim_y.v) - 1)
+    end;
+    MyMathImage.d3DrawAxes('x', 'y', 'z', 5, 5, 5, 0, 0, 0, true);
+    MyMathImage.d3drawfullworldbox;
+  end;
+
+  If wl_ha.v > 0.0 then
+  begin
+    { Berechnung scheint korrekt s. Manuskript Hängeregister Vgl 1D2D }
+    Imax.v := Ar.v / 14 * 1000 / 86400 / wl_ha.v;
+    { Berechnung Influxrate [mol/(cm/s)] }
+    // Imax.V := Ar.v*1000/(14*86400*WL_ha.v);  //Debuggen
+  end
+  else
+    Imax.v := 0.0;
+  // Ausgabe von XY-Koord. bei statischem Modell
+  if iniMethod.Option <> 'submodstruct' then
+    fillChartRootDistr;
+  showActConc;
+
+
+
+  InitConc;
+
 end;
 
 

@@ -22,6 +22,9 @@ type
 const
   /// <summary>largest index, required for the vectors during the flux calculation</summary>
   dim_max = 10000;
+
+
+/// <summary>Color array for concentration display</summary>
 colorarray: array [0 .. 11] of TColor = ($00CB9F74, $00D8AD49, $00E6C986,
     $00F2E3C1, $00DAF0C4, $00A6E089, $0086D560, $0065CFB5, $008DC5FC, $0075D5FD,
     $0078E1ED, $00ACEDF4);
@@ -35,7 +38,7 @@ type
   real = double;
 
   /// <summary>Problem: the dynamic implementation was removed again due to difficulties with array boundaries.</summary>
-    array_type = array [0 .. dim_max + 1] of real;
+  array_type = array [0 .. dim_max + 1] of real;
 
   /// <summary>
   /// Mode of nitrogen uptake by the root: Michaelis-Menten (saturation kinetics),
@@ -50,7 +53,7 @@ type
   /// TSRP instances of the single root model also need fields for area and the
   /// vertex list so that, when reading raster data, the surface area can be
   /// determined (using Voronoi polygons or alternatively by splitting the area of
-    /// raster cells among the roots contained in them. Units may be an issue)
+  /// raster cells among the roots contained in them. Units may be an issue)
   /// </summary>
   TSRPLight = class(TObject)
   private
@@ -67,9 +70,6 @@ type
 
     /// <summary>Root length density of the SRP [cm/cm^3]</summary>
     RLD : real;
-
-    /// <summary>Field for the coordinates of the root [cm]</summary>
-    coordRoot: TMyFloatPoint;
 
     /// <summary>Surface area of the single root cylinder [cm^2]</summary>
     area: double;
@@ -138,11 +138,9 @@ type
 
 
 /// <summary>
-///   forward declaration
+///  forward declaration
 /// </summary>
   TBaseSubmodRootDiff = class;
-
-
 
   /// <summary>
   /// Declaration of class TRasterData. This class encapsulates the raster,
@@ -172,8 +170,6 @@ type
     /// <summary>Width of columns [cm]</summary>
     DimRows: double;
 
-    /// <summary>Arrays of class RasterData</summary>
-
     /// <summary>
     /// Root numbers in the raster (computational) cells.
     /// There can be more than one root per cell
@@ -182,15 +178,17 @@ type
     /// </summary>
     CountArr: array of array of integer;
 
-    /// <summary> Stores information on all roots in the form of TPointDoubleType entries</summary>
+    /// <summary> Stores information on all roots in the form of TRootposition entries</summary>
     PosList: TStringList;
   private
     /// <summary>Private declarations</summary>
   protected
     /// <summary>Protected declarations</summary>
+    ///
+    ///
   public
     { Public declarations }
-    /// <summary> Reference to the diffusion submodel</summary>
+    /// <summary> Reference to the diffusion submodel the raster data object belongs to</summary>
     SubmodRootDiff: TBaseSubmodRootDiff;
 
     /// <summary>Constructor</summary>
@@ -208,8 +206,8 @@ type
 
 
   published
-    /// <summary>Published declarations</summary>
-    /// <summary>Clears the Pos array members</summary>
+   /// <summary>Published declarations</summary>
+   /// <summary>Clears the Pos array members</summary>
    /// procedure ErasePosList;
   end; { Ende Deklaration TRasterData }
 
@@ -225,20 +223,25 @@ type
   TBaseSubmodRootDiff = class(TSubmodel)
   private
 
-  /// <summary>Private declarations</summary>
-    ContPosx, // Fixed position of the container center.
-    ContPosy : real;
-
-
+    /// <summary>
+    ///   a private field for showing the concentration field on a TMathimage object
+    /// </summary>
     fMyMathImage: TMathImage;
-    ColorSurface: TColorSurface;
-    TSRPLightList: TList; // List with TSRPLight instances
-
 
     /// <summary>
     /// Reference to the chart in the Hume form for displaying the root distribution
     /// </summary>
     fMyChart: TChart;
+
+    /// <summary>
+    ///   the codings for the concentration in colours
+    /// </summary>
+    ColorSurface: TColorSurface;
+
+    /// <summary>
+    ///   a dynamic list with single root objects located on the 2-D plane of interest
+    /// </summary>
+    TSRPLightList: TList; // List with TSRPLight instances
 
     /// <summary>Reference to the AdvStringGrid in the Hume form for displaying raster data</summary>
     fMyAdvStringGrid: TAdvStringGrid;
@@ -247,17 +250,27 @@ type
     fMyStructModel: TSubmodRootStrucNew;
 
   protected
+
+/// <summary>Protected declarations</summary>
+/// <summary> contains the x and y coordinates of the center of the container in container mode</summary>
+    contposx: real;
+    contposy: real;
+
+
     /// <summary>
     ///   sum of internal time steps
     /// </summary>
     SumOfInternalTimeSteps: double;
 
+    /// <summary>Field stores whether the output file for sink influx per cell has been created.
+    /// This should be done anew before each model run -> SinkCellFileWasCreated is set to false in init.
+    /// In CalcRates the file is created once and the flag is set to true</summary>
     SinkCellFileWasCreated: boolean;
 
     /// <summary>Field stores whether the output file for sink influx has been created. This should be done anew before each model run -> FileWasCreated is set to false in init. In CalcRates the file is created once and the flag is set to true</summary>
     FileWasCreated: boolean;
 
-      /// <summary>volume of a computational element [cm3]</summary>
+    /// <summary>volume of a computational element [cm3]</summary>
     vol_Element,
     /// <summary>water amount of a computational element [cm3]</summary>
     wm,
@@ -266,13 +279,6 @@ type
     /// <summary>maximum concentration in the grid</summary>
     max_c
       : double;
-/// <summary> C_xy: array for concentrations in the computational elements.
-/// c_xy was declared as a dynamic array (see NG, p.65 ff) because the size of
-///      the array should be declared with values of dim_x and dim_y (number of
-///      computational elements in the x and y directions) that are assigned later.
-/// </summary>
-
-    C_xy: array of array of double;
 
 /// <summary> VWC_xy: array for volumetric water content in the computational elements.
 /// WC_xy was declared as a dynamic array (see NG, p.65 ff) because the size of
@@ -293,8 +299,10 @@ type
     /// <summary> Object for displaying the root intersection points in the Hume form TChart object </summary>
     SeriesXY: TPointSeries;
 
-    /// <summary> Area of the whole soil section of interest [cm2]</summary>
-    Area: real;
+    /// <summary> Area of the whole soil section of interest [cm2]
+    ///  is handled as a constant
+    /// </summary>
+    Area: TVar;
 
     /// <summary>RasterData instance owned by the submodel</summary>
     RasterData: TRasterData;
@@ -313,8 +321,9 @@ type
     /// <summary>Width of the raster grid (aggregated data) in y-direction [cm]</summary>
     gridHeight: TPar;
 
-        /// <summary>number of elements in X-direction</summary>
+    /// <summary>number of elements in X-direction</summary>
     dim_x: TPar;
+
     /// <summary>number of elements in Y-direction</summary>
     dim_y:TPar;
 
@@ -324,23 +333,25 @@ type
     /// <summary> Initial volumetric water content [cm3/cm3]</summary>
     IniTheta: TPar;
 
-        /// <summary>radius of the container in container mode</summary>
+    /// <summary>radius of the container in container mode</summary>
     ContRad: TPar;
 
-
     /// <summary>Depth of the layer [cm], assumption for mineralization calculation</summary>
-    Depth: TPar;
     /// <remarks>Mineralization model not yet available but should be implemented for both models</remarks>
     /// <remarks>Margins are necessary so that edge effects can be excluded when the root exit points are hexagonally distributed</remarks>
+    /// <summary>Vertical margin [cm]</summary>
+    Depth: TPar;
+
     /// <summary>Vertical margin [cm]</summary>
     verticMargin: TPar;
     /// <summary>Horizontal margin [cm]</summary>
     horizMargin: TPar;
+
     /// <summary>Depth at which evaluation should begin (in the 2D cross-section) [cm]</summary>
     depthLayer: TPar;
+
     /// <summary>Thickness of the layer [cm]</summary>
     SizeLayer: TPar;
-
 
     /// <summary>Mean root length density [cm/ccm]</summary>
     ParMRLD: TPar;
@@ -353,7 +364,6 @@ type
 
 /// <summary>grid width in Y-direction [cm]</summary>
     dy: TVar;
-
 
     /// <summary>Mean root length density in a layer [cm/cm^3] calculated without roots located in the margins</summary>
     RLD_mean: TVar;
@@ -376,16 +386,31 @@ type
     /// <summary>Measure of error for regular distribution = number of roots that do not fit into the observation window when generating the uniform distribution, as a percentage of all roots [%]</summary>
     errorReg: TVar;
 
+    /// <summary>internal time step [d]</summary>
     int_dt: TVar;
+
     /// <summary>
-    ///   Wurzellängen pro Hektar [cm/ha]
+    ///   root length per hectar [cm/ha]
     /// </summary>
     wl_ha: TVar;
 
+    /// <summary>
+    ///   root length per hectar
+    /// </summary>
+    wl: TVar;
+
+
+    /// <summary>
+    ///   Average distance between roots [cm]
+    /// </summary>
+    AvDistance: TVar;
 
 
 
+    /// <summary>Number of elements in the middle area in X-direction</summary>
     dim_xMiddle: TVar; { Zahl der MITTIGEN Elemente in X-Richtung }
+
+    /// <summary>Number of elements in the middle area in Y-direction</summary>
     dim_yMiddle: TVar; { Zahl der MITTIGEN Elemente in Y-Richtung }
 
     /// <summary>Option for Type of initialization, e.g. file or structural model</summary>
@@ -403,16 +428,20 @@ type
     /// <summary>Path and name of the output file for XY data</summary>
     RootXYOutpDataFile: TOption;
 
+    /// <summary>Option for the type of root distribution
+    /// distinct from the 1D model
+    /// Options are 'Random', i.e. a random distribution of root exit points
+    /// 'Regular', i.e. a regular grid distribution
+    /// 'FromSource', i.e. a distribution based on source data
+    /// </summary>
+    RootDistribution: TOption;
+
+
     /// <summary>Fills the chart with root distribution data</summary>
     procedure fillChartRootDistr;
+
     /// <summary>Fills the AdvStringGrid with aggregated raster data</summary>
     procedure fillGridRasterData;
-
-    /// <summary>
-    ///   Applies parameter-based initialization logic that can be shared across
-    ///   derived diffusion submodels.
-    /// </summary>
-    procedure ApplyParameterRootInitialization; virtual;
 
     /// <summary>Distributes roots evenly across the grid</summary>
     procedure CalcEqualDistribution;
@@ -428,13 +457,16 @@ type
     /// <summary>Removes roots that are in the margins</summary>
     procedure removeMarginRoots;
 
+    /// <summary>Updates root data from the structural root model</summary>
     procedure updateFromStructModell; virtual;
 
+    /// <summary>Calculates the grid cell indices for each root position</summary>
     procedure CalcRootPosAsIndex;
-
 
     /// <summary>Calculates the number of roots that are within the observation window but not in the margins</summary>
     procedure calcNumberConsRoots;
+
+    /// <summary>Tests if roots are located within the border</summary>
     procedure testForContBorder(var start_, ende_: integer;
   x_ndx, y_ndx: integer; zeile: boolean);
       function calcAbsValue2D(vect: r2): double;
@@ -464,15 +496,24 @@ type
   published
     /// <summary>Published declarations</summary>
     // Publication of properties in the object inspector.
+
+    /// <summary>Property for accessing the TChart object in the Hume form</summary>
     property MyChart: TChart read fMyChart write fMyChart;
+
+    /// <summary>Property for accessing the TAdvStringGrid object in the Hume form</summary>
     property MyAdvStringGrid: TAdvStringGrid read fMyAdvStringGrid
       write fMyAdvStringGrid;
+
+    /// <summary>Property for accessing the TSubmodRootStrucNew object in the Hume form</summary>
     property MyStructModel: TSubmodRootStrucNew read fMyStructModel
       write fMyStructModel;
 
   end; { Ende Deklaration TSubmodRootDiff }
 
+  /// <summary>Function for calculating mineralisation rate </summary>
   function Mg_func(Tiefe_cm, theta, Cli_mol_cm3: real): real;
+
+  /// <summary>Function for calculating nitrate concentration </summary>
   function Cl_func(Tiefe_cm, theta, NMenge: real): real;
 
 
@@ -493,10 +534,6 @@ begin
 end;
 
 
-
-
-
-
 /// <summary>
 /// Reads aggregated raster data (root counts) which are then used to randomly
 /// determine coordinate points. Example of functionality: readln(f, Ncols)
@@ -506,7 +543,7 @@ procedure TRasterData.readRasterData(fn: string; var Series: TPointSeries);
 var
   F: TextFile; { File variable for text files }
   S: string;
-  Row, Col, root, AllRoot: integer;
+  i, Row, Col, root, AllRoot: integer;
   NewRoot : TRootPosition;
 
 begin
@@ -522,6 +559,13 @@ begin
   Readln(F, NCols); { Fourth line: number of columns }
   Readln(F, DimRows); { Fifth line: row height [cm] }
   Readln(F, DimCols); { Sixth line: column width [cm] }
+
+  setLength(CountArr, trunc(NCols));
+  for i := 0 to NRows-1 do
+  begin
+    setLength(CountArr[i], trunc(NRows));
+  end;
+
   // Repeatedly read data until end of file
   for Row := 0 to NRows - 1 do
   begin { Read root counts into CountArr }
@@ -537,7 +581,7 @@ begin
     for Row := 0 to NRows - 1 do
     begin
       { Exactly as many roots are assigned to PosArr as were read into CountArr. }
-      for root := 1 to CountArr[Col, Row] do
+      for root := 0 to CountArr[Col, Row]-1 do
       begin
         NewRoot := TRootPosition.create;
         // randomize;     // [What does Randomize do?]
@@ -553,6 +597,9 @@ begin
   { The model and the RasterData object know the total number of roots }
   TBaseSubmodRootDiff(SubmodRootDiff).num_roots.v := AllRoot;
   self.NRoots := AllRoot;
+
+
+
 end;
 
 /// <summary>
@@ -572,6 +619,8 @@ var
   pos_delimiter: integer;
   NewRoot : TRootPosition;
   i: integer;
+
+
 begin
   self.PosList.Clear;
 //  ErasePosList;
@@ -634,7 +683,7 @@ begin
 end;
 
 /// <summary>
-/// After reading aggregated root data, saves the generated random root
+/// After reading aggregated root data, i.e. without exact coordinates, saves the generated random root
 /// coordinates (considering assignment to a 5x5 cm grid cell) as floating point
 /// numbers in a file.
 /// </summary>
@@ -680,50 +729,64 @@ begin
   initialised := false;
   RasterData := TRasterData.create(self);
   // Create and initialize TPar
-  ParCreate('dimensionX', '[cm]', 100, dimensionX);
-  ParCreate('dimensionY', '[cm]', 100, dimensionY);
-  ParCreate('gridWidth', '[cm]', 5, gridWidth);
-  ParCreate('gridHeight', '[cm]', 5, gridHeight);
-  ParCreate('max_dt', '[s]', 0, max_dt);
+  ParCreate('dimensionX', '[cm]', 100, dimensionX, 'width of the area in x direction');
+  ParCreate('dimensionY', '[cm]', 100, dimensionY, 'height of the area in y direction');
+  ParCreate('gridWidth', '[cm]', 5, gridWidth, 'width of the grid cells');
+  ParCreate('gridHeight', '[cm]', 5, gridHeight, 'height of the grid cells');
+  ParCreate('max_dt', '[s]', 0, max_dt, 'maximum time step');
   ParCreate('IniTheta', '[cm3/cm3]', 0.2, IniTheta, 'initial volumetric water content');
-  ParCreate('Tiefe', '[cm]', 10, Depth);
+  ParCreate('Tiefe', '[cm]', 10, Depth, 'depth of the layer');
   { Note: the original value was in micromol/l }
-  ParCreate('verticMargin', '[cm]', 0, verticMargin);
-  ParCreate('horizMargin', '[cm]', 0, horizMargin);
-  ParCreate('depthLayer', '[cm]', 0, depthLayer);
-  ParCreate('SizeLayer', '[cm]', 10, SizeLayer);
-  ParCreate('ParMRLD', '[cm/ccm]', 0, ParMRLD);
-  ParCreate('RootRadius', '[cm]', 0, RootRadius);
-  ParCreate('dim_x', '[n]', 500, dim_x);
-  ParCreate('dim_y', '[n]', 500, dim_y);
+  ParCreate('verticMargin', '[cm]', 0, verticMargin, 'vertical margin');
+  ParCreate('horizMargin', '[cm]', 0, horizMargin, 'horizontal margin');
+  ParCreate('depthLayer', '[cm]', 0, depthLayer, 'depth of the layer');
+  ParCreate('SizeLayer', '[cm]', 10, SizeLayer, 'size of the layer');
+  ParCreate('ParMRLD', '[cm/ccm]', 0, ParMRLD, 'mean root length density');
+  ParCreate('RootRadius', '[cm]', 0, RootRadius, 'root radius');
+  ParCreate('dim_x', '[n]', 500, dim_x, 'dimension in x direction');
+  ParCreate('dim_y', '[n]', 500, dim_y, 'dimension in y direction');
   ParCreate('ContRad', '[cm]', 10, ContRad, 'radius of the container in container mode');
   // Create and initialize TState
 
-  VarCreate('dx', '[cm]', 0, false, dx);
-  VarCreate('dy', '[cm]', 0, false, dy);
-  VarCreate('RLD_mean', '[cm/cm^3]', 0, false, RLD_mean);
-  VarCreate('AreaMiddle', '[cm2]', 0, false, AreaMiddle);
-  VarCreate('num_roots', '[-]', 0, false, num_roots);
-  VarCreate('number_consid_roots', '[-]', 0, false, number_consid_roots);
-  VarCreate('volumen', '[cm/m^3]', 0, false, Volume);
+  VarCreate('dx', '[cm]', 0, false, dx, 'grid width in X-direction');
+  VarCreate('dy', '[cm]', 0, false, dy, 'grid width in Y-direction');
+  VarCreate('RLD_mean', '[cm/cm^3]', 0, false, RLD_mean,
+    'mean root length density in a layer');
+  VarCreate('AreaMiddle', '[cm2]', 0, false, AreaMiddle, 'central area without margins');
+  VarCreate('num_roots', '[-]', 0, false, num_roots, 'number of roots in center and margins');
+  VarCreate('number_consid_roots', '[-]', 0, false, number_consid_roots,
+    'number of considered roots, i.e. without margin roots');
   VarCreate('theta', '[cm3/cm3]', 0, false, theta, 'actual volumetric water content');
-  VarCreate('errorReg', '[%]', 0, false, errorReg);
-  VarCreate('int_dt', '[d]', 0, false, int_dt);
-  VarCreate('wl_ha', '[cm/ha]', 0, false, wl_ha);
+  VarCreate('errorReg', '[%]', 0, false, errorReg,
+    'measure of error for regular distribution');
+  VarCreate('int_dt', '[d]', 0, false, int_dt, 'internal time step');
+  VarCreate('wl_ha', '[cm/ha]', 0, false, wl_ha, 'root length per hectar');
+  VarCreate('Wl', '[cm/ha]', 0, false, Wl, 'root length per hectar');
+  VarCreate('AvDistance', 'cm', 0, false, AvDistance, 'Average distance between roots');
 
-  VarCreate('dim_xMiddle', '[d]', 0, false, dim_xMiddle);
-  VarCreate('dim_yMiddle', '[d]', 0, false, dim_yMiddle);
+  VarCreate('dim_xMiddle', '[d]', 0, false, dim_xMiddle, 'dimension in x direction');
+  VarCreate('dim_yMiddle', '[d]', 0, false, dim_yMiddle, 'dimension in y direction');
 
+  ConstCreate('Area', '[cm²]', 0, false, Area, 'Area of the container');
+  ConstCreate('Volume', '[cm/m³]', 0, false, Volume, 'Volume of the container');
+
+  OptCreate('RootDistribution', 'Random', RootDistribution,
+    'Type of root distribution');
+  RootDistribution.OptionList.Add('Random');
+  RootDistribution.OptionList.Add('Regular');
+  // Verteilung wie in Quelle (Datei, Strukturmodell)
+  RootDistribution.OptionList.Add('FromSource');
 
 
   // Create and initialize TOption
   { Specify the source of the root data }
-  OptCreate('IniMethod', 'InpPar', IniMethod);
+  OptCreate('IniMethod', 'InpPar', IniMethod, 'Method for root initialization');
   IniMethod.OptionList.add('InpPar'); // RLD/VC indicators as parameters
   IniMethod.OptionList.add('XYFile');
   IniMethod.OptionList.add('RasterDataFile');
   IniMethod.OptionList.add('SubmodStruct');
-  OptCreate('OutputXY', 'no', OutputXY);
+
+  OptCreate('OutputXY', 'no', OutputXY, 'Output in XY format');
   OutputXY.OptionList.add('no');
   OutputXY.OptionList.add('yes');
   { Paths for model comparison 1D vs 2D }
@@ -811,23 +874,35 @@ var
 
 begin
   inherited;
-  // Rewrite output file for XY coordinates
 
-  AssignFile(xyFile, RootXYOutpDataFile.Option);
-  rewrite(xyFile);
+  // Rewrite output file for XY coordinates
+  AssignFile(xyfile, RootXYOutpDataFile.Option);
+  rewrite(xyfile);
   { Create or replace the file; it is rewritten for each model run }
-  closeFile(xyFile);
+  closeFile(xyfile);
+
+  contposx := 50; // not yet clear why this value has to be 50
+  contposy := 50;
+
+  // the number of grid cells for both dimensions
   numberGridCellsX := trunc(dimensionX.v / gridWidth.v);
-  numberGridCellsY := trunc(dimensionY.v / self.gridHeight.v);
+  numberGridCellsY := trunc(dimensionY.v / gridHeight.v);
+
+  // set the length of the CountArr array according to the number of grid cells
+  // in X and Y direction
+  // in a first step only the first dimension is set
+  // in a second step the second dimension is set for each element of the first dimension
   setLength(RasterData.CountArr, trunc(numberGridCellsX));
   for i := 0 to high(RasterData.CountArr) do
   begin
     setLength(RasterData.CountArr[i], trunc(numberGridCellsY));
   end;
-  // Initialize TVar where appropriate at this stage
-  area := dimensionX.v * dimensionY.v;
+
+  // Initialize TConst where appropriate at this stage
+  area.v := dimensionX.v * dimensionY.v;
   { Area of the layer under investigation }
-  Volume.v := area * Depth.v;
+  Volume.v := area.v * Depth.v;
+
   theta.v := IniTheta.v;
   { Implementation of a check for previous initialization. This allows easy extension
     for initializations requiring file access or object instantiation. This should be
@@ -835,40 +910,122 @@ begin
     have already been read. The original TSubmodel method cannot be used because it
     is called multiple times. }
 
-  if iniMethod.Option = 'rasterdatafile' then
+  if IniMethod.Option = 'rasterdatafile' then
   begin
-    RasterData.readRasterData(RootInpDataFile.Option, seriesXY);
+    RasterData.readRasterData(RootInpDataFile.Option, SeriesXY);
+    fillGridRasterData;
   end;
-  if iniMethod.Option = 'xyfile' then
+  if IniMethod.Option = 'xyfile' then
   begin
-    RasterData.readXYfromFile(RootInpDataFileXY.Option, seriesXY);
+    RasterData.readXYfromFile(RootInpDataFileXY.Option, SeriesXY);
   end;
 
-  ApplyParameterRootInitialization;
-  calcNumberConsRoots;
+  // if the number of roots is given by root length density
+  // the distribution of the roots is always regular
+  if IniMethod.Option = 'inppar' then
+  begin
 
- //init_eingelesen wird von den abgeleiteten Methoden mit inherited aufgerufen.
- initialised := true;
+    // take the input parameter as mean root length density
+    RLD_mean.v := ParMRLD.v;
+    // calculation of the number of roots
+    num_roots.v := RLD_mean.v * area.v;
 
-end;
+    // copy the number of roots to the RasterData object
+    RasterData.NRoots := trunc(num_roots.v);
 
-procedure TBaseSubmodRootDiff.ApplyParameterRootInitialization;
-begin
-  if iniMethod.Option = 'inppar' then
+    // calculate positions of the roots according to a regular distribution
+    CalcEqualDistribution;
+    if RootDistribution.Option = 'fromsource' then
+    begin
+      // Da es keine Quelle gibt macht hier nur die Option regular bzw. random Sinn
+      ShowMessage
+        ('Caution: RootDistribution = FromSource. RootDistribution is set to regular.');
+      RootDistribution.Option := 'regular';
+    end;
+  end;
+
+
+  // Berechnen einer gleichmäßigen bzw. zufälligen Verteilung
+  If RootDistribution.Option = 'random' then
+  begin
+    for i := 0 to trunc(num_roots.v) - 1 do
+    begin
+      TRootPosition(RasterData.PosList.Objects[i]).x :=
+        Random(trunc(dim_x.v) - 2) + 2;
+      TRootPosition(RasterData.PosList.Objects[i]).y :=
+        Random(trunc(dim_y.v) - 2) + 2;
+    end;
+  end;
+
+  If (RootDistribution.Option = 'regular') and (num_roots.v <> 0) then
   begin
     CalcEqualDistribution;
   end;
+
+  // calculation of index values for each root position
+  // needed for further calculations
+  if num_roots.v <> 0 then
+  begin
+    CalcRootPosAsIndex;
+  end;
+
+  // roots inside the margins are removed
+  calcNumberConsRoots;
+
+  // several algorithms should only consider roots not located in the margins
+  if RootDistribution.Option = 'Regular' then
+  begin
+    // the area has to be adapted because roots in the margins are not considered
+    AreaMiddle.v := 1 / RLD_mean.v * number_consid_roots.v;
+  end;
+  { Nur im Fall der gleichmäßigen Verteilung soll die ursprünglich übergebene WLD
+    verwendet werden, ansonsten soll eine neue RLD berücksichtigt werden, wobei nur
+    Wurzeln eingehen, die nicht in den Rändern liegen. }
+  if (RootDistribution.Option <> 'regular') or (IniMethod.Option = 'xyfile')
+  then
+  begin
+    // RLD_mean has also to be calculated when borders are considered
+    if AreaMiddle.v <> 0 then
+      RLD_mean.v := number_consid_roots.v / AreaMiddle.v;
+  end;
+
+  { Für Distance und die weiteren abgeleiteten Variablen werden nur Wurzel
+    berücksichtigt, die sich nicht in den Rändern befinden }
+  if num_roots.v <> 0 then
+    AvDistance.v := 1 / sqrt(pi * RLD_mean.v);
+  { Berechnung der Wurzellänge in [cm] bezogen auf die Tiefe. Es wird davon ausge-
+    gangen, dass die parallel angeordnete lineare Strukturen ohne Krümmung sind.
+    Es werden dabei die Anzahl der berücksichtigten mittigen Wurzeln auf die gesamte
+    Beobachtungsfläche hochgerechnet }
+
+  // root length per quare meter [cm/m²]
+  wl.v := number_consid_roots.v / AreaMiddle.v * 1E4 * Depth.v;
+
+  // root length per hectar [cm/ha]
+  wl_ha.v := wl.v * 1E4;
+  { alternativ: alle Wurzeln werden berücksichtigt:
+    wl.v:= RLD_mean.v*Flaeche.V*tiefe.v;
+    wl_ha.v:= RLD_mean.v*1e8*tiefe.v;     { Wurzellängen auf einem Hektar [cm/ha]
+    1e8 = Zentimeter auf ha }
+
 end;
 
-
+/// <summary> Only for further definition ..  </summary>
 procedure TBaseSubmodRootDiff.CalcRates;
 begin
-  { Class is overridden in derived components. }
+  inherited;
+  { inherited is commented out because integration in the derived submodels is
+    partially performed using an analytical solution. }
+  // inherited;
+
 end;
+
+
 
 /// <summary> Method overridden to successively change the time step width. </summary>
 procedure TBaseSubmodRootDiff.Integrate;
 begin
+  inherited;
   { inherited is commented out because integration in the derived submodels is
     partially performed using an analytical solution. }
   // inherited;

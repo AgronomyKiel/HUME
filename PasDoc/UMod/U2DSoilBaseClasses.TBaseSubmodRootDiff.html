@@ -21,7 +21,7 @@
 <code>type TBaseSubmodRootDiff = class(TSubmodel)</code></p>
 <h2 class="description">Description</h2>
 <p>
-Declaration of class TSubmodRootDiff. Base class for derived diffusion models Functionality of the base class: all models can read raster data, exclude margins from calculations and display the data in the appropriate tabs of the Hume form. The 1D model does not output in the 3D plot tab. </p>
+Declaration of class TBaseSubmodRootDiff. Base class for derived 2d and 1d diffusion models applied to a 2D area Functionality of the base class: all models can read raster data, exclude margins from calculations and display the data in the appropriate tabs of the Hume form. The 1D models does not output in the 3D plot tab. derived model simulate 2D water and nitrogen transport or apply for comparison 1D approaches to the same problem </p>
 <span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
 <ul class="hierarchy"><li class="ancestor">TSubmodel</li>
 <li class="thisitem">TBaseSubmodRootDiff</li></ul><h2 class="overview">Overview</h2>
@@ -29,7 +29,7 @@ Declaration of class TSubmodRootDiff. Base class for derived diffusion models Fu
 <table class="summary wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Area">Area</a></strong>: <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Area">Area</a></strong>: TVar;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
@@ -37,23 +37,71 @@ Declaration of class TSubmodRootDiff. Base class for derived diffusion models Fu
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Depth">Depth</a></strong>: TPar;</code></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#AvDistance">AvDistance</a></strong>: TVar;</code></td>
 </tr>
 <tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#ColorSurface">ColorSurface</a></strong>: TColorSurface;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#contposx">contposx</a></strong>: <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#contposy">contposy</a></strong>: <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#ContRad">ContRad</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Depth">Depth</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#depthLayer">depthLayer</a></strong>: TPar;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#dimensionX">dimensionX</a></strong>: TPar;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#dimensionY">dimensionY</a></strong>: TPar;</code></td>
 </tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#dim_x">dim_x</a></strong>: TPar;</code></td>
+</tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#dim_xMiddle">dim_xMiddle</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#dim_y">dim_y</a></strong>:TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#dim_yMiddle">dim_yMiddle</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#dx">dx</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#dy">dy</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#errorReg">errorReg</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#FileWasCreated">FileWasCreated</a></strong>: boolean;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
@@ -65,39 +113,55 @@ Declaration of class TSubmodRootDiff. Base class for derived diffusion models Fu
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
-<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#fMyStructModel">fMyStructModel</a></strong>: TSubmodRootStrucNew;</code></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#fMyMathImage">fMyMathImage</a></strong>: TMathImage;</code></td>
 </tr>
 <tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#fMyStructModel">fMyStructModel</a></strong>: TSubmodRootStrucNew;</code></td>
+</tr>
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#gridHeight">gridHeight</a></strong>: TPar;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#gridWidth">gridWidth</a></strong>: TPar;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#hasWritten">hasWritten</a></strong>: boolean;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#horizMargin">horizMargin</a></strong>: TPar;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#IniMethod">IniMethod</a></strong>: TOption;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#IniTheta">IniTheta</a></strong>: TPar;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#initialised">initialised</a></strong>: boolean;</code></td>
 </tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#int_dt">int_dt</a></strong>: TVar;</code></td>
+</tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#max_c">max_c</a></strong>: double;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#max_dt">max_dt</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#min_c">min_c</a></strong>: double;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
@@ -125,23 +189,31 @@ Declaration of class TSubmodRootDiff. Base class for derived diffusion models Fu
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#RootInpDataFile">RootInpDataFile</a></strong>: TOption;</code></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#RootDistribution">RootDistribution</a></strong>: TOption;</code></td>
 </tr>
 <tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#RootInpDataFile">RootInpDataFile</a></strong>: TOption;</code></td>
+</tr>
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#RootInpDataFileXY">RootInpDataFileXY</a></strong>: TOption;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#RootRadius">RootRadius</a></strong>: TPar;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#RootXYOutpDataFile">RootXYOutpDataFile</a></strong>: TOption;</code></td>
 </tr>
-<tr class="list">
+<tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#SeriesXY">SeriesXY</a></strong>: TPointSeries;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#SinkCellFileWasCreated">SinkCellFileWasCreated</a></strong>: boolean;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
@@ -149,19 +221,55 @@ Declaration of class TSubmodRootDiff. Base class for derived diffusion models Fu
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#theta">theta</a></strong>: TVar;</code></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#SumOfInternalTimeSteps">SumOfInternalTimeSteps</a></strong>: double;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#verticMargin">verticMargin</a></strong>: TPar;</code></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#theta">theta</a></strong>: TVar;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#verticMargin">verticMargin</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Volume">Volume</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#vol_Element">vol_Element</a></strong>: double;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#VWC_xy">VWC_xy</a></strong>: array of array of double;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#wl">wl</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#wl_ha">wl_ha</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#wm">wm</a></strong>: double;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#xyfile">xyfile</a></strong>: textfile;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#x_arr">x_arr</a></strong>: array of double;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#y_arr">y_arr</a></strong>: array of double;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#TSRPLightList">TSRPLightList</a></strong>: TList;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
@@ -169,6 +277,14 @@ Declaration of class TSubmodRootDiff. Base class for derived diffusion models Fu
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
 <td class="itemcode"><code>function <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#getRasterData">getRasterData</a></strong>: <a href="U2DSoilBaseClasses.TRasterData.html">TRasterData</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>function <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#calcAbsValue2D-r2-">calcAbsValue2D</a></strong>(vect: <a href="SubmodRootDiff1DRapp.html#r2">r2</a>): double;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>function <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#vectorSubtrakt2D-r2-r2-">vectorSubtrakt2D</a></strong>(vect2, vect1: <a href="SubmodRootDiff1DRapp.html#r2">r2</a>): <a href="SubmodRootDiff1DRapp.html#r2">r2</a>;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
@@ -188,19 +304,27 @@ Declaration of class TSubmodRootDiff. Base class for derived diffusion models Fu
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#ApplyParameterRootInitialization">ApplyParameterRootInitialization</a></strong>; virtual;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#CalcEqualDistribution">CalcEqualDistribution</a></strong>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#calcNumberConsRoots">calcNumberConsRoots</a></strong>;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#distributeHexagonCol">distributeHexagonCol</a></strong>;</code></td>
+<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#CalcRootPosAsIndex">CalcRootPosAsIndex</a></strong>;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#distributeHexagonRow">distributeHexagonRow</a></strong>;</code></td>
+<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#distributeHexagonCol">distributeHexagonCol</a></strong>;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#EqualDistribution">EqualDistribution</a></strong>;</code></td>
+<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#distributeHexagonRow">distributeHexagonRow</a></strong>;</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
@@ -212,15 +336,19 @@ Declaration of class TSubmodRootDiff. Base class for derived diffusion models Fu
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#init_ReadFromFile">init_ReadFromFile</a></strong>; virtual;</code></td>
+<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#removeMarginRoots">removeMarginRoots</a></strong>;</code></td>
 </tr>
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#removeMarginRoots">removeMarginRoots</a></strong>;</code></td>
+<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#testForContBorder-integer-integer-integer-integer-boolean-">testForContBorder</a></strong>(var start_, ende_: integer; x_ndx, y_ndx: integer; zeile: boolean);</code></td>
 </tr>
 <tr class="list2">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#writeOutputToFile">writeOutputToFile</a></strong>;</code></td>
+<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#updateFromStructModell">updateFromStructModell</a></strong>; virtual;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#writeOutputToFile">writeOutputToFile</a></strong>; virtual;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Properties"></span><h3 class="summary">Properties</h3>
@@ -239,29 +367,17 @@ Declaration of class TSubmodRootDiff. Base class for derived diffusion models Fu
 <td class="itemcode"><code>property <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#MyStructModel">MyStructModel</a></strong>: TSubmodRootStrucNew read <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#fMyStructModel">fMyStructModel</a>
       write <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#fMyStructModel">fMyStructModel</a>;</code></td>
 </tr>
-<tr class="list2">
-<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
-<td class="itemcode"><code>property <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Par_theta">Par_theta</a></strong>: TPar read <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#IniTheta">Initheta</a> write <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#IniTheta">Initheta</a>;</code></td>
-</tr>
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
-<td class="itemcode"><code>property <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Par_Tiefe">Par_Tiefe</a></strong>: TPar read <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Depth">Depth</a> write <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Depth">Depth</a>;</code></td>
-</tr>
-<tr class="list2">
-<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
-<td class="itemcode"><code>property <strong><a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Par_volumen">Par_volumen</a></strong>: TVar read <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Volume">Volume</a> write <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Volume">Volume</a>;</code></td>
-</tr>
 </table>
 <h2 class="description">Description</h2>
 <h3 class="detail">Fields</h3>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><span id="Area"></span><code><strong>Area</strong>: <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+<td class="itemcode"><span id="Area"></span><code><strong>Area</strong>: TVar;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
- Area of the whole soil section of interest [cm2]</p>
+ Area of the whole soil section of interest [cm2] is handled as a constant </p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -272,6 +388,56 @@ Declaration of class TSubmodRootDiff. Base class for derived diffusion models Fu
 <tr><td colspan="2">
 <p>
 Central area without margins [cm2]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="AvDistance"></span><code><strong>AvDistance</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ Average distance between roots [cm] </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="ColorSurface"></span><code><strong>ColorSurface</strong>: TColorSurface;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ the codings for the concentration in colours </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="contposx"></span><code><strong>contposx</strong>: <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ contains the x and y coordinates of the center of the container in container mode</p>
+<p>
+ </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="contposy"></span><code><strong>contposy</strong>: <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="ContRad"></span><code><strong>ContRad</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+radius of the container in container mode</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -317,11 +483,81 @@ Height of the computational domain [cm]</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="dim_x"></span><code><strong>dim_x</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+number of elements in X-direction</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="dim_xMiddle"></span><code><strong>dim_xMiddle</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Number of elements in the middle area in X-direction</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="dim_y"></span><code><strong>dim_y</strong>:TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+number of elements in Y-direction</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="dim_yMiddle"></span><code><strong>dim_yMiddle</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Number of elements in the middle area in Y-direction</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="dx"></span><code><strong>dx</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+grid width in X-direction [cm]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="dy"></span><code><strong>dy</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+grid width in Y-direction [cm]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><span id="errorReg"></span><code><strong>errorReg</strong>: TVar;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
 Measure of error for regular distribution = number of roots that do not fit into the observation window when generating the uniform distribution, as a percentage of all roots [%]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="FileWasCreated"></span><code><strong>FileWasCreated</strong>: boolean;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Field stores whether the output file for sink influx has been created. This should be done anew before each model run -&gt; FileWasCreated is set to false in init. In CalcRates the file is created once and the flag is set to true</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -342,6 +578,16 @@ Reference to the AdvStringGrid in the Hume form for displaying raster data</p>
 <tr><td colspan="2">
 <p>
  Reference to the chart in the Hume form for displaying the root distribution </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="fMyMathImage"></span><code><strong>fMyMathImage</strong>: TMathImage;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ a private field for showing the concentration field on a TMathimage object </p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -425,11 +671,41 @@ Indicates whether initialization has already occurred</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="int_dt"></span><code><strong>int_dt</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+internal time step [d]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="max_c"></span><code><strong>max_c</strong>: double;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+maximum concentration in the grid</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><span id="max_dt"></span><code><strong>max_dt</strong>: TPar;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
 Maximum time step width [s]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="min_c"></span><code><strong>min_c</strong>: double;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+minimum concentration in the grid [mol/cm3]</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -495,6 +771,16 @@ Mean root length density in a layer [cm/cm&circ;3] calculated without roots loca
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="RootDistribution"></span><code><strong>RootDistribution</strong>: TOption;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Option for the type of root distribution distinct from the 1D model </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><span id="RootInpDataFile"></span><code><strong>RootInpDataFile</strong>: TOption;</code></td>
 </tr>
 <tr><td colspan="2">
@@ -519,7 +805,7 @@ Path and name of the init file with XY root data</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Radius of the root [cm]</p>
+average Radius of the roots [cm]</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -539,7 +825,17 @@ Path and name of the output file for XY data</p>
 </tr>
 <tr><td colspan="2">
 <p>
-Object for displaying the root intersection points in the Hume form</p>
+ Object for displaying the root intersection points in the Hume form TChart object </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="SinkCellFileWasCreated"></span><code><strong>SinkCellFileWasCreated</strong>: boolean;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Field stores whether the output file for sink influx per cell has been created. This should be done anew before each model run -&gt; SinkCellFileWasCreated is set to false in init. In CalcRates the file is created once and the flag is set to true</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -550,6 +846,16 @@ Object for displaying the root intersection points in the Hume form</p>
 <tr><td colspan="2">
 <p>
 Thickness of the layer [cm]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="SumOfInternalTimeSteps"></span><code><strong>SumOfInternalTimeSteps</strong>: double;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ sum of internal time steps </p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -587,11 +893,91 @@ Volume of the soil layer including margins [cm3]</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="vol_Element"></span><code><strong>vol_Element</strong>: double;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+volume of a computational element [cm3]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="VWC_xy"></span><code><strong>VWC_xy</strong>: array of array of double;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ VWC_xy: array for volumetric water content in the computational elements. WC_xy was declared as a dynamic array (see NG, p.65 ff) because the size of the array should be declared with values of dim_x and dim_y (number of computational elements in the x and y directions) that are assigned later. </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="wl"></span><code><strong>wl</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ root length per hectar </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="wl_ha"></span><code><strong>wl_ha</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ root length per hectar [cm/ha] </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="wm"></span><code><strong>wm</strong>: double;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+water amount of a computational element [cm3]</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><span id="xyfile"></span><code><strong>xyfile</strong>: textfile;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
  text file for writing xy data </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="x_arr"></span><code><strong>x_arr</strong>: array of double;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ In x_arr and y_arr are the 'midpoint coordinates of the grid cells' </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="y_arr"></span><code><strong>y_arr</strong>: array of double;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ In x_arr and y_arr are the 'midpoint coordinates of the grid cells' </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSRPLightList"></span><code><strong>TSRPLightList</strong>: TList;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+List with TSRPLight instances</p>
 </td></tr>
 </table>
 <h3 class="detail">Methods</h3>
@@ -604,6 +990,22 @@ Volume of the soil layer including margins [cm3]</p>
 <p>
 Set and get methods &lt;summary&gt;Returns the RasterData instance&lt;/summary&gt;</p>
 </td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="calcAbsValue2D-r2-"></span><code>function <strong>calcAbsValue2D</strong>(vect: <a href="SubmodRootDiff1DRapp.html#r2">r2</a>): double;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="vectorSubtrakt2D-r2-r2-"></span><code>function <strong>vectorSubtrakt2D</strong>(vect2, vect1: <a href="SubmodRootDiff1DRapp.html#r2">r2</a>): <a href="SubmodRootDiff1DRapp.html#r2">r2</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -650,11 +1052,41 @@ Performs various initializations</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="ApplyParameterRootInitialization"></span><code>procedure <strong>ApplyParameterRootInitialization</strong>; virtual;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ Applies parameter-based initialization logic that can be shared across derived diffusion submodels. </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="CalcEqualDistribution"></span><code>procedure <strong>CalcEqualDistribution</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ All diffusion models can compute a uniform distribution from a given one. The method distributes points based on a given WLD evenly over an area. The TPointSeries object of the calling HUME GUI method is refilled so the display can be updated. Different methods were created for this purpose and can be switched here. </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><span id="calcNumberConsRoots"></span><code>procedure <strong>calcNumberConsRoots</strong>;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
-End TSubmodRootDiff.distributeHexagonCol &lt;summary&gt; Calculates the number of valid roots (located in the observation window but not in the margins). &lt;/summary&gt;</p>
+End TSubmodRootDiff.distributeHexagonCol &lt;summary&gt; Calculates the number of valid/considered roots (located in the observation window but not in the margins). &lt;/summary&gt;</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="CalcRootPosAsIndex"></span><code>procedure <strong>CalcRootPosAsIndex</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Calculates the grid cell indices for each root position</p>
 </td></tr>
 </table>
 <table class="detail wide_list">
@@ -680,16 +1112,6 @@ End TSubmodRootDiff.distributeHexagonCol &lt;summary&gt; Calculates the number o
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><span id="EqualDistribution"></span><code>procedure <strong>EqualDistribution</strong>;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
- All diffusion models can compute a uniform distribution from a given one. The method distributes points based on a given WLD evenly over an area. The TPointSeries object of the calling HUME GUI method is refilled so the display can be updated. Different methods were created for this purpose and can be switched here. </p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><span id="fillChartRootDistr"></span><code>procedure <strong>fillChartRootDistr</strong>;</code></td>
 </tr>
 <tr><td colspan="2">
@@ -710,16 +1132,6 @@ Both models can display roots in the RootDistribution tab.</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><span id="init_ReadFromFile"></span><code>procedure <strong>init_ReadFromFile</strong>; virtual;</code></td>
-</tr>
-<tr><td colspan="2">
-<p>
- Calculates the number of roots that are in the observation window and simultaneously NOT in the margins. </p>
-</td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
 <td class="itemcode"><span id="removeMarginRoots"></span><code>procedure <strong>removeMarginRoots</strong>;</code></td>
 </tr>
 <tr><td colspan="2">
@@ -730,7 +1142,27 @@ Removes roots located in the margins from the Pos array</p>
 <table class="detail wide_list">
 <tr class="list">
 <td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
-<td class="itemcode"><span id="writeOutputToFile"></span><code>procedure <strong>writeOutputToFile</strong>;</code></td>
+<td class="itemcode"><span id="testForContBorder-integer-integer-integer-integer-boolean-"></span><code>procedure <strong>testForContBorder</strong>(var start_, ende_: integer; x_ndx, y_ndx: integer; zeile: boolean);</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Tests if roots are located within the border</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="updateFromStructModell"></span><code>procedure <strong>updateFromStructModell</strong>; virtual;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Updates root data from the structural root model</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="protected.gif" alt="Protected" title="Protected"></a></td>
+<td class="itemcode"><span id="writeOutputToFile"></span><code>procedure <strong>writeOutputToFile</strong>; virtual;</code></td>
 </tr>
 <tr><td colspan="2">
 <p>
@@ -745,7 +1177,9 @@ Removes roots located in the margins from the Pos array</p>
       write <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#fMyAdvStringGrid">fMyAdvStringGrid</a>;</code></td>
 </tr>
 <tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
+<p>
+Property for accessing the TAdvStringGrid object in the Hume form</p>
+</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -753,7 +1187,11 @@ Removes roots located in the margins from the Pos array</p>
 <td class="itemcode"><span id="MyChart"></span><code>property <strong>MyChart</strong>: TChart read <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#fMyChart">fMyChart</a> write <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#fMyChart">fMyChart</a>;</code></td>
 </tr>
 <tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
+<p>
+Property for accessing the TChart object in the Hume form</p>
+<p>
+ Publication of properties in the object inspector. </p>
+</td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
@@ -762,35 +1200,9 @@ Removes roots located in the margins from the Pos array</p>
       write <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#fMyStructModel">fMyStructModel</a>;</code></td>
 </tr>
 <tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
-<td class="itemcode"><span id="Par_theta"></span><code>property <strong>Par_theta</strong>: TPar read <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#IniTheta">Initheta</a> write <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#IniTheta">Initheta</a>;</code></td>
-</tr>
-<tr><td colspan="2">
 <p>
-Published declarations</p>
-<p>
- Publication of properties in the object inspector.</p>
+Property for accessing the TSubmodRootStrucNew object in the Hume form</p>
 </td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
-<td class="itemcode"><span id="Par_Tiefe"></span><code>property <strong>Par_Tiefe</strong>: TPar read <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Depth">Depth</a> write <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Depth">Depth</a>;</code></td>
-</tr>
-<tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
-</table>
-<table class="detail wide_list">
-<tr class="list">
-<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
-<td class="itemcode"><span id="Par_volumen"></span><code>property <strong>Par_volumen</strong>: TVar read <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Volume">Volume</a> write <a href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html#Volume">Volume</a>;</code></td>
-</tr>
-<tr><td colspan="2">
-<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0-snapshot</a>. </em>
 </span>

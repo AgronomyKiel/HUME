@@ -12,7 +12,7 @@
 <ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
 <h1 class="unit">Unit U2DSoilBaseClasses</h1>
 <div class="sections">
-<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section">Constants</div><div class="one_section">Variables</div></div>
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section">Variables</div></div>
 <span id="PasDoc-Description"></span><h2 class="description">Description</h2>
 <p>
  defines some base classes for 2 dimensional water and nitrate transport equations </p>
@@ -25,7 +25,7 @@
 </tr>
 <tr class="list">
 <td class="itemname">Class&nbsp;<a class="bold" href="U2DSoilBaseClasses.TBaseSubmodRootDiff.html"><code>TBaseSubmodRootDiff</code></a></td>
-<td class="itemdesc">Declaration of class TSubmodRootDiff. Base class for derived diffusion models Functionality of the base class: all models can read raster data, exclude margins from calculations and display the data in the appropriate tabs of the Hume form. The 1D model does not output in the 3D plot tab. </td>
+<td class="itemdesc">Declaration of class TBaseSubmodRootDiff. Base class for derived 2d and 1d diffusion models applied to a 2D area Functionality of the base class: all models can read raster data, exclude margins from calculations and display the data in the appropriate tabs of the Hume form. The 1D models does not output in the 3D plot tab. derived model simulate 2D water and nitrogen transport or apply for comparison 1D approaches to the same problem </td>
 </tr>
 <tr class="list2">
 <td class="itemname">Class&nbsp;<a class="bold" href="U2DSoilBaseClasses.TRasterData.html"><code>TRasterData</code></a></td>
@@ -38,6 +38,10 @@
 <tr class="list2">
 <td class="itemname">Class&nbsp;<a class="bold" href="U2DSoilBaseClasses.TSRPLight.html"><code>TSRPLight</code></a></td>
 <td class="itemdesc">Lean, memory-saving version of an SRP used in the 2d diffusion model for interface with the structural root model TSRP instances of the single root model also need fields for area and the vertex list so that, when reading raster data, the surface area can be determined (using Voronoi polygons or alternatively by splitting the area of raster cells among the roots contained in them. Units may be an issue) </td>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="U2DSoilBaseClasses.TSRPLightNitrate.html"><code>TSRPLightNitrate</code></a></td>
+<td class="itemdesc">TSRPLight plus some extra fields for nitrate transport calculations </td>
 </tr>
 </table>
 <span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
@@ -52,10 +56,30 @@
 <span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
 <table class="summary wide_list">
 <tr class="list">
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.html#array_type">array_type</a></strong> = array [0 .. <a href="U2DSoilBaseClasses.html#dim_max">dim_max</a> + 1] of <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.html#MathFloat">MathFloat</a></strong> = double;</code></td>
+</tr>
+<tr class="list">
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.html#real">real</a></strong> = double;</code></td>
 </tr>
 <tr class="list2">
 <td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.html#TMyFloatPoint">TMyFloatPoint</a></strong> = double;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.html#TUptake_Function">TUptake_Function</a></strong> = (...);</code></td>
+</tr>
+</table>
+<span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.html#colorarray">colorarray</a></strong>: array [0 .. 11] of TColor = ($00CB9F74, $00D8AD49, $00E6C986,
+    $00F2E3C1, $00DAF0C4, $00A6E089, $0086D560, $0065CFB5, $008DC5FC, $0075D5FD,
+    $0078E1ED, $00ACEDF4);</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a href="U2DSoilBaseClasses.html#dim_max">dim_max</a></strong> = 10000;</code></td>
 </tr>
 </table>
 <h2 class="description">Description</h2>
@@ -81,6 +105,24 @@ Returns the concentration [Mol N/cm&circ;3]</p>
 <h3 class="detail">Types</h3>
 <table class="detail wide_list">
 <tr class="list">
+<td class="itemcode"><span id="array_type"></span><code><strong>array_type</strong> = array [0 .. <a href="U2DSoilBaseClasses.html#dim_max">dim_max</a> + 1] of <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Problem: the dynamic implementation was removed again due to difficulties with array boundaries.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MathFloat"></span><code><strong>MathFloat</strong> = double;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+const &lt;summary&gt;Maximum number of roots.&lt;/summary&gt; max_num_roots = 40000;</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
 <td class="itemcode"><span id="real"></span><code><strong>real</strong> = double;</code></td>
 </tr>
 <tr><td colspan="1">
@@ -94,7 +136,46 @@ re defines a floating point type</p>
 </tr>
 <tr><td colspan="1">
 <p>
-const &lt;summary&gt;Maximum number of roots.&lt;/summary&gt; max_num_roots = 40000; &lt;summary&gt;Floating point type for coordinates&lt;/summary&gt;</p>
+Floating point type for coordinates</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TUptake_Function"></span><code><strong>TUptake_Function</strong> = (...);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+ Mode of nitrogen uptake by the root: Michaelis-Menten (saturation kinetics), fixed_influx assumes a constant sink strength, ZeroSink represents unlimited sink strength (black hole). </p>
+<h6 class="description_section">Values</h6>
+<ul>
+<li>
+<span id="MM">MM</span></li>
+<li>
+<span id="fixed_influx">fixed_influx</span></li>
+<li>
+<span id="ZeroSink">ZeroSink</span></li>
+</ul>
+</td></tr>
+</table>
+<h3 class="detail">Constants</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="colorarray"></span><code><strong>colorarray</strong>: array [0 .. 11] of TColor = ($00CB9F74, $00D8AD49, $00E6C986,
+    $00F2E3C1, $00DAF0C4, $00A6E089, $0086D560, $0065CFB5, $008DC5FC, $0075D5FD,
+    $0078E1ED, $00ACEDF4);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Color array for concentration display</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="dim_max"></span><code><strong>dim_max</strong> = 10000;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+largest index, required for the vectors during the flux calculation</p>
 </td></tr>
 </table>
 <hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0-snapshot</a>. </em>
