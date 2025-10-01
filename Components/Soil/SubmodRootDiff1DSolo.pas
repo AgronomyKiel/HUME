@@ -324,25 +324,32 @@ type
     /// Choice of numerical or analytical calculation
     /// </summary>
     integrationMethod, 
+
     /// <summary>
-    /// Specify the assumed distribution of the WAP, specific to the 1D and 2D model, because the 1D model additionally distinguishes between lognormal and normal distributions
+    /// Specify the assumed distribution of the WAP, specific to the 1D and 2D model, because the 1D model
+    /// additionally distinguishes between lognormal and normal distributions
     /// </summary>
-    RootDistribution, 
+    RootDistribution,
+
     /// <summary>
     /// Different options for calculating the statistics of the root distribution
     /// </summary>
     CalcMethRLD_VC, 
+    
     /// <summary>
     /// Different methods for calculating the class mean values of the RLD in the associated quantiles.
     /// </summary>
     CalcMethQuant, 
+    
     /// <summary>
     /// Switch for calculations with static N amount and with dynamically changing N amount. When changing dynamically, only a time step based calculation can be used. With the analytical solution this means that a fractional calculation actually no longer makes sense. Solution: replace variable Time with Timestep and multiply the fractional uptake in the time step by the currently available N amount.
     /// </summary>
+    
     StatN_AmountSoil, 
     /// <summary>
     /// Switch used to specify whether the 1D model should be run for comparison with the 2D model = setting 'yes': Only the N amount in the soil at steady state Influx = mineralisation is calculated; root uptake is not calculated (see Kage dissertation, equation 3.6.43) or not = setting 'no': Solution according to Tinker/Nye (Eq. 10.28; calculation of root uptake as well as the N amounts in the soil from the initial N amount and root uptake
     /// </summary>
+    
     compareMode 
     /// <summary>
     /// Switch for comparison with the 2D model: There, to produce the steady state, the absorbed amount is added back to the cells in each time step. When comparing the models this must also happen in the 1D model. (Only the solo model needs this, because in the full model such a comparison does not play a role.) Switch is currently not used
@@ -380,16 +387,16 @@ implementation
 { TSubmodRootDiff1DSolo }
 
 procedure TSubmodRootDiff1DSolo.createAll;
-(* -----------------------------------------------------------------------------
-  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
-  DESCRIPTION: Create and initialize state variables, variables, and parameters.
-  The first parameter of the function call passes a string that is identical to the
-  identifier and can therefore be searched for.
-  The second parameter contains a string indicating the unit used ([-] for
-  dimensionless parameters).
-  The third parameter is the actual (floating point) value.
-  See declaration for explanation of the identifiers.
-  ------------------------------------------------------------------------------ *)
+/// <remarks>
+/// ASSOCIATED CLASS: TSubmodRootDiff1DSolo
+/// DESCRIPTION: Create and initialize state variables, variables, and parameters.
+/// The first parameter of the function call passes a string that is identical to the
+/// identifier and can therefore be searched for.
+/// The second parameter contains a string indicating the unit used ([-] for
+/// dimensionless parameters).
+/// The third parameter is the actual (floating point) value.
+/// See declaration for explanation of the identifiers.
+/// </remarks>
 begin
   inherited;
   // Create the lists
@@ -574,11 +581,12 @@ begin
   begin
     // Implementation still missing.
   end;
+  
   if iniMethod.Option = 'inppar' then
   begin
     { When mWLD and VC are read in as parameters, the corresponding variables must be
       set. VarKoeff_RLD is adjusted depending on the distribution function. }
-    RLD_mean.V := ParMRLD.V;
+    
     VarKoeff_RLD.V := ParVC.V;
     // Also applies to statistics of the area distribution
     Area_mean.V := Par_AreaMean.V;
@@ -593,6 +601,7 @@ begin
   begin
     transform_Clmin;
   end;
+  
   // In the case of a uniform distribution the PosArr must first be calculated.
   if RootDistribution.Option = 'random' then
   begin
@@ -601,16 +610,18 @@ begin
     // Calculate the number of roots in the observation area from the RLD
     if self.My2DDiffModel <> nil then
     begin
-      copyPosArrFrom2DDif;
+      RasterData := My2DDiffModel.getRasterData;
+      //copyPosArrFrom2DDif;
     end
     else
     begin
+// issue: maybe doubled from base class
       if iniMethod.Option = 'inppar' then
         num_Roots.V := RLD_mean.V * dimensionX.V * dimensionY.V;
       for i := 1 to trunc(num_Roots.V) do
       begin
-        TRootPosition(RasterData.PosList.Objects[i]).x := random(trunc(dimensionX.V) - 2) + 2;
-        TRootPosition(RasterData.PosList.Objects[i]).y := random(trunc(dimensionY.V) - 2) + 2;
+        TRootObject(RasterData.PosList.Objects[i]).x := random(trunc(dimensionX.V) - 2) + 2;
+        TRootObject(RasterData.PosList.Objects[i]).y := random(trunc(dimensionY.V) - 2) + 2;
       end;
     end;
     { In the random case, area data must be calculated from the coordinates }
@@ -622,7 +633,7 @@ begin
   if (iniMethod.Option = 'rasterdatafile') and
     (RootDistribution.Option <> 'regular') then
   begin
-    calcRootArea;
+    calcRootArea; //not yet implemented, dummy code
   end;
   { After reading and adjusting the distribution, roots located outside the
     observation window or in the margins are removed. }
@@ -693,13 +704,12 @@ begin
     // setLength(Init_NAmountEWZArray,RasterData.NRoots-1);
     for i := 0 to RasterData.NRoots-1 do
     begin
-      new(AVol_H20);
-      new(AInitNAmount);
-      new(AInitNConc);
       { Calculate the H2O volumes of the EWZ [cm3] }
-      AVol_H20^ := TRootPosition(RasterData.PosList.Objects[i]).area * theta.V * SizeLayer.V;
+
+      TRootObject(RasterData.PosList.Objects[i]).WAmount := TRootObject(RasterData.PosList.Objects[i]).area * theta.V * SizeLayer.V;
+
       // Calculate the N amounts in the EWZ at the beginning (initial values)
-      AInitNAmount^ := AVol_H20^ * c_start.V;
+      TRootObject(RasterData.PosList.Objects[i]).NAmount := TRootObject(RasterData.PosList.Objects[i]).WAmount * c_start.V;
       // Uniform concentration in the EWZ at the beginning (initial values)
       AInitNConc^ := c_start.V;
       VolH20_EWZ_List.Add(AVol_H20);
@@ -915,15 +925,15 @@ begin
     RasterData.NRoots := RasterData2D.NRoots;
     for i := 0 to RasterData.NRoots do
     begin
-      TRootPosition(RasterData.PosList.Objects[i]).x := TRootPosition(RasterData2D.PosList.Objects[i]).x;
-      TRootPosition(RasterData.PosList.Objects[i]).y := TRootPosition(RasterData2D.PosList.Objects[i]).y;
-      TRootPosition(RasterData.PosList.Objects[i]).xi := TRootPosition(RasterData2D.PosList.Objects[i]).xi;
-      TRootPosition(RasterData.PosList.Objects[i]).yi := TRootPosition(RasterData2D.PosList.Objects[i]).yi;
-      TRootPosition(RasterData.PosList.Objects[i]).root := TRootPosition(RasterData2D.PosList.Objects[i]).root;
-      TRootPosition(RasterData.PosList.Objects[i]).NInflux := TRootPosition(RasterData2D.PosList.Objects[i]).NInflux;
-      TRootPosition(RasterData.PosList.Objects[i]).SumNAmount := TRootPosition(RasterData2D.PosList.Objects[i]).SumNAmount;
-      TRootPosition(RasterData.PosList.Objects[i]).WInflux := TRootPosition(RasterData2D.PosList.Objects[i]).WInflux;
-      TRootPosition(RasterData.PosList.Objects[i]).area := TRootPosition(RasterData2D.PosList.Objects[i]).area;
+      TRootObject(RasterData.PosList.Objects[i]).x := TRootObject(RasterData2D.PosList.Objects[i]).x;
+      TRootObject(RasterData.PosList.Objects[i]).y := TRootObject(RasterData2D.PosList.Objects[i]).y;
+      TRootObject(RasterData.PosList.Objects[i]).xi := TRootObject(RasterData2D.PosList.Objects[i]).xi;
+      TRootObject(RasterData.PosList.Objects[i]).yi := TRootObject(RasterData2D.PosList.Objects[i]).yi;
+      TRootObject(RasterData.PosList.Objects[i]).root := TRootObject(RasterData2D.PosList.Objects[i]).root;
+      TRootObject(RasterData.PosList.Objects[i]).NInflux := TRootObject(RasterData2D.PosList.Objects[i]).NInflux;
+      TRootObject(RasterData.PosList.Objects[i]).NAmount := TRootObject(RasterData2D.PosList.Objects[i]).NAmount;
+      TRootObject(RasterData.PosList.Objects[i]).WInflux := TRootObject(RasterData2D.PosList.Objects[i]).WInflux;
+      TRootObject(RasterData.PosList.Objects[i]).area := TRootObject(RasterData2D.PosList.Objects[i]).area;
     end;
   end;
   num_Roots.V := RasterData.NRoots;
@@ -940,7 +950,7 @@ var
 begin
   setLength(WLD_Array, trunc(number_consid_roots.V));
   // Set the array length
-  j := 1; // PosArr starts at 1
+  j := 0; // PosArr starts at 1
   { Special case of uniform distribution: catchment area is constant. However, it can
     happen that PosArr contains roots for which no area was calculated because they
     are located outside the observation window when distributing over the area
@@ -950,7 +960,7 @@ begin
     for i := 0 to trunc(number_consid_roots.V - 1) do
     begin
       // Calculate the EWZ radius from the area:
-      Radius := sqrt(TRootPosition(RasterData.PosList.Objects[0]).area / Pi);
+      Radius := sqrt(TRootObject(RasterData.PosList.Objects[0]).area / Pi);
       WLD_Array[i] := 1 / (Radius * Radius * Pi);
     end;
   end
@@ -960,7 +970,7 @@ begin
     begin
       { Calculate the root length density from the areas of the Voronoi polygons }
       // Calculate the EWZ radius from the area:
-      Radius := sqrt(TRootPosition(RasterData.PosList[j]).area / Pi);
+      Radius := sqrt(TRootObject(RasterData.PosList[j]).area / Pi);
       WLD_Array[i] := 1 / (Radius * Radius * Pi);
       inc(j)
     end;
@@ -1209,7 +1219,7 @@ begin
   // Rate calculation for all roots
   for i := 0 to RasterData.NRoots - 1 do
   begin
-    dist := sqrt(TRootPosition(RasterData.PosList.Objects[j]).area / Pi);
+    dist := sqrt(TRootObject(RasterData.PosList.Objects[j]).area / Pi);
     // Calculate the EWZ radius
     AClmean := Pdouble(Cl_mean_List.items[i])^;
     Nitrat_Flux_EWZ := ((AClmean - Clmin.V) * 2 * Pi * Db) /
@@ -1235,18 +1245,17 @@ begin
 
 end; // End TSubmodRootDiff1DSolo.calc_num_class
 
+/// <summary>
+/// Transform the Clmin from mol/l concentration to different units.
+/// </summary>
 procedure TSubmodRootDiff1DSolo.transform_Clmin;
-(* ------------------------------------------------------------------------------
-  ASSOCIATED CLASS: TSubmodRootDiff1DSolo
-  DESCRIPTION: Convert the soil solution concentration from mol/l into other units.
-  Issue: verify conversion.
-  ------------------------------------------------------------------------------ *)
+
 begin
   // Convert from [micromol/l] to [kg/l]
   ClminTransf.V := Clmin.V * 14 / 1E-9;
   // Convert to [kg/ha]
   ClminTransf_ha.V := ClminTransf.V / 1E-7;
-end; // End TSubmodRootDiff1DSolo.transform_Clmin
+end; 
 
 procedure TSubmodRootDiff1DSolo.calc_Amount_H20;
 (* ------------------------------------------------------------------------------

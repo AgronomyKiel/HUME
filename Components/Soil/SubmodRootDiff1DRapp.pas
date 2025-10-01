@@ -18,7 +18,7 @@ type
   ///  class for random points
   /// </summary>
   TRandomPoint = class(TObject)
-    RandomPointPos: TRootPosition;
+    RandomPointPos: TRootObject;
     shortestDist, { Kürzeste Distanz [cm] }
     shortDist_m, { Kürzeste Distanz [m] }
     quadShortDist_m, { Quadrierte kürzeste Distanz [m] }
@@ -450,8 +450,8 @@ begin
     for j := 0 to RasterData.PosList.Count-1 do
     begin
       { Es werden alle Wurzeln berücksichtigt }
-      WAPKoord[0] := TRootPosition(RasterData.PosList.Objects[j]).x;
-      WAPKoord[1] := TRootPosition(RasterData.PosList.Objects[j]).y;
+      WAPKoord[0] := TRootObject(RasterData.PosList.Objects[j]).x;
+      WAPKoord[1] := TRootObject(RasterData.PosList.Objects[j]).y;
       distNew := calcDistance(WAPKoord, RandomPointKoord);
       if distNew < distOld then
       begin
@@ -463,10 +463,10 @@ begin
     { Erweiterung des Ansatzes: Es werden nur Strecken bis zu den Grenzen berücksich-
       tigt. Rand selbst gehört zur Beobachtungsfläche }
     // Wenn der Punkt in den Rändern liegt
-    if (TRootPosition(RasterData.PosList.Objects[indexNearestWAP]).x < verticMargin.V) or
-      (TRootPosition(RasterData.PosList.Objects[indexNearestWAP]).x > dimensionX.V - verticMargin.V) or
-      (TRootPosition(RasterData.PosList.Objects[indexNearestWAP]).y < horizMargin.V) or
-      (TRootPosition(RasterData.PosList.Objects[indexNearestWAP]).y < dimensiony.V - horizMargin.V) then
+    if (TRootObject(RasterData.PosList.Objects[indexNearestWAP]).x < verticMargin.V) or
+      (TRootObject(RasterData.PosList.Objects[indexNearestWAP]).x > dimensionX.V - verticMargin.V) or
+      (TRootObject(RasterData.PosList.Objects[indexNearestWAP]).y < horizMargin.V) or
+      (TRootObject(RasterData.PosList.Objects[indexNearestWAP]).y < dimensiony.V - horizMargin.V) then
     begin
       ARandomPoint.shortestDist := CalcBorderDist(ARandomPoint,
         indexNearestWAP);
@@ -1199,7 +1199,7 @@ end;
 constructor TRandomPoint.create;
 begin
   inherited;
-  RandomPointPos := TRootPosition.create;
+  RandomPointPos := TRootObject.create;
 end;
 
 end.

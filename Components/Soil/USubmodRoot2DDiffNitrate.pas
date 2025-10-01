@@ -653,18 +653,18 @@ begin
     write(SinkCellFile, GlobMod.Time.v:6:2, ' ', int_dt.v:6:2, ' ',
       GlobMod.Time.v * 86400 + SumOfInternalTimeSteps, ' ');
     for i := 1 to RasterData.NRoots do
-      if (TRootPosition(RasterData.PosList.Objects[i]).xi > trunc(dim_x.v / 10)) and
-        (TRootPosition(RasterData.PosList.Objects[i]).xi < self.dim_x.v - trunc(self.dim_x.v / 10)) and
-        (TRootPosition(RasterData.PosList.Objects[i]).yi > trunc(self.dim_y.v / 10)) and
-        (TRootPosition(RasterData.PosList.Objects[i]).yi < self.dim_y.v - trunc(self.dim_y.v / 10)) then
-        write(SinkCellFile, TRootPosition(RasterData.PosList.Objects[i]).NInflux, ' ');
+      if (TRootObject(RasterData.PosList.Objects[i]).xi > trunc(dim_x.v / 10)) and
+        (TRootObject(RasterData.PosList.Objects[i]).xi < self.dim_x.v - trunc(self.dim_x.v / 10)) and
+        (TRootObject(RasterData.PosList.Objects[i]).yi > trunc(self.dim_y.v / 10)) and
+        (TRootObject(RasterData.PosList.Objects[i]).yi < self.dim_y.v - trunc(self.dim_y.v / 10)) then
+        write(SinkCellFile, TRootObject(RasterData.PosList.Objects[i]).NInflux, ' ');
     for i := 1 to RasterData.NRoots do
-      if (TRootPosition(RasterData.PosList.Objects[i]).xi > trunc(dim_x.v / 10)) and
-        (TRootPosition(RasterData.PosList.Objects[i]).xi < self.dim_x.v - trunc(self.dim_x.v / 10)) and
-        (TRootPosition(RasterData.PosList.Objects[i]).yi > trunc(self.dim_y.v / 10)) and
-        (TRootPosition(RasterData.PosList.Objects[i]).yi < self.dim_y.v - trunc(self.dim_y.v / 10)) then
-        write(SinkCellFile, C_xy[TRootPosition(RasterData.PosList.Objects[i]).xi,
-          TRootPosition(RasterData.PosList.Objects[i]).yi], ' ');
+      if (TRootObject(RasterData.PosList.Objects[i]).xi > trunc(dim_x.v / 10)) and
+        (TRootObject(RasterData.PosList.Objects[i]).xi < self.dim_x.v - trunc(self.dim_x.v / 10)) and
+        (TRootObject(RasterData.PosList.Objects[i]).yi > trunc(self.dim_y.v / 10)) and
+        (TRootObject(RasterData.PosList.Objects[i]).yi < self.dim_y.v - trunc(self.dim_y.v / 10)) then
+        write(SinkCellFile, C_xy[TRootObject(RasterData.PosList.Objects[i]).xi,
+          TRootObject(RasterData.PosList.Objects[i]).yi], ' ');
     writeln(SinkCellFile);
     closefile(SinkCellFile);
   end;
@@ -694,7 +694,7 @@ begin
   for i := 0 to trunc(Num_Roots.v)-1 do
   begin
     // test whether a sink exists in the computational element, then calculate uptake
-    if ((TRootPosition(RasterData.PosList.Objects[i]).xi = x_loc) and (TRootPosition(RasterData.PosList.Objects[i]).yi = y_loc))
+    if ((TRootObject(RasterData.PosList.Objects[i]).xi = x_loc) and (TRootObject(RasterData.PosList.Objects[i]).yi = y_loc))
     then
     begin
       x := sqrt(dx.v * dy.v / pi);
@@ -759,17 +759,17 @@ begin
         // NUptake :=  Influx_f( Imax.v, Km.v, C_xy[x_loc, y_loc]);
         NUptake := influx_fVar(Imax.v, Km.v, C_xy[x_loc, y_loc], x, Db);
       // influx into the sink during the time step
-      TRootPosition(RasterData.PosList.Objects[i]).NInflux := NUptake;
+      TRootObject(RasterData.PosList.Objects[i]).NInflux := NUptake;
       If NitrateUptakeFunction.Option <> lowercase('ZeroSink') then
         SumUptake := SumUptake + NUptake
       else
         SumUptake := NUptake;
       // calculate cumulative N uptake for the sinks
 /// <summary>Problem: there is still a conceptual error here</summary>
-      NAmountRootdt := TRootPosition(RasterData.PosList.Objects[i]).NInflux * 14 / 1000 * int_dt.v;
+      NAmountRootdt := TRootObject(RasterData.PosList.Objects[i]).NInflux * 14 / 1000 * int_dt.v;
       // NAmountRootdt:=TRootPosition(RasterData.PosList.Objects[i]).NInflux*14/1000*86400/int_dt.V;
-      TRootPosition(RasterData.PosList.Objects[i]).NAmountdt := NAmountRootdt;
-      TRootPosition(RasterData.PosList.Objects[i]).SumNAmount := TRootPosition(RasterData.PosList.Objects[i]).SumNAmount +
+      TRootObject(RasterData.PosList.Objects[i]).NAmountdt := NAmountRootdt;
+      TRootObject(RasterData.PosList.Objects[i]).NAmount := TRootObject(RasterData.PosList.Objects[i]).NAmount +
         NAmountRootdt;
     end;
   end;
@@ -817,7 +817,7 @@ begin
   // create new file with outputs for the sinks:
   for i := 0 to RasterData.Poslist.Count-1 do
   begin
-    TRootPosition(RasterData.PosList.Objects[i]).SumNAmount := 0;
+    TRootObject(RasterData.PosList.Objects[i]).NAmount := 0;
   end;
   if FileWasCreated = false then
   begin
@@ -1183,11 +1183,11 @@ begin
   for i := 1 to trunc(RasterData.NRoots) do
   begin
     // Punkt nicht in den vertikalen Rändern
-    if (TRootPosition(RasterData.PosList.Objects[i]).x >= verticMargin.v) and
-      (TRootPosition(RasterData.PosList.Objects[i]).x <= DimensionX.v - verticMargin.v)
+    if (TRootObject(RasterData.PosList.Objects[i]).x >= verticMargin.v) and
+      (TRootObject(RasterData.PosList.Objects[i]).x <= DimensionX.v - verticMargin.v)
     // Punkt nicht in den horizontalen Rändern
-      and (TRootPosition(RasterData.PosList.Objects[i]).y >= horizMargin.v) and
-      (TRootPosition(RasterData.PosList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
+      and (TRootObject(RasterData.PosList.Objects[i]).y >= horizMargin.v) and
+      (TRootObject(RasterData.PosList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
     begin
       NAmountRoot := NAmountRoot + convertConcToAmount(i);
     end;
@@ -1211,7 +1211,7 @@ var
   NAmountRoot: double;
 begin
   { NINflux in [mol/cm/s }
-  NAmountRoot := TRootPosition(RasterData.PosList.Objects[i]).NInflux * kg_mol * Depth.v * int_dt.v;
+  NAmountRoot := TRootObject(RasterData.PosList.Objects[i]).NInflux * kg_mol * Depth.v * int_dt.v;
   Result := NAmountRoot;
 end;
 
@@ -1233,14 +1233,14 @@ begin
   for i := 1 to trunc(RasterData.NRoots) do
   begin
     // Punkt nicht in den vertikalen Rändern
-    if (TRootPosition(RasterData.PosList.Objects[i]).x >= verticMargin.v) and
-      (TRootPosition(RasterData.PosList.Objects[i]).x <= DimensionX.v - verticMargin.v)
+    if (TRootObject(RasterData.PosList.Objects[i]).x >= verticMargin.v) and
+      (TRootObject(RasterData.PosList.Objects[i]).x <= DimensionX.v - verticMargin.v)
     // Punkt nicht in den horizontalen Rändern
-      and (TRootPosition(RasterData.PosList.Objects[i]).y >= horizMargin.v) and
-      (TRootPosition(RasterData.PosList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
+      and (TRootObject(RasterData.PosList.Objects[i]).y >= horizMargin.v) and
+      (TRootObject(RasterData.PosList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
     begin
-      AVInflux := AVInflux + TRootPosition(RasterData.PosList.Objects[i]).NInflux;
-      AvNMenge := AvNMenge + TRootPosition(RasterData.PosList.Objects[i]).SumNAmount;
+      AVInflux := AVInflux + TRootObject(RasterData.PosList.Objects[i]).NInflux;
+      AvNMenge := AvNMenge + TRootObject(RasterData.PosList.Objects[i]).NAmount;
       inc(rootCounter);
     end;
   end;
@@ -1266,7 +1266,7 @@ var
   i, j: integer;
   { Nur Senken, die nicht im Rand und im Beobachtungsfenster liegen werden ausgege-
     ben }
-  PosArr_middle: Array of TRootPosition;
+  PosArr_middle: Array of TRootObject;
 
 begin
   { Wenn Datei noch nicht vorhanden, neu anlegen }
@@ -1281,20 +1281,20 @@ begin
   for i := 1 to trunc(RasterData.NRoots) do
   begin
     // Punkt nicht in den vertikalen Rändern
-    if (TRootPosition(RasterData.PosList.Objects[i]).x >= verticMargin.v) and
-      (TRootPosition(RasterData.PosList.Objects[i]).x <= DimensionX.v - verticMargin.v)
+    if (TRootObject(RasterData.PosList.Objects[i]).x >= verticMargin.v) and
+      (TRootObject(RasterData.PosList.Objects[i]).x <= DimensionX.v - verticMargin.v)
     // Punkt nicht in den horizontalen Rändern
-      and (TRootPosition(RasterData.PosList.Objects[i]).y >= horizMargin.v) and
-      (TRootPosition(RasterData.PosList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
+      and (TRootObject(RasterData.PosList.Objects[i]).y >= horizMargin.v) and
+      (TRootObject(RasterData.PosList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
     begin
-      PosArr_middle[j].x := TRootPosition(RasterData.PosList.Objects[i]).x;
-      PosArr_middle[j].y := TRootPosition(RasterData.PosList.Objects[i]).y;
-      PosArr_middle[j].xi := TRootPosition(RasterData.PosList.Objects[i]).xi;
-      PosArr_middle[j].yi := TRootPosition(RasterData.PosList.Objects[i]).yi;
-      PosArr_middle[j].NInflux := TRootPosition(RasterData.PosList.Objects[i]).NInflux;
-      PosArr_middle[j].WInflux := TRootPosition(RasterData.PosList.Objects[i]).WInflux;
-      PosArr_middle[j].root := TRootPosition(RasterData.PosList.Objects[i]).root;
-      PosArr_middle[j].area := TRootPosition(RasterData.PosList.Objects[i]).area;
+      PosArr_middle[j].x := TRootObject(RasterData.PosList.Objects[i]).x;
+      PosArr_middle[j].y := TRootObject(RasterData.PosList.Objects[i]).y;
+      PosArr_middle[j].xi := TRootObject(RasterData.PosList.Objects[i]).xi;
+      PosArr_middle[j].yi := TRootObject(RasterData.PosList.Objects[i]).yi;
+      PosArr_middle[j].NInflux := TRootObject(RasterData.PosList.Objects[i]).NInflux;
+      PosArr_middle[j].WInflux := TRootObject(RasterData.PosList.Objects[i]).WInflux;
+      PosArr_middle[j].root := TRootObject(RasterData.PosList.Objects[i]).root;
+      PosArr_middle[j].area := TRootObject(RasterData.PosList.Objects[i]).area;
       inc(j);
     end;
   end;
