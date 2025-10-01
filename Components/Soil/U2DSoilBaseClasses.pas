@@ -793,7 +793,7 @@ begin
   { Paths to input and output files are identical for both submodels. Running both
     submodels simultaneously in one model run only makes sense for comparison. }
   OptCreate('RootInpDataFile',
-    'Q:\Kohl\DiffModell\IniFilesAusgaben\abo130782.txt', RootInpDataFile);
+    'Q:\Kohl\DiffModell\IniFilesAusgaben\abo130782.txt', RootInpDataFile, 'file name of root input data');
   // File with root positions
   RootInpDataFile.OptionList.add
     ('Q:\Kohl\DiffModell\IniFilesAusgaben\abo130782.txt');
@@ -859,7 +859,7 @@ begin
   RootInpDataFileXY.OptionList.add
     ('Q:\Kohl\DiffModell\IniFilesAusgaben\p15_t4_unterBod.txt');
   OptCreate('RootXYOutpDataFile', 'Q:\Kohl\DiffModell\IniFilesAusgaben\xy_Data',
-    RootXYOutpDataFile);
+    RootXYOutpDataFile, 'file name of root output data containing the influx rates of the roots');
   RootXYOutpDataFile.OptionList.add
     ('Q:\Kohl\DiffModell\IniFilesAusgaben\xy_Data');
 

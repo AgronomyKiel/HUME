@@ -1,6 +1,10 @@
-﻿unit SubmodRootDiff1DSolo;
+﻿///  <summary>
+/// Unit with the solo variant of the 1D diffusion model: does not expect a structure model
+///  </summary>
 
-{ Solo variant of the 1D diffusion model: does not expect a structure model }
+unit SubmodRootDiff1DSolo;
+
+
 interface
 
 uses
@@ -8,22 +12,23 @@ uses
   UMod, UState, Math, USubModRoot2DDiffNitrate, U2DSoilBaseClasses;
 
 const
-  { The following are the Phi(u) values of the standard normal distribution:
-    Example for interpretation:
-    z_5 value [1.64486] denotes the u value that is exceeded by 5% of all values.
-    That is, 5% of all values deviate by at least 1.64486 from the mean.
-    Because of the symmetry of the standard normal distribution, for -z_5: 5% of all
-    values deviate by -1.64486 from the mean. z_x values correspond to the Phi(u)
-    values.
-    Issue: In my opinion these are the Phi(u) values that can later be used to
-    calculate the CLASS MEANS of the RLD density distribution.
-    Correct??? (Class boundaries would then be 0.1, 0.2 ... 1) }
-  { Original values commented out here
-    z_5  = 1.64486;
-    z_15 = 1.03644;
-    z_25 = 0.674492;
-    z_35 = 0.385322;
-    z_45 = 0.125663; }
+
+/// <summary>
+/// The following constants are the z_x values of the standard normal distribution
+/// </summary>
+/// <remarks>
+/// The following are the Phi(u) values of the standard normal distribution:
+/// Example for interpretation:
+/// z_5 value [1.64486] denotes the u value that is exceeded by 5% of all values.
+/// That is, 5% of all values deviate by at least 1.64486 from the mean.
+/// Because of the symmetry of the standard normal distribution, for -z_5: 5% of all
+/// values deviate by -1.64486 from the mean. z_x values correspond to the Phi(u)
+/// values.
+/// Issue: In my opinion these are the Phi(u) values that can later be used to
+/// calculate the CLASS MEANS of the RLD density distribution.
+/// Correct??? (Class boundaries would then be 0.1, 0.2 ... 1)
+/// </remarks>
+
   { Values calculated with Excel: }
   z_5 = 1.6448534756699800;
   z_15 = 1.0364334736256900;
@@ -47,39 +52,51 @@ type
   // Type declarations
   Pdouble = ^double; // Pointer type to double, for use in lists
 
-  // Arrays
-  { Array type for state-variable arrays. Required for the numerical solution.
-    Each SRP (or a property of the SRP) is treated here as an instance of TState.
-    The array contains values for all SRP of the simulated soil layer.
-    Issue: Had to be defined from the outset to the maximum allowed number of roots,
-    because TState instances must be created in createAll and at that point no roots
-    have been read in yet. Issue 2: It would probably make more sense to declare only
-    the aggregated values (mRLD and VC) as TState (as before), because the individual
-    root cylinders have a whole range of properties as TSRP. }
-  // TSRPStateArray  = array [0..max_num_roots-1] of TState;
-
+  
   // Classes
 
+  /// <summary>
+  /// Class for the solo variant of the 1D diffusion model
+  /// </summary>
   TSubmodRootDiff1DSolo = class(TSubmodRoot2DDiffNitrate)
   private
     { Private declarations }
     fMy2DDiffModel: TSubmodRoot2DDiffNitrate;
     // FIELDS
     // a) required for analytical solution
+    
+    /// <summary>
+    /// Array storing the root length densities of the individual classes
+    /// </summary>
+    /// <remarks>
+    /// Array storing the root length densities of the individual classes
+    /// (class mean values) when dividing the normal or lognormal distribution
+    /// curve into 10 classes, i.e. the array requires 10 entries.
+    /// The first field of the array stores the root length density of the
+    /// class belonging to -z_5, the last field stores the root length density
+    /// of the class belonging to z_5. Storage of the root length densities
+       /// </remarks>
     WLD_Array: Array of double;
-    { One-dimensional arrays that map the quartiles of a normal or lognormal
-      distribution to the corresponding RANDOM VARIABLES.
-      A classification into 10 classes was assumed, i.e. the array requires 10
-      entries. The first field of the array stores the random variable belonging to
-      -z_5, the last field stores the random variable belonging to z_5. Storage of the
-      random variables at the "class midpoint", see above. }
-    // Array for normal distribution
+    
+    /// <summary>
+    /// Array for normal distribution
+    /// </summary>
     ZV_Array_normvert,
-    // Array for lognormal distribution
+    
+    /// <summary>
+    /// Array for lognormal distribution
+    /// </summary>
     ZV_Array_lognorm,
-    // Array for standard normal distribution
+    
+    /// <summary>
+    /// Array for standard normal distribution
+    /// </summary>
     ZV_Array_Stdnorm,
     // Array for weighting (needed when calculating from the distribution of areas)
+    
+    /// <summary>
+    /// Array for weighting
+    /// </summary>
     weightArr: Array of real;
     // b) required for numerical solution
     { The following lists contain information or specific calculated values for each
@@ -89,14 +106,27 @@ type
     // WLD_List : TList;
     { List for current average nitrate concentrations in the SRP. Each list element
       stores the average nitrate concentration of a specific SRP. }
+    
+    /// <summary>
+    /// List for current average nitrate concentrations in the SRP
+    /// </summary>
     Cl_mean_List: TList;
-    { List for (water) volumes for all SRP (initially constant). Issue: must be
-      adapted when implementing a dynamic model. }
+    
+    /// <summary>
+    /// List for (water) volumes for all SRP (initially constant)
+    /// </summary>
     VolH20_EWZ_List: TList;
-    { List storing the initial N amounts in the SRP }
+    
+    /// <summary>
+    /// List storing the initial N amounts in the SRP
+    /// </summary>
     Init_NAmountEWZList: TList; // maybe I do not need this
-    { Initial N amount: }
+    
+    /// <summary>
+    /// Initial N amount
+    /// </summary>
     NAmountInit: double;
+    
     { Array/list storing the absorbed N amounts (fluxes) into/out of the individual
       root cylinders in the current time step.
       Issue: A dynamic array or list is probably not possible here because we want to
@@ -111,7 +141,15 @@ type
     // Helper methods
     function Kolmogorov_Smirnov: boolean;
 
+    /// <summary>
+    /// Calculate the areas of the Voronoi polygons
+    /// not yet implemented
+    /// </summary>
     procedure calcRootArea;
+
+    /// <summary>
+    /// Copy the root positions from the 2D diffusion model
+
     procedure copyPosArrFrom2DDif;
     procedure fillWLDArr;
     // Method for calculating using the rate equation (numerical solution)
@@ -121,8 +159,9 @@ type
     function calc_num_EWZ: real;
     function calc_num_class: real;
 
-    { Method for model comparison: calculate the soil N amount for a given distribution
-      and mineralisation rate }
+     /// <summary>
+     /// Calculate the soil N amount for a given distribution
+     /// </summary> 
     procedure calcN_AmountSoilEquil;
   protected
     { Protected declarations }
@@ -133,103 +172,182 @@ type
       Member HUME-Basisklasse TPar (Parameter)
       Problem: Zuweisung der Variablen in diese Gruppe korrekt?
       ------------------------------------------------------------------------------ *)
-    number_classes, { Number of classes to be used for calculating a class-specific
-      uptake }
-    Log_StdAbw_Area, { Log-transformed standard deviation of the area [cm^2] }
-    Log_Area_mean, { Log-transformed mean area in
-      a layer [cm^2] }
-    ParVC { Coefficient of variation of mRLD [%] }
-    { Note: The coefficient of variation is only an input parameter in the Voronoi
-      model, because only there can THESE aggregated values (area or RLD distribution)
-      be processed.
-      The 2D model depends on the XY coordinates of the WAP.
-      The Rappolt model in the current implementation works with observed frequencies
-      and NOT with theoretical distribution functions of the shortest distances
-      (diffusion paths). }
-      : TPar;
+    /// <summary>
+    /// Number of classes for class-specific uptake calculation
+    /// </summary>
+    number_classes: TPar; 
+
+    /// <summary>
+    /// Log-transformed standard deviation of the area [cm^2]
+    /// </summary>
+    Log_StdAbw_Area: TPar;
+
+    /// <summary>
+    /// Log-transformed mean area in a layer [cm^2]
+    /// </summary>
+    Log_Area_mean: TPar; 
+
+    /// <summary>
+    /// Coefficient of variation of the mRLD [%]
+    /// </summary>
+    /// <remarks>
+    /// Note: The coefficient of variation is only an input parameter in the Voronoi
+    /// model, because only there can THESE aggregated values (area or RLD distribution)
+    /// be processed.
+    /// The 2D model depends on the XY coordinates of the WAP.
+    /// The Rappolt model in the current implementation works with observed frequencies
+    /// and NOT with theoretical distribution functions of the shortest distances
+    /// (diffusion paths).
+    /// </remarks>
+    ParVC: TPar; 
 
     (* -----------------------------------------------------------------------------
       Member HUME base class TVar (variables) Issue: units correct?
       ------------------------------------------------------------------------------ *)
-    Area_mean, { Mean area [cm^2] }
-    VarKoeff_Area, { Coefficient of variation of the mean area [%] }
-    StdAbw_Area, { Standard deviation of the area [cm^2] }
-    Log_RLD_mean, { Log-transformed mean root length density in
-      a layer [cm/cm^3] }
-    Log_StdAbw_RLD, { Log-transformed standard deviation of the root
-      length density [cm/cm^3] }
-    VarKoeff_RLD, { Coefficient of variation of the mean RLD [%] }
-    StdAbw_RLD, { Standard deviation of the root length density [cm/cm^3] }
+    /// <summary>
+    /// Mean area [cm^2]
+    /// </summary>
+    Area_mean: TVar; { Mean area [cm^2] }
+    
+    /// <summary>
+    /// Coefficient of variation of the mean area [%]
+    /// </summary>
+    VarKoeff_Area: TVar; { Coefficient of variation of the mean area [%] }
+    
+    /// <summary>
+    /// Standard deviation of the area [cm^2]
+    /// </summary>
+    StdAbw_Area: TVar; { Standard deviation of the area [cm^2] }
+    
+    /// summary>
+    /// Log-transformed mean root length density in a layer [cm/cm^3]
+    /// </summary>
+    Log_RLD_mean: TVar; 
 
-    Varianz, { Variance of the mean root length density [cm/cm^3] }
-    VM, { V/M ratio }
-    Mittl_Flaeche, { Mean area of the Voronoi polygons [cm^2]
-      Issue: what is it needed for? }
-    StdAbw_Flaeche, { Standard deviation of Mittl_Flaeche [cm^2] }
-    // For numerical solution:
-    ClminTransf, { Minimum soil solution concentration [kg N/cm*H20] }
-    ClminTransf_ha, { Minimum soil solution concentration [kg N/ha] }
-    Amount_H20, { Water amount in the soil layer under consideration [l] }
-    Par_AreaMean, { Mean area [cm^2] }
-    Par_AreaVC { Coefficient of variation of mean area [%] }
-      : TVar;
+    /// <summary>
+    /// Log-transformed mean root length density in a layer [cm/cm^3]
+    /// </summary>
+    
+    /// <summary>
+    /// Log-transformed standard deviation of the root length density [cm/cm^3]
+    /// </summary>
+    Log_StdAbw_RLD: TVar; 
+    
+    
+    /// <summary>
+    /// Coefficient of variation of the mean RLD [%]
+    /// </summary>
+    VarKoeff_RLD: TVar;
+
+    /// <summary>
+    /// Standard deviation of the root length density [cm/cm^3]
+    /// </summary>
+    StdAbw_RLD: TVar;
+
+    /// <summary>
+    /// Variance of the mean root length density [cm/cm^3]
+    /// </summary>
+    Varianz: TVar;
+
+    /// <summary>
+    /// V/M ratio
+    /// </summary>
+    VM: TVar;
+
+    /// <summary>
+    /// Mean area of the Voronoi polygons [cm^2]
+    /// Issue: what is it needed for?
+    /// </summary>
+    Mittl_Flaeche: TVar;
+
+    /// <summary>
+    /// Standard deviation of Mittl_Flaeche [cm^2]
+    /// </summary>
+    StdAbw_Flaeche: TVar;
+
+    /// <summary>
+    /// Minimum soil solution concentration [kg N/cm*H20]
+    /// For numerical solution:
+    /// </summary>
+    ClminTransf: TVar;
+
+    /// <summary>
+    /// Minimum soil solution concentration [kg N/ha]
+    /// </summary>
+    ClminTransf_ha: TVar;
+
+    /// <summary>
+    /// Water amount in the soil layer under consideration [l]
+    /// </summary>
+    Amount_H20: TVar;
+
+    /// <summary>
+    /// Mean area [cm^2]
+    /// </summary>
+    Par_AreaMean: TVar;
+
+    /// <summary>
+    /// Coefficient of variation of mean area [%]
+    /// </summary>
+    Par_AreaVC: TVar;
 
     (* -----------------------------------------------------------------------------
       Member HUME-Basisklasse TState (Zustandsvariablen)
       ------------------------------------------------------------------------------ *)
-    N_MengeAnteilAn, { Fractional nitrogen uptake [-] when using
-      the analytical solution according to Tinker, Nye Eq.10.28 }
-    N_MengeAnteilNum, { Fractional nitrogen uptake [-] when using
-      the numerical solution }
-    N_AmountSoilNum { The solo 1D model has an additional state variable
-      for comparing the calculation with the analytical and
-      numerical solution }
+    /// <summary>
+    /// Fractional nitrogen uptake [-] when using the analytical solution according to Tinker, Nye Eq.10.28
+    /// </summary>
+    N_MengeAnteilAn, 
+    /// <summary>
+    /// Fractional nitrogen uptake [-] when using the numerical solution
+    /// </summary>
+    N_MengeAnteilNum, 
+    /// <summary>
+    /// The solo 1D model has an additional state variable for comparing the calculation with the analytical and numerical solution
+    /// </summary>
+    N_AmountSoilNum 
 
       : TState;
     (* -----------------------------------------------------------------------------
       Member HUME-Basisklasse TState (Zustandsvariablen)
       ------------------------------------------------------------------------------ *)
 
-    OperatingMode, { How the model should run: with or without the 2D model,
-      important for the output in the form }
-    calcMethodZV, { Selection of calculation method:
-      a) with constant cumulative frequency interval
-      b) with constant class interval. }
-    integrationMethod, { Choice of numerical or analytical calculation }
-    RootDistribution, { Specify the assumed distribution of the WAP,
-      specific to the 1D and 2D model, because the 1D model
-      additionally distinguishes between lognormal and normal
-      distributions }
-    CalcMethRLD_VC, { Different options for calculating the statistics of the
-      root distribution }
-    CalcMethQuant, { Different methods for calculating the class mean values
-      of the RLD in the associated quantiles. }
-    StatN_AmountSoil, { Switch for calculations with static N amount and with
-      dynamically changing N amount
-      When changing dynamically, only a time step based
-      calculation can be used. With the analytical solution
-      this means that a fractional calculation actually no
-      longer makes sense. Solution: replace variable Time with
-      Timestep and multiply the fractional uptake in the time
-      step by the currently available N amount. }
-    compareMode { Switch used to specify whether the 1D model should be
-      run for comparison with the 2D model
-      = setting 'yes':
-      Only the N amount in the soil at steady state
-      Influx = mineralisation is calculated; root uptake is
-      not calculated (see Kage dissertation, equation 3.6.43)
-      or not
-      = setting 'no':
-      Solution according to Tinker/Nye (Eq. 10.28; calculation of
-      root uptake as well as the N amounts in the soil from the
-      initial N amount and root uptake }
-
+    /// <summary>
+    /// How the model should run: with or without the 2D model, important for the output in the form
+    /// </summary>
+    OperatingMode, 
+    /// <summary>
+    /// Selection of calculation method: a) with constant cumulative frequency interval b) with constant class interval.
+    /// </summary>
+    calcMethodZV, 
+    /// <summary>
+    /// Choice of numerical or analytical calculation
+    /// </summary>
+    integrationMethod, 
+    /// <summary>
+    /// Specify the assumed distribution of the WAP, specific to the 1D and 2D model, because the 1D model additionally distinguishes between lognormal and normal distributions
+    /// </summary>
+    RootDistribution, 
+    /// <summary>
+    /// Different options for calculating the statistics of the root distribution
+    /// </summary>
+    CalcMethRLD_VC, 
+    /// <summary>
+    /// Different methods for calculating the class mean values of the RLD in the associated quantiles.
+    /// </summary>
+    CalcMethQuant, 
+    /// <summary>
+    /// Switch for calculations with static N amount and with dynamically changing N amount. When changing dynamically, only a time step based calculation can be used. With the analytical solution this means that a fractional calculation actually no longer makes sense. Solution: replace variable Time with Timestep and multiply the fractional uptake in the time step by the currently available N amount.
+    /// </summary>
+    StatN_AmountSoil, 
+    /// <summary>
+    /// Switch used to specify whether the 1D model should be run for comparison with the 2D model = setting 'yes': Only the N amount in the soil at steady state Influx = mineralisation is calculated; root uptake is not calculated (see Kage dissertation, equation 3.6.43) or not = setting 'no': Solution according to Tinker/Nye (Eq. 10.28; calculation of root uptake as well as the N amounts in the soil from the initial N amount and root uptake
+    /// </summary>
+    compareMode 
+    /// <summary>
+    /// Switch for comparison with the 2D model: There, to produce the steady state, the absorbed amount is added back to the cells in each time step. When comparing the models this must also happen in the 1D model. (Only the solo model needs this, because in the full model such a comparison does not play a role.) Switch is currently not used
+    /// </summary>
     // Compare2DModel
-    { Switch for comparison with the 2D model: There, to produce the steady
-      state, the absorbed amount is added back to the cells in each time step.
-      When comparing the models this must also happen in the 1D model. (Only the
-      solo model needs this, because in the full model such a comparison does not
-      play a role.) Switch is currently not used }
       : TOption;
 
     procedure calcVar_Analyt;
