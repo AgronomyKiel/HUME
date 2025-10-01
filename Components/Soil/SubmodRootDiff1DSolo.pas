@@ -398,51 +398,77 @@ begin
   Init_NAmountEWZList := TList.Create;
   initial_1D := false;
   // Create and initialize TVar
-  VarCreate('Area_mean', '[cm^2]', 0, false, Area_mean);
-  VarCreate('VarKoeff_Area', '[%]', 0, false, VarKoeff_Area);
-  VarCreate('StdAbw_Area', '[cm^2]', 0, false, StdAbw_Area);
-  VarCreate('Log_RLD_mean', '[cm/cm^3]', 0, false, Log_RLD_mean);
-  VarCreate('VarKoeff_RLD', '[%]', 0, false, VarKoeff_RLD);
-  VarCreate('Log_StdAbw_RLD', '[cm/cm^3]', 0, false, Log_StdAbw_RLD);
-  VarCreate('StdAbw_RLD', '[cm/cm^3]', 0, false, StdAbw_RLD);
-  VarCreate('Varianz', '[%]', 0, false, Varianz);
-  VarCreate('VM', '[-]', 0, false, VM);
-  VarCreate('Mittl_Flaeche', '[cm^2]', 0, false, Mittl_Flaeche);
-  VarCreate('Par_AreaMean', '[cm^2]', 5, false, Par_AreaMean);
-  VarCreate('Par_AreaVC', '[%]', 100, false, Par_AreaVC);
-  VarCreate('ClminTransf', '[kg N/cm*H20]', 0, false, ClminTransf);
-  VarCreate('ClminTransf_ha', '[kg N/ha]', 0, false, ClminTransf_ha);
-  VarCreate('Amount_H20', '[l]', 0, false, Amount_H20);
+  VarCreate('Area_mean', '[cm^2]', 0, false, Area_mean,
+    'Mean area [cm^2]');
+  VarCreate('VarKoeff_Area', '[%]', 0, false, VarKoeff_Area,
+    'Coefficient of variation of the mean area [%]');
+  VarCreate('StdAbw_Area', '[cm^2]', 0, false, StdAbw_Area,
+    'Standard deviation of the area [cm^2]');
+  VarCreate('Log_RLD_mean', '[cm/cm^3]', 0, false, Log_RLD_mean,
+    'Log-transformed mean root length density in a layer [cm/cm^3]');
+  VarCreate('VarKoeff_RLD', '[%]', 0, false, VarKoeff_RLD,
+    'Coefficient of variation of the mean RLD [%]');
+  VarCreate('Log_StdAbw_RLD', '[cm/cm^3]', 0, false, Log_StdAbw_RLD,
+    'Log-transformed standard deviation of the root length density [cm/cm^3]');
+  VarCreate('StdAbw_RLD', '[cm/cm^3]', 0, false, StdAbw_RLD,
+    'Standard deviation of the root length density [cm/cm^3]');
+  VarCreate('Varianz', '[%]', 0, false, Varianz,
+    'Variance of the mean root length density [cm/cm^3]');
+  VarCreate('VM', '[-]', 0, false, VM, 'V/M ratio');
+  VarCreate('Mittl_Flaeche', '[cm^2]', 0, false, Mittl_Flaeche,
+    'Mean area of the Voronoi polygons [cm^2]; Issue: what is it needed for?');
+  VarCreate('Par_AreaMean', '[cm^2]', 5, false, Par_AreaMean,
+    'Mean area [cm^2]');
+  VarCreate('Par_AreaVC', '[%]', 100, false, Par_AreaVC,
+    'Coefficient of variation of mean area [%]');
+  VarCreate('ClminTransf', '[kg N/cm*H20]', 0, false, ClminTransf,
+    'Minimum soil solution concentration [kg N/cm*H20]; For numerical solution');
+  VarCreate('ClminTransf_ha', '[kg N/ha]', 0, false, ClminTransf_ha,
+    'Minimum soil solution concentration [kg N/ha]');
+  VarCreate('Amount_H20', '[l]', 0, false, Amount_H20,
+    'Water amount in the soil layer under consideration [l]');
 
   // Create and initialize TPar
-  ParCreate('number_classes', '[-]', 10, number_classes);
+  ParCreate('number_classes', '[-]', 10, number_classes,
+    'Number of classes for class-specific uptake calculation');
   // 10 classes by default
-  ParCreate('Log_Area_mean', '[cm^2]', 0, Log_Area_mean);
-  ParCreate('Log_StdAbw_Area', '[cm^2]', 0, Log_StdAbw_Area);
-  ParCreate('ParVC', '[%]', 0, ParVC);
+  ParCreate('Log_Area_mean', '[cm^2]', 0, Log_Area_mean,
+    'Log-transformed mean area in a layer [cm^2]');
+  ParCreate('Log_StdAbw_Area', '[cm^2]', 0, Log_StdAbw_Area,
+    'Log-transformed standard deviation of the area [cm^2]');
+  ParCreate('ParVC', '[%]', 0, ParVC,
+    'Coefficient of variation of the mRLD [%]');
   // Create and initialize TState
-  StateCreate('N_MengeAnteilAn', '[]', 0, false, N_MengeAnteilAn);
-  StateCreate('N_MengeAnteilNum', '[]', 0, false, N_MengeAnteilNum);
-  StateCreate('N_AmountSoilNum', '[kg N/ha]', 0, false, N_AmountSoilNum);
+  StateCreate('N_MengeAnteilAn', '[]', 0, false, N_MengeAnteilAn,
+    'Fractional nitrogen uptake [-] when using the analytical solution according to Tinker, Nye Eq.10.28');
+  StateCreate('N_MengeAnteilNum', '[]', 0, false, N_MengeAnteilNum,
+    'Fractional nitrogen uptake [-] when using the numerical solution');
+  StateCreate('N_AmountSoilNum', '[kg N/ha]', 0, false, N_AmountSoilNum,
+    'The solo 1D model has an additional state variable for comparing the calculation with the analytical and numerical solution');
   // Erzeugen und initialisieren von TOption
 
-  OptCreate('CalcMethQuant', 'fromarea', CalcMethQuant);
+  OptCreate('CalcMethQuant', 'fromarea', CalcMethQuant,
+    'Different methods for calculating the class mean values of the RLD in the associated quantiles.');
   CalcMethQuant.OptionList.Add('fromarea');
   CalcMethQuant.OptionList.Add('fromRLD');
-  OptCreate('StatN_AmountSoil', 'static', StatN_AmountSoil);
+  OptCreate('StatN_AmountSoil', 'static', StatN_AmountSoil,
+    'Switch for calculations with static N amount and with dynamically changing N amount. When changing dynamically, only a time step based calculation can be used. With the analytical solution this means that a fractional calculation actually no longer makes sense. Solution: replace variable Time with Timestep and multiply the fractional uptake in the time step by the currently available N amount.');
   StatN_AmountSoil.OptionList.Add('static');
   StatN_AmountSoil.OptionList.Add('dynamic');
-  OptCreate('OperatingMode', 'without2DModel', OperatingMode);
+  OptCreate('OperatingMode', 'without2DModel', OperatingMode,
+    'How the model should run: with or without the 2D model, important for the output in the form');
   OperatingMode.OptionList.Add('without2DModel');
   OperatingMode.OptionList.Add('with2DModel');
-  OptCreate('integrationMethod', 'analytic', integrationMethod);
+  OptCreate('integrationMethod', 'analytic', integrationMethod,
+    'Choice of numerical or analytical calculation');
   integrationMethod.OptionList.Add('analytic');
   integrationMethod.OptionList.Add('numeric');
   { For comparing analytical and numerical solutions there is also an option that
     performs both calculations. }
   integrationMethod.OptionList.Add('both');
   { Define the assumed distribution of the WAP }
-  OptCreate('RootDistribution', 'Random', RootDistribution);
+  OptCreate('RootDistribution', 'Random', RootDistribution,
+    'Specify the assumed distribution of the WAP, specific to the 1D and 2D model, because the 1D model additionally distinguishes between lognormal and normal distributions');
   RootDistribution.OptionList.Add('Regular');
   RootDistribution.OptionList.Add('normal');
   { If the input comes from the structure model, a lognormal distribution is
@@ -450,14 +476,17 @@ begin
   RootDistribution.OptionList.Add('lognormal');
   { Specify whether the statistics RLD and VC should be derived from Voronoi
     polygons or from the occupancy of the grid cells. }
-  OptCreate('CalcMethRLD_VC', 'fromGrid', CalcMethRLD_VC);
+  OptCreate('CalcMethRLD_VC', 'fromGrid', CalcMethRLD_VC,
+    'Different options for calculating the statistics of the root distribution');
   CalcMethRLD_VC.OptionList.Add('voronoi');
   CalcMethRLD_VC.OptionList.Add('fromGrid');
 
-  OptCreate('compareMode', 'no', compareMode);
+  OptCreate('compareMode', 'no', compareMode,
+    'Switch used to specify whether the 1D model should be run for comparison with the 2D model = setting ''yes'': Only the N amount in the soil at steady state Influx = mineralisation is calculated; root uptake is not calculated (see Kage dissertation, equation 3.6.43) or not = setting ''no'': Solution according to Tinker/Nye (Eq. 10.28; calculation of root uptake as well as the N amounts in the soil from the initial N amount and root uptake');
   compareMode.OptionList.Add('no');
   compareMode.OptionList.Add('yes');
-  OptCreate('calcMethodZV', 'equalSumfreq', calcMethodZV);
+  OptCreate('calcMethodZV', 'equalSumfreq', calcMethodZV,
+    'Selection of calculation method: a) with constant cumulative frequency interval b) with constant class interval.');
   calcMethodZV.OptionList.Add('equalSumfreq');
   calcMethodZV.OptionList.Add('equalInt');
 
