@@ -6,7 +6,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs,
-  UMod, U2DSoilBaseClasses, USubmodRoot2dDiffNitrate, UState, AdvGrid;
+  UMod, U2DSoilBaseClasses, USubmodRoot2dDiffNitrate, URootObject, UState, AdvGrid;
 
 type
   // Zeigertypen
@@ -447,11 +447,11 @@ begin
     ARandomPoint := RandomPointList.items[i];
     RandomPointKoord[0] := ARandomPoint.RandomPointPos.x;
     RandomPointKoord[1] := ARandomPoint.RandomPointPos.y;
-    for j := 0 to RasterData.PosList.Count-1 do
+    for j := 0 to RasterData.RootList.Count-1 do
     begin
       { Es werden alle Wurzeln berücksichtigt }
-      WAPKoord[0] := TRootObject(RasterData.PosList.Objects[j]).x;
-      WAPKoord[1] := TRootObject(RasterData.PosList.Objects[j]).y;
+      WAPKoord[0] := TRootObject(RasterData.RootList.Objects[j]).x;
+      WAPKoord[1] := TRootObject(RasterData.RootList.Objects[j]).y;
       distNew := calcDistance(WAPKoord, RandomPointKoord);
       if distNew < distOld then
       begin
@@ -463,10 +463,10 @@ begin
     { Erweiterung des Ansatzes: Es werden nur Strecken bis zu den Grenzen berücksich-
       tigt. Rand selbst gehört zur Beobachtungsfläche }
     // Wenn der Punkt in den Rändern liegt
-    if (TRootObject(RasterData.PosList.Objects[indexNearestWAP]).x < verticMargin.V) or
-      (TRootObject(RasterData.PosList.Objects[indexNearestWAP]).x > dimensionX.V - verticMargin.V) or
-      (TRootObject(RasterData.PosList.Objects[indexNearestWAP]).y < horizMargin.V) or
-      (TRootObject(RasterData.PosList.Objects[indexNearestWAP]).y < dimensiony.V - horizMargin.V) then
+    if (TRootObject(RasterData.RootList.Objects[indexNearestWAP]).x < verticMargin.V) or
+      (TRootObject(RasterData.RootList.Objects[indexNearestWAP]).x > dimensionX.V - verticMargin.V) or
+      (TRootObject(RasterData.RootList.Objects[indexNearestWAP]).y < horizMargin.V) or
+      (TRootObject(RasterData.RootList.Objects[indexNearestWAP]).y < dimensiony.V - horizMargin.V) then
     begin
       ARandomPoint.shortestDist := CalcBorderDist(ARandomPoint,
         indexNearestWAP);

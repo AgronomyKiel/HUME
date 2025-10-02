@@ -10,7 +10,7 @@ uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, math,  VCLTee.TeeProcs, VCLTee.TeEngine,
   VCLTee.Chart, VCLTee.Series,   AdvGrid, MathImge,
-  UMod, UState, Diffko, SubmodRootStructureNew;
+  UMod, UState, URootObject, Diffko, SubmodRootStructureNew;
 
 //const
   /// <summary>Maximum number of roots.</summary>
@@ -31,8 +31,6 @@ colorarray: array [0 .. 11] of TColor = ($00CB9F74, $00D8AD49, $00E6C986,
 
 type
 
-/// <summary>Floating point type for coordinates</summary>
-  TMyFloatPoint = double;
 
 /// <summary>re defines a floating point type</summary>
   real = double;
@@ -40,116 +38,8 @@ type
   /// <summary>Problem: the dynamic implementation was removed again due to difficulties with array boundaries.</summary>
   array_type = array [0 .. dim_max + 1] of real;
 
-  /// <summary>
-  /// Mode of nitrogen uptake by the root: Michaelis-Menten (saturation kinetics),
-  /// fixed_influx assumes a constant sink strength, ZeroSink represents unlimited
-  /// sink strength (black hole).
-  /// </summary>
-  TUptake_Function = (MM, fixed_influx, ZeroSink);
 
-
-  /// <summary>Lean, memory-saving version of an SRP
-  ///  used in the 2d diffusion model for interface with the structural root model
-  /// TSRP instances of the single root model also need fields for area and the
-  /// vertex list so that, when reading raster data, the surface area can be
-  /// determined (using Voronoi polygons or alternatively by splitting the area of
-  /// raster cells among the roots contained in them. Units may be an issue)
-  /// </summary>
-  TSRPLight = class(TObject)
-  private
-    /// <summary>Private declarations</summary>
-
-  protected
-
-  public
-    /// <summary>Root coordinates x [cm] and root length density of the SRP [cm/cm^3]</summary>
-    x : real;
-
-    /// <summary>Root coordinates y [cm]</summary>
-    y : real;
-
-    /// <summary>Root length density of the SRP [cm/cm^3]</summary>
-    RLD : real;
-
-    /// <summary>Surface area of the single root cylinder [cm^2]</summary>
-    area: double;
-
-    /// <summary>List of polygon vertices</summary>
-    vertexList: TList;
-  public
-    /// <summary>Public declarations</summary>
-    /// <summary>Access to the fields: set and get methods</summary>
-  end;
-
-   /// <summary>TSRPLight plus some extra fields for nitrate transport calculations </summary>
-  TSRPLightNitrate = class(TSRPLight)
-  private
-
-  protected
-  public
-    /// <summary>Mean nitrate concentration</summary>
-    Cl_mean: double;
-    /// <summary>N amount in the EWZ at the beginning</summary>
-    init_NAmount: double;
-  public
-    /// <summary>Public declarations</summary>
-    /// <summary>Access to the fields: set and get methods</summary>
-  end;
-
-
-  /// <summary>
-  ///   Defines an object for storing the information of
-  ///  a single root object
-  ///  x and y are the floating point type coordinate
-  ///  xi and yi are the index integers for the cell of a 2-D grid object
-  ///  the root object is located
-  /// </summary>
-  TRootObject = class(TObject)
-    x: real;
-    y: real;
-    xi, yi: integer;
-    root: integer;
-
-    /// <summary>
-    ///  the area of the single root cylinder [cm²]
-    /// </summary>
-    area : real;
-
-    /// <summary>
-    ///   Amount of water in the single root cylinder [cm3]
-    /// </summary>
-    WAmount: real;
-
-    /// <summary>
-    ///   Amount of nitrate in the single root cylinder [mol N]
-    /// </summary>
-    NAmount: real;
-
-    /// <summary>
-    /// the nitrate influx rate of that root [mol/cm/s]
-    /// </summary>
-    NInflux : real;
-
-    /// <summary>
-    /// the water influx rate of that root [cm3/cm/s]
-    /// </summary>
-    WInflux: real;
-
-    /// <summary>
-    /// the sum of nitrate nitrogen [mol]
-    /// </summary>
-   // SumNAmount: real;
-
-    /// <summary>
-    /// the nitrate uptake rate [mol/s]
-    /// </summary>
-    NAmountdt : real;
-  end;
-
-
-/// <summary>
-///  forward declaration
-/// </summary>
+//  forward declaration of class TBaseSubmodRootDiff
   TBaseSubmodRootDiff = class;
 
   /// <summary>
@@ -188,8 +78,8 @@ type
     /// </summary>
     CountArr: array of array of integer;
 
-    /// <summary> Stores information on all roots in the form of TRootposition entries</summary>
-    PosList: TStringList;
+    /// <summary> Stores information on all roots in the form of TRootObject entries</summary>
+    RootList: TStringList;
   private
     /// <summary>Private declarations</summary>
   protected
@@ -233,6 +123,8 @@ type
   TBaseSubmodRootDiff = class(TSubmodel)
   private
 
+
+  protected
     /// <summary>
     ///   a private field for showing the concentration field on a TMathimage object
     /// </summary>
@@ -248,18 +140,11 @@ type
     /// </summary>
     ColorSurface: TColorSurface;
 
-    /// <summary>
-    ///   a dynamic list with single root objects located on the 2-D plane of interest
-    /// </summary>
-    TSRPLightList: TList; // List with TSRPLight instances
-
     /// <summary>Reference to the AdvStringGrid in the Hume form for displaying raster data</summary>
     fMyAdvStringGrid: TAdvStringGrid;
 
     /// <summary>Reference to the structural root model</summary>
     fMyStructModel: TSubmodRootStrucNew;
-
-  protected
 
 /// <summary>Protected declarations</summary>
 /// <summary> contains the x and y coordinates of the center of the container in container mode</summary>
@@ -337,7 +222,7 @@ type
     /// <summary>number of elements in Y-direction</summary>
     dim_y:TPar;
 
-    /// <summary>Maximum time step width [s]</summary>
+    /// <summary>Maximum time step width [d]</summary>
     max_dt: TPar;
 
     /// <summary> Initial volumetric water content [cm3/cm3]</summary>
@@ -409,6 +294,11 @@ type
     /// </summary>
     wl: TVar;
 
+    /// <summary>
+    ///   Amount of water in the object [cm3]
+    /// </summary>
+    WAmount: TState;
+
 
     /// <summary>
     ///   Average distance between roots [cm]
@@ -467,9 +357,6 @@ type
     /// <summary>Removes roots that are in the margins</summary>
     procedure removeMarginRoots;
 
-    /// <summary>Updates root data from the structural root model</summary>
-    procedure updateFromStructModell; virtual;
-
     /// <summary>Calculates the grid cell indices for each root position</summary>
     procedure CalcRootPosAsIndex;
 
@@ -510,6 +397,9 @@ type
     /// <summary>Property for accessing the TChart object in the Hume form</summary>
     property MyChart: TChart read fMyChart write fMyChart;
 
+    property MyMathImage: TMathImage read fMyMathImage write fMyMathImage;
+
+
     /// <summary>Property for accessing the TAdvStringGrid object in the Hume form</summary>
     property MyAdvStringGrid: TAdvStringGrid read fMyAdvStringGrid
       write fMyAdvStringGrid;
@@ -540,7 +430,7 @@ var
 begin
   { The RasterData instance knows its submodel }
   SubmodRootDiff := Submodel;
-  PosList := TStringlist.create;
+  RootList := TStringlist.create;
 end;
 
 
@@ -557,7 +447,7 @@ var
   NewRoot : TRootObject;
 
 begin
-  PosList.Clear;
+  RootList.Clear;
   AssignFile(F, fn); { File selected }
   Reset(F);
   // Read the header
@@ -597,8 +487,9 @@ begin
         // randomize;     // [What does Randomize do?]
         NewRoot.x := (Col) * DimCols + Random * DimCols;
         NewRoot.y := (Row) * DimRows + Random * DimRows;
+        NewRoot.nroot := root;
 //        PosArr[AllRoot].root := AllRoot;
-        self.PosList.AddObject(IntToStr(AllRoot), NewRoot);
+        self.RootList.AddObject(IntToStr(AllRoot), NewRoot);
         Series.AddXY(NewRoot.x, NewRoot.y);
         Inc(AllRoot);
       end;
@@ -607,8 +498,6 @@ begin
   { The model and the RasterData object know the total number of roots }
   TBaseSubmodRootDiff(SubmodRootDiff).num_roots.v := AllRoot;
   self.NRoots := AllRoot;
-
-
 
 end;
 
@@ -632,7 +521,7 @@ var
 
 
 begin
-  self.PosList.Clear;
+  self.RootList.Clear;
 //  ErasePosList;
   // Issue: Is the clearing step needed (see called method)?
   // Read data from file:
@@ -662,7 +551,7 @@ begin
     while not Eof(F) do
     begin
       NewRoot := TRootObject.create;
-      Readln(F, NewRoot.x, NewRoot.y, NewRoot.root,
+      Readln(F, NewRoot.x, NewRoot.y, NewRoot.nroot,
         restString);
       // Remove trailing whitespace:
       restString := TrimRight(restString);
@@ -677,7 +566,7 @@ begin
         1D model only coordinates not in the margins are used for calculating the
         parameters of the lognormal distribution function. }
 
-      self.PosList.AddObject(intToStr(i), NewRoot);
+      self.RootList.AddObject(intToStr(i), NewRoot);
      Series.AddXY(NewRoot.x, NewRoot.y);
       Inc(i);
       inc(NRoots);
@@ -712,8 +601,8 @@ begin
     // Write header
     writeln(F, 'X	 Y	Number	Edge	Species	Radius');
     // Write the randomly generated X and Y values
-    for root := 0 to self.PosList.Count -1 do
-      ActRoot := TRootObject(self.PosList.Objects[root]);
+    for root := 0 to self.RootList.Count -1 do
+      ActRoot := TRootObject(self.RootList.Objects[root]);
       writeln(F, ActRoot.x, ' ', ActRoot.y, ' ', root, ' e a 0');
     closeFile(F);
   end;
@@ -743,13 +632,12 @@ begin
   ParCreate('dimensionY', '[cm]', 100, dimensionY, 'height of the area in y direction');
   ParCreate('gridWidth', '[cm]', 5, gridWidth, 'width of the grid cells');
   ParCreate('gridHeight', '[cm]', 5, gridHeight, 'height of the grid cells');
-  ParCreate('max_dt', '[s]', 0, max_dt, 'maximum time step');
+  ParCreate('max_dt', '[d]', 0, max_dt, 'maximum time step');
   ParCreate('IniTheta', '[cm3/cm3]', 0.2, IniTheta, 'initial volumetric water content');
-  ParCreate('Tiefe', '[cm]', 10, Depth, 'depth of the layer');
+  ParCreate('Depth', '[cm]', 10, Depth, 'depth of the layer');
   { Note: the original value was in micromol/l }
   ParCreate('verticMargin', '[cm]', 0, verticMargin, 'vertical margin');
   ParCreate('horizMargin', '[cm]', 0, horizMargin, 'horizontal margin');
-  ParCreate('depthLayer', '[cm]', 0, depthLayer, 'depth of the layer');
   ParCreate('SizeLayer', '[cm]', 10, SizeLayer, 'size of the layer');
   ParCreate('ParMRLD', '[cm/ccm]', 0, ParMRLD, 'mean root length density');
   ParCreate('RootRadius', '[cm]', 0, RootRadius, 'root radius');
@@ -776,6 +664,7 @@ begin
 
   VarCreate('dim_xMiddle', '[d]', 0, false, dim_xMiddle, 'dimension in x direction');
   VarCreate('dim_yMiddle', '[d]', 0, false, dim_yMiddle, 'dimension in y direction');
+  StateCreate('WAmount', '[cm3]', 0, false, WAmount, 'Amount of water in soil object');
 
   ConstCreate('Area', '[cm²]', 0, false, Area, 'Area of the container');
   ConstCreate('Volume', '[cm/m³]', 0, false, Volume, 'Volume of the container');
@@ -881,6 +770,7 @@ var
   i: integer;
   // Number of grid cells in X and Y direction
   numberGridCellsX, numberGridCellsY: integer;
+  ARoot: TRootObject;
 
 begin
   inherited;
@@ -912,19 +802,27 @@ begin
   area.v := dimensionX.v * dimensionY.v;
   { Area of the layer under investigation }
   Volume.v := area.v * Depth.v;
-
   theta.v := IniTheta.v;
   { Implementation of a check for previous initialization. This allows easy extension
     for initializations requiring file access or object instantiation. This should be
     done in the _init method. Initializations should only be performed when roots
     have already been read. The original TSubmodel method cannot be used because it
     is called multiple times. }
+  WAmount.v := theta.v*Volume.v;
+
+  /// there are three options for defining the location and number of roots
+  ///  rasterdatafile: root counts within a pre defined grid are input
+  ///  xyfile: a list of defined roots with their exact position input
+  ///  inppar: only the average root length density is defined, the root position
+  ///  are then calculated either in a regular hexagonal grid or as
+  ///  pure random positions
 
   if IniMethod.Option = 'rasterdatafile' then
   begin
     RasterData.readRasterData(RootInpDataFile.Option, SeriesXY);
     fillGridRasterData;
   end;
+
   if IniMethod.Option = 'xyfile' then
   begin
     RasterData.readXYfromFile(RootInpDataFileXY.Option, SeriesXY);
@@ -944,7 +842,11 @@ begin
     RasterData.NRoots := trunc(num_roots.v);
 
     // calculate positions of the roots according to a regular distribution
+    // and create root objects for each position
     CalcEqualDistribution;
+
+    // correct for wrong setting of root distribution option
+    // if initMethod is inppar then from source is not a correct option
     if RootDistribution.Option = 'fromsource' then
     begin
       // Da es keine Quelle gibt macht hier nur die Option regular bzw. random Sinn
@@ -954,14 +856,14 @@ begin
     end;
   end;
 
-
   // Berechnen einer gleichmäßigen bzw. zufälligen Verteilung
   If RootDistribution.Option = 'random' then
   begin
     for i := 0 to trunc(num_roots.v) - 1 do
     begin
-      TRootObject(RasterData.PosList.Objects[i]).x := Random(trunc(dim_x.v) - 2) + 2;
-      TRootObject(RasterData.PosList.Objects[i]).y := Random(trunc(dim_y.v) - 2) + 2;
+      ARoot := TRootObject(RasterData.RootList.Objects[i]);
+      ARoot.x := Random(trunc(dim_x.v) - 2) + 2;
+      ARoot.y := Random(trunc(dim_y.v) - 2) + 2;
     end;
   end;
 
@@ -1048,9 +950,9 @@ var
 begin
   SeriesXY.Clear;
   // Fill the series object.
-  for i := 0 to self.RasterData.PosList.count-1 do
+  for i := 0 to self.RasterData.RootList.count-1 do
   begin
-    ActRoot := TRootObject(self.RasterData.PosList.Objects[i]);
+    ActRoot := TRootObject(self.RasterData.RootList.Objects[i]);
     if (ActRoot.x <> 0) and (ActRoot.y <> 0) then
       SeriesXY.AddXY(ActRoot.x, ActRoot.y);
   end;
@@ -1127,7 +1029,7 @@ begin
   begin
     j := 0;
     for i := 0 to trunc(RasterData.NRoots)-1 do
-      ActRoot := TRootObject(self.RasterData.PosList.Objects[i]);
+      ActRoot := TRootObject(self.RasterData.RootList.Objects[i]);
     begin
       // Point not in vertical margins
       if (ActRoot.x >= verticMargin.v) and
@@ -1142,7 +1044,7 @@ begin
         PosArr_middle[j].yi := ActRoot.yi;
 //        PosArr_middle[j].NInflux := ActRoot.NInflux;
         PosArr_middle[j].WInflux := ActRoot.WInflux;
-        PosArr_middle[j].root := ActRoot.root;
+        PosArr_middle[j].nroot := ActRoot.nroot;
         PosArr_middle[j].area := ActRoot.area;
         Inc(j);
       end;
@@ -1156,7 +1058,7 @@ begin
     writeln(xyFile);
     for i := 0 to high(PosArr_middle) do
     begin
-      write(xyFile, PosArr_middle[i].root, ' ');
+      write(xyFile, PosArr_middle[i].nroot, ' ');
       write(xyFile, PosArr_middle[i].x, ' ');
       write(xyFile, PosArr_middle[i].y, ' ');
       write(xyFile, PosArr_middle[i].area, ' ');
@@ -1172,7 +1074,7 @@ begin
       for i := 0 to trunc(RasterData.NRoots)-1 do
       begin
         // Point not in vertical margins
-      ActRoot := TRootObject(self.RasterData.PosList.Objects[i]);
+      ActRoot := TRootObject(self.RasterData.RootList.Objects[i]);
         if (ActRoot.x >= verticMargin.v) and
           (ActRoot.x <= dimensionX.v - verticMargin.v)
         // Point not in horizontal margins
@@ -1185,7 +1087,7 @@ begin
           PosArr_middle[j].yi := ActRoot.yi;
 //          PosArr_middle[j].NInflux := ActRoot.NInflux;
           PosArr_middle[j].WInflux := ActRoot.WInflux;
-          PosArr_middle[j].root := ActRoot.root;
+          PosArr_middle[j].nroot := ActRoot.nroot;
           PosArr_middle[j].area := ActRoot.area;
           Inc(j);
         end;
@@ -1199,7 +1101,7 @@ begin
       writeln(xyFile);
       for i := 0 to high(PosArr_middle) do
       begin
-        write(xyFile, PosArr_middle[i].root, ' ');
+        write(xyFile, PosArr_middle[i].nroot, ' ');
         write(xyFile, PosArr_middle[i].x, ' ');
         write(xyFile, PosArr_middle[i].y, ' ');
         write(xyFile, PosArr_middle[i].area, ' ');
@@ -1212,7 +1114,7 @@ begin
       writeln(xyFile);
       for i := 0 to trunc(RasterData.NRoots)-1 do
       begin
-        ActRoot := TRootObject(self.RasterData.PosList.Objects[i]);
+        ActRoot := TRootObject(self.RasterData.RootList.Objects[i]);
 
         // Point not in vertical margins
         if (ActRoot.x < verticMargin.v) or
@@ -1221,7 +1123,7 @@ begin
           or (ActRoot.y < horizMargin.v) or
           (ActRoot.y > dimensionY.v - horizMargin.v) then
         begin
-          write(xyFile, ActRoot.root, ' ');
+          write(xyFile, ActRoot.nroot, ' ');
           write(xyFile, ActRoot.x, ' ');
           write(xyFile, ActRoot.y, ' ');
           write(xyFile, ActRoot.area, ' ');
@@ -1283,11 +1185,11 @@ var
   /// <summary>Edge length of hexagon</summary>
   edgeHexagon: real;
   errorRoot, i, j, number_row: integer;
-  NewPosition : TRootObject;
+  NewRoot : TRootObject;
 
 begin
   inherited;
-  self.RasterData.PosList.Clear;
+  self.RasterData.RootList.Clear;
   { Calculation of the area assigned to one hexagon.
     Margins are cut off only after the uniform distribution }
   AreaObservation := dimensionX.v * dimensionY.v;
@@ -1326,22 +1228,22 @@ begin
       if (pos_x <= dimx) and (pos_y <= dimy) then
       // As long as the point remains within the calculation area
       begin
-        NewPosition := TRootObject.create;
+        NewRoot := TRootObject.create;
 //        NewPosition.create;
-        NewPosition.x := pos_x;
-        NewPosition.x := pos_y;
-        NewPosition.root := i;
-        NewPosition.area := Area_Polygon;
-        RasterData.PosList.AddObject(IntToStr(i), NewPosition);
- //       TRootPosition(RasterData.PosList.objects[i]).x := pos_x;
- //       TRootPosition(RasterData.PosList.objects[i]).y := pos_y;
- //       TRootPosition(RasterData.PosList.objects[i]).root := i;
+        NewRoot.x := pos_x;
+        NewRoot.x := pos_y;
+        NewRoot.nroot := i;
+        NewRoot.area := Area_Polygon;
+        RasterData.RootList.AddObject(IntToStr(i), NewRoot);
+ //       TRootObject(RasterData.PosList.objects[i]).x := pos_x;
+ //       TRootObject(RasterData.PosList.objects[i]).y := pos_y;
+ //       TRootObject(RasterData.PosList.objects[i]).root := i;
         { It is assumed that the area of the hexagon corresponds to the area of the
           Voronoi polygon. Points within the polygon would then be closer to the central
           sink than to any other sink. }
         { This point is not entirely consistent since PosArr could also be used for the
           calculations. }
- //       TRootPosition(RasterData.PosList.objects[i]).area := Area_Polygon;
+ //       TRootObject(RasterData.PosList.objects[i]).area := Area_Polygon;
       end;
       { If roots are no longer in the observation window, in row-wise filling this
         means the position is outside the observation area in the y-direction }
@@ -1370,16 +1272,16 @@ begin
       if (pos_x <= dimx) and (pos_y <= dimy) then
       // As long as the point remains within the calculation area
       begin
-        NewPosition := TRootObject.create;
-        NewPosition.x := pos_x;
-        NewPosition.x := pos_y;
-        NewPosition.root := i;
-        NewPosition.area := Area_Polygon;
-        RasterData.PosList.AddObject(IntToStr(i), NewPosition);
-//        TRootPosition(RasterData.PosList.objects[i]).x := pos_x;
-//        TRootPosition(RasterData.PosList.objects[i]).y := pos_y;
-//        TRootPosition(RasterData.PosList.objects[i]).root := i;
-//        TRootPosition(RasterData.PosList.objects[i]).area := Area_Polygon;
+        NewRoot := TRootObject.create;
+        NewRoot.x := pos_x;
+        NewRoot.x := pos_y;
+        NewRoot.nroot := i;
+        NewRoot.area := Area_Polygon;
+        RasterData.RootList.AddObject(IntToStr(i), NewRoot);
+//        TRootObject(RasterData.PosList.objects[i]).x := pos_x;
+//        TRootObject(RasterData.PosList.objects[i]).y := pos_y;
+//        TRootObject(RasterData.PosList.objects[i]).root := i;
+//        TRootObject(RasterData.PosList.objects[i]).area := Area_Polygon;
       end;
       { If roots are no longer in the observation window, in row-wise filling this
         means the position is outside the observation area in the y-direction }
@@ -1430,7 +1332,7 @@ var
   NewPosition: TRootObject;
 begin
   inherited;
-  self.RasterData.PosList.Clear;
+  self.RasterData.RootList.Clear;
   AreaObservation := dimensionX.v * dimensionY.v;
   { Calculation of the area assigned to one hexagon: }
   Area_Polygon := AreaObservation / num_roots.v;
@@ -1473,17 +1375,17 @@ begin
         NewPosition.create;
         NewPosition.x := pos_x;
         NewPosition.x := pos_y;
-        NewPosition.root := i;
+        NewPosition.nroot := i;
         NewPosition.area := Area_Polygon;
-        RasterData.PosList.AddObject(IntToStr(i), NewPosition);
+        RasterData.RootList.AddObject(IntToStr(i), NewPosition);
 
-//        TRootPosition(RasterData.PosList.objects[i]).x := pos_x;
-//        TRootPosition(RasterData.PosList.objects[i]).y := pos_y;
-//        TRootPosition(RasterData.PosList.objects[i]).root := i;
+//        TRootObject(RasterData.PosList.objects[i]).x := pos_x;
+//        TRootObject(RasterData.PosList.objects[i]).y := pos_y;
+//        TRootObject(RasterData.PosList.objects[i]).root := i;
         { It is assumed that the area of the hexagon corresponds to the area of the
           Voronoi polygon. Points within the polygon would then be closer to the central
           sink than to any other sink. }
-//        TRootPosition(RasterData.PosList.objects[i]).area := Area_Polygon;
+//        TRootObject(RasterData.PosList.objects[i]).area := Area_Polygon;
       end;
       Inc(j);
       Inc(i);
@@ -1510,13 +1412,13 @@ begin
         NewPosition := TRootObject.create;
         NewPosition.x := pos_x;
         NewPosition.x := pos_y;
-        NewPosition.root := i;
+        NewPosition.nroot := i;
         NewPosition.area := Area_Polygon;
-        RasterData.PosList.AddObject(IntToStr(i), NewPosition);
-//        TRootPosition(RasterData.PosList.objects[i]).x := pos_x;
-//        TRootPosition(RasterData.PosList.objects[i]).y := pos_y;
-//        TRootPosition(RasterData.PosList.objects[i]).root := i;
-//        TRootPosition(RasterData.PosList.objects[i]).area := Area_Polygon;
+        RasterData.RootList.AddObject(IntToStr(i), NewPosition);
+//        TRootObject(RasterData.PosList.objects[i]).x := pos_x;
+//        TRootObject(RasterData.PosList.objects[i]).y := pos_y;
+//        TRootObject(RasterData.PosList.objects[i]).root := i;
+//        TRootObject(RasterData.PosList.objects[i]).area := Area_Polygon;
       end;
       Inc(j);
       Inc(i);
@@ -1548,14 +1450,14 @@ begin
   for i := 0 to RasterData.NRoots-1 do
   begin
     // Point not in vertical margins
-//    if (TRootPosition(RasterData.PosList.objects[i]).x >= verticMargin.v) and
-    if (TRootObject(RasterData.PosList.Objects[i]).x >= verticMargin.v) and
-//      (TRootPosition(RasterData.PosList.objects[i]).x <= dimensionX.v - verticMargin.v)
-      (TRootObject(RasterData.PosList.Objects[i]).x <= dimensionX.v - verticMargin.v)
+//    if (TRootObject(RasterData.PosList.objects[i]).x >= verticMargin.v) and
+    if (TRootObject(RasterData.RootList.Objects[i]).x >= verticMargin.v) and
+//      (TRootObject(RasterData.PosList.objects[i]).x <= dimensionX.v - verticMargin.v)
+      (TRootObject(RasterData.RootList.Objects[i]).x <= dimensionX.v - verticMargin.v)
     // Point not in horizontal margins
-//      and (TRootPosition(RasterData.PosList.objects[i]).y >= horizMargin.v) and
-      and (TRootObject(RasterData.PosList.Objects[i]).y >= horizMargin.v) and
-      (TRootObject(RasterData.PosList.Objects[i]).y <= dimensionY.v - horizMargin.v) then
+//      and (TRootObject(RasterData.PosList.objects[i]).y >= horizMargin.v) and
+      and (TRootObject(RasterData.RootList.Objects[i]).y >= horizMargin.v) and
+      (TRootObject(RasterData.RootList.Objects[i]).y <= dimensionY.v - horizMargin.v) then
     begin
       Inc(rootcount);
       number_consid_roots.v := rootcount;
@@ -1580,37 +1482,37 @@ begin
   for i := 0 to trunc(RasterData.NRoots)-1 do
   begin
     // Point not in vertical margins
-    if (TRootObject(RasterData.PosList.objects[i]).x >= verticMargin.v) and
-      (TRootObject(RasterData.PosList.objects[i]).x <= dimensionX.v - verticMargin.v)
+    if (TRootObject(RasterData.RootList.objects[i]).x >= verticMargin.v) and
+      (TRootObject(RasterData.RootList.objects[i]).x <= dimensionX.v - verticMargin.v)
     // Point not in horizontal margins
-      and (TRootObject(RasterData.PosList.objects[i]).y >= horizMargin.v) and
-      (TRootObject(RasterData.PosList.objects[i]).y <= dimensionY.v - horizMargin.v) then
+      and (TRootObject(RasterData.RootList.objects[i]).y >= horizMargin.v) and
+      (TRootObject(RasterData.RootList.objects[i]).y <= dimensionY.v - horizMargin.v) then
     begin
-      PosArr_middle[j].x := TRootObject(RasterData.PosList.objects[i]).x;
-      PosArr_middle[j].y := TRootObject(RasterData.PosList.objects[i]).y;
-      PosArr_middle[j].xi := TRootObject(RasterData.PosList.objects[i]).xi;
-      PosArr_middle[j].yi := TRootObject(RasterData.PosList.objects[i]).yi;
-      PosArr_middle[j].NInflux := TRootObject(RasterData.PosList.objects[i]).NInflux;
-      PosArr_middle[j].WInflux := TRootObject(RasterData.PosList.objects[i]).WInflux;
-      PosArr_middle[j].root := TRootObject(RasterData.PosList.objects[i]).root;
-      PosArr_middle[j].area := TRootObject(RasterData.PosList.objects[i]).area;
+      PosArr_middle[j].x := TRootObject(RasterData.RootList.objects[i]).x;
+      PosArr_middle[j].y := TRootObject(RasterData.RootList.objects[i]).y;
+      PosArr_middle[j].xi := TRootObject(RasterData.RootList.objects[i]).xi;
+      PosArr_middle[j].yi := TRootObject(RasterData.RootList.objects[i]).yi;
+      PosArr_middle[j].NInflux := TRootObject(RasterData.RootList.objects[i]).NInflux;
+      PosArr_middle[j].WInflux := TRootObject(RasterData.RootList.objects[i]).WInflux;
+      PosArr_middle[j].nroot := TRootObject(RasterData.RootList.objects[i]).nroot;
+      PosArr_middle[j].area := TRootObject(RasterData.RootList.objects[i]).area;
       Inc(j);
     end;
   end;
   // Delete old PosArr
-  RasterData.PosList.Clear;
+  RasterData.RootList.Clear;
   j := 1;
   // Write back values from the temporary PosArr
   for i := 0 to high(PosArr_middle) do
   begin
-    TRootObject(RasterData.PosList.objects[i]).x := PosArr_middle[i].x;
-    TRootObject(RasterData.PosList.objects[i]).y := PosArr_middle[i].y;
-    TRootObject(RasterData.PosList.objects[i]).xi := PosArr_middle[i].xi;
-    TRootObject(RasterData.PosList.objects[i]).yi := PosArr_middle[i].yi;
-    TRootObject(RasterData.PosList.objects[i]).NInflux := PosArr_middle[i].NInflux;
-    TRootObject(RasterData.PosList.objects[i]).WInflux := PosArr_middle[i].WInflux;
-    TRootObject(RasterData.PosList.objects[i]).root := PosArr_middle[i].root;
-    TRootObject(RasterData.PosList.objects[i]).area := PosArr_middle[i].area;
+    TRootObject(RasterData.RootList.objects[i]).x := PosArr_middle[i].x;
+    TRootObject(RasterData.RootList.objects[i]).y := PosArr_middle[i].y;
+    TRootObject(RasterData.RootList.objects[i]).xi := PosArr_middle[i].xi;
+    TRootObject(RasterData.RootList.objects[i]).yi := PosArr_middle[i].yi;
+    TRootObject(RasterData.RootList.objects[i]).NInflux := PosArr_middle[i].NInflux;
+    TRootObject(RasterData.RootList.objects[i]).WInflux := PosArr_middle[i].WInflux;
+    TRootObject(RasterData.RootList.objects[i]).nroot := PosArr_middle[i].nroot;
+    TRootObject(RasterData.RootList.objects[i]).area := PosArr_middle[i].area;
     Inc(j);
   end;
   RasterData.NRoots := trunc(number_consid_roots.v);
@@ -1794,39 +1696,6 @@ begin
 end;
 
 
-procedure TBaseSubmodRootDiff.updateFromStructModell;
-(* ------------------------------------------------------------------------------
-  BESCHREIBUNG: Dynamische Verknüpfung von Struktur und Funktionsmodell,
-  Möglichkeit des Einlesens von SRPs, die im Strukturmodell generiert wurden
-  da es sich um sehr viele Instanzen handelt habe ich nicht den Weg über externe
-  Variablen gewählt.
-  ------------------------------------------------------------------------------ *)
-var
-  ATSRPLight: TSRPLight;
-  i, j, numberRoots: integer;
-begin
-  // alte Einträge in PosArr löschen
-  RasterData.PosList.Clear;
-  TSRPLightList := MyStructModel.getSRPList;
-  Num_Roots.v := TSRPLightList.Count;
-  // Füllen des Pos-Arrays mit XY-Koordinaten
-  j := 0;
-  for i := 0 to TSRPLightList.Count - 1 do
-  begin
-    ATSRPLight := TSRPLightList.Items[i];
-    TRootObject(RasterData.PosList.Objects[j]).x := ATSRPLight.x;
-    TRootObject(RasterData.PosList.Objects[j]).y := ATSRPLight.y;
-    TRootObject(RasterData.PosList.Objects[j]).root := j;
-    inc(j);
-  end;
-  // Umwandlung der XY-Koordinaten
-  if Num_Roots.v <> 0 then
-  begin
-    calcRootPosAsIndex;
-  end;
-end;
-
-
 procedure TBaseSubmodRootDiff.calcRootPosAsIndex;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG:
@@ -1841,17 +1710,17 @@ var
 begin
   for i := 0 to trunc(Num_Roots.v)-1 do
   begin
-    xTemp := TRootObject(RasterData.PosList.Objects[i]).x;
-    yTemp := TRootObject(RasterData.PosList.Objects[i]).y;
-    TRootObject(RasterData.PosList.Objects[i]).xi := min(trunc(dim_x.v) - 1,
-      max(1, round(TRootObject(RasterData.PosList.Objects[i]).x / (trunc(DimensionX.v)) *
+    xTemp := TRootObject(RasterData.RootList.Objects[i]).x;
+    yTemp := TRootObject(RasterData.RootList.Objects[i]).y;
+    TRootObject(RasterData.RootList.Objects[i]).xi := min(trunc(dim_x.v) - 1,
+      max(1, round(TRootObject(RasterData.RootList.Objects[i]).x / (trunc(DimensionX.v)) *
       trunc(dim_x.v))));
-    TRootObject(RasterData.PosList.Objects[i]).yi := min(trunc(dim_y.v) - 1,
-      max(1, round(TRootObject(RasterData.PosList.Objects[i]).y / (trunc(DimensionY.v)) *
+    TRootObject(RasterData.RootList.Objects[i]).yi := min(trunc(dim_y.v) - 1,
+      max(1, round(TRootObject(RasterData.RootList.Objects[i]).y / (trunc(DimensionY.v)) *
       trunc(dim_y.v))));
     // Rückspeichern
-    TRootObject(RasterData.PosList.Objects[i]).x := xTemp;
-    TRootObject(RasterData.PosList.Objects[i]).y := yTemp;
+    TRootObject(RasterData.RootList.Objects[i]).x := xTemp;
+    TRootObject(RasterData.RootList.Objects[i]).y := yTemp;
   end;
 end;
 

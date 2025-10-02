@@ -6,40 +6,37 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, math,  VCLTee.TeeProcs, VCLTee.TeEngine,
-  VCLTee.Chart, VCLTee.Series,   AdvGrid,
-  UMod, UState, Diffko, SubmodRootStructureNew, U2DSoilBaseClasses, MathImge;
-
+  VCLTee.Chart, VCLTee.Series,   AdvGrid, U2DSoilBaseClassNitrate,
+  UMod, UState, Diffko, SubmodRootStructureNew, URootObject, URootUptakeFunctions,
+  U2DSoilBaseClasses, MathImge;
 
 type
   /// <summary>Type declarations</summary>
   /// <summary>Records and sets</summary>
 
 
-
-
   /// <summary> Declaration of class TSubmodRootDiff. Class based on base class for derived diffusion models
   /// implements further details for nitrate transport
   /// </summary>
-  TSubmodRoot2DDiffNitrate = class(TBaseSubmodRootDiff)
+  TSubmodRoot2DDiffNitrate = class(TBaseSubmodRootDiffNitrate)
   private
     /// <summary>
     ///   diffusive nitrate uptake rate
     /// </summary>
     Diffuptake: double;
-    fMyMathImage: TMathImage;
-    ColorSurface: TColorSurface;
 
+    /// <summary>
+    ///   Two dimensional solution of nitrate transport
+    /// </summary>
     procedure zweid_solut(dt_globmod: real);
     // Helper methods
     procedure InitConc;
     procedure createSteadyState(DiffSteadyState: double);
     function avg_conz: double;
-    function influx_fVar(Imax, Km, ClAv, x, Db: double): double;
 
     function calcAmountUptakeRoots: double;
     function calcActArdt: double;
     function convertConcToAmount(i: integer): double;
-    procedure writeNitrateUptakeSinkToFile;
 
   protected
 
@@ -51,65 +48,14 @@ type
 
     C_xy: array of array of double;
 
-
-
     /// <summary>Protected declarations, also accessible by derived classes</summary>
     ///
-    /// <summary>uptake rate [Kg N/ha*d]</summary>
-    Ar: TPar;
 
-    /// <summary>Diffusion coefficient of nitrate in free H2O [cm^2/s]</summary>
-    Dl: TPar;
-
-    /// <remarks>Mineralization model not yet available but should be implemented for both models</remarks>
-    /// <summary>Mineralization rate [kg N/ha*d]</summary>
-    minera: TPar;
-    /// <summary>Minimum soil solution concentration [Mol/l], also needed for the numerical solution in the 1D model; note: originally in micromol/l</summary>
-    Clmin: TPar;
-
-    /// <summary>Michaelis-Menten constant [mol/cm3]</summary>
-    Km: TPar;
-
-
-    /// <summary>
-    /// anfängliche interne Zeitschrittweite [s]
-    /// </summary>
-    ini_dt: TPar; {  }
 
     /// <remarks>Margins are necessary so that edge effects can be excluded when the root exit points are hexagonally distributed</remarks>
 
-    /// <summary>Member HUME base class TState (state variables)</summary>
-    /// <summary>N amount [kg N/ha], also basis for calculating concentrations in the calculation elements; see Kage dissertation p.79 where concentrations of 10.0 micromol/l were assumed</summary>
-    N_AmountSoil: TState;
-    /// <summary>Cumulative amount of N taken up by the roots [kg N/ha] for the specified depth</summary>
-    Sum_N_AmountRoots: TState;
-    /// <summary>Member HUME base class TVar (variables)</summary>
 
-    /// <summary>Mineralization rate [Mol/cm^3*s]</summary>
-    Min_S: TVar;
-    /// <summary>Initial concentration [mol/cm^3], calculated from the initial N amount; the 1D model can also calculate concentrations</summary>
-    c_start: TVar;
-    /// <summary>Average concentration in the soil solution [Mol/cm^3]</summary>
-    cl_av: TVar;
-    /// <summary>Effective diffusion coefficient [cm^2/s]</summary>
-    De: TVar;
-
-   /// <summary>maximum influx [mol/cm*s]</summary>
-   Imax: TVar;
-
-    ActArFromConc : TVar;
-    ActAr : TVar;
-
-    /// <summary>
-    /// average Concentration [mol/cm3]
-    /// </summary>
-    c_av: TVar;
-
-
-
-
-    /// <summary>Type of uptake calculation</summary>
-    NitrateUptakeFunction: TOption;
+   ActArFromConc : TVar;
 
     OutputSink: Toption; { specify whether nutrient uptake of individual sinks
       should be written to a file }
@@ -136,8 +82,12 @@ type
     /// <summary>switch for growth in pots</summary>
     ContGrowth : TOption;
 
-
   public
+    /// <summary>
+    ///   maximum nitrate concentration in grid [mol/cm3]
+    /// </summary>
+    max_c : real;
+
     /// <summary>Public declarations</summary>
     /// <summary>Flag for one-time write access</summary>
     procedure createAll; override;
@@ -150,6 +100,11 @@ type
     // Helper method
     /// <summary>current concentrations can be output via a form</summary>
     procedure showActConc;
+    function influx_fVar(Imax, Km, ClAv, x, Db: double): double;
+
+
+    procedure writeNitrateUptakeSinkToFile;
+
 
   published
     /// <summary>Published declarations</summary>
@@ -157,23 +112,10 @@ type
 
   end; { Ende Deklaration TSubmodRootDiff }
 
-//var
-  /// <summary>
-  /// Stores the root positions read from a file. A global variable is necessary,
-  /// because when PosArr_eingelesen is a member of an object, an unexplained crash
-  /// occurs.
-  /// </summary>
-
-
-  //  PosArr_FromFile: array [1 .. max_num_roots] of TRootPosition;
-
 procedure Register;
 
 
-
 implementation
-
-
 
 { -------------------------------------------------------------------- }
 { -------------------------   MODUL TRDIAG  -------------------------- }
@@ -298,107 +240,71 @@ end;
 procedure TSubmodRoot2DDiffNitrate.createAll;
 begin
   inherited createAll;
-  ParCreate('Ar', '[kg N/ha*d]', 0, Ar);
-
-  ParCreate('Minera', '[kg N/ha*d]', 0, minera);
-  ParCreate('Dl', '[cm^2/s]', 1.92E-5, Dl);
-  ParCreate('Clmin', '[mol/l]', 0, Clmin);
-  ParCreate('Km', '[mikromol/l]', 0, Km, '');
-
-  ParCreate('ini_dt', '[s]', 3600, ini_dt);
-  ParCreate('dim_x', '[n]', 500, dim_x);
-  ParCreate('dim_y', '[n]', 500, dim_y);
-
-  // Create and initialize TState
-  StateCreate('N_AmountSoil', '[kg N/ha]', 0, false, N_AmountSoil);
-  StateCreate('Sum_N_AmountRoots', '[kg N/ha]', 0, false, Sum_N_AmountRoots);
   // Create and initialize TVar
   { Caveat: variables are always initialized to 0. If a start value other than 0 is
     needed, calculation and assignment must occur in init. It would be better not to
     declare such variables as TVar. }
 
-  VarCreate('Min_s', '[Mol/cm^3*s]', 0, false, Min_S);
-  VarCreate('c_start', '[Mol/cm^3]', 0, false, c_start);
-  VarCreate('cl_av', '[Mol/cm^3]', 0, false, cl_av);
-  VarCreate('De ', '[cm^2/s]', 0, false, De);
-  VarCreate('Imax', '[mol/cm/s]', 0, false, Imax);
-
-  VarCreate('ActArFromConc', '[mol/cm/s]', 0, false, ActArFromConc);
-  VarCreate('ActAr', '[mol/cm/s]', 0, false, ActAr);
-  VarCreate('C_av', '[mol/cm3]', 0, false, C_av);
 
 
-  // Create and initialize TOption
-  { Specify the source of the root data }
-  { Define uptake function }
-  OptCreate('NitrateUptake_function', 'ZeroSink', NitrateUptakeFunction);
-  NitrateUptakeFunction.OptionList.add('ZeroSink');
-  NitrateUptakeFunction.OptionList.add('ConstInflux');
-  NitrateUptakeFunction.OptionList.add('MM');
-
-
-  OptCreate('ContGrowth', 'no', ContGrowth);
+  OptCreate('ContGrowth', 'no', ContGrowth, 'Switch for continuous growth of the root system');
   ContGrowth.OptionList.add('yes');
   ContGrowth.OptionList.add('no');
 
-  OptCreate('ShowConc', 'True', ShowConc);
+  OptCreate('ShowConc', 'True', ShowConc, 'Switch for showing concentration');
   ShowConc.OptionList.add('true');
   ShowConc.OptionList.add('false');
 
-  OptCreate('CalcModeSteadyState', 'withoutMargin', CalcModeSteadyState);
+  OptCreate('CalcModeSteadyState', 'withoutMargin', CalcModeSteadyState, 'Calculation mode for steady state');
   CalcModeSteadyState.OptionList.add('withMargin');
   CalcModeSteadyState.OptionList.add('withoutMargin');
 
-  OptCreate('SteadyState', 'no', SteadyState);
+  OptCreate('SteadyState', 'no', SteadyState, 'Switch for steady state');
   SteadyState.OptionList.add('yes');
   SteadyState.OptionList.add('no');
 
-  OptCreate('RootDistribution', 'Random', RootDistribution);
+  OptCreate('RootDistribution', 'Random', RootDistribution, 'Root distribution method');
   RootDistribution.OptionList.add('Random');
   RootDistribution.OptionList.add('Regular');
   RootDistribution.OptionList.add('FromSource');
 
-  OptCreate('DelMarginRoots', 'no', DelMarginRoots);
+  OptCreate('DelMarginRoots', 'no', DelMarginRoots, 'Delete margin roots');
   DelMarginRoots.OptionList.add('yes');
   DelMarginRoots.OptionList.add('no');
 
-  OptCreate('writeConcField', 'no', writeConcField);
+  OptCreate('writeConcField', 'no', writeConcField, 'Switch for writing concentration field');
   writeConcField.OptionList.add('no');
   writeConcField.OptionList.add('yes');
 
-  OptCreate('writeSinkCellFile', 'no', writeSinkCellFile);
+  OptCreate('writeSinkCellFile', 'no', writeSinkCellFile, 'Switch for writing sink cell file');
   writeSinkCellFile.OptionList.add('no');
   writeSinkCellFile.OptionList.add('yes');
 
-  OptCreate('OutputSink', 'no', OutputSink);
+  OptCreate('OutputSink', 'no', OutputSink, 'Switch for outputting sink');
   OutputSink.OptionList.add('no');
   OutputSink.OptionList.add('yes');
 
   OptCreate('ConcFieldDataFile',
-    'Q:\Kohl\DiffModell\IniFilesAusgaben\concField.csv', ConcFieldDataFile);
+    'Q:\Kohl\DiffModell\IniFilesAusgaben\concField.csv', ConcFieldDataFile, 'Concentration field data file name');
   ConcFieldDataFile.OptionList.add
     ('Q:\Kohl\DiffModell\IniFilesAusgaben\concField.csv');
 
   OptCreate('SinkCellFileFile',
-    'Q:\Kohl\DiffModell\IniFilesAusgaben\SinkFile.csv', SinkCellFileFile);
+    'Q:\Kohl\DiffModell\IniFilesAusgaben\SinkFile.csv', SinkCellFileFile, 'Sink cell file name');
   SinkCellFileFile.OptionList.add
     ('Q:\Kohl\DiffModell\IniFilesAusgaben\SinkFile.csv');
 
   OptCreate('RootSinkOutpDataFile',
-    'Q:\Kohl\DiffModell\IniFilesAusgaben\in.dat', RootSinkOutpDataFile);
+    'Q:\Kohl\DiffModell\IniFilesAusgaben\in.dat', RootSinkOutpDataFile, 'Root sink output data file name');
   RootSinkOutpDataFile.OptionList.add
     ('Q:\Kohl\DiffModell\IniFilesAusgaben\in.dat');
 
-  OptCreate('OutputXY', 'no', OutputXY);
+  OptCreate('OutputXY', 'no', OutputXY, 'Switch for outputting XY data');
   OutputXY.OptionList.add('no');
   OutputXY.OptionList.add('yes');
   { Paths for model comparison 1D vs 2D }
   { Paths to input and output files are identical for both submodels. Running both
     submodels simultaneously in one model run only makes sense for comparison. }
-
-
-
-
 
 end; // End TSubmodRootDiff.CreateAll
 
@@ -431,6 +337,10 @@ var
   { Note: since array_type also starts at 0 in the original, nothing needs to be
     changed here }
   Result, i: word;
+
+  /// <summary>
+  ///   effective diffusion coeffecient
+  /// </summary>
   Df: real;
   /// <summary>loop variables for grid elements</summary>
   x_ndx, y_ndx: integer;
@@ -561,7 +471,7 @@ var
         assignfile(SinkCellFile, SinkCellFileName);
         rewrite(SinkCellFile);
         // Header
-        write(SinkCellFile, 'SimZeit', ' ', 'dt_akt[s]', ' ', 'sumDtInt[s]',
+        write(SinkCellFile, 'SimZeit', ' ', 'dt_akt[d]', ' ', 'sumDtInt[d]',
           ' ', 'Influx', ' ', 'Konz_Zelle');
         writeln(SinkCellFile);
         closefile(SinkCellFile);
@@ -580,6 +490,7 @@ var
 var
   start_, ende_: integer;
 begin
+
   /// <summary>computation factor for half time step</summary>
   Df := int_dt.v / 2 * 1 / wm;
   { Setup of the system of equations with an IMPLICIT formulation for y and
@@ -653,18 +564,18 @@ begin
     write(SinkCellFile, GlobMod.Time.v:6:2, ' ', int_dt.v:6:2, ' ',
       GlobMod.Time.v * 86400 + SumOfInternalTimeSteps, ' ');
     for i := 1 to RasterData.NRoots do
-      if (TRootObject(RasterData.PosList.Objects[i]).xi > trunc(dim_x.v / 10)) and
-        (TRootObject(RasterData.PosList.Objects[i]).xi < self.dim_x.v - trunc(self.dim_x.v / 10)) and
-        (TRootObject(RasterData.PosList.Objects[i]).yi > trunc(self.dim_y.v / 10)) and
-        (TRootObject(RasterData.PosList.Objects[i]).yi < self.dim_y.v - trunc(self.dim_y.v / 10)) then
-        write(SinkCellFile, TRootObject(RasterData.PosList.Objects[i]).NInflux, ' ');
+      if (TRootObject(RasterData.RootList.Objects[i]).xi > trunc(dim_x.v / 10)) and
+        (TRootObject(RasterData.RootList.Objects[i]).xi < self.dim_x.v - trunc(self.dim_x.v / 10)) and
+        (TRootObject(RasterData.RootList.Objects[i]).yi > trunc(self.dim_y.v / 10)) and
+        (TRootObject(RasterData.RootList.Objects[i]).yi < self.dim_y.v - trunc(self.dim_y.v / 10)) then
+        write(SinkCellFile, TRootObject(RasterData.RootList.Objects[i]).NInflux, ' ');
     for i := 1 to RasterData.NRoots do
-      if (TRootObject(RasterData.PosList.Objects[i]).xi > trunc(dim_x.v / 10)) and
-        (TRootObject(RasterData.PosList.Objects[i]).xi < self.dim_x.v - trunc(self.dim_x.v / 10)) and
-        (TRootObject(RasterData.PosList.Objects[i]).yi > trunc(self.dim_y.v / 10)) and
-        (TRootObject(RasterData.PosList.Objects[i]).yi < self.dim_y.v - trunc(self.dim_y.v / 10)) then
-        write(SinkCellFile, C_xy[TRootObject(RasterData.PosList.Objects[i]).xi,
-          TRootObject(RasterData.PosList.Objects[i]).yi], ' ');
+      if (TRootObject(RasterData.RootList.Objects[i]).xi > trunc(dim_x.v / 10)) and
+        (TRootObject(RasterData.RootList.Objects[i]).xi < self.dim_x.v - trunc(self.dim_x.v / 10)) and
+        (TRootObject(RasterData.RootList.Objects[i]).yi > trunc(self.dim_y.v / 10)) and
+        (TRootObject(RasterData.RootList.Objects[i]).yi < self.dim_y.v - trunc(self.dim_y.v / 10)) then
+        write(SinkCellFile, C_xy[TRootObject(RasterData.RootList.Objects[i]).xi,
+          TRootObject(RasterData.RootList.Objects[i]).yi], ' ');
     writeln(SinkCellFile);
     closefile(SinkCellFile);
   end;
@@ -677,7 +588,7 @@ end;
 procedure TSubmodRoot2DDiffNitrate.Get_Sink(x_loc, y_loc: word; var s: real);
 (* ------------------------------------------------------------------------------
   DESCRIPTION: calculation of sink terms (uptake and mineralization)
-  [mol/s-1] in a computational element
+  [mol/d-1] in a computational element
   Problem: Do the units match?
   ------------------------------------------------------------------------------ *)
 var
@@ -694,7 +605,7 @@ begin
   for i := 0 to trunc(Num_Roots.v)-1 do
   begin
     // test whether a sink exists in the computational element, then calculate uptake
-    if ((TRootObject(RasterData.PosList.Objects[i]).xi = x_loc) and (TRootObject(RasterData.PosList.Objects[i]).yi = y_loc))
+    if ((TRootObject(RasterData.RootList.Objects[i]).xi = x_loc) and (TRootObject(RasterData.RootList.Objects[i]).yi = y_loc))
     then
     begin
       x := sqrt(dx.v * dy.v / pi);
@@ -703,7 +614,7 @@ begin
       { Inner boundary condition: constant influx; this scenario can be controlled
         via parameter Ar; another influencing factor is the calculated wl_ha }
       If NitrateUptakeFunction.Option = lowercase('ConstInflux') then
-        NUptake := Imax.v; // mol/cm*s
+        NUptake := Imax.v; // mol/cm*d
       // Innere Randbedingung: Zero sink
       If NitrateUptakeFunction.Option = lowercase('ZeroSink') then
 
@@ -759,17 +670,17 @@ begin
         // NUptake :=  Influx_f( Imax.v, Km.v, C_xy[x_loc, y_loc]);
         NUptake := influx_fVar(Imax.v, Km.v, C_xy[x_loc, y_loc], x, Db);
       // influx into the sink during the time step
-      TRootObject(RasterData.PosList.Objects[i]).NInflux := NUptake;
+      TRootObject(RasterData.RootList.Objects[i]).NInflux := NUptake;
       If NitrateUptakeFunction.Option <> lowercase('ZeroSink') then
         SumUptake := SumUptake + NUptake
       else
         SumUptake := NUptake;
       // calculate cumulative N uptake for the sinks
 /// <summary>Problem: there is still a conceptual error here</summary>
-      NAmountRootdt := TRootObject(RasterData.PosList.Objects[i]).NInflux * 14 / 1000 * int_dt.v;
-      // NAmountRootdt:=TRootPosition(RasterData.PosList.Objects[i]).NInflux*14/1000*86400/int_dt.V;
-      TRootObject(RasterData.PosList.Objects[i]).NAmountdt := NAmountRootdt;
-      TRootObject(RasterData.PosList.Objects[i]).NAmount := TRootObject(RasterData.PosList.Objects[i]).NAmount +
+      NAmountRootdt := TRootObject(RasterData.RootList.Objects[i]).NInflux * 14 / 1000 * int_dt.v;
+      // NAmountRootdt:=TRootObject(RasterData.PosList.Objects[i]).NInflux*14/1000*86400/int_dt.V;
+      TRootObject(RasterData.RootList.Objects[i]).NAmountdt := NAmountRootdt;
+      TRootObject(RasterData.RootList.Objects[i]).NAmount := TRootObject(RasterData.RootList.Objects[i]).NAmount +
         NAmountRootdt;
     end;
   end;
@@ -779,13 +690,13 @@ end;
 
 procedure TSubmodRoot2DDiffNitrate.get_minGrid(x_loc, y_loc: word; var s: real);
 (* ------------------------------------------------------------------------------
-  DESCRIPTION: calculation of mineralization [mol/s-1] in a computational element
+  DESCRIPTION: calculation of mineralization [mol/d-1] in a computational element
   Problem: Do the units match?
   ------------------------------------------------------------------------------ *)
 var
   pos: word;
 begin
-  /// <summary>sink term from mineralization [mol/s]</summary>
+  /// <summary>sink term from mineralization [mol/d]</summary>
   s := Min_S.v * vol_Element;
 end;
 
@@ -815,9 +726,9 @@ begin
   ConcFieldName := ConcFieldDataFile.Option;
   // Communication with the structural model and display of WAP in MathImNutrUptake
   // create new file with outputs for the sinks:
-  for i := 0 to RasterData.Poslist.Count-1 do
+  for i := 0 to RasterData.RootList.Count-1 do
   begin
-    TRootObject(RasterData.PosList.Objects[i]).NAmount := 0;
+    TRootObject(RasterData.RootList.Objects[i]).NAmount := 0;
   end;
   if FileWasCreated = false then
   begin
@@ -828,7 +739,7 @@ begin
   end;
   if self.iniMethod.Option = 'submodstruct' then
   begin
-    updateFromStructModell;
+//    updateFromStructModell;
     // as long as no roots exist, no fluxes are calculated
     if Num_Roots.v < 1 then
       exit;
@@ -960,7 +871,7 @@ begin
   FileWasCreated := false;
   hasWritten := false;
   // Listen leeren
-  self.RasterData.PosList.clear;
+  self.RasterData.RootList.clear;
   { Keine dynamische Verbindung zwischen 2D-Diffmodell und Strukturmodell in den
     Verteilungsvarianten regular oder random }
   if (iniMethod.Option = 'submodstruct') and
@@ -1013,7 +924,7 @@ begin
     mit Rändern. }
   volume.v := Area.v * Depth.v;
   { Volumen der betrachteten Bodenschicht[cm3] }
-  { Berechnung Mineralisationsrate in [Mol/cm^3*s] }
+  { Berechnung Mineralisationsrate in [Mol/cm^3*d] }
   Min_S.v := minera.v / 14 * 1000 / 86400 * 1 / (Depth.v * 1E8);
   // Initialisieren der Visuallisierung der Nährstoffaufnahme
 
@@ -1051,8 +962,8 @@ begin
   If wl_ha.v > 0.0 then
   begin
     { Berechnung scheint korrekt s. Manuskript Hängeregister Vgl 1D2D }
-    Imax.v := Ar.v / 14 * 1000 / 86400 / wl_ha.v;
-    { Berechnung Influxrate [mol/(cm/s)] }
+    Imax.v := potNUptakerate.v / 14 * 1000 / wl_ha.v;
+    { Berechnung Influxrate [mol/(cm/d)] }
     // Imax.V := Ar.v*1000/(14*86400*WL_ha.v);  //Debuggen
   end
   else
@@ -1153,7 +1064,7 @@ function TSubmodRoot2DDiffNitrate.influx_fVar(Imax, Km, ClAv, x, Db: double): do
   ------------------------------------------------------------------------------ *)
 var
   cla, // Konzentration an der Wurzeloberfläche
-  influx, // Nährstoffinfluxrate [mol cm^-1 s^-1]
+  influx, // Nährstoffinfluxrate [mol cm^-1 d^-1]
   numerator // Zähler in Gleichung 3.6.33, Diss. Kage
     : double;
 begin
@@ -1183,11 +1094,11 @@ begin
   for i := 1 to trunc(RasterData.NRoots) do
   begin
     // Punkt nicht in den vertikalen Rändern
-    if (TRootObject(RasterData.PosList.Objects[i]).x >= verticMargin.v) and
-      (TRootObject(RasterData.PosList.Objects[i]).x <= DimensionX.v - verticMargin.v)
+    if (TRootObject(RasterData.RootList.Objects[i]).x >= verticMargin.v) and
+      (TRootObject(RasterData.RootList.Objects[i]).x <= DimensionX.v - verticMargin.v)
     // Punkt nicht in den horizontalen Rändern
-      and (TRootObject(RasterData.PosList.Objects[i]).y >= horizMargin.v) and
-      (TRootObject(RasterData.PosList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
+      and (TRootObject(RasterData.RootList.Objects[i]).y >= horizMargin.v) and
+      (TRootObject(RasterData.RootList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
     begin
       NAmountRoot := NAmountRoot + convertConcToAmount(i);
     end;
@@ -1201,7 +1112,7 @@ end;
 
 function TSubmodRoot2DDiffNitrate.convertConcToAmount(i: integer): double;
 (* ------------------------------------------------------------------------------
-  BESCHREIBUNG: Rechnet die Aufnahme [mol/cm*s] in Menge [kg/d], für übergebene
+  BESCHREIBUNG: Rechnet die Aufnahme [mol/cm*d] in Menge [kg/d], für übergebene
   Wurzeln.
   ------------------------------------------------------------------------------ *)
 const
@@ -1210,8 +1121,8 @@ var
   ha: integer;
   NAmountRoot: double;
 begin
-  { NINflux in [mol/cm/s }
-  NAmountRoot := TRootObject(RasterData.PosList.Objects[i]).NInflux * kg_mol * Depth.v * int_dt.v;
+  { NINflux in [mol/cm/d }
+  NAmountRoot := TRootObject(RasterData.RootList.Objects[i]).NInflux * kg_mol * Depth.v * int_dt.v;
   Result := NAmountRoot;
 end;
 
@@ -1233,14 +1144,14 @@ begin
   for i := 1 to trunc(RasterData.NRoots) do
   begin
     // Punkt nicht in den vertikalen Rändern
-    if (TRootObject(RasterData.PosList.Objects[i]).x >= verticMargin.v) and
-      (TRootObject(RasterData.PosList.Objects[i]).x <= DimensionX.v - verticMargin.v)
+    if (TRootObject(RasterData.RootList.Objects[i]).x >= verticMargin.v) and
+      (TRootObject(RasterData.RootList.Objects[i]).x <= DimensionX.v - verticMargin.v)
     // Punkt nicht in den horizontalen Rändern
-      and (TRootObject(RasterData.PosList.Objects[i]).y >= horizMargin.v) and
-      (TRootObject(RasterData.PosList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
+      and (TRootObject(RasterData.RootList.Objects[i]).y >= horizMargin.v) and
+      (TRootObject(RasterData.RootList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
     begin
-      AVInflux := AVInflux + TRootObject(RasterData.PosList.Objects[i]).NInflux;
-      AvNMenge := AvNMenge + TRootObject(RasterData.PosList.Objects[i]).NAmount;
+      AVInflux := AVInflux + TRootObject(RasterData.RootList.Objects[i]).NInflux;
+      AvNMenge := AvNMenge + TRootObject(RasterData.RootList.Objects[i]).NAmount;
       inc(rootCounter);
     end;
   end;
@@ -1281,20 +1192,20 @@ begin
   for i := 1 to trunc(RasterData.NRoots) do
   begin
     // Punkt nicht in den vertikalen Rändern
-    if (TRootObject(RasterData.PosList.Objects[i]).x >= verticMargin.v) and
-      (TRootObject(RasterData.PosList.Objects[i]).x <= DimensionX.v - verticMargin.v)
+    if (TRootObject(RasterData.RootList.Objects[i]).x >= verticMargin.v) and
+      (TRootObject(RasterData.RootList.Objects[i]).x <= DimensionX.v - verticMargin.v)
     // Punkt nicht in den horizontalen Rändern
-      and (TRootObject(RasterData.PosList.Objects[i]).y >= horizMargin.v) and
-      (TRootObject(RasterData.PosList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
+      and (TRootObject(RasterData.RootList.Objects[i]).y >= horizMargin.v) and
+      (TRootObject(RasterData.RootList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
     begin
-      PosArr_middle[j].x := TRootObject(RasterData.PosList.Objects[i]).x;
-      PosArr_middle[j].y := TRootObject(RasterData.PosList.Objects[i]).y;
-      PosArr_middle[j].xi := TRootObject(RasterData.PosList.Objects[i]).xi;
-      PosArr_middle[j].yi := TRootObject(RasterData.PosList.Objects[i]).yi;
-      PosArr_middle[j].NInflux := TRootObject(RasterData.PosList.Objects[i]).NInflux;
-      PosArr_middle[j].WInflux := TRootObject(RasterData.PosList.Objects[i]).WInflux;
-      PosArr_middle[j].root := TRootObject(RasterData.PosList.Objects[i]).root;
-      PosArr_middle[j].area := TRootObject(RasterData.PosList.Objects[i]).area;
+      PosArr_middle[j].x := TRootObject(RasterData.RootList.Objects[i]).x;
+      PosArr_middle[j].y := TRootObject(RasterData.RootList.Objects[i]).y;
+      PosArr_middle[j].xi := TRootObject(RasterData.RootList.Objects[i]).xi;
+      PosArr_middle[j].yi := TRootObject(RasterData.RootList.Objects[i]).yi;
+      PosArr_middle[j].NInflux := TRootObject(RasterData.RootList.Objects[i]).NInflux;
+      PosArr_middle[j].WInflux := TRootObject(RasterData.RootList.Objects[i]).WInflux;
+      PosArr_middle[j].nroot := TRootObject(RasterData.RootList.Objects[i]).nroot;
+      PosArr_middle[j].area := TRootObject(RasterData.RootList.Objects[i]).area;
       inc(j);
     end;
   end;
@@ -1308,7 +1219,7 @@ begin
   writeln(UptakeFile);
   for i := 0 to high(PosArr_middle) do
   begin
-    write(UptakeFile, PosArr_middle[i].root, ' ');
+    write(UptakeFile, PosArr_middle[i].nroot, ' ');
     write(UptakeFile, PosArr_middle[i].x, ' ');
     write(UptakeFile, PosArr_middle[i].y, ' ');
     write(UptakeFile, PosArr_middle[i].area, ' ');

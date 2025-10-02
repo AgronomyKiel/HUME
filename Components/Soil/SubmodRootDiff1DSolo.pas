@@ -9,7 +9,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, vcl.Dialogs,
-  UMod, UState, Math, USubModRoot2DDiffNitrate, U2DSoilBaseClasses;
+  UMod, UState, Math, USubModRoot2DDiffNitrate, U2DSoilBaseClasses,
+  URootObject, URootUptakeFunctions;
 
 const
 
@@ -87,7 +88,7 @@ type
     /// Array for lognormal distribution
     /// </summary>
     ZV_Array_lognorm,
-    
+
     /// <summary>
     /// Array for standard normal distribution
     /// </summary>
@@ -161,7 +162,7 @@ type
 
      /// <summary>
      /// Calculate the soil N amount for a given distribution
-     /// </summary> 
+     /// </summary>
     procedure calcN_AmountSoilEquil;
   protected
     { Protected declarations }
@@ -297,7 +298,7 @@ type
     /// <summary>
     /// Fractional nitrogen uptake [-] when using the analytical solution according to Tinker, Nye Eq.10.28
     /// </summary>
-    N_MengeAnteilAn, 
+    N_MengeAnteilAn,
     /// <summary>
     /// Fractional nitrogen uptake [-] when using the numerical solution
     /// </summary>
@@ -515,14 +516,10 @@ procedure TSubmodRootDiff1DSolo.Init(var GlobMod: TMod);
   ------------------------------------------------------------------------------ *)
 var
   i: integer;
-  ASRP_Light: TSRPLight; // A lightweight version of the SRP
-  AVol_H20, // Pointer to the variable storing the water volumes in the SRP
-  AInitNAmount, // Pointer to the variable storing the initial N amount in the SRP
-  AInitNConc // Pointer to the variable storing the initial N concentration in the SRP
-    : Pdouble;
+  ARoot : TRootObject;
+
 begin
   inherited;
-
   // Cache the initial N amount
   NAmountInit := N_AmountSoil.V;
   // Initialize dynamic arrays:
@@ -577,7 +574,7 @@ begin
       ZV_Array_Stdnorm[19] := z_475;
     end;
   end;
-  if self.calcMethodZV.Option = 'equalint' then
+  if calcMethodZV.Option = 'equalint' then
   begin
     // Implementation still missing.
   end;
@@ -591,7 +588,6 @@ begin
     // Also applies to statistics of the area distribution
     Area_mean.V := Par_AreaMean.V;
     VarKoeff_Area.V := Par_AreaVC.V;
-
     if RootDistribution.Option = 'regular' then
       VarKoeff_RLD.V := 0;
   end;
@@ -610,6 +606,7 @@ begin
     // Calculate the number of roots in the observation area from the RLD
     if self.My2DDiffModel <> nil then
     begin
+//      num_Roots.V := My2DDiffModel.num_Roots.V;
       RasterData := My2DDiffModel.getRasterData;
       //copyPosArrFrom2DDif;
     end
@@ -620,8 +617,9 @@ begin
         num_Roots.V := RLD_mean.V * dimensionX.V * dimensionY.V;
       for i := 1 to trunc(num_Roots.V) do
       begin
-        TRootObject(RasterData.PosList.Objects[i]).x := random(trunc(dimensionX.V) - 2) + 2;
-        TRootObject(RasterData.PosList.Objects[i]).y := random(trunc(dimensionY.V) - 2) + 2;
+        ARoot := TRootObject(RasterData.RootList.Objects[i]);
+        ARoot.x := random(trunc(dimensionX.V) - 2) + 2;
+        ARoot.y := random(trunc(dimensionY.V) - 2) + 2;
       end;
     end;
     { In the random case, area data must be calculated from the coordinates }
@@ -705,17 +703,13 @@ begin
     for i := 0 to RasterData.NRoots-1 do
     begin
       { Calculate the H2O volumes of the EWZ [cm3] }
-
-      TRootObject(RasterData.PosList.Objects[i]).WAmount := TRootObject(RasterData.PosList.Objects[i]).area * theta.V * SizeLayer.V;
+      ARoot := TRootObject(RasterData.RootList.Objects[i]);
+      ARoot.WAmount := ARoot.area * theta.V * SizeLayer.V;
 
       // Calculate the N amounts in the EWZ at the beginning (initial values)
-      TRootObject(RasterData.PosList.Objects[i]).NAmount := TRootObject(RasterData.PosList.Objects[i]).WAmount * c_start.V;
+      ARoot.NAmount := ARoot.WAmount * c_start.V;
       // Uniform concentration in the EWZ at the beginning (initial values)
-      AInitNConc^ := c_start.V;
-      VolH20_EWZ_List.Add(AVol_H20);
-      Cl_mean_List.Add(AInitNConc);
-      Init_NAmountEWZList.Add(AInitNAmount);
-      // NAmount_UPEWZArray[i].V:=0.0; // No uptake at the beginning yet
+      ARoot.Cl_mean := c_start.V;
     end;
   end; // End if calcAnalyt=false
   { If no 2D model is available, the 1D model handles output to the table object that
@@ -918,6 +912,7 @@ procedure TSubmodRootDiff1DSolo.copyPosArrFrom2DDif;
 var
   RasterData2D: TRasterData;
   i: integer;
+  ARoot : TRootObject;
 begin
   if My2DDiffModel <> nil then // to be safe
   begin
@@ -925,15 +920,17 @@ begin
     RasterData.NRoots := RasterData2D.NRoots;
     for i := 0 to RasterData.NRoots do
     begin
-      TRootObject(RasterData.PosList.Objects[i]).x := TRootObject(RasterData2D.PosList.Objects[i]).x;
-      TRootObject(RasterData.PosList.Objects[i]).y := TRootObject(RasterData2D.PosList.Objects[i]).y;
-      TRootObject(RasterData.PosList.Objects[i]).xi := TRootObject(RasterData2D.PosList.Objects[i]).xi;
-      TRootObject(RasterData.PosList.Objects[i]).yi := TRootObject(RasterData2D.PosList.Objects[i]).yi;
-      TRootObject(RasterData.PosList.Objects[i]).root := TRootObject(RasterData2D.PosList.Objects[i]).root;
-      TRootObject(RasterData.PosList.Objects[i]).NInflux := TRootObject(RasterData2D.PosList.Objects[i]).NInflux;
-      TRootObject(RasterData.PosList.Objects[i]).NAmount := TRootObject(RasterData2D.PosList.Objects[i]).NAmount;
-      TRootObject(RasterData.PosList.Objects[i]).WInflux := TRootObject(RasterData2D.PosList.Objects[i]).WInflux;
-      TRootObject(RasterData.PosList.Objects[i]).area := TRootObject(RasterData2D.PosList.Objects[i]).area;
+      ARoot := TRootObject(RasterData2D.RootList.Objects[i]);
+      RasterData.RootList.Objects[i] := ARoot;
+   {   TRootObject(RasterData.RootList.Objects[i]).x := TRootObject(RasterData2D.RootList.Objects[i]).x;
+      TRootObject(RasterData.RootList.Objects[i]).y := TRootObject(RasterData2D.RootList.Objects[i]).y;
+      TRootObject(RasterData.RootList.Objects[i]).xi := TRootObject(RasterData2D.RootList.Objects[i]).xi;
+      TRootObject(RasterData.RootList.Objects[i]).yi := TRootObject(RasterData2D.RootList.Objects[i]).yi;
+      TRootObject(RasterData.RootList.Objects[i]).nroot := TRootObject(RasterData2D.RootList.Objects[i]).nroot;
+      TRootObject(RasterData.RootList.Objects[i]).NInflux := TRootObject(RasterData2D.RootList.Objects[i]).NInflux;
+      TRootObject(RasterData.RootList.Objects[i]).NAmount := TRootObject(RasterData2D.RootList.Objects[i]).NAmount;
+      TRootObject(RasterData.RootList.Objects[i]).WInflux := TRootObject(RasterData2D.RootList.Objects[i]).WInflux;
+      TRootObject(RasterData.RootList.Objects[i]).area := TRootObject(RasterData2D.RootList.Objects[i]).area; }
     end;
   end;
   num_Roots.V := RasterData.NRoots;
@@ -960,7 +957,7 @@ begin
     for i := 0 to trunc(number_consid_roots.V - 1) do
     begin
       // Calculate the EWZ radius from the area:
-      Radius := sqrt(TRootObject(RasterData.PosList.Objects[0]).area / Pi);
+      Radius := sqrt(TRootObject(RasterData.RootList.Objects[0]).area / Pi);
       WLD_Array[i] := 1 / (Radius * Radius * Pi);
     end;
   end
@@ -970,7 +967,7 @@ begin
     begin
       { Calculate the root length density from the areas of the Voronoi polygons }
       // Calculate the EWZ radius from the area:
-      Radius := sqrt(TRootObject(RasterData.PosList[j]).area / Pi);
+      Radius := sqrt(TRootObject(RasterData.RootList[j]).area / Pi);
       WLD_Array[i] := 1 / (Radius * Radius * Pi);
       inc(j)
     end;
@@ -1199,13 +1196,13 @@ var
   Db, // Product of buffering and effective diffusion coefficient
   dist: real; // Radius of the EWZ
   AClmean: double; // due to dereferencing the pointer
+  ARoot: TRootObject;
 
 begin
   { Issue: Is the calculation correct? }
   { Kage dissertation: Db is the product of buffering and effective diffusion
     coefficient and thus Db = De * theta, because for non-sorbed ions b = theta. }
-  Db := De.V * theta.V * 86400;
-  j := 1; // PosArr starts at 1
+  j := 0; // PosArr starts at 1
   // Calculate the current concentrations for the respective EWZ
   for i := 0 to trunc(RasterData.NRoots) - 1 do
   begin
@@ -1219,13 +1216,15 @@ begin
   // Rate calculation for all roots
   for i := 0 to RasterData.NRoots - 1 do
   begin
-    dist := sqrt(TRootObject(RasterData.PosList.Objects[j]).area / Pi);
+    ARoot := TRootObject(RasterData.RootList.Objects[j]);
+    ARoot.HalfDistance := sqrt(ARoot.area / Pi);
     // Calculate the EWZ radius
-    AClmean := Pdouble(Cl_mean_List.items[i])^;
-    Nitrat_Flux_EWZ := ((AClmean - Clmin.V) * 2 * Pi * Db) /
-      (ln(dist / (1.65 * self.RootRadius.V))); // Kage Diss, S.57, Gl.3.6.30
+    ARoot.Cl_mean := ARoot.NAmount/ARoot.WAmount;
+    ARoot.WInflux := 0;
+
+    ARoot.NInflux := max(Imax.v, ARoot.MaxNitrateInflux);
     // NAmount_UPEWZArray[i].C:=Nitrat_Flux_EWZ;
-    Sum_Nitrate_flux := Sum_Nitrate_flux + Nitrat_Flux_EWZ;
+    ARoot.SumNInflux := ARoot.SumNInflux + ARoot.NInflux*self.int_dt.v;
     inc(j);
   end;
   Result := Sum_Nitrate_flux;
@@ -1255,7 +1254,7 @@ begin
   ClminTransf.V := Clmin.V * 14 / 1E-9;
   // Convert to [kg/ha]
   ClminTransf_ha.V := ClminTransf.V / 1E-7;
-end; 
+end;
 
 procedure TSubmodRootDiff1DSolo.calc_Amount_H20;
 (* ------------------------------------------------------------------------------
