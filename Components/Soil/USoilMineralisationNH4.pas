@@ -886,8 +886,8 @@ begin
         f_Clay := 1 - 2 * min(0.25, Clay);
         f_Clay_Hum := max(min(1,1 - 2.727 *(Clay+10*HumusContent.v-0.125)),0.25);
         //result := f_W * f_T * f_Clay;
-        result := f_W * f_T * f_Clay_Hum;
-//        result := f_W * f_T * f_Clay;
+        //result := f_W * f_T * f_Clay_Hum;
+        result := f_W * f_T * f_Clay;
       end;
     nitp:
       begin
@@ -1149,7 +1149,7 @@ begin
 
     { calculation of factors for abiotic influences }
     f_abiot_min[layer].v := Calc_f_abiot(minp, layer) * Layerfactor[layer].v;
-	//hier evtl. noch f_abiot ohne W-Einfluss // //?dn											  
+	//hier evtl. noch f_abiot ohne W-Einfluss // //?dn
     f_abiot_nit[layer].v := Calc_f_abiot(nitp, layer);
     f_abiot_den[layer].v := Calc_f_abiot(denp, layer);
 
@@ -1332,7 +1332,7 @@ begin
 
   NSumme.v := 0.0;
   CSumme.v := 0.0;
-  
+
   for Pool := low(Pools) to high(Pools) do
   begin
     NPool[Pool].v := CPool[Pool].v / CN[Pool].v;
