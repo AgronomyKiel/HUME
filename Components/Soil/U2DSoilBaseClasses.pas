@@ -17,7 +17,16 @@ uses
 //  max_num_roots = 40000;
 
 type
+ 
+ /// <summary>re defines a floating point type for MathImage</summary>
   MathFloat = double;
+  // Type declarations
+  Pdouble = ^double; // Pointer type to double, for use in lists
+/// <summary>re defines a floating point type</summary>
+  real = double;
+  // Arrays
+  r2 = array [0 .. 1] of double; // Vektor im Punktraum
+
 
 const
   /// <summary>largest index, required for the vectors during the flux calculation</summary>
@@ -31,9 +40,6 @@ colorarray: array [0 .. 11] of TColor = ($00CB9F74, $00D8AD49, $00E6C986,
 
 type
 
-
-/// <summary>re defines a floating point type</summary>
-  real = double;
 
   /// <summary>Problem: the dynamic implementation was removed again due to difficulties with array boundaries.</summary>
   array_type = array [0 .. dim_max + 1] of real;
@@ -324,6 +330,12 @@ type
 
     /// <summary>Specify whether XY data should be written to a file</summary>
     OutputXY: TOption;
+
+    /// <summary>
+    ///   Option to remove root position which are too near to the border
+    ///  of the calculation field in the 2D case
+    /// </summary>
+    WithMargins: TOption;
 
     /// <summary>Path and name of the output file for XY data</summary>
     RootXYOutpDataFile: TOption;
@@ -676,6 +688,9 @@ begin
   // Verteilung wie in Quelle (Datei, Strukturmodell)
   RootDistribution.OptionList.Add('FromSource');
 
+  OptCreate('WithMargins', 'withoutMargin', WithMargins, 'Option for removing root too near the border of the 2-Dcalculation field');
+  WithMargins.OptionList.Add('withMargin');
+  WithMargins.OptionList.Add('withoutMargin');
 
   // Create and initialize TOption
   { Specify the source of the root data }
@@ -771,6 +786,7 @@ var
   // Number of grid cells in X and Y direction
   numberGridCellsX, numberGridCellsY: integer;
   ARoot: TRootObject;
+  DimXMiddle, DimYMiddle: real;
 
 begin
   inherited;
@@ -788,6 +804,11 @@ begin
   numberGridCellsX := trunc(dimensionX.v / gridWidth.v);
   numberGridCellsY := trunc(dimensionY.v / gridHeight.v);
 
+
+
+
+
+
   // set the length of the CountArr array according to the number of grid cells
   // in X and Y direction
   // in a first step only the first dimension is set
@@ -799,23 +820,31 @@ begin
   end;
 
   // Initialize TConst where appropriate at this stage
-  area.v := dimensionX.v * dimensionY.v;
+  area.v := dimensionX.v * dimensionY.v;     // [cm2]
   { Area of the layer under investigation }
-  Volume.v := area.v * Depth.v;
-  theta.v := IniTheta.v;
-  { Implementation of a check for previous initialization. This allows easy extension
-    for initializations requiring file access or object instantiation. This should be
-    done in the _init method. Initializations should only be performed when roots
-    have already been read. The original TSubmodel method cannot be used because it
-    is called multiple times. }
-  WAmount.v := theta.v*Volume.v;
+//  Volume.v := area.v * Depth.v;    // [cm3]
+  theta.v := IniTheta.v;  // [cm3/cm3]
 
-  /// there are three options for defining the location and number of roots
+  // The amount of water is multiplied by depth and not by area
+  // because implicitely this meant for an area average
+  WAmount.v := theta.v*Depth.v;   //  [cm]
+
+  /// there are four options for defining the location and number of roots
   ///  rasterdatafile: root counts within a pre defined grid are input
   ///  xyfile: a list of defined roots with their exact position input
   ///  inppar: only the average root length density is defined, the root position
   ///  are then calculated either in a regular hexagonal grid or as
   ///  pure random positions
+  ///  submodstruct: the positions are given by a root structural model
+  ///
+    { Keine dynamische Verbindung zwischen 2D-Diffmodell und Strukturmodell in den
+    Verteilungsvarianten regular oder random }
+  if (iniMethod.Option = 'submodstruct') and
+    (RootDistribution.Option <> 'fromsource') then
+  begin
+    RootDistribution.Option := 'fromsource';
+    // showMessage('Strukturmodell setzt Einstellung lognormal voraus.Wurde umgestellt.');
+  end;
 
   if IniMethod.Option = 'rasterdatafile' then
   begin
@@ -879,8 +908,28 @@ begin
     CalcRootPosAsIndex;
   end;
 
+
+  // if Margin roots should not be considered only the middle area is used
+  // for calculation of RLD etc.
+  if WithMargins.Option = 'true' then begin
+    DimXMiddle := DimensionX.v - 2 * verticMargin.v;
+    DimYMiddle := DimensionY.v - 2 * horizMargin.v;
+  // Berechnung der Anzahl der mittigen Rechenelemente
+    dim_xMiddle.v := DimXMiddle / dx.v;
+    dim_yMiddle.v := DimYMiddle / dy.v;
+    AreaMiddle.v := DimXMiddle * DimYMiddle;
+//   AreaMiddle.v := (dimensionX.v-self.horizMargin.v) * (dimensionY.v-self.verticMargin.v)
+  end
+  else
+    AreaMiddle.v := Area.V;
+
   // roots inside the margins are removed
-  calcNumberConsRoots;
+  if (IniMethod.Option <> 'inppar') then begin
+      calcNumberConsRoots;
+    end else begin
+      number_consid_roots.v := self.num_roots.v;
+
+    end;
 
   // several algorithms should only consider roots not located in the margins
   if RootDistribution.Option = 'Regular' then
@@ -909,6 +958,7 @@ begin
     Beobachtungsfläche hochgerechnet }
 
   // root length per quare meter [cm/m²]
+
   wl.v := number_consid_roots.v / AreaMiddle.v * 1E4 * Depth.v;
 
   // root length per hectar [cm/ha]

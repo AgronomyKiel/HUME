@@ -13,10 +13,6 @@ type
   /// </summary>
   TUptake_Function = (MM, fixed_influx, ZeroSink);
 
-
-
-
-
   /// <summary>
   ///   Defines an object for storing the information of
   ///  a single root object
@@ -59,7 +55,7 @@ type
     nroot: integer;
 
     /// <summary>
-    ///  the area of the single root cylinder [cm²]
+    ///  the area of the single root cylinder [cmï¿½]
     /// </summary>
     area : real;
 
@@ -112,11 +108,6 @@ type
     ///   Sum of the water influx rates [cm3/cm]
     /// </summary>
     SumWInflux: real;
-
-    /// <summary>
-    /// the sum of nitrate nitrogen [mol]
-    /// </summary>
-   // SumNAmount: real;
 
     /// <summary>
     /// the nitrate uptake rate [mol/s]

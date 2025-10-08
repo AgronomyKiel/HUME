@@ -6,13 +6,9 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs,
-  UMod, U2DSoilBaseClasses, USubmodRoot2dDiffNitrate, URootObject, UState, AdvGrid;
+  UMod, U2DSoilBaseClasses, U2DSoilBaseClassNitrate, URootObject, UState, AdvGrid;
 
 type
-  // Zeigertypen
-  Pdouble = ^double;
-  // Arrays
-  r2 = array [0 .. 1] of double; // Vektor im Punktraum
 
   /// <summary>
   ///  class for random points
@@ -29,7 +25,7 @@ type
     constructor create;
   end;
 
-  TSubmodRootDiff1DRapp = class(TSubmodRoot2DDiffNitrate)
+  TSubmodRootDiff1DRapp = class(TBaseSubmodRootDiffNitrate)
   private
 
     widthMiddle, heigthMiddle, RLD_m, { Wurzellängendichte [m/m^3] }

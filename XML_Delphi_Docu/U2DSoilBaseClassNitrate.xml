@@ -42,6 +42,7 @@
       </methodref>
       <propertyref name="MyChart" visibility="published">
       </propertyref>
+      <propertyref name="MyMathImage" visibility="published" />
       <propertyref name="MyAdvStringGrid" visibility="published">
       </propertyref>
       <propertyref name="MyStructModel" visibility="published">
@@ -1273,100 +1274,102 @@
            </summary>
         </devnotes>
       </field>
-      <field name="N_AmountSoil" type="TState" visibility="protected" size="4" offset="1676" file="U2DSoilBaseClassNitrate.pas" line="48">
+      <field name="IniSoilNitrate" type="TPar" visibility="protected" size="4" offset="1676" file="U2DSoilBaseClassNitrate.pas" line="47">
+        <devnotes>
+           <summary>
+             initial soil nitrate [kg N/ha]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="N_AmountSoil" type="TState" visibility="protected" size="4" offset="1680" file="U2DSoilBaseClassNitrate.pas" line="53">
         <devnotes>
            <remarks>Margins are necessary so that edge effects can be excluded when the root exit points are hexagonally distributed</remarks>
            <summary>Member HUME base class TState (state variables)</summary>
            <summary>N amount [kg N/ha], also basis for calculating concentrations in the calculation elements; see Kage dissertation p.79 where concentrations of 10.0 micromol/l were assumed</summary>
         </devnotes>
       </field>
-      <field name="Sum_N_AmountRoots" type="TState" visibility="protected" size="4" offset="1680" file="U2DSoilBaseClassNitrate.pas" line="50">
+      <field name="Sum_N_AmountRoots" type="TState" visibility="protected" size="4" offset="1684" file="U2DSoilBaseClassNitrate.pas" line="55">
         <devnotes>
            <summary>Cumulative amount of N taken up by the roots [kg N/ha] for the specified depth</summary>
         </devnotes>
       </field>
-      <field name="Min_S" type="TVar" visibility="protected" size="4" offset="1684" file="U2DSoilBaseClassNitrate.pas" line="54">
+      <field name="Min_S" type="TVar" visibility="protected" size="4" offset="1688" file="U2DSoilBaseClassNitrate.pas" line="59">
         <devnotes>
            <summary>Member HUME base class TVar (variables)</summary>
            <summary>Mineralization rate [Mol/cm^3*d]</summary>
         </devnotes>
       </field>
-      <field name="c_start" type="TVar" visibility="protected" size="4" offset="1688" file="U2DSoilBaseClassNitrate.pas" line="56">
+      <field name="c_start" type="TVar" visibility="protected" size="4" offset="1692" file="U2DSoilBaseClassNitrate.pas" line="61">
         <devnotes>
            <summary>Initial concentration [mol/cm^3], calculated from the initial N amount; the 1D model can also calculate concentrations</summary>
         </devnotes>
       </field>
-      <field name="cl_av" type="TVar" visibility="protected" size="4" offset="1692" file="U2DSoilBaseClassNitrate.pas" line="58">
+      <field name="cl_av" type="TVar" visibility="protected" size="4" offset="1696" file="U2DSoilBaseClassNitrate.pas" line="63">
         <devnotes>
            <summary>Average concentration in the soil solution [Mol/cm^3]</summary>
         </devnotes>
       </field>
-      <field name="Imax" type="TVar" visibility="protected" size="4" offset="1696" file="U2DSoilBaseClassNitrate.pas" line="61">
+      <field name="Imax" type="TVar" visibility="protected" size="4" offset="1700" file="U2DSoilBaseClassNitrate.pas" line="66">
         <devnotes>
            <summary>maximum influx [mol/cm*d]</summary>
         </devnotes>
       </field>
-      <field name="ActArFromConc" type="TVar" visibility="protected" size="4" offset="1700" file="U2DSoilBaseClassNitrate.pas" line="63" />
-      <field name="ActAr" type="TVar" visibility="protected" size="4" offset="1704" file="U2DSoilBaseClassNitrate.pas" line="65" />
-      <field name="c_av" type="TVar" visibility="protected" size="4" offset="1708" file="U2DSoilBaseClassNitrate.pas" line="70">
+      <field name="ActArFromConc" type="TVar" visibility="protected" size="4" offset="1704" file="U2DSoilBaseClassNitrate.pas" line="68" />
+      <field name="ActAr" type="TVar" visibility="protected" size="4" offset="1708" file="U2DSoilBaseClassNitrate.pas" line="70" />
+      <field name="c_av" type="TVar" visibility="protected" size="4" offset="1712" file="U2DSoilBaseClassNitrate.pas" line="75">
         <devnotes>
            <summary>
            average Concentration [mol/cm3]
            </summary>
         </devnotes>
       </field>
-      <field name="PotentialNInfluxrate" type="TVar" visibility="protected" size="4" offset="1712" file="U2DSoilBaseClassNitrate.pas" line="76">
+      <field name="PotentialNInfluxrate" type="TVar" visibility="protected" size="4" offset="1716" file="U2DSoilBaseClassNitrate.pas" line="81">
         <devnotes>
            <summary>
              Potential N Influx rate [mol/cm/d]
            </summary>
         </devnotes>
       </field>
-      <field name="NitrateUptakeFunction" type="TOption" visibility="protected" size="4" offset="1716" file="U2DSoilBaseClassNitrate.pas" line="80">
+      <field name="NitrateUptakeFunction" type="TOption" visibility="protected" size="4" offset="1720" file="U2DSoilBaseClassNitrate.pas" line="85">
         <devnotes>
            <summary>Type of uptake calculation</summary>
         </devnotes>
       </field>
-      <field name="OutputSink" type="TOption" visibility="protected" size="4" offset="1720" file="U2DSoilBaseClassNitrate.pas" line="83">
+      <field name="OutputSink" type="TOption" visibility="protected" size="4" offset="1724" file="U2DSoilBaseClassNitrate.pas" line="88">
         <devnotes>
            <summary>specify whether nutrient uptake of individual sinks should be written to a file</summary>
         </devnotes>
       </field>
-      <field name="CalcModeSteadyState" type="TOption" visibility="protected" size="4" offset="1724" file="U2DSoilBaseClassNitrate.pas" line="86">
-        <devnotes>
-           <summary>specify the mode in which steady state should be calculated (with or without margins)</summary>
-        </devnotes>
-      </field>
-      <field name="ShowConc" type="TOption" visibility="protected" size="4" offset="1728" file="U2DSoilBaseClassNitrate.pas" line="89">
+      <field name="ShowConc" type="TOption" visibility="protected" size="4" offset="1728" file="U2DSoilBaseClassNitrate.pas" line="91">
         <devnotes>
            <summary>specify whether concentrations should be displayed or not</summary>
         </devnotes>
       </field>
-      <field name="SteadyState" type="TOption" visibility="protected" size="4" offset="1732" file="U2DSoilBaseClassNitrate.pas" line="92">
+      <field name="SteadyState" type="TOption" visibility="protected" size="4" offset="1732" file="U2DSoilBaseClassNitrate.pas" line="94">
         <devnotes>
            <summary>flag whether a steady state should be generated in the 2D model or not</summary>
         </devnotes>
       </field>
-      <field name="RootSinkOutpDataFile" type="TOption" visibility="protected" size="4" offset="1736" file="U2DSoilBaseClassNitrate.pas" line="95">
+      <field name="RootSinkOutpDataFile" type="TOption" visibility="protected" size="4" offset="1736" file="U2DSoilBaseClassNitrate.pas" line="97">
         <devnotes>
            <summary>path and name of the output file for nutrient uptake of individual sinks</summary>
         </devnotes>
       </field>
-      <field name="writeConcField" type="TOption" visibility="protected" size="4" offset="1740" file="U2DSoilBaseClassNitrate.pas" line="98" />
-      <field name="writeSinkCellFile" type="TOption" visibility="protected" size="4" offset="1744" file="U2DSoilBaseClassNitrate.pas" line="99" />
-      <field name="ConcFieldDataFile" type="TOption" visibility="protected" size="4" offset="1748" file="U2DSoilBaseClassNitrate.pas" line="100" />
-      <field name="SinkCellFileFile" type="TOption" visibility="protected" size="4" offset="1752" file="U2DSoilBaseClassNitrate.pas" line="103" />
-      <field name="DelMarginRoots" type="TOption" visibility="protected" size="4" offset="1756" file="U2DSoilBaseClassNitrate.pas" line="106">
+      <field name="writeConcField" type="TOption" visibility="protected" size="4" offset="1740" file="U2DSoilBaseClassNitrate.pas" line="100" />
+      <field name="writeSinkCellFile" type="TOption" visibility="protected" size="4" offset="1744" file="U2DSoilBaseClassNitrate.pas" line="101" />
+      <field name="ConcFieldDataFile" type="TOption" visibility="protected" size="4" offset="1748" file="U2DSoilBaseClassNitrate.pas" line="102" />
+      <field name="SinkCellFileFile" type="TOption" visibility="protected" size="4" offset="1752" file="U2DSoilBaseClassNitrate.pas" line="105" />
+      <field name="DelMarginRoots" type="TOption" visibility="protected" size="4" offset="1756" file="U2DSoilBaseClassNitrate.pas" line="108">
         <devnotes>
            <summary>deletes boundary roots from PosArr</summary>
         </devnotes>
       </field>
-      <field name="ContGrowth" type="TOption" visibility="protected" size="4" offset="1760" file="U2DSoilBaseClassNitrate.pas" line="108">
+      <field name="ContGrowth" type="TOption" visibility="protected" size="4" offset="1760" file="U2DSoilBaseClassNitrate.pas" line="110">
         <devnotes>
            <summary>switch for growth in pots</summary>
         </devnotes>
       </field>
-      <function name="influx_fVar" visibility="protected" file="U2DSoilBaseClassNitrate.pas" line="111">
+      <function name="influx_fVar" visibility="protected" file="U2DSoilBaseClassNitrate.pas" line="113">
         <parameters>
           <parameter name="Imax" type="Double" />
           <parameter name="Km" type="Double" />
@@ -1376,27 +1379,34 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="ConvertConcToAmount" visibility="protected" file="U2DSoilBaseClassNitrate.pas" line="112">
+      <function name="ConvertConcToAmount" visibility="protected" file="U2DSoilBaseClassNitrate.pas" line="114">
         <parameters>
           <parameter name="i" type="Integer" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="calcActArdt" visibility="protected" file="U2DSoilBaseClassNitrate.pas" line="113">
+      <function name="calcActArdt" visibility="protected" file="U2DSoilBaseClassNitrate.pas" line="115">
         <parameters>
           <retval type="Double" />
         </parameters>
       </function>
-      <procedure name="writeNitrateUptakeSinkToFile" visibility="protected" file="U2DSoilBaseClassNitrate.pas" line="114">
+      <procedure name="writeNitrateUptakeSinkToFile" visibility="protected" file="U2DSoilBaseClassNitrate.pas" line="116">
       </procedure>
-      <field name="De" type="TVar" visibility="public" size="4" offset="1764" file="U2DSoilBaseClassNitrate.pas" line="120">
+      <field name="De" type="TVar" visibility="public" size="4" offset="1764" file="U2DSoilBaseClassNitrate.pas" line="122">
         <devnotes>
            <summary>
              effective Diffusion coefficient [cm2/d]
            </summary>
         </devnotes>
       </field>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="U2DSoilBaseClassNitrate.pas" line="122">
+      <field name="Dl" type="TVar" visibility="public" size="4" offset="1768" file="U2DSoilBaseClassNitrate.pas" line="127">
+        <devnotes>
+           <summary>
+             Diffusion coefficient of nitrate in water [cm2/d]
+           </summary>
+        </devnotes>
+      </field>
+      <procedure name="CreateAll" visibility="public" procflags="override" file="U2DSoilBaseClassNitrate.pas" line="129">
         <devnotes>
            <summary>Implementierung TSubmodRootDiff</summary>
            <summary>
@@ -1409,7 +1419,7 @@
            </summary>
         </devnotes>
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="U2DSoilBaseClassNitrate.pas" line="125">
+      <procedure name="Init" visibility="public" procflags="override" file="U2DSoilBaseClassNitrate.pas" line="132">
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>

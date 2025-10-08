@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="SubmodRootDiff1DRapp" platform="Win32">
-  <pointer name="Pdouble" type="Double" indircnt="1" file="SubmodRootDiff1DRapp.pas" line="13" />
-  <array name="r2" low="0" high="1" file="SubmodRootDiff1DRapp.pas" line="15">
-    <element type="Double" />
-  </array>
-  <class name="TRandomPoint" file="SubmodRootDiff1DRapp.pas" line="20">
+  <class name="TRandomPoint" file="SubmodRootDiff1DRapp.pas" line="16">
     <devnotes>
        <summary>
         class for random points
@@ -87,43 +83,26 @@
       </propertyref>
     </ancestor>
     <members>
-      <field name="RandomPointPos" type="TRootObject" visibility="public" size="4" offset="4" file="SubmodRootDiff1DRapp.pas" line="21" />
-      <field name="shortestDist" type="Double" visibility="public" size="8" offset="8" file="SubmodRootDiff1DRapp.pas" line="22" />
-      <field name="shortDist_m" type="Double" visibility="public" size="8" offset="16" file="SubmodRootDiff1DRapp.pas" line="23" />
-      <field name="quadShortDist_m" type="Double" visibility="public" size="8" offset="24" file="SubmodRootDiff1DRapp.pas" line="24" />
-      <field name="y" type="Double" visibility="public" size="8" offset="32" file="SubmodRootDiff1DRapp.pas" line="25" />
-      <constructor name="create" visibility="public" file="SubmodRootDiff1DRapp.pas" line="29">
+      <field name="RandomPointPos" type="TRootObject" visibility="public" size="4" offset="4" file="SubmodRootDiff1DRapp.pas" line="17" />
+      <field name="shortestDist" type="Double" visibility="public" size="8" offset="8" file="SubmodRootDiff1DRapp.pas" line="18" />
+      <field name="shortDist_m" type="Double" visibility="public" size="8" offset="16" file="SubmodRootDiff1DRapp.pas" line="19" />
+      <field name="quadShortDist_m" type="Double" visibility="public" size="8" offset="24" file="SubmodRootDiff1DRapp.pas" line="20" />
+      <field name="y" type="Double" visibility="public" size="8" offset="32" file="SubmodRootDiff1DRapp.pas" line="21" />
+      <constructor name="create" visibility="public" file="SubmodRootDiff1DRapp.pas" line="25">
         <parameters>
         </parameters>
       </constructor>
     </members>
   </class>
-  <class name="TSubmodRootDiff1DRapp" file="SubmodRootDiff1DRapp.pas" line="32">
-    <ancestor name="TSubmodRoot2DDiffNitrate" namespace="USubmodRoot2DDiffNitrate">
-      <methodref name="zweid_solut" visibility="private" />
-      <methodref name="InitConc" visibility="private">
-      </methodref>
-      <methodref name="createSteadyState" visibility="private" />
-      <methodref name="avg_conz" visibility="private" />
-      <methodref name="influx_fVar" visibility="private" />
-      <methodref name="calcAmountUptakeRoots" visibility="private" />
-      <methodref name="calcActArdt" visibility="private" />
-      <methodref name="convertConcToAmount" visibility="private" />
-      <methodref name="writeNitrateUptakeSinkToFile" visibility="private" />
+  <class name="TSubmodRootDiff1DRapp" file="SubmodRootDiff1DRapp.pas" line="28">
+    <ancestor name="TBaseSubmodRootDiffNitrate" namespace="U2DSoilBaseClassNitrate">
+      <methodref name="influx_fVar" visibility="protected" />
+      <methodref name="ConvertConcToAmount" visibility="protected" />
+      <methodref name="calcActArdt" visibility="protected" />
+      <methodref name="writeNitrateUptakeSinkToFile" visibility="protected" />
       <methodref name="CreateAll" visibility="public" procflags="override">
       </methodref>
-      <methodref name="CalcRates" visibility="public" procflags="override">
-      </methodref>
-      <methodref name="Integrate" visibility="public" procflags="override" />
       <methodref name="Init" visibility="public" procflags="override" />
-      <methodref name="Get_Sink" visibility="public">
-      </methodref>
-      <methodref name="get_minGrid" visibility="public">
-      </methodref>
-      <methodref name="showActConc" visibility="public">
-      </methodref>
-      <propertyref name="MyMathImage" visibility="published">
-      </propertyref>
       <ancestor name="TBaseSubmodRootDiff" namespace="U2DSoilBaseClasses">
         <methodref name="fillChartRootDistr" visibility="protected">
         </methodref>
@@ -138,8 +117,6 @@
         <methodref name="writeOutputToFile" visibility="protected" procflags="virtual">
         </methodref>
         <methodref name="removeMarginRoots" visibility="protected">
-        </methodref>
-        <methodref name="updateFromStructModell" visibility="protected" procflags="virtual">
         </methodref>
         <methodref name="CalcRootPosAsIndex" visibility="protected">
         </methodref>
@@ -161,6 +138,7 @@
         </methodref>
         <propertyref name="MyChart" visibility="published">
         </propertyref>
+        <propertyref name="MyMathImage" visibility="published" />
         <propertyref name="MyAdvStringGrid" visibility="published">
         </propertyref>
         <propertyref name="MyStructModel" visibility="published">
@@ -1364,84 +1342,84 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="widthMiddle" type="Double" visibility="private" size="8" offset="1784" file="SubmodRootDiff1DRapp.pas" line="35" />
-      <field name="heigthMiddle" type="Double" visibility="private" size="8" offset="1792" file="SubmodRootDiff1DRapp.pas" line="35" />
-      <field name="RLD_m" type="Double" visibility="private" size="8" offset="1800" file="SubmodRootDiff1DRapp.pas" line="35" />
-      <field name="RadWurzel_m" type="Double" visibility="private" size="8" offset="1808" file="SubmodRootDiff1DRapp.pas" line="36" />
-      <field name="De_m" type="Double" visibility="private" size="8" offset="1816" file="SubmodRootDiff1DRapp.pas" line="37" />
-      <field name="ArrayHasFilled" type="Boolean" visibility="private" size="1" offset="1824" file="SubmodRootDiff1DRapp.pas" line="41" />
-      <field name="x1_temp" type="Double" visibility="private" size="8" offset="1832" file="SubmodRootDiff1DRapp.pas" line="43" />
-      <field name="x2_temp" type="Double" visibility="private" size="8" offset="1840" file="SubmodRootDiff1DRapp.pas" line="44" />
-      <field name="RandomPointList" type="TList" visibility="private" size="4" offset="1848" file="SubmodRootDiff1DRapp.pas" line="45" />
-      <field name="DistFile" type="Text" visibility="private" size="730" offset="1852" file="SubmodRootDiff1DRapp.pas" line="46" />
-      <field name="absFrequencyArr" type=":TSubmodRootDiff1DRapp.:2" visibility="private" size="4" offset="2584" file="SubmodRootDiff1DRapp.pas" line="50" />
-      <field name="relFrequencyArr" type=":TSubmodRootDiff1DRapp.:2" visibility="private" size="4" offset="2588" file="SubmodRootDiff1DRapp.pas" line="50" />
-      <field name="quadAbsFrequencyArr" type=":TSubmodRootDiff1DRapp.:2" visibility="private" size="4" offset="2592" file="SubmodRootDiff1DRapp.pas" line="54" />
-      <field name="quadRelFrequencyArr" type=":TSubmodRootDiff1DRapp.:2" visibility="private" size="4" offset="2596" file="SubmodRootDiff1DRapp.pas" line="54" />
-      <field name="uptakeArr" type=":TSubmodRootDiff1DRapp.:3" visibility="private" size="4" offset="2600" file="SubmodRootDiff1DRapp.pas" line="56" />
-      <field name="weightArr" type=":TSubmodRootDiff1DRapp.:3" visibility="private" size="4" offset="2604" file="SubmodRootDiff1DRapp.pas" line="58" />
-      <field name="quadWeightArr" type=":TSubmodRootDiff1DRapp.:3" visibility="private" size="4" offset="2608" file="SubmodRootDiff1DRapp.pas" line="59" />
-      <field name="a_j" type=":TSubmodRootDiff1DRapp.:3" visibility="private" size="4" offset="2612" file="SubmodRootDiff1DRapp.pas" line="62" />
-      <field name="nullstelle" type="Double" visibility="private" size="8" offset="2616" file="SubmodRootDiff1DRapp.pas" line="65" />
-      <field name="initAmountNSoil" type="Double" visibility="private" size="8" offset="2624" file="SubmodRootDiff1DRapp.pas" line="65" />
-      <procedure name="calcN_AmountSoilEquil" visibility="private" file="SubmodRootDiff1DRapp.pas" line="66">
+      <field name="widthMiddle" type="Double" visibility="private" size="8" offset="1776" file="SubmodRootDiff1DRapp.pas" line="31" />
+      <field name="heigthMiddle" type="Double" visibility="private" size="8" offset="1784" file="SubmodRootDiff1DRapp.pas" line="31" />
+      <field name="RLD_m" type="Double" visibility="private" size="8" offset="1792" file="SubmodRootDiff1DRapp.pas" line="31" />
+      <field name="RadWurzel_m" type="Double" visibility="private" size="8" offset="1800" file="SubmodRootDiff1DRapp.pas" line="32" />
+      <field name="De_m" type="Double" visibility="private" size="8" offset="1808" file="SubmodRootDiff1DRapp.pas" line="33" />
+      <field name="ArrayHasFilled" type="Boolean" visibility="private" size="1" offset="1816" file="SubmodRootDiff1DRapp.pas" line="37" />
+      <field name="x1_temp" type="Double" visibility="private" size="8" offset="1824" file="SubmodRootDiff1DRapp.pas" line="39" />
+      <field name="x2_temp" type="Double" visibility="private" size="8" offset="1832" file="SubmodRootDiff1DRapp.pas" line="40" />
+      <field name="RandomPointList" type="TList" visibility="private" size="4" offset="1840" file="SubmodRootDiff1DRapp.pas" line="41" />
+      <field name="DistFile" type="Text" visibility="private" size="730" offset="1844" file="SubmodRootDiff1DRapp.pas" line="42" />
+      <field name="absFrequencyArr" type=":TSubmodRootDiff1DRapp.:2" visibility="private" size="4" offset="2576" file="SubmodRootDiff1DRapp.pas" line="46" />
+      <field name="relFrequencyArr" type=":TSubmodRootDiff1DRapp.:2" visibility="private" size="4" offset="2580" file="SubmodRootDiff1DRapp.pas" line="46" />
+      <field name="quadAbsFrequencyArr" type=":TSubmodRootDiff1DRapp.:2" visibility="private" size="4" offset="2584" file="SubmodRootDiff1DRapp.pas" line="50" />
+      <field name="quadRelFrequencyArr" type=":TSubmodRootDiff1DRapp.:2" visibility="private" size="4" offset="2588" file="SubmodRootDiff1DRapp.pas" line="50" />
+      <field name="uptakeArr" type=":TSubmodRootDiff1DRapp.:3" visibility="private" size="4" offset="2592" file="SubmodRootDiff1DRapp.pas" line="52" />
+      <field name="weightArr" type=":TSubmodRootDiff1DRapp.:3" visibility="private" size="4" offset="2596" file="SubmodRootDiff1DRapp.pas" line="54" />
+      <field name="quadWeightArr" type=":TSubmodRootDiff1DRapp.:3" visibility="private" size="4" offset="2600" file="SubmodRootDiff1DRapp.pas" line="55" />
+      <field name="a_j" type=":TSubmodRootDiff1DRapp.:3" visibility="private" size="4" offset="2604" file="SubmodRootDiff1DRapp.pas" line="58" />
+      <field name="nullstelle" type="Double" visibility="private" size="8" offset="2608" file="SubmodRootDiff1DRapp.pas" line="61" />
+      <field name="initAmountNSoil" type="Double" visibility="private" size="8" offset="2616" file="SubmodRootDiff1DRapp.pas" line="61" />
+      <procedure name="calcN_AmountSoilEquil" visibility="private" file="SubmodRootDiff1DRapp.pas" line="62">
       </procedure>
-      <procedure name="calcArr" visibility="private" file="SubmodRootDiff1DRapp.pas" line="67">
+      <procedure name="calcArr" visibility="private" file="SubmodRootDiff1DRapp.pas" line="63">
       </procedure>
-      <procedure name="calcUptakeClasses" visibility="private" file="SubmodRootDiff1DRapp.pas" line="68">
+      <procedure name="calcUptakeClasses" visibility="private" file="SubmodRootDiff1DRapp.pas" line="64">
       </procedure>
-      <procedure name="calcUptakeClassesYoungs" visibility="private" file="SubmodRootDiff1DRapp.pas" line="69">
+      <procedure name="calcUptakeClassesYoungs" visibility="private" file="SubmodRootDiff1DRapp.pas" line="65">
       </procedure>
-      <function name="vectorSubtraktR2" visibility="private" file="SubmodRootDiff1DRapp.pas" line="73">
+      <function name="vectorSubtraktR2" visibility="private" file="SubmodRootDiff1DRapp.pas" line="69">
         <parameters>
           <parameter name="vector_a" type="r2" />
           <parameter name="vector_b" type="r2" />
           <retval type="r2" />
         </parameters>
       </function>
-      <procedure name="CalcShortestDist" visibility="private" file="SubmodRootDiff1DRapp.pas" line="74">
+      <procedure name="CalcShortestDist" visibility="private" file="SubmodRootDiff1DRapp.pas" line="70">
       </procedure>
-      <function name="CalcBorderDist" visibility="private" file="SubmodRootDiff1DRapp.pas" line="75">
+      <function name="CalcBorderDist" visibility="private" file="SubmodRootDiff1DRapp.pas" line="71">
         <parameters>
           <parameter name="ARandomPoint" type="TRandomPoint" />
           <parameter name="indexNearestPoint" type="Integer" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="calcDistance" visibility="private" file="SubmodRootDiff1DRapp.pas" line="77">
+      <function name="calcDistance" visibility="private" file="SubmodRootDiff1DRapp.pas" line="73">
         <parameters>
           <parameter name="KoordWAP" type="r2" />
           <parameter name="KoordRandPoint" type="r2" />
           <retval type="Double" />
         </parameters>
       </function>
-      <procedure name="writeDistances" visibility="private" file="SubmodRootDiff1DRapp.pas" line="78">
+      <procedure name="writeDistances" visibility="private" file="SubmodRootDiff1DRapp.pas" line="74">
       </procedure>
-      <procedure name="resetLists" visibility="private" file="SubmodRootDiff1DRapp.pas" line="79">
+      <procedure name="resetLists" visibility="private" file="SubmodRootDiff1DRapp.pas" line="75">
       </procedure>
-      <procedure name="resetArrays" visibility="private" file="SubmodRootDiff1DRapp.pas" line="80">
+      <procedure name="resetArrays" visibility="private" file="SubmodRootDiff1DRapp.pas" line="76">
       </procedure>
-      <procedure name="calcFrequencies" visibility="private" file="SubmodRootDiff1DRapp.pas" line="81">
+      <procedure name="calcFrequencies" visibility="private" file="SubmodRootDiff1DRapp.pas" line="77">
       </procedure>
-      <procedure name="calcweightFactors" visibility="private" file="SubmodRootDiff1DRapp.pas" line="82">
+      <procedure name="calcweightFactors" visibility="private" file="SubmodRootDiff1DRapp.pas" line="78">
       </procedure>
-      <procedure name="calcFrequenciesQuad" visibility="private" file="SubmodRootDiff1DRapp.pas" line="84">
+      <procedure name="calcFrequenciesQuad" visibility="private" file="SubmodRootDiff1DRapp.pas" line="80">
       </procedure>
-      <procedure name="calcweightFactorsQuad" visibility="private" file="SubmodRootDiff1DRapp.pas" line="85">
+      <procedure name="calcweightFactorsQuad" visibility="private" file="SubmodRootDiff1DRapp.pas" line="81">
       </procedure>
-      <procedure name="calcRoot" visibility="private" file="SubmodRootDiff1DRapp.pas" line="90">
+      <procedure name="calcRoot" visibility="private" file="SubmodRootDiff1DRapp.pas" line="86">
         <parameters>
           <parameter name="roh" type="Double" />
         </parameters>
       </procedure>
-      <function name="fx" visibility="private" file="SubmodRootDiff1DRapp.pas" line="91">
+      <function name="fx" visibility="private" file="SubmodRootDiff1DRapp.pas" line="87">
         <parameters>
           <parameter name="alpha" type="Double" />
           <parameter name="roh" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <procedure name="zbrac" visibility="private" file="SubmodRootDiff1DRapp.pas" line="92">
+      <procedure name="zbrac" visibility="private" file="SubmodRootDiff1DRapp.pas" line="88">
         <parameters>
           <parameter name="x1" type="Double" paramflags="var" />
           <parameter name="x2" type="Double" paramflags="var" />
@@ -1449,7 +1427,7 @@
           <parameter name="roh" type="Double" />
         </parameters>
       </procedure>
-      <function name="rtbis" visibility="private" file="SubmodRootDiff1DRapp.pas" line="93">
+      <function name="rtbis" visibility="private" file="SubmodRootDiff1DRapp.pas" line="89">
         <parameters>
           <parameter name="x1" type="Double" />
           <parameter name="x2" type="Double" />
@@ -1458,73 +1436,73 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="bessj" visibility="private" file="SubmodRootDiff1DRapp.pas" line="94">
+      <function name="bessj" visibility="private" file="SubmodRootDiff1DRapp.pas" line="90">
         <parameters>
           <parameter name="n" type="Integer" />
           <parameter name="x" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="bessj0" visibility="private" file="SubmodRootDiff1DRapp.pas" line="95">
+      <function name="bessj0" visibility="private" file="SubmodRootDiff1DRapp.pas" line="91">
         <parameters>
           <parameter name="x" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="bessj1" visibility="private" file="SubmodRootDiff1DRapp.pas" line="96">
+      <function name="bessj1" visibility="private" file="SubmodRootDiff1DRapp.pas" line="92">
         <parameters>
           <parameter name="x" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="bessy" visibility="private" file="SubmodRootDiff1DRapp.pas" line="97">
+      <function name="bessy" visibility="private" file="SubmodRootDiff1DRapp.pas" line="93">
         <parameters>
           <parameter name="n" type="Integer" />
           <parameter name="x" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="bessy0" visibility="private" file="SubmodRootDiff1DRapp.pas" line="98">
+      <function name="bessy0" visibility="private" file="SubmodRootDiff1DRapp.pas" line="94">
         <parameters>
           <parameter name="x" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="bessy1" visibility="private" file="SubmodRootDiff1DRapp.pas" line="99">
+      <function name="bessy1" visibility="private" file="SubmodRootDiff1DRapp.pas" line="95">
         <parameters>
           <parameter name="x" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <field name="numb_classesDist" type="Integer" visibility="protected" size="4" offset="2632" file="SubmodRootDiff1DRapp.pas" line="101" />
-      <field name="N_MengeAnteil" type="TState" visibility="protected" size="4" offset="2636" file="SubmodRootDiff1DRapp.pas" line="107" />
-      <field name="numb_RandomPoints" type="TPar" visibility="protected" size="4" offset="2640" file="SubmodRootDiff1DRapp.pas" line="109" />
-      <field name="threshold" type="TPar" visibility="protected" size="4" offset="2644" file="SubmodRootDiff1DRapp.pas" line="109" />
-      <field name="x1" type="TPar" visibility="protected" size="4" offset="2648" file="SubmodRootDiff1DRapp.pas" line="118" />
-      <field name="x2" type="TPar" visibility="protected" size="4" offset="2652" file="SubmodRootDiff1DRapp.pas" line="118" />
-      <field name="comp_prec" type="TPar" visibility="protected" size="4" offset="2656" file="SubmodRootDiff1DRapp.pas" line="118" />
-      <field name="K" type="TVar" visibility="protected" size="4" offset="2660" file="SubmodRootDiff1DRapp.pas" line="125" />
-      <field name="v_s" type="TVar" visibility="protected" size="4" offset="2664" file="SubmodRootDiff1DRapp.pas" line="126" />
-      <field name="tau_s" type="TVar" visibility="protected" size="4" offset="2668" file="SubmodRootDiff1DRapp.pas" line="127" />
-      <field name="sumWeight" type="TVar" visibility="protected" size="4" offset="2672" file="SubmodRootDiff1DRapp.pas" line="128" />
-      <field name="compareMode" type="TOption" visibility="protected" size="4" offset="2676" file="SubmodRootDiff1DRapp.pas" line="130" />
-      <field name="numb_classes_dist" type="TOption" visibility="protected" size="4" offset="2680" file="SubmodRootDiff1DRapp.pas" line="142" />
-      <field name="distanceFile" type="TOption" visibility="protected" size="4" offset="2684" file="SubmodRootDiff1DRapp.pas" line="143" />
-      <field name="RootDistribution" type="TOption" visibility="protected" size="4" offset="2688" file="SubmodRootDiff1DRapp.pas" line="146" />
-      <field name="Model" type="TOption" visibility="protected" size="4" offset="2692" file="SubmodRootDiff1DRapp.pas" line="147" />
-      <procedure name="CreateAll" visibility="public" procflags="override" file="SubmodRootDiff1DRapp.pas" line="152">
+      <field name="numb_classesDist" type="Integer" visibility="protected" size="4" offset="2624" file="SubmodRootDiff1DRapp.pas" line="97" />
+      <field name="N_MengeAnteil" type="TState" visibility="protected" size="4" offset="2628" file="SubmodRootDiff1DRapp.pas" line="103" />
+      <field name="numb_RandomPoints" type="TPar" visibility="protected" size="4" offset="2632" file="SubmodRootDiff1DRapp.pas" line="105" />
+      <field name="threshold" type="TPar" visibility="protected" size="4" offset="2636" file="SubmodRootDiff1DRapp.pas" line="105" />
+      <field name="x1" type="TPar" visibility="protected" size="4" offset="2640" file="SubmodRootDiff1DRapp.pas" line="114" />
+      <field name="x2" type="TPar" visibility="protected" size="4" offset="2644" file="SubmodRootDiff1DRapp.pas" line="114" />
+      <field name="comp_prec" type="TPar" visibility="protected" size="4" offset="2648" file="SubmodRootDiff1DRapp.pas" line="114" />
+      <field name="K" type="TVar" visibility="protected" size="4" offset="2652" file="SubmodRootDiff1DRapp.pas" line="121" />
+      <field name="v_s" type="TVar" visibility="protected" size="4" offset="2656" file="SubmodRootDiff1DRapp.pas" line="122" />
+      <field name="tau_s" type="TVar" visibility="protected" size="4" offset="2660" file="SubmodRootDiff1DRapp.pas" line="123" />
+      <field name="sumWeight" type="TVar" visibility="protected" size="4" offset="2664" file="SubmodRootDiff1DRapp.pas" line="124" />
+      <field name="compareMode" type="TOption" visibility="protected" size="4" offset="2668" file="SubmodRootDiff1DRapp.pas" line="126" />
+      <field name="numb_classes_dist" type="TOption" visibility="protected" size="4" offset="2672" file="SubmodRootDiff1DRapp.pas" line="138" />
+      <field name="distanceFile" type="TOption" visibility="protected" size="4" offset="2676" file="SubmodRootDiff1DRapp.pas" line="139" />
+      <field name="RootDistribution" type="TOption" visibility="protected" size="4" offset="2680" file="SubmodRootDiff1DRapp.pas" line="142" />
+      <field name="Model" type="TOption" visibility="protected" size="4" offset="2684" file="SubmodRootDiff1DRapp.pas" line="143" />
+      <procedure name="CreateAll" visibility="public" procflags="override" file="SubmodRootDiff1DRapp.pas" line="148">
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="SubmodRootDiff1DRapp.pas" line="154">
+      <procedure name="Init" visibility="public" procflags="override" file="SubmodRootDiff1DRapp.pas" line="150">
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="SubmodRootDiff1DRapp.pas" line="155">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="SubmodRootDiff1DRapp.pas" line="151">
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="override" file="SubmodRootDiff1DRapp.pas" line="156">
+      <procedure name="Integrate" visibility="public" procflags="override" file="SubmodRootDiff1DRapp.pas" line="152">
       </procedure>
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="SubmodRootDiff1DRapp.pas" line="165">
+  <procedure name="Register" visibility="public" file="SubmodRootDiff1DRapp.pas" line="161">
   </procedure>
 </namespace>

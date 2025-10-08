@@ -135,7 +135,7 @@ begin
         // Wurzellängenumrechnung von cm/cm2 auf cm/ha
         Cl_min_arr[i] := not_av_N.v / WAmount[i].v + Cmin.v;
         // ar:  max_Wl_NupTake = physiological limitation of the N uptake per root length (Wl)
-        // will be effective if time-step error is high (after N fertilization evemts)
+        // will be effective if time-step error is high (after N fertilization events)
         Imax_arr[i] := min(Max_Wl_Nuptake.v,
           max(0, Imax(NConc[i].v, Cl_min_arr[i], theta_arr[i].v, WInflux[i],
           Exwld_arr[i].v, RootRad.v)));

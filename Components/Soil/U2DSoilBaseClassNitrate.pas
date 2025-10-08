@@ -87,9 +87,6 @@ type
     /// <summary>specify whether nutrient uptake of individual sinks should be written to a file</summary>
     OutputSink: TOption;
 
-    /// <summary>specify the mode in which steady state should be calculated (with or without margins)</summary>
-    CalcModeSteadyState: TOption;
-
     /// <summary>specify whether concentrations should be displayed or not</summary>
     ShowConc: TOption;
 
@@ -198,10 +195,6 @@ begin
   ShowConc.OptionList.add('true');
   ShowConc.OptionList.add('false');
 
-  OptCreate('CalcModeSteadyState', 'withoutMargin', CalcModeSteadyState, 'Calculation mode for steady state');
-  CalcModeSteadyState.OptionList.add('withMargin');
-  CalcModeSteadyState.OptionList.add('withoutMargin');
-
   OptCreate('SteadyState', 'no', SteadyState, 'Switch for steady state');
   SteadyState.OptionList.add('yes');
   SteadyState.OptionList.add('no');
@@ -268,55 +261,46 @@ begin
   hasWritten := false;
   // Listen leeren
 
-  { Keine dynamische Verbindung zwischen 2D-Diffmodell und Strukturmodell in den
-    Verteilungsvarianten regular oder random }
-  if (iniMethod.Option = 'submodstruct') and
-    (RootDistribution.Option <> 'fromsource') then
-  begin
-    RootDistribution.Option := 'fromsource';
-    // showMessage('Strukturmodell setzt Einstellung lognormal voraus.Wurde umgestellt.');
-  end;
-  inherited;
 
-  De.v := D0NO3*f_Tortuosity(Theta.v);
+  De.v := D0NO3*f_Tortuosity(Theta.v); // [cm2/d]
 
-  // Berechnung der Anzahl der mittigen Rechenelemente
-  dim_xMiddle.v := DimXMiddle / dx.v;
-  dim_yMiddle.v := DimYMiddle / dy.v;
-  AreaMiddle.v := DimXMiddle * DimYMiddle;
   N_amountsoil.v := IniSoilNitrate.v; // kg N/ha
 
-  c_av.v := (N_amountsoil.v*1000/14)/WAmount.v;
+  // the amount of water is calculated in length units
+  // within the macroscopic 1-D transport model the length unit for water is [cm]
+  // thereby the area is neglected
+  // because initial nitrate N is given in kg N/ha this ends with the units   [Kg NO3-N/ha/cm water]
+  c_av.v := N_amountsoil.v/WAmount.v; // [Kg NO3-N/cm water]
   c_start.v := c_av.v;
   // N_AmountSoil.v := mg_func(Tiefe.v, Theta.v, c_av.v);//Debuggen
   int_dt.v := ini_dt.v; // Zuweisung der Startzeitschrittweite ...
 
   { Volumen der betrachteten Bodenschicht[cm3] }
   { Berechnung Mineralisationsrate in [Mol/cm^3*d] }
-  Min_S.v := minera.v / 14 * 1000 / 86400 * 1 / (Depth.v * 1E8);
-  // Initialisieren der Visuallisierung der Nährstoffaufnahme
 
+  // the input parameter minera.v for the soil N mineralisation rate is in kg N/ha/d
+  Min_S.v := minera.v;
 
     { Ausschluss der Ränder; sollte nicht durchgeführt werden, da die Wurzeln zwar
     vorhanden sein und auch Aufnahme durchführen sollten, aber nicht berücksichtigt
     werden sollten }
   if DelMarginRoots.Option = 'yes' then
     removeMarginRoots;
-  calcNumberConsRoots;
 
   If wl_ha.v > 0.0 then
   begin
     { Berechnung scheint korrekt s. Manuskript Hängeregister Vgl 1D2D }
-    Imax.v := potNUptakerate.v / 14 * 1000 / wl_ha.v;
-    { Berechnung Influxrate [mol/(cm/d)] }
-    // Imax.V := Ar.v*1000/(14*86400*WL_ha.v);  //Debuggen
+    // PotNuptakerate.v is in kg N/ha/d
+    // also Imax is therefore in kg N/ha/d
+    // this should be considered if compared to literature data
+    // from plant physiologiy where Imax is most often given in [mol N/cm/s]
+    Imax.v := potNUptakerate.v / wl_ha.v;
   end
   else
     Imax.v := 0.0;
   // Ausgabe von XY-Koord. bei statischem Modell
   if iniMethod.Option <> 'submodstruct' then
     fillChartRootDistr;
-
 end;
 
 

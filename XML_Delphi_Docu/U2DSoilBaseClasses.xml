@@ -6,7 +6,12 @@
      </summary>
   </devnotes>
   <type name="MathFloat" type="Double" file="System.pas" line="12" />
-  <const name="dim_max" type="Integer" file="U2DSoilBaseClasses.pas" line="24">
+  <pointer name="Pdouble" type="Double" indircnt="1" file="U2DSoilBaseClasses.pas" line="24" />
+  <type name="real" type="Double" file="System.pas" line="12" />
+  <array name="r2" low="0" high="1" file="U2DSoilBaseClasses.pas" line="28">
+    <element type="Double" />
+  </array>
+  <const name="dim_max" type="Integer" file="U2DSoilBaseClasses.pas" line="33">
     <devnotes>
        <summary>largest index, required for the vectors during the flux calculation</summary>
     </devnotes>
@@ -14,13 +19,12 @@
       $2710
     </value>
   </const>
-  <variable name="colorarray" visibility="public" file="U2DSoilBaseClasses.pas" line="28">
+  <variable name="colorarray" visibility="public" file="U2DSoilBaseClasses.pas" line="37">
     <devnotes>
        <summary>Color array for concentration display</summary>
     </devnotes>
   </variable>
-  <type name="real" type="Double" file="System.pas" line="12" />
-  <array name="array_type" low="0" high="10001" file="U2DSoilBaseClasses.pas" line="39">
+  <array name="array_type" low="0" high="10001" file="U2DSoilBaseClasses.pas" line="45">
     <devnotes>
        <summary>Problem: the dynamic implementation was removed again due to difficulties with array boundaries.</summary>
     </devnotes>
@@ -30,7 +34,7 @@
       </devnotes>
     </element>
   </array>
-  <class name="TRasterData" file="U2DSoilBaseClasses.pas" line="51">
+  <class name="TRasterData" file="U2DSoilBaseClasses.pas" line="57">
     <devnotes>
        <summary>
        Declaration of class TRasterData. This class encapsulates the raster,
@@ -116,42 +120,42 @@
       </propertyref>
     </ancestor>
     <members>
-      <field name="DescStr" type="string" visibility="public" size="4" offset="4" file="U2DSoilBaseClasses.pas" line="53">
+      <field name="DescStr" type="string" visibility="public" size="4" offset="4" file="U2DSoilBaseClasses.pas" line="59">
         <devnotes>
            <summary>Description of the data set</summary>
         </devnotes>
       </field>
-      <field name="Date" type="TDateTime" visibility="public" size="8" offset="8" file="U2DSoilBaseClasses.pas" line="56">
+      <field name="Date" type="TDateTime" visibility="public" size="8" offset="8" file="U2DSoilBaseClasses.pas" line="62">
         <devnotes>
            <summary>Date [TDateTime format]</summary>
         </devnotes>
       </field>
-      <field name="NCols" type="Integer" visibility="public" size="4" offset="16" file="U2DSoilBaseClasses.pas" line="59">
+      <field name="NCols" type="Integer" visibility="public" size="4" offset="16" file="U2DSoilBaseClasses.pas" line="65">
         <devnotes>
            <summary>Number of rows</summary>
         </devnotes>
       </field>
-      <field name="NRows" type="Integer" visibility="public" size="4" offset="20" file="U2DSoilBaseClasses.pas" line="62">
+      <field name="NRows" type="Integer" visibility="public" size="4" offset="20" file="U2DSoilBaseClasses.pas" line="68">
         <devnotes>
            <summary>Number of columns</summary>
         </devnotes>
       </field>
-      <field name="NRoots" type="Integer" visibility="public" size="4" offset="24" file="U2DSoilBaseClasses.pas" line="65">
+      <field name="NRoots" type="Integer" visibility="public" size="4" offset="24" file="U2DSoilBaseClasses.pas" line="71">
         <devnotes>
            <summary>Number of roots</summary>
         </devnotes>
       </field>
-      <field name="DimCols" type="Double" visibility="public" size="8" offset="32" file="U2DSoilBaseClasses.pas" line="68">
+      <field name="DimCols" type="Double" visibility="public" size="8" offset="32" file="U2DSoilBaseClasses.pas" line="74">
         <devnotes>
            <summary>Height of rows [cm]</summary>
         </devnotes>
       </field>
-      <field name="DimRows" type="Double" visibility="public" size="8" offset="40" file="U2DSoilBaseClasses.pas" line="71">
+      <field name="DimRows" type="Double" visibility="public" size="8" offset="40" file="U2DSoilBaseClasses.pas" line="77">
         <devnotes>
            <summary>Width of columns [cm]</summary>
         </devnotes>
       </field>
-      <field name="CountArr" type=":TRasterData.:2" visibility="public" size="4" offset="48" file="U2DSoilBaseClasses.pas" line="79">
+      <field name="CountArr" type=":TRasterData.:2" visibility="public" size="4" offset="48" file="U2DSoilBaseClasses.pas" line="85">
         <devnotes>
            <summary>
            Root numbers in the raster (computational) cells.
@@ -161,12 +165,12 @@
            </summary>
         </devnotes>
       </field>
-      <field name="RootList" type="TStringList" visibility="public" size="4" offset="52" file="U2DSoilBaseClasses.pas" line="82">
+      <field name="RootList" type="TStringList" visibility="public" size="4" offset="52" file="U2DSoilBaseClasses.pas" line="88">
         <devnotes>
            <summary> Stores information on all roots in the form of TRootObject entries</summary>
         </devnotes>
       </field>
-      <field name="SubmodRootDiff" type="TBaseSubmodRootDiff" visibility="public" size="4" offset="56" file="U2DSoilBaseClasses.pas" line="92">
+      <field name="SubmodRootDiff" type="TBaseSubmodRootDiff" visibility="public" size="4" offset="56" file="U2DSoilBaseClasses.pas" line="98">
         <devnotes>
            <summary>Private declarations</summary>
            <summary>Protected declarations</summary>
@@ -175,7 +179,7 @@
            <summary> Reference to the diffusion submodel the raster data object belongs to</summary>
         </devnotes>
       </field>
-      <constructor name="create" visibility="public" file="U2DSoilBaseClasses.pas" line="95">
+      <constructor name="create" visibility="public" file="U2DSoilBaseClasses.pas" line="101">
         <devnotes>
            <summary>
            Implementation of the methods of TRasterData
@@ -185,7 +189,7 @@
           <parameter name="Submodel" type="TBaseSubmodRootDiff" />
         </parameters>
       </constructor>
-      <procedure name="readRasterData" visibility="public" file="U2DSoilBaseClasses.pas" line="98">
+      <procedure name="readRasterData" visibility="public" file="U2DSoilBaseClasses.pas" line="104">
         <devnotes>
            <summary>
            Reads aggregated raster data (root counts) which are then used to randomly
@@ -198,7 +202,7 @@
           <parameter name="Series" type="TPointSeries" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="readXYfromFile" visibility="public" procflags="virtual" file="U2DSoilBaseClasses.pas" line="101">
+      <procedure name="readXYfromFile" visibility="public" procflags="virtual" file="U2DSoilBaseClasses.pas" line="107">
         <devnotes>
            <summary>
            Reads XY coordinates from a file and successively fills the passed
@@ -210,7 +214,7 @@
           <parameter name="Series" type="TPointSeries" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="saveRootPositions" visibility="public" file="U2DSoilBaseClasses.pas" line="105">
+      <procedure name="saveRootPositions" visibility="public" file="U2DSoilBaseClasses.pas" line="111">
         <devnotes>
            <summary>
            After reading aggregated root data, i.e. without exact coordinates, saves the generated random root
@@ -224,7 +228,7 @@
       </procedure>
     </members>
   </class>
-  <class name="TBaseSubmodRootDiff" file="U2DSoilBaseClasses.pas" line="123">
+  <class name="TBaseSubmodRootDiff" file="U2DSoilBaseClasses.pas" line="129">
     <devnotes>
        <summary>Published declarations</summary>
        <summary>Clears the Pos array members</summary>
@@ -1435,84 +1439,84 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fMyMathImage" type="TMathImage" visibility="protected" size="4" offset="648" file="U2DSoilBaseClasses.pas" line="131">
+      <field name="fMyMathImage" type="TMathImage" visibility="protected" size="4" offset="648" file="U2DSoilBaseClasses.pas" line="137">
         <devnotes>
            <summary>
              a private field for showing the concentration field on a TMathimage object
            </summary>
         </devnotes>
       </field>
-      <field name="fMyChart" type="TChart" visibility="protected" size="4" offset="652" file="U2DSoilBaseClasses.pas" line="136">
+      <field name="fMyChart" type="TChart" visibility="protected" size="4" offset="652" file="U2DSoilBaseClasses.pas" line="142">
         <devnotes>
            <summary>
            Reference to the chart in the Hume form for displaying the root distribution
            </summary>
         </devnotes>
       </field>
-      <field name="ColorSurface" type="TColorSurface" visibility="protected" size="4" offset="656" file="U2DSoilBaseClasses.pas" line="141">
+      <field name="ColorSurface" type="TColorSurface" visibility="protected" size="4" offset="656" file="U2DSoilBaseClasses.pas" line="147">
         <devnotes>
            <summary>
              the codings for the concentration in colours
            </summary>
         </devnotes>
       </field>
-      <field name="fMyAdvStringGrid" type="TAdvStringGrid" visibility="protected" size="4" offset="660" file="U2DSoilBaseClasses.pas" line="144">
+      <field name="fMyAdvStringGrid" type="TAdvStringGrid" visibility="protected" size="4" offset="660" file="U2DSoilBaseClasses.pas" line="150">
         <devnotes>
            <summary>Reference to the AdvStringGrid in the Hume form for displaying raster data</summary>
         </devnotes>
       </field>
-      <field name="fMyStructModel" type="TSubmodRootStrucNew" visibility="protected" size="4" offset="664" file="U2DSoilBaseClasses.pas" line="147">
+      <field name="fMyStructModel" type="TSubmodRootStrucNew" visibility="protected" size="4" offset="664" file="U2DSoilBaseClasses.pas" line="153">
         <devnotes>
            <summary>Reference to the structural root model</summary>
         </devnotes>
       </field>
-      <field name="contposx" type="Double" visibility="protected" size="8" offset="672" file="U2DSoilBaseClasses.pas" line="151">
+      <field name="contposx" type="Double" visibility="protected" size="8" offset="672" file="U2DSoilBaseClasses.pas" line="157">
         <devnotes>
            <summary>Protected declarations</summary>
            <summary> contains the x and y coordinates of the center of the container in container mode</summary>
         </devnotes>
       </field>
-      <field name="contposy" type="Double" visibility="protected" size="8" offset="680" file="U2DSoilBaseClasses.pas" line="152" />
-      <field name="SumOfInternalTimeSteps" type="Double" visibility="protected" size="8" offset="688" file="U2DSoilBaseClasses.pas" line="158">
+      <field name="contposy" type="Double" visibility="protected" size="8" offset="680" file="U2DSoilBaseClasses.pas" line="158" />
+      <field name="SumOfInternalTimeSteps" type="Double" visibility="protected" size="8" offset="688" file="U2DSoilBaseClasses.pas" line="164">
         <devnotes>
            <summary>
              sum of internal time steps
            </summary>
         </devnotes>
       </field>
-      <field name="SinkCellFileWasCreated" type="Boolean" visibility="protected" size="1" offset="696" file="U2DSoilBaseClasses.pas" line="163">
+      <field name="SinkCellFileWasCreated" type="Boolean" visibility="protected" size="1" offset="696" file="U2DSoilBaseClasses.pas" line="169">
         <devnotes>
            <summary>Field stores whether the output file for sink influx per cell has been created.
            This should be done anew before each model run -&gt; SinkCellFileWasCreated is set to false in init.
            In CalcRates the file is created once and the flag is set to true</summary>
         </devnotes>
       </field>
-      <field name="FileWasCreated" type="Boolean" visibility="protected" size="1" offset="697" file="U2DSoilBaseClasses.pas" line="166">
+      <field name="FileWasCreated" type="Boolean" visibility="protected" size="1" offset="697" file="U2DSoilBaseClasses.pas" line="172">
         <devnotes>
            <summary>Field stores whether the output file for sink influx has been created. This should be done anew before each model run -&gt; FileWasCreated is set to false in init. In CalcRates the file is created once and the flag is set to true</summary>
         </devnotes>
       </field>
-      <field name="vol_Element" type="Double" visibility="protected" size="8" offset="704" file="U2DSoilBaseClasses.pas" line="169">
+      <field name="vol_Element" type="Double" visibility="protected" size="8" offset="704" file="U2DSoilBaseClasses.pas" line="175">
         <devnotes>
            <summary>volume of a computational element [cm3]</summary>
         </devnotes>
       </field>
-      <field name="wm" type="Double" visibility="protected" size="8" offset="712" file="U2DSoilBaseClasses.pas" line="171">
+      <field name="wm" type="Double" visibility="protected" size="8" offset="712" file="U2DSoilBaseClasses.pas" line="177">
         <devnotes>
            <summary>water amount of a computational element [cm3]</summary>
         </devnotes>
       </field>
-      <field name="min_c" type="Double" visibility="protected" size="8" offset="720" file="U2DSoilBaseClasses.pas" line="173">
+      <field name="min_c" type="Double" visibility="protected" size="8" offset="720" file="U2DSoilBaseClasses.pas" line="179">
         <devnotes>
            <summary>minimum concentration in the grid [mol/cm3]</summary>
         </devnotes>
       </field>
-      <field name="max_c" type="Double" visibility="protected" size="8" offset="728" file="U2DSoilBaseClasses.pas" line="175">
+      <field name="max_c" type="Double" visibility="protected" size="8" offset="728" file="U2DSoilBaseClasses.pas" line="181">
         <devnotes>
            <summary>maximum concentration in the grid</summary>
         </devnotes>
       </field>
-      <field name="VWC_xy" type=":TBaseSubmodRootDiff.:2" visibility="protected" size="4" offset="736" file="U2DSoilBaseClasses.pas" line="184">
+      <field name="VWC_xy" type=":TBaseSubmodRootDiff.:2" visibility="protected" size="4" offset="736" file="U2DSoilBaseClasses.pas" line="190">
         <devnotes>
            <summary> VWC_xy: array for volumetric water content in the computational elements.
            WC_xy was declared as a dynamic array (see NG, p.65 ff) because the size of
@@ -1521,87 +1525,87 @@
            </summary>
         </devnotes>
       </field>
-      <field name="x_arr" type=":TBaseSubmodRootDiff.:3" visibility="protected" size="4" offset="740" file="U2DSoilBaseClasses.pas" line="189">
+      <field name="x_arr" type=":TBaseSubmodRootDiff.:3" visibility="protected" size="4" offset="740" file="U2DSoilBaseClasses.pas" line="195">
         <devnotes>
            <summary>
              In x_arr and y_arr are the 'midpoint coordinates of the grid cells'
            </summary>
         </devnotes>
       </field>
-      <field name="y_arr" type=":TBaseSubmodRootDiff.:3" visibility="protected" size="4" offset="744" file="U2DSoilBaseClasses.pas" line="189" />
-      <field name="xyfile" type="Text" visibility="protected" size="730" offset="748" file="U2DSoilBaseClasses.pas" line="192">
+      <field name="y_arr" type=":TBaseSubmodRootDiff.:3" visibility="protected" size="4" offset="744" file="U2DSoilBaseClasses.pas" line="195" />
+      <field name="xyfile" type="Text" visibility="protected" size="730" offset="748" file="U2DSoilBaseClasses.pas" line="198">
         <devnotes>
            <summary> text file for writing xy data </summary>
         </devnotes>
       </field>
-      <field name="SeriesXY" type="TPointSeries" visibility="protected" size="4" offset="1480" file="U2DSoilBaseClasses.pas" line="195">
+      <field name="SeriesXY" type="TPointSeries" visibility="protected" size="4" offset="1480" file="U2DSoilBaseClasses.pas" line="201">
         <devnotes>
            <summary> Object for displaying the root intersection points in the Hume form TChart object </summary>
         </devnotes>
       </field>
-      <field name="Area" type="TVar" visibility="protected" size="4" offset="1484" file="U2DSoilBaseClasses.pas" line="200">
+      <field name="Area" type="TVar" visibility="protected" size="4" offset="1484" file="U2DSoilBaseClasses.pas" line="206">
         <devnotes>
            <summary> Area of the whole soil section of interest [cm2]
             is handled as a constant
            </summary>
         </devnotes>
       </field>
-      <field name="RasterData" type="TRasterData" visibility="protected" size="4" offset="1488" file="U2DSoilBaseClasses.pas" line="203">
+      <field name="RasterData" type="TRasterData" visibility="protected" size="4" offset="1488" file="U2DSoilBaseClasses.pas" line="209">
         <devnotes>
            <summary>RasterData instance owned by the submodel</summary>
         </devnotes>
       </field>
-      <field name="initialised" type="Boolean" visibility="protected" size="1" offset="1492" file="U2DSoilBaseClasses.pas" line="206">
+      <field name="initialised" type="Boolean" visibility="protected" size="1" offset="1492" file="U2DSoilBaseClasses.pas" line="212">
         <devnotes>
            <summary>Indicates whether initialization has already occurred</summary>
         </devnotes>
       </field>
-      <field name="dimensionX" type="TPar" visibility="protected" size="4" offset="1496" file="U2DSoilBaseClasses.pas" line="209">
+      <field name="dimensionX" type="TPar" visibility="protected" size="4" offset="1496" file="U2DSoilBaseClasses.pas" line="215">
         <devnotes>
            <summary>Width of the computational domain [cm]</summary>
         </devnotes>
       </field>
-      <field name="dimensionY" type="TPar" visibility="protected" size="4" offset="1500" file="U2DSoilBaseClasses.pas" line="211">
+      <field name="dimensionY" type="TPar" visibility="protected" size="4" offset="1500" file="U2DSoilBaseClasses.pas" line="217">
         <devnotes>
            <summary>Height of the computational domain [cm]</summary>
         </devnotes>
       </field>
-      <field name="gridWidth" type="TPar" visibility="protected" size="4" offset="1504" file="U2DSoilBaseClasses.pas" line="214">
+      <field name="gridWidth" type="TPar" visibility="protected" size="4" offset="1504" file="U2DSoilBaseClasses.pas" line="220">
         <devnotes>
            <summary>Width of the raster grid (aggregated data) in x-direction [cm]</summary>
         </devnotes>
       </field>
-      <field name="gridHeight" type="TPar" visibility="protected" size="4" offset="1508" file="U2DSoilBaseClasses.pas" line="217">
+      <field name="gridHeight" type="TPar" visibility="protected" size="4" offset="1508" file="U2DSoilBaseClasses.pas" line="223">
         <devnotes>
            <summary>Width of the raster grid (aggregated data) in y-direction [cm]</summary>
         </devnotes>
       </field>
-      <field name="dim_x" type="TPar" visibility="protected" size="4" offset="1512" file="U2DSoilBaseClasses.pas" line="220">
+      <field name="dim_x" type="TPar" visibility="protected" size="4" offset="1512" file="U2DSoilBaseClasses.pas" line="226">
         <devnotes>
            <summary>number of elements in X-direction</summary>
         </devnotes>
       </field>
-      <field name="dim_y" type="TPar" visibility="protected" size="4" offset="1516" file="U2DSoilBaseClasses.pas" line="223">
+      <field name="dim_y" type="TPar" visibility="protected" size="4" offset="1516" file="U2DSoilBaseClasses.pas" line="229">
         <devnotes>
            <summary>number of elements in Y-direction</summary>
         </devnotes>
       </field>
-      <field name="max_dt" type="TPar" visibility="protected" size="4" offset="1520" file="U2DSoilBaseClasses.pas" line="226">
+      <field name="max_dt" type="TPar" visibility="protected" size="4" offset="1520" file="U2DSoilBaseClasses.pas" line="232">
         <devnotes>
            <summary>Maximum time step width [d]</summary>
         </devnotes>
       </field>
-      <field name="IniTheta" type="TPar" visibility="protected" size="4" offset="1524" file="U2DSoilBaseClasses.pas" line="229">
+      <field name="IniTheta" type="TPar" visibility="protected" size="4" offset="1524" file="U2DSoilBaseClasses.pas" line="235">
         <devnotes>
            <summary> Initial volumetric water content [cm3/cm3]</summary>
         </devnotes>
       </field>
-      <field name="ContRad" type="TPar" visibility="protected" size="4" offset="1528" file="U2DSoilBaseClasses.pas" line="232">
+      <field name="ContRad" type="TPar" visibility="protected" size="4" offset="1528" file="U2DSoilBaseClasses.pas" line="238">
         <devnotes>
            <summary>radius of the container in container mode</summary>
         </devnotes>
       </field>
-      <field name="Depth" type="TPar" visibility="protected" size="4" offset="1532" file="U2DSoilBaseClasses.pas" line="238">
+      <field name="Depth" type="TPar" visibility="protected" size="4" offset="1532" file="U2DSoilBaseClasses.pas" line="244">
         <devnotes>
            <summary>Depth of the layer [cm], assumption for mineralization calculation</summary>
            <remarks>Mineralization model not yet available but should be implemented for both models</remarks>
@@ -1609,150 +1613,158 @@
            <summary>Vertical margin [cm]</summary>
         </devnotes>
       </field>
-      <field name="verticMargin" type="TPar" visibility="protected" size="4" offset="1536" file="U2DSoilBaseClasses.pas" line="241">
+      <field name="verticMargin" type="TPar" visibility="protected" size="4" offset="1536" file="U2DSoilBaseClasses.pas" line="247">
         <devnotes>
            <summary>Vertical margin [cm]</summary>
         </devnotes>
       </field>
-      <field name="horizMargin" type="TPar" visibility="protected" size="4" offset="1540" file="U2DSoilBaseClasses.pas" line="243">
+      <field name="horizMargin" type="TPar" visibility="protected" size="4" offset="1540" file="U2DSoilBaseClasses.pas" line="249">
         <devnotes>
            <summary>Horizontal margin [cm]</summary>
         </devnotes>
       </field>
-      <field name="depthLayer" type="TPar" visibility="protected" size="4" offset="1544" file="U2DSoilBaseClasses.pas" line="246">
+      <field name="depthLayer" type="TPar" visibility="protected" size="4" offset="1544" file="U2DSoilBaseClasses.pas" line="252">
         <devnotes>
            <summary>Depth at which evaluation should begin (in the 2D cross-section) [cm]</summary>
         </devnotes>
       </field>
-      <field name="SizeLayer" type="TPar" visibility="protected" size="4" offset="1548" file="U2DSoilBaseClasses.pas" line="249">
+      <field name="SizeLayer" type="TPar" visibility="protected" size="4" offset="1548" file="U2DSoilBaseClasses.pas" line="255">
         <devnotes>
            <summary>Thickness of the layer [cm]</summary>
         </devnotes>
       </field>
-      <field name="ParMRLD" type="TPar" visibility="protected" size="4" offset="1552" file="U2DSoilBaseClasses.pas" line="252">
+      <field name="ParMRLD" type="TPar" visibility="protected" size="4" offset="1552" file="U2DSoilBaseClasses.pas" line="258">
         <devnotes>
            <summary>Mean root length density [cm/ccm]</summary>
         </devnotes>
       </field>
-      <field name="RootRadius" type="TPar" visibility="protected" size="4" offset="1556" file="U2DSoilBaseClasses.pas" line="255">
+      <field name="RootRadius" type="TPar" visibility="protected" size="4" offset="1556" file="U2DSoilBaseClasses.pas" line="261">
         <devnotes>
            <summary>average Radius of the roots [cm]</summary>
         </devnotes>
       </field>
-      <field name="dx" type="TVar" visibility="protected" size="4" offset="1560" file="U2DSoilBaseClasses.pas" line="258">
+      <field name="dx" type="TVar" visibility="protected" size="4" offset="1560" file="U2DSoilBaseClasses.pas" line="264">
         <devnotes>
            <summary>grid width in X-direction [cm]</summary>
         </devnotes>
       </field>
-      <field name="dy" type="TVar" visibility="protected" size="4" offset="1564" file="U2DSoilBaseClasses.pas" line="261">
+      <field name="dy" type="TVar" visibility="protected" size="4" offset="1564" file="U2DSoilBaseClasses.pas" line="267">
         <devnotes>
            <summary>grid width in Y-direction [cm]</summary>
         </devnotes>
       </field>
-      <field name="RLD_mean" type="TVar" visibility="protected" size="4" offset="1568" file="U2DSoilBaseClasses.pas" line="264">
+      <field name="RLD_mean" type="TVar" visibility="protected" size="4" offset="1568" file="U2DSoilBaseClasses.pas" line="270">
         <devnotes>
            <summary>Mean root length density in a layer [cm/cm^3] calculated without roots located in the margins</summary>
         </devnotes>
       </field>
-      <field name="AreaMiddle" type="TVar" visibility="protected" size="4" offset="1572" file="U2DSoilBaseClasses.pas" line="267">
+      <field name="AreaMiddle" type="TVar" visibility="protected" size="4" offset="1572" file="U2DSoilBaseClasses.pas" line="273">
         <devnotes>
            <summary>Central area without margins [cm2]</summary>
         </devnotes>
       </field>
-      <field name="num_roots" type="TVar" visibility="protected" size="4" offset="1576" file="U2DSoilBaseClasses.pas" line="270">
+      <field name="num_roots" type="TVar" visibility="protected" size="4" offset="1576" file="U2DSoilBaseClasses.pas" line="276">
         <devnotes>
            <summary>Number of roots in center and margins [n]</summary>
         </devnotes>
       </field>
-      <field name="number_consid_roots" type="TVar" visibility="protected" size="4" offset="1580" file="U2DSoilBaseClasses.pas" line="273">
+      <field name="number_consid_roots" type="TVar" visibility="protected" size="4" offset="1580" file="U2DSoilBaseClasses.pas" line="279">
         <devnotes>
            <summary>Number of roots not located in margins []</summary>
         </devnotes>
       </field>
-      <field name="Volume" type="TVar" visibility="protected" size="4" offset="1584" file="U2DSoilBaseClasses.pas" line="276">
+      <field name="Volume" type="TVar" visibility="protected" size="4" offset="1584" file="U2DSoilBaseClasses.pas" line="282">
         <devnotes>
            <summary>Volume of the soil layer including margins [cm3]</summary>
         </devnotes>
       </field>
-      <field name="theta" type="TVar" visibility="protected" size="4" offset="1588" file="U2DSoilBaseClasses.pas" line="279">
+      <field name="theta" type="TVar" visibility="protected" size="4" offset="1588" file="U2DSoilBaseClasses.pas" line="285">
         <devnotes>
            <summary>actual volumetric water content [cm3/cm3]</summary>
         </devnotes>
       </field>
-      <field name="errorReg" type="TVar" visibility="protected" size="4" offset="1592" file="U2DSoilBaseClasses.pas" line="282">
+      <field name="errorReg" type="TVar" visibility="protected" size="4" offset="1592" file="U2DSoilBaseClasses.pas" line="288">
         <devnotes>
            <summary>Measure of error for regular distribution = number of roots that do not fit into the observation window when generating the uniform distribution, as a percentage of all roots [%%]</summary>
         </devnotes>
       </field>
-      <field name="int_dt" type="TVar" visibility="protected" size="4" offset="1596" file="U2DSoilBaseClasses.pas" line="285">
+      <field name="int_dt" type="TVar" visibility="protected" size="4" offset="1596" file="U2DSoilBaseClasses.pas" line="291">
         <devnotes>
            <summary>internal time step [d]</summary>
         </devnotes>
       </field>
-      <field name="wl_ha" type="TVar" visibility="protected" size="4" offset="1600" file="U2DSoilBaseClasses.pas" line="290">
+      <field name="wl_ha" type="TVar" visibility="protected" size="4" offset="1600" file="U2DSoilBaseClasses.pas" line="296">
         <devnotes>
            <summary>
              root length per hectar [cm/ha]
            </summary>
         </devnotes>
       </field>
-      <field name="wl" type="TVar" visibility="protected" size="4" offset="1604" file="U2DSoilBaseClasses.pas" line="295">
+      <field name="wl" type="TVar" visibility="protected" size="4" offset="1604" file="U2DSoilBaseClasses.pas" line="301">
         <devnotes>
            <summary>
              root length per hectar
            </summary>
         </devnotes>
       </field>
-      <field name="WAmount" type="TState" visibility="protected" size="4" offset="1608" file="U2DSoilBaseClasses.pas" line="300">
+      <field name="WAmount" type="TState" visibility="protected" size="4" offset="1608" file="U2DSoilBaseClasses.pas" line="306">
         <devnotes>
            <summary>
              Amount of water in the object [cm3]
            </summary>
         </devnotes>
       </field>
-      <field name="AvDistance" type="TVar" visibility="protected" size="4" offset="1612" file="U2DSoilBaseClasses.pas" line="306">
+      <field name="AvDistance" type="TVar" visibility="protected" size="4" offset="1612" file="U2DSoilBaseClasses.pas" line="312">
         <devnotes>
            <summary>
              Average distance between roots [cm]
            </summary>
         </devnotes>
       </field>
-      <field name="dim_xMiddle" type="TVar" visibility="protected" size="4" offset="1616" file="U2DSoilBaseClasses.pas" line="311">
+      <field name="dim_xMiddle" type="TVar" visibility="protected" size="4" offset="1616" file="U2DSoilBaseClasses.pas" line="317">
         <devnotes>
            <summary>Number of elements in the middle area in X-direction</summary>
         </devnotes>
       </field>
-      <field name="dim_yMiddle" type="TVar" visibility="protected" size="4" offset="1620" file="U2DSoilBaseClasses.pas" line="314">
+      <field name="dim_yMiddle" type="TVar" visibility="protected" size="4" offset="1620" file="U2DSoilBaseClasses.pas" line="320">
         <devnotes>
            <summary>Number of elements in the middle area in Y-direction</summary>
         </devnotes>
       </field>
-      <field name="IniMethod" type="TOption" visibility="protected" size="4" offset="1624" file="U2DSoilBaseClasses.pas" line="317">
+      <field name="IniMethod" type="TOption" visibility="protected" size="4" offset="1624" file="U2DSoilBaseClasses.pas" line="323">
         <devnotes>
            <summary>Option for Type of initialization, e.g. file or structural model</summary>
         </devnotes>
       </field>
-      <field name="RootInpDataFileXY" type="TOption" visibility="protected" size="4" offset="1628" file="U2DSoilBaseClasses.pas" line="320">
+      <field name="RootInpDataFileXY" type="TOption" visibility="protected" size="4" offset="1628" file="U2DSoilBaseClasses.pas" line="326">
         <devnotes>
            <summary>Path and name of the init file with XY root data</summary>
         </devnotes>
       </field>
-      <field name="RootInpDataFile" type="TOption" visibility="protected" size="4" offset="1632" file="U2DSoilBaseClasses.pas" line="323">
+      <field name="RootInpDataFile" type="TOption" visibility="protected" size="4" offset="1632" file="U2DSoilBaseClasses.pas" line="329">
         <devnotes>
            <summary>Path and name of the init file with root data as counts in a grid</summary>
         </devnotes>
       </field>
-      <field name="OutputXY" type="TOption" visibility="protected" size="4" offset="1636" file="U2DSoilBaseClasses.pas" line="326">
+      <field name="OutputXY" type="TOption" visibility="protected" size="4" offset="1636" file="U2DSoilBaseClasses.pas" line="332">
         <devnotes>
            <summary>Specify whether XY data should be written to a file</summary>
         </devnotes>
       </field>
-      <field name="RootXYOutpDataFile" type="TOption" visibility="protected" size="4" offset="1640" file="U2DSoilBaseClasses.pas" line="329">
+      <field name="WithMargins" type="TOption" visibility="protected" size="4" offset="1640" file="U2DSoilBaseClasses.pas" line="338">
+        <devnotes>
+           <summary>
+             Option to remove root position which are too near to the border
+            of the calculation field in the 2D case
+           </summary>
+        </devnotes>
+      </field>
+      <field name="RootXYOutpDataFile" type="TOption" visibility="protected" size="4" offset="1644" file="U2DSoilBaseClasses.pas" line="341">
         <devnotes>
            <summary>Path and name of the output file for XY data</summary>
         </devnotes>
       </field>
-      <field name="RootDistribution" type="TOption" visibility="protected" size="4" offset="1644" file="U2DSoilBaseClasses.pas" line="337">
+      <field name="RootDistribution" type="TOption" visibility="protected" size="4" offset="1648" file="U2DSoilBaseClasses.pas" line="349">
         <devnotes>
            <summary>Option for the type of root distribution
            distinct from the 1D model
@@ -1762,12 +1774,12 @@
            </summary>
         </devnotes>
       </field>
-      <procedure name="fillChartRootDistr" visibility="protected" file="U2DSoilBaseClasses.pas" line="341">
+      <procedure name="fillChartRootDistr" visibility="protected" file="U2DSoilBaseClasses.pas" line="353">
         <devnotes>
            <summary>Both models can display roots in the RootDistribution tab.</summary>
         </devnotes>
       </procedure>
-      <procedure name="fillGridRasterData" visibility="protected" file="U2DSoilBaseClasses.pas" line="344">
+      <procedure name="fillGridRasterData" visibility="protected" file="U2DSoilBaseClasses.pas" line="356">
         <devnotes>
            <summary>
            Both models can write aggregated root data to the form. The method fills the
@@ -1776,7 +1788,7 @@
            </summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcEqualDistribution" visibility="protected" file="U2DSoilBaseClasses.pas" line="347">
+      <procedure name="CalcEqualDistribution" visibility="protected" file="U2DSoilBaseClasses.pas" line="359">
         <devnotes>
            <summary>
            All diffusion models can compute a uniform distribution from a given one. The
@@ -1787,7 +1799,7 @@
            </summary>
         </devnotes>
       </procedure>
-      <procedure name="distributeHexagonRow" visibility="protected" file="U2DSoilBaseClasses.pas" line="350">
+      <procedure name="distributeHexagonRow" visibility="protected" file="U2DSoilBaseClasses.pas" line="362">
         <devnotes>
            <summary>
            Distribution using hexagons. Rows are filled sequentially. For better
@@ -1796,7 +1808,7 @@
            </summary>
         </devnotes>
       </procedure>
-      <procedure name="distributeHexagonCol" visibility="protected" file="U2DSoilBaseClasses.pas" line="353">
+      <procedure name="distributeHexagonCol" visibility="protected" file="U2DSoilBaseClasses.pas" line="365">
         <devnotes>
            <summary>
            Distribution using hexagons. Columns are filled sequentially. The method may be
@@ -1808,7 +1820,7 @@
            </summary>
         </devnotes>
       </procedure>
-      <procedure name="writeOutputToFile" visibility="protected" procflags="virtual" file="U2DSoilBaseClasses.pas" line="355">
+      <procedure name="writeOutputToFile" visibility="protected" procflags="virtual" file="U2DSoilBaseClasses.pas" line="367">
         <devnotes>
            <summary>
            Writes coordinates and areas of PosArr to a file. With a structural model, output
@@ -1818,17 +1830,17 @@
            </summary>
         </devnotes>
       </procedure>
-      <procedure name="removeMarginRoots" visibility="protected" file="U2DSoilBaseClasses.pas" line="358">
+      <procedure name="removeMarginRoots" visibility="protected" file="U2DSoilBaseClasses.pas" line="370">
         <devnotes>
            <summary>Removes roots located in the margins from the Pos array</summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcRootPosAsIndex" visibility="protected" file="U2DSoilBaseClasses.pas" line="361">
+      <procedure name="CalcRootPosAsIndex" visibility="protected" file="U2DSoilBaseClasses.pas" line="373">
         <devnotes>
            <summary>Calculates the grid cell indices for each root position</summary>
         </devnotes>
       </procedure>
-      <procedure name="calcNumberConsRoots" visibility="protected" file="U2DSoilBaseClasses.pas" line="364">
+      <procedure name="calcNumberConsRoots" visibility="protected" file="U2DSoilBaseClasses.pas" line="376">
         <devnotes>
            <summary>
            Calculates the number of valid/considered roots (located in the observation window but
@@ -1836,7 +1848,7 @@
            </summary>
         </devnotes>
       </procedure>
-      <procedure name="testForContBorder" visibility="protected" file="U2DSoilBaseClasses.pas" line="367">
+      <procedure name="testForContBorder" visibility="protected" file="U2DSoilBaseClasses.pas" line="379">
         <devnotes>
            <summary>Tests if roots are located within the border</summary>
         </devnotes>
@@ -1848,21 +1860,21 @@
           <parameter name="zeile" type="Boolean" />
         </parameters>
       </procedure>
-      <function name="calcAbsValue2D" visibility="protected" file="U2DSoilBaseClasses.pas" line="369">
+      <function name="calcAbsValue2D" visibility="protected" file="U2DSoilBaseClasses.pas" line="381">
         <parameters>
           <parameter name="vect" type="r2" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="vectorSubtrakt2D" visibility="protected" file="U2DSoilBaseClasses.pas" line="370">
+      <function name="vectorSubtrakt2D" visibility="protected" file="U2DSoilBaseClasses.pas" line="382">
         <parameters>
           <parameter name="vect2" type="r2" />
           <parameter name="vect1" type="r2" />
           <retval type="r2" />
         </parameters>
       </function>
-      <field name="hasWritten" type="Boolean" visibility="public" size="1" offset="1648" file="U2DSoilBaseClasses.pas" line="374" />
-      <procedure name="CreateAll" visibility="public" procflags="override" file="U2DSoilBaseClasses.pas" line="377">
+      <field name="hasWritten" type="Boolean" visibility="public" size="1" offset="1652" file="U2DSoilBaseClasses.pas" line="386" />
+      <procedure name="CreateAll" visibility="public" procflags="override" file="U2DSoilBaseClasses.pas" line="389">
         <devnotes>
            <summary>Set and get methods for TRasterData</summary>
            <summary>TRasterData Ende</summary>
@@ -1877,23 +1889,25 @@
            </summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="U2DSoilBaseClasses.pas" line="382">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="U2DSoilBaseClasses.pas" line="394">
         <devnotes>
-           there are three options for defining the location and number of roots
+           there are four options for defining the location and number of roots
             rasterdatafile: root counts within a pre defined grid are input
             xyfile: a list of defined roots with their exact position input
             inppar: only the average root length density is defined, the root position
             are then calculated either in a regular hexagonal grid or as
             pure random positions
+            submodstruct: the positions are given by a root structural model
+          
            <summary> Only for further definition ..  </summary>
         </devnotes>
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="override" file="U2DSoilBaseClasses.pas" line="385">
+      <procedure name="Integrate" visibility="public" procflags="override" file="U2DSoilBaseClasses.pas" line="397">
         <devnotes>
            <summary> Method overridden to successively change the time step width. </summary>
         </devnotes>
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="U2DSoilBaseClasses.pas" line="388">
+      <procedure name="Init" visibility="public" procflags="override" file="U2DSoilBaseClasses.pas" line="400">
         <devnotes>
            <summary>Performs various initializations</summary>
         </devnotes>
@@ -1901,7 +1915,7 @@
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <function name="getRasterData" visibility="public" file="U2DSoilBaseClasses.pas" line="392">
+      <function name="getRasterData" visibility="public" file="U2DSoilBaseClasses.pas" line="404">
         <devnotes>
            <summary>Returns the RasterData instance</summary>
         </devnotes>
@@ -1918,25 +1932,26 @@
           </retval>
         </parameters>
       </function>
-      <property name="MyChart" visibility="published" read="fMyChart" write="fMyChart" type="TChart" file="U2DSoilBaseClasses.pas" line="398">
+      <property name="MyChart" visibility="published" read="fMyChart" write="fMyChart" type="TChart" file="U2DSoilBaseClasses.pas" line="410">
         <devnotes>
            <summary>Published declarations</summary>
            <summary>Property for accessing the TChart object in the Hume form</summary>
         </devnotes>
       </property>
-      <property name="MyAdvStringGrid" visibility="published" read="fMyAdvStringGrid" write="fMyAdvStringGrid" type="TAdvStringGrid" file="U2DSoilBaseClasses.pas" line="401">
+      <property name="MyMathImage" visibility="published" read="fMyMathImage" write="fMyMathImage" type="TMathImage" file="U2DSoilBaseClasses.pas" line="412" />
+      <property name="MyAdvStringGrid" visibility="published" read="fMyAdvStringGrid" write="fMyAdvStringGrid" type="TAdvStringGrid" file="U2DSoilBaseClasses.pas" line="416">
         <devnotes>
            <summary>Property for accessing the TAdvStringGrid object in the Hume form</summary>
         </devnotes>
       </property>
-      <property name="MyStructModel" visibility="published" read="fMyStructModel" write="fMyStructModel" type="TSubmodRootStrucNew" file="U2DSoilBaseClasses.pas" line="405">
+      <property name="MyStructModel" visibility="published" read="fMyStructModel" write="fMyStructModel" type="TSubmodRootStrucNew" file="U2DSoilBaseClasses.pas" line="420">
         <devnotes>
            <summary>Property for accessing the TSubmodRootStrucNew object in the Hume form</summary>
         </devnotes>
       </property>
     </members>
   </class>
-  <function name="Mg_func" visibility="public" file="U2DSoilBaseClasses.pas" line="1528">
+  <function name="Mg_func" visibility="public" file="U2DSoilBaseClasses.pas" line="1581">
     <devnotes>
        <summary>
        Returns the calculated N amount [kgN/ha]; converts the existing concentration
@@ -1950,7 +1965,7 @@
       <retval type="Double" />
     </parameters>
   </function>
-  <function name="Cl_func" visibility="public" file="U2DSoilBaseClasses.pas" line="1542">
+  <function name="Cl_func" visibility="public" file="U2DSoilBaseClasses.pas" line="1595">
     <devnotes>
        <summary>Returns the concentration [Mol N/cm^3]</summary>
     </devnotes>

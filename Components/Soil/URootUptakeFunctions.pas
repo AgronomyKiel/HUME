@@ -20,7 +20,8 @@ uses
 
 
 /// <summary>
-///   Tortuosity factor
+///  Tortuosity factor for solute diffusion in soil
+/// empirical function of based on data of Barraclough (1993?)
 /// </summary>
   function f_Tortuosity(theta: real): real;
 
@@ -35,29 +36,44 @@ uses
   end;
 
 
-
-
 /// <summary>
 ///  function for calculation of maximum nitrate uptake rates of roots
 /// </summary>
+/// parameters:
+/// <param name="Cl">Soil solution concentration [Kg N/cm3 H2O]</param>
+/// <param name="clmin">Minimum soil solution concentration [Kg N/cm3 H2O]</param>
+/// <param name="theta">Volumetric water content [cm3/cm3]</param>
+/// <param name="w_influx">Water influx [cm3/cm*d]</param>
+/// <param name="wld">Mean root length density [cm/cm3]</param>
+/// <param name="rad">Mean root radius [cm]</param>
+/// <returns>Maximum nitrate influx [Kg N/cm*d]</returns>
+/// <remarks>
+/// Nitrate Concentrations are in [Kg NO3-N/cm H2O]
+/// this unusual unit is the consequence of
+/// giving the amount of water in cm throughout the
+///  classes of this class library
+///  in order to convert to g N /l
+///  multiply by 1000 -> from kg to g
+///  multiply by 10000 x 10 from cm to l
+///  -> multiply by 1e8
+/// </remarks>
   function Imax(Cl, clmin, theta, w_influx, wld, rad: real): real;
 
 { ********************************************************************** }
-{ Zweck : Berechnung des maximalen Nitratinfluxes [Kg N/cm*d]
+{ Purpose : Calculation of the maximum nitrate influx [Kg N/cm*d]
 
-  Parameter :
+  Parameters :
 
-  Name             Inhalt                          Einheit      Typ
-  Cl               Bodenlösungskonzentration       [Kg N/cm H2o]  I
-  Clmin            min. Bodenlösungkonzentration   [Kg N/cm H2o]  I
-  theta            volumetrischer Wassergehalt     [cm3/cm3]      I
-  w_influx         Wasserinflux                    [cm3/cm*d]      I
-  dist             mittlerer halber Wurzelabst.    [cm]
-  rad              mittlerer Wurzelradius          [cm]
+  Name             Description                          Unit           Type
+  Cl               Soil solution concentration          [Kg N/cm H2O]  Input
+  Clmin            Minimum soil solution concentration  [Kg N/cm H2O]  Input
+  theta            Volumetric water content             [cm3/cm3]      Input
+  w_influx         Water influx                         [cm3/cm*d]     Input
+  dist             Mean half root spacing               [cm]           Input
+  rad              Mean root radius                     [cm]           Input
 
-  Imax             maximaler Nitratinflux          [Kg N/cm*d]   O
-
-  { ********************************************************************** }
+  Imax             Maximum nitrate influx               [Kg N/cm*d]    Output
+}
 
 
 var
@@ -65,7 +81,10 @@ var
   f, { Widerstandsfaktor }
   x, x1, x2, y, z1, Db, dist, Ima: real;
 
-
+/// <summary>
+///  function for maximum nitrate uptakrate without massflow
+///  under steady state conditions
+/// </summary>
   function v0Imax(Cl, clmin, Db, dist, rad: real): real;
   // maximum nitrate influx without mass flow
 
@@ -80,6 +99,7 @@ begin
   Ima := 0;
 
   if wld > 0.0 then
+    // half distance between roots [cm]
     dist := 1 / sqrt(pi * wld)
   else
   begin
@@ -87,13 +107,13 @@ begin
     exit;
   end;
   if Cl > 0.0 then
-    Cl := Cl * 1E-8 // Umrechnung auf kg N/cm3 H2O
+    Cl := Cl * 1E-8 // transformation from  kg N/cm3 H2O to g/l
   else
   begin
     result := 0;
     exit;
   end;
-  clmin := clmin * 1E-8; // Umrechnung auf kg N/
+  clmin := clmin * 1E-8; // transformation from  kg N/cm3 H2O to g/l
   w_influx := w_influx * 1E8; // Umrechnung auf cm3
   f := f_Tortuosity(theta);
   Db := D0NO3 * f * theta;

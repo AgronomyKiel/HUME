@@ -1,134 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="SubmodRootDiff1DSolo" platform="Win32">
   <devnotes>
-      <summary>
+     <summary>
      Unit with the solo variant of the 1D diffusion model: does not expect a structure model
-      </summary>
+     </summary>
   </devnotes>
-  <const name="z_5" type="Extended" file="SubmodRootDiff1DSolo.pas" line="34">
-    <devnotes>
-       <summary>
-       The following constants are the z_x values of the standard normal distribution
-       </summary>
-       <remarks>
-       The following are the Phi(u) values of the standard normal distribution:
-       Example for interpretation:
-       z_5 value [1.64486] denotes the u value that is exceeded by 5%% of all values.
-       That is, 5%% of all values deviate by at least 1.64486 from the mean.
-       Because of the symmetry of the standard normal distribution, for -z_5: 5%% of all
-       values deviate by -1.64486 from the mean. z_x values correspond to the Phi(u)
-       values.
-       Issue: In my opinion these are the Phi(u) values that can later be used to
-       calculate the CLASS MEANS of the RLD density distribution.
-       Correct??? (Class boundaries would then be 0.1, 0.2 ... 1)
-       </remarks>
-    </devnotes>
-    <value>
-      1.645
-    </value>
-  </const>
-  <const name="z_15" type="Extended" file="SubmodRootDiff1DSolo.pas" line="35">
-    <value>
-      1.036
-    </value>
-  </const>
-  <const name="z_25" type="Extended" file="SubmodRootDiff1DSolo.pas" line="36">
-    <value>
-      0.6745
-    </value>
-  </const>
-  <const name="z_35" type="Extended" file="SubmodRootDiff1DSolo.pas" line="37">
-    <value>
-      0.3853
-    </value>
-  </const>
-  <const name="z_45" type="Extended" file="SubmodRootDiff1DSolo.pas" line="38">
-    <value>
-      0.1257
-    </value>
-  </const>
-  <const name="z_475" type="Extended" file="SubmodRootDiff1DSolo.pas" line="41">
-    <value>
-      0.06271
-    </value>
-  </const>
-  <const name="z_425" type="Extended" file="SubmodRootDiff1DSolo.pas" line="42">
-    <value>
-      0.1891
-    </value>
-  </const>
-  <const name="z_375" type="Extended" file="SubmodRootDiff1DSolo.pas" line="43">
-    <value>
-      0.3186
-    </value>
-  </const>
-  <const name="z_325" type="Extended" file="SubmodRootDiff1DSolo.pas" line="44">
-    <value>
-      0.4538
-    </value>
-  </const>
-  <const name="z_275" type="Extended" file="SubmodRootDiff1DSolo.pas" line="45">
-    <value>
-      0.5978
-    </value>
-  </const>
-  <const name="z_225" type="Extended" file="SubmodRootDiff1DSolo.pas" line="46">
-    <value>
-      0.7554
-    </value>
-  </const>
-  <const name="z_175" type="Extended" file="SubmodRootDiff1DSolo.pas" line="47">
-    <value>
-      0.9346
-    </value>
-  </const>
-  <const name="z_125" type="Extended" file="SubmodRootDiff1DSolo.pas" line="48">
-    <value>
-      1.15
-    </value>
-  </const>
-  <const name="z_075" type="Extended" file="SubmodRootDiff1DSolo.pas" line="49">
-    <value>
-      1.44
-    </value>
-  </const>
-  <const name="z_025" type="Extended" file="SubmodRootDiff1DSolo.pas" line="50">
-    <value>
-      1.96
-    </value>
-  </const>
-  <pointer name="Pdouble" type="Double" indircnt="1" file="SubmodRootDiff1DSolo.pas" line="54" />
-  <class name="TSubmodRootDiff1DSolo" file="SubmodRootDiff1DSolo.pas" line="62">
+  <class name="TSubmodRootDiff1DSolo" file="SubmodRootDiff1DSolo.pas" line="23">
     <devnotes>
        <summary>
        Class for the solo variant of the 1D diffusion model
        </summary>
     </devnotes>
-    <ancestor name="TSubmodRoot2DDiffNitrate" namespace="USubmodRoot2DDiffNitrate">
-      <methodref name="zweid_solut" visibility="private" />
-      <methodref name="InitConc" visibility="private">
-      </methodref>
-      <methodref name="createSteadyState" visibility="private" />
-      <methodref name="avg_conz" visibility="private" />
-      <methodref name="influx_fVar" visibility="private" />
-      <methodref name="calcAmountUptakeRoots" visibility="private" />
-      <methodref name="calcActArdt" visibility="private" />
-      <methodref name="convertConcToAmount" visibility="private" />
-      <methodref name="writeNitrateUptakeSinkToFile" visibility="private" />
+    <ancestor name="TBaseSubmodRootDiffNitrate" namespace="U2DSoilBaseClassNitrate">
+      <methodref name="influx_fVar" visibility="protected" />
+      <methodref name="ConvertConcToAmount" visibility="protected" />
+      <methodref name="calcActArdt" visibility="protected" />
+      <methodref name="writeNitrateUptakeSinkToFile" visibility="protected" />
       <methodref name="CreateAll" visibility="public" procflags="override">
       </methodref>
-      <methodref name="CalcRates" visibility="public" procflags="override">
-      </methodref>
-      <methodref name="Integrate" visibility="public" procflags="override" />
       <methodref name="Init" visibility="public" procflags="override" />
-      <methodref name="Get_Sink" visibility="public">
-      </methodref>
-      <methodref name="get_minGrid" visibility="public">
-      </methodref>
-      <methodref name="showActConc" visibility="public">
-      </methodref>
-      <propertyref name="MyMathImage" visibility="published">
-      </propertyref>
       <ancestor name="TBaseSubmodRootDiff" namespace="U2DSoilBaseClasses">
         <methodref name="fillChartRootDistr" visibility="protected">
         </methodref>
@@ -143,8 +33,6 @@
         <methodref name="writeOutputToFile" visibility="protected" procflags="virtual">
         </methodref>
         <methodref name="removeMarginRoots" visibility="protected">
-        </methodref>
-        <methodref name="updateFromStructModell" visibility="protected" procflags="virtual">
         </methodref>
         <methodref name="CalcRootPosAsIndex" visibility="protected">
         </methodref>
@@ -166,6 +54,7 @@
         </methodref>
         <propertyref name="MyChart" visibility="published">
         </propertyref>
+        <propertyref name="MyMathImage" visibility="published" />
         <propertyref name="MyAdvStringGrid" visibility="published">
         </propertyref>
         <propertyref name="MyStructModel" visibility="published">
@@ -1369,152 +1258,30 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fMy2DDiffModel" type="TSubmodRoot2DDiffNitrate" visibility="private" size="4" offset="1784" file="SubmodRootDiff1DSolo.pas" line="65" />
-      <field name="WLD_Array" type=":TSubmodRootDiff1DSolo.:1" visibility="private" size="4" offset="1788" file="SubmodRootDiff1DSolo.pas" line="80">
-        <devnotes>
-           <summary>
-           Array storing the root length densities of the individual classes
-           </summary>
-           <remarks>
-           Array storing the root length densities of the individual classes
-           (class mean values) when dividing the normal or lognormal distribution
-           curve into 10 classes, i.e. the array requires 10 entries.
-           The first field of the array stores the root length density of the
-           class belonging to -z_5, the last field stores the root length density
-           of the class belonging to z_5. Storage of the root length densities
-           </remarks>
-        </devnotes>
-      </field>
-      <field name="ZV_Array_normvert" type=":TSubmodRootDiff1DSolo.:2" visibility="private" size="4" offset="1792" file="SubmodRootDiff1DSolo.pas" line="85">
-        <devnotes>
-           <summary>
-           Array for normal distribution
-           </summary>
-        </devnotes>
-      </field>
-      <field name="ZV_Array_lognorm" type=":TSubmodRootDiff1DSolo.:2" visibility="private" size="4" offset="1796" file="SubmodRootDiff1DSolo.pas" line="90">
-        <devnotes>
-           <summary>
-           Array for lognormal distribution
-           </summary>
-        </devnotes>
-      </field>
-      <field name="ZV_Array_Stdnorm" type=":TSubmodRootDiff1DSolo.:2" visibility="private" size="4" offset="1800" file="SubmodRootDiff1DSolo.pas" line="95">
-        <devnotes>
-           <summary>
-           Array for standard normal distribution
-           </summary>
-        </devnotes>
-      </field>
-      <field name="weightArr" type=":TSubmodRootDiff1DSolo.:2" visibility="private" size="4" offset="1804" file="SubmodRootDiff1DSolo.pas" line="101">
-        <devnotes>
-           <summary>
-           Array for weighting
-           </summary>
-        </devnotes>
-      </field>
-      <field name="Cl_mean_List" type="TList" visibility="private" size="4" offset="1808" file="SubmodRootDiff1DSolo.pas" line="114">
-        <devnotes>
-           <summary>
-           List for current average nitrate concentrations in the SRP
-           </summary>
-        </devnotes>
-      </field>
-      <field name="VolH20_EWZ_List" type="TList" visibility="private" size="4" offset="1812" file="SubmodRootDiff1DSolo.pas" line="119">
-        <devnotes>
-           <summary>
-           List for (water) volumes for all SRP (initially constant)
-           </summary>
-        </devnotes>
-      </field>
-      <field name="Init_NAmountEWZList" type="TList" visibility="private" size="4" offset="1816" file="SubmodRootDiff1DSolo.pas" line="124">
-        <devnotes>
-           <summary>
-           List storing the initial N amounts in the SRP
-           </summary>
-        </devnotes>
-      </field>
-      <field name="NAmountInit" type="Double" visibility="private" size="8" offset="1824" file="SubmodRootDiff1DSolo.pas" line="129">
+      <field name="NAmountInit" type="Double" visibility="private" size="8" offset="1776" file="SubmodRootDiff1DSolo.pas" line="31">
         <devnotes>
            <summary>
            Initial N amount
            </summary>
         </devnotes>
       </field>
-      <procedure name="Integrate_Analyt" visibility="private" file="SubmodRootDiff1DSolo.pas" line="141">
+      <procedure name="InitRootObjects" visibility="private" file="SubmodRootDiff1DSolo.pas" line="33">
       </procedure>
-      <function name="Kolmogorov_Smirnov" visibility="private" file="SubmodRootDiff1DSolo.pas" line="143">
-        <parameters>
-          <retval type="Boolean" />
-        </parameters>
-      </function>
-      <procedure name="calcRootArea" visibility="private" file="SubmodRootDiff1DSolo.pas" line="149">
-        <devnotes>
-           <summary>
-           Calculate the areas of the Voronoi polygons
-           not yet implemented
-           </summary>
-        </devnotes>
-      </procedure>
-      <procedure name="copyPosArrFrom2DDif" visibility="private" file="SubmodRootDiff1DSolo.pas" line="154">
-        <devnotes>
-           <summary>
-           Copy the root positions from the 2D diffusion model
-        </devnotes>
-      </procedure>
-      <procedure name="fillWLDArr" visibility="private" file="SubmodRootDiff1DSolo.pas" line="155">
-      </procedure>
-      <procedure name="Calc_numeric" visibility="private" file="SubmodRootDiff1DSolo.pas" line="157">
-      </procedure>
-      <procedure name="transform_Clmin" visibility="private" file="SubmodRootDiff1DSolo.pas" line="158">
-        <devnotes>
-           <summary>
-           Transform the Clmin from mol/l concentration to different units.
-           </summary>
-        </devnotes>
-      </procedure>
-      <procedure name="calc_Amount_H20" visibility="private" file="SubmodRootDiff1DSolo.pas" line="159">
-      </procedure>
-      <function name="calc_num_EWZ" visibility="private" file="SubmodRootDiff1DSolo.pas" line="160">
-        <parameters>
-          <retval type="Double" />
-        </parameters>
-      </function>
-      <function name="calc_num_class" visibility="private" file="SubmodRootDiff1DSolo.pas" line="161">
-        <parameters>
-          <retval type="Double" />
-        </parameters>
-      </function>
-      <procedure name="calcN_AmountSoilEquil" visibility="private" file="SubmodRootDiff1DSolo.pas" line="166">
+      <procedure name="calcN_AmountSoilEquil" visibility="private" file="SubmodRootDiff1DSolo.pas" line="38">
         <devnotes>
            <summary>
            Calculate the soil N amount for a given distribution
            </summary>
         </devnotes>
       </procedure>
-      <field name="initial_1D" type="Boolean" visibility="protected" size="1" offset="1832" file="SubmodRootDiff1DSolo.pas" line="171" />
-      <field name="number_classes" type="TPar" visibility="protected" size="4" offset="1836" file="SubmodRootDiff1DSolo.pas" line="179">
+      <field name="number_classes" type="TPar" visibility="protected" size="4" offset="1784" file="SubmodRootDiff1DSolo.pas" line="47">
         <devnotes>
            <summary>
            Number of classes for class-specific uptake calculation
            </summary>
         </devnotes>
       </field>
-      <field name="Log_StdAbw_Area" type="TPar" visibility="protected" size="4" offset="1840" file="SubmodRootDiff1DSolo.pas" line="184">
-        <devnotes>
-           <summary>
-           Log-transformed standard deviation of the area [cm^2]
-           </summary>
-        </devnotes>
-      </field>
-      <field name="Log_Area_mean" type="TPar" visibility="protected" size="4" offset="1844" file="SubmodRootDiff1DSolo.pas" line="189">
-        <devnotes>
-           <summary>
-           Log-transformed mean area in a layer [cm^2]
-           </summary>
-        </devnotes>
-      </field>
-      <field name="ParVC" type="TPar" visibility="protected" size="4" offset="1848" file="SubmodRootDiff1DSolo.pas" line="203">
+      <field name="ParCV" type="TPar" visibility="protected" size="4" offset="1788" file="SubmodRootDiff1DSolo.pas" line="62">
         <devnotes>
            <summary>
            Coefficient of variation of the mRLD [%%]
@@ -1530,35 +1297,35 @@
            </remarks>
         </devnotes>
       </field>
-      <field name="Area_mean" type="TVar" visibility="protected" size="4" offset="1852" file="SubmodRootDiff1DSolo.pas" line="211">
+      <field name="Area_mean" type="TVar" visibility="protected" size="4" offset="1792" file="SubmodRootDiff1DSolo.pas" line="70">
         <devnotes>
            <summary>
            Mean area [cm^2]
            </summary>
         </devnotes>
       </field>
-      <field name="VarKoeff_Area" type="TVar" visibility="protected" size="4" offset="1856" file="SubmodRootDiff1DSolo.pas" line="216">
+      <field name="VC_Area" type="TVar" visibility="protected" size="4" offset="1796" file="SubmodRootDiff1DSolo.pas" line="75">
         <devnotes>
            <summary>
            Coefficient of variation of the mean area [%%]
            </summary>
         </devnotes>
       </field>
-      <field name="StdAbw_Area" type="TVar" visibility="protected" size="4" offset="1860" file="SubmodRootDiff1DSolo.pas" line="221">
+      <field name="StdAbw_Area" type="TVar" visibility="protected" size="4" offset="1800" file="SubmodRootDiff1DSolo.pas" line="80">
         <devnotes>
            <summary>
            Standard deviation of the area [cm^2]
            </summary>
         </devnotes>
       </field>
-      <field name="Log_RLD_mean" type="TVar" visibility="protected" size="4" offset="1864" file="SubmodRootDiff1DSolo.pas" line="226">
+      <field name="Log_RLD_mean" type="TVar" visibility="protected" size="4" offset="1804" file="SubmodRootDiff1DSolo.pas" line="85">
         <devnotes>
            summary&gt;
            Log-transformed mean root length density in a layer [cm/cm^3]
            </summary>
         </devnotes>
       </field>
-      <field name="Log_StdAbw_RLD" type="TVar" visibility="protected" size="4" offset="1868" file="SubmodRootDiff1DSolo.pas" line="235">
+      <field name="Log_StdDef_RLD" type="TVar" visibility="protected" size="4" offset="1808" file="SubmodRootDiff1DSolo.pas" line="94">
         <devnotes>
            <summary>
            Log-transformed mean root length density in a layer [cm/cm^3]
@@ -1568,35 +1335,35 @@
            </summary>
         </devnotes>
       </field>
-      <field name="VarKoeff_RLD" type="TVar" visibility="protected" size="4" offset="1872" file="SubmodRootDiff1DSolo.pas" line="241">
+      <field name="VarKoeff_RLD" type="TVar" visibility="protected" size="4" offset="1812" file="SubmodRootDiff1DSolo.pas" line="99">
         <devnotes>
            <summary>
            Coefficient of variation of the mean RLD [%%]
            </summary>
         </devnotes>
       </field>
-      <field name="StdAbw_RLD" type="TVar" visibility="protected" size="4" offset="1876" file="SubmodRootDiff1DSolo.pas" line="246">
+      <field name="StdDev_RLD" type="TVar" visibility="protected" size="4" offset="1816" file="SubmodRootDiff1DSolo.pas" line="104">
         <devnotes>
            <summary>
            Standard deviation of the root length density [cm/cm^3]
            </summary>
         </devnotes>
       </field>
-      <field name="Varianz" type="TVar" visibility="protected" size="4" offset="1880" file="SubmodRootDiff1DSolo.pas" line="251">
+      <field name="VarRLD" type="TVar" visibility="protected" size="4" offset="1820" file="SubmodRootDiff1DSolo.pas" line="109">
         <devnotes>
            <summary>
            Variance of the mean root length density [cm/cm^3]
            </summary>
         </devnotes>
       </field>
-      <field name="VM" type="TVar" visibility="protected" size="4" offset="1884" file="SubmodRootDiff1DSolo.pas" line="256">
+      <field name="VMratio" type="TVar" visibility="protected" size="4" offset="1824" file="SubmodRootDiff1DSolo.pas" line="114">
         <devnotes>
            <summary>
            V/M ratio
            </summary>
         </devnotes>
       </field>
-      <field name="Mittl_Flaeche" type="TVar" visibility="protected" size="4" offset="1888" file="SubmodRootDiff1DSolo.pas" line="262">
+      <field name="AvArea" type="TVar" visibility="protected" size="4" offset="1828" file="SubmodRootDiff1DSolo.pas" line="120">
         <devnotes>
            <summary>
            Mean area of the Voronoi polygons [cm^2]
@@ -1604,92 +1371,56 @@
            </summary>
         </devnotes>
       </field>
-      <field name="StdAbw_Flaeche" type="TVar" visibility="protected" size="4" offset="1892" file="SubmodRootDiff1DSolo.pas" line="267">
+      <field name="StdDevArea" type="TVar" visibility="protected" size="4" offset="1832" file="SubmodRootDiff1DSolo.pas" line="125">
         <devnotes>
            <summary>
            Standard deviation of Mittl_Flaeche [cm^2]
            </summary>
         </devnotes>
       </field>
-      <field name="ClminTransf" type="TVar" visibility="protected" size="4" offset="1896" file="SubmodRootDiff1DSolo.pas" line="273">
-        <devnotes>
-           <summary>
-           Minimum soil solution concentration [kg N/cm*H20]
-           For numerical solution:
-           </summary>
-        </devnotes>
-      </field>
-      <field name="ClminTransf_ha" type="TVar" visibility="protected" size="4" offset="1900" file="SubmodRootDiff1DSolo.pas" line="278">
-        <devnotes>
-           <summary>
-           Minimum soil solution concentration [kg N/ha]
-           </summary>
-        </devnotes>
-      </field>
-      <field name="Amount_H20" type="TVar" visibility="protected" size="4" offset="1904" file="SubmodRootDiff1DSolo.pas" line="283">
+      <field name="Amount_H20" type="TVar" visibility="protected" size="4" offset="1836" file="SubmodRootDiff1DSolo.pas" line="130">
         <devnotes>
            <summary>
            Water amount in the soil layer under consideration [l]
            </summary>
         </devnotes>
       </field>
-      <field name="Par_AreaMean" type="TVar" visibility="protected" size="4" offset="1908" file="SubmodRootDiff1DSolo.pas" line="288">
+      <field name="Par_AreaMean" type="TVar" visibility="protected" size="4" offset="1840" file="SubmodRootDiff1DSolo.pas" line="135">
         <devnotes>
            <summary>
            Mean area [cm^2]
            </summary>
         </devnotes>
       </field>
-      <field name="Par_AreaVC" type="TVar" visibility="protected" size="4" offset="1912" file="SubmodRootDiff1DSolo.pas" line="293">
+      <field name="Par_AreaVC" type="TVar" visibility="protected" size="4" offset="1844" file="SubmodRootDiff1DSolo.pas" line="140">
         <devnotes>
            <summary>
            Coefficient of variation of mean area [%%]
            </summary>
         </devnotes>
       </field>
-      <field name="N_MengeAnteilAn" type="TState" visibility="protected" size="4" offset="1916" file="SubmodRootDiff1DSolo.pas" line="301">
+      <field name="NAmountShare" type="TState" visibility="protected" size="4" offset="1848" file="SubmodRootDiff1DSolo.pas" line="148">
         <devnotes>
            <summary>
            Fractional nitrogen uptake [-] when using the analytical solution according to Tinker, Nye Eq.10.28
            </summary>
         </devnotes>
       </field>
-      <field name="N_MengeAnteilNum" type="TState" visibility="protected" size="4" offset="1920" file="SubmodRootDiff1DSolo.pas" line="305">
+      <field name="NAmountShareNum" type="TState" visibility="protected" size="4" offset="1852" file="SubmodRootDiff1DSolo.pas" line="153">
         <devnotes>
            <summary>
            Fractional nitrogen uptake [-] when using the numerical solution
            </summary>
         </devnotes>
       </field>
-      <field name="N_AmountSoilNum" type="TState" visibility="protected" size="4" offset="1924" file="SubmodRootDiff1DSolo.pas" line="309">
+      <field name="N_AmountSoilNum" type="TState" visibility="protected" size="4" offset="1856" file="SubmodRootDiff1DSolo.pas" line="158">
         <devnotes>
            <summary>
            The solo 1D model has an additional state variable for comparing the calculation with the analytical and numerical solution
            </summary>
         </devnotes>
       </field>
-      <field name="OperatingMode" type="TOption" visibility="protected" size="4" offset="1928" file="SubmodRootDiff1DSolo.pas" line="319">
-        <devnotes>
-           <summary>
-           How the model should run: with or without the 2D model, important for the output in the form
-           </summary>
-        </devnotes>
-      </field>
-      <field name="calcMethodZV" type="TOption" visibility="protected" size="4" offset="1932" file="SubmodRootDiff1DSolo.pas" line="323">
-        <devnotes>
-           <summary>
-           Selection of calculation method: a) with constant cumulative frequency interval b) with constant class interval.
-           </summary>
-        </devnotes>
-      </field>
-      <field name="integrationMethod" type="TOption" visibility="protected" size="4" offset="1936" file="SubmodRootDiff1DSolo.pas" line="327">
-        <devnotes>
-           <summary>
-           Choice of numerical or analytical calculation
-           </summary>
-        </devnotes>
-      </field>
-      <field name="RootDistribution" type="TOption" visibility="protected" size="4" offset="1940" file="SubmodRootDiff1DSolo.pas" line="333">
+      <field name="RootDistribution" type="TOption" visibility="protected" size="4" offset="1860" file="SubmodRootDiff1DSolo.pas" line="164">
         <devnotes>
            <summary>
            Specify the assumed distribution of the WAP, specific to the 1D and 2D model, because the 1D model
@@ -1697,73 +1428,31 @@
            </summary>
         </devnotes>
       </field>
-      <field name="CalcMethRLD_VC" type="TOption" visibility="protected" size="4" offset="1944" file="SubmodRootDiff1DSolo.pas" line="338">
-        <devnotes>
-           <summary>
-           Different options for calculating the statistics of the root distribution
-           </summary>
-        </devnotes>
-      </field>
-      <field name="CalcMethQuant" type="TOption" visibility="protected" size="4" offset="1948" file="SubmodRootDiff1DSolo.pas" line="343">
-        <devnotes>
-           <summary>
-           Different methods for calculating the class mean values of the RLD in the associated quantiles.
-           </summary>
-        </devnotes>
-      </field>
-      <field name="StatN_AmountSoil" type="TOption" visibility="protected" size="4" offset="1952" file="SubmodRootDiff1DSolo.pas" line="349">
+      <field name="StatN_AmountSoil" type="TOption" visibility="protected" size="4" offset="1864" file="SubmodRootDiff1DSolo.pas" line="170">
         <devnotes>
            <summary>
            Switch for calculations with static N amount and with dynamically changing N amount. When changing dynamically, only a time step based calculation can be used. With the analytical solution this means that a fractional calculation actually no longer makes sense. Solution: replace variable Time with Timestep and multiply the fractional uptake in the time step by the currently available N amount.
            </summary>
         </devnotes>
       </field>
-      <field name="compareMode" type="TOption" visibility="protected" size="4" offset="1956" file="SubmodRootDiff1DSolo.pas" line="354">
+      <procedure name="CreateAll" visibility="public" procflags="override" file="SubmodRootDiff1DSolo.pas" line="174">
         <devnotes>
            <summary>
-           Switch used to specify whether the 1D model should be run for comparison with the 2D model = setting 'yes': Only the N amount in the soil at steady state Influx = mineralisation is calculated; root uptake is not calculated (see Kage dissertation, equation 3.6.43) or not = setting 'no': Solution according to Tinker/Nye (Eq. 10.28; calculation of root uptake as well as the N amounts in the soil from the initial N amount and root uptake
-           </summary>
-        </devnotes>
-      </field>
-      <procedure name="calcVar_Analyt" visibility="protected" file="SubmodRootDiff1DSolo.pas" line="361">
-        <devnotes>
-           <summary>
-           Switch for comparison with the 2D model: There, to produce the steady state, the absorbed amount is added back to the cells in each time step. When comparing the models this must also happen in the 1D model. (Only the solo model needs this, because in the full model such a comparison does not play a role.) Switch is currently not used
+           Create and initialize state variables, variables, and parameters.
            </summary>
         </devnotes>
       </procedure>
-      <procedure name="get_normvert_ZV" visibility="protected" file="SubmodRootDiff1DSolo.pas" line="366">
-      </procedure>
-      <procedure name="get_lognorm_ZV" visibility="protected" file="SubmodRootDiff1DSolo.pas" line="367">
-      </procedure>
-      <procedure name="get_lognorm_ZV_Area" visibility="protected" file="SubmodRootDiff1DSolo.pas" line="368">
-      </procedure>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="SubmodRootDiff1DSolo.pas" line="371">
-      </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="SubmodRootDiff1DSolo.pas" line="373">
-        <devnotes>
-           <remarks>
-           ASSOCIATED CLASS: TSubmodRootDiff1DSolo
-           DESCRIPTION: Create and initialize state variables, variables, and parameters.
-           The first parameter of the function call passes a string that is identical to the
-           identifier and can therefore be searched for.
-           The second parameter contains a string indicating the unit used ([-] for
-           dimensionless parameters).
-           The third parameter is the actual (floating point) value.
-           See declaration for explanation of the identifiers.
-           </remarks>
-        </devnotes>
+      <procedure name="Init" visibility="public" procflags="override" file="SubmodRootDiff1DSolo.pas" line="176">
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="SubmodRootDiff1DSolo.pas" line="374">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="SubmodRootDiff1DSolo.pas" line="177">
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="override" file="SubmodRootDiff1DSolo.pas" line="375">
+      <procedure name="Integrate" visibility="public" procflags="override" file="SubmodRootDiff1DSolo.pas" line="178">
       </procedure>
-      <property name="My2DDiffModel" visibility="published" read="fMy2DDiffModel" write="fMy2DDiffModel" type="TSubmodRoot2DDiffNitrate" file="SubmodRootDiff1DSolo.pas" line="379" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="SubmodRootDiff1DSolo.pas" line="1296">
+  <procedure name="Register" visibility="public" file="SubmodRootDiff1DSolo.pas" line="405">
   </procedure>
 </namespace>
