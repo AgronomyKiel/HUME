@@ -34,7 +34,7 @@ object FormMod: TFormMod
     Top = 44
     Width = 1090
     Height = 589
-    ActivePage = TabSheetModelDiagram
+    ActivePage = TabSheetGlobal
     Align = alClient
     HotTrack = True
     TabOrder = 1
@@ -173,6 +173,7 @@ object FormMod: TFormMod
             BevelWidth = 5
             ReadOnly = True
             TabOrder = 0
+            ExplicitHeight = 25
           end
         end
         object GroupBoxEndtime: TGroupBox
@@ -203,6 +204,7 @@ object FormMod: TFormMod
             Align = alLeft
             TabOrder = 0
             OnChange = EditEndTimeChange
+            ExplicitHeight = 25
           end
           object EndTimePicker: TDateTimePicker
             Left = 101
@@ -244,6 +246,7 @@ object FormMod: TFormMod
             Align = alClient
             TabOrder = 0
             Text = '1'
+            ExplicitHeight = 25
           end
         end
         object GroupBoxStateIniFile: TGroupBox
@@ -310,9 +313,9 @@ object FormMod: TFormMod
             Width = 750
             Height = 22
             Align = alLeft
-            ReadOnly = True
             TabOrder = 0
             OnMouseMove = EditStateIniFileNameMouseMove
+            ExplicitHeight = 25
           end
         end
         object GroupBoxPamIniFileName: TGroupBox
@@ -381,9 +384,9 @@ object FormMod: TFormMod
             Width = 750
             Height = 19
             Align = alLeft
-            ReadOnly = True
             TabOrder = 0
             OnMouseMove = EditParamIniFileNameMouseMove
+            ExplicitHeight = 25
           end
         end
         object GroupBoxWeatherFile: TGroupBox
@@ -449,12 +452,13 @@ object FormMod: TFormMod
             Top = 22
             Width = 750
             Height = 21
+            Hint = 'Actual Weather Data File'
             Align = alLeft
             ParentShowHint = False
-            ReadOnly = True
             ShowHint = True
             TabOrder = 0
             OnMouseMove = EditWeatherfileMouseMove
+            ExplicitHeight = 25
           end
         end
         object GroupBoxSaveIniFileChanges: TGroupBox
@@ -583,6 +587,7 @@ object FormMod: TFormMod
           Align = alLeft
           TabOrder = 0
           OnChange = EditStartTimeChange
+          ExplicitHeight = 23
         end
         object DateTimePickerStart: TDateTimePicker
           Left = 101
@@ -905,6 +910,7 @@ object FormMod: TFormMod
         Height = 515
         Cursor = crDefault
         Align = alClient
+        ColCount = 6
         DefaultColWidth = 120
         FixedCols = 2
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goEditing]
@@ -969,6 +975,7 @@ object FormMod: TFormMod
         MouseActions.CaretPositioning = True
         MouseActions.ColSelect = True
         MouseActions.RowSelect = True
+        MouseActions.WheelAction = waMoveSelection
         Navigation.AllowDeleteRow = True
         Navigation.AdvanceAutoEdit = False
         Navigation.AdvanceDirection = adTopBottom
@@ -1023,7 +1030,8 @@ object FormMod: TFormMod
           120
           82
           83
-          92)
+          92
+          120)
       end
       object ToolBarParSheet: TToolBar
         AlignWithMargins = True
@@ -1249,7 +1257,7 @@ object FormMod: TFormMod
         FixedFont.Style = []
         FloatFormat = '%.2f'
         MouseActions.WheelIncrement = 1
-        MouseActions.WheelAction = waScroll
+        MouseActions.WheelAction = waMoveSelection
         Navigation.AdvanceAutoEdit = False
         Navigation.AdvanceDirection = adTopBottom
         Navigation.AllowClipboardShortCuts = True
@@ -1515,6 +1523,7 @@ object FormMod: TFormMod
         FixedFont.Name = 'MS Sans Serif'
         FixedFont.Style = []
         FloatFormat = '%.2f'
+        MouseActions.WheelAction = waMoveSelection
         Navigation.AdvanceAutoEdit = False
         Navigation.AdvanceDirection = adTopBottom
         Navigation.AllowClipboardShortCuts = True
@@ -1668,6 +1677,7 @@ object FormMod: TFormMod
         FixedFont.Name = 'MS Sans Serif'
         FixedFont.Style = []
         FloatFormat = '%.2f'
+        MouseActions.WheelAction = waMoveSelection
         Navigation.AdvanceAutoEdit = False
         PrintSettings.DateFormat = 'dd/mm/yyyy'
         PrintSettings.Font.Charset = DEFAULT_CHARSET
@@ -1912,7 +1922,7 @@ object FormMod: TFormMod
         Height = 524
         Cursor = crDefault
         Align = alClient
-        ColCount = 4
+        ColCount = 6
         DefaultColWidth = 100
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing]
         ScrollBars = ssBoth
@@ -1927,11 +1937,13 @@ object FormMod: TFormMod
         ActiveCellFont.Height = -11
         ActiveCellFont.Name = 'Tahoma'
         ActiveCellFont.Style = [fsBold]
-        ActiveCellColor = 15387318
+        ActiveCellColor = 9758459
+        ActiveCellColorTo = 1414638
         AutoNumAlign = True
+        AutoThemeAdapt = True
         CellNode.NodeType = cnFlat
         ControlLook.FixedGradientFrom = clWhite
-        ControlLook.FixedGradientTo = clBtnFace
+        ControlLook.FixedGradientTo = clWhite
         ControlLook.FixedGradientHoverFrom = 13619409
         ControlLook.FixedGradientHoverTo = 12502728
         ControlLook.FixedGradientHoverMirrorFrom = 12502728
@@ -1973,6 +1985,7 @@ object FormMod: TFormMod
         MouseActions.CaretPositioning = True
         MouseActions.ColSelect = True
         MouseActions.RowSelect = True
+        MouseActions.WheelAction = waMoveSelection
         Navigation.AllowDeleteRow = True
         Navigation.AdvanceAutoEdit = False
         Navigation.AllowClipboardShortCuts = True
@@ -2002,7 +2015,8 @@ object FormMod: TFormMod
         PrintSettings.PagePrefix = 'page'
         PrintSettings.PageNumSep = '/'
         ScrollWidth = 18
-        SearchFooter.ColorTo = 13160660
+        SearchFooter.Color = 15524577
+        SearchFooter.ColorTo = 11769496
         SearchFooter.FindNextCaption = 'Find &next'
         SearchFooter.FindPrevCaption = 'Find &previous'
         SearchFooter.Font.Charset = DEFAULT_CHARSET
@@ -2020,13 +2034,18 @@ object FormMod: TFormMod
         SortSettings.HeaderColorTo = 16579058
         SortSettings.HeaderMirrorColor = 16380385
         SortSettings.HeaderMirrorColorTo = 16182488
-        URLColor = clBlack
+        URLColor = clSalmon
+        URLShow = True
+        URLFull = True
+        URLEdit = True
         Version = '5.0.3.1'
         WordWrap = False
         ColWidths = (
           100
           135
           583
+          100
+          100
           100)
       end
     end
@@ -2105,6 +2124,7 @@ object FormMod: TFormMod
         MouseActions.ColSelect = True
         MouseActions.DisjunctRowSelect = True
         MouseActions.RowSelect = True
+        MouseActions.WheelAction = waMoveSelection
         Navigation.AllowDeleteRow = True
         Navigation.AdvanceOnEnter = True
         Navigation.AllowClipboardShortCuts = True
@@ -2393,6 +2413,7 @@ object FormMod: TFormMod
         FixedFont.Name = 'Tahoma'
         FixedFont.Style = [fsBold]
         FloatFormat = '%.2f'
+        MouseActions.WheelAction = waMoveSelection
         PrintSettings.DateFormat = 'dd/mm/yyyy'
         PrintSettings.Font.Charset = DEFAULT_CHARSET
         PrintSettings.Font.Color = clWindowText
@@ -2572,6 +2593,7 @@ object FormMod: TFormMod
         MouseActions.ColSelect = True
         MouseActions.DisjunctRowSelect = True
         MouseActions.RowSelect = True
+        MouseActions.WheelAction = waMoveSelection
         Multilinecells = True
         Navigation.AllowInsertRow = True
         Navigation.AllowDeleteRow = True
@@ -2878,14 +2900,14 @@ object FormMod: TFormMod
         object LabelTimeSeriesOption: TLabel
           Left = 255
           Top = 0
-          Width = 96
+          Width = 97
           Height = 24
           Alignment = taCenter
           Caption = '  Time series type  '
           Layout = tlCenter
         end
         object ComboBoxTimeAxisOption: TComboBox
-          Left = 351
+          Left = 352
           Top = 0
           Width = 145
           Height = 23
@@ -2897,7 +2919,7 @@ object FormMod: TFormMod
             'Floating Point')
         end
         object SelectMeasDataCheckBox: TCheckBox
-          Left = 496
+          Left = 497
           Top = 0
           Width = 172
           Height = 24
@@ -3021,6 +3043,7 @@ object FormMod: TFormMod
         FixedFont.Style = [fsBold]
         FloatFormat = '%.2f'
         Look = glWin7
+        MouseActions.WheelAction = waMoveSelection
         PrintSettings.DateFormat = 'dd/mm/yyyy'
         PrintSettings.Font.Charset = DEFAULT_CHARSET
         PrintSettings.Font.Color = clWindowText
@@ -3176,6 +3199,7 @@ object FormMod: TFormMod
       Top = 4
       Width = 520
       Height = 22
+      Hint = 'Actual Ini-File'
       Align = alRight
       Style = csOwnerDrawFixed
       TabOrder = 1
@@ -3420,8 +3444,8 @@ object FormMod: TFormMod
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000}
   end
-  object Lmod: TModLink
-    Left = 1016
-    Top = 536
+  object LMod: TModLink
+    Left = 560
+    Top = 552
   end
 end

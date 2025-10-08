@@ -12,6 +12,15 @@
         <Projects Include="Components\CERES Wheat\CeresSubModels.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Components\ISIP_Components\ISIP_Components.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Components\OilseedRape\OSR.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Components\PlantComponents\PackageGrowthCurvePlantRootsDM.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +56,41 @@
     <Target Name="CeresSubModels:Make">
         <MSBuild Projects="Components\CERES Wheat\CeresSubModels.dproj" Targets="Make"/>
     </Target>
+    <Target Name="ISIP_Components">
+        <MSBuild Projects="Components\ISIP_Components\ISIP_Components.dproj"/>
+    </Target>
+    <Target Name="ISIP_Components:Clean">
+        <MSBuild Projects="Components\ISIP_Components\ISIP_Components.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ISIP_Components:Make">
+        <MSBuild Projects="Components\ISIP_Components\ISIP_Components.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="OSR">
+        <MSBuild Projects="Components\OilseedRape\OSR.dproj"/>
+    </Target>
+    <Target Name="OSR:Clean">
+        <MSBuild Projects="Components\OilseedRape\OSR.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OSR:Make">
+        <MSBuild Projects="Components\OilseedRape\OSR.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PackageGrowthCurvePlantRootsDM">
+        <MSBuild Projects="Components\PlantComponents\PackageGrowthCurvePlantRootsDM.dproj"/>
+    </Target>
+    <Target Name="PackageGrowthCurvePlantRootsDM:Clean">
+        <MSBuild Projects="Components\PlantComponents\PackageGrowthCurvePlantRootsDM.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PackageGrowthCurvePlantRootsDM:Make">
+        <MSBuild Projects="Components\PlantComponents\PackageGrowthCurvePlantRootsDM.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="Hume1;SoilWaterPackage;CeresSubModels"/>
+        <CallTarget Targets="Hume1;SoilWaterPackage;CeresSubModels;ISIP_Components;OSR;PackageGrowthCurvePlantRootsDM"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Hume1:Clean;SoilWaterPackage:Clean;CeresSubModels:Clean"/>
+        <CallTarget Targets="Hume1:Clean;SoilWaterPackage:Clean;CeresSubModels:Clean;ISIP_Components:Clean;OSR:Clean;PackageGrowthCurvePlantRootsDM:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Hume1:Make;SoilWaterPackage:Make;CeresSubModels:Make"/>
+        <CallTarget Targets="Hume1:Make;SoilWaterPackage:Make;CeresSubModels:Make;ISIP_Components:Make;OSR:Make;PackageGrowthCurvePlantRootsDM:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

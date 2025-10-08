@@ -1,0 +1,1427 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="UState" platform="Win32">
+  <devnotes>
+      <summary>
+        Defines core data types and classes for representing state variables,
+        parameters, and external variables in a crop simulation model.
+        Provides a standardized way to handle variables that change over time
+        (states), fixed model parameters, and variables imported from other
+        modules or the environment.
+      </summary>
+  </devnotes>
+  <const name="RateField" type="TExValue" file="Ustate.pas" line="35">
+    <value>
+      RateField
+    </value>
+  </const>
+  <const name="StateField" type="TExValue" file="Ustate.pas" line="35">
+    <value>
+      StateField
+    </value>
+  </const>
+  <type name="real" type="Double" file="System.pas" line="12" />
+  <enum name="TExValue" file="Ustate.pas" line="35">
+    <devnotes>
+       <summary>
+       Enumeration type for pointer indirection, important for external state
+       variables and external values, where the name of a state variable can mean
+       either the state itself or its rate of change.
+       </summary>
+    </devnotes>
+    <element value="0" name="RateField" file="Ustate.pas" line="35" />
+    <element value="1" name="StateField" file="Ustate.pas" line="35" />
+  </enum>
+  <class name="THumeEntity" file="Ustate.pas" line="47">
+    <devnotes>
+       <summary>
+       THumeEntity is the base class for all objects representing either numerical
+       values (states, variables, parameters, constants) or Options. It provides
+       basic functionality for variables and external &quot;driving forces&quot;.
+       If the destination is a console app it is derived from TObject.
+       For use within the IDE/GUI applications it is derived from TPersistent.
+       </summary>
+    </devnotes>
+    <ancestor name="TPersistent" namespace="System.Classes">
+      <methodref name="AssignError" visibility="private">
+      </methodref>
+      <methodref name="AssignTo" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor override">
+      </methodref>
+      <methodref name="Assign" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+      </methodref>
+      <ancestor name="TObject" namespace="System">
+        <methodref name="Create" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="Free" visibility="public">
+        </methodref>
+        <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+        </methodref>
+        <methodref name="InitInstance" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="CleanupInstance" visibility="public">
+        </methodref>
+        <methodref name="ClassType" visibility="public" procflags="inline">
+        </methodref>
+        <methodref name="ClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassNameIs" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassParent" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="ClassInfo" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InstanceSize" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InheritsFrom" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="QualifiedClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="GetInterface" visibility="public">
+        </methodref>
+        <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="UnitName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="UnitScope" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="Equals" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetHashCode" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ToString" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="SafeCallException" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Dispatch" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="NewInstance" visibility="public" procflags="class virtual">
+        </methodref>
+        <methodref name="FreeInstance" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+        </methodref>
+        <methodref name="GetDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <propertyref name="Disposed" visibility="protected">
+        </propertyref>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="N" type="string" visibility="private" size="4" offset="4" file="Ustate.pas" line="51">
+        <devnotes>
+           <summary>Internal field for the name of the entity.</summary>
+        </devnotes>
+      </field>
+      <field name="FComment" type="string" visibility="private" size="4" offset="8" file="Ustate.pas" line="53">
+        <devnotes>
+           <summary>Internal field for comments/explanation.</summary>
+        </devnotes>
+      </field>
+      <field name="fName" type="string" visibility="private" size="4" offset="12" file="Ustate.pas" line="55">
+        <devnotes>
+           <summary>Internal field for the name of the Entity.</summary>
+        </devnotes>
+      </field>
+      <field name="fSubmod" type="string" visibility="private" size="4" offset="16" file="Ustate.pas" line="57">
+        <devnotes>
+           <summary>Internal field for the submodel to which the Entity belongs.</summary>
+        </devnotes>
+      </field>
+      <field name="fDocuWebLink" type="string" visibility="private" size="4" offset="20" file="Ustate.pas" line="59">
+        <devnotes>
+           <summary>Internal field for the documentation link.</summary>
+        </devnotes>
+      </field>
+      <field name="U" type="string" visibility="public" size="4" offset="24" file="Ustate.pas" line="62">
+        <devnotes>
+           <summary>Units of the entity (e.g., 'kg/ha', 'm').</summary>
+        </devnotes>
+      </field>
+      <field name="Indexed" type="Boolean" visibility="public" size="1" offset="28" file="Ustate.pas" line="64">
+        <devnotes>
+           <summary>Indicates if the entity is an array.</summary>
+        </devnotes>
+      </field>
+      <field name="lowerbound" type="Integer" visibility="public" size="4" offset="32" file="Ustate.pas" line="66">
+        <devnotes>
+           <summary>Lower bound for indexed entities (arrays).</summary>
+        </devnotes>
+      </field>
+      <field name="upperbound" type="Integer" visibility="public" size="4" offset="36" file="Ustate.pas" line="68">
+        <devnotes>
+           <summary>Upper bound for indexed entities (arrays).</summary>
+        </devnotes>
+      </field>
+      <field name="ReadFromIniFile" type="Boolean" visibility="public" size="1" offset="40" file="Ustate.pas" line="70">
+        <devnotes>
+           <summary>Flag to indicate if the value should be initialized from a file.</summary>
+        </devnotes>
+      </field>
+      <field name="WriteToFile" type="Boolean" visibility="public" size="1" offset="41" file="Ustate.pas" line="72">
+        <devnotes>
+           <summary>Flag to control output to a text file.</summary>
+        </devnotes>
+      </field>
+      <field name="WriteToIniFile" type="Boolean" visibility="public" size="1" offset="42" file="Ustate.pas" line="74">
+        <devnotes>
+           <summary>Flag to control output to an INI file.</summary>
+        </devnotes>
+      </field>
+      <field name="SelForSensOut" type="Boolean" visibility="public" size="1" offset="43" file="Ustate.pas" line="76">
+        <devnotes>
+           <summary>Flag for selection for sensitivity analysis output.</summary>
+        </devnotes>
+      </field>
+      <field name="WasReadFromFile" type="Boolean" visibility="public" size="1" offset="44" file="Ustate.pas" line="78">
+        <devnotes>
+           <summary>Flag indicating if initialization from file was successful.</summary>
+        </devnotes>
+      </field>
+      <property name="Name" visibility="published" read="N" write="N" type="string" default="0" file="Ustate.pas" line="81">
+        <devnotes>
+           <summary>The name of the object.</summary>
+        </devnotes>
+      </property>
+      <property name="SubModName" visibility="published" read="fSubmod" write="fSubmod" type="string" default="0" file="Ustate.pas" line="83">
+        <devnotes>
+           <summary>The name of the submodule this entity belongs to.</summary>
+        </devnotes>
+      </property>
+      <property name="Comment" visibility="published" read="FComment" write="FComment" type="string" default="0" file="Ustate.pas" line="85">
+        <devnotes>
+           <summary>A descriptive comment or explanation for the entity.</summary>
+        </devnotes>
+      </property>
+      <property name="DocuWebLink" visibility="published" read="fDocuWebLink" write="fDocuWebLink" type="string" default="0" file="Ustate.pas" line="87">
+        <devnotes>
+           <summary>A web link to documentation for this entity.</summary>
+        </devnotes>
+      </property>
+      <property name="Opt_writetoFile" visibility="published" read="WriteToFile" write="WriteToFile" type="Boolean" file="Ustate.pas" line="89">
+        <devnotes>
+           <summary>Flag indicating whether to write output to a text file.</summary>
+        </devnotes>
+      </property>
+      <property name="Opt_SelForSensOut" visibility="published" read="SelForSensOut" write="SelForSensOut" type="Boolean" file="Ustate.pas" line="91">
+        <devnotes>
+           <summary>Flag indicating selection for sensitivity analysis output.</summary>
+        </devnotes>
+      </property>
+      <property name="Units" visibility="published" read="U" write="U" type="string" default="0" file="Ustate.pas" line="93">
+        <devnotes>
+           <summary>The physical units associated with the object's value.</summary>
+        </devnotes>
+      </property>
+    </members>
+  </class>
+  <class name="TOption" file="Ustate.pas" line="99">
+    <devnotes>
+       <summary>
+       Represents a model option with a string value and a list of possible choices.
+       </summary>
+    </devnotes>
+    <ancestor name="THumeEntity" namespace="UState">
+      <propertyref name="Name" visibility="published">
+      </propertyref>
+      <propertyref name="SubModName" visibility="published">
+      </propertyref>
+      <propertyref name="Comment" visibility="published">
+      </propertyref>
+      <propertyref name="DocuWebLink" visibility="published">
+      </propertyref>
+      <propertyref name="Opt_writetoFile" visibility="published">
+      </propertyref>
+      <propertyref name="Opt_SelForSensOut" visibility="published">
+      </propertyref>
+      <propertyref name="Units" visibility="published">
+      </propertyref>
+      <ancestor name="TPersistent" namespace="System.Classes">
+        <methodref name="AssignError" visibility="private">
+        </methodref>
+        <methodref name="AssignTo" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor override">
+        </methodref>
+        <methodref name="Assign" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+        </methodref>
+        <ancestor name="TObject" namespace="System">
+          <methodref name="Create" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="Free" visibility="public">
+          </methodref>
+          <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+          </methodref>
+          <methodref name="InitInstance" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="CleanupInstance" visibility="public">
+          </methodref>
+          <methodref name="ClassType" visibility="public" procflags="inline">
+          </methodref>
+          <methodref name="ClassName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="ClassNameIs" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="ClassParent" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="ClassInfo" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="InstanceSize" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="InheritsFrom" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="MethodAddress" visibility="public" procflags="class overload">
+          </methodref>
+          <methodref name="MethodAddress" visibility="public" procflags="class overload">
+          </methodref>
+          <methodref name="MethodName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="QualifiedClassName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="FieldAddress" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="FieldAddress" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="GetInterface" visibility="public">
+          </methodref>
+          <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="UnitName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="UnitScope" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="Equals" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="GetHashCode" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ToString" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="SafeCallException" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Dispatch" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="NewInstance" visibility="public" procflags="class virtual">
+          </methodref>
+          <methodref name="FreeInstance" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+          </methodref>
+          <methodref name="GetDisposed" visibility="protected" procflags="inline">
+          </methodref>
+          <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+          </methodref>
+          <propertyref name="Disposed" visibility="protected">
+          </propertyref>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="fOption" type="string" visibility="private" size="4" offset="48" file="Ustate.pas" line="101" />
+      <function name="getOption" visibility="private" file="Ustate.pas" line="102">
+        <parameters>
+          <retval type="string" />
+        </parameters>
+      </function>
+      <procedure name="setOption" visibility="private" file="Ustate.pas" line="103">
+        <parameters>
+          <parameter name="Option" type="string" paramflags="const" />
+        </parameters>
+      </procedure>
+      <field name="DefaultString" type="string" visibility="public" size="4" offset="52" file="Ustate.pas" line="106">
+        <devnotes>
+           <summary>The default string value for the option.</summary>
+        </devnotes>
+      </field>
+      <field name="OptionList" type="TStringList" visibility="public" size="4" offset="56" file="Ustate.pas" line="108">
+        <devnotes>
+           <summary>A list of permissible string values for the option.</summary>
+        </devnotes>
+      </field>
+      <constructor name="create" visibility="public" file="Ustate.pas" line="109">
+        <parameters>
+          <parameter name="name" type="string" />
+          <parameter name="Default" type="string" />
+          <parameter name="c" type="string" />
+        </parameters>
+      </constructor>
+      <destructor name="Destroy" visibility="public" file="Ustate.pas" line="110">
+        <parameters>
+        </parameters>
+      </destructor>
+      <property name="Option" visibility="published" read="getOption" write="setOption" type="string" default="0" file="Ustate.pas" line="113">
+        <devnotes>
+           <summary>The currently selected option string.</summary>
+        </devnotes>
+      </property>
+    </members>
+  </class>
+  <class name="THumeNumEntity" file="Ustate.pas" line="121">
+    <devnotes>
+       <summary>
+       THumeNumEntity is an abstract base class for numerical entities in the model,
+       such as variables and external values. It extends THumeEntity with
+       properties for numerical values, units, and flags for plotting and output.
+       </summary>
+    </devnotes>
+    <ancestor name="THumeEntity" namespace="UState">
+      <propertyref name="Name" visibility="published">
+      </propertyref>
+      <propertyref name="SubModName" visibility="published">
+      </propertyref>
+      <propertyref name="Comment" visibility="published">
+      </propertyref>
+      <propertyref name="DocuWebLink" visibility="published">
+      </propertyref>
+      <propertyref name="Opt_writetoFile" visibility="published">
+      </propertyref>
+      <propertyref name="Opt_SelForSensOut" visibility="published">
+      </propertyref>
+      <propertyref name="Units" visibility="published">
+      </propertyref>
+      <ancestor name="TPersistent" namespace="System.Classes">
+        <methodref name="AssignError" visibility="private">
+        </methodref>
+        <methodref name="AssignTo" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor override">
+        </methodref>
+        <methodref name="Assign" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+        </methodref>
+        <ancestor name="TObject" namespace="System">
+          <methodref name="Create" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="Free" visibility="public">
+          </methodref>
+          <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+          </methodref>
+          <methodref name="InitInstance" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="CleanupInstance" visibility="public">
+          </methodref>
+          <methodref name="ClassType" visibility="public" procflags="inline">
+          </methodref>
+          <methodref name="ClassName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="ClassNameIs" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="ClassParent" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="ClassInfo" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="InstanceSize" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="InheritsFrom" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="MethodAddress" visibility="public" procflags="class overload">
+          </methodref>
+          <methodref name="MethodAddress" visibility="public" procflags="class overload">
+          </methodref>
+          <methodref name="MethodName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="QualifiedClassName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="FieldAddress" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="FieldAddress" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="GetInterface" visibility="public">
+          </methodref>
+          <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="UnitName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="UnitScope" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="Equals" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="GetHashCode" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ToString" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="SafeCallException" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Dispatch" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="NewInstance" visibility="public" procflags="class virtual">
+          </methodref>
+          <methodref name="FreeInstance" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+          </methodref>
+          <methodref name="GetDisposed" visibility="protected" procflags="inline">
+          </methodref>
+          <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+          </methodref>
+          <propertyref name="Disposed" visibility="protected">
+          </propertyref>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="FDigits" type="Integer" visibility="private" size="4" offset="48" file="Ustate.pas" line="123" />
+      <field name="FPrecision" type="Integer" visibility="private" size="4" offset="52" file="Ustate.pas" line="124" />
+      <function name="get_value" visibility="private" procflags="virtual" file="Ustate.pas" line="125">
+        <parameters>
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <procedure name="set_value" visibility="private" procflags="virtual" file="Ustate.pas" line="126">
+        <parameters>
+          <parameter name="value" type="Double" />
+        </parameters>
+      </procedure>
+      <field name="fv" type="Double" visibility="public" size="8" offset="56" file="Ustate.pas" line="129">
+        <devnotes>
+           <summary>The internal numerical value of the entity.</summary>
+        </devnotes>
+      </field>
+      <field name="DefaultValue" type="Double" visibility="public" size="8" offset="64" file="Ustate.pas" line="131">
+        <devnotes>
+           <summary>The default value, often used for initialization.</summary>
+        </devnotes>
+      </field>
+      <field name="PlotToGraph" type="Boolean" visibility="public" size="1" offset="72" file="Ustate.pas" line="133">
+        <devnotes>
+           <summary>Flag to control graphical output (plotting).</summary>
+        </devnotes>
+      </field>
+      <field name="fGlobalOutput" type="Boolean" visibility="public" size="1" offset="73" file="Ustate.pas" line="135">
+        <devnotes>
+           <summary>Flag for selection to a global output file.</summary>
+        </devnotes>
+      </field>
+      <field name="WriteFinalValue" type="Boolean" visibility="public" size="1" offset="74" file="Ustate.pas" line="137">
+        <devnotes>
+           <summary>Flag for extra output of final values in a file.</summary>
+        </devnotes>
+      </field>
+      <field name="IsMeasured" type="Boolean" visibility="public" size="1" offset="75" file="Ustate.pas" line="139">
+        <devnotes>
+           <summary>Flag to indicate if measured data is available for this entity.</summary>
+        </devnotes>
+      </field>
+      <procedure name="write_declaration" visibility="public" file="Ustate.pas" line="141">
+        <devnotes>
+           <summary>Writes the declaration code for this entity to a source file.</summary>
+        </devnotes>
+        <parameters>
+          <parameter name="f" type="Text" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="write_property" visibility="public" file="Ustate.pas" line="143">
+        <devnotes>
+           <summary>Writes the property declaration code for this entity to a source file.</summary>
+        </devnotes>
+        <parameters>
+          <parameter name="f" type="Text" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="write_Create" visibility="public" procflags="virtual" file="Ustate.pas" line="145">
+        <devnotes>
+           <summary>Writes the creation/instantiation code for this entity to a source file.</summary>
+        </devnotes>
+        <parameters>
+          <parameter name="f" type="Text" paramflags="var" />
+        </parameters>
+      </procedure>
+      <constructor name="create" visibility="published" file="Ustate.pas" line="147">
+        <parameters>
+        </parameters>
+      </constructor>
+      <property name="Opt_PlotToGraph" visibility="published" read="PlotToGraph" write="PlotToGraph" type="Boolean" file="Ustate.pas" line="149">
+        <devnotes>
+           <summary>Property for optional plotting to a graph.</summary>
+        </devnotes>
+      </property>
+      <property name="Opt_WriteFinalValue" visibility="published" read="WriteFinalValue" write="WriteFinalValue" type="Boolean" file="Ustate.pas" line="151">
+        <devnotes>
+           <summary>Property for the optional output of final values.</summary>
+        </devnotes>
+      </property>
+      <property name="Digits" visibility="published" read="FDigits" write="FDigits" type="Integer" file="Ustate.pas" line="153">
+        <devnotes>
+           <summary>Property for the number of digits used in text output.</summary>
+        </devnotes>
+      </property>
+      <property name="Precision" visibility="published" read="FPrecision" write="FPrecision" type="Integer" file="Ustate.pas" line="155">
+        <devnotes>
+           <summary>Property for the precision (digits after decimal point) of the numerical value.</summary>
+        </devnotes>
+      </property>
+      <property name="GlobalOutput" visibility="published" read="fGlobalOutput" write="fGlobalOutput" type="Boolean" file="Ustate.pas" line="157">
+        <devnotes>
+           <summary>Property indicating if the entity is written to a global output file.</summary>
+        </devnotes>
+      </property>
+      <property name="v" visibility="published" read="get_value" write="set_value" type="Double" default="0" file="Ustate.pas" line="159">
+        <devnotes>
+           <summary>The main numerical value of the entity.</summary>
+        </devnotes>
+      </property>
+    </members>
+  </class>
+  <class name="TVar" file="Ustate.pas" line="167">
+    <devnotes>
+       <summary>
+       TVar is a class representing a variable, i.e., a value that can be
+       calculated for each time step in the model from other variables, state
+       variables, or parameters. It is the base class for TPar and TState.
+       </summary>
+    </devnotes>
+    <ancestor name="THumeNumEntity" namespace="UState">
+      <methodref name="get_value" visibility="private" procflags="virtual" />
+      <methodref name="set_value" visibility="private" procflags="virtual" />
+      <methodref name="write_declaration" visibility="public">
+      </methodref>
+      <methodref name="write_property" visibility="public">
+      </methodref>
+      <methodref name="write_Create" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="create" visibility="published" procflags="constructor" />
+      <propertyref name="Opt_PlotToGraph" visibility="published">
+      </propertyref>
+      <propertyref name="Opt_WriteFinalValue" visibility="published">
+      </propertyref>
+      <propertyref name="Digits" visibility="published">
+      </propertyref>
+      <propertyref name="Precision" visibility="published">
+      </propertyref>
+      <propertyref name="GlobalOutput" visibility="published">
+      </propertyref>
+      <propertyref name="v" visibility="published">
+      </propertyref>
+      <ancestor name="THumeEntity" namespace="UState">
+        <propertyref name="Name" visibility="published">
+        </propertyref>
+        <propertyref name="SubModName" visibility="published">
+        </propertyref>
+        <propertyref name="Comment" visibility="published">
+        </propertyref>
+        <propertyref name="DocuWebLink" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_writetoFile" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_SelForSensOut" visibility="published">
+        </propertyref>
+        <propertyref name="Units" visibility="published">
+        </propertyref>
+        <ancestor name="TPersistent" namespace="System.Classes">
+          <methodref name="AssignError" visibility="private">
+          </methodref>
+          <methodref name="AssignTo" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="Assign" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+          </methodref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <function name="get_value" visibility="private" procflags="override" file="Ustate.pas" line="169">
+        <parameters>
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <procedure name="set_value" visibility="private" procflags="override" file="Ustate.pas" line="170">
+        <parameters>
+          <parameter name="value" type="Double" />
+        </parameters>
+      </procedure>
+      <field name="RateSTring" type="string" visibility="public" size="4" offset="80" file="Ustate.pas" line="173">
+        <devnotes>
+           <summary>String containing source code for rate calculation.</summary>
+        </devnotes>
+      </field>
+      <field name="IniString" type="string" visibility="public" size="4" offset="84" file="Ustate.pas" line="175">
+        <devnotes>
+           <summary>String containing source code for initialization.</summary>
+        </devnotes>
+      </field>
+      <procedure name="write_Create" visibility="public" procflags="override" file="Ustate.pas" line="176">
+        <parameters>
+          <parameter name="f" type="Text" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="write_Init" visibility="public" file="Ustate.pas" line="177">
+        <parameters>
+          <parameter name="f" type="Text" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="write_Rate" visibility="public" file="Ustate.pas" line="178">
+        <parameters>
+          <parameter name="f" type="Text" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="write_RInit" visibility="public" file="Ustate.pas" line="179">
+        <parameters>
+          <parameter name="f" type="Text" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="write_RRate" visibility="public" file="Ustate.pas" line="180">
+        <parameters>
+          <parameter name="f" type="Text" paramflags="var" />
+        </parameters>
+      </procedure>
+      <constructor name="create" visibility="published" file="Ustate.pas" line="187">
+        <devnotes>
+           <summary>Instantiates a TVar (Variable) object.</summary>
+           <param name="na">Name of the Variable.</param>
+           <param name="un">Units of the Variable.</param>
+           <param name="va">Floating point value.</param>
+           <param name="c">Comment/Explanation string.</param>
+        </devnotes>
+        <parameters>
+          <parameter name="na" type="string" />
+          <parameter name="un" type="string" />
+          <parameter name="va" type="Double" />
+          <parameter name="c" type="string" />
+        </parameters>
+      </constructor>
+    </members>
+  </class>
+  <class name="TPar" file="Ustate.pas" line="195">
+    <devnotes>
+       <summary>
+       TPar is a class representing a parameter variable in the model, which can be
+       selected for optimization or sensitivity analysis. It extends TVar and adds
+       properties for min/max values, uncertainty, and selection flags.
+       </summary>
+    </devnotes>
+    <ancestor name="TVar" namespace="UState">
+      <methodref name="get_value" visibility="private" procflags="override" />
+      <methodref name="set_value" visibility="private" procflags="override" />
+      <methodref name="write_Create" visibility="public" procflags="override" />
+      <methodref name="write_Init" visibility="public" />
+      <methodref name="write_Rate" visibility="public" />
+      <methodref name="write_RInit" visibility="public" />
+      <methodref name="write_RRate" visibility="public" />
+      <methodref name="create" visibility="published" procflags="constructor">
+      </methodref>
+      <ancestor name="THumeNumEntity" namespace="UState">
+        <methodref name="get_value" visibility="private" procflags="virtual" />
+        <methodref name="set_value" visibility="private" procflags="virtual" />
+        <methodref name="write_declaration" visibility="public">
+        </methodref>
+        <methodref name="write_property" visibility="public">
+        </methodref>
+        <methodref name="write_Create" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="create" visibility="published" procflags="constructor" />
+        <propertyref name="Opt_PlotToGraph" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_WriteFinalValue" visibility="published">
+        </propertyref>
+        <propertyref name="Digits" visibility="published">
+        </propertyref>
+        <propertyref name="Precision" visibility="published">
+        </propertyref>
+        <propertyref name="GlobalOutput" visibility="published">
+        </propertyref>
+        <propertyref name="v" visibility="published">
+        </propertyref>
+        <ancestor name="THumeEntity" namespace="UState">
+          <propertyref name="Name" visibility="published">
+          </propertyref>
+          <propertyref name="SubModName" visibility="published">
+          </propertyref>
+          <propertyref name="Comment" visibility="published">
+          </propertyref>
+          <propertyref name="DocuWebLink" visibility="published">
+          </propertyref>
+          <propertyref name="Opt_writetoFile" visibility="published">
+          </propertyref>
+          <propertyref name="Opt_SelForSensOut" visibility="published">
+          </propertyref>
+          <propertyref name="Units" visibility="published">
+          </propertyref>
+          <ancestor name="TPersistent" namespace="System.Classes">
+            <methodref name="AssignError" visibility="private">
+            </methodref>
+            <methodref name="AssignTo" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor override">
+            </methodref>
+            <methodref name="Assign" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+            </methodref>
+            <ancestor name="TObject" namespace="System">
+              <methodref name="Create" visibility="public" procflags="constructor">
+              </methodref>
+              <methodref name="Free" visibility="public">
+              </methodref>
+              <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+              </methodref>
+              <methodref name="InitInstance" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="CleanupInstance" visibility="public">
+              </methodref>
+              <methodref name="ClassType" visibility="public" procflags="inline">
+              </methodref>
+              <methodref name="ClassName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="ClassNameIs" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="ClassParent" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="ClassInfo" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="InstanceSize" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="InheritsFrom" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="MethodAddress" visibility="public" procflags="class overload">
+              </methodref>
+              <methodref name="MethodAddress" visibility="public" procflags="class overload">
+              </methodref>
+              <methodref name="MethodName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="QualifiedClassName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="FieldAddress" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="FieldAddress" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="GetInterface" visibility="public">
+              </methodref>
+              <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="UnitName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="UnitScope" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="Equals" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="GetHashCode" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="ToString" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="SafeCallException" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="Dispatch" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="NewInstance" visibility="public" procflags="class virtual">
+              </methodref>
+              <methodref name="FreeInstance" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+              </methodref>
+              <methodref name="GetDisposed" visibility="protected" procflags="inline">
+              </methodref>
+              <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+              </methodref>
+              <propertyref name="Disposed" visibility="protected">
+              </propertyref>
+            </ancestor>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="fmax" type="Double" visibility="private" size="8" offset="88" file="Ustate.pas" line="197" />
+      <field name="fmin" type="Double" visibility="private" size="8" offset="96" file="Ustate.pas" line="198" />
+      <field name="SelForOpt" type="Boolean" visibility="public" size="1" offset="104" file="Ustate.pas" line="201">
+        <devnotes>
+           <summary>Flag to indicate if the parameter is selected for optimization.</summary>
+        </devnotes>
+      </field>
+      <field name="SelForSens" type="Boolean" visibility="public" size="1" offset="105" file="Ustate.pas" line="203">
+        <devnotes>
+           <summary>Flag to indicate if the parameter is selected for sensitivity analysis.</summary>
+        </devnotes>
+      </field>
+      <field name="error" type="Double" visibility="public" size="8" offset="112" file="Ustate.pas" line="205">
+        <devnotes>
+           <summary>An uncertainty or error value associated with the parameter.</summary>
+        </devnotes>
+      </field>
+      <constructor name="create" visibility="public" file="Ustate.pas" line="213">
+        <devnotes>
+           <summary>Instantiates a TPar (Parameter) object.</summary>
+           <param name="na">Name of the parameter.</param>
+           <param name="un">Units of the parameter.</param>
+           <param name="va">Default floating point value.</param>
+           <param name="error">Error or uncertainty value.</param>
+           <param name="c">Comment/Explanation string.</param>
+        </devnotes>
+        <parameters>
+          <parameter name="na" type="string" />
+          <parameter name="un" type="string" />
+          <parameter name="va" type="Double" />
+          <parameter name="error" type="Double" />
+          <parameter name="c" type="string" />
+        </parameters>
+      </constructor>
+      <property name="opt_SelForSens" visibility="published" read="SelForSens" write="SelForSens" type="Boolean" file="Ustate.pas" line="216">
+        <devnotes>
+           <summary>Property for selecting the parameter for sensitivity analysis.</summary>
+        </devnotes>
+      </property>
+      <property name="max" visibility="published" read="fmax" write="fmax" type="Double" default="0" file="Ustate.pas" line="218">
+        <devnotes>
+           <summary>The maximum expected value, e.g., for optimization routines.</summary>
+        </devnotes>
+      </property>
+      <property name="min" visibility="published" read="fmin" write="fmax" type="Double" default="0" file="Ustate.pas" line="220">
+        <devnotes>
+           <summary>The minimum expected value, e.g., for optimization routines.</summary>
+        </devnotes>
+      </property>
+    </members>
+  </class>
+  <class name="TState" file="Ustate.pas" line="227">
+    <devnotes>
+       <summary>
+       TState is a class representing a state variable in the model, which has an
+       initial value and a rate of change. It is integrated over time.
+       </summary>
+    </devnotes>
+    <ancestor name="TVar" namespace="UState">
+      <methodref name="get_value" visibility="private" procflags="override" />
+      <methodref name="set_value" visibility="private" procflags="override" />
+      <methodref name="write_Create" visibility="public" procflags="override" />
+      <methodref name="write_Init" visibility="public" />
+      <methodref name="write_Rate" visibility="public" />
+      <methodref name="write_RInit" visibility="public" />
+      <methodref name="write_RRate" visibility="public" />
+      <methodref name="create" visibility="published" procflags="constructor">
+      </methodref>
+      <ancestor name="THumeNumEntity" namespace="UState">
+        <methodref name="get_value" visibility="private" procflags="virtual" />
+        <methodref name="set_value" visibility="private" procflags="virtual" />
+        <methodref name="write_declaration" visibility="public">
+        </methodref>
+        <methodref name="write_property" visibility="public">
+        </methodref>
+        <methodref name="write_Create" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="create" visibility="published" procflags="constructor" />
+        <propertyref name="Opt_PlotToGraph" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_WriteFinalValue" visibility="published">
+        </propertyref>
+        <propertyref name="Digits" visibility="published">
+        </propertyref>
+        <propertyref name="Precision" visibility="published">
+        </propertyref>
+        <propertyref name="GlobalOutput" visibility="published">
+        </propertyref>
+        <propertyref name="v" visibility="published">
+        </propertyref>
+        <ancestor name="THumeEntity" namespace="UState">
+          <propertyref name="Name" visibility="published">
+          </propertyref>
+          <propertyref name="SubModName" visibility="published">
+          </propertyref>
+          <propertyref name="Comment" visibility="published">
+          </propertyref>
+          <propertyref name="DocuWebLink" visibility="published">
+          </propertyref>
+          <propertyref name="Opt_writetoFile" visibility="published">
+          </propertyref>
+          <propertyref name="Opt_SelForSensOut" visibility="published">
+          </propertyref>
+          <propertyref name="Units" visibility="published">
+          </propertyref>
+          <ancestor name="TPersistent" namespace="System.Classes">
+            <methodref name="AssignError" visibility="private">
+            </methodref>
+            <methodref name="AssignTo" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor override">
+            </methodref>
+            <methodref name="Assign" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+            </methodref>
+            <ancestor name="TObject" namespace="System">
+              <methodref name="Create" visibility="public" procflags="constructor">
+              </methodref>
+              <methodref name="Free" visibility="public">
+              </methodref>
+              <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+              </methodref>
+              <methodref name="InitInstance" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="CleanupInstance" visibility="public">
+              </methodref>
+              <methodref name="ClassType" visibility="public" procflags="inline">
+              </methodref>
+              <methodref name="ClassName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="ClassNameIs" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="ClassParent" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="ClassInfo" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="InstanceSize" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="InheritsFrom" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="MethodAddress" visibility="public" procflags="class overload">
+              </methodref>
+              <methodref name="MethodAddress" visibility="public" procflags="class overload">
+              </methodref>
+              <methodref name="MethodName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="QualifiedClassName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="FieldAddress" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="FieldAddress" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="GetInterface" visibility="public">
+              </methodref>
+              <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="UnitName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="UnitScope" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="Equals" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="GetHashCode" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="ToString" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="SafeCallException" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="Dispatch" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="NewInstance" visibility="public" procflags="class virtual">
+              </methodref>
+              <methodref name="FreeInstance" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+              </methodref>
+              <methodref name="GetDisposed" visibility="protected" procflags="inline">
+              </methodref>
+              <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+              </methodref>
+              <propertyref name="Disposed" visibility="protected">
+              </propertyref>
+            </ancestor>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="iv" type="Double" visibility="public" size="8" offset="88" file="Ustate.pas" line="230">
+        <devnotes>
+           <summary>The initial value of the state variable.</summary>
+        </devnotes>
+      </field>
+      <field name="c" type="Double" visibility="public" size="8" offset="96" file="Ustate.pas" line="232">
+        <devnotes>
+           <summary>The current rate of change of the state variable.</summary>
+        </devnotes>
+      </field>
+      <constructor name="create" visibility="public" file="Ustate.pas" line="239">
+        <devnotes>
+           <summary>Instantiates a TState (State Variable) object.</summary>
+           <param name="na">Name of the state variable.</param>
+           <param name="un">Units of the state variable.</param>
+           <param name="va">Initial value.</param>
+           <param name="cr">Initial rate of change.</param>
+           <param name="comm">Comment/Explanation string.</param>
+        </devnotes>
+        <parameters>
+          <parameter name="na" type="string" />
+          <parameter name="un" type="string" />
+          <parameter name="va" type="Double" />
+          <parameter name="cr" type="Double" />
+          <parameter name="comm" type="string" />
+        </parameters>
+      </constructor>
+    </members>
+  </class>
+  <class name="TExternV" file="Ustate.pas" line="247">
+    <devnotes>
+       <summary>
+       TExternV represents an external variable in the model. Values of model
+       elements outside a submodel are &quot;external&quot; and made accessible by linking
+       to the source variable, often via a pointer.
+       </summary>
+    </devnotes>
+    <ancestor name="THumeNumEntity" namespace="UState">
+      <methodref name="get_value" visibility="private" procflags="virtual" />
+      <methodref name="set_value" visibility="private" procflags="virtual" />
+      <methodref name="write_declaration" visibility="public">
+      </methodref>
+      <methodref name="write_property" visibility="public">
+      </methodref>
+      <methodref name="write_Create" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="create" visibility="published" procflags="constructor" />
+      <propertyref name="Opt_PlotToGraph" visibility="published">
+      </propertyref>
+      <propertyref name="Opt_WriteFinalValue" visibility="published">
+      </propertyref>
+      <propertyref name="Digits" visibility="published">
+      </propertyref>
+      <propertyref name="Precision" visibility="published">
+      </propertyref>
+      <propertyref name="GlobalOutput" visibility="published">
+      </propertyref>
+      <propertyref name="v" visibility="published">
+      </propertyref>
+      <ancestor name="THumeEntity" namespace="UState">
+        <propertyref name="Name" visibility="published">
+        </propertyref>
+        <propertyref name="SubModName" visibility="published">
+        </propertyref>
+        <propertyref name="Comment" visibility="published">
+        </propertyref>
+        <propertyref name="DocuWebLink" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_writetoFile" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_SelForSensOut" visibility="published">
+        </propertyref>
+        <propertyref name="Units" visibility="published">
+        </propertyref>
+        <ancestor name="TPersistent" namespace="System.Classes">
+          <methodref name="AssignError" visibility="private">
+          </methodref>
+          <methodref name="AssignTo" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="Assign" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+          </methodref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="fSearch" type="Boolean" visibility="private" size="1" offset="80" file="Ustate.pas" line="250">
+        <devnotes>
+           <summary>If true, the variable is found by searching the model by name.</summary>
+        </devnotes>
+      </field>
+      <field name="f_Ex" type="TExValue" visibility="private" size="1" offset="81" file="Ustate.pas" line="252">
+        <devnotes>
+           <summary>Specifies whether to link to the state or its rate of change.</summary>
+        </devnotes>
+      </field>
+      <field name="Conversion_f" type="Double" visibility="private" size="8" offset="88" file="Ustate.pas" line="254">
+        <devnotes>
+           <summary>A conversion factor to apply to the external value.</summary>
+        </devnotes>
+      </field>
+      <field name="fSource" type="string" visibility="private" size="4" offset="96" file="Ustate.pas" line="256">
+        <devnotes>
+           <summary>The source of the external variable (e.g., a file or submodel name).</summary>
+        </devnotes>
+      </field>
+      <function name="get_value" visibility="private" procflags="override" file="Ustate.pas" line="257">
+        <devnotes>
+           <summary>Delivers the external &quot;value&quot; result.</summary>
+           <returns>The value pointed to, adjusted by the conversion factor.</returns>
+        </devnotes>
+        <parameters>
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <procedure name="set_value" visibility="private" procflags="override" file="Ustate.pas" line="258">
+        <parameters>
+          <parameter name="value" type="Double" />
+        </parameters>
+      </procedure>
+      <field name="F_N" type="string" visibility="public" size="4" offset="100" file="Ustate.pas" line="260" />
+      <field name="f_v" visibility="public" size="4" offset="104" file="Ustate.pas" line="262">
+        <devnotes>
+           <summary>A direct pointer to the external data.</summary>
+        </devnotes>
+        <pointer name="f_v" type="Double" indircnt="1" />
+      </field>
+      <constructor name="create" visibility="public" file="Ustate.pas" line="268">
+        <devnotes>
+           <summary>Instantiates a TExternV (External Variable) object.</summary>
+           <param name="Nname">Name of the external variable.</param>
+           <param name="NUnits">Units of the external variable.</param>
+           <param name="ExV">Type of external value (state or rate).</param>
+           <param name="c">Comment/Explanation string.</param>
+        </devnotes>
+        <parameters>
+          <parameter name="Nname" type="string" />
+          <parameter name="NUnits" type="string" />
+          <parameter name="ExV" type="TExValue" />
+          <parameter name="c" type="string" />
+        </parameters>
+      </constructor>
+      <procedure name="setPointer" visibility="public" file="Ustate.pas" line="269">
+        <devnotes>
+           <summary>Sets the internal pointer to the external &quot;value&quot; variable.</summary>
+           <param name="NewPointer">The new pointer to the external data.</param>
+        </devnotes>
+        <parameters>
+          <parameter name="NewPointer" type="Pointer" />
+        </parameters>
+      </procedure>
+      <property name="Ex" visibility="published" read="f_Ex" write="f_Ex" type="TExValue" file="Ustate.pas" line="272">
+        <devnotes>
+           <summary>Specifies whether to link to the state or rate field.</summary>
+        </devnotes>
+      </property>
+      <property name="Search" visibility="published" read="fSearch" write="fSearch" type="Boolean" file="Ustate.pas" line="274">
+        <devnotes>
+           <summary>If true, the variable is located by searching the model by its name.</summary>
+        </devnotes>
+      </property>
+      <property name="C_f" visibility="published" read="Conversion_f" write="Conversion_f" type="Double" default="0" file="Ustate.pas" line="276">
+        <devnotes>
+           <summary>A conversion factor applied to the value when read.</summary>
+        </devnotes>
+      </property>
+      <property name="Source" visibility="published" read="fSource" write="fSource" type="string" default="0" file="Ustate.pas" line="278">
+        <devnotes>
+           <summary>A string identifying the source of the variable.</summary>
+        </devnotes>
+      </property>
+    </members>
+  </class>
+</namespace>

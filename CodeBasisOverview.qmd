@@ -1,0 +1,58 @@
+---
+title: "HUME Codebase Overview"
+author: "Chatgpt/Codex"
+---
+
+# HUME Codebase Overview
+
+## Overview
+
+**HUME** is an object‑oriented Pascal/Delphi library for constructing modular dynamic simulation models. A central model object coordinates several interchangeable submodels (e.g., plant growth, soil, irrigation), which exchange data through defined interfaces.
+
+## Directory Structure (Key Areas)
+
+| Directory/File | Contents / Purpose |
+|----|----|
+| `UMod.pas`, `Ustate.pas`, `UModUtils.pas`, `UTextFileH.pas` | Core units: main model class `TMod`, base class `TSubModel`, data types for states/parameters, file and utility functions |
+| `Components/` | Collection of concrete submodels such as `CERES Wheat`, `Maize`, `Soil`, etc.; these are the domain-specific modules integrated into the framework |
+| `Forms/` & various `UForm*.pas/dfm` | GUI forms for parameter input, graphics, and debugging; based on Delphi’s VCL |
+| `Demo/` | Example project with INI files and sample submodels for quick start |
+| `Documentation_Help`, `docs/`, Quarto files (`*.qmd`) | Documentation and help files, partially for Quarto/HTML output |
+| Project files (`*.dpr`, `*.dproj`, `*.groupproj`) | Delphi project and project-group files for the compiler/IDE |
+
+## Architecture & Operation
+
+1.  **Main Model (`TMod`)**
+    -   Initiates and controls the simulation\
+    -   Manages lists of submodels, state variables, and parameters\
+    -   Provides functions for sensitivity analysis and parameter estimation (Levenberg–Marquardt)
+2.  **Submodels (`TSubModel` descendants)**
+    -   Model specific processes (e.g., yield, water balance, plant development)\
+    -   Communicate via “External Values”: strings loosely couple data producers and consumers
+3.  **Data Structures (`UState.pas`)**
+    -   Classes such as `TVar`, `TPar`, `TState`, `TExternV` represent numerical quantities with metadata (unit, comment, …)\
+    -   Uniform treatment of states, parameters, and external inputs supports generic processing
+4.  **Configuration & I/O**
+    -   INI files and text tables (via `UTextFileH`) are used for initialization and result output\
+    -   Utility functions (`UModUtils`) simplify file-name handling and numeric helper calculations
+5.  **GUI**
+    -   Numerous forms support loading/editing parameters, visualizing results, and debugging\
+    -   For console execution, compilation can proceed without the GUI (`NONVISUAL` compiler switch)
+
+## What Should a Beginner Learn?
+
+1.  **Pascal/Delphi Basics**
+    -   Classes, inheritance, properties, `unit` structure\
+    -   Working with the VCL if GUI development is planned
+2.  **Understanding HUME Base Classes**
+    -   Structure of `TMod` and `TSubModel`: lifecycle, key methods (`Init`, `Run`, `Finalize`)\
+    -   Handling of `THumeEntity`-derived classes (`TState`, `TPar`, …)
+3.  **Creating a Custom Submodel**
+    -   Derive from `TSubModel`, declare required variables, and link them via strings for external values\
+    -   Use configuration files for initialization
+4.  **Project Structure & Files**
+    -   Delphi project files (.dpr, .dproj, .groupproj) for build organization\
+    -   Understanding INI files and measurement tables as input/output
+5.  **Using Documentation & Demo**
+    -   Launch the `Demo/` project as a learning example\
+    -   Read Quarto/Markdown documents (`docs/`, `Documentation_Help/`) to grasp the model hierarchy and available components

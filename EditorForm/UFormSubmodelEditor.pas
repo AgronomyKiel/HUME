@@ -64,22 +64,22 @@ end;
 
 procedure TF_SubmodelEditor.BitBtnCloseClick(Sender: TObject);
 begin
-close;
+  close;
 end;
 
 procedure TF_SubmodelEditor.ADV_ParGetEditorType(Sender: TObject; aCol,
   aRow: Integer; var aEditor: TEditorType);
 begin
 case acol of
-0:aEditor:=edNormal;
-1:aEditor:=edNormal;
-2:aEditor:=edFloat;
-3:aEditor:=edFloat;
-4:aEditor:=edFloat;
-5:aEditor:=edFloat;
-6:aEditor:=edCheckBox;
-7:aEditor:=edCheckBox;
-8:aEditor:=edCheckBox;
+  0:aEditor:=edNormal;
+  1:aEditor:=edNormal;
+  2:aEditor:=edFloat;
+  3:aEditor:=edFloat;
+  4:aEditor:=edFloat;
+  5:aEditor:=edFloat;
+  6:aEditor:=edCheckBox;
+  7:aEditor:=edCheckBox;
+  8:aEditor:=edCheckBox;
 end;
 end;
 
@@ -87,14 +87,14 @@ procedure TF_SubmodelEditor.ADV_VarGetEditorType(Sender: TObject; aCol,
   aRow: Integer; var aEditor: TEditorType);
 begin
 case acol of
-0:aEditor:=edNormal;
-1:aEditor:=edNormal;
-2:aEditor:=edFloat;
-3:aEditor:=edFloat;
-4:aEditor:=edFloat;
-5:aEditor:=edFloat;
-6:aEditor:=edCheckBox;
-7:aEditor:=edCheckBox;
+  0:aEditor:=edNormal;
+  1:aEditor:=edNormal;
+  2:aEditor:=edFloat;
+  3:aEditor:=edFloat;
+  4:aEditor:=edFloat;
+  5:aEditor:=edFloat;
+  6:aEditor:=edCheckBox;
+  7:aEditor:=edCheckBox;
 end;
 end;
 
@@ -102,15 +102,15 @@ procedure TF_SubmodelEditor.ADV_StateGetEditorType(Sender: TObject; aCol,
   aRow: Integer; var aEditor: TEditorType);
 begin
 case acol of
-0:aEditor:=edNormal;
-1:aEditor:=edNormal;
-2:aEditor:=edFloat;
-3:aEditor:=edFloat;
-4:aEditor:=edFloat;
-5:aEditor:=edFloat;
-6:aEditor:=edCheckBox;
-7:aEditor:=edCheckBox;
-8:aEditor:=edCheckBox;
+  0:aEditor:=edNormal;
+  1:aEditor:=edNormal;
+  2:aEditor:=edFloat;
+  3:aEditor:=edFloat;
+  4:aEditor:=edFloat;
+  5:aEditor:=edFloat;
+  6:aEditor:=edCheckBox;
+  7:aEditor:=edCheckBox;
+  8:aEditor:=edCheckBox;
 end;
 end;
 
@@ -154,7 +154,7 @@ end;
 
 procedure TF_SubmodelEditor.BitBtnUndoClick(Sender: TObject);
 begin
-Save_Status:=false;
+  Save_Status:=false;
 end;
 
 end.

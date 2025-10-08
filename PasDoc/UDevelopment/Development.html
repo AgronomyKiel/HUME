@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Development</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="PasDoc 0.16.0-snapshot">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<div class="container"><div class="navigation">
+<ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
+<h1 class="unit">Unit Development</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section">Constants</div><div class="one_section">Variables</div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p class="nodescription">This item has no description.</p><span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
+<span id="PasDoc-Classes"></span><h3 class="cio">Classes, Interfaces, Objects and Records</h3>
+<table class="classestable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="Development.TDevelopment.html"><code>TDevelopment</code></a></td>
+<td class="itemdesc"> Development class, a core component of the HUME-Wheat crop model, responsible for simulating the phenological development (growth stages) of wheat. The class models the progression of the crop through its life cycle, from sowing and emergence to maturity and harvest, using temperature, daylength, and genetic parameters.
+
+<p>Key features: </p>
+
+<ul class="paragraph_spacing">
+  <li><p>Growth Stage Tracking: Uses both integer (EC, BBCH, Zadoks) and continuous (xstage) scales to represent crop development.</p></li>
+  <li><p>Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).</p></li>
+  <li><p>Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.</p></li>
+  <li><p>Event Timing: Records the day of year (DOY) for key phenological events (e.g., stem elongation, heading, flowering, ripeness).</p></li>
+  <li><p>Parameterization: Supports genetic and environmental parameters (e.g., base temperature, photoperiod sensitivity, vernalization requirements).</p></li>
+  <li><p>Data Integration: Can initialize and calibrate development using measured data (e.g., measured EC dates).</p></li>
+  <li><p>Modular Design: Integrates with other model components via external variables and options.</p></li>
+</ul>
+
+<p> Typical usage: This module is used to drive the timing of crop processes (e.g., leaf growth, flowering, grain filling) in response to weather and management, providing the developmental framework for the rest of the crop model. </td>
+</tr>
+</table>
+<span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code>procedure <strong><a href="Development.html#Register">Register</a></strong>;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a href="Development.html#TDataInitMethod">TDataInitMethod</a></strong> = (...);</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a href="Development.html#TOptTSumInternode">TOptTSumInternode</a></strong> = (...);</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Functions and Procedures</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Register"></span><code>procedure <strong>Register</strong>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<h3 class="detail">Types</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TDataInitMethod"></span><code><strong>TDataInitMethod</strong> = (...);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+ Enumeration for data initialization methods in the TDevelopment class. This enumeration defines how the development data is initialized, either from measured dates or calculated values. </p>
+
+<ul class="paragraph_spacing">
+  <li><p>EC_Date: Uses measured dates for specific growth stages (e.g., EC25, EC30, EC37).</p></li>
+  <li><p>Days_to_EC: Uses a calculated approach based on days to reach specific growth stages.</p></li>
+</ul>
+
+<p></p>
+<h6 class="description_section">Values</h6>
+<ul>
+<li>
+<span id="EC_Date">EC_Date</span></li>
+<li>
+<span id="Days_to_EC">Days_to_EC</span></li>
+</ul>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TOptTSumInternode"></span><code><strong>TOptTSumInternode</strong> = (...);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+ Enumeration for options related to Phyllochron/TSumIndernode calculation. This enumeration defines how the temperature sum for internode development is calculated. </p>
+
+<ul class="paragraph_spacing">
+  <li><p>Constant: Uses a constant temperature sum for internode development.</p></li>
+  <li><p>Daylength: Uses daylength to calculate the TSumIternoe internode development.</p></li>
+</ul>
+
+<p></p>
+<h6 class="description_section">Values</h6>
+<ul>
+<li>
+<span id="constant">constant</span></li>
+<li>
+<span id="daylength">daylength</span></li>
+</ul>
+</td></tr>
+</table>
+<h2 class="authors">Author</h2>
+<ul class="authors">
+<li>Ulf Boettcher &lt;<a href="mailto:boettcher@pflanzenbau.uni-kiel.de">boettcher@pflanzenbau.uni-kiel.de</a>&gt;</li>
+</ul>
+<hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0-snapshot</a>. </em>
+</span>
+</div></div></body></html>

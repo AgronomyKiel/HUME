@@ -1,0 +1,853 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="UModReg" platform="Win32">
+  <class name="TGMFilenameProperty" file="UModReg.pas" line="18">
+    <devnotes>
+       <summary>
+       Property editor for the <c>TMod</c> class. Displays a file open dialog
+       for selecting the control file by overriding <see cref="M:UModReg.TGMFilenameProperty.GetAttributes"/>.
+       </summary>
+    </devnotes>
+    <ancestor name="TStringProperty" namespace="DesignEditors">
+      <methodref name="AllEqual" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="GetEditLimit" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="GetValue" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="SetValue" visibility="public" procflags="overload override">
+      </methodref>
+      <ancestor name="TPropertyEditor" namespace="DesignEditors">
+        <interfaces>
+          <implements name="IProperty70" />
+          <implements name="IPropertyKind" />
+          <implements name="IProperty" />
+        </interfaces>
+        <methodref name="AddAncestor" visibility="private">
+        </methodref>
+        <methodref name="GetLookupInfo" visibility="private">
+        </methodref>
+        <methodref name="GetPrivateDirectory" visibility="private">
+        </methodref>
+        <methodref name="WriteComponentSimulation" visibility="private">
+        </methodref>
+        <methodref name="SetPropEntry" visibility="protected" procflags="override">
+        </methodref>
+        <methodref name="GetFloatValue" visibility="protected">
+        </methodref>
+        <methodref name="GetFloatValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetInt64Value" visibility="protected">
+        </methodref>
+        <methodref name="GetInt64ValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetMethodValue" visibility="protected">
+        </methodref>
+        <methodref name="GetMethodValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetOrdValue" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="GetOrdValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetStrValue" visibility="protected">
+        </methodref>
+        <methodref name="GetStrValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetWideStrValue" visibility="protected">
+        </methodref>
+        <methodref name="GetWideStrValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetVarValue" visibility="protected">
+        </methodref>
+        <methodref name="GetVarValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetIntfValue" visibility="protected">
+        </methodref>
+        <methodref name="GetIntfValueAt" visibility="protected">
+        </methodref>
+        <methodref name="Modified" visibility="protected">
+        </methodref>
+        <methodref name="SetFloatValue" visibility="protected">
+        </methodref>
+        <methodref name="SetMethodValue" visibility="protected">
+        </methodref>
+        <methodref name="SetInt64Value" visibility="protected">
+        </methodref>
+        <methodref name="SetOrdValue" visibility="protected">
+        </methodref>
+        <methodref name="SetStrValue" visibility="protected">
+        </methodref>
+        <methodref name="SetWideStrValue" visibility="protected">
+        </methodref>
+        <methodref name="SetVarValue" visibility="protected">
+        </methodref>
+        <methodref name="SetIntfValue" visibility="protected">
+        </methodref>
+        <methodref name="GetEditValue" visibility="protected" procflags="overload">
+        </methodref>
+        <methodref name="HasInstance" visibility="protected">
+        </methodref>
+        <methodref name="GetIsDefault" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="GetEditValue" visibility="protected" procflags="overload">
+        </methodref>
+        <methodref name="Create" visibility="public" procflags="constructor override">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor override">
+        </methodref>
+        <methodref name="Activate" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AllEqual" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AutoFill" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Edit" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetAttributes" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetComponent" visibility="public">
+        </methodref>
+        <methodref name="GetEditLimit" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetName" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetProperties" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetPropInfo" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetPropType" visibility="public">
+        </methodref>
+        <methodref name="GetKind" visibility="public">
+        </methodref>
+        <methodref name="GetValue" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetValueW" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetVisualValue" visibility="public">
+        </methodref>
+        <methodref name="GetValues" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Initialize" visibility="public" procflags="override">
+        </methodref>
+        <methodref name="Revert" visibility="public">
+        </methodref>
+        <methodref name="SetValue" visibility="public" procflags="overload virtual">
+        </methodref>
+        <methodref name="SetValue" visibility="public" procflags="overload virtual">
+        </methodref>
+        <methodref name="ValueAvailable" visibility="public">
+        </methodref>
+        <propertyref name="Designer" visibility="public">
+        </propertyref>
+        <propertyref name="PrivateDirectory" visibility="public">
+        </propertyref>
+        <propertyref name="PropCount" visibility="public">
+        </propertyref>
+        <propertyref name="Value" visibility="public">
+        </propertyref>
+        <ancestor name="TBasePropertyEditor" namespace="DesignIntf">
+          <methodref name="Initialize" visibility="protected" procflags="abstract virtual">
+          </methodref>
+          <methodref name="SetPropEntry" visibility="protected" procflags="abstract virtual">
+          </methodref>
+          <methodref name="Create" visibility="public" procflags="constructor virtual">
+          </methodref>
+          <ancestor name="TInterfacedObject" namespace="System">
+            <interfaces>
+              <implements name="IInterface" />
+            </interfaces>
+            <methodref name="GetRefCount" visibility="private" procflags="inline">
+            </methodref>
+            <methodref name="__MarkDestroying" visibility="protected" procflags="static inline">
+            </methodref>
+            <methodref name="QueryInterface" visibility="protected">
+            </methodref>
+            <methodref name="_AddRef" visibility="protected">
+            </methodref>
+            <methodref name="_Release" visibility="protected">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="override">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="override">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class override">
+            </methodref>
+            <propertyref name="RefCount" visibility="public">
+            </propertyref>
+            <ancestor name="TObject" namespace="System">
+              <methodref name="Create" visibility="public" procflags="constructor">
+              </methodref>
+              <methodref name="Free" visibility="public">
+              </methodref>
+              <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+              </methodref>
+              <methodref name="InitInstance" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="CleanupInstance" visibility="public">
+              </methodref>
+              <methodref name="ClassType" visibility="public" procflags="inline">
+              </methodref>
+              <methodref name="ClassName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="ClassNameIs" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="ClassParent" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="ClassInfo" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="InstanceSize" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="InheritsFrom" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="MethodAddress" visibility="public" procflags="class overload">
+              </methodref>
+              <methodref name="MethodAddress" visibility="public" procflags="class overload">
+              </methodref>
+              <methodref name="MethodName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="QualifiedClassName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="FieldAddress" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="FieldAddress" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="GetInterface" visibility="public">
+              </methodref>
+              <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="UnitName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="UnitScope" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="Equals" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="GetHashCode" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="ToString" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="SafeCallException" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="Dispatch" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="NewInstance" visibility="public" procflags="class virtual">
+              </methodref>
+              <methodref name="FreeInstance" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+              </methodref>
+              <methodref name="GetDisposed" visibility="protected" procflags="inline">
+              </methodref>
+              <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+              </methodref>
+              <propertyref name="Disposed" visibility="protected">
+              </propertyref>
+            </ancestor>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <procedure name="Edit" visibility="public" procflags="override" file="UModReg.pas" line="21">
+        <devnotes>
+           <summary>
+           Property editor for the <c>TMod</c> class. Displays a file open dialog for
+           the name of the control file (all <c>TMyFileName</c> properties).
+           </summary>
+        </devnotes>
+      </procedure>
+      <function name="GetAttributes" visibility="public" procflags="override" file="UModReg.pas" line="23">
+        <devnotes>
+           <summary>
+           Describes the property so the Object Inspector provides the appropriate controls.
+           </summary>
+        </devnotes>
+        <parameters>
+          <retval type="TPropertyAttributes" />
+        </parameters>
+      </function>
+    </members>
+  </class>
+  <class name="TGMPathProperty" file="UModReg.pas" line="31">
+    <devnotes>
+       <summary>
+       Property editor for the <c>TMod</c> class. Displays a directory selection
+       dialog for editing path properties by overriding
+       <see cref="M:UModReg.TGMPathProperty.GetAttributes"/>.
+       </summary>
+    </devnotes>
+    <ancestor name="TStringProperty" namespace="DesignEditors">
+      <methodref name="AllEqual" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="GetEditLimit" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="GetValue" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="SetValue" visibility="public" procflags="overload override">
+      </methodref>
+      <ancestor name="TPropertyEditor" namespace="DesignEditors">
+        <interfaces>
+          <implements name="IProperty70" />
+          <implements name="IPropertyKind" />
+          <implements name="IProperty" />
+        </interfaces>
+        <methodref name="AddAncestor" visibility="private">
+        </methodref>
+        <methodref name="GetLookupInfo" visibility="private">
+        </methodref>
+        <methodref name="GetPrivateDirectory" visibility="private">
+        </methodref>
+        <methodref name="WriteComponentSimulation" visibility="private">
+        </methodref>
+        <methodref name="SetPropEntry" visibility="protected" procflags="override">
+        </methodref>
+        <methodref name="GetFloatValue" visibility="protected">
+        </methodref>
+        <methodref name="GetFloatValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetInt64Value" visibility="protected">
+        </methodref>
+        <methodref name="GetInt64ValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetMethodValue" visibility="protected">
+        </methodref>
+        <methodref name="GetMethodValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetOrdValue" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="GetOrdValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetStrValue" visibility="protected">
+        </methodref>
+        <methodref name="GetStrValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetWideStrValue" visibility="protected">
+        </methodref>
+        <methodref name="GetWideStrValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetVarValue" visibility="protected">
+        </methodref>
+        <methodref name="GetVarValueAt" visibility="protected">
+        </methodref>
+        <methodref name="GetIntfValue" visibility="protected">
+        </methodref>
+        <methodref name="GetIntfValueAt" visibility="protected">
+        </methodref>
+        <methodref name="Modified" visibility="protected">
+        </methodref>
+        <methodref name="SetFloatValue" visibility="protected">
+        </methodref>
+        <methodref name="SetMethodValue" visibility="protected">
+        </methodref>
+        <methodref name="SetInt64Value" visibility="protected">
+        </methodref>
+        <methodref name="SetOrdValue" visibility="protected">
+        </methodref>
+        <methodref name="SetStrValue" visibility="protected">
+        </methodref>
+        <methodref name="SetWideStrValue" visibility="protected">
+        </methodref>
+        <methodref name="SetVarValue" visibility="protected">
+        </methodref>
+        <methodref name="SetIntfValue" visibility="protected">
+        </methodref>
+        <methodref name="GetEditValue" visibility="protected" procflags="overload">
+        </methodref>
+        <methodref name="HasInstance" visibility="protected">
+        </methodref>
+        <methodref name="GetIsDefault" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="GetEditValue" visibility="protected" procflags="overload">
+        </methodref>
+        <methodref name="Create" visibility="public" procflags="constructor override">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor override">
+        </methodref>
+        <methodref name="Activate" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AllEqual" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AutoFill" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Edit" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetAttributes" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetComponent" visibility="public">
+        </methodref>
+        <methodref name="GetEditLimit" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetName" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetProperties" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetPropInfo" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetPropType" visibility="public">
+        </methodref>
+        <methodref name="GetKind" visibility="public">
+        </methodref>
+        <methodref name="GetValue" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetValueW" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetVisualValue" visibility="public">
+        </methodref>
+        <methodref name="GetValues" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Initialize" visibility="public" procflags="override">
+        </methodref>
+        <methodref name="Revert" visibility="public">
+        </methodref>
+        <methodref name="SetValue" visibility="public" procflags="overload virtual">
+        </methodref>
+        <methodref name="SetValue" visibility="public" procflags="overload virtual">
+        </methodref>
+        <methodref name="ValueAvailable" visibility="public">
+        </methodref>
+        <propertyref name="Designer" visibility="public">
+        </propertyref>
+        <propertyref name="PrivateDirectory" visibility="public">
+        </propertyref>
+        <propertyref name="PropCount" visibility="public">
+        </propertyref>
+        <propertyref name="Value" visibility="public">
+        </propertyref>
+        <ancestor name="TBasePropertyEditor" namespace="DesignIntf">
+          <methodref name="Initialize" visibility="protected" procflags="abstract virtual">
+          </methodref>
+          <methodref name="SetPropEntry" visibility="protected" procflags="abstract virtual">
+          </methodref>
+          <methodref name="Create" visibility="public" procflags="constructor virtual">
+          </methodref>
+          <ancestor name="TInterfacedObject" namespace="System">
+            <interfaces>
+              <implements name="IInterface" />
+            </interfaces>
+            <methodref name="GetRefCount" visibility="private" procflags="inline">
+            </methodref>
+            <methodref name="__MarkDestroying" visibility="protected" procflags="static inline">
+            </methodref>
+            <methodref name="QueryInterface" visibility="protected">
+            </methodref>
+            <methodref name="_AddRef" visibility="protected">
+            </methodref>
+            <methodref name="_Release" visibility="protected">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="override">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="override">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class override">
+            </methodref>
+            <propertyref name="RefCount" visibility="public">
+            </propertyref>
+            <ancestor name="TObject" namespace="System">
+              <methodref name="Create" visibility="public" procflags="constructor">
+              </methodref>
+              <methodref name="Free" visibility="public">
+              </methodref>
+              <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+              </methodref>
+              <methodref name="InitInstance" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="CleanupInstance" visibility="public">
+              </methodref>
+              <methodref name="ClassType" visibility="public" procflags="inline">
+              </methodref>
+              <methodref name="ClassName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="ClassNameIs" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="ClassParent" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="ClassInfo" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="InstanceSize" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="InheritsFrom" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="MethodAddress" visibility="public" procflags="class overload">
+              </methodref>
+              <methodref name="MethodAddress" visibility="public" procflags="class overload">
+              </methodref>
+              <methodref name="MethodName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="QualifiedClassName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="FieldAddress" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="FieldAddress" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="GetInterface" visibility="public">
+              </methodref>
+              <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+              </methodref>
+              <methodref name="UnitName" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="UnitScope" visibility="public" procflags="class">
+              </methodref>
+              <methodref name="Equals" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="GetHashCode" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="ToString" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="SafeCallException" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="Dispatch" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="NewInstance" visibility="public" procflags="class virtual">
+              </methodref>
+              <methodref name="FreeInstance" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+              </methodref>
+              <methodref name="GetDisposed" visibility="protected" procflags="inline">
+              </methodref>
+              <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+              </methodref>
+              <propertyref name="Disposed" visibility="protected">
+              </propertyref>
+            </ancestor>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <procedure name="Edit" visibility="public" procflags="override" file="UModReg.pas" line="34">
+        <devnotes>
+           <summary>
+           Property editor for the <c>TMod</c> class. Displays a directory change
+           dialog for editing path properties.
+           </summary>
+        </devnotes>
+      </procedure>
+      <function name="GetAttributes" visibility="public" procflags="override" file="UModReg.pas" line="36">
+        <devnotes>
+           <summary>
+           Describes the property so the Object Inspector provides the appropriate controls.
+           </summary>
+        </devnotes>
+        <parameters>
+          <retval type="TPropertyAttributes" />
+        </parameters>
+      </function>
+    </members>
+  </class>
+  <class name="TModEditor" file="UModReg.pas" line="66">
+    <devnotes>
+       <summary>Component editor for <c>TMod</c>; starts design-time editing.</summary>
+    </devnotes>
+    <ancestor name="TComponentEditor" namespace="DesignEditors">
+      <interfaces>
+        <implements name="IComponentEditor" />
+      </interfaces>
+      <methodref name="Create" visibility="public" procflags="constructor override">
+      </methodref>
+      <methodref name="Edit" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ExecuteVerb" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetComponent" visibility="public">
+      </methodref>
+      <methodref name="GetDesigner" visibility="public">
+      </methodref>
+      <methodref name="GetVerb" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetVerbCount" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="IsInInlined" visibility="public">
+      </methodref>
+      <methodref name="Copy" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="PrepareItem" visibility="public" procflags="virtual">
+      </methodref>
+      <propertyref name="Component" visibility="public">
+      </propertyref>
+      <propertyref name="Designer" visibility="public">
+      </propertyref>
+      <ancestor name="TBaseComponentEditor" namespace="DesignIntf">
+        <methodref name="Create" visibility="public" procflags="constructor virtual">
+        </methodref>
+        <ancestor name="TInterfacedObject" namespace="System">
+          <interfaces>
+            <implements name="IInterface" />
+          </interfaces>
+          <methodref name="GetRefCount" visibility="private" procflags="inline">
+          </methodref>
+          <methodref name="__MarkDestroying" visibility="protected" procflags="static inline">
+          </methodref>
+          <methodref name="QueryInterface" visibility="protected">
+          </methodref>
+          <methodref name="_AddRef" visibility="protected">
+          </methodref>
+          <methodref name="_Release" visibility="protected">
+          </methodref>
+          <methodref name="AfterConstruction" visibility="public" procflags="override">
+          </methodref>
+          <methodref name="BeforeDestruction" visibility="public" procflags="override">
+          </methodref>
+          <methodref name="NewInstance" visibility="public" procflags="class override">
+          </methodref>
+          <propertyref name="RefCount" visibility="public">
+          </propertyref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <procedure name="Edit" visibility="public" procflags="override" file="UModReg.pas" line="68">
+        <devnotes>
+           <summary>
+           Exchanges data with <c>TModelEdit</c> form and starts design-time editing.
+           </summary>
+        </devnotes>
+      </procedure>
+    </members>
+  </class>
+  <class name="TSubModelEditor" file="UModReg.pas" line="75">
+    <devnotes>
+       <summary>
+       Component editor for <c>TSubModel</c>. Exchanges data with
+       <c>TF_SubmodelEditor</c> and starts design-time editing.
+       </summary>
+    </devnotes>
+    <ancestor name="TComponentEditor" namespace="DesignEditors">
+      <interfaces>
+        <implements name="IComponentEditor" />
+      </interfaces>
+      <methodref name="Create" visibility="public" procflags="constructor override">
+      </methodref>
+      <methodref name="Edit" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ExecuteVerb" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetComponent" visibility="public">
+      </methodref>
+      <methodref name="GetDesigner" visibility="public">
+      </methodref>
+      <methodref name="GetVerb" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetVerbCount" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="IsInInlined" visibility="public">
+      </methodref>
+      <methodref name="Copy" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="PrepareItem" visibility="public" procflags="virtual">
+      </methodref>
+      <propertyref name="Component" visibility="public">
+      </propertyref>
+      <propertyref name="Designer" visibility="public">
+      </propertyref>
+      <ancestor name="TBaseComponentEditor" namespace="DesignIntf">
+        <methodref name="Create" visibility="public" procflags="constructor virtual">
+        </methodref>
+        <ancestor name="TInterfacedObject" namespace="System">
+          <interfaces>
+            <implements name="IInterface" />
+          </interfaces>
+          <methodref name="GetRefCount" visibility="private" procflags="inline">
+          </methodref>
+          <methodref name="__MarkDestroying" visibility="protected" procflags="static inline">
+          </methodref>
+          <methodref name="QueryInterface" visibility="protected">
+          </methodref>
+          <methodref name="_AddRef" visibility="protected">
+          </methodref>
+          <methodref name="_Release" visibility="protected">
+          </methodref>
+          <methodref name="AfterConstruction" visibility="public" procflags="override">
+          </methodref>
+          <methodref name="BeforeDestruction" visibility="public" procflags="override">
+          </methodref>
+          <methodref name="NewInstance" visibility="public" procflags="class override">
+          </methodref>
+          <propertyref name="RefCount" visibility="public">
+          </propertyref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <procedure name="Edit" visibility="public" procflags="override" file="UModReg.pas" line="77">
+        <devnotes>
+           <summary>
+           Exchanges data with <c>TF_SubmodelEditor</c> form and starts design-time editing.
+           </summary>
+        </devnotes>
+      </procedure>
+    </members>
+  </class>
+  <procedure name="Register" visibility="public" file="UModReg.pas" line="580">
+    <devnotes>
+       <summary>Registers TMod and TSubModel components for design-time editing.</summary>
+       <summary>Registers TMod and TSubModel components for design-time editing.</summary>
+    </devnotes>
+  </procedure>
+</namespace>

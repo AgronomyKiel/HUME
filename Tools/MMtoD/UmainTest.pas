@@ -90,8 +90,8 @@ procedure TLogGrowth.CalcRates;
 
 begin
 
-   dW_dt.v :=  mue.v*S.v*W;
-   RGR.v :=  dW_dt.v/W;
+   dW_dt.v :=  mue.v*S.v*W.v;
+   RGR.v :=  dW_dt.v/W.v;
 
 
    S.c :=  -dW_dt;

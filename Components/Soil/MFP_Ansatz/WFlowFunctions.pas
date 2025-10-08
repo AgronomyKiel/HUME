@@ -1,6 +1,6 @@
 unit WFlowFunctions;
 // Functions to implement the Matrix Flow Potential approach into URootedSoil
-// U.Böttcher 31.08.2023
+// U.BÃ¶ttcher 31.08.2023
 
 
 interface

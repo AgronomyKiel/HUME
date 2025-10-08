@@ -1,0 +1,2809 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="USoilWaterMod" platform="Win32">
+  <devnotes>
+     <summary>
+     Implemtents different methods for vertical soil water transport either with differen veriants
+     of the potential based water transport or as a simple tipping bucket approach.
+     </summary>
+     <remarks>
+     <author>
+     Henning Kage, Ulf Böttcher &amp; Agronomy Group, University of Kiel
+     </author>
+     </remarks>
+  </devnotes>
+  <const name="dWg" type="Comp" file="USoilWaterMod.pas" line="28">
+    <devnotes>
+       <summary>1E-8;      delta for changing water contents</summary>
+    </devnotes>
+    <value>
+      0
+    </value>
+  </const>
+  <const name="PsiAirDryness" type="Integer" file="USoilWaterMod.pas" line="30">
+    <devnotes>
+       <summary>matrix potential of very dry soil</summary>
+    </devnotes>
+    <value>
+      $4E20
+    </value>
+  </const>
+  <const name="FromPar" type="TVGParsFromTexture" file="USoilWaterMod.pas" line="34">
+    <value>
+      FromPar
+    </value>
+  </const>
+  <const name="FromTexture" type="TVGParsFromTexture" file="USoilWaterMod.pas" line="34">
+    <value>
+      FromTexture
+    </value>
+  </const>
+  <const name="red_f" type="Tact_Evaporation" file="USoilWaterMod.pas" line="37">
+    <value>
+      red_f
+    </value>
+  </const>
+  <const name="inclExfiltration" type="Tact_Evaporation" file="USoilWaterMod.pas" line="37">
+    <value>
+      inclExfiltration
+    </value>
+  </const>
+  <const name="Mualem" type="Tm_model" file="USoilWaterMod.pas" line="40">
+    <value>
+      Mualem
+    </value>
+  </const>
+  <const name="Burdine" type="Tm_model" file="USoilWaterMod.pas" line="40">
+    <value>
+      Burdine
+    </value>
+  </const>
+  <const name="Vereecken" type="Tm_model" file="USoilWaterMod.pas" line="40">
+    <value>
+      Vereecken
+    </value>
+  </const>
+  <const name="NoFlow" type="TLowerBoundaryCondition" file="USoilWaterMod.pas" line="43">
+    <value>
+      NoFlow
+    </value>
+  </const>
+  <const name="FreeFlow" type="TLowerBoundaryCondition" file="USoilWaterMod.pas" line="43">
+    <value>
+      FreeFlow
+    </value>
+  </const>
+  <const name="ConstContent" type="TLowerBoundaryCondition" file="USoilWaterMod.pas" line="43">
+    <value>
+      ConstContent
+    </value>
+  </const>
+  <const name="Groundwatertable" type="TLowerBoundaryCondition" file="USoilWaterMod.pas" line="43">
+    <value>
+      Groundwatertable
+    </value>
+  </const>
+  <const name="Capacity" type="TCompMethod" file="USoilWaterMod.pas" line="46">
+    <value>
+      Capacity
+    </value>
+  </const>
+  <const name="Diffusion" type="TCompMethod" file="USoilWaterMod.pas" line="46">
+    <value>
+      Diffusion
+    </value>
+  </const>
+  <const name="Richards" type="TCompMethod" file="USoilWaterMod.pas" line="46">
+    <value>
+      Richards
+    </value>
+  </const>
+  <const name="Mixed" type="TCompMethod" file="USoilWaterMod.pas" line="46">
+    <value>
+      Mixed
+    </value>
+  </const>
+  <const name="MixedHydrus" type="TCompMethod" file="USoilWaterMod.pas" line="46">
+    <value>
+      MixedHydrus
+    </value>
+  </const>
+  <const name="FromParameter" type="TnFKCalcMethod" file="USoilWaterMod.pas" line="49">
+    <value>
+      FromParameter
+    </value>
+  </const>
+  <const name="Input" type="TnFKCalcMethod" file="USoilWaterMod.pas" line="49">
+    <value>
+      Input
+    </value>
+  </const>
+  <const name="Watercontents" type="TIniMethod" file="USoilWaterMod.pas" line="52">
+    <value>
+      Watercontents
+    </value>
+  </const>
+  <const name="Potentials" type="TIniMethod" file="USoilWaterMod.pas" line="52">
+    <value>
+      Potentials
+    </value>
+  </const>
+  <const name="Parameter" type="TIniMethod" file="USoilWaterMod.pas" line="52">
+    <value>
+      Parameter
+    </value>
+  </const>
+  <const name="modifiedBeese" type="Tred_f" file="USoilWaterMod.pas" line="55">
+    <value>
+      modifiedBeese
+    </value>
+  </const>
+  <const name="Beese1978" type="Tred_f" file="USoilWaterMod.pas" line="55">
+    <value>
+      Beese1978
+    </value>
+  </const>
+  <enum name="TVGParsFromTexture" file="USoilWaterMod.pas" line="34">
+    <devnotes>
+       <summary>TTexture_version = (RR, KA);</summary>
+    </devnotes>
+    <element value="0" name="FromPar" file="USoilWaterMod.pas" line="34" />
+    <element value="1" name="FromTexture" file="USoilWaterMod.pas" line="34" />
+  </enum>
+  <enum name="Tact_Evaporation" file="USoilWaterMod.pas" line="37">
+    <devnotes>
+       <summary>type for calculaiton options of evaporation</summary>
+    </devnotes>
+    <element value="0" name="red_f" file="USoilWaterMod.pas" line="37" />
+    <element value="1" name="inclExfiltration" file="USoilWaterMod.pas" line="37" />
+  </enum>
+  <enum name="Tm_model" file="USoilWaterMod.pas" line="40">
+    <devnotes>
+       <summary>type of model for calculating the parameter 'm' within the van Genuchten model</summary>
+    </devnotes>
+    <element value="0" name="Mualem" file="USoilWaterMod.pas" line="40" />
+    <element value="1" name="Burdine" file="USoilWaterMod.pas" line="40" />
+    <element value="2" name="Vereecken" file="USoilWaterMod.pas" line="40" />
+  </enum>
+  <enum name="TLowerBoundaryCondition" file="USoilWaterMod.pas" line="43">
+    <devnotes>
+       <summary>type for specifying lower boundary conditions</summary>
+    </devnotes>
+    <element value="0" name="NoFlow" file="USoilWaterMod.pas" line="43" />
+    <element value="1" name="FreeFlow" file="USoilWaterMod.pas" line="43" />
+    <element value="2" name="ConstContent" file="USoilWaterMod.pas" line="43" />
+    <element value="3" name="Groundwatertable" file="USoilWaterMod.pas" line="43" />
+  </enum>
+  <enum name="TCompMethod" file="USoilWaterMod.pas" line="46">
+    <devnotes>
+       <summary>type for specifying computation method</summary>
+    </devnotes>
+    <element value="0" name="Capacity" file="USoilWaterMod.pas" line="46" />
+    <element value="1" name="Diffusion" file="USoilWaterMod.pas" line="46" />
+    <element value="2" name="Richards" file="USoilWaterMod.pas" line="46" />
+    <element value="3" name="Mixed" file="USoilWaterMod.pas" line="46" />
+    <element value="4" name="MixedHydrus" file="USoilWaterMod.pas" line="46" />
+  </enum>
+  <enum name="TnFKCalcMethod" file="USoilWaterMod.pas" line="49">
+    <devnotes>
+       <summary>type for specifying computation method for nFK</summary>
+    </devnotes>
+    <element value="0" name="FromParameter" file="USoilWaterMod.pas" line="49" />
+    <element value="1" name="Input" file="USoilWaterMod.pas" line="49" />
+  </enum>
+  <enum name="TIniMethod" file="USoilWaterMod.pas" line="52">
+    <devnotes>
+       <summary>type for initialization method</summary>
+    </devnotes>
+    <element value="0" name="Watercontents" file="USoilWaterMod.pas" line="52" />
+    <element value="1" name="Potentials" file="USoilWaterMod.pas" line="52" />
+    <element value="2" name="Parameter" file="USoilWaterMod.pas" line="52" />
+  </enum>
+  <enum name="Tred_f" file="USoilWaterMod.pas" line="55">
+    <devnotes>
+       <summary>Type of soil evaporation reduction function</summary>
+    </devnotes>
+    <element value="0" name="modifiedBeese" file="USoilWaterMod.pas" line="55" />
+    <element value="1" name="Beese1978" file="USoilWaterMod.pas" line="55" />
+  </enum>
+  <array name="TSoilWaterParams" low="1" high="50" file="USoilWaterMod.pas" line="58">
+    <devnotes>
+       <summary>Type for soil water parameters</summary>
+    </devnotes>
+    <element type="TGenucht">
+      <devnotes>
+         <summary>Type for soil water parameters</summary>
+      </devnotes>
+    </element>
+  </array>
+  <class name="TSoilWaterMod" file="USoilWaterMod.pas" line="61">
+    <devnotes>
+       <summary>Component implementing vertical soil water transport</summary>
+    </devnotes>
+    <ancestor name="TLayeredSoil" namespace="UlayeredSoil">
+      <methodref name="LayerInit" visibility="protected" procflags="virtual" />
+      <methodref name="CreateAll" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="Init" visibility="public" procflags="override" />
+      <methodref name="CalcRates" visibility="public" procflags="override" />
+      <propertyref name="parMaxTiefe" visibility="published" />
+      <propertyref name="p_NComp" visibility="published" />
+      <ancestor name="TPlantRelatedSubMod" namespace="UAbstractPlant">
+        <methodref name="GetIsPlantModelset" visibility="protected">
+        </methodref>
+        <methodref name="SetPlantModel" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="Init" visibility="public" procflags="override">
+        </methodref>
+        <propertyref name="IsPlantModelSet" visibility="public" />
+        <propertyref name="PlantModel" visibility="published">
+        </propertyref>
+        <ancestor name="TSubmodel" namespace="UMod">
+          <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="RegistrateOption" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="RegistrateVariable" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="RegistrateStateVar" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="RegistrateConstant" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="RegistrateSubMod" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="set_State" visibility="private" procflags="virtual" />
+          <methodref name="get_State" visibility="private" />
+          <methodref name="set_Par" visibility="private" />
+          <methodref name="Get_Par" visibility="private" />
+          <methodref name="set_Var" visibility="private" />
+          <methodref name="Get_Var" visibility="private" />
+          <methodref name="set_Const" visibility="private" />
+          <methodref name="get_Const" visibility="private" />
+          <methodref name="set_Option" visibility="private" />
+          <methodref name="get_Option" visibility="private" />
+          <methodref name="set_ExternVar" visibility="private" />
+          <methodref name="get_ExternVar" visibility="private" />
+          <methodref name="InitStates" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="InitParms" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="InitVars" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="InitOptions" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="InitOutputFileNames" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="InitUpdateFile" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="IsOutput" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="Get_GlobMod" visibility="protected">
+          </methodref>
+          <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="UpdateValue" visibility="protected" />
+          <methodref name="Paint" visibility="protected" procflags="override">
+          </methodref>
+          <methodref name="Notification" visibility="protected" procflags="virtual" />
+          <methodref name="Create" visibility="public" procflags="constructor override">
+          </methodref>
+          <methodref name="free" visibility="public">
+          </methodref>
+          <methodref name="BeforeDestruction" visibility="public" procflags="override">
+          </methodref>
+          <methodref name="ParCreate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="OptCreate" visibility="public">
+          </methodref>
+          <methodref name="VarCreate" visibility="public">
+          </methodref>
+          <methodref name="ConstCreate" visibility="public">
+          </methodref>
+          <methodref name="StateCreate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ExternVcreate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ExternVinit" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CreateAll" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Init" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CalcRates" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Integrate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CalcVars" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="UpdateValues" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="WriteStateName" visibility="public">
+          </methodref>
+          <methodref name="WriteFinalStateName" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="WriteRateName" visibility="public">
+          </methodref>
+          <methodref name="SaveState" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="SaveRate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="SaveFinalState" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="closeOutputfiles" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="activate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="deactivate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="AddDataValueToDataSeries" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="AddSimValueToDataSeries" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="write_1_1_files" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CalcLinearRegressions" visibility="public">
+          </methodref>
+          <propertyref name="StateVar" visibility="public">
+          </propertyref>
+          <propertyref name="ParamVar" visibility="public">
+          </propertyref>
+          <propertyref name="VarVar" visibility="public">
+          </propertyref>
+          <propertyref name="ConstVar" visibility="public">
+          </propertyref>
+          <propertyref name="Option" visibility="public">
+          </propertyref>
+          <propertyref name="ExternVar" visibility="public">
+          </propertyref>
+          <methodref name="DblClick" visibility="public" procflags="override">
+          </methodref>
+          <propertyref name="SM_GlobMod" visibility="published">
+          </propertyref>
+          <propertyref name="SM_ExternVStrList" visibility="published">
+          </propertyref>
+          <propertyref name="SM_VarStrList" visibility="published">
+          </propertyref>
+          <propertyref name="SM_ConstStrList" visibility="published">
+          </propertyref>
+          <propertyref name="SM_ParStrList" visibility="published">
+          </propertyref>
+          <propertyref name="SM_StateStrList" visibility="published">
+          </propertyref>
+          <propertyref name="CompIndex" visibility="published">
+          </propertyref>
+          <propertyref name="FN_ratefn" visibility="published">
+          </propertyref>
+          <propertyref name="FN_Statefn" visibility="published">
+          </propertyref>
+          <propertyref name="MeasFile" visibility="published">
+          </propertyref>
+          <propertyref name="AssimilatedSubmodList" visibility="published">
+          </propertyref>
+          <propertyref name="DebugModus" visibility="published">
+          </propertyref>
+          <propertyref name="OptContOutput" visibility="published">
+          </propertyref>
+          <propertyref name="Parent" visibility="published" />
+          <propertyref name="Canvas" visibility="published" />
+          <propertyref name="Visible" visibility="published" />
+          <propertyref name="color" visibility="published" />
+          <propertyref name="DebugForm" visibility="published" />
+          <propertyref name="OnDblclick" visibility="published" />
+          <ancestor name="TGraphicControl" namespace="Vcl.Controls">
+            <methodref name="WMPaint" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="Paint" visibility="protected" procflags="virtual">
+            </methodref>
+            <propertyref name="Canvas" visibility="protected">
+            </propertyref>
+            <methodref name="Create" visibility="public" procflags="constructor override">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor override">
+            </methodref>
+            <ancestor name="TControl" namespace="Vcl.Controls">
+              <methodref name="GetCustomHint" visibility="private">
+              </methodref>
+              <methodref name="CalcDockSizes" visibility="private">
+              </methodref>
+              <methodref name="UpdateRootControl" visibility="private">
+              </methodref>
+              <methodref name="CheckNewSize" visibility="private">
+              </methodref>
+              <methodref name="CreateFloatingDockSite" visibility="private">
+              </methodref>
+              <methodref name="DoActionChange" visibility="private">
+              </methodref>
+              <methodref name="DoCanAutoSize" visibility="private">
+              </methodref>
+              <methodref name="DoCanResize" visibility="private">
+              </methodref>
+              <methodref name="DoConstraintsChange" visibility="private">
+              </methodref>
+              <methodref name="DoConstrainedResize" visibility="private">
+              </methodref>
+              <methodref name="DoDragMsg" visibility="private">
+              </methodref>
+              <methodref name="DoMouseActivate" visibility="private">
+              </methodref>
+              <methodref name="DoMouseDown" visibility="private">
+              </methodref>
+              <methodref name="DoMouseUp" visibility="private">
+              </methodref>
+              <methodref name="DoMarginChange" visibility="private">
+              </methodref>
+              <methodref name="FontChanged" visibility="private">
+              </methodref>
+              <methodref name="GetAlignWithMargins" visibility="private" procflags="inline">
+              </methodref>
+              <methodref name="GetBoundsRect" visibility="private">
+              </methodref>
+              <methodref name="GetClientHeight" visibility="private">
+              </methodref>
+              <methodref name="GetClientWidth" visibility="private">
+              </methodref>
+              <methodref name="GetLRDockWidth" visibility="private">
+              </methodref>
+              <methodref name="GetMouseCapture" visibility="private">
+              </methodref>
+              <methodref name="GetTBDockHeight" visibility="private">
+              </methodref>
+              <methodref name="GetUndockWidth" visibility="private">
+              </methodref>
+              <methodref name="GetUndockHeight" visibility="private">
+              </methodref>
+              <methodref name="InvalidateControl" visibility="private">
+              </methodref>
+              <methodref name="IsAnchorsStored" visibility="private">
+              </methodref>
+              <methodref name="IsBiDiModeStored" visibility="private">
+              </methodref>
+              <methodref name="IsCaptionStored" visibility="private">
+              </methodref>
+              <methodref name="IsColorStored" visibility="private">
+              </methodref>
+              <methodref name="IsEnabledStored" visibility="private">
+              </methodref>
+              <methodref name="IsFontStored" visibility="private">
+              </methodref>
+              <methodref name="IsHintStored" visibility="private">
+              </methodref>
+              <methodref name="IsHelpContextStored" visibility="private">
+              </methodref>
+              <methodref name="IsOnClickStored" visibility="private">
+              </methodref>
+              <methodref name="IsShowHintStored" visibility="private">
+              </methodref>
+              <methodref name="IsVisibleStored" visibility="private">
+              </methodref>
+              <methodref name="ReadIsControl" visibility="private">
+              </methodref>
+              <methodref name="ReadExplicitLeft" visibility="private">
+              </methodref>
+              <methodref name="ReadExplicitTop" visibility="private">
+              </methodref>
+              <methodref name="ReadExplicitWidth" visibility="private">
+              </methodref>
+              <methodref name="ReadExplicitHeight" visibility="private">
+              </methodref>
+              <methodref name="SetAlignWithMargins" visibility="private">
+              </methodref>
+              <methodref name="SetAnchors" visibility="private">
+              </methodref>
+              <methodref name="SetAction" visibility="private">
+              </methodref>
+              <methodref name="SetAlign" visibility="private">
+              </methodref>
+              <methodref name="SetBoundsRect" visibility="private">
+              </methodref>
+              <methodref name="SetClientHeight" visibility="private">
+              </methodref>
+              <methodref name="SetClientSize" visibility="private">
+              </methodref>
+              <methodref name="SetClientWidth" visibility="private">
+              </methodref>
+              <methodref name="SetColor" visibility="private">
+              </methodref>
+              <methodref name="SetCursor" visibility="private">
+              </methodref>
+              <methodref name="SetDesktopFont" visibility="private">
+              </methodref>
+              <methodref name="SetFont" visibility="private">
+              </methodref>
+              <methodref name="SetHeight" visibility="private">
+              </methodref>
+              <methodref name="SetHelpContext" visibility="private">
+              </methodref>
+              <methodref name="SetHelpKeyword" visibility="private">
+              </methodref>
+              <methodref name="SetHostDockSite" visibility="private">
+              </methodref>
+              <methodref name="SetLeft" visibility="private">
+              </methodref>
+              <methodref name="SetMouseCapture" visibility="private">
+              </methodref>
+              <methodref name="SetParentColor" visibility="private">
+              </methodref>
+              <methodref name="SetParentFont" visibility="private">
+              </methodref>
+              <methodref name="SetShowHint" visibility="private">
+              </methodref>
+              <methodref name="SetParentShowHint" visibility="private">
+              </methodref>
+              <methodref name="SetParentCustomHint" visibility="private">
+              </methodref>
+              <methodref name="SetPopupMenu" visibility="private">
+              </methodref>
+              <methodref name="SetTop" visibility="private">
+              </methodref>
+              <methodref name="SetVisible" visibility="private">
+              </methodref>
+              <methodref name="SetWidth" visibility="private">
+              </methodref>
+              <methodref name="SetZOrderPosition" visibility="private">
+              </methodref>
+              <methodref name="UpdateAnchorRules" visibility="private">
+              </methodref>
+              <methodref name="WriteIsControl" visibility="private">
+              </methodref>
+              <methodref name="WriteExplicitLeft" visibility="private">
+              </methodref>
+              <methodref name="WriteExplicitTop" visibility="private">
+              </methodref>
+              <methodref name="WriteExplicitWidth" visibility="private">
+              </methodref>
+              <methodref name="WriteExplicitHeight" visibility="private">
+              </methodref>
+              <methodref name="WMLButtonDown" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMNCLButtonDown" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMRButtonDown" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMMButtonDown" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMLButtonDblClk" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMRButtonDblClk" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMMButtonDblClk" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMMouseMove" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMLButtonUp" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMRButtonUp" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMMButtonUp" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMMouseWheel" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMCancelMode" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMWindowPosChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMVisibleChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMEnabledChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMFontChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMColorChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMMouseActivate" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMParentFontChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMSysFontChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMParentColorChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMParentShowHintChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMHintShow" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMHitTest" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMMouseEnter" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMMouseLeave" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMDesignHitTest" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMBiDiModeChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMParentBiDiModeChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMMouseWheel" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMGesture" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMContextMenu" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMParentTabletOptionsChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMStyleElementsChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="SetConstraints" visibility="private">
+              </methodref>
+              <methodref name="SetMargins" visibility="private">
+              </methodref>
+              <methodref name="SetTouchManager" visibility="private">
+              </methodref>
+              <methodref name="GetText" visibility="private">
+              </methodref>
+              <methodref name="SetText" visibility="private">
+              </methodref>
+              <methodref name="CMFloat" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="GetDesignDpi" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetParentCurrentDpi" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetCurrentPPI" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetDPIForDesigner" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="AsyncSchedule" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="ActionChange" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="AdjustSize" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="AssignTo" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="BeginAutoDrag" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="CanResize" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="Changed" visibility="protected">
+              </methodref>
+              <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
+              </methodref>
+              <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
+              </methodref>
+              <methodref name="Click" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="ConstrainedResize" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="CalcCursorPos" visibility="protected">
+              </methodref>
+              <methodref name="CreateTouchManager" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="DblClick" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DefaultDockImage" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DefineProperties" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="DockTrackNoTarget" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoContextPopup" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoEndDock" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoDock" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoStartDock" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoMouseWheel" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoMouseWheelDown" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoMouseWheelUp" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DragCanceled" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DragOver" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoEndDrag" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoStartDrag" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoGesture" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="DoGetGestureOptions" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="DoStyleElementsChanged" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="DrawDragDockImage" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="EraseDragDockImage" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetAction" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetActionLinkClass" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetClientOrigin" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetClientRect" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetDeviceContext" visibility="protected" procflags="overload virtual">
+              </methodref>
+              <methodref name="GetDockEdge" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetEnabled" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetFloating" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetFloatingDockSiteClass" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetPalette" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetPopupMenu" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetDragMode" visibility="protected">
+              </methodref>
+              <methodref name="IsTouchPropertyStored" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="Loaded" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="MouseActivate" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="MouseDown" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="MouseMove" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="MouseUp" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="Notification" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="PositionDockRect" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="PaletteChanged" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="ReadState" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="RequestAlign" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="Resize" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="ScaleConstraints" visibility="protected">
+              </methodref>
+              <methodref name="ScaleMargins" visibility="protected">
+              </methodref>
+              <methodref name="DefaultScalingFlags" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SendCancelMode" visibility="protected">
+              </methodref>
+              <methodref name="SendDockNotification" visibility="protected">
+              </methodref>
+              <methodref name="SetAutoSize" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetDragMode" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetEnabled" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetName" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="SetParent" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetParentBiDiMode" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetBiDiMode" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetStyleElements" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetStyleElements" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetStyleName" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetZOrder" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="SetCustomHint" visibility="protected">
+              </methodref>
+              <methodref name="UpdateExplicitBounds" visibility="protected">
+              </methodref>
+              <methodref name="UpdateBoundsRect" visibility="protected">
+              </methodref>
+              <methodref name="VisibleChanging" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="WndProc" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="UpdateStyleElements" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="DesignWndProc" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetDragImages" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetAllocatedWindowHandle" visibility="protected" procflags="virtual">
+              </methodref>
+              <propertyref name="ActionLink" visibility="protected">
+              </propertyref>
+              <propertyref name="AutoSize" visibility="protected">
+              </propertyref>
+              <propertyref name="Caption" visibility="protected">
+              </propertyref>
+              <propertyref name="DesktopFont" visibility="protected">
+              </propertyref>
+              <propertyref name="DragKind" visibility="protected">
+              </propertyref>
+              <propertyref name="DragCursor" visibility="protected">
+              </propertyref>
+              <propertyref name="DragMode" visibility="protected">
+              </propertyref>
+              <propertyref name="IsControl" visibility="protected">
+              </propertyref>
+              <propertyref name="MouseCapture" visibility="protected">
+              </propertyref>
+              <propertyref name="ParentBiDiMode" visibility="protected">
+              </propertyref>
+              <propertyref name="ParentColor" visibility="protected">
+              </propertyref>
+              <propertyref name="ParentFont" visibility="protected">
+              </propertyref>
+              <propertyref name="ParentShowHint" visibility="protected">
+              </propertyref>
+              <propertyref name="PopupMenu" visibility="protected">
+              </propertyref>
+              <propertyref name="ScalingFlags" visibility="protected">
+              </propertyref>
+              <propertyref name="Text" visibility="protected">
+              </propertyref>
+              <propertyref name="WheelAccumulator" visibility="protected">
+              </propertyref>
+              <propertyref name="Color" visibility="protected">
+              </propertyref>
+              <propertyref name="Font" visibility="protected">
+              </propertyref>
+              <propertyref name="IScaling" visibility="protected">
+              </propertyref>
+              <propertyref name="WindowText" visibility="protected">
+              </propertyref>
+              <eventref name="OnCanResize" visibility="protected">
+              </eventref>
+              <eventref name="OnClick" visibility="protected">
+              </eventref>
+              <eventref name="OnConstrainedResize" visibility="protected">
+              </eventref>
+              <eventref name="OnContextPopup" visibility="protected">
+              </eventref>
+              <eventref name="OnDblClick" visibility="protected">
+              </eventref>
+              <eventref name="OnDragDrop" visibility="protected">
+              </eventref>
+              <eventref name="OnDragOver" visibility="protected">
+              </eventref>
+              <eventref name="OnEndDock" visibility="protected">
+              </eventref>
+              <eventref name="OnEndDrag" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseActivate" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseDown" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseEnter" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseLeave" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseMove" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseUp" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseWheel" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseWheelDown" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseWheelUp" visibility="protected">
+              </eventref>
+              <eventref name="OnResize" visibility="protected">
+              </eventref>
+              <eventref name="OnStartDock" visibility="protected">
+              </eventref>
+              <eventref name="OnStartDrag" visibility="protected">
+              </eventref>
+              <methodref name="Create" visibility="public" procflags="constructor override">
+              </methodref>
+              <methodref name="Destroy" visibility="public" procflags="destructor override">
+              </methodref>
+              <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="IsLightStyleColor" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="ScaleForPPI" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="BeginDrag" visibility="public">
+              </methodref>
+              <methodref name="BringToFront" visibility="public">
+              </methodref>
+              <methodref name="ClientToScreen" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ClientToScreen" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ClientToParent" visibility="public">
+              </methodref>
+              <methodref name="Dock" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="Dragging" visibility="public">
+              </methodref>
+              <methodref name="DragDrop" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="DrawTextBiDiModeFlags" visibility="public">
+              </methodref>
+              <methodref name="DrawTextBiDiModeFlagsReadingOnly" visibility="public">
+              </methodref>
+              <propertyref name="Enabled" visibility="public">
+              </propertyref>
+              <methodref name="EndDrag" visibility="public">
+              </methodref>
+              <methodref name="GetControlsAlignment" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="GetParentComponent" visibility="public" procflags="override">
+              </methodref>
+              <methodref name="HasParent" visibility="public" procflags="override">
+              </methodref>
+              <methodref name="Hide" visibility="public">
+              </methodref>
+              <methodref name="InitiateAction" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="Invalidate" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="MouseWheelHandler" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="IsRightToLeft" visibility="public">
+              </methodref>
+              <methodref name="ManualDock" visibility="public">
+              </methodref>
+              <methodref name="ManualFloat" visibility="public">
+              </methodref>
+              <methodref name="Perform" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="Refresh" visibility="public">
+              </methodref>
+              <methodref name="Repaint" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="ReplaceDockedControl" visibility="public">
+              </methodref>
+              <methodref name="ScreenToClient" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ScreenToClient" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ParentToClient" visibility="public">
+              </methodref>
+              <methodref name="SendToBack" visibility="public">
+              </methodref>
+              <methodref name="SetBounds" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="SetDesignVisible" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="SetParentComponent" visibility="public" procflags="override">
+              </methodref>
+              <methodref name="Show" visibility="public">
+              </methodref>
+              <methodref name="Update" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="UseRightToLeftAlignment" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="UseRightToLeftReading" visibility="public">
+              </methodref>
+              <methodref name="UseRightToLeftScrollBar" visibility="public">
+              </methodref>
+              <methodref name="DefaultHandler" visibility="public" procflags="override">
+              </methodref>
+              <methodref name="GetTextBuf" visibility="public">
+              </methodref>
+              <methodref name="GetTextLen" visibility="public">
+              </methodref>
+              <methodref name="Perform" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="Perform" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="SetTextBuf" visibility="public">
+              </methodref>
+              <methodref name="GetSystemMetrics" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="GetStyleName" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="GetInternalStyleElements" visibility="public">
+              </methodref>
+              <methodref name="ScaleValue" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ScaleValue" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ScaleValue" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ScaleValue" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ScaleValue" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ScaleRectSize" visibility="public">
+              </methodref>
+              <propertyref name="Action" visibility="public">
+              </propertyref>
+              <propertyref name="Align" visibility="public">
+              </propertyref>
+              <propertyref name="Anchors" visibility="public">
+              </propertyref>
+              <propertyref name="BiDiMode" visibility="public">
+              </propertyref>
+              <propertyref name="BoundsRect" visibility="public">
+              </propertyref>
+              <propertyref name="ClientHeight" visibility="public">
+              </propertyref>
+              <propertyref name="ClientOrigin" visibility="public">
+              </propertyref>
+              <propertyref name="ClientRect" visibility="public">
+              </propertyref>
+              <propertyref name="ClientWidth" visibility="public">
+              </propertyref>
+              <propertyref name="Constraints" visibility="public">
+              </propertyref>
+              <propertyref name="ControlState" visibility="public">
+              </propertyref>
+              <propertyref name="ControlStyle" visibility="public">
+              </propertyref>
+              <propertyref name="CurrentPPI" visibility="public">
+              </propertyref>
+              <propertyref name="DockOrientation" visibility="public">
+              </propertyref>
+              <propertyref name="ExplicitLeft" visibility="public">
+              </propertyref>
+              <propertyref name="ExplicitTop" visibility="public">
+              </propertyref>
+              <propertyref name="ExplicitWidth" visibility="public">
+              </propertyref>
+              <propertyref name="ExplicitHeight" visibility="public">
+              </propertyref>
+              <propertyref name="Floating" visibility="public">
+              </propertyref>
+              <propertyref name="FloatingDockSiteClass" visibility="public">
+              </propertyref>
+              <propertyref name="HostDockSite" visibility="public">
+              </propertyref>
+              <propertyref name="LRDockWidth" visibility="public">
+              </propertyref>
+              <propertyref name="ScaleFactor" visibility="public">
+              </propertyref>
+              <propertyref name="ShowHint" visibility="public">
+              </propertyref>
+              <propertyref name="TBDockHeight" visibility="public">
+              </propertyref>
+              <propertyref name="Touch" visibility="public">
+              </propertyref>
+              <propertyref name="UndockHeight" visibility="public">
+              </propertyref>
+              <propertyref name="UndockWidth" visibility="public">
+              </propertyref>
+              <propertyref name="Visible" visibility="public">
+              </propertyref>
+              <eventref name="WindowProc" visibility="public">
+              </eventref>
+              <propertyref name="Parent" visibility="public">
+              </propertyref>
+              <propertyref name="StyleElements" visibility="public">
+              </propertyref>
+              <propertyref name="StyleName" visibility="public">
+              </propertyref>
+              <eventref name="OnGesture" visibility="public">
+              </eventref>
+              <propertyref name="RaiseOnNonMainThreadUsage" visibility="public">
+              </propertyref>
+              <propertyref name="AlignWithMargins" visibility="published">
+              </propertyref>
+              <propertyref name="Left" visibility="published">
+              </propertyref>
+              <propertyref name="Top" visibility="published">
+              </propertyref>
+              <propertyref name="Width" visibility="published">
+              </propertyref>
+              <propertyref name="Height" visibility="published">
+              </propertyref>
+              <propertyref name="Cursor" visibility="published">
+              </propertyref>
+              <propertyref name="Hint" visibility="published">
+              </propertyref>
+              <propertyref name="HelpType" visibility="published">
+              </propertyref>
+              <propertyref name="HelpKeyword" visibility="published">
+              </propertyref>
+              <propertyref name="HelpContext" visibility="published">
+              </propertyref>
+              <propertyref name="Margins" visibility="published">
+              </propertyref>
+              <propertyref name="CustomHint" visibility="published">
+              </propertyref>
+              <propertyref name="ParentCustomHint" visibility="published">
+              </propertyref>
+              <ancestor name="TComponent" namespace="System.Classes">
+                <interfaces>
+                  <implements name="IInterfaceComponentReference" />
+                  <implements name="IInterface" />
+                </interfaces>
+                <methodref name="GetComObject" visibility="private">
+                </methodref>
+                <methodref name="GetComponent" visibility="private">
+                </methodref>
+                <methodref name="GetComponentCount" visibility="private">
+                </methodref>
+                <methodref name="GetComponentIndex" visibility="private">
+                </methodref>
+                <methodref name="Insert" visibility="private">
+                </methodref>
+                <methodref name="ReadLeft" visibility="private">
+                </methodref>
+                <methodref name="ReadTop" visibility="private">
+                </methodref>
+                <methodref name="Remove" visibility="private">
+                </methodref>
+                <methodref name="RemoveNotification" visibility="private">
+                </methodref>
+                <methodref name="SetComponentIndex" visibility="private">
+                </methodref>
+                <methodref name="SetReference" visibility="private">
+                </methodref>
+                <methodref name="WriteLeft" visibility="private">
+                </methodref>
+                <methodref name="WriteTop" visibility="private">
+                </methodref>
+                <methodref name="IntfGetComponent" visibility="private">
+                </methodref>
+                <methodref name="DoGetDeltaStreams" visibility="private">
+                </methodref>
+                <methodref name="ReadDeltaStream" visibility="private">
+                </methodref>
+                <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="FindSortedComponent" visibility="private">
+                </methodref>
+                <methodref name="AddSortedComponent" visibility="private">
+                </methodref>
+                <methodref name="RemoveSortedComponent" visibility="private" procflags="inline">
+                </methodref>
+                <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+                </methodref>
+                <methodref name="AsyncSchedule" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="ChangeName" visibility="protected">
+                </methodref>
+                <methodref name="DefineProperties" visibility="protected" procflags="override">
+                </methodref>
+                <methodref name="GetChildren" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="GetChildOwner" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="GetChildParent" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="GetOwner" visibility="protected" procflags="override">
+                </methodref>
+                <methodref name="Loaded" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="Notification" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="GetDeltaStreams" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="ReadState" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="CanObserve" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="ObserverAdded" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="GetObservers" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="SetAncestor" visibility="protected">
+                </methodref>
+                <methodref name="SetDesigning" visibility="protected">
+                </methodref>
+                <methodref name="SetInline" visibility="protected">
+                </methodref>
+                <methodref name="SetDesignInstance" visibility="protected">
+                </methodref>
+                <methodref name="SetName" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="SetChildOrder" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="SetParentComponent" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="Updating" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="Updated" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="UpdateRegistry" visibility="protected" procflags="class virtual">
+                </methodref>
+                <methodref name="ValidateRename" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="ValidateContainer" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="ValidateInsert" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="WriteState" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="RemoveFreeNotifications" visibility="protected">
+                </methodref>
+                <methodref name="QueryInterface" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="_AddRef" visibility="protected">
+                </methodref>
+                <methodref name="_Release" visibility="protected">
+                </methodref>
+                <methodref name="GetTypeInfoCount" visibility="protected">
+                </methodref>
+                <methodref name="GetTypeInfo" visibility="protected">
+                </methodref>
+                <methodref name="GetIDsOfNames" visibility="protected">
+                </methodref>
+                <methodref name="Invoke" visibility="protected">
+                </methodref>
+                <eventref name="OnGetDeltaStreams" visibility="protected">
+                </eventref>
+                <methodref name="Create" visibility="public" procflags="constructor virtual">
+                </methodref>
+                <methodref name="Destroy" visibility="public" procflags="destructor override">
+                </methodref>
+                <methodref name="BeforeDestruction" visibility="public" procflags="override">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="EndInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="EndInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="EndFunctionInvoke" visibility="public">
+                </methodref>
+                <methodref name="DestroyComponents" visibility="public">
+                </methodref>
+                <methodref name="Destroying" visibility="public">
+                </methodref>
+                <methodref name="ExecuteAction" visibility="public" procflags="dynamic">
+                </methodref>
+                <methodref name="FindComponent" visibility="public">
+                </methodref>
+                <methodref name="FreeNotification" visibility="public">
+                </methodref>
+                <methodref name="RemoveFreeNotification" visibility="public">
+                </methodref>
+                <methodref name="FreeOnRelease" visibility="public">
+                </methodref>
+                <methodref name="GetEnumerator" visibility="public" procflags="inline">
+                </methodref>
+                <methodref name="GetParentComponent" visibility="public" procflags="dynamic">
+                </methodref>
+                <methodref name="GetNamePath" visibility="public" procflags="override">
+                </methodref>
+                <methodref name="HasParent" visibility="public" procflags="dynamic">
+                </methodref>
+                <methodref name="InsertComponent" visibility="public">
+                </methodref>
+                <methodref name="RemoveComponent" visibility="public">
+                </methodref>
+                <methodref name="SetSubComponent" visibility="public">
+                </methodref>
+                <methodref name="SafeCallException" visibility="public" procflags="override">
+                </methodref>
+                <methodref name="UpdateAction" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="IsImplementorOf" visibility="public">
+                </methodref>
+                <methodref name="ReferenceInterface" visibility="public">
+                </methodref>
+                <propertyref name="ComObject" visibility="public">
+                </propertyref>
+                <propertyref name="Components" visibility="public">
+                </propertyref>
+                <propertyref name="ComponentCount" visibility="public">
+                </propertyref>
+                <propertyref name="ComponentIndex" visibility="public">
+                </propertyref>
+                <propertyref name="ComponentState" visibility="public">
+                </propertyref>
+                <propertyref name="ComponentStyle" visibility="public">
+                </propertyref>
+                <propertyref name="DesignInfo" visibility="public">
+                </propertyref>
+                <propertyref name="Owner" visibility="public">
+                </propertyref>
+                <propertyref name="VCLComObject" visibility="public">
+                </propertyref>
+                <propertyref name="Observers" visibility="public">
+                </propertyref>
+                <propertyref name="Name" visibility="published">
+                </propertyref>
+                <propertyref name="Tag" visibility="published">
+                </propertyref>
+                <ancestor name="TPersistent" namespace="System.Classes">
+                  <methodref name="AssignError" visibility="private">
+                  </methodref>
+                  <methodref name="AssignTo" visibility="protected" procflags="virtual">
+                  </methodref>
+                  <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+                  </methodref>
+                  <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+                  </methodref>
+                  <methodref name="Destroy" visibility="public" procflags="destructor override">
+                  </methodref>
+                  <methodref name="Assign" visibility="public" procflags="virtual">
+                  </methodref>
+                  <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+                  </methodref>
+                  <ancestor name="TObject" namespace="System">
+                    <methodref name="Create" visibility="public" procflags="constructor">
+                    </methodref>
+                    <methodref name="Free" visibility="public">
+                    </methodref>
+                    <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+                    </methodref>
+                    <methodref name="InitInstance" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="CleanupInstance" visibility="public">
+                    </methodref>
+                    <methodref name="ClassType" visibility="public" procflags="inline">
+                    </methodref>
+                    <methodref name="ClassName" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="ClassNameIs" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="ClassParent" visibility="public" procflags="class inline">
+                    </methodref>
+                    <methodref name="ClassInfo" visibility="public" procflags="class inline">
+                    </methodref>
+                    <methodref name="InstanceSize" visibility="public" procflags="class inline">
+                    </methodref>
+                    <methodref name="InheritsFrom" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="MethodAddress" visibility="public" procflags="class overload">
+                    </methodref>
+                    <methodref name="MethodAddress" visibility="public" procflags="class overload">
+                    </methodref>
+                    <methodref name="MethodName" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="QualifiedClassName" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="FieldAddress" visibility="public" procflags="overload">
+                    </methodref>
+                    <methodref name="FieldAddress" visibility="public" procflags="overload">
+                    </methodref>
+                    <methodref name="GetInterface" visibility="public">
+                    </methodref>
+                    <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+                    </methodref>
+                    <methodref name="UnitName" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="UnitScope" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="Equals" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="GetHashCode" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="ToString" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="SafeCallException" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="Dispatch" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="NewInstance" visibility="public" procflags="class virtual">
+                    </methodref>
+                    <methodref name="FreeInstance" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+                    </methodref>
+                    <methodref name="GetDisposed" visibility="protected" procflags="inline">
+                    </methodref>
+                    <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+                    </methodref>
+                    <propertyref name="Disposed" visibility="protected">
+                    </propertyref>
+                  </ancestor>
+                </ancestor>
+              </ancestor>
+            </ancestor>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="ResetTimeStep" type="Boolean" visibility="private" size="1" offset="2568" file="USoilWaterMod.pas" line="65">
+        <devnotes>
+           <summary>flag for resetting time step</summary>
+        </devnotes>
+      </field>
+      <field name="NewDay" type="Boolean" visibility="private" size="1" offset="2569" file="USoilWaterMod.pas" line="67">
+        <devnotes>
+           <summary>flag for start of a new day</summary>
+        </devnotes>
+      </field>
+      <field name="last_iter" type="Integer" visibility="private" size="4" offset="2572" file="USoilWaterMod.pas" line="69">
+        <devnotes>
+           <summary>number of iterations during previous internal time step</summary>
+        </devnotes>
+      </field>
+      <field name="Iter_save" type="Integer" visibility="private" size="4" offset="2576" file="USoilWaterMod.pas" line="71">
+        <devnotes>
+           <summary>field for saving itermax</summary>
+        </devnotes>
+      </field>
+      <field name="total_iter" type="Integer" visibility="private" size="4" offset="2580" file="USoilWaterMod.pas" line="73">
+        <devnotes>
+           <summary>total number of iterations during internal time step</summary>
+        </devnotes>
+      </field>
+      <field name="delt_iter_max" type="Double" visibility="private" size="8" offset="2584" file="USoilWaterMod.pas" line="75">
+        <devnotes>
+           <summary>maximum water content change within a single layer during an internal time step</summary>
+        </devnotes>
+      </field>
+      <field name="max_flow_ratio" type="Double" visibility="private" size="8" offset="2592" file="USoilWaterMod.pas" line="77">
+        <devnotes>
+           <summary>maximum ratio of flow to soil water storage during iteration in any layer</summary>
+        </devnotes>
+      </field>
+      <field name="theta_airdryness" type="Double" visibility="private" size="8" offset="2600" file="USoilWaterMod.pas" line="79">
+        <devnotes>
+           <summary>lower limit to soil water content [cm3/cm3]</summary>
+        </devnotes>
+      </field>
+      <field name="DayFlow1" type="Double" visibility="private" size="8" offset="2608" file="USoilWaterMod.pas" line="81">
+        <devnotes>
+           <summary>upper flow rate, constant over one day  [cm/d]</summary>
+        </devnotes>
+      </field>
+      <field name="CumDayFlow1" type="Double" visibility="private" size="8" offset="2616" file="USoilWaterMod.pas" line="83">
+        <devnotes>
+           <summary>cumulative flow into layer 1 over the day [cm/d]</summary>
+        </devnotes>
+      </field>
+      <field name="oldrunoff" type="Double" visibility="private" size="8" offset="2624" file="USoilWaterMod.pas" line="85">
+        <devnotes>
+           <summary>for saving old runoff rate value</summary>
+        </devnotes>
+      </field>
+      <field name="MaxInfil" type="Double" visibility="private" size="8" offset="2632" file="USoilWaterMod.pas" line="87">
+        <devnotes>
+           <summary>maximum infiltration rate</summary>
+        </devnotes>
+      </field>
+      <field name="max_IterErrorsave" type="Double" visibility="private" size="8" offset="2640" file="USoilWaterMod.pas" line="89">
+        <devnotes>
+           <summary>for saving max_IterError</summary>
+        </devnotes>
+      </field>
+      <field name="start" type="Byte" visibility="private" size="1" offset="2648" file="USoilWaterMod.pas" line="91">
+        <devnotes>
+           <summary>number of layer where solution of equation system starts, mostly the first sometimes the second ..</summary>
+        </devnotes>
+      </field>
+      <field name="wet" type="Boolean" visibility="private" size="1" offset="2649" file="USoilWaterMod.pas" line="93">
+        <devnotes>
+           <summary>S�ttigung im obersten Kompartiment ?</summary>
+        </devnotes>
+      </field>
+      <field name="dry" type="Boolean" visibility="private" size="1" offset="2650" file="USoilWaterMod.pas" line="95">
+        <devnotes>
+           <summary>Wassergehalt kleiner b_rest im obersten Komp.?</summary>
+        </devnotes>
+      </field>
+      <field name="success" type="Boolean" visibility="private" size="1" offset="2651" file="USoilWaterMod.pas" line="97">
+        <devnotes>
+           <summary>solution converged</summary>
+        </devnotes>
+      </field>
+      <field name="dt_set" type="Boolean" visibility="private" size="1" offset="2652" file="USoilWaterMod.pas" line="99">
+        <devnotes>
+           <summary>was dt set during act. iteration</summary>
+        </devnotes>
+      </field>
+      <field name="fCompMethod" type="TCompMethod" visibility="private" size="1" offset="2653" file="USoilWaterMod.pas" line="102">
+        <devnotes>
+           <summary>Enumeration type variable for computation method</summary>
+        </devnotes>
+      </field>
+      <field name="fShowWarnings" type="Boolean" visibility="private" size="1" offset="2654" file="USoilWaterMod.pas" line="104">
+        <devnotes>
+           <summary>Switch for put Warnings on and off</summary>
+        </devnotes>
+      </field>
+      <field name="FVGParsFromTexture" type="TVGParsFromTexture" visibility="private" size="1" offset="2655" file="USoilWaterMod.pas" line="106">
+        <devnotes>
+           <summary>Option to take Van-Genuchten-Parameters from texture estimates</summary>
+        </devnotes>
+      </field>
+      <field name="Texture_version" type="TTexture_version" visibility="private" size="1" offset="2656" file="USoilWaterMod.pas" line="108">
+        <devnotes>
+           <summary>type for defining pedotransfer function either KA5 or RR</summary>
+        </devnotes>
+      </field>
+      <field name="FKsFromTexture" type="TVGParsFromTexture" visibility="private" size="1" offset="2657" file="USoilWaterMod.pas" line="110">
+        <devnotes>
+           <summary>FKsFromTexture;</summary>
+        </devnotes>
+      </field>
+      <field name="FTextureClass1" type="TTextureClass" visibility="private" size="1" offset="2658" file="USoilWaterMod.pas" line="111" />
+      <field name="FTextureClass2" type="TTextureClass" visibility="private" size="1" offset="2659" file="USoilWaterMod.pas" line="113" />
+      <field name="FTextureClass3" type="TTextureClass" visibility="private" size="1" offset="2660" file="USoilWaterMod.pas" line="113" />
+      <field name="FTextureClass4" type="TTextureClass" visibility="private" size="1" offset="2661" file="USoilWaterMod.pas" line="113" />
+      <field name="FTextureClass5" type="TTextureClass" visibility="private" size="1" offset="2662" file="USoilWaterMod.pas" line="113" />
+      <field name="FTextureClass6" type="TTextureClass" visibility="private" size="1" offset="2663" file="USoilWaterMod.pas" line="114" />
+      <field name="fLDClass1" type="TLDClass" visibility="private" size="1" offset="2664" file="USoilWaterMod.pas" line="119">
+        <devnotes>
+           <summary>
+           soil bulk density classes in Horizon x }
+           </summary>
+        </devnotes>
+      </field>
+      <field name="FLDClass2" type="TLDClass" visibility="private" size="1" offset="2665" file="USoilWaterMod.pas" line="120" />
+      <field name="FLDClass3" type="TLDClass" visibility="private" size="1" offset="2666" file="USoilWaterMod.pas" line="120" />
+      <field name="FLDClass4" type="TLDClass" visibility="private" size="1" offset="2667" file="USoilWaterMod.pas" line="120" />
+      <field name="FLDClass5" type="TLDClass" visibility="private" size="1" offset="2668" file="USoilWaterMod.pas" line="120" />
+      <field name="FLDClass6" type="TLDClass" visibility="private" size="1" offset="2669" file="USoilWaterMod.pas" line="120" />
+      <field name="fLD1" type="TLD" visibility="private" size="1" offset="2670" file="USoilWaterMod.pas" line="123">
+        <devnotes>
+           <summary>numerical bulk density as constants for each of the six possible soil horizons</summary>
+        </devnotes>
+      </field>
+      <field name="fLD2" type="TLD" visibility="private" size="1" offset="2671" file="USoilWaterMod.pas" line="123" />
+      <field name="fLD3" type="TLD" visibility="private" size="1" offset="2672" file="USoilWaterMod.pas" line="123" />
+      <field name="fLD4" type="TLD" visibility="private" size="1" offset="2673" file="USoilWaterMod.pas" line="123" />
+      <field name="fLD5" type="TLD" visibility="private" size="1" offset="2674" file="USoilWaterMod.pas" line="123" />
+      <field name="fLD6" type="TLD" visibility="private" size="1" offset="2675" file="USoilWaterMod.pas" line="123" />
+      <field name="fm_model" type="Tm_model" visibility="private" size="1" offset="2676" file="USoilWaterMod.pas" line="126">
+        <devnotes>
+           <summary>type of m_model used</summary>
+        </devnotes>
+      </field>
+      <field name="fWriteParsFromTexture" type="Boolean" visibility="private" size="1" offset="2677" file="USoilWaterMod.pas" line="128">
+        <devnotes>
+           <summary>flag for writing texture VG-Pars into Param-Ini-file</summary>
+        </devnotes>
+      </field>
+      <field name="fred_f" type="Tred_f" visibility="private" size="1" offset="2678" file="USoilWaterMod.pas" line="130">
+        <devnotes>
+           <summary>Option for soil evaporation reduction function</summary>
+        </devnotes>
+      </field>
+      <field name="dt_old" type="Double" visibility="private" size="8" offset="2680" file="USoilWaterMod.pas" line="132">
+        <devnotes>
+           <summary>alte Zeitschrittweite [d]</summary>
+        </devnotes>
+      </field>
+      <field name="MaxAktAenderWaGe" type="Double" visibility="private" size="8" offset="2688" file="USoilWaterMod.pas" line="134">
+        <devnotes>
+           <summary>maximale Wassergehalts�nderung</summary>
+        </devnotes>
+      </field>
+      <field name="TempFactor" type="Double" visibility="private" size="8" offset="2696" file="USoilWaterMod.pas" line="136">
+        <devnotes>
+           <summary></summary>
+        </devnotes>
+      </field>
+      <field name="ndx_Weff" type="Integer" visibility="private" size="4" offset="2704" file="USoilWaterMod.pas" line="139">
+        <devnotes>
+           <summary>index of layer where maximum Weff is reached</summary>
+        </devnotes>
+      </field>
+      <field name="PSI_dummy" type="TVar" visibility="private" size="4" offset="2708" file="USoilWaterMod.pas" line="142">
+        <devnotes>
+           <summary>dummy to set array settings</summary>
+        </devnotes>
+      </field>
+      <field name="IniMethod" type="TIniMethod" visibility="private" size="1" offset="2712" file="USoilWaterMod.pas" line="145">
+        <devnotes>
+           <summary>Enumeration type variable for initialisation method</summary>
+        </devnotes>
+      </field>
+      <field name="nFKCalcMethod" type="TnFKCalcMethod" visibility="private" size="1" offset="2713" file="USoilWaterMod.pas" line="148">
+        <devnotes>
+           <summary> type of calculation method for plant available soil water </summary>
+        </devnotes>
+      </field>
+      <field name="fWeffOpt" type="TSource" visibility="private" size="1" offset="2714" file="USoilWaterMod.pas" line="151">
+        <devnotes>
+           <summary>Source of effective rooting depth (Weff)</summary>
+        </devnotes>
+      </field>
+      <field name="FSoilHeatModel" type="TAbstractSoilHeat" visibility="private" size="4" offset="2716" file="USoilWaterMod.pas" line="154">
+        <devnotes>
+           <summary>Link to soil temperature model</summary>
+        </devnotes>
+      </field>
+      <field name="fTransferWGs" type="Boolean" visibility="private" size="1" offset="2720" file="USoilWaterMod.pas" line="157">
+        <devnotes>
+           <summary>Option field, if true water contents are written into the next state ini-File of the control file</summary>
+        </devnotes>
+      </field>
+      <field name="alpha" type="TSoilArray" visibility="private" size="416" offset="2728" file="USoilWaterMod.pas" line="158" />
+      <field name="beta" type="TSoilArray" visibility="private" size="416" offset="3144" file="USoilWaterMod.pas" line="158" />
+      <field name="gamma" type="TSoilArray" visibility="private" size="416" offset="3560" file="USoilWaterMod.pas" line="158" />
+      <field name="Res" type="TSoilArray" visibility="private" size="416" offset="3976" file="USoilWaterMod.pas" line="158" />
+      <procedure name="CalcTempFactor" visibility="private" file="USoilWaterMod.pas" line="161">
+        <devnotes>
+           <summary>Calculation of freezing effect</summary>
+        </devnotes>
+      </procedure>
+      <procedure name="CalcConductivities" visibility="private" file="USoilWaterMod.pas" line="163">
+        <devnotes>
+           <summary>Calculation of conductivities</summary>
+        </devnotes>
+      </procedure>
+      <procedure name="CapWatSolut" visibility="private" file="USoilWaterMod.pas" line="165">
+        <devnotes>
+           <summary>caculation of water transport according to diffusivity approach</summary>
+        </devnotes>
+      </procedure>
+      <procedure name="get_water_contents" visibility="private" file="USoilWaterMod.pas" line="166">
+      </procedure>
+      <procedure name="Diffwater_solut" visibility="private" file="USoilWaterMod.pas" line="168">
+        <devnotes>
+           <summary>caculation of water transport according to diffusivity approach</summary>
+        </devnotes>
+      </procedure>
+      <procedure name="Richardswater_solut" visibility="private" file="USoilWaterMod.pas" line="170">
+        <devnotes>
+           <summary>caculation of water transport according to Richards equation approach</summary>
+        </devnotes>
+      </procedure>
+      <procedure name="Mixedwater_solut" visibility="private" file="USoilWaterMod.pas" line="172">
+        <devnotes>
+           <summary>caculation of water transport according to &quot;Mixed&quot; approach</summary>
+        </devnotes>
+      </procedure>
+      <procedure name="MixedHydruswater_solut" visibility="private" file="USoilWaterMod.pas" line="174">
+        <devnotes>
+           <summary>caculation of water transport according to &quot;Mixed Hydrus&quot; approach</summary>
+        </devnotes>
+      </procedure>
+      <procedure name="GetWaterBalance" visibility="private" file="USoilWaterMod.pas" line="177">
+        <devnotes>
+           <summary>Calculation of soil water balance</summary>
+        </devnotes>
+      </procedure>
+      <procedure name="get_new_dt" visibility="private" file="USoilWaterMod.pas" line="179">
+        <devnotes>
+           <summary>Calculation of new internal time step width</summary>
+        </devnotes>
+      </procedure>
+      <procedure name="adjust_dt" visibility="private" file="USoilWaterMod.pas" line="181">
+        <devnotes>
+           <summary>adjust time step during picard iteration</summary>
+        </devnotes>
+      </procedure>
+      <procedure name="get_delt_iter_max" visibility="private" file="USoilWaterMod.pas" line="183">
+        <devnotes>
+           <summary>Calculation of maximal water content change within an internal time step</summary>
+        </devnotes>
+      </procedure>
+      <procedure name="set_new_state_vars" visibility="private" file="USoilWaterMod.pas" line="185">
+        <devnotes>
+           <summary>setting up the new state vars</summary>
+        </devnotes>
+      </procedure>
+      <procedure name="CalcOverflow" visibility="private" file="USoilWaterMod.pas" line="187">
+        <devnotes>
+           <summary>calculation of runoff</summary>
+        </devnotes>
+      </procedure>
+      <function name="getNetRain" visibility="private" file="USoilWaterMod.pas" line="188">
+        <parameters>
+          <retval type="TExternV">
+            <devnotes>
+               <summary>
+               TExternV represents an external variable in the model. Values of model
+               elements outside a submodel are &quot;external&quot; and made accessible by linking
+               to the source variable, often via a pointer.
+               </summary>
+            </devnotes>
+          </retval>
+        </parameters>
+      </function>
+      <function name="getPotEvap" visibility="private" file="USoilWaterMod.pas" line="189">
+        <parameters>
+          <retval type="TExternV">
+            <devnotes>
+               <summary>
+               TExternV represents an external variable in the model. Values of model
+               elements outside a submodel are &quot;external&quot; and made accessible by linking
+               to the source variable, often via a pointer.
+               </summary>
+            </devnotes>
+          </retval>
+        </parameters>
+      </function>
+      <procedure name="CreateParameters" visibility="private" file="USoilWaterMod.pas" line="191">
+        <devnotes>
+           summary&gt; set options for numerical bulk density classes </summary>
+        </devnotes>
+      </procedure>
+      <procedure name="CreateOptions" visibility="private" file="USoilWaterMod.pas" line="192">
+      </procedure>
+      <procedure name="CreateStates" visibility="private" file="USoilWaterMod.pas" line="193">
+      </procedure>
+      <procedure name="CreateVars" visibility="private" file="USoilWaterMod.pas" line="194">
+      </procedure>
+      <procedure name="InitGenuchtenPars" visibility="private" file="USoilWaterMod.pas" line="195">
+      </procedure>
+      <procedure name="SetCompMethod" visibility="private" file="USoilWaterMod.pas" line="196">
+        <devnotes>
+           <summary>soil water diffusivities [cm2/d] }</summary>
+           <summary>specific water capacity</summary>
+           <summary>intermediate variable dt.v/(C_arr*??)</summary>
+           <summary>saturated hydraulic conductivities [cm/d]</summary>
+           <summary>unsaturated hydraulische Leitf�higkeiten [cm/d] }</summary>
+           <summary>Mittelwert der Diffusivit�t zwischen 2 Kompartimenten [cm2/d] }</summary>
+           <summary>Mittelwert der unsaturatedn hydr. conductivity zwischen 2 Kompartimenten [cm/d] }</summary>
+           <summary>Intermediate variable</summary>
+           <summary>Intermediate variable</summary>
+           <summary>Intermediate variable[i] := 0.0; known values and solution vektor</summary>
+           <summary>lower vector of the tri-diagonal matrix</summary>
+           <summary>central vector of the tri-diagonal matrix</summary>
+           <summary>upper vector of the tri-diagonal matrix</summary>
+           <summary>Wassergehalte bei der letzten Iteration [cm3/cm3 }</summary>
+           <summary>new soil water contents</summary>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+           <summary>permanenter Welkepunkt [cm3/cm3]</summary>
+           <summary>nutzbare Feldkapazit�t [cm3/cm3]</summary>
+           <summary>alte Wasserfl�sse [cm/d]</summary>
+           <summary>alte Wassergehalte</summary>
+           <summary>New estimate of water potential [cm]</summary>
+        </devnotes>
+      </procedure>
+      <procedure name="InitVectors" visibility="private" file="USoilWaterMod.pas" line="197">
+      </procedure>
+      <procedure name="SetGenuchtenPars" visibility="private" file="USoilWaterMod.pas" line="198">
+      </procedure>
+      <procedure name="SetLDPars" visibility="private" file="USoilWaterMod.pas" line="199">
+      </procedure>
+      <procedure name="SetLDnumbers" visibility="private" file="USoilWaterMod.pas" line="200">
+      </procedure>
+      <procedure name="SetLowerBoundaryCondition" visibility="private" file="USoilWaterMod.pas" line="201">
+      </procedure>
+      <procedure name="SetEvaporationReductionOption" visibility="private" file="USoilWaterMod.pas" line="202">
+      </procedure>
+      <procedure name="Calc_nFK" visibility="private" file="USoilWaterMod.pas" line="203">
+        <parameters>
+          <parameter name="psiFK" type="Extended" />
+          <parameter name="psiWP" type="Extended" />
+        </parameters>
+      </procedure>
+      <procedure name="Calc_nFKparsForHorizons" visibility="private" file="USoilWaterMod.pas" line="204">
+      </procedure>
+      <procedure name="SetNewPsi_and_Theta_Values" visibility="private" file="USoilWaterMod.pas" line="205">
+      </procedure>
+      <procedure name="CheckForHoriIndexInitialisation" visibility="private" file="USoilWaterMod.pas" line="206">
+      </procedure>
+      <procedure name="SaveOldValuesForCrankNicholson_SoluteTransport" visibility="private" file="USoilWaterMod.pas" line="207">
+      </procedure>
+      <procedure name="Find_Number_of_computation_Layers" visibility="private" file="USoilWaterMod.pas" line="208">
+      </procedure>
+      <procedure name="CalcTotalWaterAmounts" visibility="private" file="USoilWaterMod.pas" line="209">
+      </procedure>
+      <procedure name="CalcProfileWaterBalance" visibility="private" file="USoilWaterMod.pas" line="210">
+        <parameters>
+          <parameter name="OldSumSoilwater" type="Extended" />
+        </parameters>
+      </procedure>
+      <procedure name="CalcGlobalWaterBalance" visibility="private" file="USoilWaterMod.pas" line="211">
+      </procedure>
+      <procedure name="InitDailySums_and_Changes" visibility="private" file="USoilWaterMod.pas" line="212">
+        <parameters>
+          <parameter name="OldSumSoilwater" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="CalcProfile_and_HorizonSums" visibility="private" file="USoilWaterMod.pas" line="213">
+      </procedure>
+      <procedure name="TransferWGsToNextINI" visibility="private" file="USoilWaterMod.pas" line="214">
+      </procedure>
+      <procedure name="obere_Randbedingung" visibility="private" file="USoilWaterMod.pas" line="215">
+      </procedure>
+      <field name="Dw_arr" type="TSoilArray" visibility="protected" size="416" offset="4392" file="USoilWaterMod.pas" line="219">
+        <devnotes>
+           <summary>soil water diffusivities [cm2/d] }</summary>
+        </devnotes>
+      </field>
+      <field name="c_arr" type="TSoilArray" visibility="protected" size="416" offset="4808" file="USoilWaterMod.pas" line="221">
+        <devnotes>
+           <summary>specific water capacity</summary>
+        </devnotes>
+      </field>
+      <field name="P" type="TSoilArray" visibility="protected" size="416" offset="5224" file="USoilWaterMod.pas" line="223">
+        <devnotes>
+           <summary>intermediate variable dt.v/(C_arr*??)</summary>
+        </devnotes>
+      </field>
+      <field name="kf" type="TSoilArray" visibility="protected" size="416" offset="5640" file="USoilWaterMod.pas" line="225">
+        <devnotes>
+           <summary>saturated hydraulic conductivities [cm/d]</summary>
+        </devnotes>
+      </field>
+      <field name="Ku_arr" type="TSoilArray" visibility="protected" size="416" offset="6056" file="USoilWaterMod.pas" line="227">
+        <devnotes>
+           <summary>unsaturated hydraulische Leitf�higkeiten [cm/d] }</summary>
+        </devnotes>
+      </field>
+      <field name="avg_Dw" type="TSoilArray" visibility="protected" size="416" offset="6472" file="USoilWaterMod.pas" line="229">
+        <devnotes>
+           <summary>Mittelwert der Diffusivit�t zwischen 2 Kompartimenten [cm2/d] }</summary>
+        </devnotes>
+      </field>
+      <field name="avg_Ku" type="TSoilArray" visibility="protected" size="416" offset="6888" file="USoilWaterMod.pas" line="231">
+        <devnotes>
+           <summary>Mittelwert der unsaturated hydr. conductivity zwischen 2 Kompartimenten [cm/d] }</summary>
+        </devnotes>
+      </field>
+      <field name="Dw_fact" type="TSoilArray" visibility="protected" size="416" offset="7304" file="USoilWaterMod.pas" line="233">
+        <devnotes>
+           <summary>Intermediate variable</summary>
+        </devnotes>
+      </field>
+      <field name="Ku_fact" type="TSoilArray" visibility="protected" size="416" offset="7720" file="USoilWaterMod.pas" line="235">
+        <devnotes>
+           <summary>Intermediate variable</summary>
+        </devnotes>
+      </field>
+      <field name="B_vektor" type="TSoilArray" visibility="protected" size="416" offset="8136" file="USoilWaterMod.pas" line="237">
+        <devnotes>
+           <summary>Intermediate variable: TSoilArray; known values and solution vektor</summary>
+        </devnotes>
+      </field>
+      <field name="lower" type="TSoilArray" visibility="protected" size="416" offset="8552" file="USoilWaterMod.pas" line="239">
+        <devnotes>
+           <summary>lower vector of the tri-diagonal matrix</summary>
+        </devnotes>
+      </field>
+      <field name="diag" type="TSoilArray" visibility="protected" size="416" offset="8968" file="USoilWaterMod.pas" line="241">
+        <devnotes>
+           <summary>central vector of the tri-diagonal matrix</summary>
+        </devnotes>
+      </field>
+      <field name="upper" type="TSoilArray" visibility="protected" size="416" offset="9384" file="USoilWaterMod.pas" line="243">
+        <devnotes>
+           <summary>upper vector of the tri-diagonal matrix</summary>
+        </devnotes>
+      </field>
+      <field name="last_iter_theta" type="TSoilArray" visibility="protected" size="416" offset="9800" file="USoilWaterMod.pas" line="245">
+        <devnotes>
+           <summary>Wassergehalte bei der letzten Iteration [cm3/cm3 }</summary>
+        </devnotes>
+      </field>
+      <field name="est_theta" type="TSoilArray" visibility="protected" size="416" offset="10216" file="USoilWaterMod.pas" line="247">
+        <devnotes>
+           <summary>extrapolated soil water content for first iteration step</summary>
+        </devnotes>
+      </field>
+      <field name="wf" type="TSoilArray" visibility="protected" size="416" offset="10632" file="USoilWaterMod.pas" line="249">
+        <devnotes>
+           <summary>factor for calculation of flows in cases of near saturation</summary>
+        </devnotes>
+      </field>
+      <field name="flow_ratio" type="TSoilArray" visibility="protected" size="416" offset="11048" file="USoilWaterMod.pas" line="251">
+        <devnotes>
+           <summary>ratio of flow to soil water storage</summary>
+        </devnotes>
+      </field>
+      <field name="LowerBoundaryCondition" type="TLowerBoundaryCondition" visibility="protected" size="1" offset="11464" file="USoilWaterMod.pas" line="254">
+        <devnotes>
+           <summary>Lower boundary condition specification</summary>
+        </devnotes>
+      </field>
+      <function name="ndx_str" visibility="protected" file="USoilWaterMod.pas" line="256">
+        <parameters>
+          <parameter name="i" type="Integer" />
+          <retval type="string" />
+        </parameters>
+      </function>
+      <function name="getTexture" visibility="protected" file="USoilWaterMod.pas" line="257">
+        <parameters>
+          <parameter name="i" type="Integer" />
+          <retval type="TTextureClass">
+            <devnotes>
+               <summary>
+               Texture classes according to Bodenkundliche Kartieranleitung 5. Auflage
+               </summary>
+            </devnotes>
+          </retval>
+        </parameters>
+      </function>
+      <function name="getLD" visibility="protected" file="USoilWaterMod.pas" line="258">
+        <parameters>
+          <parameter name="i" type="Integer" />
+          <retval type="TLDClass">
+            <devnotes>
+               <summary>
+               bulk density classes according to KA5
+               </summary>
+            </devnotes>
+          </retval>
+        </parameters>
+      </function>
+      <field name="act_n_comp" type="Integer" visibility="public" size="4" offset="11468" file="USoilWaterMod.pas" line="263">
+        <devnotes>
+           <summary></summary>
+           <summary>actual number of layers to be calculated, variable in case of groundwater influence</summary>
+        </devnotes>
+      </field>
+      <field name="iter" type="Integer" visibility="public" size="4" offset="11472" file="USoilWaterMod.pas" line="265">
+        <devnotes>
+           <summary>number of iterations during internal time step</summary>
+        </devnotes>
+      </field>
+      <field name="akt_bilanz_f" type="Double" visibility="public" size="8" offset="11480" file="USoilWaterMod.pas" line="266" />
+      <field name="sum_Bilanz_f" type="Double" visibility="public" size="8" offset="11488" file="USoilWaterMod.pas" line="267" />
+      <field name="SW_start" type="Double" visibility="public" size="8" offset="11496" file="USoilWaterMod.pas" line="269">
+        <devnotes>
+           <summary>sum of soil and ponded water [mm]</summary>
+        </devnotes>
+      </field>
+      <field name="global_WaterBalance" type="Double" visibility="public" size="8" offset="11504" file="USoilWaterMod.pas" line="269" />
+      <field name="old_global_WaterBalance" type="Double" visibility="public" size="8" offset="11512" file="USoilWaterMod.pas" line="269" />
+      <field name="theta_arr" type="TSoilVarArray" visibility="public" size="212" offset="11520" file="USoilWaterMod.pas" line="271">
+        <devnotes>
+           <summary>Wassergehaltsvektor [cm3/cm3]</summary>
+        </devnotes>
+      </field>
+      <field name="theta_new" type="TSoilArray" visibility="public" size="416" offset="11736" file="USoilWaterMod.pas" line="273">
+        <devnotes>
+           <summary>new soil water contents</summary>
+        </devnotes>
+      </field>
+      <field name="WAmount" type="TSoilStateArray" visibility="public" size="208" offset="12152" file="USoilWaterMod.pas" line="275">
+        <devnotes>
+           <summary>Wassermenge je Schicht [cm]</summary>
+        </devnotes>
+      </field>
+      <field name="psi_arr" type="TSoilVarArray" visibility="public" size="212" offset="12360" file="USoilWaterMod.pas" line="277">
+        <devnotes>
+           <summary>Wasserspannungsvektor [cm]</summary>
+        </devnotes>
+      </field>
+      <field name="Wflow_arr" type="TSoilVarArray" visibility="public" size="212" offset="12572" file="USoilWaterMod.pas" line="279">
+        <devnotes>
+           <summary>Flussvektor [cm/d]</summary>
+        </devnotes>
+      </field>
+      <field name="WflowInt_arr" type="TSoilVarArray" visibility="public" size="212" offset="12784" file="USoilWaterMod.pas" line="281">
+        <devnotes>
+           <summary>Flussvektor [cm/d] for internen Zeitschritt</summary>
+        </devnotes>
+      </field>
+      <field name="Sink_arr" type="TSoilVarArray" visibility="public" size="212" offset="12996" file="USoilWaterMod.pas" line="283">
+        <devnotes>
+           <summary>Sinkvektor [cm]</summary>
+        </devnotes>
+      </field>
+      <field name="SinkInt_arr" type="TSoilVarArray" visibility="public" size="212" offset="13208" file="USoilWaterMod.pas" line="285">
+        <devnotes>
+           <summary>Sinkvektor [cm/d] for internen Zeitschritt</summary>
+        </devnotes>
+      </field>
+      <field name="FK_Arr" type="TSoilArray" visibility="public" size="416" offset="13424" file="USoilWaterMod.pas" line="287">
+        <devnotes>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </field>
+      <field name="PWP_Arr" type="TSoilArray" visibility="public" size="416" offset="13840" file="USoilWaterMod.pas" line="289">
+        <devnotes>
+           <summary>permanenter Welkepunkt [cm3/cm3]</summary>
+        </devnotes>
+      </field>
+      <field name="nFK_Arr" type="TSoilArray" visibility="public" size="416" offset="14256" file="USoilWaterMod.pas" line="291">
+        <devnotes>
+           <summary>nutzbare Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </field>
+      <field name="WPar" type="TSoilWaterParams" visibility="public" size="200" offset="14672" file="USoilWaterMod.pas" line="293">
+        <devnotes>
+           <summary>Array der Van-Genuchten Parameter for jede Schicht</summary>
+        </devnotes>
+      </field>
+      <field name="Wflow_old" type="TSoilArray" visibility="public" size="416" offset="14872" file="USoilWaterMod.pas" line="296">
+        <devnotes>
+           <summary>alte Wasserfl�sse [cm/d]</summary>
+        </devnotes>
+      </field>
+      <field name="theta_old" type="TSoilArray" visibility="public" size="416" offset="15288" file="USoilWaterMod.pas" line="298">
+        <devnotes>
+           <summary>alte Wassergehalte</summary>
+        </devnotes>
+      </field>
+      <field name="psi_neu" type="TSoilArray" visibility="public" size="416" offset="15704" file="USoilWaterMod.pas" line="300">
+        <devnotes>
+           <summary>New estimate of water potential [cm]</summary>
+        </devnotes>
+      </field>
+      <field name="SW_Balance_arr" type="TSoilArray" visibility="public" size="416" offset="16120" file="USoilWaterMod.pas" line="302">
+        <devnotes>
+           <summary>actual values of water balance for single layers</summary>
+        </devnotes>
+      </field>
+      <field name="cumSW_Balance_arr" type="TSoilArray" visibility="public" size="416" offset="16536" file="USoilWaterMod.pas" line="304">
+        <devnotes>
+           <summary>cumulative values of water balance for single layers</summary>
+        </devnotes>
+      </field>
+      <field name="nHorizons" type="TPar" visibility="public" size="4" offset="16952" file="USoilWaterMod.pas" line="307">
+        <devnotes>
+           <summary>number of soil horizons with different textures</summary>
+        </devnotes>
+      </field>
+      <field name="HoriNdx1" type="TPar" visibility="public" size="4" offset="16956" file="USoilWaterMod.pas" line="310">
+        <devnotes>
+           <summary>Index der untersten Schicht im jeweiligen Horizont</summary>
+        </devnotes>
+      </field>
+      <field name="HoriNdx2" type="TPar" visibility="public" size="4" offset="16960" file="USoilWaterMod.pas" line="310" />
+      <field name="HoriNdx3" type="TPar" visibility="public" size="4" offset="16964" file="USoilWaterMod.pas" line="310" />
+      <field name="HoriNdx4" type="TPar" visibility="public" size="4" offset="16968" file="USoilWaterMod.pas" line="310" />
+      <field name="HoriNdx5" type="TPar" visibility="public" size="4" offset="16972" file="USoilWaterMod.pas" line="310" />
+      <field name="HoriNdx6" type="TPar" visibility="public" size="4" offset="16976" file="USoilWaterMod.pas" line="310" />
+      <field name="FVGParsFromTextOption" type="TOption" visibility="public" size="4" offset="16980" file="USoilWaterMod.pas" line="313">
+        <devnotes>
+           <summary>Texture_versionOption: TOption;</summary>
+        </devnotes>
+      </field>
+      <field name="FKsFromTextOption" type="TOption" visibility="public" size="4" offset="16984" file="USoilWaterMod.pas" line="315">
+        <devnotes>
+           <summary></summary>
+        </devnotes>
+      </field>
+      <field name="act_EvaporationOption" type="TOption" visibility="public" size="4" offset="16988" file="USoilWaterMod.pas" line="316" />
+      <field name="red_fOption" type="TOption" visibility="public" size="4" offset="16992" file="USoilWaterMod.pas" line="317" />
+      <field name="OptUntere_Randb" type="TOption" visibility="public" size="4" offset="16996" file="USoilWaterMod.pas" line="320">
+        <devnotes>
+           <summary>lowerBoundCond</summary>
+        </devnotes>
+      </field>
+      <field name="OptIniMethod" type="TOption" visibility="public" size="4" offset="17000" file="USoilWaterMod.pas" line="322">
+        <devnotes>
+           <summary>Option for choosing the initialisaiton method</summary>
+        </devnotes>
+      </field>
+      <field name="OptCompMethod" type="TOption" visibility="public" size="4" offset="17004" file="USoilWaterMod.pas" line="324">
+        <devnotes>
+           <summary>Option for choosing the computation method</summary>
+        </devnotes>
+      </field>
+      <field name="OptWriteParsFromTexture" type="TOption" visibility="public" size="4" offset="17008" file="USoilWaterMod.pas" line="327">
+        <devnotes>
+           <summary>Option for writing VG-Pars from Texture estimates into Param-Ini-file</summary>
+           <summary></summary>
+        </devnotes>
+      </field>
+      <field name="OptTransferWGToNextIniFile" type="TOption" visibility="public" size="4" offset="17012" file="USoilWaterMod.pas" line="330">
+        <devnotes>
+           <summary></summary>
+           <summary></summary>
+        </devnotes>
+      </field>
+      <field name="Groundwaterdepth" type="TExternV" visibility="public" size="4" offset="17016" file="USoilWaterMod.pas" line="333">
+        <devnotes>
+           <summary>depth of groundwatertable [cm] needed if option is selected</summary>
+        </devnotes>
+      </field>
+      <field name="FTextClass1Option" type="TTextClassOption" visibility="public" size="4" offset="17020" file="USoilWaterMod.pas" line="335" />
+      <field name="FTextClass2Option" type="TTextClassOption" visibility="public" size="4" offset="17024" file="USoilWaterMod.pas" line="335" />
+      <field name="FTextClass3Option" type="TTextClassOption" visibility="public" size="4" offset="17028" file="USoilWaterMod.pas" line="335" />
+      <field name="FTextClass4Option" type="TTextClassOption" visibility="public" size="4" offset="17032" file="USoilWaterMod.pas" line="335" />
+      <field name="FTextClass5Option" type="TTextClassOption" visibility="public" size="4" offset="17036" file="USoilWaterMod.pas" line="337">
+        <devnotes>
+           <summary>Options for choosing Parameters for 6 distinct horizons</summary>
+        </devnotes>
+      </field>
+      <field name="FTextClass6Option" type="TTextClassOption" visibility="public" size="4" offset="17040" file="USoilWaterMod.pas" line="337" />
+      <field name="fLDClass1Option" type="TLDClassOption" visibility="public" size="4" offset="17044" file="USoilWaterMod.pas" line="339" />
+      <field name="fLDClass2Option" type="TLDClassOption" visibility="public" size="4" offset="17048" file="USoilWaterMod.pas" line="339" />
+      <field name="fLDClass3Option" type="TLDClassOption" visibility="public" size="4" offset="17052" file="USoilWaterMod.pas" line="339" />
+      <field name="fLDClass4Option" type="TLDClassOption" visibility="public" size="4" offset="17056" file="USoilWaterMod.pas" line="339" />
+      <field name="fLDClass5Option" type="TLDClassOption" visibility="public" size="4" offset="17060" file="USoilWaterMod.pas" line="341">
+        <devnotes>
+           <summary>Options for choosing layer density  for 6 distinct horizons</summary>
+        </devnotes>
+      </field>
+      <field name="fLDClass6Option" type="TLDClassOption" visibility="public" size="4" offset="17064" file="USoilWaterMod.pas" line="341" />
+      <field name="fLD1Option" type="TLDOption" visibility="public" size="4" offset="17068" file="USoilWaterMod.pas" line="344">
+        <devnotes>
+           <summary>Options for choosing layer density  for 6 distinct horizons</summary>
+        </devnotes>
+      </field>
+      <field name="fLD2Option" type="TLDOption" visibility="public" size="4" offset="17072" file="USoilWaterMod.pas" line="344" />
+      <field name="fLD3Option" type="TLDOption" visibility="public" size="4" offset="17076" file="USoilWaterMod.pas" line="344" />
+      <field name="fLD4Option" type="TLDOption" visibility="public" size="4" offset="17080" file="USoilWaterMod.pas" line="344" />
+      <field name="fLD5Option" type="TLDOption" visibility="public" size="4" offset="17084" file="USoilWaterMod.pas" line="344" />
+      <field name="fLD6Option" type="TLDOption" visibility="public" size="4" offset="17088" file="USoilWaterMod.pas" line="345" />
+      <field name="max_aenderWG" type="TPar" visibility="public" size="4" offset="17092" file="USoilWaterMod.pas" line="348">
+        <devnotes>
+           <summary>maximale Wassergehalts�nderung pro Zeitschritt</summary>
+        </devnotes>
+      </field>
+      <field name="max_IterError" type="TPar" visibility="public" size="4" offset="17096" file="USoilWaterMod.pas" line="351">
+        <devnotes>
+           <summary>maximum change of water content in a layer between two iterations</summary>
+           <summary></summary>
+        </devnotes>
+      </field>
+      <field name="Max_dt" type="TPar" visibility="public" size="4" offset="17100" file="USoilWaterMod.pas" line="354">
+        <devnotes>
+           <summary>maximum internal time step</summary>
+        </devnotes>
+      </field>
+      <field name="Min_dt" type="TPar" visibility="public" size="4" offset="17104" file="USoilWaterMod.pas" line="356">
+        <devnotes>
+           <summary>minimum internal time step [d]</summary>
+        </devnotes>
+      </field>
+      <field name="IterMax" type="TPar" visibility="public" size="4" offset="17108" file="USoilWaterMod.pas" line="358">
+        <devnotes>
+           <summary>maximum number of Iterations before internal time step is reduced</summary>
+        </devnotes>
+      </field>
+      <field name="bsat_scaling" type="TPar" visibility="public" size="4" offset="17112" file="USoilWaterMod.pas" line="361">
+        <devnotes>
+           <summary>Parameter for linear scaling of soil hydraulic Parameter bsat</summary>
+        </devnotes>
+      </field>
+      <field name="alpha_scaling" type="TPar" visibility="public" size="4" offset="17116" file="USoilWaterMod.pas" line="363">
+        <devnotes>
+           <summary>Parameter for linear scaling of soil hydraulic Parameter alpha</summary>
+        </devnotes>
+      </field>
+      <field name="b_sat1" type="TPar" visibility="public" size="4" offset="17120" file="USoilWaterMod.pas" line="367">
+        <devnotes>
+           <summary>van-Genuchten Parameter fuer Horizont 1</summary>
+           <summary>Wassergehalt bei S�ttigung [cm3/cm3] }</summary>
+        </devnotes>
+      </field>
+      <field name="b_rest1" type="TPar" visibility="public" size="4" offset="17124" file="USoilWaterMod.pas" line="369">
+        <devnotes>
+           <summary>&quot;Restwassergehalt&quot; [cm3/cm3] }</summary>
+        </devnotes>
+      </field>
+      <field name="alpha1" type="TPar" visibility="public" size="4" offset="17128" file="USoilWaterMod.pas" line="371">
+        <devnotes>
+           <summary>Fitparameter &quot;&quot; [1/cm] }</summary>
+        </devnotes>
+      </field>
+      <field name="n_par1" type="TPar" visibility="public" size="4" offset="17132" file="USoilWaterMod.pas" line="373">
+        <devnotes>
+           <summary>Fitparameter &quot;n&quot; dimensionslos }</summary>
+        </devnotes>
+      </field>
+      <field name="l_par1" type="TPar" visibility="public" size="4" offset="17136" file="USoilWaterMod.pas" line="375">
+        <devnotes>
+           <summary>parameter for hydraulic conductivity shape</summary>
+        </devnotes>
+      </field>
+      <field name="Ks1" type="TPar" visibility="public" size="4" offset="17140" file="USoilWaterMod.pas" line="377">
+        <devnotes>
+           <summary>ges�ttigte conductivity [cm.d-1]</summary>
+        </devnotes>
+      </field>
+      <field name="FK1" type="TPar" visibility="public" size="4" offset="17144" file="USoilWaterMod.pas" line="379">
+        <devnotes>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </field>
+      <field name="PWP1" type="TPar" visibility="public" size="4" offset="17148" file="USoilWaterMod.pas" line="381">
+        <devnotes>
+           <summary>permanenter Welkepunkt</summary>
+        </devnotes>
+      </field>
+      <field name="nFK1" type="TPar" visibility="public" size="4" offset="17152" file="USoilWaterMod.pas" line="383">
+        <devnotes>
+           <summary>nutzbare Feldkapazit�t</summary>
+        </devnotes>
+      </field>
+      <field name="b_sat2" type="TPar" visibility="public" size="4" offset="17156" file="USoilWaterMod.pas" line="387">
+        <devnotes>
+           <summary>van-Genuchten Parameter fuer Horizont 2</summary>
+           <summary>Wassergehalt bei S�ttigung [cm3/cm3] }</summary>
+        </devnotes>
+      </field>
+      <field name="b_rest2" type="TPar" visibility="public" size="4" offset="17160" file="USoilWaterMod.pas" line="389">
+        <devnotes>
+           <summary>&quot;Restwassergehalt&quot; [cm3/cm3] }</summary>
+        </devnotes>
+      </field>
+      <field name="alpha2" type="TPar" visibility="public" size="4" offset="17164" file="USoilWaterMod.pas" line="391">
+        <devnotes>
+           <summary>Fitparameter &quot;&quot; [1/cm] }</summary>
+        </devnotes>
+      </field>
+      <field name="n_par2" type="TPar" visibility="public" size="4" offset="17168" file="USoilWaterMod.pas" line="393">
+        <devnotes>
+           <summary>Fitparameter &quot;n&quot; dimensionslos }</summary>
+        </devnotes>
+      </field>
+      <field name="l_par2" type="TPar" visibility="public" size="4" offset="17172" file="USoilWaterMod.pas" line="395">
+        <devnotes>
+           <summary>parameter for hydraulic conductivity shape</summary>
+        </devnotes>
+      </field>
+      <field name="Ks2" type="TPar" visibility="public" size="4" offset="17176" file="USoilWaterMod.pas" line="397">
+        <devnotes>
+           <summary>ges�ttigte conductivity [cm.d-1]</summary>
+        </devnotes>
+      </field>
+      <field name="FK2" type="TPar" visibility="public" size="4" offset="17180" file="USoilWaterMod.pas" line="399">
+        <devnotes>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </field>
+      <field name="PWP2" type="TPar" visibility="public" size="4" offset="17184" file="USoilWaterMod.pas" line="401">
+        <devnotes>
+           <summary>permanenter Welkepunkt</summary>
+        </devnotes>
+      </field>
+      <field name="nFK2" type="TPar" visibility="public" size="4" offset="17188" file="USoilWaterMod.pas" line="403">
+        <devnotes>
+           <summary>nutzbare Feldkapazit�t</summary>
+        </devnotes>
+      </field>
+      <field name="b_sat3" type="TPar" visibility="public" size="4" offset="17192" file="USoilWaterMod.pas" line="407">
+        <devnotes>
+           <summary>van-Genuchten Parameter fuer Horizont 3</summary>
+           <summary>Wassergehalt bei S�ttigung [cm3/cm3] }</summary>
+        </devnotes>
+      </field>
+      <field name="b_rest3" type="TPar" visibility="public" size="4" offset="17196" file="USoilWaterMod.pas" line="409">
+        <devnotes>
+           <summary>&quot;Restwassergehalt&quot; [cm3/cm3] }</summary>
+        </devnotes>
+      </field>
+      <field name="alpha3" type="TPar" visibility="public" size="4" offset="17200" file="USoilWaterMod.pas" line="411">
+        <devnotes>
+           <summary>Fitparameter &quot;&quot; [1/cm] }</summary>
+        </devnotes>
+      </field>
+      <field name="n_par3" type="TPar" visibility="public" size="4" offset="17204" file="USoilWaterMod.pas" line="413">
+        <devnotes>
+           <summary>Fitparameter &quot;n&quot; dimensionslos }</summary>
+        </devnotes>
+      </field>
+      <field name="l_par3" type="TPar" visibility="public" size="4" offset="17208" file="USoilWaterMod.pas" line="415">
+        <devnotes>
+           <summary>parameter for hydraulic conductivity shape</summary>
+        </devnotes>
+      </field>
+      <field name="Ks3" type="TPar" visibility="public" size="4" offset="17212" file="USoilWaterMod.pas" line="417">
+        <devnotes>
+           <summary>ges�ttigte conductivity [cm.d-1]</summary>
+        </devnotes>
+      </field>
+      <field name="FK3" type="TPar" visibility="public" size="4" offset="17216" file="USoilWaterMod.pas" line="419">
+        <devnotes>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </field>
+      <field name="PWP3" type="TPar" visibility="public" size="4" offset="17220" file="USoilWaterMod.pas" line="421">
+        <devnotes>
+           <summary>permanenter Welkepunkt</summary>
+        </devnotes>
+      </field>
+      <field name="nFK3" type="TPar" visibility="public" size="4" offset="17224" file="USoilWaterMod.pas" line="423">
+        <devnotes>
+           <summary>nutzbare Feldkapazit�t</summary>
+        </devnotes>
+      </field>
+      <field name="b_sat4" type="TPar" visibility="public" size="4" offset="17228" file="USoilWaterMod.pas" line="427">
+        <devnotes>
+           <summary>van-Genuchten Parameter fuer Horizont 4</summary>
+           <summary>Wassergehalt bei S�ttigung [cm3/cm3] }</summary>
+        </devnotes>
+      </field>
+      <field name="b_rest4" type="TPar" visibility="public" size="4" offset="17232" file="USoilWaterMod.pas" line="429">
+        <devnotes>
+           <summary>&quot;Restwassergehalt&quot; [cm3/cm3] }</summary>
+        </devnotes>
+      </field>
+      <field name="alpha4" type="TPar" visibility="public" size="4" offset="17236" file="USoilWaterMod.pas" line="431">
+        <devnotes>
+           <summary>Fitparameter &quot;&quot; [1/cm] }</summary>
+        </devnotes>
+      </field>
+      <field name="n_par4" type="TPar" visibility="public" size="4" offset="17240" file="USoilWaterMod.pas" line="433">
+        <devnotes>
+           <summary>Fitparameter &quot;n&quot; dimensionslos }</summary>
+        </devnotes>
+      </field>
+      <field name="l_par4" type="TPar" visibility="public" size="4" offset="17244" file="USoilWaterMod.pas" line="435">
+        <devnotes>
+           <summary>parameter for hydraulic conductivity shape</summary>
+        </devnotes>
+      </field>
+      <field name="Ks4" type="TPar" visibility="public" size="4" offset="17248" file="USoilWaterMod.pas" line="437">
+        <devnotes>
+           <summary>ges�ttigte conductivity [cm.d-1]</summary>
+        </devnotes>
+      </field>
+      <field name="FK4" type="TPar" visibility="public" size="4" offset="17252" file="USoilWaterMod.pas" line="439">
+        <devnotes>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </field>
+      <field name="PWP4" type="TPar" visibility="public" size="4" offset="17256" file="USoilWaterMod.pas" line="441">
+        <devnotes>
+           <summary>permanenter Welkepunkt</summary>
+        </devnotes>
+      </field>
+      <field name="nFK4" type="TPar" visibility="public" size="4" offset="17260" file="USoilWaterMod.pas" line="445">
+        <devnotes>
+           <summary>nutzbare Feldkapazit�t</summary>
+           <summary></summary>
+           <summary>van-Genuchten Parameter fuer Horizont 5</summary>
+        </devnotes>
+      </field>
+      <field name="b_sat5" type="TPar" visibility="public" size="4" offset="17264" file="USoilWaterMod.pas" line="447">
+        <devnotes>
+           <summary>Wassergehalt bei S�ttigung [cm3/cm3] }</summary>
+        </devnotes>
+      </field>
+      <field name="b_rest5" type="TPar" visibility="public" size="4" offset="17268" file="USoilWaterMod.pas" line="449">
+        <devnotes>
+           <summary>&quot;Restwassergehalt&quot; [cm3/cm3] }</summary>
+        </devnotes>
+      </field>
+      <field name="alpha5" type="TPar" visibility="public" size="4" offset="17272" file="USoilWaterMod.pas" line="451">
+        <devnotes>
+           <summary>Fitparameter &quot;&quot; [1/cm] }</summary>
+        </devnotes>
+      </field>
+      <field name="n_par5" type="TPar" visibility="public" size="4" offset="17276" file="USoilWaterMod.pas" line="453">
+        <devnotes>
+           <summary>Fitparameter &quot;n&quot; dimensionslos }</summary>
+        </devnotes>
+      </field>
+      <field name="l_par5" type="TPar" visibility="public" size="4" offset="17280" file="USoilWaterMod.pas" line="455">
+        <devnotes>
+           <summary>parameter for hydraulic conductivity shape</summary>
+        </devnotes>
+      </field>
+      <field name="Ks5" type="TPar" visibility="public" size="4" offset="17284" file="USoilWaterMod.pas" line="457">
+        <devnotes>
+           <summary>ges�ttigte conductivity [cm.d-1]</summary>
+        </devnotes>
+      </field>
+      <field name="FK5" type="TPar" visibility="public" size="4" offset="17288" file="USoilWaterMod.pas" line="459">
+        <devnotes>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </field>
+      <field name="PWP5" type="TPar" visibility="public" size="4" offset="17292" file="USoilWaterMod.pas" line="461">
+        <devnotes>
+           <summary>permanenter Welkepunkt</summary>
+        </devnotes>
+      </field>
+      <field name="nFK5" type="TPar" visibility="public" size="4" offset="17296" file="USoilWaterMod.pas" line="465">
+        <devnotes>
+           <summary>nutzbare Feldkapazit�t</summary>
+           <summary></summary>
+           <summary>van-Genuchten Parameter fuer Horizont 6</summary>
+        </devnotes>
+      </field>
+      <field name="b_sat6" type="TPar" visibility="public" size="4" offset="17300" file="USoilWaterMod.pas" line="467">
+        <devnotes>
+           <summary>Wassergehalt bei S�ttigung [cm3/cm3] }</summary>
+        </devnotes>
+      </field>
+      <field name="b_rest6" type="TPar" visibility="public" size="4" offset="17304" file="USoilWaterMod.pas" line="469">
+        <devnotes>
+           <summary>&quot;Restwassergehalt&quot; [cm3/cm3] }</summary>
+        </devnotes>
+      </field>
+      <field name="alpha6" type="TPar" visibility="public" size="4" offset="17308" file="USoilWaterMod.pas" line="471">
+        <devnotes>
+           <summary>Fitparameter &quot;&quot; [1/cm] }</summary>
+        </devnotes>
+      </field>
+      <field name="n_par6" type="TPar" visibility="public" size="4" offset="17312" file="USoilWaterMod.pas" line="473">
+        <devnotes>
+           <summary>Fitparameter &quot;n&quot; dimensionslos }</summary>
+        </devnotes>
+      </field>
+      <field name="l_par6" type="TPar" visibility="public" size="4" offset="17316" file="USoilWaterMod.pas" line="475">
+        <devnotes>
+           <summary>parameter for hydraulic conductivity shape</summary>
+        </devnotes>
+      </field>
+      <field name="Ks6" type="TPar" visibility="public" size="4" offset="17320" file="USoilWaterMod.pas" line="477">
+        <devnotes>
+           <summary>ges�ttigte conductivity [cm.d-1]</summary>
+        </devnotes>
+      </field>
+      <field name="FK6" type="TPar" visibility="public" size="4" offset="17324" file="USoilWaterMod.pas" line="479">
+        <devnotes>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </field>
+      <field name="PWP6" type="TPar" visibility="public" size="4" offset="17328" file="USoilWaterMod.pas" line="481">
+        <devnotes>
+           <summary>permanenter Welkepunkt</summary>
+        </devnotes>
+      </field>
+      <field name="nFK6" type="TPar" visibility="public" size="4" offset="17332" file="USoilWaterMod.pas" line="485">
+        <devnotes>
+           <summary>nutzbare Feldkapazit�t</summary>
+           <summary></summary>
+           <summary></summary>
+        </devnotes>
+      </field>
+      <field name="PsiStart1" type="TPar" visibility="public" size="4" offset="17336" file="USoilWaterMod.pas" line="487">
+        <devnotes>
+           <summary>For initalisation of Soil water contents and suction values</summary>
+        </devnotes>
+      </field>
+      <field name="bil_nr" type="TPar" visibility="public" size="4" offset="17340" file="USoilWaterMod.pas" line="489">
+        <devnotes>
+           <summary>Index of Layer where lower boundary fluxes are calculated</summary>
+        </devnotes>
+      </field>
+      <field name="Weff" type="TPar" visibility="public" size="4" offset="17344" file="USoilWaterMod.pas" line="491">
+        <devnotes>
+           <summary>effective rooting deph [cm]</summary>
+        </devnotes>
+      </field>
+      <field name="psi_critEvap" type="TPar" visibility="public" size="4" offset="17348" file="USoilWaterMod.pas" line="493">
+        <devnotes>
+           <summary>Wasserspannung ab der Evaporation abnimmt [hPa]</summary>
+        </devnotes>
+      </field>
+      <field name="NetRain" type="TExternV" visibility="public" size="4" offset="17352" file="USoilWaterMod.pas" line="495">
+        <devnotes>
+           <summary>NetRain = Niederschlag - Interception</summary>
+        </devnotes>
+      </field>
+      <field name="CumNetRain" type="TState" visibility="public" size="4" offset="17356" file="USoilWaterMod.pas" line="499">
+        <devnotes>
+           <summary>NetRain = Niederschlag - Interception</summary>
+           <summary>kumulativer Niederschlag [mm]</summary>
+        </devnotes>
+      </field>
+      <field name="Pot_Evap" type="THumeNumEntity" visibility="public" size="4" offset="17360" file="USoilWaterMod.pas" line="501">
+        <devnotes>
+           <summary>potentielle Evaporationsrate</summary>
+        </devnotes>
+      </field>
+      <field name="red_evap" type="TVar" visibility="public" size="4" offset="17364" file="USoilWaterMod.pas" line="504">
+        <devnotes>
+           <summary>Reduktionsfaktor for Evaporation</summary>
+        </devnotes>
+      </field>
+      <field name="Act_Evap" type="TVar" visibility="public" size="4" offset="17368" file="USoilWaterMod.pas" line="506">
+        <devnotes>
+           <summary>aktuelle Evaporationsrate</summary>
+        </devnotes>
+      </field>
+      <field name="Exfiltration" type="TVar" visibility="public" size="4" offset="17372" file="USoilWaterMod.pas" line="508">
+        <devnotes>
+           <summary>Estimation of maximum exfiltration rate</summary>
+        </devnotes>
+      </field>
+      <field name="CumTrans" type="TState" visibility="public" size="4" offset="17376" file="USoilWaterMod.pas" line="510">
+        <devnotes>
+           <summary>kumulative Transpiration [mm]</summary>
+        </devnotes>
+      </field>
+      <field name="CumEvap" type="TState" visibility="public" size="4" offset="17380" file="USoilWaterMod.pas" line="512">
+        <devnotes>
+           <summary>kumulative Evaporation</summary>
+        </devnotes>
+      </field>
+      <field name="CumDrainage" type="TState" visibility="public" size="4" offset="17384" file="USoilWaterMod.pas" line="514">
+        <devnotes>
+           <summary>kumulative Sickerwasserspende/kapillarer Aufstieg [mm]</summary>
+        </devnotes>
+      </field>
+      <field name="CumWaterBalance" type="TState" visibility="public" size="4" offset="17388" file="USoilWaterMod.pas" line="516">
+        <devnotes>
+           <summary></summary>
+        </devnotes>
+      </field>
+      <field name="CumGlobalWaterBalance" type="TState" visibility="public" size="4" offset="17392" file="USoilWaterMod.pas" line="520">
+        <devnotes>
+           <summary></summary>
+           <summary>Water-balance based on Evapotranspiration, losses and Rain</summary>
+        </devnotes>
+      </field>
+      <field name="PondedWater" type="TState" visibility="public" size="4" offset="17396" file="USoilWaterMod.pas" line="523">
+        <devnotes>
+           <summary>amount of ponded water on the soil surface [mm]</summary>
+        </devnotes>
+      </field>
+      <field name="PondMax" type="TPar" visibility="public" size="4" offset="17400" file="USoilWaterMod.pas" line="525">
+        <devnotes>
+           <summary>maximum ponding height [mm];</summary>
+        </devnotes>
+      </field>
+      <field name="CumRunoff" type="TState" visibility="public" size="4" offset="17404" file="USoilWaterMod.pas" line="529">
+        <devnotes>
+           <summary>kumulative Bilanz [mm] zur Kontrolle!</summary>
+           <summary>cumulative Runoff [mm]</summary>
+        </devnotes>
+      </field>
+      <field name="SumSoilWater" type="TVar" visibility="public" size="4" offset="17408" file="USoilWaterMod.pas" line="532">
+        <devnotes>
+           <summary>sum of soil water down to boundary given by the Par &quot;bil_nr&quot;</summary>
+        </devnotes>
+      </field>
+      <field name="SumPAVSoilWater" type="TVar" visibility="public" size="4" offset="17412" file="USoilWaterMod.pas" line="534">
+        <devnotes>
+           <summary>sum of plant available soil water down to boundary given by the Par &quot;bil_nr&quot;</summary>
+        </devnotes>
+      </field>
+      <field name="SumPAvSoilWaterRZ" type="TVar" visibility="public" size="4" offset="17416" file="USoilWaterMod.pas" line="536">
+        <devnotes>
+           <summary>sum of plant available soil water in the rooting zone (down to Weff)</summary>
+        </devnotes>
+      </field>
+      <field name="global_iter" type="TVar" visibility="public" size="4" offset="17420" file="USoilWaterMod.pas" line="538">
+        <devnotes>
+           <summary>total number of iterations over the simulation run</summary>
+        </devnotes>
+      </field>
+      <field name="dt" type="TVar" visibility="public" size="4" offset="17424" file="USoilWaterMod.pas" line="541">
+        <devnotes>
+           <summary>interne Zeitschrittweite des Diff. Wassertransportmodells</summary>
+        </devnotes>
+      </field>
+      <field name="n_int_timesteps" type="TVar" visibility="public" size="4" offset="17428" file="USoilWaterMod.pas" line="543">
+        <devnotes>
+           <summary>number of time steps per day</summary>
+        </devnotes>
+      </field>
+      <field name="SumOfInternalTimeSteps" type="TVar" visibility="public" size="4" offset="17432" file="USoilWaterMod.pas" line="545">
+        <devnotes>
+           <summary>Summe der internen Zeitschritte (Kontrollvariable)</summary>
+        </devnotes>
+      </field>
+      <field name="WG0_30" type="TVar" visibility="public" size="4" offset="17436" file="USoilWaterMod.pas" line="547" />
+      <field name="WG30_60" type="TVar" visibility="public" size="4" offset="17440" file="USoilWaterMod.pas" line="547" />
+      <field name="WG60_90" type="TVar" visibility="public" size="4" offset="17444" file="USoilWaterMod.pas" line="547" />
+      <field name="WG90_120" type="TVar" visibility="public" size="4" offset="17448" file="USoilWaterMod.pas" line="547" />
+      <field name="WG0_60" type="TVar" visibility="public" size="4" offset="17452" file="USoilWaterMod.pas" line="547" />
+      <field name="WG0_10" type="TVar" visibility="public" size="4" offset="17456" file="USoilWaterMod.pas" line="549" />
+      <field name="WG0_20" type="TVar" visibility="public" size="4" offset="17460" file="USoilWaterMod.pas" line="549" />
+      <field name="WG0_40" type="TVar" visibility="public" size="4" offset="17464" file="USoilWaterMod.pas" line="549" />
+      <field name="WG10_30" type="TVar" visibility="public" size="4" offset="17468" file="USoilWaterMod.pas" line="549" />
+      <field name="WG20_30" type="TVar" visibility="public" size="4" offset="17472" file="USoilWaterMod.pas" line="549" />
+      <field name="WG20_40" type="TVar" visibility="public" size="4" offset="17476" file="USoilWaterMod.pas" line="549" />
+      <field name="WG30_40" type="TVar" visibility="public" size="4" offset="17480" file="USoilWaterMod.pas" line="549" />
+      <field name="WG30_50" type="TVar" visibility="public" size="4" offset="17484" file="USoilWaterMod.pas" line="549" />
+      <field name="WG30_120" type="TVar" visibility="public" size="4" offset="17488" file="USoilWaterMod.pas" line="550" />
+      <field name="WG30_100" type="TVar" visibility="public" size="4" offset="17492" file="USoilWaterMod.pas" line="550" />
+      <field name="WG40_60" type="TVar" visibility="public" size="4" offset="17496" file="USoilWaterMod.pas" line="550" />
+      <field name="WG60_80" type="TVar" visibility="public" size="4" offset="17500" file="USoilWaterMod.pas" line="550" />
+      <field name="WG80_100" type="TVar" visibility="public" size="4" offset="17504" file="USoilWaterMod.pas" line="550" />
+      <field name="WG90_110" type="TVar" visibility="public" size="4" offset="17508" file="USoilWaterMod.pas" line="550" />
+      <field name="WG0_100" type="TVar" visibility="public" size="4" offset="17512" file="USoilWaterMod.pas" line="550" />
+      <field name="WG0_120" type="TVar" visibility="public" size="4" offset="17516" file="USoilWaterMod.pas" line="551" />
+      <field name="wg0_90" type="TVar" visibility="public" size="4" offset="17520" file="USoilWaterMod.pas" line="551" />
+      <field name="WG60_100" type="TVar" visibility="public" size="4" offset="17524" file="USoilWaterMod.pas" line="551" />
+      <field name="ProzNFK0_Weff" type="TVar" visibility="public" size="4" offset="17528" file="USoilWaterMod.pas" line="552" />
+      <field name="ProzNFK0_100" type="TVar" visibility="public" size="4" offset="17532" file="USoilWaterMod.pas" line="553" />
+      <field name="ProzNFK0_30" type="TVar" visibility="public" size="4" offset="17536" file="USoilWaterMod.pas" line="554" />
+      <procedure name="SetPlantModel" visibility="public" procflags="override" file="USoilWaterMod.pas" line="556">
+        <parameters>
+          <parameter name="NewPlantmodel" type="TAbstractPlant" />
+        </parameters>
+      </procedure>
+      <procedure name="CreateAll" visibility="public" procflags="override" file="USoilWaterMod.pas" line="557">
+      </procedure>
+      <procedure name="Init" visibility="public" procflags="override" file="USoilWaterMod.pas" line="559">
+        <parameters>
+          <parameter name="GlobMod" type="TMod" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="CalcEvap_red_f" visibility="public" file="USoilWaterMod.pas" line="561">
+      </procedure>
+      <procedure name="Integrate" visibility="public" procflags="override" file="USoilWaterMod.pas" line="563">
+      </procedure>
+      <procedure name="CalcRatesAndIntegrate" visibility="public" procflags="virtual" file="USoilWaterMod.pas" line="565">
+      </procedure>
+      <procedure name="CalcRates" visibility="public" procflags="override" file="USoilWaterMod.pas" line="567">
+      </procedure>
+      <procedure name="CalcSinks" visibility="public" procflags="virtual" file="USoilWaterMod.pas" line="569">
+      </procedure>
+      <procedure name="update_Wcont_Values" visibility="public" file="USoilWaterMod.pas" line="571">
+      </procedure>
+      <procedure name="BeforeDestruction" visibility="public" procflags="override" file="USoilWaterMod.pas" line="573">
+      </procedure>
+      <property name="Texture[i]" visibility="public" read="getTexture" type="TTextureClass" file="USoilWaterMod.pas" line="574" />
+      <property name="LD[i]" visibility="public" read="getLD" type="TLDClass" file="USoilWaterMod.pas" line="575" />
+      <property name="ShowWarnings" visibility="published" read="fShowWarnings" write="fShowWarnings" type="Boolean" file="USoilWaterMod.pas" line="578" />
+      <property name="m_model" visibility="published" read="fm_model" write="fm_model" type="Tm_model" file="USoilWaterMod.pas" line="579" />
+      <property name="Opt_CompMethod" visibility="published" read="fCompMethod" write="fCompMethod" type="TCompMethod" file="USoilWaterMod.pas" line="580" />
+      <property name="Opt_red_f" visibility="published" read="fred_f" write="fred_f" type="Tred_f" file="USoilWaterMod.pas" line="581" />
+      <property name="Opt_maxWGchange" visibility="published" read="max_aenderWG" write="max_aenderWG" type="TPar" file="USoilWaterMod.pas" line="582" />
+      <property name="Opt_IterError" visibility="published" read="max_IterError" write="max_IterError" type="TPar" file="USoilWaterMod.pas" line="583" />
+      <property name="Opt_Randbed" visibility="published" read="LowerBoundaryCondition" write="LowerBoundaryCondition" type="TLowerBoundaryCondition" file="USoilWaterMod.pas" line="585" />
+      <property name="Opt_IniMethod" visibility="published" read="IniMethod" write="IniMethod" type="TIniMethod" file="USoilWaterMod.pas" line="587" />
+      <property name="Opt_maxdt" visibility="published" read="Max_dt" write="Max_dt" type="TPar" file="USoilWaterMod.pas" line="588" />
+      <property name="Opt_mindt" visibility="published" read="Min_dt" write="Min_dt" type="TPar" file="USoilWaterMod.pas" line="589" />
+      <property name="Opt_nFKCalcMethod" visibility="published" read="nFKCalcMethod" write="nFKCalcMethod" type="TnFKCalcMethod" file="USoilWaterMod.pas" line="590" />
+      <property name="Opt_VanGenPars_from_Texture" visibility="published" read="FVGParsFromTexture" write="FVGParsFromTexture" type="TVGParsFromTexture" file="USoilWaterMod.pas" line="592" />
+      <property name="Opt_Ks_from_Texture" visibility="published" read="FKsFromTexture" write="FKsFromTexture" type="TVGParsFromTexture" file="USoilWaterMod.pas" line="594" />
+      <property name="Opt_TextureClass1" visibility="published" read="FTextureClass1" write="FTextureClass1" type="TTextureClass" file="USoilWaterMod.pas" line="596" />
+      <property name="Opt_TextureClass2" visibility="published" read="FTextureClass2" write="FTextureClass2" type="TTextureClass" file="USoilWaterMod.pas" line="598" />
+      <property name="Opt_TextureClass3" visibility="published" read="FTextureClass3" write="FTextureClass3" type="TTextureClass" file="USoilWaterMod.pas" line="600" />
+      <property name="Opt_TextureClass4" visibility="published" read="FTextureClass4" write="FTextureClass4" type="TTextureClass" file="USoilWaterMod.pas" line="602" />
+      <property name="Opt_TextureClass5" visibility="published" read="FTextureClass4" write="FTextureClass4" type="TTextureClass" file="USoilWaterMod.pas" line="604" />
+      <property name="Opt_TextureClass6" visibility="published" read="FTextureClass4" write="FTextureClass4" type="TTextureClass" file="USoilWaterMod.pas" line="606" />
+      <property name="Opt_TransferWGsToNextINI" visibility="published" read="fTransferWGs" write="fTransferWGs" type="Boolean" file="USoilWaterMod.pas" line="608" />
+      <property name="Opt_Weff" visibility="published" read="fWeffOpt" write="fWeffOpt" type="TSource" file="USoilWaterMod.pas" line="611">
+        <devnotes>
+           <summary>Option for Source of parameter Weff</summary>
+        </devnotes>
+      </property>
+      <property name="Ext_NetRain" visibility="published" read="getNetRain" type="TExternV" file="USoilWaterMod.pas" line="613" />
+      <property name="Ex_PotEvap" visibility="published" read="getPotEvap" type="TExternV" file="USoilWaterMod.pas" line="614" />
+      <property name="Ex_Groundwaterdepth" visibility="published" read="Groundwaterdepth" write="Groundwaterdepth" type="TExternV" file="USoilWaterMod.pas" line="615" />
+      <property name="Par_nHorizons" visibility="published" read="nHorizons" write="nHorizons" type="TPar" file="USoilWaterMod.pas" line="618" />
+      <property name="Par_b_sat1" visibility="published" read="b_sat1" write="b_sat1" type="TPar" file="USoilWaterMod.pas" line="620" />
+      <property name="Par_b_rest1" visibility="published" read="b_rest1" write="b_rest1" type="TPar" file="USoilWaterMod.pas" line="621" />
+      <property name="Par_b_KS1" visibility="published" read="Ks1" write="Ks1" type="TPar" file="USoilWaterMod.pas" line="622" />
+      <property name="Par_n1" visibility="published" read="n_par1" write="n_par1" type="TPar" file="USoilWaterMod.pas" line="623" />
+      <property name="Par_lpar1" visibility="published" read="l_par1" write="l_par1" type="TPar" file="USoilWaterMod.pas" line="624" />
+      <property name="Par_alpha1" visibility="published" read="alpha1" write="alpha1" type="TPar" file="USoilWaterMod.pas" line="625" />
+      <property name="Par_FK1" visibility="published" read="FK1" write="FK1" type="TPar" file="USoilWaterMod.pas" line="627">
+        <devnotes>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </property>
+      <property name="Par_PWP1" visibility="published" read="PWP1" write="PWP1" type="TPar" file="USoilWaterMod.pas" line="629">
+        <devnotes>
+           <summary>permanenter Welkepunkt</summary>
+        </devnotes>
+      </property>
+      <property name="Par_nFK1" visibility="published" read="nFK1" type="TPar" file="USoilWaterMod.pas" line="631">
+        <devnotes>
+           <summary>nutzbare Feldkapazit�t</summary>
+        </devnotes>
+      </property>
+      <property name="Par_b_sat2" visibility="published" read="b_sat2" write="b_sat2" type="TPar" file="USoilWaterMod.pas" line="633" />
+      <property name="Par_b_rest2" visibility="published" read="b_rest2" write="b_rest2" type="TPar" file="USoilWaterMod.pas" line="634" />
+      <property name="Par_b_KS2" visibility="published" read="Ks2" write="Ks2" type="TPar" file="USoilWaterMod.pas" line="635" />
+      <property name="Par_n2" visibility="published" read="n_par2" write="n_par2" type="TPar" file="USoilWaterMod.pas" line="636" />
+      <property name="Par_lpar2" visibility="published" read="l_par2" write="l_par2" type="TPar" file="USoilWaterMod.pas" line="637" />
+      <property name="Par_alpha2" visibility="published" read="alpha2" write="alpha2" type="TPar" file="USoilWaterMod.pas" line="638" />
+      <property name="Par_FK2" visibility="published" read="FK2" write="FK2" type="TPar" file="USoilWaterMod.pas" line="640">
+        <devnotes>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </property>
+      <property name="Par_PWP2" visibility="published" read="PWP2" write="PWP2" type="TPar" file="USoilWaterMod.pas" line="642">
+        <devnotes>
+           <summary>permanenter Welkepunkt</summary>
+        </devnotes>
+      </property>
+      <property name="Par_nFK2" visibility="published" read="nFK2" type="TPar" file="USoilWaterMod.pas" line="644">
+        <devnotes>
+           <summary>nutzbare Feldkapazit�t</summary>
+        </devnotes>
+      </property>
+      <property name="Par_b_sat3" visibility="published" read="b_sat3" write="b_sat3" type="TPar" file="USoilWaterMod.pas" line="646" />
+      <property name="Par_b_rest3" visibility="published" read="b_rest3" write="b_rest3" type="TPar" file="USoilWaterMod.pas" line="647" />
+      <property name="Par_b_KS3" visibility="published" read="Ks3" write="Ks3" type="TPar" file="USoilWaterMod.pas" line="648" />
+      <property name="Par_n3" visibility="published" read="n_par3" write="n_par3" type="TPar" file="USoilWaterMod.pas" line="649" />
+      <property name="Par_lpar3" visibility="published" read="l_par3" write="l_par3" type="TPar" file="USoilWaterMod.pas" line="650" />
+      <property name="Par_alpha3" visibility="published" read="alpha3" write="alpha3" type="TPar" file="USoilWaterMod.pas" line="651" />
+      <property name="Par_FK3" visibility="published" read="FK3" write="FK3" type="TPar" file="USoilWaterMod.pas" line="653">
+        <devnotes>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </property>
+      <property name="Par_PWP3" visibility="published" read="PWP3" write="PWP3" type="TPar" file="USoilWaterMod.pas" line="655">
+        <devnotes>
+           <summary>permanenter Welkepunkt</summary>
+        </devnotes>
+      </property>
+      <property name="Par_nFK3" visibility="published" read="nFK3" type="TPar" file="USoilWaterMod.pas" line="657">
+        <devnotes>
+           <summary>nutzbare Feldkapazit�t</summary>
+        </devnotes>
+      </property>
+      <property name="Par_b_sat4" visibility="published" read="b_sat4" write="b_sat4" type="TPar" file="USoilWaterMod.pas" line="659" />
+      <property name="Par_b_rest4" visibility="published" read="b_rest4" write="b_rest4" type="TPar" file="USoilWaterMod.pas" line="660" />
+      <property name="Par_b_KS4" visibility="published" read="Ks4" write="Ks4" type="TPar" file="USoilWaterMod.pas" line="661" />
+      <property name="Par_n4" visibility="published" read="n_par4" write="n_par4" type="TPar" file="USoilWaterMod.pas" line="662" />
+      <property name="Par_lpar4" visibility="published" read="l_par4" write="l_par4" type="TPar" file="USoilWaterMod.pas" line="663" />
+      <property name="Par_alpha4" visibility="published" read="alpha4" write="alpha4" type="TPar" file="USoilWaterMod.pas" line="664" />
+      <property name="Par_FK4" visibility="published" read="FK4" write="FK4" type="TPar" file="USoilWaterMod.pas" line="666">
+        <devnotes>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </property>
+      <property name="Par_PWP4" visibility="published" read="PWP4" write="PWP4" type="TPar" file="USoilWaterMod.pas" line="668">
+        <devnotes>
+           <summary>permanenter Welkepunkt</summary>
+        </devnotes>
+      </property>
+      <property name="Par_nFK4" visibility="published" read="nFK4" type="TPar" file="USoilWaterMod.pas" line="670">
+        <devnotes>
+           <summary>nutzbare Feldkapazit�t</summary>
+        </devnotes>
+      </property>
+      <property name="Par_b_sat5" visibility="published" read="b_sat5" write="b_sat5" type="TPar" file="USoilWaterMod.pas" line="672" />
+      <property name="Par_b_rest5" visibility="published" read="b_rest5" write="b_rest5" type="TPar" file="USoilWaterMod.pas" line="673" />
+      <property name="Par_b_KS5" visibility="published" read="Ks5" write="Ks5" type="TPar" file="USoilWaterMod.pas" line="674" />
+      <property name="Par_n5" visibility="published" read="n_par5" write="n_par5" type="TPar" file="USoilWaterMod.pas" line="675" />
+      <property name="Par_lpar5" visibility="published" read="l_par5" write="l_par5" type="TPar" file="USoilWaterMod.pas" line="676" />
+      <property name="Par_alpha5" visibility="published" read="alpha5" write="alpha5" type="TPar" file="USoilWaterMod.pas" line="677" />
+      <property name="Par_FK5" visibility="published" read="FK5" write="FK5" type="TPar" file="USoilWaterMod.pas" line="679">
+        <devnotes>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </property>
+      <property name="Par_PWP5" visibility="published" read="PWP5" write="PWP5" type="TPar" file="USoilWaterMod.pas" line="681">
+        <devnotes>
+           <summary>permanenter Welkepunkt</summary>
+        </devnotes>
+      </property>
+      <property name="Par_nFK5" visibility="published" read="nFK5" type="TPar" file="USoilWaterMod.pas" line="683">
+        <devnotes>
+           <summary>nutzbare Feldkapazit�t</summary>
+        </devnotes>
+      </property>
+      <property name="Par_b_sat6" visibility="published" read="b_sat6" write="b_sat6" type="TPar" file="USoilWaterMod.pas" line="685" />
+      <property name="Par_b_rest6" visibility="published" read="b_rest6" write="b_rest6" type="TPar" file="USoilWaterMod.pas" line="686" />
+      <property name="Par_b_KS6" visibility="published" read="Ks6" write="Ks6" type="TPar" file="USoilWaterMod.pas" line="687" />
+      <property name="Par_n6" visibility="published" read="n_par6" write="n_par6" type="TPar" file="USoilWaterMod.pas" line="688" />
+      <property name="Par_lpar6" visibility="published" read="l_par6" write="l_par6" type="TPar" file="USoilWaterMod.pas" line="689" />
+      <property name="Par_alpha6" visibility="published" read="alpha6" write="alpha6" type="TPar" file="USoilWaterMod.pas" line="690" />
+      <property name="Par_FK6" visibility="published" read="FK6" write="FK6" type="TPar" file="USoilWaterMod.pas" line="692">
+        <devnotes>
+           <summary>Feldkapazit�t [cm3/cm3]</summary>
+        </devnotes>
+      </property>
+      <property name="Par_PWP6" visibility="published" read="PWP6" write="PWP6" type="TPar" file="USoilWaterMod.pas" line="694">
+        <devnotes>
+           <summary>permanenter Welkepunkt</summary>
+        </devnotes>
+      </property>
+      <property name="Par_nFK6" visibility="published" read="nFK6" type="TPar" file="USoilWaterMod.pas" line="696">
+        <devnotes>
+           <summary>nutzbare Feldkapazit�t</summary>
+        </devnotes>
+      </property>
+      <property name="Par_PsiStart1" visibility="published" read="PsiStart1" write="PsiStart1" type="TPar" file="USoilWaterMod.pas" line="698" />
+      <property name="Par_Weff" visibility="published" read="Weff" write="Weff" type="TPar" file="USoilWaterMod.pas" line="699" />
+      <property name="Par_PondMax" visibility="published" read="PondMax" write="PondMax" type="TPar" file="USoilWaterMod.pas" line="700" />
+      <property name="Var_WG0_30" visibility="published" read="WG0_30" write="WG0_30" type="TVar" file="USoilWaterMod.pas" line="702" />
+      <property name="Var_WG30_60" visibility="published" read="WG30_60" write="WG30_60" type="TVar" file="USoilWaterMod.pas" line="703" />
+      <property name="Var_WG30_120" visibility="published" read="WG30_120" write="WG30_120" type="TVar" file="USoilWaterMod.pas" line="704" />
+      <property name="Var_WG30_100" visibility="published" read="WG30_100" write="WG30_100" type="TVar" file="USoilWaterMod.pas" line="705" />
+      <property name="Var_WG60_90" visibility="published" read="WG60_90" write="WG60_90" type="TVar" file="USoilWaterMod.pas" line="706" />
+      <property name="Var_WG90_120" visibility="published" read="WG90_120" write="WG90_120" type="TVar" file="USoilWaterMod.pas" line="707" />
+      <property name="Var_WG0_100" visibility="published" read="WG0_100" write="WG0_100" type="TVar" file="USoilWaterMod.pas" line="708" />
+      <property name="Var_WG0_120" visibility="published" read="WG0_120" write="WG0_120" type="TVar" file="USoilWaterMod.pas" line="709" />
+      <property name="Var_WG0_90" visibility="published" read="wg0_90" write="wg0_90" type="TVar" file="USoilWaterMod.pas" line="710" />
+      <property name="Var_WG0_60" visibility="published" read="WG0_60" write="WG0_60" type="TVar" file="USoilWaterMod.pas" line="711" />
+      <property name="Var_Psi_dummy" visibility="published" read="PSI_dummy" write="PSI_dummy" type="TVar" file="USoilWaterMod.pas" line="713" />
+      <property name="Var_ActEvap" visibility="published" read="Act_Evap" write="Act_Evap" type="TVar" file="USoilWaterMod.pas" line="714" />
+      <property name="St_CumEvap" visibility="published" read="CumEvap" write="CumEvap" type="TState" file="USoilWaterMod.pas" line="716" />
+      <property name="St_CumDrainage" visibility="published" read="CumDrainage" write="CumDrainage" type="TState" file="USoilWaterMod.pas" line="717" />
+      <property name="St_CumNetRain" visibility="published" read="CumNetRain" write="CumNetRain" type="TState" file="USoilWaterMod.pas" line="718" />
+      <property name="St_PondedWater" visibility="published" read="PondedWater" write="PondedWater" type="TState" file="USoilWaterMod.pas" line="719" />
+      <property name="Par_psi_critEvap" visibility="published" read="psi_critEvap" write="psi_critEvap" type="TPar" file="USoilWaterMod.pas" line="721" />
+      <property name="Par_Horindx1" visibility="published" read="HoriNdx1" write="HoriNdx1" type="TPar" file="USoilWaterMod.pas" line="723" />
+      <property name="Par_Horindx2" visibility="published" read="HoriNdx2" write="HoriNdx2" type="TPar" file="USoilWaterMod.pas" line="724" />
+      <property name="Par_Horindx3" visibility="published" read="HoriNdx3" write="HoriNdx3" type="TPar" file="USoilWaterMod.pas" line="725" />
+      <property name="Par_Horindx4" visibility="published" read="HoriNdx4" write="HoriNdx4" type="TPar" file="USoilWaterMod.pas" line="726" />
+      <property name="Par_Horindx5" visibility="published" read="HoriNdx5" write="HoriNdx5" type="TPar" file="USoilWaterMod.pas" line="727" />
+      <property name="Par_Horindx6" visibility="published" read="HoriNdx6" write="HoriNdx6" type="TPar" file="USoilWaterMod.pas" line="728" />
+      <property name="SoilHeatModel" visibility="published" read="FSoilHeatModel" write="FSoilHeatModel" type="TAbstractSoilHeat" file="USoilWaterMod.pas" line="730" />
+    </members>
+  </class>
+  <variable name="SoilWaterMod" type="TSoilWaterMod" file="USoilWaterMod.pas" line="738" />
+  <procedure name="Register" visibility="public" file="USoilWaterMod.pas" line="4123">
+  </procedure>
+</namespace>

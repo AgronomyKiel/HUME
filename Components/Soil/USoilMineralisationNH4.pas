@@ -1,34 +1,44 @@
+ï»¿/// <summary>
+/// Sub-Modell zur Beschreibung der Dynamik der Umsetzungen organischer Substanz
+/// im Boden.
+/// After Verberne et al. 1990: Modelling organic matter dynamics
+/// in different soils, Neth.J.agr.Sci., 38, 221-238
+/// </summary>
 unit USoilMineralisationNH4;
-
-{ Sub-Modell zur Beschreibung der Dynamik der Umsetzungen organischer Substanz
-  im Boden.
-  After Verberne et al. 1990: Modelling organic matter dynamics
-  in different soils, Neth.J.agr.Sci., 38, 221-238 }
 
 interface
 
 uses
   Ustate, UlayeredSoil, UMod,
-//  IniFilesNew,
+  // IniFilesNew,
   classes, UAbstractSoilMin;
 
-
 type
+  /// <summary>Options for calculation of f_abiot</summary>
   T_f_abiot_calc = (Verbruggen, Petersen, Zhou, DAISY, Mueller, APSIM);
-  /// Options for calculation of f_abiot
-  T_ProcessType = (minp, nitp, denp); /// mineralisation, nitrification, denitrification
+  /// <summary>mineralisation, nitrification, denitrification</summary>
+  T_ProcessType = (minp, nitp, denp);
 
-  TMinProcess = Class(Tobject) /// class for calculation of a decay process for one pool
+  /// <summary>class for calculation of a decay process for one pool</summary>
+  TMinProcess = Class(Tobject)
   public
-    Name: string;     /// name of the process
-    k: TPar; /// decay constant               [1/d] }
-    E: TPar; /// conversion efficiency        [-] }
-    C_flow: real; /// actual C flow rate from (loss from Edukt)
-    CO2_Flow: real; /// actual CO2 flow rate
-    Nr: real;    /// Mineralisation/immobilisation rate [kg N/(ha*d]
-	  Edukt,       /// educt/substrate of the pool
-    Produkt      /// product pool of the process
-    : Pools;
+    /// <summary>name of the process</summary>
+    Name: string;
+    /// <summary>decay constant               [1/d]</summary>
+    k: TPar;
+    /// <summary>conversion efficiency        [-]</summary>
+    E: TPar;
+    /// <summary>actual C flow rate from (loss from Edukt)</summary>
+    C_flow: real;
+    /// <summary>actual CO2 flow rate</summary>
+    CO2_Flow: real;
+    /// <summary>Mineralisation/immobilisation rate [kg N/(ha*d]</summary>
+    Nr: real;
+    /// <summary>educt/substrate of the pool</summary>
+    Edukt,
+    /// <summary>product pool of the process</summary>
+    Produkt
+      : Pools;
 
     procedure init(iName: string; ik, iE: TPar; iEdukt, iProdukt: Pools);
 
@@ -44,12 +54,16 @@ type
   TSoilMinNH4 = class(TAbstractSoilMin)
 
   private
-    f_abiot_min_Calcmethod, /// calculation of abiotic influences for mineralisation
-    f_abiot_nit_Calcmethod, /// calculation of abiotic influences for nitrification
-    f_abiot_den_Calcmethod: T_f_abiot_calc; /// calculation of abiotic influences for denitrification
+    /// <summary>calculation of abiotic influences for mineralisation</summary>
+    f_abiot_min_Calcmethod,
+    /// <summary>calculation of abiotic influences for nitrification</summary>
+    f_abiot_nit_Calcmethod,
+    /// <summary>calculation of abiotic influences for denitrification</summary>
+    f_abiot_den_Calcmethod: T_f_abiot_calc;
 
-	  fTransferPools : boolean;  /// field for option on transfer of pools to next INI
-    fInitFromHumusConc: boolean; ///
+    /// <summary>field for option on transfer of pools to next INI</summary>
+    fTransferPools: boolean;
+    fInitFromHumusConc: boolean;
 
   protected
     function Calc_f_abiot(ProcessType: T_ProcessType; layer: integer): real;
@@ -63,127 +77,188 @@ type
     function calcR_NOx_N2O(WFPS: real): real;
 
   public
-    OrgDepth: TPar; /// total depth of organic layer [cm]
-    iBulkDensity: TPar; /// inital density of soil
-    BulkDensity: TVar; /// actual density of soil
-    HumusContent: TPar; /// Humus content
+    /// <summary>total depth of organic layer [cm]</summary>
+    OrgDepth: TPar;
+    /// <summary>inital density of soil</summary>
+    iBulkDensity: TPar;
+    /// <summary>actual density of soil</summary>
+    BulkDensity: TVar;
+    /// <summary>Humus content</summary>
+    HumusContent: TPar;
 
-    MinNmin: TPar; /// minimal SMN content
-    kBBf: TPar; /// "Decay rate" of tillage factor
+    /// <summary>minimal SMN content</summary>
+    MinNmin: TPar;
+    /// <summary>"Decay rate" of tillage factor</summary>
+    kBBf: TPar;
 
+    /// <summary>sum of ammonia N in each layer</summary>
     NH4_Arr: array [1 .. MaxSoilLayers] of TState;
-    /// sum of ammonia N in each layer
-    Nmin_Arr: array [1 .. MaxSoilLayers] of TVar; /// sum of nitrate (external) and ammonia
-    SumNmin: TVar; /// sum of Nmin
+    /// <summary>sum of nitrate (external) and ammonia</summary>
+    Nmin_Arr: array [1 .. MaxSoilLayers] of TVar;
+    /// <summary>sum of Nmin</summary>
+    SumNmin: TVar;
+    /// <summary>cumulative N2O loss [kg N ha-1]</summary>
     cum_N2O: array [1 .. MaxNOrgLayers] of TState;
-    /// cumulative N2O loss [kg N ha-1]
-    { external values }
-    temp: TExternV; /// Mean air temperature
-    Theta_Array: array [1 .. MaxNOrgLayers] of TExternV; /// volumetric soil water content [cm3/cm3] , external
-    NO3_Arr: array [1 .. MaxSoilLayers] of TExternV; /// soil nitrate [kg N/ha], external
+    /// <summary>external values</summary>
+    /// <summary>Mean air temperature</summary>
+    temp: TExternV;
+    /// <summary>volumetric soil water content [cm3/cm3] , external</summary>
+    Theta_Array: array [1 .. MaxNOrgLayers] of TExternV;
+    /// <summary>soil nitrate [kg N/ha], external</summary>
+    NO3_Arr: array [1 .. MaxSoilLayers] of TExternV;
     WFPS_Arr: array [1 .. MaxNOrgLayers] of TVar;
-    WFPS0_30: TVar; /// waterfilled pore space 0-30 cm [%]
+    /// <summary>waterfilled pore space 0-30 cm [%]</summary>
+    WFPS0_30: TVar;
 
+    /// <summary>array for iterating the processes</summary>
     MinProcesses: array [0 .. MaxNOrgLayers, processes] of TMinProcess;
-    /// array for iterating the processes
-    CFlowArr: array [processes, 0 .. MaxNOrgLayers] of TVar; /// C flows
-    CO2FlowArr: array [processes, 0 .. MaxNOrgLayers] of TVar; /// CO2 flows
-    C_ges, /// Total C content of the soil [kg/ha]
-    C_ER, /// C in crop residues    [kg/ha]
-    N_ER, /// N in crop residues    [kg/ha]
-    Added_N, Added_C, /// Norg / Corg added from Input [kg N/ha]
-    cum_N2O_nit, /// cumulative N2O emissions from nitrification [kg N/ha]
-    cum_N2O_den, /// cumulative N2O emissions from denitrification [kg N/ha]
-    cum_N2, /// cumulative N2 emissions [kg N/ha]
-    cum_NOx /// cumulative NOx emissions [kg N/ha]
+    /// <summary>C flows</summary>
+    CFlowArr: array [processes, 0 .. MaxNOrgLayers] of TVar;
+    /// <summary>CO2 flows</summary>
+    CO2FlowArr: array [processes, 0 .. MaxNOrgLayers] of TVar;
+    /// <summary>Total C content of the soil [kg/ha]</summary>
+    C_ges,
+    /// <summary>C in crop residues    [kg/ha]</summary>
+    C_ER,
+    /// <summary>N in crop residues    [kg/ha]</summary>
+    N_ER,
+    /// <summary>Norg / Corg added from Input [kg N/ha]</summary>
+    Added_N, Added_C,
+    /// <summary>cumulative N2O emissions from nitrification [kg N/ha]</summary>
+    cum_N2O_nit,
+    /// <summary>cumulative N2O emissions from denitrification [kg N/ha]</summary>
+    cum_N2O_den,
+    /// <summary>cumulative N2 emissions [kg N/ha]</summary>
+    cum_N2,
+    /// <summary>cumulative NOx emissions [kg N/ha]</summary>
+    cum_NOx
       : TState;
 
-    total_N2O, N_ges, /// Total N content of the soil  [kg/ha]
-    f_DPM, /// fraction of decomposable carbon in residues
-    SumMinr, /// cumulative sum of net mineralisation in all layers [kg N/ha]
-	Net_ming, 
-	NSumme, /// sum of N in all pools
-	CBilanz, /// balance of carbon
-    NBilanz, /// balance of nitrogen
-	CSumme /// sum of N in all pools
-	 : TVar;
+    /// <summary>Total N content of the soil  [kg/ha]</summary>
+    total_N2O, N_ges,
+    /// <summary>fraction of decomposable carbon in residues</summary>
+    f_DPM,
+    /// <summary>cumulative sum of net mineralisation in all layers [kg N/ha]</summary>
+    SumMinr,
+    /// <summary>sum of N in all pools</summary>
+    Net_ming, NSumme,
+    /// <summary>balance of carbon</summary>
+    CBilanz,
+    /// <summary>balance of nitrogen</summary>
+    NBilanz,
+    /// <summary>sum of N in all pools</summary>
+    CSumme
+      : TVar;
     NetMinArr: array [processes, 0 .. MaxNOrgLayers] of TVar;
 
-    km_Nmin, /// Parameter for decreasing decomposition rates under nitrogen shortage
-    k_dpm_biom, /// decay constant dpm to biom
+    /// <summary>Parameter for decreasing decomposition rates under nitrogen shortage</summary>
+    km_Nmin,
+    /// <summary>decay constant dpm to biom</summary>
+    k_dpm_biom,
     k_rpm_biom, k_som_biom, k_biom_som, E_dpm_biom, E_rpm_biom, E_som_biom,
-      E_biom_som, k_nit, /// nitrification constant
-    fr_Nloss_nit, /// fraction of N loss during nitrification  in Zhou et al. 2010: Parameter Kn := 0.05
-    k_den, /// denitrification constant
-    km_den, /// Michaelis Menten constant for denitrification
-    f_biom, /// fraction of Biomass C to total C  ~ 0.0001;
-    Soil_pH, /// Soil pH for calculation of f_abiot_nit according to Zhou
-    WFPS_crit_den, /// critical WFPS for start of denitrification according Mielenz et al. (2016)
-    CritDen_f /// factor for critical WFPS/WC for start of denitrification according Mielenz et al. (2016)
+    /// <summary>nitrification constant</summary>
+      E_biom_som, k_nit,
+    /// <summary>fraction of N loss during nitrification  in Zhou et al. 2010: Parameter Kn := 0.05</summary>
+    fr_Nloss_nit,
+    /// <summary>denitrification constant</summary>
+    k_den,
+    /// <summary>Michaelis Menten constant for denitrification</summary>
+    km_den,
+    /// <summary>fraction of Biomass C to total C  ~ 0.0001;</summary>
+    f_biom,
+    /// <summary>Soil pH for calculation of f_abiot_nit according to Zhou</summary>
+    Soil_pH,
+    /// <summary>critical WFPS for start of denitrification according Mielenz et al. (2016)</summary>
+    WFPS_crit_den,
+    /// <summary>factor for critical WFPS/WC for start of denitrification according Mielenz et al. (2016)</summary>
+    CritDen_f
       : TPar;
 
-    ResidueIncorp: TOption; /// Option if residues are initally incorporated or stay on top
-    InitFromHumusConc: TOption;/// Option to init c-Pools from humus content, default is true
-    InitIOM : TOption; /// Allocate part of the initial carbon to an inert IOC pool, default is false
+    /// <summary>Option if residues are initally incorporated or stay on top</summary>
+    ResidueIncorp: TOption;
+    /// <summary>Option to init c-Pools from humus content, default is true</summary>
+    InitFromHumusConc: TOption;
+    /// <summary>Allocate part of the initial carbon to an inert IOC pool, default is false</summary>
+    InitIOM: TOption;
     C_distributionmethod: TOption;
-    f_abiot_min_Calcmethod_Option: TOption; /// Calculation method for the abiotic factor for mineralisation
-    f_abiot_nit_Calcmethod_Option: TOption; /// Calculation method for the abiotic factor for nitrification
-    f_abiot_den_Calcmethod_Option: TOption; /// Calculation method for the abiotic factor for denitrification
+    /// <summary>Calculation method for the abiotic factor for mineralisation</summary>
+    f_abiot_min_Calcmethod_Option: TOption;
+    /// <summary>Calculation method for the abiotic factor for nitrification</summary>
+    f_abiot_nit_Calcmethod_Option: TOption;
+    /// <summary>Calculation method for the abiotic factor for denitrification</summary>
+    f_abiot_den_Calcmethod_Option: TOption;
 
-    CN_Residues: TVar; /// C/N ratio in added crop residues
+    /// <summary>C/N ratio in added crop residues</summary>
+    CN_Residues: TVar;
 
-    CPool: TPoolStateArray; /// array of carbon pools (sum over layers)
-    NPool: TPoolVarArray; /// array of carbon pools (sum over layers)
-    CN: TPoolParArray; /// array of CN ratios in the pools
+    /// <summary>array of carbon pools (sum over layers)</summary>
+    CPool: TPoolStateArray;
+    /// <summary>array of carbon pools (sum over layers)</summary>
+    NPool: TPoolVarArray;
+    /// <summary>array of CN ratios in the pools</summary>
+    CN: TPoolParArray;
 
-    Net_min: array [0 .. MaxNOrgLayers] of TVar; /// net mineralisation rate [kg N/ha/d]
-    f_abiot_min: array [0 .. MaxNOrgLayers] of TVar; /// abiotic influence factor accounting for temperature and soil water content
+    /// <summary>net mineralisation rate [kg N/ha/d]</summary>
+    Net_min: array [0 .. MaxNOrgLayers] of TVar;
+    /// <summary>abiotic influence factor accounting for temperature and soil water content</summary>
+    f_abiot_min: array [0 .. MaxNOrgLayers] of TVar;
     f_abiot_nit: array [0 .. MaxNOrgLayers] of TVar;
     f_abiot_den: array [0 .. MaxNOrgLayers] of TVar;
-    f_Nmin: array [0 .. MaxNOrgLayers] of TVar; /// relative factor [0..1] for reducing decomposition rate under nitrogen shortage
-    Layerfactor: array [0 .. MaxNOrgLayers] of TPar; /// factor to correct decomposition rates in individual soil layers
-    c_frac: array [0 .. MaxNOrgLayers] of TPar; /// fraction of carbon initially within a certain soil layer
+    /// <summary>relative factor [0..1] for reducing decomposition rate under nitrogen shortage</summary>
+    f_Nmin: array [0 .. MaxNOrgLayers] of TVar;
+    /// <summary>factor to correct decomposition rates in individual soil layers</summary>
+    Layerfactor: array [0 .. MaxNOrgLayers] of TPar;
+    /// <summary>fraction of carbon initially within a certain soil layer</summary>
+    c_frac: array [0 .. MaxNOrgLayers] of TPar;
 
+    /// <summary>all nitrogen pools, two dimensional Var matrix</summary>
     NPool_i: array [0 .. MaxNOrgLayers] of TPoolVarArray;
-    /// all nitrogen pools, two dimensional Var matrix
-    CPool_i: array [0 .. MaxNOrgLayers] of TPoolStateArray; /// all carbon pools
+    /// <summary>all carbon pools</summary>
+    CPool_i: array [0 .. MaxNOrgLayers] of TPoolStateArray;
+    /// <summary>rate of NO3 production by nitrification</summary>
     NitrificationRate: array [0 .. MaxNOrgLayers] of TVar;
-    /// rate of NO3 production by nitrification
+    /// <summary>rate of NO3 consumption by denitrification</summary>
     DenitrificationRate: array [0 .. MaxNOrgLayers] of TVar;
-    /// rate of NO3 consumption by denitrification
+    /// <summary>net rate of NO3 production</summary>
     NetMinRate: array [0 .. MaxNOrgLayers] of TExternV;
-    /// net rate of NO3 production
 
+    /// <summary>ratio of N2 / N2O from denitrification</summary>
     R_N2_N2O: array [0 .. MaxNOrgLayers] of TVar;
-    /// ratio of N2 / N2O from denitrification
+    /// <summary>CO2 flux rate [kg C ha-1 d-1] from all processes in each layer</summary>
     CO2_flux_Arr: array [1 .. MaxNOrgLayers] of TVar;
-    ///  CO2 flux rate [kg C ha-1 d-1] from all processes in each layer
 
-    Norg, /// total amount of organic nitrogen [kg/ha] sum of all other pools and over layers
-    Corg: TVar; /// total amount of organic carbon [kg/ha]
+    /// <summary>total amount of organic nitrogen [kg/ha] sum of all other pools and over layers</summary>
+    Norg,
+    /// <summary>total amount of organic carbon [kg/ha]</summary>
+    Corg: TVar;
 
+    /// <summary>ammonium in 30cm soil layers [kg N/ha] and layer 0-10cm</summary>
     NH4_0_10, NH4_0_30, NH4_30_60, NH4_60_90, NH4_0_60, NH4_0_90,
-    /// ammonium in 30cm soil layers [kg N/ha] and layer 0-10cm
-    Nmin0_10, Nmin0_30, Nmin30_60, Nmin60_90, Nmin0_60, Nmin0_90: TVar; /// soil mineral nitrogen in 30cm soil layers [kg N/ha] and layer 0-10cm
+    /// <summary>soil mineral nitrogen in 30cm soil layers [kg N/ha] and layer 0-10cm</summary>
+    Nmin0_10, Nmin0_30, Nmin30_60, Nmin60_90, Nmin0_60, Nmin0_90: TVar;
 
+    /// <summary>N2O-N emission rate from nitrification</summary>
     NH4_N2O_rate: array [0 .. MaxNOrgLayers] of TVar;
-    /// N2O-N emission rate from nitrification
+    /// <summary>NOx-N emission rate from nitrification</summary>
     NH4_NOx_rate: array [0 .. MaxNOrgLayers] of TVar;
-    /// NOx-N emission rate from nitrification
+    /// <summary>N2O-N emission rate from denitrification</summary>
     NO3_N2O_rate: array [0 .. MaxNOrgLayers] of TVar;
-    /// N2O-N emission rate from denitrification
+    /// <summary>N2-N emission rate from denitrification</summary>
     NO3_N2_rate: array [0 .. MaxNOrgLayers] of TVar;
-    /// N2-N emission rate from denitrification
 
-    N2O_flux,  /// N2O flux rate [kg N ha-1 d-1]
-    N2_flux,   /// N2 flux rate [kg N ha-1 d-1]
-    NOx_flux,  /// NOx flux rate [kg N ha-1 d-1]
-    CO2_flux: TVar; /// CO2 flux rate [kg C ha-1 d-1]
+    /// <summary>N2O flux rate [kg N ha-1 d-1]</summary>
+    N2O_flux,
+    /// <summary>N2 flux rate [kg N ha-1 d-1]</summary>
+    N2_flux,
+    /// <summary>NOx flux rate [kg N ha-1 d-1]</summary>
+    NOx_flux,
+    /// <summary>CO2 flux rate [kg C ha-1 d-1]</summary>
+    CO2_flux: TVar;
 
-    TransferPoolsToNextINI : TOption; ///
+    TransferPoolsToNextINI: TOption;
     procedure CreateAll; override;
 
-    procedure Init(Var GlobMod: TMod); Override;
+    procedure init(Var GlobMod: TMod); Override;
     procedure CalcRates; override;
     procedure Integrate; override;
 
@@ -197,12 +272,13 @@ type
     property Ex_Temp: TExternV read temp write temp;
     property Var_NetMinG: TVar read Net_ming write Net_ming;
     property Var_SumMInr: TVar read SumMinr write SumMinr;
-    property opt_c_distributionmethod
-      : TOption read C_distributionmethod write C_distributionmethod;
-	property Opt_TransferPoolsToNextINI
-      : boolean read fTransferPools write fTransferPools;
-    property Opt_InitFromHumusConc: boolean read fInitFromHumusConc write fInitfromHumusconc;
-																						 
+    property opt_c_distributionmethod: TOption read C_distributionmethod
+      write C_distributionmethod;
+    property Opt_TransferPoolsToNextINI: boolean read fTransferPools
+      write fTransferPools;
+    property Opt_InitFromHumusConc: boolean read fInitFromHumusConc
+      write fInitFromHumusConc;
+
   end;
 
 var
@@ -214,9 +290,9 @@ implementation
 
 uses
   math, SysUtils,
-  {$IFNDEF NONVISUAL}
+{$IFNDEF NONVISUAL}
   vcl.dialogs,
-  {$ENDIF}
+{$ENDIF}
   USoilWaterMod, USoilTexture;
 
 procedure TMinProcess.init(iName: string; ik, iE: TPar;
@@ -224,8 +300,8 @@ procedure TMinProcess.init(iName: string; ik, iE: TPar;
 
 begin
   Name := iName;
-  k    := ik;
-  E    := iE;
+  k := ik;
+  E := iE;
   Edukt := iEdukt;
   Produkt := iProdukt;
 end;
@@ -238,12 +314,13 @@ Var
   C_flow_educt, C_flow_product: real;
 
 begin
-  C_flow_educt   := min(1, F_abiot * k.v) * (CPools[Edukt].v);
+  C_flow_educt := min(1, F_abiot * k.v) * (CPools[Edukt].v);
   C_flow_product := min(1, F_abiot * k.v) * (CPools[Edukt].v * E.v);
   Nr := C_flow_educt * (1 / CN[Edukt].v - E.v / CN[Produkt].v);
   if Nr <= 0.0 then
   begin
-    C_flow_educt := f_Nmin * C_flow_educt; // if nr is negative, fNmin accounts for influence of nitrate availability
+    C_flow_educt := f_Nmin * C_flow_educt;
+    // if nr is negative, fNmin accounts for influence of nitrate availability
     C_flow_product := f_Nmin * C_flow_product;
     Nr := C_flow_educt * (1 / CN[Edukt].v - E.v / CN[Produkt].v);
   end;
@@ -276,26 +353,39 @@ begin
   ParCreate('CN_iom', '[-]', CN_iom, CN[IOM]);
   ParCreate('CN_biom', '[-]', CN_biom, CN[BIOM]);
   ParCreate('f_biom', '[-]', 0.001, f_biom);
-  ParCreate('Km_Nmin', '[-]', 1, km_Nmin, 'Michaelis-Constant for Effect of Nmin on mineralisation');
-  ParCreate('k_nit', '[1/d]', 0.5, k_nit, 'Nitrification rate under optimal conditions');
+  ParCreate('Km_Nmin', '[-]', 1, km_Nmin,
+    'Michaelis-Constant for Effect of Nmin on mineralisation');
+  ParCreate('k_nit', '[1/d]', 0.5, k_nit,
+    'Nitrification rate under optimal conditions');
   ParCreate('fr_Nloss_nit', '[-]', 0.05, fr_Nloss_nit,
-    'fraction of N loss during nitrification'); // in Zhou et al. 2010: Parameter Kn := 0.05
+    'fraction of N loss during nitrification');
+  // in Zhou et al. 2010: Parameter Kn := 0.05
   ParCreate('k_den', '[1/d]', 0.1, k_den);
   ParCreate('Km_den', '[kg N/ha]', 26, km_den,
-    'Michaelis-Menten constant for denitrification'); // Zhou et al. 2010: Km = 20ug/g = 26 kg N/ha/soil layer
-  ParCreate('WFPS_crit_den', '[-]', 0.8, WFPS_crit_den,'critical WFPS for start of denitrification');  //   according Mielenz et al. (2016)
-  ParCreate('CritDen_f', '[-]', 1.05, CritDen_f,'factor for critical WFPS(=CritDen_f*FK/Sat) for start of denitrification');  //   according Mielenz et al. (2016)
+    'Michaelis-Menten constant for denitrification');
+  // Zhou et al. 2010: Km = 20ug/g = 26 kg N/ha/soil layer
+  ParCreate('WFPS_crit_den', '[-]', 0.8, WFPS_crit_den,
+    'critical WFPS for start of denitrification');
+  // according Mielenz et al. (2016)
+  ParCreate('CritDen_f', '[-]', 1.05, CritDen_f,
+    'factor for critical WFPS(=CritDen_f*FK/Sat) for start of denitrification');
+  // according Mielenz et al. (2016)
   ParCreate('kBBf', '[1/d]', 0.05, kBBf, 'factor for soil tillage effect');
   ParCreate('OrgDepth', '[cm]', 30, OrgDepth, 'depth of organic layers');
-  ParCreate('ini.BulkDensity', '[g/cm3]', 1.3, iBulkDensity, 'initial bulk density');
-  VarCreate('act.BulkDensity', '[g/cm3]', 1.3, false, BulkDensity, 'acutal bulk density');
-  ParCreate('HumusContent', '[0..1]', 0.018, HumusContent, 'humus concentration as relative value [0..1]');
+  ParCreate('ini.BulkDensity', '[g/cm3]', 1.3, iBulkDensity,
+    'initial bulk density');
+  VarCreate('act.BulkDensity', '[g/cm3]', 1.3, false, BulkDensity,
+    'acutal bulk density');
+  ParCreate('HumusContent', '[0..1]', 0.018, HumusContent,
+    'humus concentration as relative value [0..1]');
   ParCreate('MinNmin', '[kg N/ha/layer]', 2., MinNmin, 'Minimum Nmin value ');
   ParCreate('Soil_pH', '[-]', 6.4, Soil_pH,
     'Soil pH for calculation of f_abiot_nit according to Zhou');
   value := 0.0;
-  StateCreate('C_ges', '[kg C/ha]', 0, false, C_ges, 'Total soil organic carbon');
-  VarCreate('N_ges', '[kg N/ha]', value, false, N_ges, 'Total soil organic nitrogen');
+  StateCreate('C_ges', '[kg C/ha]', 0, false, C_ges,
+    'Total soil organic carbon');
+  VarCreate('N_ges', '[kg N/ha]', value, false, N_ges,
+    'Total soil organic nitrogen');
   VarCreate('NSumme', '[kg N/ha]', value, false, NSumme, 'total nitrogen');
   VarCreate('CSumme', '[kg C/ha]', value, false, CSumme, 'total carbon');
   VarCreate('NBilanz', '[kg N/ha]', value, false, NBilanz);
@@ -303,7 +393,7 @@ begin
   VarCreate('CN_Residues', '[-]', value, false, CN_Residues,
     'C/N ratio in added crop residues');
 
-  ExternVCreate('TMPM', '[°C]', StateField, temp);
+  ExternVCreate('TMPM', '[Â°C]', StateField, temp);
   for layer := 1 to trunc(NOrgLayers.v) do
   begin
     ExternVCreate('WG' + ndx_str(layer), '[cm3.cm3]', StateField,
@@ -355,8 +445,8 @@ begin
       cum_N2O[layer]);
     VarCreate('R_N2_N2O' + ndx_str(layer), '[-]', 4, false, R_N2_N2O[layer],
       'ratio of N2 / N2O from denitrification in layer' + IntToStr(layer));
-    VarCreate('CO2_flux_Arr'+ ndx_str(layer), '[kg C ha-1 d-1]', 0, false,
-      CO2_flux_Arr[layer],'CO2 flux rate from all processes in each layer');
+    VarCreate('CO2_flux_Arr' + ndx_str(layer), '[kg C ha-1 d-1]', 0, false,
+      CO2_flux_Arr[layer], 'CO2 flux rate from all processes in each layer');
   end;
 
   for layer := 1 to MaxSoilLayers do
@@ -365,7 +455,7 @@ begin
       NH4_Arr[layer]);
     VarCreate('Nmin_Arr' + ndx_str(layer), '[kg N/ha]', 0.0, false,
       Nmin_Arr[layer], 'sum of nitrate and ammonia N per layer');
-          ExternVCreate('Nmin' + ndx_str(layer), '[kg N.ha-1]', StateField,
+    ExternVCreate('Nmin' + ndx_str(layer), '[kg N.ha-1]', StateField,
       NO3_Arr[layer]);
 
   end;
@@ -390,8 +480,10 @@ begin
 
   VarCreate('total_N2O', '[kg N/ha]', 0, true, total_N2O);
   VarCreate('F_DPM', '[-]', value, true, f_DPM);
-  VarCreate('SumMinr', '[kg N/ha]', 0.0, false, SumMinr, 'cumulative sum of net mineralisation in all layers');
-  VarCreate('Net_ming', '[kg N.ha-1.d-1]', 0.0, false, Net_ming, 'daily total of net mineralisation rate in all layers');
+  VarCreate('SumMinr', '[kg N/ha]', 0.0, false, SumMinr,
+    'cumulative sum of net mineralisation in all layers');
+  VarCreate('Net_ming', '[kg N.ha-1.d-1]', 0.0, false, Net_ming,
+    'daily total of net mineralisation rate in all layers');
 
   for layer := 0 to trunc(NOrgLayers.v) do
   begin
@@ -470,12 +562,12 @@ begin
   begin
     StateCreate('C_DPM_' + IntToStr(layer), '[kg C/ha]', 0.0, false,
       CPool_i[layer, DPM]);
-    VarCreate('N_DPM_' + IntToStr(layer), '[kg N/ha]',
-      CPool_i[layer, DPM].v / CN[DPM].v, false, NPool_i[layer, DPM]);
+    VarCreate('N_DPM_' + IntToStr(layer), '[kg N/ha]', CPool_i[layer, DPM].v /
+      CN[DPM].v, false, NPool_i[layer, DPM]);
     StateCreate('C_rpm_' + IntToStr(layer), '[kg C/ha]', 0.0, false,
       CPool_i[layer, RPM]);
-    VarCreate('N_rpm_' + IntToStr(layer), '[kg N/ha]',
-      CPool_i[layer, RPM].v / CN[RPM].v, false, NPool_i[layer, RPM]);
+    VarCreate('N_rpm_' + IntToStr(layer), '[kg N/ha]', CPool_i[layer, RPM].v /
+      CN[RPM].v, false, NPool_i[layer, RPM]);
     StateCreate('C_som_' + IntToStr(layer), '[kg C/ha]', 0.0, false,
       CPool_i[layer, SOM]);
     VarCreate('N_som_' + IntToStr(layer), '[kg N/ha]', 0.0, false,
@@ -500,8 +592,7 @@ begin
   ResidueIncorp.OptionList.Add('InSoil');
   ResidueIncorp.OptionList.Add('OnTop');
 
-  OptCreate('f_abiot_min_Calcmethod', 'DAISY',
-    f_abiot_min_Calcmethod_Option,
+  OptCreate('f_abiot_min_Calcmethod', 'DAISY', f_abiot_min_Calcmethod_Option,
     'Option for the abiotic factor for mineralisation');
   f_abiot_min_Calcmethod_Option.OptionList.Add('Verbruggen');
   f_abiot_min_Calcmethod_Option.OptionList.Add('Petersen');
@@ -509,8 +600,7 @@ begin
   f_abiot_min_Calcmethod_Option.OptionList.Add('DAISY');
   f_abiot_min_Calcmethod_Option.OptionList.Add('Mueller');
 
-  OptCreate('f_abiot_nit_Calcmethod', 'DAISY',
-    f_abiot_nit_Calcmethod_Option,
+  OptCreate('f_abiot_nit_Calcmethod', 'DAISY', f_abiot_nit_Calcmethod_Option,
     'Option for the abiotic factor for mineralisation');
   f_abiot_nit_Calcmethod_Option.OptionList.Add('Verbruggen');
   f_abiot_nit_Calcmethod_Option.OptionList.Add('Petersen');
@@ -528,15 +618,12 @@ begin
 
   OptCreate('InitIOM', 'false', InitIOM,
     'Option for allocating part of Carbon to inert IOM Pool');
-  InitIom.OptionList.Add('false');
-  InitIom.OptionList.Add('true');
+  InitIOM.OptionList.Add('false');
+  InitIOM.OptionList.Add('true');
 
-
-
-  OptCreate('TransferCPoolsToNextIni', 'false',
-    TransferPoolsToNextINI,
+  OptCreate('TransferCPoolsToNextIni', 'false', TransferPoolsToNextINI,
     'Option for transfer C-Pools to next Ini');
-  TransferPoolsToNextINI.OptionList.add('true');
+  TransferPoolsToNextINI.OptionList.Add('true');
   TransferPoolsToNextINI.OptionList.Add('false');
   VarCreate('NH4_0_10', '[kg N/ha]', 0.0, false, NH4_0_10,
     'NH4 in 0 to 10 cm soil depth [kg N/ha]');
@@ -564,9 +651,6 @@ begin
     'Soil mineral nitrogen in 0 to 90 cm soil depth [kg N/ha]');
 end;
 
-
-
-
 procedure TSoilMinNH4.AddResidues(Carbon, nitrogen: real);
 
 var
@@ -582,25 +666,30 @@ begin
   Added_N.c := nitrogen;
   Added_C.c := Carbon;
   if Carbon > 0.0 then
-    f_DPM.v := max(0,(-nitrogen * CN[DPM].v * CN[RPM].v / Carbon + CN[DPM].v) /
+    f_DPM.v := max(0, (-nitrogen * CN[DPM].v * CN[RPM].v / Carbon + CN[DPM].v) /
       (-CN[RPM].v + CN[DPM].v))
   else
     f_DPM.v := 0.0;
 
   CPool[DPM].v := CPool[DPM].v + Carbon * f_DPM.v;
-  NPool[DPM].v := NPool[DPM].v + Carbon * f_DPM.v/ CN[DPM].v;// CPool[DPM].v / CN[DPM].v;
+  NPool[DPM].v := NPool[DPM].v + Carbon * f_DPM.v / CN[DPM].v;
+  // CPool[DPM].v / CN[DPM].v;
   CPool[RPM].v := CPool[RPM].v + Carbon * (1 - f_DPM.v);
-  NPool[RPM].v := NPool[RPM].v + Carbon * (1 - f_DPM.v)/CN[RPM].v;//CPool[RPM].v / CN[RPM].v;
-
+  NPool[RPM].v := NPool[RPM].v + Carbon * (1 - f_DPM.v) / CN[RPM].v;
+  // CPool[RPM].v / CN[RPM].v;
 
   If lowercase(ResidueIncorp.Option) = 'insoil' then
   begin
     for layer := 1 to trunc(NOrgLayers.v) do
     begin
-      CPool_i[layer,DPM].v := CPool_i[layer, DPM].v + Carbon * f_DPM.v*c_frac[layer].v;
-      NPool_i[layer,DPM].v := NPool_i[layer, DPM].v + Carbon * f_DPM.v/ CN[DPM].v*c_frac[layer].v;// CPool[DPM].v / CN[DPM].v;
-      CPool_i[layer,RPM].v := CPool_i[layer, RPM].v + Carbon * (1 - f_DPM.v)*c_frac[layer].v;
-      NPool_i[layer,RPM].v := NPool_i[layer, RPM].v + Carbon * (1 - f_DPM.v)/CN[RPM].v*c_frac[layer].v;//CPool[RPM].v / CN[RPM].v;
+      CPool_i[layer, DPM].v := CPool_i[layer, DPM].v + Carbon * f_DPM.v *
+        c_frac[layer].v;
+      NPool_i[layer, DPM].v := NPool_i[layer, DPM].v + Carbon * f_DPM.v /
+        CN[DPM].v * c_frac[layer].v; // CPool[DPM].v / CN[DPM].v;
+      CPool_i[layer, RPM].v := CPool_i[layer, RPM].v + Carbon * (1 - f_DPM.v) *
+        c_frac[layer].v;
+      NPool_i[layer, RPM].v := NPool_i[layer, RPM].v + Carbon * (1 - f_DPM.v) /
+        CN[RPM].v * c_frac[layer].v; // CPool[RPM].v / CN[RPM].v;
     end;
   end;
 
@@ -613,6 +702,7 @@ begin
   end;
 
 end;
+
 procedure TSoilMinNH4.init(Var GlobMod: TMod);
 
 var
@@ -622,79 +712,85 @@ var
 
 begin
   inherited init(GlobMod);
-  BulkDensity.v := iBulkDensity.v;							  
-//
+  BulkDensity.v := iBulkDensity.v;
+  //
 
   if uppercase(self.InitFromHumusConc.Option) = uppercase('TRUE') then
-    fInitFromHumusConc := true else
-      fInitFromHumusConc := false;
-  if fInitFromHumusConc then begin
+    fInitFromHumusConc := true
+  else
+    fInitFromHumusConc := false;
+  if fInitFromHumusConc then
+  begin
     For Pool := low(Pools) to high(Pools) do
-      begin
-        CPool[Pool].c := 0.0;
-        CPool[Pool].v := 0.0;
+    begin
+      CPool[Pool].c := 0.0;
+      CPool[Pool].v := 0.0;
       for layer := 0 to trunc(NOrgLayers.v) do
       begin
-        CPool_i[layer, pool].v := 0.0;
-        CPool_i[layer, pool].c := 0.0;
+        CPool_i[layer, Pool].v := 0.0;
+        CPool_i[layer, Pool].c := 0.0;
       end;
-    end;	
-  if C_distributionmethod.Option = 'even' then
-  begin // default option, calculates fractions evenly distributed between all organic soil layers
+    end;
+    if C_distributionmethod.Option = 'even' then
+    begin // default option, calculates fractions evenly distributed between all organic soil layers
+      for layer := 1 to trunc(NOrgLayers.v) do
+        c_frac[layer].v := 1 / trunc(NOrgLayers.v);
+      for layer := trunc(NOrgLayers.v) + 1 to MaxNOrgLayers do
+        c_frac[layer].v := 0.0;
+    end;
+
+    c_frac_control := 0;
+    // if not overwritten by previous routine, fractions from inifile are used and a control variable is calculated here
     for layer := 1 to trunc(NOrgLayers.v) do
-      c_frac[layer].v := 1 / trunc(NOrgLayers.v);
-    for layer := trunc(NOrgLayers.v) + 1 to MaxNOrgLayers do
-      c_frac[layer].v := 0.0;
-  end;
-
-  c_frac_control := 0; // if not overwritten by previous routine, fractions from inifile are used and a control variable is calculated here
-  for layer := 1 to trunc(NOrgLayers.v) do
-    c_frac_control := c_frac_control + c_frac[layer].v;
-	{$IFNDEF NONVISUAL}													 
-  if (c_frac_control > (1 + 1E-5)) or (c_frac_control < (1 - 1E-5)) then
-    showmessage('Error in fractioning of organic matter between layers!');
-    {$ENDIF}
-	
-    C_ges.v := 0.5 * OrgDepth.v / 100 * 1E4 * 1000 * iBulkDensity.v * HumusContent.v;
-//  size of the inert organic matter pool (IOM), this pool do
-// not change over time in RothC and it is independent on the model’s dynamics. Falloon et al. (1998)
+      c_frac_control := c_frac_control + c_frac[layer].v;
+    if (c_frac_control > (1 + 1E-5)) or (c_frac_control < (1 - 1E-5)) then
+{$IFNDEF NONVISUAL}
+      showmessage('Error in fractioning of organic matter between layers!');
+{$ENDIF}
+    C_ges.v := 0.5 * OrgDepth.v / 100 * 1E4 * 1000 * iBulkDensity.v *
+      HumusContent.v;
+    // size of the inert organic matter pool (IOM), this pool do
+    // not change over time in RothC and it is independent on the modelÂ’s dynamics. Falloon et al. (1998)
     if self.InitIOM.Option = 'true' then
-      CPool[IOM].v := 0.049*power(C_ges.v, 1.139)
+      CPool[IOM].v := 0.049 * power(C_ges.v, 1.139)
     else
-    CPool[IOM].v := 0.0;
+      CPool[IOM].v := 0.0;
 
-    CPool[SOM].v := C_ges.v*(1-f_BIOM.v) - CPool[IOM].v;
-    CPool[BIOM].v := C_ges.v*f_BIOM.v;
-    
-	for layer := 1 to trunc(NOrgLayers.v) do
+    CPool[SOM].v := C_ges.v * (1 - f_biom.v) - CPool[IOM].v;
+    CPool[BIOM].v := C_ges.v * f_biom.v;
+
+    for layer := 1 to trunc(NOrgLayers.v) do
       for Pool := BIOM to SOM do
         CPool_i[layer, Pool].v := CPool[Pool].v * c_frac[layer].v;
 
-  end else begin
+  end
+  else
+  begin
     C_ges.v := 0.0;
     N_ges.v := 0.0;
-    for pool := Low(pools) to High(pools) do begin
-      C_ges.v := C_ges.v+ CPool[pool].v;
-      N_ges.v := N_ges.v / CN[pool].v;
+    for Pool := Low(Pools) to High(Pools) do
+    begin
+      C_ges.v := C_ges.v + CPool[Pool].v;
+      N_ges.v := N_ges.v / CN[Pool].v;
     end;
   end;
 
   AddResidues(C_ER.v, N_ER.v);
- C_ER.v := 0.0;
- N_ER.v := 0.0;
-									   
-  NPool[SOM].v := CPool[SOM].v/CN[SOM].v;
-  NPool[BIOM].v := CPool[BIOM].v/CN[BIOM].v;
- 
+  C_ER.v := 0.0;
+  N_ER.v := 0.0;
+
+  NPool[SOM].v := CPool[SOM].v / CN[SOM].v;
+  NPool[BIOM].v := CPool[BIOM].v / CN[BIOM].v;
+
   for layer := 1 to trunc(NOrgLayers.v) do
-		 
-   for Pool := BIOM to SOM do
-		   														  
-     NPool_i[layer, Pool].v := CPool_i[layer, Pool].v / CN[Pool].v;
-	
+
+    for Pool := BIOM to SOM do
+
+      NPool_i[layer, Pool].v := CPool_i[layer, Pool].v / CN[Pool].v;
+
   for layer := 1 to trunc(NOrgLayers.v) do
   begin
-										   
+
     Net_min[layer].v := 0.0;
     f_abiot_min[layer].v := 1.0;
     BBf[layer].v := 1.0;
@@ -704,21 +800,21 @@ begin
   end;
   for layer := 0 to trunc(NOrgLayers.v) do
   begin
-    MinProcesses[layer, dpm_biom].init('dpm_biom', k_dpm_biom, E_dpm_biom, DPM,
-      BIOM);
-    MinProcesses[layer, rpm_biom].init('rpm_biom', k_rpm_biom, E_rpm_biom, RPM,
-      BIOM);
-    MinProcesses[layer, som_biom].init('som_biom', k_som_biom, E_som_biom, SOM,
-      BIOM);
+    MinProcesses[layer, dpm_biom].init('dpm_biom', k_dpm_biom, E_dpm_biom,
+      DPM, BIOM);
+    MinProcesses[layer, rpm_biom].init('rpm_biom', k_rpm_biom, E_rpm_biom,
+      RPM, BIOM);
+    MinProcesses[layer, som_biom].init('som_biom', k_som_biom, E_som_biom,
+      SOM, BIOM);
     MinProcesses[layer, biom_som].init('biom_som', k_biom_som, E_biom_som,
       BIOM, SOM);
   end;
 
   if uppercase(f_abiot_min_Calcmethod_Option.Option) = uppercase('Verbruggen')
-    then
+  then
     f_abiot_min_Calcmethod := Verbruggen;
   if uppercase(f_abiot_min_Calcmethod_Option.Option) = uppercase('Petersen')
-    then
+  then
     f_abiot_min_Calcmethod := Petersen;
   if uppercase(f_abiot_min_Calcmethod_Option.Option) = uppercase('Zhou') then
     f_abiot_min_Calcmethod := Zhou;
@@ -730,10 +826,10 @@ begin
     f_abiot_min_Calcmethod := APSIM;
 
   if uppercase(f_abiot_nit_Calcmethod_Option.Option) = uppercase('Verbruggen')
-    then
+  then
     f_abiot_nit_Calcmethod := Verbruggen;
   if uppercase(f_abiot_nit_Calcmethod_Option.Option) = uppercase('Petersen')
-    then
+  then
     f_abiot_nit_Calcmethod := Petersen;
   if uppercase(f_abiot_nit_Calcmethod_Option.Option) = uppercase('Zhou') then
     f_abiot_nit_Calcmethod := Zhou;
@@ -745,10 +841,10 @@ begin
     f_abiot_nit_Calcmethod := APSIM;
 
   if uppercase(f_abiot_den_Calcmethod_Option.Option) = uppercase('Verbruggen')
-    then
+  then
     f_abiot_den_Calcmethod := Verbruggen;
   if uppercase(f_abiot_den_Calcmethod_Option.Option) = uppercase('Petersen')
-    then
+  then
     f_abiot_den_Calcmethod := Petersen;
   if uppercase(f_abiot_den_Calcmethod_Option.Option) = uppercase('Zhou') then
     f_abiot_den_Calcmethod := Zhou;
@@ -758,9 +854,10 @@ begin
     f_abiot_den_Calcmethod := Mueller;
   if uppercase(f_abiot_den_Calcmethod_Option.Option) = uppercase('APSIM') then
     f_abiot_den_Calcmethod := APSIM;
-    if uppercase(self.TransferPoolsToNextINI.Option) = uppercase('TRUE') then
-    fTransferPools := true else
-      fTransferPools := false;																		   
+  if uppercase(self.TransferPoolsToNextINI.Option) = uppercase('TRUE') then
+    fTransferPools := true
+  else
+    fTransferPools := false;
 end;
 
 procedure TSoilMinNH4.MixLayers(depth: real);
@@ -810,26 +907,21 @@ begin
   end;
 end;
 
+/// <summary>
+/// Purpose: Calculation of reduction factor for mineralisation dependent on
+/// soil moisture and soil temperature, assuming maximal mineralisation.
+/// Source: Verbruggen (1985) cited in Groot (1987).
+/// Parameters:
+///   WC    - volumetric water content [cm3/cm3] (input)
+///   Temp  - soil temperature [Â°C] (input)
+///   BD    - bulk density [g/cm3] (input)
+/// Returns:
+///   Min_red_f - reduction factor [-] (output)
+/// </summary>
 function TSoilMinNH4.calc_f_abiot_Verbruggen(WC, temp, BD: real): real;
-{ ********************************************************************** }
-{ Purpose: Calculation of reduction factor for mineralisation dependent on
-  soil moisture and soil temperature, assuming maximal mineralisation
-  at 35°C an 35 Vol% water content.
-
-  Quelle: Verbruggen (1985) zit. in Groot (1987)
-
-  Parameter :
-  Name             Inhalt                          Einheit      Typ
-
-  WC               volumetric water content        [cm3/cm3]    I
-  Temp             soil temperature                [øC]         I
-  BD               bulk density                    [g/cm3]      I
-
-  Min_red_f        reduction factor                [-]          O
-  { ********************************************************************** }
 
 const
-  RefTemp = 20.0; // Reference temperature [°C]
+  RefTemp = 20.0; // Reference temperature [Â°C]
   RefWC = 0.35; // Reference water content
   RefBD = 1.5; // Reference bulk density
 
@@ -884,10 +976,11 @@ begin
           f_T := exp(0.47 - 0.027 * 28 + 0.00193 * sqr(28));
         f_T := f_T / exp(0.47 - 0.027 * 28 + 0.00193 * sqr(28));
         f_Clay := 1 - 2 * min(0.25, Clay);
-        f_Clay_Hum := max(min(1,1 - 2.727 *(Clay+10*HumusContent.v-0.125)),0.25);
-        //result := f_W * f_T * f_Clay;
-        //result := f_W * f_T * f_Clay_Hum;
-        result := f_W * f_T * f_Clay;
+        f_Clay_Hum :=
+          max(min(1, 1 - 2.727 * (Clay + 10 * HumusContent.v - 0.125)), 0.25);
+        // result := f_W * f_T * f_Clay;
+        result := f_W * f_T * f_Clay_Hum;
+        // result := f_W * f_T * f_Clay;
       end;
     nitp:
       begin
@@ -962,8 +1055,8 @@ var
       if (X > P[i].X) and (X <= P[i + 1].X) then
         result := P[i].Y + (P[i + 1].Y - P[i].Y) * (X - P[i].X) /
           (P[i + 1].X - P[i].X);
-    if X >= P[ high(P)].X then
-      result := P[ high(P)].Y;
+    if X >= P[high(P)].X then
+      result := P[high(P)].Y;
   end;
 
   function QF(i, a, o, q, X: real): real;
@@ -1015,9 +1108,11 @@ begin
   case ProcessType of
     denp:
       begin
-        f_W := min(1, max(0, (WC-WFPS_crit_den.v*Sat)/(Sat-WFPS_crit_den.v*Sat))); // dn: 16.12. verändert nach Mielenz et al. (2016): standortspezifische Anpassung des kritischen Wassergehalts für Denitrifikationsbeginn
-                                                                                    //vorher (WC-FK)/(Sat-FK)  für systematischere Parametrisierung z.B. in Abhängigkeit von Ton oder Sandgehalt evtl. Schreibweise als FK*lim_Faktor besser
-        f_T := 0.1 * exp(0.046*T);
+        f_W := min(1, max(0, (WC - WFPS_crit_den.v * Sat) /
+          (Sat - WFPS_crit_den.v * Sat)));
+        // dn: 16.12. verÃ¤ndert nach Mielenz et al. (2016): standortspezifische Anpassung des kritischen Wassergehalts fÃ¼r Denitrifikationsbeginn
+        // vorher (WC-FK)/(Sat-FK)  fÃ¼r systematischere Parametrisierung z.B. in AbhÃ¤ngigkeit von Ton oder Sandgehalt evtl. Schreibweise als FK*lim_Faktor besser
+        f_T := 0.1 * exp(0.046 * T);
       end;
   end;
   result := f_W * f_T;
@@ -1030,7 +1125,7 @@ var
 begin
   result := 1;
   WC := Theta_Array[layer].v;
-  WFPS := Theta_Array[layer].v /(1-BulkDensity.v / 2.65);
+  WFPS := Theta_Array[layer].v / (1 - BulkDensity.v / 2.65);
   if assigned(fSoilHeatModel) then
     T := fSoilHeatModel.temp[layer].v
   else
@@ -1046,7 +1141,8 @@ begin
     PWP := fSoilWaterModel.WPar[layer].b_psi_f(power(10, 4.2));
     FK := fSoilWaterModel.WPar[layer].b_psi_f(power(10, 1.8));
     Sat := fSoilWaterModel.WPar[layer].b_sat;
-    WFPS := WC/Sat;  //dorothee neukam (dn) 15.12.16 vorher:(WC - PWP) / (Sat - PWP);
+    WFPS := WC / Sat;
+    // dorothee neukam (dn) 15.12.16 vorher:(WC - PWP) / (Sat - PWP);
   end;
   pH := Soil_pH.v;
 
@@ -1110,7 +1206,8 @@ var
   Pool: Pools; // local iteration variable
   Procs: processes; // local iteration variable
   layer: integer; // local iteration variable
-  CO2, active_C, WFPS, WC, PWP, Sat, DFC, // soil gas diffusivity at field capacity
+  CO2, active_C, WFPS, WC, PWP, Sat, DFC,
+  // soil gas diffusivity at field capacity
   epsilon, // air filled porosity (at field capacity)
   phi, // total porosity
   k1, // parameter for N2/N2O ratio according to del Grosso et al. 2000
@@ -1128,7 +1225,8 @@ begin
 
   Net_ming.v := 0.0; // set net mineralisation to zero
 
-  f_abiot_min[0].v := 0.5 * Calc_f_abiot(minp, 1); // ( theta_array[1].v, temp.v, BulkDensity.v);      // provisionally set factor for litter layer to 50% of value in first soil layer
+  f_abiot_min[0].v := 0.5 * Calc_f_abiot(minp, 1);
+  // ( theta_array[1].v, temp.v, BulkDensity.v);      // provisionally set factor for litter layer to 50% of value in first soil layer
   for Procs := low(processes) to high(processes) do
   begin
     MinProcesses[0, Procs].Calculate(f_abiot_min[0].v, f_Nmin[0].v, CN,
@@ -1136,35 +1234,38 @@ begin
     NetMinArr[Procs, 0].v := MinProcesses[0, Procs].Nr;
     CFlowArr[Procs, 0].v := MinProcesses[0, Procs].C_flow;
     CO2FlowArr[Procs, 0].v := MinProcesses[0, Procs].CO2_Flow;
-    Net_min[0].v := Net_min[0].v + MinProcesses[0, Procs].Nr; // Mineralisation from surface layer is added to first soil layer !
+    Net_min[0].v := Net_min[0].v + MinProcesses[0, Procs].Nr;
+    // Mineralisation from surface layer is added to first soil layer !
   end;
   Net_ming.v := Net_ming.v + Net_min[0].v;
 
   for layer := 1 to trunc(NOrgLayers.v) do
+    /// <summary>michalis-menten like factor to decrease mineralisation under nitrate shortage</summary>
   begin
-    { michalis-menten like factor to decrease mineralisation under nitrate shortage }
-    f_Nmin[layer].v := min(1,
-      max(0, (Nmin_Arr[layer].v - MinNmin.v) /
-          ((Nmin_Arr[layer].v - MinNmin.v) + km_Nmin.v)));
+    f_Nmin[layer].v :=
+      min(1, max(0, (Nmin_Arr[layer].v - MinNmin.v) /
+    /// <summary>calculation of factors for abiotic influences</summary>
+      ((Nmin_Arr[layer].v - MinNmin.v) + km_Nmin.v)));
 
-    { calculation of factors for abiotic influences }
     f_abiot_min[layer].v := Calc_f_abiot(minp, layer) * Layerfactor[layer].v;
-	//hier evtl. noch f_abiot ohne W-Einfluss // //?dn
+    // hier evtl. noch f_abiot ohne W-Einfluss // //?dn
     f_abiot_nit[layer].v := Calc_f_abiot(nitp, layer);
+    /// <summary>Calculation of turn-over between the pools</summary>
     f_abiot_den[layer].v := Calc_f_abiot(denp, layer);
 
-    { Calculation of turn-over between the pools }
     If layer > 1 then
-      Net_min[layer].v := 0.0; // In layer 1 the surface layer is included, therefore no reset to 0
+      Net_min[layer].v := 0.0;
+    // In layer 1 the surface layer is included, therefore no reset to 0
     for Procs := dpm_biom to biom_som do
     begin
-      if (Procs = biom_som) then // No effect of tillage on the decomposition of biom...
+      if (Procs = biom_som) then
+      // No effect of tillage on the decomposition of biom...
         MinProcesses[layer, Procs].Calculate(f_abiot_min[layer].v,
           f_Nmin[layer].v, CN, CPool_i[layer], NPool_i[layer], false)
       else // ...for all other processes include the tillage factor BBf
-        MinProcesses[layer, Procs].Calculate
-          (f_abiot_min[layer].v * BBf[layer].v, f_Nmin[layer].v, CN,
-          CPool_i[layer], NPool_i[layer], false);
+        MinProcesses[layer, Procs].Calculate(f_abiot_min[layer].v *
+          BBf[layer].v, f_Nmin[layer].v, CN, CPool_i[layer],
+          NPool_i[layer], false);
       NetMinArr[Procs, layer].v := MinProcesses[layer, Procs].Nr;
       CFlowArr[Procs, layer].v := MinProcesses[layer, Procs].C_flow;
       CO2FlowArr[Procs, layer].v := MinProcesses[layer, Procs].CO2_Flow;
@@ -1183,13 +1284,14 @@ begin
       begin
         // set all nitrate consuming processes to zero!
         // If MinProcesses[layer,Procs].nr<0.0 then
-        if (Procs = biom_som) then // No effect of tillage on the decomposition of biom...
+        if (Procs = biom_som) then
+        // No effect of tillage on the decomposition of biom...
           MinProcesses[layer, Procs].Calculate(f_abiot_min[layer].v,
             f_Nmin[layer].v, CN, CPool_i[layer], NPool_i[layer], true)
         else // ...for all other processes include the tillage factor BBf
-          MinProcesses[layer, Procs].Calculate
-            (f_abiot_min[layer].v * BBf[layer].v, f_Nmin[layer].v, CN,
-            CPool_i[layer], NPool_i[layer], true);
+          MinProcesses[layer, Procs].Calculate(f_abiot_min[layer].v *
+            BBf[layer].v, f_Nmin[layer].v, CN, CPool_i[layer],
+            NPool_i[layer], true);
         CFlowArr[Procs, layer].v := MinProcesses[layer, Procs].C_flow;
         CO2FlowArr[Procs, layer].v := MinProcesses[layer, Procs].CO2_Flow;
         NetMinArr[Procs, layer].v := MinProcesses[layer, Procs].Nr;
@@ -1212,25 +1314,26 @@ begin
     CO2 := 0;
     for Procs := low(processes) to high(processes) do
       CO2 := CO2FlowArr[Procs, layer].v + CO2;
-    NitrificationRate[layer].v := min(1, k_nit.v * f_abiot_nit[layer].v)
-      * NH4_Arr[layer].v;
+    NitrificationRate[layer].v := min(1, k_nit.v * f_abiot_nit[layer].v) *
+      NH4_Arr[layer].v;
     if Net_min[layer].v < 0 then // substract negative net mineralisation
       NitrificationRate[layer].v := min(NitrificationRate[layer].v,
         NH4_Arr[layer].v + Net_min[layer].v);
 
     WFPS := Theta_Array[layer].v / (1 - BulkDensity.v / 2.65);
-    k1 := 25;  // oder 42? (kg)
+    k1 := 25; // oder 42? (kg)
     if assigned(fSoilWaterModel) then
     begin
-      WC   := fSoilWaterModel.theta_arr[layer].v;
-      PWP  := fSoilWaterModel.WPar[layer].b_psi_f(power(10, 4.2));
-      Sat  := fSoilWaterModel.WPar[layer].b_sat;
-      WFPS := WC/Sat;        //dn: 15.12.16 vorher: (WC - PWP) / (Sat - PWP);
-      phi  := Sat; // total porosity
+      WC := fSoilWaterModel.theta_arr[layer].v;
+      PWP := fSoilWaterModel.WPar[layer].b_psi_f(power(10, 4.2));
+      Sat := fSoilWaterModel.WPar[layer].b_sat;
+      WFPS := WC / Sat; // dn: 15.12.16 vorher: (WC - PWP) / (Sat - PWP);
+      phi := Sat; // total porosity
       epsilon := Sat - fSoilWaterModel.WPar[layer].b_psi_f(power(10, 1.8));
       // air filled porosity at FK
-      DFC := power(epsilon, (10 / 3)) / sqr(phi); // Millington and Quirk (1961) as cited in Kristensen et al. (2010)
-      k1  := max(1.7, 38.4 - 350 * DFC); // Del Grosso et al. (2000)
+      DFC := power(epsilon, (10 / 3)) / sqr(phi);
+      // Millington and Quirk (1961) as cited in Kristensen et al. (2010)
+      k1 := max(1.7, 38.4 - 350 * DFC); // Del Grosso et al. (2000)
     end;
     WFPS_Arr[layer].v := WFPS;
 
@@ -1238,20 +1341,22 @@ begin
       (1 / (1 + calcR_NOx_N2O(WFPS)));
     NH4_NOx_rate[layer].v := fr_Nloss_nit.v * NitrificationRate[layer].v *
       (calcR_NOx_N2O(WFPS) / (1 + calcR_NOx_N2O(WFPS)));
-    NitrificationRate[layer].v := (1 - fr_Nloss_nit.v) * NitrificationRate[layer].v;
+    NitrificationRate[layer].v := (1 - fr_Nloss_nit.v) *
+      NitrificationRate[layer].v;
 
     NH4_Arr[layer].c := Net_min[layer].v - NitrificationRate[layer].v;
     // active_C:= 0.0031*(CPool_i[layer,SOM].v/BulkDensity.v)+24.5;
     // DenitrificationRate[layer].v:=k_den.v*NO3_Arr[layer].v*f_abiot_den[layer].v*active_C;
 
     DenitrificationRate[layer].v := k_den.v *
-      (NO3_Arr[layer].v / (km_den.v + NO3_Arr[layer].v)) * f_abiot_den[layer].v * CO2;
+      (NO3_Arr[layer].v / (km_den.v + NO3_Arr[layer].v)) * f_abiot_den
+      [layer].v * CO2;
     if CO2 < 0.0001 then
       R_N2_N2O[layer].v := 0.16 * k1 { .v } * max(0.1, (1.5 * WFPS - 0.32))
     else
       R_N2_N2O[layer].v := max((0.16 * k1 { .v } ), (k1
-          { .v } * exp(-0.8 * NO3_Arr[layer].v / (CO2)))) * max(0.1,
-        (1.5 * WFPS - 0.32));
+        { .v } * exp(-0.8 * NO3_Arr[layer].v / (CO2)))) *
+        max(0.1, (1.5 * WFPS - 0.32));
     NO3_N2O_rate[layer].v := DenitrificationRate[layer].v /
       (1 + R_N2_N2O[layer].v);
     NO3_N2_rate[layer].v := DenitrificationRate[layer].v * R_N2_N2O[layer].v /
@@ -1259,7 +1364,8 @@ begin
 
     cum_N2O[layer].c := NO3_N2O_rate[layer].v + NH4_N2O_rate[layer].v;
     // set external variable of net NO3 production for NO3 transport submodel
-    NetMinRate[layer].v := NitrificationRate[layer].v - DenitrificationRate[layer].v;
+    NetMinRate[layer].v := NitrificationRate[layer].v -
+      DenitrificationRate[layer].v;
   end;
   WFPS0_30.v := (WFPS_Arr[1].v + WFPS_Arr[2].v + WFPS_Arr[3].v) * 100 / 3;
 
@@ -1294,7 +1400,8 @@ begin
     for Procs := low(processes) to high(processes) do
     begin
       CO2_flux.v := CO2_flux.v + CO2FlowArr[Procs, layer].v;
-      CO2_flux_Arr[layer].v := CO2_flux_Arr[layer].v + CO2FlowArr[Procs, layer].v;
+      CO2_flux_Arr[layer].v := CO2_flux_Arr[layer].v + CO2FlowArr
+        [Procs, layer].v;
     end;
   end;
 end;
@@ -1307,17 +1414,17 @@ var
   i: integer;
   NsummeAlt, CsummeAlt: real;
   NextINI, NextStateINI: TMyIniFile;
-  fn : string;									
+  fn: string;
 
 begin
-   For Pool := low(Pools) to high(Pools) do
+  For Pool := low(Pools) to high(Pools) do
   begin
     CPool[Pool].c := 0.0;
     CPool[Pool].v := 0.0;
     for layer := 0 to trunc(NOrgLayers.v) do
     begin // sum up all carbon change rates over soil layers
-      CPool[Pool].c  := CPool[Pool].c + CPool_i[layer, Pool].c;
-      CPool[Pool].v  := CPool[Pool].v + CPool_i[layer, Pool].v;
+      CPool[Pool].c := CPool[Pool].c + CPool_i[layer, Pool].c;
+      CPool[Pool].v := CPool[Pool].v + CPool_i[layer, Pool].v;
     end;
   end;
   inherited Integrate;
@@ -1328,7 +1435,6 @@ begin
 
   NsummeAlt := NSumme.v;
   CsummeAlt := CSumme.v;
-
 
   NSumme.v := 0.0;
   CSumme.v := 0.0;
@@ -1344,7 +1450,7 @@ begin
     NBilanz.v := (NsummeAlt - NSumme.v) / GlobTime.c - Net_ming.v
   else
     NBilanz.v := 0.0;
-	NSumme.v := 0.0;
+  NSumme.v := 0.0;
 
   CSumme.v := 0.0;
   for Pool := low(Pools) to high(Pools) do
@@ -1352,9 +1458,9 @@ begin
   If CsummeAlt > 0.0 then
     CBilanz.v := (CsummeAlt - CSumme.v) / GlobTime.c - self.CO2_flux.v
   else
-    CBilanz.v := 0.0;			  
-  //N_ER.v := NPool[DPM].v + NPool[RPM].v; // warum auskommentiert? SR
-  //C_ER.v := CPool[DPM].v + CPool[RPM].v;  // warum auskommentiert? SR
+    CBilanz.v := 0.0;
+  // N_ER.v := NPool[DPM].v + NPool[RPM].v; // warum auskommentiert? SR
+  // C_ER.v := CPool[DPM].v + CPool[RPM].v;  // warum auskommentiert? SR
   Norg.v := 0.0;
   Corg.v := 0.0;
   for Pool := low(Pools) to high(Pools) do
@@ -1379,35 +1485,37 @@ begin
   Nmin60_90.v := Nmin_Arr[7].v + Nmin_Arr[8].v + Nmin_Arr[9].v;
   Nmin0_60.v := Nmin0_30.v + Nmin30_60.v;
   Nmin0_90.v := Nmin0_30.v + Nmin30_60.v + Nmin60_90.v;
-  
+
   if Opt_TransferPoolsToNextINI and (GlobTime.v = GlobMod.Endtime) then
   begin
     if GlobMod.IniFileNames.IndexOf(GlobMod.ActIniFile.FileName)
       = GlobMod.IniFileNames.Count - 1 then
       exit;
-//    NextINI := TMyIniFile.Create;
-//    NextINI.c
-    fn := GlobMod.IniFileNames[GlobMod.IniFileNames.IndexOf
-        (GlobMod.ActIniFile.FileName) + 1];
-    NextIni := TMyIniFile.Create(fn, TEncoding.UTF8);
-  //  NextINI.Init(fn);
+    // NextINI := TMyIniFile.Create;
+    // NextINI.c
+    fn := GlobMod.IniFileNames
+      [GlobMod.IniFileNames.IndexOf(GlobMod.ActIniFile.FileName) + 1];
+    NextINI := TMyIniFile.create(fn, TEncoding.UTF8);
+    // NextINI.Init(fn);
 
     fn := NextINI.ReadString('FileNames', 'StateIniFN', '');
-    NextStateINI := TMyIniFile.create(fn,TEncoding.UTF8);
-  //  NextStateINI.init();
-   for pool := Low(Pools) to High(Pools) do
-      NextStateINI.WriteString(self.Name, CPool[pool].Name, FloatToStrF(CPool[pool].v, ffFixed, 9, 6));
-//    NextStateINI.WriteString(Name, 'C_BIOM', FloatToStrF(CPool[BIOM].v, ffFixed, 9, 6));
-//    NextStateINI.WriteString(Name, 'C_DPM', FloatToStrF(CPool[DPM].v, ffFixed, 9, 6));
-//    NextStateINI.WriteString(Name, 'C_RPM', FloatToStrF(CPool[RPM].v, ffFixed, 9, 6));
+    NextStateINI := TMyIniFile.create(fn, TEncoding.UTF8);
+    // NextStateINI.init();
+    for Pool := Low(Pools) to High(Pools) do
+      NextStateINI.WriteString(self.Name, CPool[Pool].Name,
+        FloatToStrF(CPool[Pool].v, ffFixed, 9, 6));
+    // NextStateINI.WriteString(Name, 'C_BIOM', FloatToStrF(CPool[BIOM].v, ffFixed, 9, 6));
+    // NextStateINI.WriteString(Name, 'C_DPM', FloatToStrF(CPool[DPM].v, ffFixed, 9, 6));
+    // NextStateINI.WriteString(Name, 'C_RPM', FloatToStrF(CPool[RPM].v, ffFixed, 9, 6));
 
-
-    NextStateINI.WriteString(self.Name, CPool_i[0,DPM].Name, FloatToStrF(CPool_i[0,DPM].v, ffFixed, 9, 6));
-    NextStateINI.WriteString(self.Name, CPool_i[0,RPM].Name, FloatToStrF(CPool_i[0,RPM].v, ffFixed, 9, 6));
+    NextStateINI.WriteString(self.Name, CPool_i[0, DPM].Name,
+      FloatToStrF(CPool_i[0, DPM].v, ffFixed, 9, 6));
+    NextStateINI.WriteString(self.Name, CPool_i[0, RPM].Name,
+      FloatToStrF(CPool_i[0, RPM].v, ffFixed, 9, 6));
     for i := 1 to trunc(NOrgLayers.v) do
-        for pool := Low(Pools) to High(Pools) do
-            NextStateINI.WriteString(self.Name, CPool_i[i,pool].Name, FloatToStrF(CPool_i[i,pool].v, ffFixed, 9, 6));
-
+      for Pool := Low(Pools) to High(Pools) do
+        NextStateINI.WriteString(self.Name, CPool_i[i, Pool].Name,
+          FloatToStrF(CPool_i[i, Pool].v, ffFixed, 9, 6));
 
     for i := 1 to trunc(NOrgLayers.v) do
     begin
@@ -1422,12 +1530,9 @@ end;
 
 procedure Register;
 begin
-
- {$IFNDEF NONVISUAL}
+{$IFNDEF NONVISUAL}
   RegisterComponents('Simulation', [TSoilMinNH4]);
 {$ENDIF}
-
-
 end;
 
 end.

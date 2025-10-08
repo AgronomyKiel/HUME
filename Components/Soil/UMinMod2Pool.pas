@@ -3,7 +3,10 @@ unit UMinMod2Pool;
 interface
 
 uses
+{$IFNDEF NONVISUAL}
   Windows, Messages, SysUtils, Classes,// Graphics, Controls, Forms, Dialogs,
+{$ENDIF}
+
   UMod, UState, UAbstractPlant;
 
 type

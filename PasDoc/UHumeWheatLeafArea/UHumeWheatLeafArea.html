@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>UHumeWheatLeafArea</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="PasDoc 0.16.0-snapshot">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">
+
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<div class="container"><div class="navigation">
+<ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li><li><form class="search-form" action="tipue_results.html"><div class="search-input"><input type="text" name="q" id="tipue_search_input" pattern=".{1,}" title="At least 1 characters" required><div class="search-button"><input type="button" id="tipue_search_button" onclick="this.form.submit();"></div></div></form>
+<div style="clear: both"></div>
+</li></ul></div><div class="content">
+<h1 class="unit">Unit UHumeWheatLeafArea</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section">Variables</div></div>
+<span id="PasDoc-Description"></span><h2 class="description">Description</h2>
+<p>
+ Module for leaf area development and senescence </p>
+<p>
+
+
+<p>## Purpose
+
+<p></p>
+
+<ul class="paragraph_spacing">
+  <li><p><strong>Simulates wheat leaf area growth and senescence</strong> (aging, drought, nitrogen, and light effects).</p></li>
+  <li><p>Calculates <strong>Leaf Area Index (LAI)</strong>, <strong>green leaf area</strong>, <strong>senescence rates</strong>, and <strong>distribution of leaf area/mass</strong> across four canopy layers.</p></li>
+  <li><p>Integrates with other modules (e.g., dry matter, environmental variables).</p></li>
+</ul>
+
+<p> ## Key Components
+
+<p>### 1. <strong>Class Definition</strong> </p>
+
+<ul class="paragraph_spacing">
+  <li><p><code><a class="normal" href="UHumeWheatLeafArea.THumeWheatLeafArea.html">THumeWheatLeafArea</a> = class(TSubmodel)</code></p></li>
+  <li><p>Contains fields for state variables, parameters, external variables, and options.</p></li>
+</ul>
+
+<p> ### 2. <strong>Main Variables</strong> </p>
+
+<ul class="paragraph_spacing">
+  <li><p><strong>State Variables</strong>: LAI, PLA (plant leaf area), PLSC (single leaf areas), SENLA (senescent area), CUMPH (cumulative phyllochrons), etc.</p></li>
+  <li><p><strong>Parameters</strong>: maxPLALR (max senescence rate), aSLA/bSLA (SLA parameters), Icrit (critical radiation), etc.</p></li>
+  <li><p><strong>External Variables</strong>: GROLF (leaf growth rate), ISTAGE (growth stage), plants (plant density), TMPM/TMPMN/TMPMX (temperatures), etc.</p></li>
+  <li><p><strong>Options</strong>: For drought, senescence type, and whether to use age/light/drought-dependent senescence.</p></li>
+</ul>
+
+<p> ### 3. <strong>Core Methods</strong> </p>
+
+<ul class="paragraph_spacing">
+  <li><p><code>createAll</code>: Initializes all variables, states, parameters, and options.</p></li>
+  <li><p><code>Init</code>: Sets initial values and options.</p></li>
+  <li><p><code>CalcRates</code>: Calculates rates of change for all variables.</p></li>
+  <li><p><code>Integrate</code>: Updates state variables for the next time step.</p></li>
+  <li><p><strong>Senescence Calculation</strong>: Multiple methods for different senescence drivers (age, N, light, drought).</p></li>
+  <li><p><strong>Leaf Layer Distribution</strong>: Allocates leaf area/mass to four canopy layers.</p></li>
+  <li><p><strong>Radiation and Water Calculations</strong>: Computes intercepted PAR, transpiration, and interception.</p></li>
+</ul>
+
+<p> ### 4. <strong>Senescence Logic</strong> </p>
+
+<ul class="paragraph_spacing">
+  <li><p><strong>Age-dependent</strong>: Based on leaf age and phyllochron.</p></li>
+  <li><p><strong>N-dependent</strong>: Based on specific leaf nitrogen (SLN).</p></li>
+  <li><p><strong>Light-dependent</strong>: Based on 10-day average radiation.</p></li>
+  <li><p><strong>Drought-dependent</strong>: Based on transpiration ratios and sustainable LAI.</p></li>
+</ul>
+
+<p> ### 5. <strong>Leaf Area Growth</strong> </p>
+
+<ul class="paragraph_spacing">
+  <li><p><strong>Single Leaf Growth</strong>: Only the youngest leaf grows at a time.</p></li>
+  <li><p><strong>SLA Calculation</strong>: Specific leaf area changes with LAI and growth stage.</p></li>
+</ul>
+
+<p> ### 6. <strong>Layered Canopy</strong> </p>
+
+<ul class="paragraph_spacing">
+  <li><p><strong>Four layers</strong>: Top to bottom, with distribution functions for mass and area.</p></li>
+  <li><p><strong>PAR Calculation</strong>: Incident PAR on each layer is computed.</p></li>
+</ul>
+
+<p> ## Usage
+
+<p></p>
+
+<ul class="paragraph_spacing">
+  <li><p><strong>Part of a larger crop simulation</strong>: Interacts with other modules (e.g., dry matter, environmental conditions).</p></li>
+  <li><p><strong>Highly parameterized</strong>: Many parameters and options for flexibility.</p></li>
+  <li><p><strong>Object-oriented</strong>: Designed for reuse and extension.</p></li>
+</ul>
+
+<p> ## Summary
+
+<p>This file is a <strong>comprehensive, object-oriented module</strong> for simulating wheat leaf area dynamics, including growth, senescence, and environmental responses, with detailed physiological and environmental modeling. It is suitable for research or advanced crop modeling applications.</p>
+<span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
+<span id="PasDoc-Classes"></span><h3 class="cio">Classes, Interfaces, Objects and Records</h3>
+<table class="classestable wide_list">
+<tr class="listheader">
+<th class="itemname">Name</th>
+<th class="itemdesc">Description</th>
+</tr>
+<tr class="list">
+<td class="itemname">Class&nbsp;<a class="bold" href="UHumeWheatLeafArea.THumeWheatLeafArea.html"><code>THumeWheatLeafArea</code></a></td>
+<td class="itemdesc"> Module for leaf area development and senescence </td>
+</tr>
+</table>
+<span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code>procedure <strong><a href="UHumeWheatLeafArea.html#Register">Register</a></strong>;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a href="UHumeWheatLeafArea.html#TSenescence">TSenescence</a></strong> = (...);</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a href="UHumeWheatLeafArea.html#TnLeafLayer">TnLeafLayer</a></strong> = 1..4;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a href="UHumeWheatLeafArea.html#MaxLeafNumber">MaxLeafNumber</a></strong> = 25;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Functions and Procedures</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Register"></span><code>procedure <strong>Register</strong>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<h3 class="detail">Types</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TSenescence"></span><code><strong>TSenescence</strong> = (...);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+ Type for senescence type </p>
+<h6 class="description_section">Values</h6>
+<ul>
+<li>
+<span id="cwt3">cwt3</span></li>
+<li>
+<span id="concentration">concentration</span></li>
+</ul>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="TnLeafLayer"></span><code><strong>TnLeafLayer</strong> = 1..4;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+ Type 4 leaf layers </p>
+</td></tr>
+</table>
+<h3 class="detail">Constants</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MaxLeafNumber"></span><code><strong>MaxLeafNumber</strong> = 25;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+vcl.Dialogs,</p>
+</td></tr>
+</table>
+<hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0-snapshot</a>. </em>
+</span>
+</div></div></body></html>

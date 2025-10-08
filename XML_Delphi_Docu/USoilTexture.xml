@@ -1,0 +1,759 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="USoilTexture" platform="Win32">
+  <devnotes>
+     <summary>
+     Contains implementation for derivation of Van Genuchten parameters from texture
+     classes according to Ad-hoc-AG Boden: Verknüpfungsregel 1.18, Tabelle 1.
+     Ulf Böttcher, 29.4.09
+     1st modification: new values for parameters b_sat, b_rest, alpha and n_par according to DWA-Regelwerk: Arbeitsblatt DWA-A 920-1-Bodenfunktionsansprache
+     Teil 1: Ableitung von Kennwerten des Bodenwasserhaushalts, Tabelle 16.
+     Thomas Räbiger, 16.03.2017
+     </summary>
+  </devnotes>
+  <const name="Ss" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Ss
+    </value>
+  </const>
+  <const name="mS" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      mS
+    </value>
+  </const>
+  <const name="mSgs" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      mSgs
+    </value>
+  </const>
+  <const name="mSfs" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      mSfs
+    </value>
+  </const>
+  <const name="fS" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      fS
+    </value>
+  </const>
+  <const name="fSms" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      fSms
+    </value>
+  </const>
+  <const name="Sl2" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Sl2
+    </value>
+  </const>
+  <const name="Sl3" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Sl3
+    </value>
+  </const>
+  <const name="Sl4" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Sl4
+    </value>
+  </const>
+  <const name="Slu" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Slu
+    </value>
+  </const>
+  <const name="St2" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      St2
+    </value>
+  </const>
+  <const name="St3" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      St3
+    </value>
+  </const>
+  <const name="Su2" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Su2
+    </value>
+  </const>
+  <const name="Su3" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Su3
+    </value>
+  </const>
+  <const name="Su4" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Su4
+    </value>
+  </const>
+  <const name="Ls2" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Ls2
+    </value>
+  </const>
+  <const name="Ls3" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Ls3
+    </value>
+  </const>
+  <const name="Ls4" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Ls4
+    </value>
+  </const>
+  <const name="Lt2" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Lt2
+    </value>
+  </const>
+  <const name="Lt3" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Lt3
+    </value>
+  </const>
+  <const name="Lts" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Lts
+    </value>
+  </const>
+  <const name="Lu" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Lu
+    </value>
+  </const>
+  <const name="Uu" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Uu
+    </value>
+  </const>
+  <const name="Uls" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Uls
+    </value>
+  </const>
+  <const name="Us" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Us
+    </value>
+  </const>
+  <const name="Ut2" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Ut2
+    </value>
+  </const>
+  <const name="Ut3" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Ut3
+    </value>
+  </const>
+  <const name="Ut4" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Ut4
+    </value>
+  </const>
+  <const name="Tt" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Tt
+    </value>
+  </const>
+  <const name="Tl" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Tl
+    </value>
+  </const>
+  <const name="Ts2" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Ts2
+    </value>
+  </const>
+  <const name="Ts3" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Ts3
+    </value>
+  </const>
+  <const name="Ts4" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Ts4
+    </value>
+  </const>
+  <const name="Tu2" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Tu2
+    </value>
+  </const>
+  <const name="Tu3" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Tu3
+    </value>
+  </const>
+  <const name="Tu4" type="TTextureClass" file="USoilTexture.pas" line="21">
+    <value>
+      Tu4
+    </value>
+  </const>
+  <const name="LD1" type="TLDClass" file="USoilTexture.pas" line="25">
+    <value>
+      LD1
+    </value>
+  </const>
+  <const name="LD2" type="TLDClass" file="USoilTexture.pas" line="25">
+    <value>
+      LD2
+    </value>
+  </const>
+  <const name="LD3" type="TLDClass" file="USoilTexture.pas" line="25">
+    <value>
+      LD3
+    </value>
+  </const>
+  <const name="LD4" type="TLDClass" file="USoilTexture.pas" line="25">
+    <value>
+      LD4
+    </value>
+  </const>
+  <const name="LD5" type="TLDClass" file="USoilTexture.pas" line="25">
+    <value>
+      LD5
+    </value>
+  </const>
+  <const name="LD13" type="TLD" file="USoilTexture.pas" line="30">
+    <value>
+      LD13
+    </value>
+  </const>
+  <const name="LD142" type="TLD" file="USoilTexture.pas" line="30">
+    <value>
+      LD142
+    </value>
+  </const>
+  <const name="LD15" type="TLD" file="USoilTexture.pas" line="30">
+    <value>
+      LD15
+    </value>
+  </const>
+  <const name="LD164" type="TLD" file="USoilTexture.pas" line="30">
+    <value>
+      LD164
+    </value>
+  </const>
+  <const name="LD17" type="TLD" file="USoilTexture.pas" line="30">
+    <value>
+      LD17
+    </value>
+  </const>
+  <const name="OldVersion" type="TLD" file="USoilTexture.pas" line="30">
+    <value>
+      OldVersion
+    </value>
+  </const>
+  <enum name="TTextureClass" file="USoilTexture.pas" line="21">
+    <devnotes>
+       <summary>
+       Texture classes according to Bodenkundliche Kartieranleitung 5. Auflage
+       </summary>
+    </devnotes>
+    <element value="0" name="Ss" file="USoilTexture.pas" line="21" />
+    <element value="1" name="mS" file="USoilTexture.pas" line="21" />
+    <element value="2" name="mSgs" file="USoilTexture.pas" line="21" />
+    <element value="3" name="mSfs" file="USoilTexture.pas" line="21" />
+    <element value="4" name="fS" file="USoilTexture.pas" line="21" />
+    <element value="5" name="fSms" file="USoilTexture.pas" line="21" />
+    <element value="6" name="Sl2" file="USoilTexture.pas" line="21" />
+    <element value="7" name="Sl3" file="USoilTexture.pas" line="21" />
+    <element value="8" name="Sl4" file="USoilTexture.pas" line="21" />
+    <element value="9" name="Slu" file="USoilTexture.pas" line="21" />
+    <element value="10" name="St2" file="USoilTexture.pas" line="21" />
+    <element value="11" name="St3" file="USoilTexture.pas" line="21" />
+    <element value="12" name="Su2" file="USoilTexture.pas" line="21" />
+    <element value="13" name="Su3" file="USoilTexture.pas" line="21" />
+    <element value="14" name="Su4" file="USoilTexture.pas" line="21" />
+    <element value="15" name="Ls2" file="USoilTexture.pas" line="21" />
+    <element value="16" name="Ls3" file="USoilTexture.pas" line="21" />
+    <element value="17" name="Ls4" file="USoilTexture.pas" line="21" />
+    <element value="18" name="Lt2" file="USoilTexture.pas" line="21" />
+    <element value="19" name="Lt3" file="USoilTexture.pas" line="21" />
+    <element value="20" name="Lts" file="USoilTexture.pas" line="21" />
+    <element value="21" name="Lu" file="USoilTexture.pas" line="21" />
+    <element value="22" name="Uu" file="USoilTexture.pas" line="21" />
+    <element value="23" name="Uls" file="USoilTexture.pas" line="21" />
+    <element value="24" name="Us" file="USoilTexture.pas" line="21" />
+    <element value="25" name="Ut2" file="USoilTexture.pas" line="21" />
+    <element value="26" name="Ut3" file="USoilTexture.pas" line="21" />
+    <element value="27" name="Ut4" file="USoilTexture.pas" line="21" />
+    <element value="28" name="Tt" file="USoilTexture.pas" line="21" />
+    <element value="29" name="Tl" file="USoilTexture.pas" line="21" />
+    <element value="30" name="Ts2" file="USoilTexture.pas" line="21" />
+    <element value="31" name="Ts3" file="USoilTexture.pas" line="21" />
+    <element value="32" name="Ts4" file="USoilTexture.pas" line="21" />
+    <element value="33" name="Tu2" file="USoilTexture.pas" line="21" />
+    <element value="34" name="Tu3" file="USoilTexture.pas" line="21" />
+    <element value="35" name="Tu4" file="USoilTexture.pas" line="21" />
+  </enum>
+  <enum name="TLDClass" file="USoilTexture.pas" line="25">
+    <devnotes>
+       <summary>
+       bulk density classes according to KA5
+       </summary>
+    </devnotes>
+    <element value="0" name="LD1" file="USoilTexture.pas" line="25" />
+    <element value="1" name="LD2" file="USoilTexture.pas" line="25" />
+    <element value="2" name="LD3" file="USoilTexture.pas" line="25" />
+    <element value="3" name="LD4" file="USoilTexture.pas" line="25" />
+    <element value="4" name="LD5" file="USoilTexture.pas" line="25" />
+  </enum>
+  <enum name="TLD" file="USoilTexture.pas" line="30">
+    <devnotes>
+       <summary>
+       numerical bulk density as constants
+       </summary>
+    </devnotes>
+    <element value="0" name="LD13" file="USoilTexture.pas" line="30" />
+    <element value="1" name="LD142" file="USoilTexture.pas" line="30" />
+    <element value="2" name="LD15" file="USoilTexture.pas" line="30" />
+    <element value="3" name="LD164" file="USoilTexture.pas" line="30" />
+    <element value="4" name="LD17" file="USoilTexture.pas" line="30" />
+    <element value="5" name="OldVersion" file="USoilTexture.pas" line="30" />
+  </enum>
+  <class name="TTextClassOption" file="USoilTexture.pas" line="35">
+    <devnotes>
+       <summary>
+       Option for texture classes
+       </summary>
+    </devnotes>
+    <ancestor name="TOption" namespace="UState">
+      <methodref name="getOption" visibility="private" />
+      <methodref name="setOption" visibility="private" />
+      <methodref name="create" visibility="public" procflags="constructor" />
+      <methodref name="Destroy" visibility="public" procflags="destructor override" />
+      <propertyref name="Option" visibility="published">
+      </propertyref>
+      <ancestor name="THumeEntity" namespace="UState">
+        <propertyref name="Name" visibility="published">
+        </propertyref>
+        <propertyref name="SubModName" visibility="published">
+        </propertyref>
+        <propertyref name="Comment" visibility="published">
+        </propertyref>
+        <propertyref name="DocuWebLink" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_writetoFile" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_SelForSensOut" visibility="published">
+        </propertyref>
+        <propertyref name="Units" visibility="published">
+        </propertyref>
+        <ancestor name="TPersistent" namespace="System.Classes">
+          <methodref name="AssignError" visibility="private">
+          </methodref>
+          <methodref name="AssignTo" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="Assign" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+          </methodref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <procedure name="AddTextureClasses" visibility="published" file="USoilTexture.pas" line="36">
+      </procedure>
+    </members>
+  </class>
+  <class name="TLDClassOption" file="USoilTexture.pas" line="45">
+    <devnotes>
+       <summary>
+       Option for bulk density classes
+       </summary>
+    </devnotes>
+    <ancestor name="TOption" namespace="UState">
+      <methodref name="getOption" visibility="private" />
+      <methodref name="setOption" visibility="private" />
+      <methodref name="create" visibility="public" procflags="constructor" />
+      <methodref name="Destroy" visibility="public" procflags="destructor override" />
+      <propertyref name="Option" visibility="published">
+      </propertyref>
+      <ancestor name="THumeEntity" namespace="UState">
+        <propertyref name="Name" visibility="published">
+        </propertyref>
+        <propertyref name="SubModName" visibility="published">
+        </propertyref>
+        <propertyref name="Comment" visibility="published">
+        </propertyref>
+        <propertyref name="DocuWebLink" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_writetoFile" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_SelForSensOut" visibility="published">
+        </propertyref>
+        <propertyref name="Units" visibility="published">
+        </propertyref>
+        <ancestor name="TPersistent" namespace="System.Classes">
+          <methodref name="AssignError" visibility="private">
+          </methodref>
+          <methodref name="AssignTo" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="Assign" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+          </methodref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <procedure name="AddLDClasses" visibility="published" file="USoilTexture.pas" line="46">
+      </procedure>
+    </members>
+  </class>
+  <class name="TLDOption" file="USoilTexture.pas" line="52">
+    <devnotes>
+       <summary>
+       option for numerical bulk density
+       </summary>
+    </devnotes>
+    <ancestor name="TOption" namespace="UState">
+      <methodref name="getOption" visibility="private" />
+      <methodref name="setOption" visibility="private" />
+      <methodref name="create" visibility="public" procflags="constructor" />
+      <methodref name="Destroy" visibility="public" procflags="destructor override" />
+      <propertyref name="Option" visibility="published">
+      </propertyref>
+      <ancestor name="THumeEntity" namespace="UState">
+        <propertyref name="Name" visibility="published">
+        </propertyref>
+        <propertyref name="SubModName" visibility="published">
+        </propertyref>
+        <propertyref name="Comment" visibility="published">
+        </propertyref>
+        <propertyref name="DocuWebLink" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_writetoFile" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_SelForSensOut" visibility="published">
+        </propertyref>
+        <propertyref name="Units" visibility="published">
+        </propertyref>
+        <ancestor name="TPersistent" namespace="System.Classes">
+          <methodref name="AssignError" visibility="private">
+          </methodref>
+          <methodref name="AssignTo" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="Assign" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+          </methodref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <procedure name="AddLD" visibility="published" file="USoilTexture.pas" line="53">
+      </procedure>
+    </members>
+  </class>
+  <procedure name="AddClasses" visibility="public" file="USoilTexture.pas" line="72">
+    <parameters>
+      <parameter name="l" type="TStrings" />
+    </parameters>
+  </procedure>
+  <procedure name="setTextClassOption" visibility="public" file="USoilTexture.pas" line="117">
+    <parameters>
+      <parameter name="ATextureClass" type="TTextureClass" paramflags="var" />
+      <parameter name="AOptionVal" type="string" />
+    </parameters>
+  </procedure>
+  <procedure name="setLDClassOption" visibility="public" file="USoilTexture.pas" line="192">
+    <parameters>
+      <parameter name="ALDClass" type="TLDClass" paramflags="var" />
+      <parameter name="AOptionVal" type="string" />
+    </parameters>
+  </procedure>
+  <procedure name="setLDOption" visibility="public" file="USoilTexture.pas" line="202">
+    <parameters>
+      <parameter name="ALD" type="TLD" paramflags="var" />
+      <parameter name="AOptionVal" type="string" />
+    </parameters>
+  </procedure>
+  <procedure name="VanGenuchtenFromTextureClass_KA" visibility="public" file="USoilTexture.pas" line="215">
+    <parameters>
+      <parameter name="GPar" type="TGenucht" />
+      <parameter name="TC" type="TTextureClass" />
+    </parameters>
+  </procedure>
+  <procedure name="VanGenuchtenFromTextureClass_RR" visibility="public" file="USoilTexture.pas" line="451">
+    <parameters>
+      <parameter name="GPar" type="TGenucht" />
+      <parameter name="TC" type="TTextureClass" />
+    </parameters>
+  </procedure>
+  <function name="KSFromTextureClass_RR" visibility="public" file="USoilTexture.pas" line="716">
+    <devnotes>
+       <summary>
+       function to set the satauration hydraulic conductivity from texture class and bulk density
+       </summary>
+       <param name="TC">Texture class</param>
+       <param name="ALD">Bulk density class</param>
+       <returns>Hydraulic conductivity in cm/d</returns>
+    </devnotes>
+    <parameters>
+      <parameter name="TC" type="TTextureClass" />
+      <parameter name="ALD" type="TLD" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="KSFromTextureClass_KA" visibility="public" file="USoilTexture.pas" line="1211">
+    <parameters>
+      <parameter name="TC" type="TTextureClass" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="ClayFromTexture" visibility="public" file="USoilTexture.pas" line="1254">
+    <parameters>
+      <parameter name="TC" type="TTextureClass" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+</namespace>

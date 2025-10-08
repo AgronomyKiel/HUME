@@ -1,0 +1,2511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Development: Class TDevelopment</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="PasDoc 0.16.0-snapshot">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<div class="container"><div class="navigation">
+<ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
+<span id="TDevelopment"></span><h1 class="cio">Class TDevelopment</h1>
+<div class="sections">
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section"><a class="section" href="#PasDoc-Fields">Fields</a></div><div class="one_section"><a class="section" href="#PasDoc-Methods">Methods</a></div><div class="one_section"><a class="section" href="#PasDoc-Properties">Properties</a></div></div>
+<span id="PasDoc-Description"></span><h2 class="unit">Unit</h2>
+<p class="unitlink">
+<a href="Development.html">Development</a></p>
+<h2 class="declaration">Declaration</h2>
+<p class="declaration">
+<code>type TDevelopment = class(TSubmodel)</code></p>
+<h2 class="description">Description</h2>
+<p>
+ Development class, a core component of the HUME-Wheat crop model, responsible for simulating the phenological development (growth stages) of wheat. The class models the progression of the crop through its life cycle, from sowing and emergence to maturity and harvest, using temperature, daylength, and genetic parameters.
+
+<p>Key features: </p>
+
+<ul class="paragraph_spacing">
+  <li><p>Growth Stage Tracking: Uses both integer (EC, BBCH, Zadoks) and continuous (xstage) scales to represent crop development.</p></li>
+  <li><p>Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).</p></li>
+  <li><p>Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.</p></li>
+  <li><p>Event Timing: Records the day of year (DOY) for key phenological events (e.g., stem elongation, heading, flowering, ripeness).</p></li>
+  <li><p>Parameterization: Supports genetic and environmental parameters (e.g., base temperature, photoperiod sensitivity, vernalization requirements).</p></li>
+  <li><p>Data Integration: Can initialize and calibrate development using measured data (e.g., measured EC dates).</p></li>
+  <li><p>Modular Design: Integrates with other model components via external variables and options.</p></li>
+</ul>
+
+<p> Typical usage: This module is used to drive the timing of crop processes (e.g., leaf growth, flowering, grain filling) in response to weather and management, providing the developmental framework for the rest of the crop model. </p>
+<span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
+<ul class="hierarchy"><li class="ancestor">TSubmodel</li>
+<li class="thisitem">TDevelopment</li></ul><h2 class="overview">Overview</h2>
+<span id="PasDoc-Fields"></span><h3 class="summary">Fields</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#c">c</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#cumvern">cumvern</a></strong>: TState;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#d10">d10</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#d29">d29</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#d50">d50</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#d59">d59</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#d75">d75</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#d90">d90</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#DataInitMethod">DataInitMethod</a></strong>: Toption;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#daylengthp">daylengthp</a></strong>: TExternV;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#dayofyear">dayofyear</a></strong>: TExternV;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#DayOfYearSowingDate">DayOfYearSowingDate</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#DaySSow">DaySSow</a></strong>: TState;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#devrates1">devrates1</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#devrates2">devrates2</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#devrates3">devrates3</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#devrates4">devrates4</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#devrates5">devrates5</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#devrates6">devrates6</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#devrates9">devrates9</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#DOY_BegFlower">DOY_BegFlower</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#DOY_BegHeading">DOY_BegHeading</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#DOY_BegStemElong">DOY_BegStemElong</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#DOY_EndHeading">DOY_EndHeading</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#DOY_PhysRipe">DOY_PhysRipe</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#DOY_YellowRipeness">DOY_YellowRipeness</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#dvs10">dvs10</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#ec">ec</a></strong>: TState;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#EC25MeasDate">EC25MeasDate</a></strong>: real;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#EC30MeasDate">EC30MeasDate</a></strong>: real;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#EC37MeasDate">EC37MeasDate</a></strong>: real;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#ECa">ECa</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#fDataInitMethod">fDataInitMethod</a></strong>: <a href="Development.html#TDataInitMethod">TDataInitMethod</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#fdl">fdl</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#fReCalcSowingDate">fReCalcSowingDate</a></strong>: boolean;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#fTSumInternode">fTSumInternode</a></strong>: <a href="Development.html#TOptTSumInternode">TOptTSumInternode</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#GS_EC25">GS_EC25</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#ini_inLMS">ini_inLMS</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#inL_MS">inL_MS</a></strong>: TState;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#inl_MS_xstage2">inl_MS_xstage2</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#Internode">Internode</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#istage">istage</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#k_v">k_v</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#MaxPhotoperiod">MaxPhotoperiod</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#MaxVernDays">MaxVernDays</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#minLeaf_number">minLeaf_number</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#nL_MS">nL_MS</a></strong>: TState;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#OptTSumInternode">OptTSumInternode</a></strong>: Toption;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#p1d">p1d</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#p1v">p1v</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#p3">p3</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#p4">p4</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#p5">p5</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#p9">p9</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#Ph39">Ph39</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#Ph39_opt">Ph39_opt</a></strong>: Tvar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#phint">phint</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#plastochron">plastochron</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#rdr_p">rdr_p</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#rdr_v">rdr_v</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#ReCalcSowingDate">ReCalcSowingDate</a></strong>: Toption;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#sdepth">sdepth</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#sowingdate">sowingdate</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#tBase">tBase</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#tdu">tdu</a></strong>: TState;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#Teff">Teff</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#tempsumemergence">tempsumemergence</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TMPM">TMPM</a></strong>: TExternV;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC32">TSEC32</a></strong>: Tvar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC32_max">TSEC32_max</a></strong>: real;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC32_min">TSEC32_min</a></strong>: real;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC33">TSEC33</a></strong>: Tvar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC33_max">TSEC33_max</a></strong>: real;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC33_min">TSEC33_min</a></strong>: real;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC37">TSEC37</a></strong>: Tvar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC37_max">TSEC37_max</a></strong>: real;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC37_min">TSEC37_min</a></strong>: real;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC38">TSEC38</a></strong>: Tvar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC38_max">TSEC38_max</a></strong>: real;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC38_min">TSEC38_min</a></strong>: real;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC39">TSEC39</a></strong>: Tvar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC57">TSEC57</a></strong>: Tvar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC57_max">TSEC57_max</a></strong>: real;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC57_min">TSEC57_min</a></strong>: real;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC59">TSEC59</a></strong>: Tvar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC59_max">TSEC59_max</a></strong>: real;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC59_min">TSEC59_min</a></strong>: real;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC61">TSEC61</a></strong>: Tvar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC61_max">TSEC61_max</a></strong>: real;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC61_min">TSEC61_min</a></strong>: real;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC65">TSEC65</a></strong>: Tvar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC65_max">TSEC65_max</a></strong>: real;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC65_min">TSEC65_min</a></strong>: real;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC69">TSEC69</a></strong>: Tvar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC69_max">TSEC69_max</a></strong>: real;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC69_min">TSEC69_min</a></strong>: real;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC71">TSEC71</a></strong>: Tvar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC71_max">TSEC71_max</a></strong>: real;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSEC71_min">TSEC71_min</a></strong>: real;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSumEC30">TSumEC30</a></strong>: TState;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSumInternode">TSumInternode</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSumInternode_opt">TSumInternode_opt</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#tsums">tsums</a></strong>: TState;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSum_until_EC_30">TSum_until_EC_30</a></strong>: TState;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#TSum_until_EC_37">TSum_until_EC_37</a></strong>: TState;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#vernf">vernf</a></strong>: TVar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#VernMaxTemp">VernMaxTemp</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#VernMinTemp">VernMinTemp</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#VernOptTemp1">VernOptTemp1</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#VernOptTemp2">VernOptTemp2</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#xstage">xstage</a></strong>: TState;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#xstage_fin_leaf_prim">xstage_fin_leaf_prim</a></strong>: TPar;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code><strong><a href="Development.TDevelopment.html#zstage">zstage</a></strong>: TVar;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Methods"></span><h3 class="summary">Methods</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#addDataValueToDataSeries">addDataValueToDataSeries</a></strong>; override;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#AddSimValueToDataSeries">AddSimValueToDataSeries</a></strong>; override;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#CalcRates">CalcRates</a></strong>; override;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#createAll">createAll</a></strong>; override;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#Init-TMod-">Init</a></strong>(var GlobMod: TMod); override;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#Integrate">Integrate</a></strong>; override;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#CalcLeafAppearanceRate">CalcLeafAppearanceRate</a></strong>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#CalcLeafInitiationRate">CalcLeafInitiationRate</a></strong>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#CalcSpecificDays_and_TemperatureSums">CalcSpecificDays_and_TemperatureSums</a></strong>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#CalcStage9DevRate">CalcStage9DevRate</a></strong>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#CalcVernalisationRate">CalcVernalisationRate</a></strong>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#CalcXStageChangeRate">CalcXStageChangeRate</a></strong>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#CreateExterns">CreateExterns</a></strong>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#CreateOptions">CreateOptions</a></strong>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#CreatePars">CreatePars</a></strong>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#CreateStates">CreateStates</a></strong>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#CreateVars">CreateVars</a></strong>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#InitComments">InitComments</a></strong>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#LookForEC30MeasurementDate">LookForEC30MeasurementDate</a></strong>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><code>procedure <strong><a href="Development.TDevelopment.html#SetVarsToZero">SetVarsToZero</a></strong>;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Properties"></span><h3 class="summary">Properties</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Ex_daylengthp">Ex_daylengthp</a></strong> : TExternV read <a href="Development.TDevelopment.html#daylengthp">daylengthp</a> write <a href="Development.TDevelopment.html#daylengthp">daylengthp</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Ex_dayofyear">Ex_dayofyear</a></strong> : TExternV read <a href="Development.TDevelopment.html#dayofyear">dayofyear</a> write <a href="Development.TDevelopment.html#dayofyear">dayofyear</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Ex_TMPM">Ex_TMPM</a></strong> : TExternV read <a href="Development.TDevelopment.html#TMPM">TMPM</a> write <a href="Development.TDevelopment.html#TMPM">TMPM</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Opt_DataIniMethod">Opt_DataIniMethod</a></strong> : TOption read <a href="Development.TDevelopment.html#DataInitMethod">DataInitMethod</a> write <a href="Development.TDevelopment.html#DataInitMethod">DataInitMethod</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Opt_ReCalcSowingDate">Opt_ReCalcSowingDate</a></strong> : boolean read <a href="Development.TDevelopment.html#fReCalcSowingDate">fReCalcSowingDate</a> write <a href="Development.TDevelopment.html#fReCalcSowingDate">fReCalcSowingDate</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Par_Ini_inLMS">Par_Ini_inLMS</a></strong> : TPar read <a href="Development.TDevelopment.html#ini_inLMS">Ini_inLMS</a> write <a href="Development.TDevelopment.html#ini_inLMS">Ini_inLMS</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#PAR_MaxPhotoperiod">PAR_MaxPhotoperiod</a></strong>: TPar read <a href="Development.TDevelopment.html#MaxPhotoperiod">MaxPhotoperiod</a> write <a href="Development.TDevelopment.html#MaxPhotoperiod">MaxPhotoperiod</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#PAR_MaxVernDays">PAR_MaxVernDays</a></strong>: TPar read <a href="Development.TDevelopment.html#MaxVernDays">MaxVernDays</a> write <a href="Development.TDevelopment.html#MaxVernDays">MaxVernDays</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Par_minLeaf_number">Par_minLeaf_number</a></strong> : TPar read <a href="Development.TDevelopment.html#minLeaf_number">minLeaf_number</a> write <a href="Development.TDevelopment.html#minLeaf_number">minLeaf_number</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Par_p4">Par_p4</a></strong> : TPar read <a href="Development.TDevelopment.html#p4">p4</a> write <a href="Development.TDevelopment.html#p4">p4</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Par_p5">Par_p5</a></strong> : TPar read <a href="Development.TDevelopment.html#p5">p5</a> write <a href="Development.TDevelopment.html#p5">p5</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Par_p9">Par_p9</a></strong> : TPar read <a href="Development.TDevelopment.html#p9">p9</a> write <a href="Development.TDevelopment.html#p9">p9</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Par_phint">Par_phint</a></strong> : TPar read <a href="Development.TDevelopment.html#phint">phint</a> write <a href="Development.TDevelopment.html#phint">phint</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Par_plastochron">Par_plastochron</a></strong> : TPar read <a href="Development.TDevelopment.html#plastochron">plastochron</a> write <a href="Development.TDevelopment.html#plastochron">plastochron</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#PAR_sowingdate">PAR_sowingdate</a></strong>: TPar read <a href="Development.TDevelopment.html#sowingdate">sowingdate</a> write <a href="Development.TDevelopment.html#sowingdate">sowingdate</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#PAR_VernMaxTemp">PAR_VernMaxTemp</a></strong>: TPar read <a href="Development.TDevelopment.html#VernMaxTemp">VernMaxTemp</a> write <a href="Development.TDevelopment.html#VernMaxTemp">VernMaxTemp</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#PAR_VernMinTemp">PAR_VernMinTemp</a></strong>: TPar read <a href="Development.TDevelopment.html#VernMinTemp">VernMinTemp</a> write <a href="Development.TDevelopment.html#VernMinTemp">VernMinTemp</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#PAR_VernOptTemp1">PAR_VernOptTemp1</a></strong>: TPar read <a href="Development.TDevelopment.html#VernOptTemp1">VernOptTemp1</a> write <a href="Development.TDevelopment.html#VernOptTemp1">VernOptTemp1</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#PAR_VernOptTemp2">PAR_VernOptTemp2</a></strong>: TPar read <a href="Development.TDevelopment.html#VernOptTemp2">VernOptTemp2</a> write <a href="Development.TDevelopment.html#VernOptTemp2">VernOptTemp2</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#ST_cumvern">ST_cumvern</a></strong> : TState read <a href="Development.TDevelopment.html#cumvern">cumvern</a> write <a href="Development.TDevelopment.html#cumvern">cumvern</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#ST_ec">ST_ec</a></strong> : TState read <a href="Development.TDevelopment.html#ec">ec</a> write <a href="Development.TDevelopment.html#ec">ec</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#ST_inl_MS">ST_inl_MS</a></strong> : TState read <a href="Development.TDevelopment.html#inL_MS">inl_MS</a> write <a href="Development.TDevelopment.html#inL_MS">inl_MS</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#ST_nl_MS">ST_nl_MS</a></strong> : TState read <a href="Development.TDevelopment.html#nL_MS">nl_MS</a> write <a href="Development.TDevelopment.html#nL_MS">nl_MS</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#ST_tdu">ST_tdu</a></strong> : TState read <a href="Development.TDevelopment.html#tdu">tdu</a> write <a href="Development.TDevelopment.html#tdu">tdu</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#ST_tsums">ST_tsums</a></strong> : TState read <a href="Development.TDevelopment.html#tsums">tsums</a> write <a href="Development.TDevelopment.html#tsums">tsums</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#ST_Tsum_until_EC_30">ST_Tsum_until_EC_30</a></strong> : TState read <a href="Development.TDevelopment.html#TSum_until_EC_30">Tsum_until_EC_30</a> write <a href="Development.TDevelopment.html#TSum_until_EC_30">Tsum_until_EC_30</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#ST_Tsum_until_EC_37">ST_Tsum_until_EC_37</a></strong> : TState read <a href="Development.TDevelopment.html#TSum_until_EC_37">Tsum_until_EC_37</a> write <a href="Development.TDevelopment.html#TSum_until_EC_37">Tsum_until_EC_37</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#ST_xstage">ST_xstage</a></strong> : TState read <a href="Development.TDevelopment.html#xstage">xstage</a> write <a href="Development.TDevelopment.html#xstage">xstage</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_c">Var_c</a></strong> : TVar read <a href="Development.TDevelopment.html#c">c</a> write <a href="Development.TDevelopment.html#c">c</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_d10">Var_d10</a></strong> : TVar read <a href="Development.TDevelopment.html#d10">d10</a> write <a href="Development.TDevelopment.html#d10">d10</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_d29">Var_d29</a></strong> : TVar read <a href="Development.TDevelopment.html#d29">d29</a> write <a href="Development.TDevelopment.html#d29">d29</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_d59">Var_d59</a></strong> : TVar read <a href="Development.TDevelopment.html#d59">d59</a> write <a href="Development.TDevelopment.html#d59">d59</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_dayofYearSowingDate">Var_dayofYearSowingDate</a></strong> : TVar read <a href="Development.TDevelopment.html#DayOfYearSowingDate">DayOfYearSowingDate</a> write <a href="Development.TDevelopment.html#DayOfYearSowingDate">DayofYearSowingDate</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_devrates1">Var_devrates1</a></strong> : TVar read <a href="Development.TDevelopment.html#devrates1">devrates1</a> write <a href="Development.TDevelopment.html#devrates1">devrates1</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_devrates2">Var_devrates2</a></strong> : TVar read <a href="Development.TDevelopment.html#devrates2">devrates2</a> write <a href="Development.TDevelopment.html#devrates2">devrates2</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_devrates3">Var_devrates3</a></strong> : TVar read <a href="Development.TDevelopment.html#devrates3">devrates3</a> write <a href="Development.TDevelopment.html#devrates3">devrates3</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_devrates4">Var_devrates4</a></strong> : TVar read <a href="Development.TDevelopment.html#devrates4">devrates4</a> write <a href="Development.TDevelopment.html#devrates4">devrates4</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_devrates5">Var_devrates5</a></strong> : TVar read <a href="Development.TDevelopment.html#devrates5">devrates5</a> write <a href="Development.TDevelopment.html#devrates5">devrates5</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_devrates6">Var_devrates6</a></strong> : TVar read <a href="Development.TDevelopment.html#devrates6">devrates6</a> write <a href="Development.TDevelopment.html#devrates6">devrates6</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_devrates9">Var_devrates9</a></strong> : TVar read <a href="Development.TDevelopment.html#devrates9">devrates9</a> write <a href="Development.TDevelopment.html#devrates9">devrates9</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_DOY_BegFlower">Var_DOY_BegFlower</a></strong>: TVar read <a href="Development.TDevelopment.html#DOY_BegFlower">DOY_BegFlower</a> write <a href="Development.TDevelopment.html#DOY_BegFlower">DOY_BegFlower</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_DOY_BegHeading">Var_DOY_BegHeading</a></strong>: TVar read <a href="Development.TDevelopment.html#DOY_BegHeading">DOY_BegHeading</a> write <a href="Development.TDevelopment.html#DOY_BegHeading">DOY_BegHeading</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_DOY_BegStemElong">Var_DOY_BegStemElong</a></strong>: TVar read <a href="Development.TDevelopment.html#DOY_BegStemElong">DOY_BegStemElong</a> write <a href="Development.TDevelopment.html#DOY_BegStemElong">DOY_BegStemElong</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_DOY_EndHeading">Var_DOY_EndHeading</a></strong>: TVar read <a href="Development.TDevelopment.html#DOY_EndHeading">DOY_EndHeading</a> write <a href="Development.TDevelopment.html#DOY_EndHeading">DOY_EndHeading</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_DOY_PhysRipe">Var_DOY_PhysRipe</a></strong>: TVar read <a href="Development.TDevelopment.html#DOY_PhysRipe">DOY_PhysRipe</a> write <a href="Development.TDevelopment.html#DOY_PhysRipe">DOY_PhysRipe</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_DOY_yellowRipeness">Var_DOY_yellowRipeness</a></strong>: TVar read <a href="Development.TDevelopment.html#DOY_YellowRipeness">DOY_YellowRipeness</a> write <a href="Development.TDevelopment.html#DOY_YellowRipeness">DOY_YellowRipeness</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_dvs10">Var_dvs10</a></strong> : TVar read <a href="Development.TDevelopment.html#dvs10">dvs10</a> write <a href="Development.TDevelopment.html#dvs10">dvs10</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_istage">Var_istage</a></strong> : TVar read <a href="Development.TDevelopment.html#istage">istage</a> write <a href="Development.TDevelopment.html#istage">istage</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_rdr_p">Var_rdr_p</a></strong> : TVar read <a href="Development.TDevelopment.html#rdr_p">rdr_p</a> write <a href="Development.TDevelopment.html#rdr_p">rdr_p</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_rdr_v">Var_rdr_v</a></strong> : TVar read <a href="Development.TDevelopment.html#rdr_v">rdr_v</a> write <a href="Development.TDevelopment.html#rdr_v">rdr_v</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_tempsumemergence">Var_tempsumemergence</a></strong> : TVar read <a href="Development.TDevelopment.html#tempsumemergence">tempsumemergence</a> write <a href="Development.TDevelopment.html#tempsumemergence">tempsumemergence</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_tsuminc">Var_tsuminc</a></strong> : TVar read <a href="Development.TDevelopment.html#Teff">Teff</a> write <a href="Development.TDevelopment.html#Teff">Teff</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_vernf">Var_vernf</a></strong> : TVar read <a href="Development.TDevelopment.html#vernf">vernf</a> write <a href="Development.TDevelopment.html#vernf">vernf</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_zstage">Var_zstage</a></strong> : TVar read <a href="Development.TDevelopment.html#zstage">zstage</a> write <a href="Development.TDevelopment.html#zstage">zstage</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><code>property <strong><a href="Development.TDevelopment.html#Var_k_v">Var_k_v</a></strong> : TVar read <a href="Development.TDevelopment.html#k_v">k_v</a> write <a href="Development.TDevelopment.html#k_v">k_v</a>;</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Fields</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="c"></span><code><strong>c</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="cumvern"></span><code><strong>cumvern</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+cumulative vernalisation</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="d10"></span><code><strong>d10</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Day when EC equals 10</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="d29"></span><code><strong>d29</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Day when EC equals 29</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="d50"></span><code><strong>d50</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Day when EC equals 50</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="d59"></span><code><strong>d59</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Day when EC equals 59</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="d75"></span><code><strong>d75</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Day when EC equals 75</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="d90"></span><code><strong>d90</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Day when EC equals 90</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="DataInitMethod"></span><code><strong>DataInitMethod</strong>: Toption;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+option for data initialization method</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="daylengthp"></span><code><strong>daylengthp</strong>: TExternV;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+photoperiodic daylength</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="dayofyear"></span><code><strong>dayofyear</strong>: TExternV;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+mean air temperature</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="DayOfYearSowingDate"></span><code><strong>DayOfYearSowingDate</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Dayof Year of sowingdate</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="DaySSow"></span><code><strong>DaySSow</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+days since sowing</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="devrates1"></span><code><strong>devrates1</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+developmet rate during istage 1</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="devrates2"></span><code><strong>devrates2</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+developmet rate during istage 2</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="devrates3"></span><code><strong>devrates3</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+developmet rate during istage 3</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="devrates4"></span><code><strong>devrates4</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+developmet rate during istage 4</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="devrates5"></span><code><strong>devrates5</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+developmet rate during istage 5</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="devrates6"></span><code><strong>devrates6</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+developmet rate during istage 6</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="devrates9"></span><code><strong>devrates9</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+developmet rate during istage 9</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="DOY_BegFlower"></span><code><strong>DOY_BegFlower</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+DOY for begin of flowering</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="DOY_BegHeading"></span><code><strong>DOY_BegHeading</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+DOY when BBCH 51</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="DOY_BegStemElong"></span><code><strong>DOY_BegStemElong</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+DOY for begin stem elongation</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="DOY_EndHeading"></span><code><strong>DOY_EndHeading</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+DOY when BBCH 59</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="DOY_PhysRipe"></span><code><strong>DOY_PhysRipe</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+DOY for physiological ripeness</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="DOY_YellowRipeness"></span><code><strong>DOY_YellowRipeness</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+DOY when BBCH 88</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="dvs10"></span><code><strong>dvs10</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+xstage times 10, for convenience of plotting</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="ec"></span><code><strong>ec</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+EC stage</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="EC25MeasDate"></span><code><strong>EC25MeasDate</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Private-Deklarationen</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="EC30MeasDate"></span><code><strong>EC30MeasDate</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Private-Deklarationen</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="EC37MeasDate"></span><code><strong>EC37MeasDate</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Private-Deklarationen</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="ECa"></span><code><strong>ECa</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="fDataInitMethod"></span><code><strong>fDataInitMethod</strong>: <a href="Development.html#TDataInitMethod">TDataInitMethod</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="fdl"></span><code><strong>fdl</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+weighting factor for daylength influence</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="fReCalcSowingDate"></span><code><strong>fReCalcSowingDate</strong>: boolean;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="fTSumInternode"></span><code><strong>fTSumInternode</strong>: <a href="Development.html#TOptTSumInternode">TOptTSumInternode</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="GS_EC25"></span><code><strong>GS_EC25</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+vernalisationfactor</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="ini_inLMS"></span><code><strong>ini_inLMS</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+initial number of initiated leaves at emergence</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="inL_MS"></span><code><strong>inL_MS</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+initial leaf number on main stem</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="inl_MS_xstage2"></span><code><strong>inl_MS_xstage2</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Anzahl nicht ausgebildeter Blätter zum Zeitpunkt Xstage 2</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Internode"></span><code><strong>Internode</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Multiplikator des Phyllochronintervalls in der Schossenphase</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="istage"></span><code><strong>istage</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+integer value of dev stage</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="k_v"></span><code><strong>k_v</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+variable photoperiodic influence factor (0..1)</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="MaxPhotoperiod"></span><code><strong>MaxPhotoperiod</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+maximum daylength which increase developmental rate</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="MaxVernDays"></span><code><strong>MaxVernDays</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+maximum number of vernalisation days which increase developmental rate</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="minLeaf_number"></span><code><strong>minLeaf_number</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="nL_MS"></span><code><strong>nL_MS</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+number of leaves on main stem</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="OptTSumInternode"></span><code><strong>OptTSumInternode</strong>: Toption;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+option for TSumInternode calculation</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="p1d"></span><code><strong>p1d</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+genetic specific parameter of photoperiod sensitivity</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="p1v"></span><code><strong>p1v</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+genetic specific parameter of vernalisation sensitivity</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="p3"></span><code><strong>p3</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+End of leaf growth and beginning of ear growth to end of pre-anthesis ear growth</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="p4"></span><code><strong>p4</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+thermal time between Pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase)in°Cd</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="p5"></span><code><strong>p5</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+thermal time between beginning of grain fill and maturity in°Cd</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="p9"></span><code><strong>p9</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+thermal timen from germination to seedling emergence in °Cd</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Ph39"></span><code><strong>Ph39</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+TSUM 37 bis 39</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Ph39_opt"></span><code><strong>Ph39_opt</strong>: Tvar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="phint"></span><code><strong>phint</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+the phyllochron interval: the interval in thermal time (degree days) between successive leaf and tiller appearances</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="plastochron"></span><code><strong>plastochron</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+interval in thermal time between leaf initiation</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="rdr_p"></span><code><strong>rdr_p</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Phenologicalstages in integer values 1 Emergence to terminal spikelet(TS), BBCH 10-30 2 TS to end of vegetative growth, BBCH 30-39 3 End of vegetative growth and beginning ear growth to end of pre-anthesis ear growth, BBCH 40-57 4 End of pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase), BBCH 57-71 5 Beginning of grain filling to physiological maturity, BBCH 71-90 6 Physiological maturity to fallow (harvest), BBCH 90-99 7 Fallow to sowing 8 Sowing to germination 9 Germination to emergence</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="rdr_v"></span><code><strong>rdr_v</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+relative development rate of photoperiod</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="ReCalcSowingDate"></span><code><strong>ReCalcSowingDate</strong>: Toption;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+option for recalculating sowing date</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="sdepth"></span><code><strong>sdepth</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+sowing depth (cm): not actual in use</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="sowingdate"></span><code><strong>sowingdate</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="tBase"></span><code><strong>tBase</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+base temperature</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="tdu"></span><code><strong>tdu</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+thermal developmental units</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Teff"></span><code><strong>Teff</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+relative development rate of vernalization</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="tempsumemergence"></span><code><strong>tempsumemergence</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+vernalisation variable temperature sum from emergence to EC30</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TMPM"></span><code><strong>TMPM</strong>: TExternV;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+mean air temperature</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSEC32"></span><code><strong>TSEC32</strong>: Tvar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC32_max"></span><code><strong>TSEC32_max</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC32_min"></span><code><strong>TSEC32_min</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSEC33"></span><code><strong>TSEC33</strong>: Tvar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC33_max"></span><code><strong>TSEC33_max</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC33_min"></span><code><strong>TSEC33_min</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSEC37"></span><code><strong>TSEC37</strong>: Tvar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC37_max"></span><code><strong>TSEC37_max</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC37_min"></span><code><strong>TSEC37_min</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSEC38"></span><code><strong>TSEC38</strong>: Tvar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC38_max"></span><code><strong>TSEC38_max</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC38_min"></span><code><strong>TSEC38_min</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSEC39"></span><code><strong>TSEC39</strong>: Tvar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSEC57"></span><code><strong>TSEC57</strong>: Tvar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC57_max"></span><code><strong>TSEC57_max</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC57_min"></span><code><strong>TSEC57_min</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSEC59"></span><code><strong>TSEC59</strong>: Tvar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC59_max"></span><code><strong>TSEC59_max</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC59_min"></span><code><strong>TSEC59_min</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSEC61"></span><code><strong>TSEC61</strong>: Tvar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC61_max"></span><code><strong>TSEC61_max</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC61_min"></span><code><strong>TSEC61_min</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSEC65"></span><code><strong>TSEC65</strong>: Tvar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC65_max"></span><code><strong>TSEC65_max</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC65_min"></span><code><strong>TSEC65_min</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSEC69"></span><code><strong>TSEC69</strong>: Tvar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC69_max"></span><code><strong>TSEC69_max</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC69_min"></span><code><strong>TSEC69_min</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSEC71"></span><code><strong>TSEC71</strong>: Tvar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC71_max"></span><code><strong>TSEC71_max</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="TSEC71_min"></span><code><strong>TSEC71_min</strong>: real;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSumEC30"></span><code><strong>TSumEC30</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Temperature sum since EC30</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSumInternode"></span><code><strong>TSumInternode</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+temperature sum between two internodes</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSumInternode_opt"></span><code><strong>TSumInternode_opt</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="tsums"></span><code><strong>tsums</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+temperature sum since sowing</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSum_until_EC_30"></span><code><strong>TSum_until_EC_30</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Temperature sum until EC30</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="TSum_until_EC_37"></span><code><strong>TSum_until_EC_37</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Temperature sum until EC37</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="vernf"></span><code><strong>vernf</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Zadock's stages</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="VernMaxTemp"></span><code><strong>VernMaxTemp</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+temperature where vernalisation is getting zero</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="VernMinTemp"></span><code><strong>VernMinTemp</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+minimum vernalisation temperature</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="VernOptTemp1"></span><code><strong>VernOptTemp1</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+temperature where vernalisation is starting to be optimal</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="VernOptTemp2"></span><code><strong>VernOptTemp2</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+temperature where vernalisation is ending to be optimal</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="xstage"></span><code><strong>xstage</strong>: TState;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+non integer growth stage indicator ranging from zero to six</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="xstage_fin_leaf_prim"></span><code><strong>xstage_fin_leaf_prim</strong>: TPar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+xstage an dem keine weiteren leaf primordien angelegt werden</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="zstage"></span><code><strong>zstage</strong>: TVar;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+effective day temperature &gt;=0 zur Basistemperatur</p>
+</td></tr>
+</table>
+<h3 class="detail">Methods</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="addDataValueToDataSeries"></span><code>procedure <strong>addDataValueToDataSeries</strong>; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="AddSimValueToDataSeries"></span><code>procedure <strong>AddSimValueToDataSeries</strong>; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="CalcRates"></span><code>procedure <strong>CalcRates</strong>; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ Calculates the rates conditions. </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="createAll"></span><code>procedure <strong>createAll</strong>; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+option for using measured dates for development</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Init-TMod-"></span><code>procedure <strong>Init</strong>(var GlobMod: TMod); override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ Initializes the TDevelopment model with global parameters and sets initial values for variables and states. </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="public.gif" alt="Public" title="Public"></a></td>
+<td class="itemcode"><span id="Integrate"></span><code>procedure <strong>Integrate</strong>; override;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ Integrates the model states over time, updating growth stages and phenological events. </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="CalcLeafAppearanceRate"></span><code>procedure <strong>CalcLeafAppearanceRate</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="CalcLeafInitiationRate"></span><code>procedure <strong>CalcLeafInitiationRate</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="CalcSpecificDays_and_TemperatureSums"></span><code>procedure <strong>CalcSpecificDays_and_TemperatureSums</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="CalcStage9DevRate"></span><code>procedure <strong>CalcStage9DevRate</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="CalcVernalisationRate"></span><code>procedure <strong>CalcVernalisationRate</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="CalcXStageChangeRate"></span><code>procedure <strong>CalcXStageChangeRate</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="CreateExterns"></span><code>procedure <strong>CreateExterns</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="CreateOptions"></span><code>procedure <strong>CreateOptions</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="CreatePars"></span><code>procedure <strong>CreatePars</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="CreateStates"></span><code>procedure <strong>CreateStates</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="CreateVars"></span><code>procedure <strong>CreateVars</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="InitComments"></span><code>procedure <strong>InitComments</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="LookForEC30MeasurementDate"></span><code>procedure <strong>LookForEC30MeasurementDate</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="private.gif" alt="Private" title="Private"></a></td>
+<td class="itemcode"><span id="SetVarsToZero"></span><code>procedure <strong>SetVarsToZero</strong>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<h3 class="detail">Properties</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Ex_daylengthp"></span><code>property <strong>Ex_daylengthp</strong> : TExternV read <a href="Development.TDevelopment.html#daylengthp">daylengthp</a> write <a href="Development.TDevelopment.html#daylengthp">daylengthp</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Ex_dayofyear"></span><code>property <strong>Ex_dayofyear</strong> : TExternV read <a href="Development.TDevelopment.html#dayofyear">dayofyear</a> write <a href="Development.TDevelopment.html#dayofyear">dayofyear</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Ex_TMPM"></span><code>property <strong>Ex_TMPM</strong> : TExternV read <a href="Development.TDevelopment.html#TMPM">TMPM</a> write <a href="Development.TDevelopment.html#TMPM">TMPM</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Opt_DataIniMethod"></span><code>property <strong>Opt_DataIniMethod</strong> : TOption read <a href="Development.TDevelopment.html#DataInitMethod">DataInitMethod</a> write <a href="Development.TDevelopment.html#DataInitMethod">DataInitMethod</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Opt_ReCalcSowingDate"></span><code>property <strong>Opt_ReCalcSowingDate</strong> : boolean read <a href="Development.TDevelopment.html#fReCalcSowingDate">fReCalcSowingDate</a> write <a href="Development.TDevelopment.html#fReCalcSowingDate">fReCalcSowingDate</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_Ini_inLMS"></span><code>property <strong>Par_Ini_inLMS</strong> : TPar read <a href="Development.TDevelopment.html#ini_inLMS">Ini_inLMS</a> write <a href="Development.TDevelopment.html#ini_inLMS">Ini_inLMS</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="PAR_MaxPhotoperiod"></span><code>property <strong>PAR_MaxPhotoperiod</strong>: TPar read <a href="Development.TDevelopment.html#MaxPhotoperiod">MaxPhotoperiod</a> write <a href="Development.TDevelopment.html#MaxPhotoperiod">MaxPhotoperiod</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="PAR_MaxVernDays"></span><code>property <strong>PAR_MaxVernDays</strong>: TPar read <a href="Development.TDevelopment.html#MaxVernDays">MaxVernDays</a> write <a href="Development.TDevelopment.html#MaxVernDays">MaxVernDays</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_minLeaf_number"></span><code>property <strong>Par_minLeaf_number</strong> : TPar read <a href="Development.TDevelopment.html#minLeaf_number">minLeaf_number</a> write <a href="Development.TDevelopment.html#minLeaf_number">minLeaf_number</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_p4"></span><code>property <strong>Par_p4</strong> : TPar read <a href="Development.TDevelopment.html#p4">p4</a> write <a href="Development.TDevelopment.html#p4">p4</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Define Value</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_p5"></span><code>property <strong>Par_p5</strong> : TPar read <a href="Development.TDevelopment.html#p5">p5</a> write <a href="Development.TDevelopment.html#p5">p5</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Define Value</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_p9"></span><code>property <strong>Par_p9</strong> : TPar read <a href="Development.TDevelopment.html#p9">p9</a> write <a href="Development.TDevelopment.html#p9">p9</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Define Value</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_phint"></span><code>property <strong>Par_phint</strong> : TPar read <a href="Development.TDevelopment.html#phint">phint</a> write <a href="Development.TDevelopment.html#phint">phint</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Par_plastochron"></span><code>property <strong>Par_plastochron</strong> : TPar read <a href="Development.TDevelopment.html#plastochron">plastochron</a> write <a href="Development.TDevelopment.html#plastochron">plastochron</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="PAR_sowingdate"></span><code>property <strong>PAR_sowingdate</strong>: TPar read <a href="Development.TDevelopment.html#sowingdate">sowingdate</a> write <a href="Development.TDevelopment.html#sowingdate">sowingdate</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+property Par_TsumInternode : TPar read TsumInternode write TsumInternode;</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="PAR_VernMaxTemp"></span><code>property <strong>PAR_VernMaxTemp</strong>: TPar read <a href="Development.TDevelopment.html#VernMaxTemp">VernMaxTemp</a> write <a href="Development.TDevelopment.html#VernMaxTemp">VernMaxTemp</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+temperature where vernalisation is getting zero</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="PAR_VernMinTemp"></span><code>property <strong>PAR_VernMinTemp</strong>: TPar read <a href="Development.TDevelopment.html#VernMinTemp">VernMinTemp</a> write <a href="Development.TDevelopment.html#VernMinTemp">VernMinTemp</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+minimum vernalisation temperature</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="PAR_VernOptTemp1"></span><code>property <strong>PAR_VernOptTemp1</strong>: TPar read <a href="Development.TDevelopment.html#VernOptTemp1">VernOptTemp1</a> write <a href="Development.TDevelopment.html#VernOptTemp1">VernOptTemp1</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+temperature where vernalisation is starting to be optimal</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="PAR_VernOptTemp2"></span><code>property <strong>PAR_VernOptTemp2</strong>: TPar read <a href="Development.TDevelopment.html#VernOptTemp2">VernOptTemp2</a> write <a href="Development.TDevelopment.html#VernOptTemp2">VernOptTemp2</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+temperature where vernalisation is ending to be optimal</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="ST_cumvern"></span><code>property <strong>ST_cumvern</strong> : TState read <a href="Development.TDevelopment.html#cumvern">cumvern</a> write <a href="Development.TDevelopment.html#cumvern">cumvern</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="ST_ec"></span><code>property <strong>ST_ec</strong> : TState read <a href="Development.TDevelopment.html#ec">ec</a> write <a href="Development.TDevelopment.html#ec">ec</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="ST_inl_MS"></span><code>property <strong>ST_inl_MS</strong> : TState read <a href="Development.TDevelopment.html#inL_MS">inl_MS</a> write <a href="Development.TDevelopment.html#inL_MS">inl_MS</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="ST_nl_MS"></span><code>property <strong>ST_nl_MS</strong> : TState read <a href="Development.TDevelopment.html#nL_MS">nl_MS</a> write <a href="Development.TDevelopment.html#nL_MS">nl_MS</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="ST_tdu"></span><code>property <strong>ST_tdu</strong> : TState read <a href="Development.TDevelopment.html#tdu">tdu</a> write <a href="Development.TDevelopment.html#tdu">tdu</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="ST_tsums"></span><code>property <strong>ST_tsums</strong> : TState read <a href="Development.TDevelopment.html#tsums">tsums</a> write <a href="Development.TDevelopment.html#tsums">tsums</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="ST_Tsum_until_EC_30"></span><code>property <strong>ST_Tsum_until_EC_30</strong> : TState read <a href="Development.TDevelopment.html#TSum_until_EC_30">Tsum_until_EC_30</a> write <a href="Development.TDevelopment.html#TSum_until_EC_30">Tsum_until_EC_30</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="ST_Tsum_until_EC_37"></span><code>property <strong>ST_Tsum_until_EC_37</strong> : TState read <a href="Development.TDevelopment.html#TSum_until_EC_37">Tsum_until_EC_37</a> write <a href="Development.TDevelopment.html#TSum_until_EC_37">Tsum_until_EC_37</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="ST_xstage"></span><code>property <strong>ST_xstage</strong> : TState read <a href="Development.TDevelopment.html#xstage">xstage</a> write <a href="Development.TDevelopment.html#xstage">xstage</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_c"></span><code>property <strong>Var_c</strong> : TVar read <a href="Development.TDevelopment.html#c">c</a> write <a href="Development.TDevelopment.html#c">c</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Define Value</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_d10"></span><code>property <strong>Var_d10</strong> : TVar read <a href="Development.TDevelopment.html#d10">d10</a> write <a href="Development.TDevelopment.html#d10">d10</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_d29"></span><code>property <strong>Var_d29</strong> : TVar read <a href="Development.TDevelopment.html#d29">d29</a> write <a href="Development.TDevelopment.html#d29">d29</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_d59"></span><code>property <strong>Var_d59</strong> : TVar read <a href="Development.TDevelopment.html#d59">d59</a> write <a href="Development.TDevelopment.html#d59">d59</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_dayofYearSowingDate"></span><code>property <strong>Var_dayofYearSowingDate</strong> : TVar read <a href="Development.TDevelopment.html#DayOfYearSowingDate">DayOfYearSowingDate</a> write <a href="Development.TDevelopment.html#DayOfYearSowingDate">DayofYearSowingDate</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_devrates1"></span><code>property <strong>Var_devrates1</strong> : TVar read <a href="Development.TDevelopment.html#devrates1">devrates1</a> write <a href="Development.TDevelopment.html#devrates1">devrates1</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+( development rate during istage 1</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_devrates2"></span><code>property <strong>Var_devrates2</strong> : TVar read <a href="Development.TDevelopment.html#devrates2">devrates2</a> write <a href="Development.TDevelopment.html#devrates2">devrates2</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ development rate during istage 2 </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_devrates3"></span><code>property <strong>Var_devrates3</strong> : TVar read <a href="Development.TDevelopment.html#devrates3">devrates3</a> write <a href="Development.TDevelopment.html#devrates3">devrates3</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ development rate during istage 3 </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_devrates4"></span><code>property <strong>Var_devrates4</strong> : TVar read <a href="Development.TDevelopment.html#devrates4">devrates4</a> write <a href="Development.TDevelopment.html#devrates4">devrates4</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ development rate during istage 4 </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_devrates5"></span><code>property <strong>Var_devrates5</strong> : TVar read <a href="Development.TDevelopment.html#devrates5">devrates5</a> write <a href="Development.TDevelopment.html#devrates5">devrates5</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ development rate during istage 5 </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_devrates6"></span><code>property <strong>Var_devrates6</strong> : TVar read <a href="Development.TDevelopment.html#devrates6">devrates6</a> write <a href="Development.TDevelopment.html#devrates6">devrates6</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ development rate during istage 6 </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_devrates9"></span><code>property <strong>Var_devrates9</strong> : TVar read <a href="Development.TDevelopment.html#devrates9">devrates9</a> write <a href="Development.TDevelopment.html#devrates9">devrates9</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ development rate during istage 9 </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_DOY_BegFlower"></span><code>property <strong>Var_DOY_BegFlower</strong>: TVar read <a href="Development.TDevelopment.html#DOY_BegFlower">DOY_BegFlower</a> write <a href="Development.TDevelopment.html#DOY_BegFlower">DOY_BegFlower</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_DOY_BegHeading"></span><code>property <strong>Var_DOY_BegHeading</strong>: TVar read <a href="Development.TDevelopment.html#DOY_BegHeading">DOY_BegHeading</a> write <a href="Development.TDevelopment.html#DOY_BegHeading">DOY_BegHeading</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_DOY_BegStemElong"></span><code>property <strong>Var_DOY_BegStemElong</strong>: TVar read <a href="Development.TDevelopment.html#DOY_BegStemElong">DOY_BegStemElong</a> write <a href="Development.TDevelopment.html#DOY_BegStemElong">DOY_BegStemElong</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_DOY_EndHeading"></span><code>property <strong>Var_DOY_EndHeading</strong>: TVar read <a href="Development.TDevelopment.html#DOY_EndHeading">DOY_EndHeading</a> write <a href="Development.TDevelopment.html#DOY_EndHeading">DOY_EndHeading</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_DOY_PhysRipe"></span><code>property <strong>Var_DOY_PhysRipe</strong>: TVar read <a href="Development.TDevelopment.html#DOY_PhysRipe">DOY_PhysRipe</a> write <a href="Development.TDevelopment.html#DOY_PhysRipe">DOY_PhysRipe</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_DOY_yellowRipeness"></span><code>property <strong>Var_DOY_yellowRipeness</strong>: TVar read <a href="Development.TDevelopment.html#DOY_YellowRipeness">DOY_YellowRipeness</a> write <a href="Development.TDevelopment.html#DOY_YellowRipeness">DOY_YellowRipeness</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_dvs10"></span><code>property <strong>Var_dvs10</strong> : TVar read <a href="Development.TDevelopment.html#dvs10">dvs10</a> write <a href="Development.TDevelopment.html#dvs10">dvs10</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ xstage times 10, for convenience of plotting </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_istage"></span><code>property <strong>Var_istage</strong> : TVar read <a href="Development.TDevelopment.html#istage">istage</a> write <a href="Development.TDevelopment.html#istage">istage</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ integer value of development stage </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_rdr_p"></span><code>property <strong>Var_rdr_p</strong> : TVar read <a href="Development.TDevelopment.html#rdr_p">rdr_p</a> write <a href="Development.TDevelopment.html#rdr_p">rdr_p</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ relative development rate effect of photoperiod </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_rdr_v"></span><code>property <strong>Var_rdr_v</strong> : TVar read <a href="Development.TDevelopment.html#rdr_v">rdr_v</a> write <a href="Development.TDevelopment.html#rdr_v">rdr_v</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+ relative development rate effect of vernalisation </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_tempsumemergence"></span><code>property <strong>Var_tempsumemergence</strong> : TVar read <a href="Development.TDevelopment.html#tempsumemergence">tempsumemergence</a> write <a href="Development.TDevelopment.html#tempsumemergence">tempsumemergence</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Define Value</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_tsuminc"></span><code>property <strong>Var_tsuminc</strong> : TVar read <a href="Development.TDevelopment.html#Teff">Teff</a> write <a href="Development.TDevelopment.html#Teff">Teff</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_vernf"></span><code>property <strong>Var_vernf</strong> : TVar read <a href="Development.TDevelopment.html#vernf">vernf</a> write <a href="Development.TDevelopment.html#vernf">vernf</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_zstage"></span><code>property <strong>Var_zstage</strong> : TVar read <a href="Development.TDevelopment.html#zstage">zstage</a> write <a href="Development.TDevelopment.html#zstage">zstage</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="visibility"><a href="legend.html"><img  src="published.gif" alt="Published" title="Published"></a></td>
+<td class="itemcode"><span id="Var_k_v"></span><code>property <strong>Var_k_v</strong> : TVar read <a href="Development.TDevelopment.html#k_v">k_v</a> write <a href="Development.TDevelopment.html#k_v">k_v</a>;</code></td>
+</tr>
+<tr><td colspan="2">
+<p>
+Define Value</p>
+</td></tr>
+</table>
+<hr><span class="appinfo"><em>Generated by <a href="https://pasdoc.github.io/">PasDoc 0.16.0-snapshot</a>. </em>
+</span>
+</div></div></body></html>

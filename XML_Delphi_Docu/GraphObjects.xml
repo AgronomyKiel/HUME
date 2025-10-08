@@ -1,0 +1,536 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="GraphObjects" platform="Win32">
+  <const name="TwoPoint" type="TGLineState" file="GraphObjects.pas" line="33">
+    <value>
+      TwoPoint
+    </value>
+  </const>
+  <const name="OnePoint" type="TGLineState" file="GraphObjects.pas" line="33">
+    <value>
+      OnePoint
+    </value>
+  </const>
+  <const name="Vector" type="TGLineState" file="GraphObjects.pas" line="33">
+    <value>
+      Vector
+    </value>
+  </const>
+  <struct name="TRGB" size="4" packed="true" file="GraphObjects.pas" line="27">
+    <field name="Color" type="Cardinal" visibility="public" variant="true" size="4" offset="0" file="GraphObjects.pas" line="29" />
+    <field name="R" type="Byte" visibility="public" variant="true" size="1" offset="0" file="GraphObjects.pas" line="30" />
+    <field name="G" type="Byte" visibility="public" variant="true" size="1" offset="1" file="GraphObjects.pas" line="30" />
+    <field name="B" type="Byte" visibility="public" variant="true" size="1" offset="2" file="GraphObjects.pas" line="30" />
+    <field name="A" type="Byte" visibility="public" variant="true" size="1" offset="3" file="GraphObjects.pas" line="30" />
+  </struct>
+  <enum name="TGLineState" file="GraphObjects.pas" line="33">
+    <element value="0" name="TwoPoint" file="GraphObjects.pas" line="33" />
+    <element value="1" name="OnePoint" file="GraphObjects.pas" line="33" />
+    <element value="2" name="Vector" file="GraphObjects.pas" line="33" />
+  </enum>
+  <class name="TGraphObject" file="GraphObjects.pas" line="39">
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public" procflags="inline">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="QualifiedClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitScope" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+      <methodref name="GetDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <propertyref name="Disposed" visibility="protected">
+      </propertyref>
+    </ancestor>
+    <members>
+      <field name="orig_index" type="Integer" visibility="private" size="4" offset="4" file="GraphObjects.pas" line="41" />
+      <field name="index" type="Integer" visibility="private" size="4" offset="8" file="GraphObjects.pas" line="42" />
+      <field name="List" type="TList" visibility="private" size="4" offset="12" file="GraphObjects.pas" line="43" />
+      <field name="Canvas" type="TCanvas" visibility="private" size="4" offset="16" file="GraphObjects.pas" line="44" />
+      <constructor name="Create" visibility="protected" file="GraphObjects.pas" line="46">
+        <parameters>
+          <parameter name="L" type="TList" />
+          <parameter name="C" type="TCanvas" />
+        </parameters>
+      </constructor>
+      <field name="Color" type="TRGB" visibility="public" size="4" offset="20" file="GraphObjects.pas" line="48" />
+      <procedure name="MoveToList" visibility="public" file="GraphObjects.pas" line="49">
+        <parameters>
+          <parameter name="L" type="TList" />
+        </parameters>
+      </procedure>
+      <procedure name="CopyToList" visibility="public" file="GraphObjects.pas" line="50">
+        <parameters>
+          <parameter name="L" type="TList" />
+        </parameters>
+      </procedure>
+      <function name="CloneToList" visibility="public" file="GraphObjects.pas" line="51">
+        <parameters>
+          <parameter name="L" type="TList" />
+          <retval type="TGraphObject" />
+        </parameters>
+      </function>
+      <function name="GetIndex" visibility="public" file="GraphObjects.pas" line="52">
+        <parameters>
+          <retval type="Integer" />
+        </parameters>
+      </function>
+      <function name="GetOrigIndex" visibility="public" file="GraphObjects.pas" line="53">
+        <parameters>
+          <retval type="Integer" />
+        </parameters>
+      </function>
+      <procedure name="Delete" visibility="public" file="GraphObjects.pas" line="54">
+        <parameters>
+          <parameter name="orig" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="SetCanvas" visibility="public" file="GraphObjects.pas" line="55">
+        <parameters>
+          <parameter name="c" type="TCanvas" />
+        </parameters>
+      </procedure>
+      <function name="GetCanvas" visibility="public" file="GraphObjects.pas" line="56">
+        <parameters>
+          <retval type="TCanvas" />
+        </parameters>
+      </function>
+      <procedure name="ReIndex" visibility="public" procflags="overload" file="GraphObjects.pas" line="57">
+        <parameters>
+          <parameter name="Orig" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="ReIndex" visibility="public" procflags="overload" file="GraphObjects.pas" line="58">
+        <parameters>
+          <parameter name="Orig" type="Boolean" />
+          <parameter name="i" type="Integer" />
+        </parameters>
+      </procedure>
+      <procedure name="Draw" visibility="public" procflags="abstract virtual" file="GraphObjects.pas" line="59">
+      </procedure>
+      <procedure name="Clear" visibility="public" procflags="abstract virtual" file="GraphObjects.pas" line="60">
+      </procedure>
+      <function name="Clone" visibility="public" procflags="abstract virtual" file="GraphObjects.pas" line="61">
+        <parameters>
+          <retval type="TGraphObject" />
+        </parameters>
+      </function>
+    </members>
+  </class>
+  <class name="TGLine" file="GraphObjects.pas" line="68">
+    <ancestor name="TGraphObject" namespace="GraphObjects">
+      <methodref name="Create" visibility="protected" procflags="constructor" />
+      <methodref name="MoveToList" visibility="public" />
+      <methodref name="CopyToList" visibility="public" />
+      <methodref name="CloneToList" visibility="public" />
+      <methodref name="GetIndex" visibility="public" />
+      <methodref name="GetOrigIndex" visibility="public" />
+      <methodref name="Delete" visibility="public" />
+      <methodref name="SetCanvas" visibility="public" />
+      <methodref name="GetCanvas" visibility="public" />
+      <methodref name="ReIndex" visibility="public" procflags="overload" />
+      <methodref name="ReIndex" visibility="public" procflags="overload" />
+      <methodref name="Draw" visibility="public" procflags="abstract virtual" />
+      <methodref name="Clear" visibility="public" procflags="abstract virtual" />
+      <methodref name="Clone" visibility="public" procflags="abstract virtual" />
+      <ancestor name="TObject" namespace="System">
+        <methodref name="Create" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="Free" visibility="public">
+        </methodref>
+        <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+        </methodref>
+        <methodref name="InitInstance" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="CleanupInstance" visibility="public">
+        </methodref>
+        <methodref name="ClassType" visibility="public" procflags="inline">
+        </methodref>
+        <methodref name="ClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassNameIs" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassParent" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="ClassInfo" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InstanceSize" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InheritsFrom" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="QualifiedClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="GetInterface" visibility="public">
+        </methodref>
+        <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="UnitName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="UnitScope" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="Equals" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetHashCode" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ToString" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="SafeCallException" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Dispatch" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="NewInstance" visibility="public" procflags="class virtual">
+        </methodref>
+        <methodref name="FreeInstance" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+        </methodref>
+        <methodref name="GetDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <propertyref name="Disposed" visibility="protected">
+        </propertyref>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="state" type="TGLineState" visibility="private" size="1" offset="24" file="GraphObjects.pas" line="70" />
+      <field name="d" type="Extended" visibility="private" size="10" offset="32" file="GraphObjects.pas" line="71" />
+      <field name="dx" type="Extended" visibility="private" size="10" offset="48" file="GraphObjects.pas" line="71" />
+      <field name="dy" type="Extended" visibility="private" size="10" offset="64" file="GraphObjects.pas" line="71" />
+      <field name="ix" type="Extended" visibility="private" size="10" offset="80" file="GraphObjects.pas" line="72" />
+      <field name="iy" type="Extended" visibility="private" size="10" offset="96" file="GraphObjects.pas" line="72" />
+      <field name="t" type="Extended" visibility="private" size="10" offset="112" file="GraphObjects.pas" line="72" />
+      <field name="r" type="Extended" visibility="private" size="10" offset="128" file="GraphObjects.pas" line="72" />
+      <procedure name="initialize" visibility="private" file="GraphObjects.pas" line="73">
+      </procedure>
+      <field name="p1" type="TGPoint" visibility="public" size="4" offset="140" file="GraphObjects.pas" line="75" />
+      <field name="p2" type="TGPoint" visibility="public" size="4" offset="144" file="GraphObjects.pas" line="75" />
+      <field name="ex" type="Extended" visibility="public" size="10" offset="152" file="GraphObjects.pas" line="76" />
+      <field name="ey" type="Extended" visibility="public" size="10" offset="168" file="GraphObjects.pas" line="76" />
+      <field name="BisectorOf" visibility="public" size="8" offset="180" file="GraphObjects.pas" line="77">
+        <array name="BisectorOf" visibility="public" low="1" high="2" file="GraphObjects.pas" line="77">
+          <element type="Integer" />
+        </array>
+      </field>
+      <constructor name="Create" visibility="public" file="GraphObjects.pas" line="78">
+        <parameters>
+          <parameter name="p1_" type="TGPoint" />
+          <parameter name="p2_" type="TGPoint" />
+          <parameter name="s" type="TGLineState" />
+          <parameter name="L" type="TList" />
+          <parameter name="C" type="TCanvas" />
+        </parameters>
+      </constructor>
+      <function name="Clone" visibility="public" procflags="override" file="GraphObjects.pas" line="79">
+        <parameters>
+          <retval type="TGraphObject" />
+        </parameters>
+      </function>
+      <procedure name="Draw" visibility="public" procflags="override" file="GraphObjects.pas" line="81">
+      </procedure>
+      <procedure name="Clear" visibility="public" procflags="override" file="GraphObjects.pas" line="82">
+      </procedure>
+      <function name="GetState" visibility="public" file="GraphObjects.pas" line="84">
+        <parameters>
+          <retval type="TGLineState" />
+        </parameters>
+      </function>
+      <function name="Intersect" visibility="public" file="GraphObjects.pas" line="85">
+        <parameters>
+          <parameter name="ln" type="TGLine" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <procedure name="GetCurrentIPoint" visibility="public" procflags="overload" file="GraphObjects.pas" line="86">
+        <parameters>
+          <parameter name="x" type="Extended" paramflags="var" />
+          <parameter name="y" type="Extended" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="GetCurrentIPoint" visibility="public" procflags="overload" file="GraphObjects.pas" line="87">
+        <parameters>
+          <parameter name="p" type="TGPoint" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="CutRight" visibility="public" file="GraphObjects.pas" line="88">
+        <parameters>
+          <parameter name="ln" type="TGLine" />
+        </parameters>
+      </procedure>
+      <procedure name="CutLeft" visibility="public" file="GraphObjects.pas" line="89">
+        <parameters>
+          <parameter name="ln" type="TGLine" />
+        </parameters>
+      </procedure>
+      <procedure name="CutBoth" visibility="public" file="GraphObjects.pas" line="90">
+        <parameters>
+          <parameter name="ln" type="TGLine" />
+        </parameters>
+      </procedure>
+    </members>
+  </class>
+  <class name="TGPoint" file="GraphObjects.pas" line="94">
+    <ancestor name="TGraphObject" namespace="GraphObjects">
+      <methodref name="Create" visibility="protected" procflags="constructor" />
+      <methodref name="MoveToList" visibility="public" />
+      <methodref name="CopyToList" visibility="public" />
+      <methodref name="CloneToList" visibility="public" />
+      <methodref name="GetIndex" visibility="public" />
+      <methodref name="GetOrigIndex" visibility="public" />
+      <methodref name="Delete" visibility="public" />
+      <methodref name="SetCanvas" visibility="public" />
+      <methodref name="GetCanvas" visibility="public" />
+      <methodref name="ReIndex" visibility="public" procflags="overload" />
+      <methodref name="ReIndex" visibility="public" procflags="overload" />
+      <methodref name="Draw" visibility="public" procflags="abstract virtual" />
+      <methodref name="Clear" visibility="public" procflags="abstract virtual" />
+      <methodref name="Clone" visibility="public" procflags="abstract virtual" />
+      <ancestor name="TObject" namespace="System">
+        <methodref name="Create" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="Free" visibility="public">
+        </methodref>
+        <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+        </methodref>
+        <methodref name="InitInstance" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="CleanupInstance" visibility="public">
+        </methodref>
+        <methodref name="ClassType" visibility="public" procflags="inline">
+        </methodref>
+        <methodref name="ClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassNameIs" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassParent" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="ClassInfo" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InstanceSize" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InheritsFrom" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="QualifiedClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="GetInterface" visibility="public">
+        </methodref>
+        <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="UnitName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="UnitScope" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="Equals" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetHashCode" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ToString" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="SafeCallException" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Dispatch" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="NewInstance" visibility="public" procflags="class virtual">
+        </methodref>
+        <methodref name="FreeInstance" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+        </methodref>
+        <methodref name="GetDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <propertyref name="Disposed" visibility="protected">
+        </propertyref>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="x" type="Extended" visibility="private" size="10" offset="24" file="GraphObjects.pas" line="96" />
+      <field name="y" type="Extended" visibility="private" size="10" offset="40" file="GraphObjects.pas" line="96" />
+      <field name="closeDist" type="Extended" visibility="public" size="10" offset="56" file="GraphObjects.pas" line="98" />
+      <constructor name="Create" visibility="public" file="GraphObjects.pas" line="99">
+        <parameters>
+          <parameter name="x_" type="Extended" />
+          <parameter name="y_" type="Extended" />
+          <parameter name="L" type="TList" />
+          <parameter name="C" type="TCanvas" />
+        </parameters>
+      </constructor>
+      <function name="Clone" visibility="public" procflags="override" file="GraphObjects.pas" line="100">
+        <parameters>
+          <retval type="TGraphObject" />
+        </parameters>
+      </function>
+      <procedure name="Draw" visibility="public" procflags="override" file="GraphObjects.pas" line="102">
+      </procedure>
+      <procedure name="Clear" visibility="public" procflags="override" file="GraphObjects.pas" line="103">
+      </procedure>
+      <function name="getX" visibility="public" file="GraphObjects.pas" line="105">
+        <parameters>
+          <retval type="Extended" />
+        </parameters>
+      </function>
+      <function name="getY" visibility="public" file="GraphObjects.pas" line="106">
+        <parameters>
+          <retval type="Extended" />
+        </parameters>
+      </function>
+      <function name="DistanceTo" visibility="public" procflags="overload" file="GraphObjects.pas" line="107">
+        <parameters>
+          <parameter name="p" type="TGPoint" />
+          <retval type="Extended" />
+        </parameters>
+      </function>
+      <function name="DistanceTo" visibility="public" procflags="overload" file="GraphObjects.pas" line="108">
+        <parameters>
+          <parameter name="x_" type="Extended" />
+          <parameter name="y_" type="Extended" />
+          <retval type="Extended" />
+        </parameters>
+      </function>
+      <procedure name="MoveTo" visibility="public" file="GraphObjects.pas" line="109">
+        <parameters>
+          <parameter name="x_" type="Extended" />
+          <parameter name="y_" type="Extended" />
+        </parameters>
+      </procedure>
+      <function name="Match" visibility="public" procflags="overload" file="GraphObjects.pas" line="110">
+        <parameters>
+          <parameter name="p" type="TGPoint" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="Match" visibility="public" procflags="overload" file="GraphObjects.pas" line="111">
+        <parameters>
+          <parameter name="x_" type="Extended" />
+          <parameter name="y_" type="Extended" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="Angle" visibility="public" file="GraphObjects.pas" line="112">
+        <parameters>
+          <parameter name="p" type="TGPoint" />
+          <retval type="Extended" />
+        </parameters>
+      </function>
+      <function name="IsRightTurn" visibility="public" file="GraphObjects.pas" line="113">
+        <parameters>
+          <parameter name="p1" type="TGPoint" />
+          <parameter name="p2" type="TGPoint" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="areCollinear" visibility="public" file="GraphObjects.pas" line="114">
+        <parameters>
+          <parameter name="a" type="TGPoint" />
+          <parameter name="b" type="TGPoint" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="Bisector" visibility="public" file="GraphObjects.pas" line="115">
+        <parameters>
+          <parameter name="p" type="TGPoint" />
+          <retval type="TGLine" />
+        </parameters>
+      </function>
+    </members>
+  </class>
+</namespace>

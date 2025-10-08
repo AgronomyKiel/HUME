@@ -1,4 +1,4 @@
-unit UFormMod;
+ï»¿unit UFormMod;
 
 interface
 
@@ -127,7 +127,6 @@ type
     AdvStringGridModelSummary: TAdvStringGrid;
     SpeedButtonMergeData: TSpeedButton;
     btnCheckButton1: TSpeedButton;
-    Lmod: TModLink;
  //   CheckBoxContOutput: TCheckBox;
     GroupBoxIniFileEdits: TGroupBox;
     GroupBoxControlFileName: TGroupBox;
@@ -165,6 +164,7 @@ type
     GroupBox1: TGroupBox;
     SpeedButtonNoContOutput: TSpeedButton;
     SpeedButtonAllContOutput: TSpeedButton;
+    LMod: TModLink;
 
     procedure RunModel; virtual;
     procedure Menu_RunClick(Sender: TObject); virtual;
@@ -403,30 +403,34 @@ begin
  inherited;
   if ParamCount > 0 then begin
     // Execute HUME with ParameterStrings 1: FN-File and 2; Output-Directory
-    // without showing the GUI   -  Ulf Böttcher 25.8.2021
+    // without showing the GUI   -  Ulf Bï¿½ttcher 25.8.2021
     CtrlFileFN := ParamStr(1);
     OutDir := ParamStr(2);
     if Lmod.fModel <> nil then
     begin
-      if OutDir <> '' then Lmod.fModel.GM_OutPutPath := OutDir;
+      if OutDir <> '' then
+      begin
+        Lmod.fModel.GM_OutPutPath := OutDir;
+        Lmod.fModel.ReadIniOutputpath := false;
+      end;
       LMod.fModel.Set_ControlFileFN(CtrlFileFN);
       Lmod.fModel.init(Lmod.fModel.actIniFile);
       Lmod.fModel.InitAllSubMods;
 
       // gespeicherte Properties aus *ini Datei einlesen
-  {    path :=  ExtractFilePath(ParamStr(0));
+      path :=  ExtractFilePath(ParamStr(0));
       fn := path+ 'properties.ini';
-      FPropIniFile := TMyIniFile.create(fn);
+      Lmod.fModel.FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
       for i := 0 to Lmod.fModel.SubModStrList.count - 1 do
       begin
         ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[i]);
         with ActSubMod do
         begin
-          setPropFromIniFile(stateStrList, Name);
-          setPropFromIniFile(VarStrList, Name);
-          setPropFromIniFile(ExternVStrList, Name);
+          Lmod.fModel.setPropFromIniFile(stateStrList, Name);
+          Lmod.fModel.setPropFromIniFile(VarStrList, Name);
+          Lmod.fModel.setPropFromIniFile(ExternVStrList, Name);
         end;
-      end;     }
+      end;
 
       Lmod.fModel.run;
     end;
@@ -515,8 +519,6 @@ begin
  // Lmod.fModel.Set_ControlFileFN(CtrlFileFN);
 //  Lmod.fModel.GM_ControlFile := CtrlFileFN;
   updateForm;
-
-
 end;
 
 procedure TFormMod.RunModel;
@@ -555,7 +557,7 @@ begin
 end;
 
 // ==============================================================================
-// UpdateStringGrid für alle States
+// UpdateStringGrid fï¿½r alle States
 // ==============================================================================
 
 procedure TFormMod.UpdateStringGridParam;
@@ -563,7 +565,7 @@ var
   i, actSubModIndex: Integer;
   SubModel: TSubModel;
   Param: TPar;
-  line: string;
+  line, LinkString: string;
 begin
   with AdvStringGridParam do
   begin
@@ -572,7 +574,7 @@ begin
 
     EditParamFileName.Text := Lmod.fModel.ParamInifile.FileName;
     Clear;
-    Rows[0].commatext := 'Name, Unit, Value, Save_to_all_Inis, Info';
+    Rows[0].commatext := 'Name, Unit, Value, Save_to_all_Inis, Info, DocuLink';
     RowCount := 2;
     FixedRows := 1;
 
@@ -585,11 +587,23 @@ begin
       begin
         Param := TPar(SubModel.ParStrList.objects[i]);
         with Param do
-          line := name + ',' + u + ',' + floattoStrF(v, ffgeneral, 6, 3);
-        Rows[i + 1].commatext := line;
+//          line := name + ',' + u + ',' + floattoStrF(v, ffgeneral, 6, 3);
+        cells[0, i+1] := name;
+        cells[1, i+1] := Param.U;
+        cells[2, i+1] := floattoStrF(Param.v, ffgeneral, 6, 3);
+
+
+//        Rows[i + 1].commatext := line;
         AddBitButton(3, i + 1, 20, 20, '', img_savetoall, haCenter, vaCenter);
         if Param.Comment <> '' then
           AddBitButton(4, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
+        if param.DocuWebLink <> '' then begin
+          LinkString := ' <A href="' + Param.DocuWebLink + '" title="' + Param.DocuWebLink + '">Explanation</A>';
+          cells[5, i+1] := LinkString;
+
+        end;
+
+
       end;
     end;
     EditParamFileName.hint := Lmod.fModel.ParamInifile.FileName;
@@ -622,7 +636,7 @@ begin
     EditStateFileName.Text := Lmod.fModel.StateIniFile.FileName;
     Clear;
     Rows[0].commatext :=
-      'Name, Unit, Ini.Value, SaveToAllInis, WriteToFile, Plot, WriteFinalValue, GlobalOutput, Ínfo';
+      'Name, Unit, Ini.Value, SaveToAllInis, WriteToFile, Plot, WriteFinalValue, GlobalOutput, ï¿½nfo';
     // Description';
     RowCount := 2;
     FixedRows := 1;
@@ -706,10 +720,14 @@ var
   SubModel: TSubModel;
   Option: TOption;
   line: string;
+  LinkString: string;
 begin
   with AdvStringGridOptions do
   begin
     BeginUpdate;
+    AdvStringGridOptions.URLFull := false;
+    AdvStringGridOptions.URLShow  := true;
+
     // TODO ActIniFileIndex := ComboBoxIniFile.ItemIndex;
     // TODO Inifile := TMyIniFile(LMod.fModel.FiniFiles.objects[ActIniFileIndex]);
     // TODO LMod.fModel.init(IniFile);
@@ -718,7 +736,7 @@ begin
 
     EditOptionsFileName.Text := Lmod.fModel.OptionIniFile.FileName;
     Clear;
-    Rows[0].commatext := 'Name, Options, SaveToAllIni, Info';
+    Rows[0].commatext := 'Name, Options, SaveToAllIni, Info, DocuLink';
     RowCount := 2;
     FixedRows := 1;
     actSubModIndex := ComboBoxSubMod.ItemIndex;
@@ -729,8 +747,22 @@ begin
       for i := 0 to SubModel.OptionStrList.count - 1 do
       begin
         Option := TOption(SubModel.OptionStrList.objects[i]);
-        line := Option.name + ',' + Option.Option;
-        Rows[i + 1].commatext := line;
+//        line := Option.name + ',' + Option.Option;
+        AdvStringGridOptions.cells[0, i+1] := Option.name;
+        AdvStringGridOptions.cells[1, i+1] := Option.Option;
+
+        if Option.DocuWebLink <> '' then begin
+          LinkString := ' <A href="' + Option.DocuWebLink + '"title="'+Option.DocuWebLink+'>Explanation</A>';
+//          LinkString := Option.DocuWebLink;
+  //        line := line + ','','',' + LinkString ;
+ //       AdvStringGridOptions.cells[4, i+1] := Option.DocuWebLink;
+        AdvStringGridOptions.cells[4, i+1] := LinkString;
+//        AdvStringGridOptions.Hyperlinks.add(4, i+1, LinkString);
+
+        end;
+//        else
+//          line := line + ',' + Option.Option;
+//        Rows[i + 1].commatext := line;
         AddBitButton(2, i + 1, 20, 20, '', img_savetoall, haCenter, vaCenter);
         if Option.Comment <> '' then
           AddBitButton(3, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
@@ -1060,7 +1092,7 @@ begin
       EditDataFileName.hint := SubModel.FMeasValues.FName;
 
       // LoadFromCSV(SubModel.FMeasValues.FileName);
-      // wäre wesentlich einfacher, geht aber nicht,
+      // wï¿½re wesentlich einfacher, geht aber nicht,
       // weil die Daten mit beliebig vielen Leerzeichen getrennt sind
 
       if CheckBoxDataDateFormat.Checked then
@@ -1322,7 +1354,8 @@ begin
       // if entity.PlotToGraph then
       // entity.WriteToFile := true;
       WriteBool(submodname, entity.Name + '.WriteToFile', entity.writeToFile);
-      WriteBool(submodname, entity.Name + '.SelForSensOut', entity.SelForSensOut);
+// hk 18.08.2025
+//      WriteBool(submodname, entity.Name + '.SelForSensOut', entity.SelForSensOut);
     end;
   end;
   Lmod.fModel.FPropIniFile.UpdateFile;
@@ -1454,10 +1487,18 @@ end;
        if index >= 0 then
        begin
          ActExVar := TExternV(SubModel.ExternVStrList.objects[index]);
+         GetCheckBoxState(4, i, ActExVar.WriteToFile);
          GetCheckBoxState(5, i, ActExVar.PlotToGraph);
        end;
      end;
    end;
+  updatePropIniFile(SubModel.ExternVStrList, SubModel.name);
+  self.UpdateStringGridExternV;
+  Lmod.fModel.init(Lmod.fModel.actIniFile);
+  Lmod.fModel.InitAllSubMods;
+
+
+
  end;
 
  procedure TFormMod.SaveVar();
@@ -1625,17 +1666,17 @@ begin
     if rep = false then
     begin
       NewLine := DelDoubleSpaces(ActWeather.Strings[0]);
-      NewLine := StringReplace(NewLine, ' ', Model.separator,
+      NewLine := StringReplace(NewLine, ' ', Model.Separator,
         [rfReplaceAll, rfIgnoreCase]);
-      NewLine := 'IniFile' + Model.separator + 'WeatherFile' + Model.separator
+      NewLine := 'IniFile' + Model.Separator + 'WeatherFile' + Model.Separator
         + NewLine;
       writeln(AllData, NewLine);
       for lines := 2 to ActWeather.count - 1 do
       begin
         NewLine := DelDoubleSpaces(ActWeather.Strings[lines]);
-        NewLine := StringReplace(NewLine, ' ', Model.separator,
+        NewLine := StringReplace(NewLine, ' ', Model.Separator,
           [rfReplaceAll, rfIgnoreCase]);
-        NewLine := actIniFN + Model.separator + w_fn + Model.separator
+        NewLine := actIniFN + Model.Separator + w_fn + Model.Separator
           + NewLine;
         writeln(AllData, NewLine);
         rep := True;
@@ -1646,9 +1687,9 @@ begin
       for lines := 2 to ActWeather.count - 1 do
       begin
         NewLine := DelDoubleSpaces(ActWeather.Strings[lines]);
-        NewLine := StringReplace(NewLine, ' ', Model.separator,
+        NewLine := StringReplace(NewLine, ' ', Model.Separator,
           [rfReplaceAll, rfIgnoreCase]);
-        NewLine := actIniFN + Model.separator + w_fn + Model.separator
+        NewLine := actIniFN + Model.Separator + w_fn + Model.Separator
           + NewLine;
         writeln(AllData, NewLine);
       end;
@@ -1666,7 +1707,7 @@ begin
 end;
 
 // ==============================================================================
-// AdvStringGrid ButtonClick für alle States
+// AdvStringGrid ButtonClick fï¿½r alle States
 // ==============================================================================
 
 procedure TFormMod.AdvStringGridParamButtonClick(Sender: TObject;
@@ -2378,7 +2419,7 @@ begin
           line := ',' + line; }
         ncol := 1;
         for i := 1 to Length(line) do
-          if line[i] = Model.separator then
+          if line[i] = Model.Separator then
             inc(ncol);
         with FormShowFinalValues.AdvStringGrid1 do
         begin
@@ -2527,20 +2568,20 @@ begin
     'HUME: AN OBJECT ORIENTED COMPONENT LIBRARY FOR GENERIC MODULAR MODELLING OF DYNAMIC SYSTEMS '
     + #13 + #10 + '' + #13 + #10 + 'H. Kage' + #13 + #10 + '' + #13 + #10 +
     'Any model based on this library consists of one main model ' + #13 + #10 +
-    'module, implemented in a class called ‘Tmod’ and a number ' + #13 + #10 +
+    'module, implemented in a class called ï¿½Tmodï¿½ and a number ' + #13 + #10 +
     'of sub-models. The main model is responsible for the control ' + #13 + #10
     + 'of the simulation, single or multiple runs, and also implements ' + #13 +
     #10 + 'methods like calculating basic statistics and parameter ' + #13 + #10
     + 'estimation based on the Levenberg-Marquardt method. ' + #13 + #10 +
     'All sub-models have to be derived from the base class ' + #13 + #10 +
-    '‘TsubMod’ which contains dynamic lists of state variables, ' + #13 + #10 +
-    'variables, parameters and ‘external values’, i.e. values ' + #13 + #10 +
+    'ï¿½TsubModï¿½ which contains dynamic lists of state variables, ' + #13 + #10 +
+    'variables, parameters and ï¿½external valuesï¿½, i.e. values ' + #13 + #10 +
     'needed from outside the sub-model. The information' + #13 + #10 +
-    'exchange between the sub-models through ‘external values’ ' + #13 + #10 +
+    'exchange between the sub-models through ï¿½external valuesï¿½ ' + #13 + #10 +
     'is flexible, since it is simply based on string identities between ' + #13
     + #10 + 'the information needed and information located in any other ' + #13
     + #10 + 'submodel or input file. This technique allows exchange of ' + #13 +
-    #10 + 'sub-models through ‘drag and drop’ without any changes in ' + #13 +
+    #10 + 'sub-models through ï¿½drag and dropï¿½ without any changes in ' + #13 +
     #10 + 'the source code even for a changing number and order of ' + #13 + #10
     + 'parameters, as long as the necessary input parameters to the ' + #13 +
     #10 + 'sub-model can be found anywhere else in the model. ' + #13 + #10 +
@@ -2864,7 +2905,7 @@ begin
 end;
 
 // ==============================================================================
-// PageControl Änderungen
+// PageControl ï¿½nderungen
 // ==============================================================================
 
 procedure TFormMod.ViewVariables1Click(Sender: TObject);
@@ -2968,12 +3009,9 @@ begin
     for i := 0 to Lmod.fModel.SubModStrList.count - 1 do
     begin
       ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[i]);
-      with ActSubMod do
-      begin
-        Lmod.fModel.setPropFromIniFile(stateStrList, Name);
-        Lmod.fModel.setPropFromIniFile(VarStrList, Name);
-        Lmod.fModel.setPropFromIniFile(ExternVStrList, Name);
-      end;
+      Lmod.fModel.setPropFromIniFile(ActSubMod.stateStrList, ActSubMod.Name);
+      Lmod.fModel.setPropFromIniFile(ActSubMod.VarStrList, ActSubMod.Name);
+      Lmod.fModel.setPropFromIniFile(ActSubMod.ExternVStrList, ActSubMod.Name);
     end;
 
     UpdateStringGridParam;
@@ -3326,7 +3364,7 @@ begin
     FormGraphArray[nFormGraph].show;
   end
   else
-    showmessage('Mehr als 10 Graph-Fenster geöffnet');
+    showmessage('Mehr als 10 Graph-Fenster geï¿½ffnet');
 end;
 
 procedure TFormMod.OptimizeClick(Sender: TObject);

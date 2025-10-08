@@ -99,7 +99,7 @@ begin
     FirstLine.CommaText := slFile[0];
     UnitLine.CommaText := slFile[1];
     if UnitLIne.Count < FirstLine.Count then
-      for I := UnitLine.Count to FirstLine.Count do
+      for I := UnitLine.Count to FirstLine.Count - 1 do
         UnitLine.Append('[]');
      for i := 0 to firstLine.count - 1 do
       firstLine.objects[i] := TVar.create(firstline.strings[i],
@@ -199,7 +199,7 @@ var
   actValue: real;
   success: boolean;
 begin
-  success := true;
+  success := false;
   actnr := 1;
   while hasMoreLines() do begin
     NextLine;

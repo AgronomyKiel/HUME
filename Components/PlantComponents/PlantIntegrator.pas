@@ -3,61 +3,46 @@ unit PlantIntegrator;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, vcl.Graphics, vcl.Controls, vcl.Forms, vcl.Dialogs,
+  Windows, Messages, SysUtils, Classes, vcl.Graphics, vcl.Controls, vcl.Forms,
+  vcl.Dialogs,
   UMod, ULayeredSoil, Ustate, UAbstractPlant;
 
 const
   Maxplants = 6;
+
 type
-TExPlantArr = array[1..MaxPlants] of TExternV;
-TexPlantMatr = array[1..MaxPlants, 1..Max_comp] of TExternV;
+  TExPlantArr = array [1 .. Maxplants] of TExternV;
+  TexPlantMatr = array [1 .. Maxplants, 1 .. Max_comp] of TExternV;
 
   TPlantIntegrator = class(TSubmodel)
   private
     { Private-Deklarationen }
-    fNPlants,
-    fNLayers : integer;
-    fLAIName,
-    fPlantHeightName,
-    fNuptake : string;
+    fNPlants, fNLayers: integer;
+    fLAIName, fPlantHeightName, fNuptake: string;
   protected
     { Protected-Deklarationen }
   public
-    LAI,
-    PlantHeight,
-    NUptake
-     : TVar;
-    WLD_arr,
-    effWLD_arr,
-    WL_arr,
-    effWL_arr : TSoilVarArray;
+    LAI, PlantHeight, NUptake: TVar;
+    WLD_arr, effWLD_arr, WL_arr, effWL_arr: TSoilVarArray;
 
-    exLAI,
-    exNUptake,
-    exPlantHeight : TExPlantArr;
-    exWLD,
-    exWL,
-    exeffWLD,
-    exeffWL         : TExPlantMatr;
+    exLAI, exNUptake, exPlantHeight: TExPlantArr;
+    exWLD, exWL, exeffWLD, exeffWL: TexPlantMatr;
 
-   procedure createAll; override;
+    procedure createAll; override;
+
+    Constructor create(AOwner: TComponent); override;
+    // procedure Set_GlobMod(value:TMod);
 
 
-   Constructor create(AOwner : TComponent); override;
-//   procedure Set_GlobMod(value:TMod);
+    // procedure Init(var GlobMod:Tmod); override;
 
-
-//   procedure Init(var GlobMod:Tmod); override;
-
-   procedure CalcRates; override;
-
+    procedure CalcRates; override;
 
     { Public-Deklarationen }
   published
     { Published-Deklarationen }
-  property NPlants: integer read fNPlants write fNPlants;
-  property NLayers: integer read fNLayers write fNLayers;
-
+    property NPlants: integer read fNPlants write fNPlants;
+    property NLayers: integer read fNLayers write fNLayers;
 
   end;
 
@@ -68,88 +53,91 @@ implementation
 procedure TPlantIntegrator.createAll;
 
 var
-  i, j :integer;
+  i, j: integer;
 
 begin
   VarCreate('LAI', '[-]', 0.0, false, LAI);
-  VarCreate('PlantNDemand', '[gN.m-2.d-1]', 0.0, false, Nuptake);
-  VarCreate('CropHeight', '[-]', 0.0, false, Plantheight);
+  VarCreate('PlantNDemand', '[gN.m-2.d-1]', 0.0, false, NUptake);
+  VarCreate('CropHeight', '[-]', 0.0, false, PlantHeight);
 
-  for i := 1 to NPlants do begin
-      ExternVCreate('LAI'+inttostr(i), '[]', StateField, exLAI[i]);
-      ExternVCreate('PlantNDemand'+inttostr(i), '[]', RateField, exNUptake[i]);
-      ExternVCreate('CropHeight'+inttostr(i), '[]', StateField, exPlantHeight[i]);
-      for j := 1 to NLayers do begin
-        ExternVCreate('Sal'+inttostr(i)+'WLD_'+inttostr(j), '[]', StateField, exWLD[i,j]);
-        ExternVCreate('Sal'+inttostr(i)+'WL_'+inttostr(j),  '[]', StateField, exWL[i,j]);
-        ExternVCreate('Sal'+inttostr(i)+'effWLD_'+inttostr(j), '[]', StateField, exeffWLD[i,j]);
-        ExternVCreate('Sal'+inttostr(i)+'effWL_'+inttostr(j),  '[]', StateField, exeffWL[i,j]);
+  for i := 1 to NPlants do
+  begin
+    ExternVCreate('LAI' + inttostr(i), '[]', StateField, exLAI[i]);
+    ExternVCreate('PlantNDemand' + inttostr(i), '[]', RateField, exNUptake[i]);
+    ExternVCreate('CropHeight' + inttostr(i), '[]', StateField,
+      exPlantHeight[i]);
+    for j := 1 to NLayers do
+    begin
+      ExternVCreate('Sal' + inttostr(i) + 'WLD_' + inttostr(j), '[]',
+        StateField, exWLD[i, j]);
+      ExternVCreate('Sal' + inttostr(i) + 'WL_' + inttostr(j), '[]', StateField,
+        exWL[i, j]);
+      ExternVCreate('Sal' + inttostr(i) + 'effWLD_' + inttostr(j), '[]',
+        StateField, exeffWLD[i, j]);
+      ExternVCreate('Sal' + inttostr(i) + 'effWL_' + inttostr(j), '[]',
+        StateField, exeffWL[i, j]);
 
-      end;
-
-  end;
-
-  for i := 1 to NLayers do begin
-     VarCreate('WLD_'+inttostr(i), '[-]', 0.0, false, WLD_arr[i]);
-     wld_arr[i].WriteToFile := false;
-     VarCreate('WL_'+inttostr(i), '[-]', 0.0, false, WL_arr[i]);
-     wl_arr[i].WriteToFile := false;
-     VarCreate('effWLD_'+inttostr(i), '[-]', 0.0, false, effWLD_arr[i]);
-     effwld_arr[i].WriteToFile := false;
-     VarCreate('effWL_'+inttostr(i), '[-]', 0.0, false, effWL_arr[i]);
-     effwl_arr[i].WriteToFile := false;
+    end;
 
   end;
 
+  for i := 1 to NLayers do
+  begin
+    VarCreate('WLD_' + inttostr(i), '[-]', 0.0, false, WLD_arr[i]);
+    WLD_arr[i].WriteToFile := false;
+    VarCreate('WL_' + inttostr(i), '[-]', 0.0, false, WL_arr[i]);
+    WL_arr[i].WriteToFile := false;
+    VarCreate('effWLD_' + inttostr(i), '[-]', 0.0, false, effWLD_arr[i]);
+    effWLD_arr[i].WriteToFile := false;
+    VarCreate('effWL_' + inttostr(i), '[-]', 0.0, false, effWL_arr[i]);
+    effWL_arr[i].WriteToFile := false;
 
-
-
+  end;
 
 end;
 
-Constructor TPlantIntegrator.Create(AOwner : TComponent);
+Constructor TPlantIntegrator.create(AOwner: TComponent);
 
 begin
-  fNplants := 2;
+  fNPlants := 2;
   fNLayers := 20;
   inherited create(AOwner);
-  CreateAll;
+  createAll;
 end;
-
 
 procedure TPlantIntegrator.CalcRates;
 
 var
-  i, j : integer;
+  i, j: integer;
 begin
-  Lai.V := 0.0;
-  NUptake.v := 0.0;
-  PlantHeight.v := 0.0;
-  for j := 1 to NLayers do begin
-    WLD_arr[j].v := 0.0;
-    WL_arr[j].v := 0.0;
-    effWLD_arr[j].v := 0.0;
-    effWL_arr[j].v  := 0.0;
+  LAI.V := 0.0;
+  NUptake.V := 0.0;
+  PlantHeight.V := 0.0;
+  for j := 1 to NLayers do
+  begin
+    WLD_arr[j].V := 0.0;
+    WL_arr[j].V := 0.0;
+    effWLD_arr[j].V := 0.0;
+    effWL_arr[j].V := 0.0;
   end;
 
+  for i := 1 to NPlants do
+  begin
+    LAI.V := LAI.V + exLAI[i].V;
+    NUptake.V := NUptake.V + exNUptake[i].V;
+    PlantHeight.V := PlantHeight.V + exPlantHeight[i].V;
 
-  for i := 1 to NPlants do begin
-    lai.v := lai.v + exLAI[i].v;
-    NUptake.v := NUptake.v + exNUptake[i].v;
-    PlantHeight.v := PlantHeight.v + exPlantHeight[i].v;
-
-    for j := 1 to NLayers do begin
-      WLD_arr[j].v := WLD_arr[j].v + exWLD[i,j].v;
-      WL_arr[j].v  :=  WL_arr[j].v + exWL[i,j].v;
-      effWLD_arr[j].v := effWLD_arr[j].v + exeffWLD[i,j].v;
-      effWL_arr[j].v := effWL_arr[j].v + exeffWL[i,j].v;
+    for j := 1 to NLayers do
+    begin
+      WLD_arr[j].V := WLD_arr[j].V + exWLD[i, j].V;
+      WL_arr[j].V := WL_arr[j].V + exWL[i, j].V;
+      effWLD_arr[j].V := effWLD_arr[j].V + exeffWLD[i, j].V;
+      effWL_arr[j].V := effWL_arr[j].V + exeffWL[i, j].V;
     end;
 
   end;
 
 end;
-
-
 
 procedure Register;
 begin

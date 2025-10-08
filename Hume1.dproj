@@ -4,7 +4,7 @@
         <MainSource>Hume1.dpk</MainSource>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
-        <ProjectVersion>20.1</ProjectVersion>
+        <ProjectVersion>20.3</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -105,6 +105,8 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
         <DCC_BplOutput>C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\</DCC_BplOutput>
+        <DCC_XmlOutput>Q:\HUME\HUME\XML_Delphi_Docu\</DCC_XmlOutput>
+        <DCC_OutputXMLDocumentation>true</DCC_OutputXMLDocumentation>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -128,7 +130,7 @@
         </DCCReference>
         <DCCReference Include="UModUtils.pas"/>
         <DCCReference Include="UMrqMinD.pas"/>
-        <DCCReference Include="UState.pas"/>
+        <DCCReference Include="Ustate_.pas"/>
         <DCCReference Include="EditorForm\UFormSubmodelEditor.pas">
             <Form>F_SubmodelEditor</Form>
         </DCCReference>
@@ -153,8 +155,9 @@
             <Form>FormDebugAbstract</Form>
         </DCCReference>
         <DCCReference Include="inifilesNew.pas"/>
-        <DCCReference Include="UMod.pas"/>
         <DCCReference Include="UModReg.pas"/>
+        <DCCReference Include="UMod.pas"/>
+        <DCCReference Include="UNamedMatrix.pas"/>
         <None Include="ModelSupport_Hume1\default.txvpck"/>
         <None Include="ModelSupport_Hume1\default.txaPackage"/>
         <BuildConfiguration Include="Base">
@@ -211,13 +214,10 @@
                     <VersionInfoKeys Name="Comments"/>
                 </VersionInfoKeys>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\CeresSubModels.bpl">(untitled)</Excluded_Packages>
-                    <Excluded_Packages Name="Q:\HUME\ADV_STRGRD\asgd_Rio.bpl">File Q:\HUME\ADV_STRGRD\asgd_Rio.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\Hume1.bpl">HUME</Excluded_Packages>
-                    <Excluded_Packages Name="Q:\Kohl\BarleySubmodPackage\BarleyPack.bpl">(untitled)</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\SoilWaterPackage.bpl">(untitled)</Excluded_Packages>
                     <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\PackagePotato.bpl">(untitled)</Excluded_Packages>
                     <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\ISIP_Components.bpl">(untitled)</Excluded_Packages>
+                    <Excluded_Packages Name="Q:\HUME\ADV_STRGRD\asgd_Rio.bpl">File Q:\HUME\ADV_STRGRD\asgd_Rio.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="Q:\Kohl\BarleySubmodPackage\BarleyPack.bpl">(untitled)</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k290.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp290.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k290.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
@@ -231,9 +231,10 @@
                 <Platform value="Win64">False</Platform>
                 <Platform value="Win64x">False</Platform>
             </Platforms>
-            <Deployment Version="4">
+            <Deployment Version="5">
                 <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\20.0\Bpl\Win64\Hume1.bpl" Configuration="Debug" Class="ProjectOutput"/>
                 <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\21.0\Bpl\Hume1.bpl" Configuration="Debug" Class="ProjectOutput"/>
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\Hume1.bpl" Configuration="Debug" Class="ProjectOutput"/>
                 <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl\Hume1.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>Hume1.bpl</RemoteName>
@@ -246,16 +247,6 @@
                     </Platform>
                     <Platform Name="Win32">
                         <Operation>0</Operation>
-                    </Platform>
-                </DeployClass>
-                <DeployClass Name="AndroidClasses">
-                    <Platform Name="Android">
-                        <RemoteDir>classes</RemoteDir>
-                        <Operation>64</Operation>
-                    </Platform>
-                    <Platform Name="Android64">
-                        <RemoteDir>classes</RemoteDir>
-                        <Operation>64</Operation>
                     </Platform>
                 </DeployClass>
                 <DeployClass Name="AndroidFileProvider">
@@ -357,6 +348,16 @@
                     </Platform>
                     <Platform Name="Android64">
                         <RemoteDir>res\values-v31</RemoteDir>
+                        <Operation>1</Operation>
+                    </Platform>
+                </DeployClass>
+                <DeployClass Name="AndroidSplashStylesV35">
+                    <Platform Name="Android">
+                        <RemoteDir>res\values-v35</RemoteDir>
+                        <Operation>1</Operation>
+                    </Platform>
+                    <Platform Name="Android64">
+                        <RemoteDir>res\values-v35</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>

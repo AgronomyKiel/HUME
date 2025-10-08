@@ -1,21 +1,8 @@
 ---
-title: "Class description of TMaizeDevelopment"
-author: "Agronomy and Crop Science Group, Kiel University"
+title: "TSubDevelopmentMaize"
+author: "K. Holzhauser / Agronomy and Crop Science Group, Kiel University"
 date: "`r Sys.Date()`"
 bibliography: Literatur.bib
-csl: european-journal-of-agronomy.csl
-chunk_output_type: console
-html-math-method: katex
-number-sections: true
-toc: true
-toc-expand: 4
-toc-depth: 4
-toc-location: left
-crossref:
-  eq-prefix: Eq.
-format: 
-  html:
-    embed-resources: true 
 ---
 
 ```{r}
@@ -46,52 +33,107 @@ library(Weatherfunctions)
 library(xml2)
 library(ggpmisc)
 library(tidyr)
+library(ggplot2)
 options("citation_format" = "pandoc")
 
 ```
 
 ```{r}
 #| include: false
-fn_source <- "Q:/HUME/HUME/Components/Maize/Development.pas"
+#fn_source <- "Q:/HUME/HUME/Components/Evapotranspiration/UPenMonteith.pas"
+#fn_xml <- "Q:/OSR/Project/OSRGrowth/xml_docu/UPenMonteith.xml"
+#xml_docu <- read_xml(fn_xml)
+
 
 ```
 
-# Development
+# Introduction
 
-Maize development is regulated by the effective temperature (T~eff~) – derived by the positive difference of daily mean temperature and a defined base temperature (T~1~)of 6°C in agreement with @Pages.1994 and @Bonhomme.1994). Furthermore, the development process is separated into five stages further named XStage, following HYBRID-Maize, based on the approach of Yang et al. (2016). The XStages represent the development stages emergence, tassel initiation, silking, effective grain filling and maturity (Figure 1). Development rates between sowing and emergence (DevRateS0), emergence and tassel initiation (DevRateS1), tassel initiation and silking (DevRateS2), silking and grain filling (DevRateS3) are calculated as simple ratio of T~eff~ and the temperature sum (GDD) between the respective XStages {\@eq-DevRateS0} -E4).
+Maize development is regulated by the effective temperature (T~eff~) – derived by the positive difference of daily mean temperature and a defined base temperature (T1) of 6°C in agreement with [@Pages.1994] and Bonhomme et al. (1994)). Furthermore, the development process is separated into five stages further named XStage, following HYBRID-Maize, based on the approach of Yang et al. (2016). The XStages represent the development stages emergence, tassel initiation, silking, effective grain filling and maturity (Figure 1). Development rates between sowing and emergence (DevRateS0), emergence and tassel initiation (DevRateS1), tassel initiation and silking (DevRateS2), silking and grain filling (DevRateS3) are calculated as simple ratio of Teff and the temperature sum (GDD) between the respective XStages (@eq-DevRateS0 - @eq-DevRateS3 ). Compared to the approach of Yang et al. (2016), an additional GDD is introduced from emergence till silking (GDDsilk) to calculate the development rate from grain filling until maturity (DevRateS4, E5).The GDDs are defined cultivar specific parameters assigned according to the assumptions of Bignon (1990) for a mid-early cultivar at a soil with medium warming dynamics, harvested at the dough stage, which is the harvest date of whole crop silage maize with a typical DM content of 35%.
 
-$$\mathrm{DevRateS0=}\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{emer}}}$$ {#eq-DevRateS0}
+$$DevRate_{S0} = \frac{T_{eff}}{{GDD}_{emer}}$$ {#eq-DevRateS0}
 
-DevRateS0: Development rate between sowing and emergence, T~eff~: effective temperature, GDD~emer~: corresponding growing degree days
+DevRateS0: Development rate between sowing and emergence, Teff: effective temperature, GDDemer: corresponding growing degree days
 
 $$\mathrm{DevRateS1=}\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{tasini}}}$$ {#eq-DevRateS1}
 
-DevRateS1: Development rate between emergence and tassel initiation, T~eff~: effective temperature, GDD~tasini~: growing degree days from emergence till tassel initiation
+DevRateS1: Development rate between emergence and tassel initiation, Teff: effective temperature, GDDtasini: growing degree days from emergence till tassel initiation
 
-$$\mathrm{DevRateS2=\ }\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{S2}}}$$ {#eq--DevRateS2}
+$$\mathrm{DevRateS2=\ }\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{S2}}}$$ {#eq-DevRateS2}
 
-DevRateS2: Development rate between tassel initiation and silking, T~eff~: effective temperature, GDD~S2~: growing degree days from tassel initiation till silking
+DevRateS2: Development rate between tassel initiation and silking, Teff: effective temperature, GDDS2: growing degree days from tassel initiation till silking
 
 $$\mathrm{DevRateS3=}\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{S3}}}$$ {#eq-DevRateS3}
 
-DevRateS3: Development rate silking and grain filling T~eff~: effective temperature, GDD~S3~: growing degree days from silking till grain filling
-
-Compared to the approach of @Yang.2016, an additional GDD is introduced from emergence till silking (GDD~silk~) to calculate the development rate from grain filling until maturity (DevRateS4, E5).The GDDs are defined cultivar specific parameters assigned according to the assumptions of @Bignon.1990 for a mid-early cultivar at a soil with medium warming dynamics, harvested at the dough stage, which is the harvest date of whole crop silage maize with a typical DM content of 35%.
-
-![Figure.1](Bild1.png){width="653"}\[#fig.Devrates\]
+![A drawing of an elephant.](Bild1.png){#fig-DevScheme}
 
 ```{r}
-#|fig.cap: "Figure 1"
-#|include: true
-#|echo: false
-#|message: false
+#| label: fig-DevScheme
+#| fig.cap: "Development scheme of maize according to HYBRID-Maize."
+#| include: true
+#| message: false
+#| warning: false
 
-x<-seq(1,100,by=1)
-y<-0.4+x*2+x^2*3
 
-ggplot()+aes(x=x,y=y)+
-  geom_point()
-#refactoring 
+x <- seq(1, 100, by = 1)
+y <- 0.4+x*2+x^2*3
+
+df <- data.frame(x, y)
+
+p <- ggplot(df, aes(x = x, y = y)) +
+  geom_line() +
+  labs(title = "Title", x = "X", y = "Y") +
+  theme_minimal()
+p
 ```
 
-## 
+## Descendence
+
+The class TPenMonteith is derived from TPlantRelatedSubMod, which is derived from TSubmodel which is derived from TObject or TGraphicControl.
+
+TPenMonteith \|\_\_\_\_TPlantRelatedSubMod \|\_\_\_\_TSubmodel
+
+## State variables
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+fn <- "Q:/HUME/HUME/Components/Maize/Documentation/subDevelopment_Maize1.csv"
+df <- read.delim(fn, header = TRUE, sep = ";")
+
+df.state <- df %>% filter( EntityType == "State") %>% dplyr::select(EntityName, Units, Value, Comment)
+names(df.state) <- c("State variable", "Units", "InitialValue", "Description")
+```
+
+The class TSubDevelopent has `r trunc(nrow(df.state))` following state variable(s).
+
+```{r}
+#| label : tab-state
+#| table.cap : "State variables of TSubDevelopmentMaize"
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.state)
+```
+
+## Parameters
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+
+df.par <- df %>% filter( EntityType == "Parameter") %>% dplyr::select(EntityName, Units, Value, Comment)
+names(df.par) <- c("Parameter", "Units", "Value", "Description")
+
+```
+
+The class TSubDevlopemt_Maiz has `r trunc(nrow(df.par))` following parameter(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.par,  escape = FALSE)
+```

@@ -1,0 +1,834 @@
+---
+title: "THumeWheatLeafArea"
+author: "Agronomy and Crop Science Group, Kiel University"
+date: "`r Sys.Date()`"
+---
+
+```{r}
+#| label: SetupLibraries
+#| include: FALSE
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center", fig.width = 12, fig.height = 6, fig.pos = "h", fig.cap = TRUE)
+rm(list = ls(all.names = TRUE))
+
+library(rmarkdown)
+library(bookdown)
+library(soilwater)
+library(tidyverse)
+#library(reticulate)
+library(tinytex)
+library(bibtex)
+library(ggsci)
+library(knitcitations)
+library(kableExtra)
+library(xml2)
+library(ggpmisc)
+library(tools)
+library(here)
+source("ExtractInformationFromXML.R")
+
+options("citation_format" = "pandoc")
+
+```
+
+```{r}
+#| include: false
+
+
+fn_source <- here("Components/Ceres Wheat/UHumeWheatLeafArea.pas")
+fn_xml_docu <- here("XML_Delphi_Docu/UHumeWheatLeafArea.xml")
+fn_csv <- here("csv_Hume_Docu/HumeWheatLeafArea1.csv")
+
+NameSource <- file_path_sans_ext(basename(fn_source))
+
+doc <- read_xml(fn_xml_docu)
+
+```
+
+```{r}
+#| include: false
+output <- ExtractXMLDocuInformation(fn_xml_docu, ClassName = "THumeWheatLeafArea")
+
+```
+
+# Summary
+
+`r output$md_text`
+
+## Classes
+
+The unit `r NameSource` defines the following classes:
+
+`r output$classes_df$name`
+
+## Descendence
+
+The class THumeWheatLeafArea is derived from: `r paste(output$ancestor_names, collapse = " <- ")`
+
+# Submodel objects
+
+Dynamic system model consists according to the Forrester approach of state variable, parameters, variables and external driving forces. This is implemented in Hume by dynamic lists, which contents is given in the following sections.
+
+## State variables
+
+```{r}
+#| label: ReadCSVInformation
+#| echo: false
+#| message: false
+#| warning: false
+#| include: false
+
+Entities <- ExtractInformationFromCSV(fn_csv)
+
+```
+
+The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.state))` following state variable(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(Entities$df.state)
+```
+
+## Parameters
+
+The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.par))` following parameter(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(Entities$df.par,  escape = FALSE)
+```
+
+## Variables
+
+The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.var))` following variable(s).
+
+```{r}
+#| echo: false
+kable(Entities$df.var,  escape = FALSE)
+```
+
+## External variables
+
+The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.ext))` following external variable(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(Entities$df.ext,  escape = FALSE)
+```
+
+## Options
+
+The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.opt))` following option(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(Entities$df.opt,  escape = FALSE)
+```
+
+# Further source code documentation
+
+The following section includes information extracted from the XML documentation of the class THumeWheatLeafArea. It includes constants, enumerations and functions.
+
+## Enumerations
+
+Within the unit (`r trunc(nrow(output$enum_df))`) enumeration types are defined :
+
+```{r}
+#| label: tbl-THumeWheatLeafAreaEnumerationsTable
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: Enumerations of unit UHumeWheatLeafArea
+
+
+kable(output$enum_df, escape = FALSE, col.names = c("Name", "Summary", "Elements")) %>%
+  kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "30em") %>%
+  column_spec(3, width = "30em")
+
+```
+
+The enumeration types are used to internally define options for different process formulation. By setting an TOption object
+
+## Constants
+
+The following internal constants are defined within the Unit
+
+```{r}
+#| label: tbl-THumeWheatLeafAreaConstantsTable
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: Constants of unit UHumeWheatLeafArea
+
+
+kable(output$const_df, escape = FALSE, col.names = c("Name", "Type", "Summary", "Value")) %>%
+  kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "10em") %>%
+  column_spec(3, width = "30em") %>%
+  column_spec(4, width = "20em")
+```
+
+## Functions
+
+```{r}
+#| label: tbl-THumeWheatLeafAreaFunctionsTableSimple
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: Functions of class THumeWheatLeafArea
+
+paged_table(output$fun_df)
+```
+
+```{r}
+#| label: tbl-THumeWheatLeafAreaFunctionsTable
+#| eval: false
+#| message: false
+#| warning: false
+#| include: false
+#| tbl-cap: Functions of class THumeWheatLeafArea
+
+fun_df[] <- lapply(fun_df, function(x) gsub(":::", "::: ", x, fixed = TRUE))
+
+kable(fun_df, escape = FALSE, col.names = c("Name", "Visibility", "Parameters", "Summary", "Parameter Summary")) %>%
+  kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "10em") %>%
+  column_spec(3, width = "20em") %>%
+  column_spec(4, width = "30em") %>%
+  column_spec(5, width = "30em")
+
+
+```
+
+The procedures defined in the class THumeWheatLeafArea are:
+
+```{r}
+#| label: tbl-THumeWheatLeafAreaProceduresTableSimple
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: Functions of class THumeWheatLeafArea
+
+paged_table(output$proc_df)
+```
+
+# Scientific Background
+
+Many crop models are simulating leaf area as a function of simulated leaf biomass multiplied with the ratio of leaf area over leaf dry weight (SLA). Thereby two fundamentally different approaches can be employed: (i) The SLA refers to the new leaf area formed or (ii) to the overall canopy of the crop [@Marcelis1998]. The former approach considers LAI as a state variable, while SLA refers to the change rate of this state. With the latter approach LAI is usually defined as a derived variable. Both approaches have their justification: During early leaf growth SLA is decreasing with increasing leaf size, because of the greater proportion of structural C needed to maintain bigger leafs [@Rawson1987]. Thus the SLA of the new formed leafs is smaller, while the SLA of the previously formed, smaller leafs remains higher. This relationship is reflected by the decrease in SLA of new formed leaf area. As a converse effect, the influence of mutual shading becomes more important with rising LAI, what enhances SLA. The influence of shading does not concern new formed leaf area of the top leaves, but earlier formed, lower inserted leaves. Considering this aspect, it is not appropriate to conserve the SLA of already formed leaves. This implies an interaction between SLA and LAI, which should be taken into account. During early leaf growth the decrease due to leaf size probably determines SLA, but is soon dominated by the influence of mutual shading. The transition between these two phases is variable, which complicates the SLA modelling. Furthermore, for winter annual crops also the drastically changing light environment from sowing in autumn until rapid growth in spring affects SLA.
+
+A compromising solution of both approaches is provided by the simulated leaf area development in HumeWheat. Thereby a potential SLA (SLA~pot~) refers to the complete canopy, but affects only the LAI increase, whereas the reduction of LAI due to the senescence processes is calculated by separate routines:
+
+$$LAI_{new}(t)=\max (0,W_{leaf}(t) \cdot SLA_{pot}(t) \cdot 10^{-4} - LAI(t))$$ {#eq-LAI_new}
+
+Daily LAI increment is calculated from the increase in total leaf area and total senescence:
+
+$$\frac{dLAI}{dt}=LA{{I}_{new}}(t)-\frac{dSen}{dt}$$ {#eq-dLAI}
+
+## Calculation of SLA~pot~
+
+At the beginning of leaf growth, i.e. after emergence of the first leaf SLA~pot~ is initialized with the maximum SLA (SLA~max~). The standard value of SLA~max~ is 250 \[cm^2^/g\].
+
+At later stages, i.e. after start of stem elongation (BBCH 31) The SLA usually increases due to mutual shading as a function of LAI.
+
+$$SLA_{LAI}(t)=a_{SLA}+b_{SLA} \cdot LAI(t)$$ {#eq-SLA_LAI}
+
+where $a_{SLA}$ and $b_{SLA}$ are parameters of the regression equation. The default values of $a_{SLA}$ and $b_{SLA}$ are set to 136.69 and 14.93 in the model (@fig-SLA). See Fig. 3b in [@Ratjen2013].
+
+```{r}
+#| label: fig-SLA
+#| fig-cap: Specific leaf area as a function of leaf area index
+#| fig-align: center
+#| echo: false
+
+SLA <- function(LAI, a_SLA, b_SLA){
+  SLA <- a_SLA + b_SLA * LAI
+  return(SLA)
+}
+
+a_SLA <- 136.69
+b_SLA <- 14.93
+
+LAI <- seq(2, 5, 0.1)
+
+df_SLA <- data.frame(LAI = LAI)
+
+df_SLA$SLA <- SLA(df_SLA$LAI, a_SLA, b_SLA)
+
+ggplot(data = df_SLA) +
+  geom_line(aes(x = LAI, y = SLA), size=2) +
+  labs(x = "Leaf area index [m^2 m^-2]", y = "SLA [cm^2 g^-1]") +
+  theme_bw(base_size = 20) +
+  scale_y_continuous(limits = c(100, 300)) +
+  scale_x_continuous(limits = c(1.5, 5))
+
+
+```
+
+In order to describe the transition from the high SLA values after emergence to lower values followed by the subsequent increase due to the shading effects of increasing LAI a transition value of SLA (SLA~Trans~) is calculated:
+
+$$SLA_{Trans}(t)=SLA_{LAI}(t)+ (SLA_{max}-SLA_{LAI}(t)) \cdot e^{ (f_{dec1} \cdot LAI(t)+f_{dec2})}$$ {#eq-SLAtrans}
+
+where $f_{dec1}$ and $f_{dec2}$ are parameters describing the transition. The default values of $f_{dec1}$ and $f_{dec2}$ are set to -1.1237 and 0.3 in the model.
+
+In every time step the potential SLA is calculated as the minimum of the previous SLA and the calculated SLA~Trans~. If the old SLA is larger than SLA~LAI~, the SLA is equal to SLA~trans~, if not SLA is equal to SLA~LAI~.
+
+An example for the result of this algorithm is given in @fig-SLAtrans.
+
+```{r}
+#| label: fig-SLAtrans
+#| fig-cap: Specific leaf area as a function of leaf area index
+#| fig-align: center
+#| echo: false
+
+maxSLA <- 250
+a_SLA <- 136.69
+b_SLA <- 14.93
+SLA_B <- maxSLA # start SLA of juvenescent leavess (APSIM, Asseng 2003)
+
+f1_SLA <- -1.1237
+f2_SLA <- 0.3
+LAI <- seq(0, 5, 0.1)
+df_SLAtrans <- data.frame(LAI = LAI)
+df_SLAtrans$SLA <- NA
+df_SLAtrans[1, "SLA"] <- maxSLA
+
+for (i in 2:nrow(df_SLAtrans)){
+   SLAs <- min(maxSLA, a_SLA + b_SLA*df_SLAtrans[i,"LAI"])
+   if (df_SLAtrans[i-1, "SLA"] > SLAs){
+      # transition phase between initial SLA and later phase where
+      # mutual shading dominates SLA
+     SLAw <- SLAs + (SLA_B - SLAs) * exp(f1_SLA * df_SLAtrans[i,"LAI"] + f2_SLA)
+     df_SLAtrans[i, "SLA"] <- min(df_SLAtrans[i-1, "SLA"], SLAw)
+   } else {
+     # phase where shading dominates SLA (equates LAI~2)
+     df_SLAtrans[i, "SLA"] <- SLAs
+   }
+  
+}
+ 
+
+ggplot(data = df_SLAtrans) +
+  geom_line(aes(x = LAI, y = SLA), size=2) +
+  labs(x = "Leaf area index [m^2 m^-2]", y = "SLA [cm^2 g^-1]") +
+  theme_bw(base_size = 20) +
+  scale_y_continuous(limits = c(100, 300))
+
+```
+
+## Leaf number
+
+The leaf number (LN) on the main stem is calculated from the cumulative phyllochrons (CUMPH) since emergence and the phyllochron interval (PHINT) according to the following equations:
+
+$$CUMPH = \frac {\sum T_{eff}} {PHINT}$$ {#eq-CUMPH}
+
+$$LN = trunc( CUMPH + 1 )$$ {#eq-LN}
+
+where $T_{eff}$ is the effective temperature, $PHINT$ is the phyllochron interval, and $LN$ is the leaf number on the main stem. The value of $PHINT$ is set to 91.74 \[°Cd\] in the model (see #eq-dBBCH_dt_GS1 and @Johnen2012).
+
+## Leaf growth
+
+The leaf area is calculated on a leaf age class level, thereby the leaf number on the main stem is giving the age classes. This approach is basically from CERES-Wheat. Thereby only the youngest leaf age class is growing. This approach allows to implement a simple approach for leaf senescence, which is based on the leaf age. Our experience with experimental data in Germany, however, is that this approach tends to overestimate the leaf senescence over winter.
+
+The growth rate of the leaf area of the youngest leaf class (PLSCGR~i~) is calculated from the sum of the existing leaf dry matter of the leaf (LFWT~pl~) plus the daily dry matter growth rate of the leaf fraction of a single plant (GROLF, **GRO**wth Of **L**ea**F**) times the potential specific leaf area (SLA~pot~) minus the existing leaf area for that leaf age class (sumPSLC):
+
+$$\frac{dPLSC_i}{dt} = PLSCGR_i= (LFWT_{pl} + GROLF) \cdot SLA_{pot} - sumPLSC$$ {#eq-PLSCGR}
+
+
+
+## Senescence
+
+Leaf senescence is governed by different factors in HumeWheat:
+
+-   age
+-   drought stress
+-   nitrogen stress
+-   light availability and also the EC stage of the crop
+
+### Age
+
+#### CERES algorithm for leaf senescence in early stages (BBCH 10-30)
+
+The model includes the option to simulate leaf senescence in the early stages of the crop according to the CERES-Wheat approach. This algorithm, however, was not evaluated for own data sets and the leaf area simulation may perform better if this option is set to false.
+
+The 5th oldest leaf fraction dies within one phyllochron interval. First the leaf area of the oldest leaf fraction is fixed as a potential senescence rate when four younger leaves are present:
+
+$$senratesLA[trunc(LN)-4] = PLSC[trunc(LN)-4]$$ {#eq-senratesLA}
+
+Then the leaf loss rate of that leaf age fraction is calculated from the leaf area of this fraction at the beginning of the senescence process and the fraction of the leaf fraction of the effective temperature (T~eff~) and the phyllochron interval (PHINT):
+
+$$PLALR_a = min(\frac { PLSC[trunc(LN) - 4]} {dt}, senratesLA[trunc(LN) - 4] * T_{eff} / (PHINT))$$ {#eq-PLALR}
+
+where $PLSC$ is the leaf area of the leaf age class, $T_{eff}$ is the effective temperature, $PHINT$ is the phyllochron interval, and $PLALR_a$ is the leaf area loss rate due to age.
+
+An examination of the leaf senescence algorithms in HumeWheat showed that this approach is not suitable for the leaf area simulation in the early stages of the crop within the context of HumeWheat. The leaf area loss rate is too high and leads to a too low leaf area index in the early stages of the crop. Therefore, it is recommend to set the option `optUseAgeDependendLeafSenescene` to false, which is the default value in the model.
+
+```{r}
+#| label: fig-PLSCGR
+#| echo: false
+#| fig-align: center
+#| fig-cap: Leaf area growth rate of different age classes according to the CERES-Wheat 2.0 Algorithm
+#| fig-height: 10
+#| fig-width: 10
+#| warning: false
+#| message: false
+
+fn <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_HumeWheatLeafArea1_With_EarlyAgeLeafSenescence_dat.csv")
+fn2 <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_HumeWheatLeafArea1_No_EarlyAgeLeafSenescence_dat.csv")
+
+
+df <- read.delim(fn, comment.char = "[", sep=",")
+df2 <- read.delim(fn2, comment.char = "[", sep=",")
+df$AgeSenescence <- "Early age leaf senescence"
+df2$AgeSenescence <- "No early age leaf senescence"
+
+df <- rbind(df, df2)
+namesPLSC <- names(df)[grep("PLSC", names(df))]
+namesPLSC <- namesPLSC[seq(1,15)]
+
+
+
+
+dfw <- df %>% select(Time, AgeSenescence, namesPLSC)
+dfw <- dfw %>% pivot_longer(cols = -c(Time,AgeSenescence), names_to = "LeafAge", values_to = "LeafArea")
+dfw$Date <- as.POSIXct(as.numeric(as.character(dfw$Time))*86400, origin="1899-12-30", tz="GMT")
+dfw <- dfw %>% filter(Time >= 38610)
+
+library(RColorBrewer)
+
+# Brewer Set3 has 12 colors, combine with another for 15
+my_colors <- c(brewer.pal(12, "Set3"), brewer.pal(3, "Set1"))
+
+
+p <- ggplot()
+p <- p + geom_line(data = dfw, aes(x = Date, y = LeafArea, color = LeafAge), size = 1.5)
+p <- p + labs(x = "Time", y = "Leaf area [cm^2]", color = "Leaf age class")
+p <- p + theme_bw(base_size = 20) +
+ # scale_color_aaas() +
+  scale_color_manual(values = my_colors) +
+  scale_x_datetime(date_labels = "%b", date_breaks = "1 month") +
+  scale_y_continuous(limits = c(0, 35)) +
+  facet_wrap(~AgeSenescence, ncol = 1) +
+  theme(strip.background = element_blank())
+  theme(legend.position = "bottom")
+p
+
+
+```
+
+From @fig-LAIsim it becomes obvious, that the huge decline of leaf area due to the CERES-Wheat 2.0 approach leads to too low simulated LAI values for the choosen example, mainly because the start value of leaf area index in spring is too low, which slows down growth rates and thereby also leaf area index development.
+
+```{r}
+#| label: fig-LAIsim
+#| echo: false
+#| fig-align: center
+#| fig-cap: Simulated Leaf Area Index with and without early age leaf senescence. Dots reperesent measured leaf area index.
+#| fig-height: 6
+#| fig-width: 10
+#| warning: false
+#| message: false
+
+fn <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_HumeWheatLeafArea1_With_EarlyAgeLeafSenescence_dat.csv")
+fn2 <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_HumeWheatLeafArea1_No_EarlyAgeLeafSenescence_dat.csv")
+
+
+df <- read.delim(fn, comment.char = "[", sep=",")
+df2 <- read.delim(fn2, comment.char = "[", sep=",")
+df$AgeSenescence <- "Early age leaf senescence"
+df2$AgeSenescence <- "No early age leaf senescence"
+
+df <- rbind(df, df2)
+
+
+dfw <- df %>% select(Time, AgeSenescence, LAI)
+dfw <- dfw %>% pivot_longer(cols = -c(Time,AgeSenescence), names_to = "LeafAge", values_to = "LAI")
+dfw$Date <- as.POSIXct(as.numeric(as.character(dfw$Time))*86400, origin="1899-12-30", tz="GMT")
+dfw <- dfw %>% filter(Time >= 38610)
+
+fn.Data <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_SubLeafAreaSimple1.txt")
+df.data <-  read.delim(fn.Data, comment.char = "[", sep=" ")
+df.data$Date <- as.POSIXct(as.numeric(as.character(df.data$Time))*86400, origin="1899-12-30", tz="GMT")
+df.data <- df.data %>% filter (LAI>0.01)
+
+
+library(RColorBrewer)
+
+
+
+
+
+p <- ggplot()
+p <- p + geom_line(data = dfw, aes(x = Date, y = LAI, color = AgeSenescence), size = 1.5)
+p <- p + geom_point(data=df.data, aes(x=Date, y=LAI), size=3, shape=21, color="darkgrey", fill="darkgreen")
+p <- p + labs(x = "Time", y = "Leaf area index", color = "Senescence type")
+p <- p + theme_bw(base_size = 20) +
+  scale_color_aaas() +
+#  scale_color_manual(values = my_colors) +
+  scale_x_datetime(date_labels = "%b", date_breaks = "1 month") +
+  scale_y_continuous(limits = c(0, 5)) +
+  theme(strip.background = element_blank())+
+  theme(legend.position = "bottom")
+p
+
+
+```
+
+
+#### Leaf senescence in later stages (BBCH 31-71)
+
+In later stages the leaf senescence is calculated as a fraction of the existing leaf area per plant, the effective day temperature and a stage specific parameter. (see https://nowlin.css.msu.edu/wheat_book/CHAPTER2.html)
+
+For ISTAGE 2 and 4 (BBCH 30-57, see #tbl-CWDevStages), the equation is:
+
+$$PLALR_a = PSENLeaf_1 \cdot T_{eff} \cdot GPLA$$ {#eq-PLALRa1}
+
+and similarly at ISTAGE 5 (BBCH 58-71):
+
+$$PLALR_a = PSENLeaf_2 \cdot T_{eff} \cdot GPLA$$ {#eq-PLALRa2}
+
+where $PSENLeaf_1$ is a parameter of the regression equation.
+
+The parameters values $PSENLeaf_1$ and $PSENLeaf_2$ have defaults of 0.0003 and 0.0006 $cm^2 \cdot °Cd^{-1}$ in the model. From @fig-PSEN1 it becomes obvious that the parameter PSENLeaf_1 is a  sensitive parameter for the leaf area index simulation. It remains to be discussed if values > 0 improve the predictive quality of the model.
+
+
+```{r}
+#| label: fig-LAISens_PSEN1
+#| echo: false
+#| fig-align: center
+#| fig-cap: Sensitivity analysis for effects of the parameter PSEN1 ond simulated Leaf Area Index of winter wheat. Data are from trial 95/2006, N240 as average of the cultivars.
+#| fig-height: 6
+#| fig-width: 10
+#| warning: false
+#| message: false
+
+fn <- here("Components/CERES Wheat/Documentation/Data/PSEN1_LAIMatrix_sens.csv")
+
+df <- read.delim(fn, comment.char = "[", sep=",")
+ParName <- "PSENLeaf1"
+ColNames <- names(df)[grep(ParName, names(df))]
+ColValues <- as.numeric(gsub(paste0(ParName, "_"), "", ColNames))
+df <- df %>% filter(Time>=38620)
+
+
+dfl <- df %>% pivot_longer(cols = -c(Time), names_to = "PSEN1", values_to = "LAI")
+dfl$PSEN1 <- gsub(paste0(ParName, "_"), "", dfl$PSEN1)
+
+dfl$Date <- as.POSIXct(as.numeric(as.character(dfl$Time))*86400, origin="1899-12-30", tz="GMT")
+#dfl <- dfl %>% filter(Time >= 38660)
+
+fn.Data <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_SubLeafAreaSimple1.txt")
+df.data <-  read.delim(fn.Data, comment.char = "[", sep=" ")
+df.data$Date <- as.POSIXct(as.numeric(as.character(df.data$Time))*86400, origin="1899-12-30", tz="GMT")
+df.data <- df.data %>% filter (LAI>0.01)
+
+
+library(RColorBrewer)
+
+
+p <- ggplot()
+p <- p + geom_line(data = dfl, aes(x = Date, y = LAI, color = PSEN1), size = 1.5)
+p <- p + geom_point(data=df.data, aes(x=Date, y=LAI), size=4.5, shape=21, color="darkgrey", fill="darkgreen", alpha=0.6)
+p <- p + labs(x = "Time", y = "Leaf area index", color = "PSEN1")
+p <- p + theme_bw(base_size = 20) +
+  scale_color_aaas() +
+#  scale_color_manual(values = my_colors) +
+  scale_x_datetime(date_labels = "%b", date_breaks = "1 month") +
+  scale_y_continuous(limits = c(0, 6)) +
+  theme(strip.background = element_blank())+
+  theme(legend.position = "bottom")
+p
+
+```
+
+
+
+
+```{r}
+#| label: fig-LAISens_PSEN2
+#| echo: false
+#| fig-align: center
+#| fig-cap: Sensitivity analysis for effects of the parameter PSEN2 ond simulated Leaf Area Index of winter wheat.Data are from trial 95/2006, N240 as average of the cultivars.
+#| fig-height: 6
+#| fig-width: 10
+#| warning: false
+#| message: false
+
+fn <- here("Components/CERES Wheat/Documentation/Data/PSEN2_LAIMatrix_sens.csv")
+
+df <- read.delim(fn, comment.char = "[", sep=",")
+ParName <- "PSENLeaf2"
+ColNames <- names(df)[grep(ParName, names(df))]
+ColValues <- as.numeric(gsub(paste0(ParName, "_"), "", ColNames))
+df <- df %>% filter(Time>=38620)
+
+
+dfl <- df %>% pivot_longer(cols = -c(Time), names_to = "PSEN2", values_to = "LAI")
+dfl$PSEN2 <- gsub(paste0(ParName, "_"), "", dfl$PSEN2)
+
+dfl$Date <- as.POSIXct(as.numeric(as.character(dfl$Time))*86400, origin="1899-12-30", tz="GMT")
+#dfl <- dfl %>% filter(Time >= 38660)
+
+fn.Data <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_SubLeafAreaSimple1.txt")
+df.data <-  read.delim(fn.Data, comment.char = "[", sep=" ")
+df.data$Date <- as.POSIXct(as.numeric(as.character(df.data$Time))*86400, origin="1899-12-30", tz="GMT")
+df.data <- df.data %>% filter (LAI>0.01)
+
+
+library(RColorBrewer)
+
+
+p <- ggplot()
+p <- p + geom_line(data = dfl, aes(x = Date, y = LAI, color = PSEN2), size = 1.5)
+p <- p + geom_point(data=df.data, aes(x=Date, y=LAI), size=4.5, shape=21, color="darkgrey", fill="darkgreen", alpha=0.6)
+p <- p + labs(x = "Time", y = "Leaf area index", color = "PSEN2")
+p <- p + theme_bw(base_size = 20) +
+  scale_color_aaas() +
+#  scale_color_manual(values = my_colors) +
+  scale_x_datetime(date_labels = "%b", date_breaks = "1 month") +
+  scale_y_continuous(limits = c(0, 6)) +
+  theme(strip.background = element_blank())+
+  theme(legend.position = "bottom")
+p
+
+```
+
+
+### Drought stress
+
+The sub model includes an option to calculate drought stress induced leaf senescence. This option is set to true by default, but can be switched off in the options of the model. The option is named `optUseDroughtStressLeafSenescence` and can be set to false if the drought stress induced leaf senescence should not be calculated.
+
+The approach for calculating drought induced leaf senescence is mainly taken from [@Meinke1998].
+
+The base for the calculation of the drought stress is a moving average of the relative TranspirationInterception-ratio, i.e. the ratio of the sum of the actual transpiration and interception to the sum of potential transpiration and interception.
+
+If this average ratio (TransIntRatio~even~) and the actual TransIntRatio are smaller than a threshold value (TR~crit~) drought stress induced leaf senescence is calculated. The threshold value *TR~crit~* is set to 0.62 in the model and therefore lower than the value used by @Meinke1998 which is 0.8. This means that drought stress induced leaf senescence occurs if the average *and* the actual ratio of actual to potential transpiration+interception is smaller than 0.62.
+
+In a next step a sustainable leaf area index (LAI~s~) is calculated which gives a ratio of the sum of actual transpiration + interception to the sum of potential transpiration to interception equals the value of TR~crit~.
+
+The daily senescence rate due to drought stress then is calculated from the difference of the actual LAI and the sustainable LAI multiplied with the TransIntRatio divided by 15 (days) times the TransIntRatio~even~ and divided by the number of plants per m^2^, thereby the factor 1e4 converts m^2^ to cm^2^
+
+$$PLALR_d = max\left( 0, \frac{LAI - LAIs} {15} \cdot TransIntRatio_{even} \cdot 1e4 \cdot \frac{1}{plants} \right)$$ {#eq-PLALRd}
+
+where $LAI$ is the leaf area index, $LAIs$ is the sustainable leaf area index, $TransIntRatio_{even}$ is the moving average of the relative transpiration interception ratio, and $plants$ is the number of plants per square meter.
+
+The sustainable leaf area index is derived from an iterative, numerical solution using the Newton method for solving non-linear equations.
+
+
+### Nitrogen stress / nitrogen induced leaf senescence
+
+Within the class THumeWheatLeafArea two different options for late leaf area senescence are implemented, which can be selected by the option *OptNSenescenceType*. The option *concentration* calculates the leaf sencescence rate according to the ratio of the actual to the opitmal specific leaf area based N concentration, where as the option *cwt3* uses the classic, N concentration independent algorithm from CERES Wheat.
+
+#### Nitrogen induced late leaf area senescence
+
+The algorithm for nitrogen stress induced leaf senescence is based on the specific leaf nitrogen concentration (SLN) and the critical specific leaf nitrogen concentration (SLNtot~crit~). The daily senescence rate due to nitrogen stress PLALR~n~ is calculated from the difference of the actual LAI and the sustainable LAI multiplied with the ratio of the specific leaf nitrogen concentration to the critical specific leaf nitrogen concentration:
+
+$$PLALR_n = min\left( LAI_{max} \cdot \frac{PLALR_{max}} {100}, LAI \cdot \left( 1 - \frac{SLN} {SLNtot_{crit}} \right) \right) \cdot \frac{1e4}{plants}$$ {#eq-PLALRn}
+
+where $LAI_{max}$ is the maximum leaf area index, $PLALR_{max}$ is the maximum leaf area index loss rate \[%\], standard value is 5%, $SLN$ is the specific leaf nitrogen concentration \[g/m^2^ leaf\], $SLNtot_{crit}$ is the critical specific leaf nitrogen concentration (default 0.8) , and $plants$ is the number of plants per square meter. The factor 1e4 converts m^2^ to cm^2^. This algorithm also induces the leaf senescence during ripening.
+
+
+#### CERES-Wheat based late leaf area senescence
+
+Alternatively, the classical leaf senecescence calculation from the CERES-Wheat model can be used. With this algorithm, the leaf area decline during ripening is controlled by the accumulated temperaturs sum during ISTAGE 5:
+
+$$PLALR_n = GPLA \cdot 2 \cdot SUMDTT_5 \cdot \frac { T_{eff}}{TSum_{GF}^2} $$ {#eq-PLALRn_v2}
+
+where $GPLA$ is the leaf area per plant, $SUMDTT5$ is the accumulated temperature sum during ISTAGE 5, $T_{eff}$ is the temperature sum increment, and $TSum_{GF}^2$ is the value of unscaled parameter P5, giving the length of the grain filling period in degree days. The default value of $P5$ is set to 11.67 in the model. According to the equation #eq-TSumGF the equivalent value of $TSum_{GF}$ is `r 430+11.67*20` \[°Cd\].
+
+The leaf area dynamics of the two algorithms are compared in @fig-LateSenescenceComparison. The CERES-Wheat based algorithm leads to a more smooth leaf area decline during ripeningbut remains at LAI values > 0 at full ripening stage. The N concentration based algorithm, starts obviously later.
+
+
+```{r}
+#| label: fig-LateSenescenceComparison
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-align: center
+#| fig-cap: Comparison of leaf area index dynamics with the CERES-Wheat 2.0 Algorithm and th
+#| fig-height: 6
+#| fig-width: 10
+
+fn <- here("Components/CERES Wheat/Documentation/Data/CWT3_LateSensescence_95_06_N240_HumeWheatLeafArea1_dat.csv")
+fn2 <- here("Components/CERES Wheat/Documentation/Data/Nconc_LateSensescence_95_06_N240_HumeWheatLeafArea1_dat.csv")
+
+
+df <- read.delim(fn, comment.char = "[", sep=",")
+df2 <- read.delim(fn2, comment.char = "[", sep=",")
+df$AgeSenescence <- "CWT3"
+df2$AgeSenescence <- "N Concentration dependent"
+
+df <- rbind(df, df2)
+df <- df %>% select(Time, AgeSenescence, LAI)
+df$Date <- as.POSIXct(as.numeric(as.character(df$Time))*86400, origin="1899-12-30", tz="GMT")
+
+df <- df %>% filter(Time >= 38610)
+
+
+p <- ggplot()
+p <- p + geom_line(data = df, aes(x = Date, y = LAI, color = AgeSenescence), size = 1.5)
+p <- p + labs(x = "Time", y = "Leaf area index", color = "Leaf senescence algorithm")
+p <- p + theme_bw(base_size = 20) +
+  scale_color_aaas() +
+#  scale_color_manual(values = my_colors) +
+  scale_x_datetime(date_labels = "%b", date_breaks = "1 month") +
+  scale_y_continuous(limits = c(0, 5.5)) +
+  theme(strip.background = element_blank()) +
+  theme(legend.position = "bottom")
+p
+
+
+```
+
+
+
+### Light limitation
+
+Optionally, the effect of self shading on leaf senescence can be considered. The light dependent leaf senescence is calculated from the leaf area index if the 10 day average of radiation (PAR~av~) \[MJ^.^m^-2.^d^-1^\] is falling below a threshold value named I~crit~. The threshold value is set to 0.2 \[MJ^.^m^-1.^d^-1^\] in the model, which is much lower than the value of 1 \[MJ^.^m^-1.^d^-1^\] from @Meinke1998.
+
+Light dependent senescence only occurs between BBCH 31 and 39, the latter value is, however, a parameter describing the end of leaf growth (EClgend).
+
+The daily senescence rate due to light limitation is calculated from the difference of the actual LAI and the sustainable LAI multiplied with the radiation sum divided by 10 days and divided by the number of plants per m^2^, thereby the factor 1e4 converts m^2^ to cm^2^
+
+In a first step a sustainable leaf area index (LAI~s~) is calculated, which depends on the radiation sum and the critical radiation sum (I~crit~) according to the following equation:
+
+$$LAI_s =  ln \left( \frac{I_{crit}} {PAR_{av}} \right)  \cdot \frac {1} {-k_{PAR}}$$ {#eq-LAIs}
+
+where $Icrit$ is the critical radiation sum, $PAR_{av}$ is the 10 day average of photosynthetic active radiation, and $k_{PAR}$ is the extinction coefficient for PAR radiation. The default value of $kPAR$ is set to 0.7 in the model.
+
+The daily senescence rate due to light limitation is calculated from the difference of the actual LAI and the sustainable LAI multiplied with the radiation sum divided by 20 days and divided by the number of plants per m^2^, thereby the factor 1e4 converts m^2^ to cm^2^
+
+$$PLALR_l = max \left( 0, min \left( \left( \left( \frac{ LAI - LAI_s } { 20} \right) \cdot 1e4 \right) / plants, pla \right) \right)$$ {#eq-PLALRl}
+
+where $PLALR_l$ is the leaf area loss rate due to light limitation, $LAI$ is the leaf area index, $LAIs$ is the sustainable leaf area index, and $plants$ is the number of plants per square meter.
+
+## Combined senescence
+
+In order to combine the different senescence processes the maximum of either the maximum of age or drought senescence or the maximum of nitrogen or light dependent senescence rate is calculated. In total the senescence rate is not larger than the leaf area per plant:
+
+$$    PLALR = min \left( \frac{LAI*1e4}{plants}, max\left(max\left(PLALR_a,PLALR_d\right),
+                    max\left(PLALR_n, PLALR_l\right) \right)\right)
+$$
+
+where $PLALR$ is the leaf area loss rate, $LAI$ is the leaf area index, $plants$ is the number of plants per square meter, $PLALR_a$ is the leaf area loss rate due to age, $PLALR_d$ is the leaf area loss rate due to drought stress, $PLALR_n$ is the leaf area loss rate due to nitrogen stress, and $PLALR_l$ is the leaf area loss rate due to light limitation.
+
+The algorithms for leaf area senescence are mainly taken from other models Ceres-Wheat and I_Wheat. A stringent validation has not yet been performed.
+
+## Leaf senescence due to N remobilization
+
+Growing grains represent a strong sink for nitrogen (N) and trigger N remobilization from the vegetative organs, which decreases canopy photosynthesis and accelerates leaf senescence. The N dynamics for specific leaf-layers, stem and grain during grain-filling is simulated according to the process based approach of [@Bertheloot2008b]. According to [@Meinke1998] a SLN threshold value SLNcrit \[g N^.^m^-2^\] is used for the calculation of leaf senescence due to N remobilization. The critical leaf N concentration of a specific leaf-layer cNcrit\[i\] \[%\] is calculated as follows:
+
+$$c{{N}_{crit[i]}}=\text{ SL}{{\text{N}}_{\text{crit2}}}\cdot \text{SL}{{\text{A}}_{\text{ }\!\![\!\!\text{ i }\!\!]\!\!\text{ }}}\cdot {{10}^{-2}}$$ {#eq-LA30}
+
+The sustainable leaf area of the layer Ls\[i\] \[m^2.^m^-2^\] is
+
+$${{L}_{s[i]}}=SL{{A}_{[i]}}\cdot \frac{W{{L}_{[i]}}\cdot c{{N}_{[i]}}}{c{{N}_{crit[i]}}}\cdot {{10}^{-4}}$$ {#eq-LA31}
+
+The senescence rate is the difference between the sum of Ls\[i\] and LAI:
+
+$$\frac{dSe{{n}_{N\lim }}}{dt}=\text{ }\sum\limits_{\text{i}}{\text{L}{{\text{s}}_{\text{ }\!\![\!\!\text{ i }\!\!]\!\!\text{ }}}\text{(t)}-LAI(t)}$$ {#eq-LA32}
+
+## N dynamics during grain filling period
+
+These algorithms were mainly inspired by @Bertheloot2008 and @Thornley1998.
+
+The modelled plant N uptake during vegetative growth is driven by C accumulation, considering the decrease of N concentration with increasing leaf and stem dry mass. This concept is not appropriate during reproductive phase, since N dynamics are dominated by sink-source relations (e.g.[@Bertheloot2008b]), while N translocation starts to rule LUE and leaf senescence. In many crop models like CERES-WHEAT the influence of sink N demand on photosynthesis is not explicitly modelled, but approximated by equations reducing the effective LUE as a function of thermal time and/or ratio of current and structural stem weight (see CERES-WHEAT CarboRed function, Ritchie and Godwin 1987). The empiric modelling of leaf senescence and N translocation to the grains as a function of thermal time and C translocation only requires a range of fit parameters, difficult to parameterize and with low physiological relevance.
+
+As an alternative, the N dynamics of the reproductive canopy is simulated as a function of sink (growing grains) and light environment according to the approach of @Bertheloot2008. This mechanistic model concept describes the N fluxes within a representative tiller, assuming four leaf layers. Necessary parameters are forced by experimental data. The concept supplies information about the potential root N uptake after anthesis and N mass per unit leaf area (SLN). The leaf parameter SLN, wich is functional related to canopy photosynthesis and leaf senescence was previously used for LUE and leaf senescence modelling during grain filling (e.g. @Meinke1998). The challenge was to link the plant N model with the process based concept of C assimilation and allocation used during previous vegetative phase. The following sub-sections gives a summary of the N model according to [@Bertheloot2008b] and will describe the interfaces needed for the implementation.
+
+## Initial lamina distribution at anthesis
+
+The first necessary step for implementation of the N model is the description of leaf relative tissue distribution between layers, regarded as uniform during vegetative growth. Rain-out-shelter experiments (See Thesis Ratjen, Tab.2, Exp.6) were carried out to describe the lamina distribution among leaf layers at anthesis. The method used for leaf partition across layers is described more precisely in Thesis Ratjen Chapter 3. Since leaf distribution follows the light gradient within the canopy it is influenced by LAI. Therefore, the leaf distribution was investigated by plotting the fraction of leaf dry matter, N mass and area of the respective layer against LAI. In order to ensure a sufficient amount of variability in LAI at anthesis, both, water limited and well irrigated treatments were taken into account. The leaf N concentration needed for the calculation of the leaf N distribution was not measured, but estimated as a function of chlorophyll index (Minolta SPAD-502) and leaf size. The estimation function (Fig.I.1) was previously calibrated using data of Exp.4 (same cultivar). The leaf mass Wl\[i\] \[g^.^m^-2^\] and leaf area L\[i\] \[m^2.^m^-2^\] of the first three layers is calculated as a function of LAI:
+
+$$Wl_{i}=W_{leaf}\cdot (r{{W}_{l}}{{\operatorname{int}}_{[i]}}+r{{W}_{l}}in{{c}_{i}}\cdot LAI)$$ {#eq-LA33}
+
+where rWlint\[1-3\] and rWlinc\[1-3\] are dimensionless fit parameters of the distribution.
+
+The calculation of the leaf area and N distribution is carried out analogously:
+
+$${{L}_{[i]}}=LAI\cdot (rL{{\operatorname{int}}_{[i]}}+rLin{{c}_{[i]}}\times LAI)$$ {#eq-LA34}
+
+$${{N}_{l}}_{[i]}={{N}_{leaf}}\cdot (r{{N}_{l}}{{\operatorname{int}}_{[i]}}+r{{N}_{l}}in{{c}_{[i]}}\times LAI)$$ {#eq-LA35}
+
+respectively.
+
+The amount of leaf mass and area of the fourth layer is simply calculated as the difference between the respective total amount and sum of the first three layers.
+
+### Decomposition of total stem and lamina N
+
+The total amount of N in leaf layers and stem is divided into a structural fraction (strucNl\[i\], strucNs) and photosynthetic fraction (phNl\[i\], phNs). According to @Bertheloot2008b, the mobile N pool (mobNtot) is decomposed into a leaf and a stem fraction (mobN~l~, mobN~s~).
+
+The structural fraction is the product of dry mass and structural N concentration (Eq.I26). At beginning of grain filling period the photosynthetic fraction is initialized as the difference between total N and structural N:
+
+$${{N}^{ph}_{li}}={{N}_{li}}-{{W}_{li}}\cdot c{{N}_{struc}}$$ {#eq-LA36}
+
+and
+
+$${{N}^{ph}_{s}}={{N}_{stem}}-{{W}_{stem}}\cdot c{{N}_{struc}}$$ {#eq-LA37}
+
+At the begining of grain filling period the leaf and stem fraction of the common mobile N pool (mobN~tot~) is initialised according to the proportion of N~stem~ and N~leaf~:
+
+$${{N}^{mob}_{s}}={{N}^{mob}_{tot}}\cdot \frac{{{N}_{stem}}}{{{N}_{stem}}+{{N}_{leaf}}}$$ {#eq-LA38}
+
+respectively
+
+$${{N}^{mob}_{l}}={{N}^{mob}_{tot}}-{{N}^{mob}_{S}}$$ {#eq-LA39}
+
+## Dynamics of photosynthetic N during grain filling period
+
+The physiological senescence rate during grain filling is driven by the N translocation from the vegetative tissue to the grains. Once leaf area is senescent, the difference between structural and current N content in senescent leaf tissue (transN\[i\]) is stored to the ${}^{mob}{{N}_{l}}$ pool, whereas the ${{N}^{ph}_{l[i]}}$pool is reduced proportionally. Thus the concentration of photosynthetic N in the layer is not enhanced by senescence process. On this issue the implementation differs from the original approach, which assumes ${N}^{ph}_{l[i]}$ as being unaffected by senescence. As a consequence senescence increases leaf N concentration. Generally, the differences between the methods are small (not shown) since transN\[i\] enhances the mobile N pool and thereby the synthesis of photosynthetic leaf N (@eq-LA47). According to [@Bertheloot2008] (their eq. 4) the dynamic of phNL\[i\] is modelled as the difference between a synthesis rate (phS\[i\] (t), \[kg^.^°Cd^-1^\]) and degeneration rate (phD\[i\] (t), \[kg^.^°Cd^-1^\]):
+
+$$\frac{{{d}}{{N}^{ph}_{l[i]}}}{dt}={{S}^{ph}_{[i]}}(t){{-}}{{D}^{ph}_{[i]}}(t)]\times {{10}^{3}}-{{N}^{trans}_{[i]}}(t)$$ {#eq-LA45}
+
+with the restriction that $\text{d}{}^{\text{ph}}\text{N}{{l}_{\text{ }\!\![\!\!\text{ i }\!\!]\!\!\text{ }}}$ can not fall below zero.
+
+The degeneration rate is modelled as a first order kinetic:
+
+$${{D}^{ph}_{i}}(t)=\delta \cdot {}{{N}^{ph}_{i}} \cdot {{10}^{-3}},$$ {#eq-LA46}
+
+where δ \[°Cd^-1^\] is the relative rate of $N^{ph}_i$ degeneration.
+
+The synthesis rate is modelled as a double Michaelis-Menten function:
+
+$${ph}{{S}_{[i]}}(t)=\sigma \cdot {{W}_{l}}_{[i]}(t)\times {{10}^{-3}}\cdot \frac{{}^{mob}{{N}_{c}}(t)}{{}^{mob}{{N}_{c}}(t)+k1}\cdot \frac{PAR}{PA{{R}_{[i]}}+k2},$$ {#eq-LA47}
+
+where σ \[kg^.^kg^-1^°Cd^-1^\] is the relative rate of photosynthetic N synthesis and k1 \[kg^.^kg^-1^\] is the Michaelis Menten constant associated to mobile N concentration, whereas k~2~ \[J^.^m^-2^s^-1^\] is Michaelis Menten constant associated to the amount of PAR incident on surface of lamina i PAR\[i\] \[MJ PAR.m-2\]. The mobile N concentration mobNc(t) \[g^.^g^-1^\] is computed as the mean concentration of mobile N in green lamina plus stem tissue:
+
+$${{N}^{mob}_{c}}(t)=\frac{{{N}^{mob}_{l}}(t)+{{N}^{mob}_{s}}(t)}{{{W}_{leaf}}(t)+{{W}_{stem}}(t)}$$ {#eq-LA48}
+
+According to [@Bertheloot2008], the amount of intercepted PAR\[i\] was calculated as a function of cumulative leaf area index above the respective lamina F\[i\]:
+
+$$PA{{R}_{[i]}}={{k}_{PAR}}\cdot PA{{R}_{0}}\cdot p_{Trans} \cdot \exp (-{{k}_{PAR}}\cdot {{F}_{[i]}})$$ {#eq-LA49}
+
+where p~Trans~ is the dimensionless PAR transmission coefficient.
+
+The original model assumes a constant average PAR, whereas measured PAR is used in HumeWheat. In order to dampen any short-term, diurnal variations the net increase of phN\[i\] is limited to a maximum of 5%. The dynamic of phNs is calculated assuming that the ratio of mobile and photosynthetic N mass (r) is equal for all modules:
+
+$$r=\frac{{{N}^{mob}_{l}}}{\sum\limits_{i}{{{N}^{ph}_{l[i]}}}}$$ {#eq-LA50}
+
+the change rate of phNs therefore is
+
+$$\frac{\text{d}{}{{N}^{ph}_{s}}}{dt}= min\left(0,N^{ph}_{s}(t) \cdot r(t) -{{N}^{mob}_{s}}(t) \right)$$ {#eq-LA51}
+
+In contrast to the original model, the transfer of mobile N to the grain N pool starts with stem fraction (mobN~s~). The change rate of mobN~s~ is calculated as the difference between stem N release and grain N uptake (@eq-LA44) as follows:
+
+$$\frac{d{}{{N}^{mob}_{s}}}{dt} = max\left(-{{N}^{mob}_{s}}(t),- \frac{d{N^{ph}_s}}{dt}-\frac{dN_g}{dt}\right)$$ {#eq-52}
+
+Therefore, a larger amount of N remains at the mobN~l~ pool (@eq-LA38), compared to mobNs whenever the amount of mobile N exceeds the N demand of the grains:
+
+$$\frac{d{}{{N}^{mob}_{\text{l}}}}{\text{dt}}= \left\{ \begin{align}
+  & \max \left(-{{N}^{mob}_{l}}(t),-\sum\limits_{\text{i}}{\frac{\text{d}{}{{N}^{ph}_{l}}}{dt}}+\sum{{}{{N}^{trans}_{i}}(t)}\right) &{{|}}{{N}^{mob}_{s}}(t)\ge (\frac{dN^{ph}_{s}}{dt}+\frac{d{{N}_{grain}}}{dt})\\ 
+ & \max \left(-{N^{mob}_{l}}(t),-\sum \limits_{i}{\frac{d{}{{N}^{ph}_{l}}}{dt}}-\left(\frac{d{}{{N}^{ph}_{s}}}{dt}+\frac{d{{N}_{grain}}}{dt}\right) \right)  
+ & {{|}}{{N}^{mob}_{s}}(t)<(\frac{d{}^{ph}{{N}_{s}}}{dt}+\frac{d{{N}_{grain}}}{dt})\\ 
+ & \mathop{{}}^{{}}\mathop{{}}^{{}}+{}{{N}^{mob}_{s}}(t)+\sum{{N^{trans}_{i}}(t)}). \\ 
+\end{align} \right.$$ {#eq-LA53}

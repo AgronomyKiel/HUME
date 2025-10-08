@@ -1,0 +1,265 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="URootObject" platform="Win32">
+  <const name="MM" type="TUptake_Function" file="URootObject.pas" line="14">
+    <value>
+      MM
+    </value>
+  </const>
+  <const name="fixed_influx" type="TUptake_Function" file="URootObject.pas" line="14">
+    <value>
+      fixed_influx
+    </value>
+  </const>
+  <const name="ZeroSink" type="TUptake_Function" file="URootObject.pas" line="14">
+    <value>
+      ZeroSink
+    </value>
+  </const>
+  <enum name="TUptake_Function" file="URootObject.pas" line="14">
+    <devnotes>
+       <summary>
+       Mode of nitrogen uptake by the root: Michaelis-Menten (saturation kinetics),
+       fixed_influx assumes a constant sink strength, ZeroSink represents unlimited
+       sink strength (black hole).
+       </summary>
+    </devnotes>
+    <element value="0" name="MM" file="URootObject.pas" line="14" />
+    <element value="1" name="fixed_influx" file="URootObject.pas" line="14" />
+    <element value="2" name="ZeroSink" file="URootObject.pas" line="14" />
+  </enum>
+  <class name="TRootObject" file="URootObject.pas" line="27">
+    <devnotes>
+       <summary>
+         Defines an object for storing the information of
+        a single root object
+        x and y are the floating point type coordinate
+        xi and yi are the index integers for the cell of a 2-D grid object
+        the root object is located
+       </summary>
+    </devnotes>
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public" procflags="inline">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="QualifiedClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitScope" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+      <methodref name="GetDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <propertyref name="Disposed" visibility="protected">
+      </propertyref>
+    </ancestor>
+    <members>
+      <field name="fCl_min" type="Real" visibility="private" size="8" offset="8" file="URootObject.pas" line="32">
+        <devnotes>
+           <summary>
+             minimum nitrate concentraion
+           </summary>
+        </devnotes>
+      </field>
+      <field name="fHalfDistance" type="Real" visibility="private" size="8" offset="16" file="URootObject.pas" line="37">
+        <devnotes>
+           <summary>
+             radius of root cylinder [cm]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="fMaxNInflux" type="Real" visibility="private" size="8" offset="24" file="URootObject.pas" line="42">
+        <devnotes>
+           <summary>
+             maximum nitrate uptake rate [mol/cm/]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="x" type="Real" visibility="public" size="8" offset="32" file="URootObject.pas" line="49">
+        <devnotes>
+           <summary>
+             x and y coordinates of the root exit point [cm]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="y" type="Real" visibility="public" size="8" offset="40" file="URootObject.pas" line="50" />
+      <field name="xi" type="Integer" visibility="public" size="4" offset="48" file="URootObject.pas" line="55">
+        <devnotes>
+           <summary>
+             the index of the grid cell in x and y direction
+           </summary>
+        </devnotes>
+      </field>
+      <field name="yi" type="Integer" visibility="public" size="4" offset="52" file="URootObject.pas" line="55" />
+      <field name="nroot" type="Integer" visibility="public" size="4" offset="56" file="URootObject.pas" line="59">
+        <devnotes>
+           <summary>
+             the number of the root
+        </devnotes>
+      </field>
+      <field name="area" type="Real" visibility="public" size="8" offset="64" file="URootObject.pas" line="64">
+        <devnotes>
+           <summary>
+            the area of the single root cylinder [cm²]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="RLD" type="Real" visibility="public" size="8" offset="72" file="URootObject.pas" line="69">
+        <devnotes>
+           <summary>
+             Root length density [cm/cm3]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="radius" type="Real" visibility="public" size="8" offset="80" file="URootObject.pas" line="74">
+        <devnotes>
+           <summary>
+             root radius [cm]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="WAmount" type="Real" visibility="public" size="8" offset="88" file="URootObject.pas" line="79">
+        <devnotes>
+           <summary>
+             Amount of water in the single root cylinder [cm3]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="NAmount" type="Real" visibility="public" size="8" offset="96" file="URootObject.pas" line="84">
+        <devnotes>
+           <summary>
+             Amount of nitrate in the single root cylinder [mol N]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="theta" type="Real" visibility="public" size="8" offset="104" file="URootObject.pas" line="88">
+        <devnotes>
+           <summary>
+           volumetric water content in the single root cylinder [cm3/cm3]
+        </devnotes>
+      </field>
+      <field name="Cl_mean" type="Real" visibility="public" size="8" offset="112" file="URootObject.pas" line="94">
+        <devnotes>
+           <summary>
+           the nitrate concentration in the single root cylinder [mol/cm3]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="NInflux" type="Real" visibility="public" size="8" offset="120" file="URootObject.pas" line="99">
+        <devnotes>
+           <summary>
+           the nitrate influx rate of that root [mol/cm/s]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="SumNInflux" type="Real" visibility="public" size="8" offset="128" file="URootObject.pas" line="104">
+        <devnotes>
+           <summary>
+             Sum of the nitrate influx rates [mol/cm]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="WInflux" type="Real" visibility="public" size="8" offset="136" file="URootObject.pas" line="109">
+        <devnotes>
+           <summary>
+           the water influx rate of that root [cm3/cm/s]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="SumWInflux" type="Real" visibility="public" size="8" offset="144" file="URootObject.pas" line="114">
+        <devnotes>
+           <summary>
+             Sum of the water influx rates [cm3/cm]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="NAmountdt" type="Real" visibility="public" size="8" offset="152" file="URootObject.pas" line="119">
+        <devnotes>
+           <summary>
+           the nitrate uptake rate [mol/s]
+           </summary>
+        </devnotes>
+      </field>
+      <procedure name="init" visibility="public" procflags="virtual" file="URootObject.pas" line="121">
+        <parameters>
+          <parameter name="x" type="Real" />
+          <parameter name="y" type="Real" />
+          <parameter name="xi" type="Word" />
+          <parameter name="yi" type="Word" />
+          <parameter name="nroot" type="Word" />
+          <parameter name="RLD" type="Real" />
+          <parameter name="radius" type="Real" />
+          <parameter name="WAmount" type="Real" />
+          <parameter name="NAmount" type="Real" />
+        </parameters>
+      </procedure>
+      <function name="MaxNitrateInflux" visibility="public" file="URootObject.pas" line="125">
+        <parameters>
+          <retval type="Real" />
+        </parameters>
+      </function>
+      <property name="Cl_min" visibility="public" read="fCl_min" write="fCl_min" type="Real" default="0" file="URootObject.pas" line="127" />
+      <property name="HalfDistance" visibility="public" read="fHalfDistance" write="fHalfDistance" type="Real" default="0" file="URootObject.pas" line="128" />
+    </members>
+  </class>
+</namespace>
