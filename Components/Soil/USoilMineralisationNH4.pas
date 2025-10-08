@@ -1,4 +1,4 @@
-/// <summary>
+﻿/// <summary>
 /// Sub-Modell zur Beschreibung der Dynamik der Umsetzungen organischer Substanz
 /// im Boden.
 /// After Verberne et al. 1990: Modelling organic matter dynamics
@@ -289,10 +289,10 @@ procedure Register;
 implementation
 
 uses
-/// <summary>$IFNDEF NONVISUAL</summary>
   math, SysUtils,
-/// <summary>$ENDIF</summary>
+{$IFNDEF NONVISUAL}
   vcl.dialogs,
+{$ENDIF}
   USoilWaterMod, USoilTexture;
 
 procedure TMinProcess.init(iName: string; ik, iE: TPar;
@@ -742,11 +742,11 @@ begin
     c_frac_control := 0;
     // if not overwritten by previous routine, fractions from inifile are used and a control variable is calculated here
     for layer := 1 to trunc(NOrgLayers.v) do
-/// <summary>$IFNDEF NONVISUAL</summary>
       c_frac_control := c_frac_control + c_frac[layer].v;
     if (c_frac_control > (1 + 1E-5)) or (c_frac_control < (1 - 1E-5)) then
-/// <summary>$ENDIF</summary>
+{$IFNDEF NONVISUAL}
       showmessage('Error in fractioning of organic matter between layers!');
+{$ENDIF}
     C_ges.v := 0.5 * OrgDepth.v / 100 * 1E4 * 1000 * iBulkDensity.v *
       HumusContent.v;
     // size of the inert organic matter pool (IOM), this pool do

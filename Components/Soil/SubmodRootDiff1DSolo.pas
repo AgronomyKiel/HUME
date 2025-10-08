@@ -315,23 +315,22 @@ procedure TSubmodRootDiff1DSolo.CalcRates;
 var
   ARoot : TRootObject;
   i : integer;
-  De, Db, MaxNInflux  : real;
+  De,
+  Db,
+  MaxNInflux,
+  sumNInflux  : real;
 
 begin
-  { The implementation was outsourced so that when using the analytical solution the
-    rate equation calculation can easily be disabled (switch in createAll). Rate
-    calculation should take place here only when using the numerical solution or
-    when both calculation methods are executed }
-//  inherited CalcRates;
 
-  For i := 0 to trunc(number_classes.v - 1) do 
+  sumNInflux := 0;
+  For i := 0 to trunc(number_classes.v - 1) do
   begin
-     
+
     ARoot := TRootObject(RasterData.RootList.Objects[i]);
     MaxNInflux := ARoot.MaxNitrateInflux;
     ARoot.Ninflux := min(Imax.v, MaxNInflux);
     // calculate the fractional uptake according to Tinker, Nye Eq. 10.28
-
+    sumNInflux := sumNInflux + ARoot.Ninflux;
   end;
 
 

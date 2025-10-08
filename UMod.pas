@@ -661,7 +661,9 @@ type
     property LMOptions: TMarquardOptions read FLMOptions write FLMOptions;
     property SensOpt: TSensitivityOptions read FSensOptions write FSensOptions;
     property IniFileNames: TStringList read FIniFiles;
+{$IFNDEF NONVISUAL}
     property Title: string read FTitle write SetTitle;
+{$ENDIF}
     // property ContOutput: TContOutput read FContOutput write FContOutput;
     property OptContOutput: TContOutput read fContOutput write fContOutput;
     // property FinalOutput: boolean read FFinalOutput write FFinalOutput;
@@ -1684,6 +1686,8 @@ begin
   inherited;
 end;
 
+
+{$IFNDEF NONVISUAL}
 /// ensures that if a submodel is removed from the model it is also removed from the SubModStrList
 procedure TMod.Notification(AComponent: TComponent; Operation: TOperation);
 var
@@ -1712,6 +1716,8 @@ begin
     end;
   end;
 end;
+{$ENDIF}
+
 
 /// <summary>
 /// Call methods for calculation of variables of all active submodels
@@ -3977,12 +3983,15 @@ begin
   inherited;
 end;
 
+
+{$IFNDEF NONVISUAL}
 procedure TSubmodel.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited;
   if (Operation = opRemove) and (AComponent = GlobMod) then
     GlobMod := nil;
 end;
+{$ENDIF}
 
 procedure TSubmodel.IsOutput(var IsOutput: boolean);
 
