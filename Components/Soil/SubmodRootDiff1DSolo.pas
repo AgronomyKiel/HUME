@@ -139,6 +139,12 @@ type
     /// </summary>
     Par_AreaVC: TVar;
 
+    NInfluxrates := array[0..Z_d_Momente-1] of TVar;
+    NAmounts := array[0..Z_d_Momente-1] of TVar;
+    WInfluxrates := array[0..Z_d_Momente-1] of TVar;
+    WAmounts := array[0..Z_d_Momente-1] of TVar
+
+
     (* -----------------------------------------------------------------------------
       Member HUME-Basisklasse TState (Zustandsvariablen)
       ------------------------------------------------------------------------------ *)
@@ -223,6 +229,17 @@ begin
     'Coefficient of variation of mean area [%]');
   VarCreate('Amount_H20', '[l]', 0, false, Amount_H20,
     'Water amount in the soil layer under consideration [l]');
+
+  for i:= 0 to Z_d_Momente-1 do begin
+    TVarCreate(Format('NInfluxrate_%d',[i]), '[g N/cm/d]', 0, false, NInfluxrates[i],
+      Format('Nitrate influx rate of class %d [g N/cm/d]',[i]));
+    TVarCreate(Format('NAmount_%d',[i]), '[kg N]', 0, false, NAmounts[i],
+      Format('Nitrate amount of class %d [kg N]',[i]));
+    TVarCreate(Format('WInfluxrate_%d',[i]), '[cm/d]', 0, false, WInfluxrates[i],
+      Format('Water influx rate of class %d [cm/d]',[i]));
+    TVarCreate(Format('WAmount_%d',[i]), '[l]', 0, false, WAmounts[i],
+      Format('Water amount of class %d [l]',[i]));
+  end;
 
   // Create and initialize TPar
   ParCreate('number_classes', '[-]', 10, number_classes,
@@ -329,10 +346,15 @@ begin
     ARoot := TRootObject(RasterData.RootList.Objects[i]);
     MaxNInflux := ARoot.MaxNitrateInflux;
     ARoot.Ninflux := min(Imax.v, MaxNInflux);
+    NInfluxrates[i].v := ARoot.Ninflux;
+
     // calculate the fractional uptake according to Tinker, Nye Eq. 10.28
     sumNInflux := sumNInflux + ARoot.Ninflux;
   end;
-
+  // SumInflux is in [g N/cm/d]
+  // wl_ha.v is in [cm/ha]
+  // N_AmountSoil.c is in [kg N/ha/d]  
+  N_AmountSoil.c := sumNInflux * wl_ha.v;
 
 end; // End  TSubmodRootDiff1DSolo.CalcRates
 
@@ -340,7 +362,21 @@ procedure TSubmodRootDiff1DSolo.Integrate;
 (* ------------------------------------------------------------------------------
   DESCRIPTION: Solve the differential equations.
   ------------------------------------------------------------------------------ *)
+var 
+  ARoot
+
 begin
+  inherited;
+  For i := 0 to trunc(number_classes.v - 1) do
+  begin
+    ARoot := TRootObject(RasterData.RootList.Objects[i]);
+    ARoot.NAmount := ARoot.NAmount - NInfluxrates[i].v * Timestep.v / 1E8; // conversion from g N/cm/d to kg N
+    NAmounts[i].v := ARoot.NAmount;
+    ARoot.WAmount := ARoot.WAmount - WInfluxrates[i].v * Timestep.v / 1E5; // conversion from cm/d to l
+    WAmounts[i].v := ARoot.WAmount;
+  end;
+
+
 end; // End TSubmodRootDiff1DSolo.Integrate
 
 

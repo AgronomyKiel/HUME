@@ -129,10 +129,12 @@ begin
     begin
       if (Exwld_arr[i].v * Thick[i] > 1E-4) then
       begin
-        actMassFlow := actMassFlow + Sink_Arr[i].v * NConc[i].v;
         // Accumulation of the mass flow over the internal time steps
+        actMassFlow := actMassFlow + Sink_Arr[i].v * NConc[i].v;
+
+        // calculation of the water influx per unit root length [cm3/cm/
+        // Conversion of root length from cm/cm2 to cm/had]
         WInflux[i] := Sink_Arr[i].v / (Exwld_arr[i].v * Thick[i] * 1E8);
-        // Conversion of root length from cm/cm2 to cm/ha
         Cl_min_arr[i] := not_av_N.v / WAmount[i].v + Cmin.v;
         // ar:  max_Wl_NupTake = physiological limitation of the N uptake per root length (Wl)
         // will be effective if time-step error is high (after N fertilization events)
@@ -140,6 +142,11 @@ begin
           max(0, Imax(NConc[i].v, Cl_min_arr[i], theta_arr[i].v, WInflux[i],
           Exwld_arr[i].v, RootRad.v)));
         SumImax := SumImax + Imax_arr[i];
+
+        // calculation of maximum N uptake rate per soil layer
+        // Imax is in g N / cm root / day in order to convert to kg N/ha/d
+        // multiply by 1E8 (cm root/cm2 soil to cm root/ha soil) and by
+        // Thick[i] (cm soil layer thickness) 
         Max_uptake[i] := Imax_arr[i] * Exwld_arr[i].v * Thick[i] * 1E8;
         // hkage 20.07.16: check if actual maximum N uptake rate would lead to negative N amounts
         // the value of 0.5 is abitrary ...
