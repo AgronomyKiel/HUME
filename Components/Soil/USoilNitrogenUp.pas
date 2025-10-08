@@ -19,43 +19,43 @@ type
     procedure SetPlantModel(NewPlantModel: TAbstractplant); override;
 
   public
+    /// <summary>Actual N uptake rate averaged over the day.</summary>
     ActNUptake: TVar;
-    /// actual N uptake rate averaged over day
+    /// <summary>Maximum N uptake rate averaged over the day.</summary>
     MaxNUptake: TVar;
-    /// maximum N uptake rate averaged over day
+    /// <summary>Sum of apparent mass flow transport to roots [kg N/ha/d].</summary>
     MassFlow: TVar;
-    /// sum of apparent mass flow transport to roots kg N/ha/d
+    /// <summary>N uptake per day [kg N/ha/d].</summary>
     NUptake: TSoilVarArray;
-    /// N uptake per day kg N/ha/d
+    /// <summary>Water influx per unit root length [cm3/cm/d].</summary>
     WInflux: TSoilArray;
-    /// water influx per unit root length [cm3/cm/d]
+    /// <summary>Nitrate influx per unit root length.</summary>
     NInflux_WL: TVar;
-    /// nitrate influx per unit root length
+    /// <summary>Nitrate influx per unit effective root length.</summary>
     NInflux_WL_eff: TVar;
-    /// nitrate influx per unit root effective length
 
+    /// <summary>Average N uptake rate per day for plotting as a state variable.</summary>
     SumSoilNUptake: TState;
-    ///
+    /// <summary>Average N uptake rate per day in units of g/m2/d.</summary>
     SoilNUptakeGrowth: TState;
-    ///
+    /// <summary>Total sum of plant nitrogen demand.</summary>
     SumPlantNDemand: TState;
-    /// sum of nitrate uptake from soil
 
+    /// <summary>Minimum nitrate concentration subtracted from the actual concentration [kg/cm water].</summary>
     Cmin: TPar;
-    /// minimal nitrate concentration, substracted from actual concentration [kg/cm water]
+    /// <summary>Plant unavailable share of nitrate [kg N/10 cm].</summary>
     not_av_N: TPar;
-    /// not plant available part of nitrate [kg N/10 cm]
+    /// <summary>Root radius [cm].</summary>
     RootRad: TPar;
-    /// root radius [cm]
+    /// <summary>Maximum value for N uptake per unit root length [kg/cm/d].</summary>
     Max_Wl_Nuptake: TPar;
-    /// maximum value for N uptake per unit root length [kg/cm/d]
     // NTotal       : TExternV;
+    /// <summary>Plant N demand [g N/m/d].</summary>
     Ex_PlantNDemand: TExternV;
-    /// plant N demand [g N/m²/d]
+    /// <summary>Sum of root length [cm/cm2].</summary>
     SRL: TExternV;
-    /// sum or root length cm/cm2
+    /// <summary>Effective sum of root length [cm/cm2].</summary>
     SRL_eff: TExternV;
-    /// effective sum or root length cm/cm2
 
     procedure CreateAll; override;
     procedure CalcRatesAndIntegrate; override;
@@ -90,22 +90,22 @@ uses
 procedure TSoilNitrogenUp.CalcRatesAndIntegrate;
 
 var
-  SumImax { Summe der maximalen Influxraten }
+  SumImax { Sum of the maximum influx rates }
     : real;
 
   Max_uptake: TSoilArray;
-  /// maximale N-Aufnahmerate in [kg N/(ha*d)] pro Schicht
+  /// maximum N uptake rate in [kg N/(ha*d)] per layer
   Imax_arr: TSoilArray;
-  /// maximale N-Influxrate in Kg N/(cm*d) pro Schicht
+  /// maximum N influx rate in kg N/(cm*d) per layer
   Cl_min_arr: TSoilArray;
-  /// not available concentration of soil nitrate (sum of Cmin and not_av_N
+  /// Not available concentration of soil nitrate (sum of Cmin and not_av_N
   i: byte;
   actMaxNUptake: real;
-  /// maximale N-Aufnahmerate im internen Zeitschritt
+  /// Maximum N uptake rate in the internal time step
   actMassFlow: real;
-  /// Massenflußtransportrate im internen Zeitschritt
+  /// Mass flow transport rate in the internal time step
   Sum_N_Nuptake: real;
-  /// Summe maximale N-Aufnahmerate im internen Zeitschritt
+  /// Sum of maximum N uptake rate in the internal time step
 
 begin
   Sum_N_Nuptake := 0.0;
@@ -124,15 +124,15 @@ begin
   // single root model approach of Baldwin/Kage
 
   if Exwld_arr[1].v > 0.0 then
-  begin // Sind Wurzeln da ?
+  begin // Are roots present?
     for i := 1 to Max_Root_Index do
     begin
       if (Exwld_arr[i].v * Thick[i] > 1E-4) then
       begin
         actMassFlow := actMassFlow + Sink_Arr[i].v * NConc[i].v;
-        // Aufsummierung des Massenflusses über die internen Zeitschritte
+        // Accumulation of the mass flow over the internal time steps
         WInflux[i] := Sink_Arr[i].v / (Exwld_arr[i].v * Thick[i] * 1E8);
-        // Wurzellängenumrechnung von cm/cm2 auf cm/ha
+        // Conversion of root length from cm/cm2 to cm/ha
         Cl_min_arr[i] := not_av_N.v / WAmount[i].v + Cmin.v;
         // ar:  max_Wl_NupTake = physiological limitation of the N uptake per root length (Wl)
         // will be effective if time-step error is high (after N fertilization events)
@@ -146,9 +146,9 @@ begin
         // if (Max_uptake[i]/dt.v > (NitrateAmount[i].v))  then
         if (Max_uptake[i] > (NitrateAmount[i].v)) then
           Max_uptake[i] := 0.5 * NitrateAmount[i].v;
-        // *dt.v; 09.09.2021 hk sollte auch so stabil laufen
+        // *dt.v; 09.09.2021 hk should also be stable this way
 
-        // Wurzellängenumrechnung von cm/cm2 auf cm/ha
+        // Conversion of root length from cm/cm2 to cm/ha
       end
       else
       begin
@@ -168,7 +168,7 @@ begin
 
     // distribution of N uptake over all layers ...
     if (actMaxNUptake >= fplantNDemand) and (actMaxNUptake > 0.0) then
-    begin // Wenn mögliche Aufnahme > Bedarf
+    begin // If possible uptake > demand
       for i := 1 to Max_Root_Index do
       begin
         NUptake[i].v := -fplantNDemand * Max_uptake[i] / actMaxNUptake;
@@ -190,7 +190,7 @@ begin
     end;
   end
   else
-  begin // ohne Wurzeln keine Aufnahme
+  begin // No uptake without roots
     for i := 1 to Max_Root_Index do
       NUptake[i].v := 0.0;
     Sum_N_Nuptake := 0.0;
@@ -234,7 +234,7 @@ begin
   SoilNUptakeGrowth.c := 0.0;
   SumPlantNDemand.c := 0.0;
   fplantNDemand := max(0, Ex_PlantNDemand.v * 10);
-  // Umrechnung von gN/m2 auf kg N/ha
+  // Conversion from g N/m2 to kg N/ha
   SumPlantNDemand.c := fplantNDemand;
 
   inherited CalcRates;
@@ -254,7 +254,7 @@ begin
   ParCreate('Cmin', '[kg N/cm]', 0.0, Cmin,
     'minimum nitrate concentration roots can deplete to');
   ParCreate('Not_av_N', '[kg N/10 cm]', 1.5, not_av_N,
-    'nicht verfügbarer Teil des Bodenstickstoffs [kg N/10 cm]');
+    'non-available part of the soil nitrogen [kg N/10 cm]');
   ParCreate('RootRad', '[cm]', 0.02, RootRad, 'root radius');
   ParCreate('Max_Wl_Nuptake', '[kg/ha/d/Wl]', 3E-9, Max_Wl_Nuptake);
   // ExternVcreate('TotalPlantNitrogen', '[kg N.ha-1.d-1]',   RateField, NTotal);
