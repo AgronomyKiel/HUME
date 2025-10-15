@@ -18,7 +18,7 @@ type
   /// <summary> Declaration of class TSubmodRootDiff. Class based on base class for derived diffusion models
   /// implements further details for nitrate transport
   /// </summary>
-  TSubmodRoot2DDiffNitrate = class(TBaseSubmodRootDiffNitrate)
+  TSubmodRoot2DNitrate = class(TSubmodRootBase2D)
   private
     /// <summary>
     ///   diffusive nitrate uptake rate
@@ -29,6 +29,7 @@ type
     ///   Two dimensional solution of nitrate transport
     /// </summary>
     procedure zweid_solut(dt_globmod: real);
+    
     // Helper methods
     procedure InitConc;
     procedure createSteadyState(DiffSteadyState: double);
@@ -237,7 +238,7 @@ end;
 /// actual floating-point value. For an explanation of the identifiers, see the
 /// declaration.
 /// </summary>
-procedure TSubmodRoot2DDiffNitrate.createAll;
+procedure TSubmodRoot2DNitrate.createAll;
 begin
   inherited createAll;
   // Create and initialize TVar
@@ -309,7 +310,7 @@ begin
 end; // End TSubmodRootDiff.CreateAll
 
 
-procedure TSubmodRoot2DDiffNitrate.zweid_solut(dt_globmod: real);
+procedure TSubmodRoot2DNitrate.zweid_solut(dt_globmod: real);
 (* ------------------------------------------------------------------------------
   DESCRIPTION: Central procedure. Calculation of nutrient transport in 2D space
   (linear algebra). Note: nested structure
@@ -347,6 +348,8 @@ var
 
   SinkCellFile: Textfile;
   SinkCellFileName: string;
+  ARoot: TRootObjectIn2D;
+
 
   procedure CalcOneLine(o_vektor, Sink: array_type; dim_z, Start, Ende: word;
     var u_vektor, z_vektor: array_type);
@@ -563,21 +566,25 @@ begin
     append(SinkCellFile);
     write(SinkCellFile, GlobMod.Time.v:6:2, ' ', int_dt.v:6:2, ' ',
       GlobMod.Time.v * 86400 + SumOfInternalTimeSteps, ' ');
-    for i := 1 to RasterData.NRoots do
-      if (TRootObject(RasterData.RootList.Objects[i]).xi > trunc(dim_x.v / 10)) and
-        (TRootObject(RasterData.RootList.Objects[i]).xi < self.dim_x.v - trunc(self.dim_x.v / 10)) and
-        (TRootObject(RasterData.RootList.Objects[i]).yi > trunc(self.dim_y.v / 10)) and
-        (TRootObject(RasterData.RootList.Objects[i]).yi < self.dim_y.v - trunc(self.dim_y.v / 10)) then
-        write(SinkCellFile, TRootObject(RasterData.RootList.Objects[i]).NInflux, ' ');
-    for i := 1 to RasterData.NRoots do
-      if (TRootObject(RasterData.RootList.Objects[i]).xi > trunc(dim_x.v / 10)) and
-        (TRootObject(RasterData.RootList.Objects[i]).xi < self.dim_x.v - trunc(self.dim_x.v / 10)) and
-        (TRootObject(RasterData.RootList.Objects[i]).yi > trunc(self.dim_y.v / 10)) and
-        (TRootObject(RasterData.RootList.Objects[i]).yi < self.dim_y.v - trunc(self.dim_y.v / 10)) then
-        write(SinkCellFile, C_xy[TRootObject(RasterData.RootList.Objects[i]).xi,
-          TRootObject(RasterData.RootList.Objects[i]).yi], ' ');
+    for i := 1 to RasterData.NRoots do begin
+      ARoot := TRootObjectIn2D(RasterData.RootList.Objects[i]);
+      if (ARoot.xi > trunc(dim_x.v / 10)) and
+        (ARoot.xi < self.dim_x.v - trunc(self.dim_x.v / 10)) and
+        (ARoot.yi > trunc(self.dim_y.v / 10)) and
+        (ARoot.yi < self.dim_y.v - trunc(self.dim_y.v / 10)) then
+        write(SinkCellFile, ARoot.NInflux, ' ');
+    end;
+    for i := 1 to RasterData.NRoots do begin
+      ARoot := TRootObjectIn2D(RasterData.RootList.Objects[i]); 
+      if (ARoot.xi > trunc(dim_x.v / 10)) and
+        (ARoot.xi < self.dim_x.v - trunc(self.dim_x.v / 10)) and
+        (ARoot.yi > trunc(self.dim_y.v / 10)) and
+        (ARoot.yi < self.dim_y.v - trunc(self.dim_y.v / 10)) then
+        write(SinkCellFile, C_xy[ARoot.xi, ARoot.yi], ' ');
+          TRootObjectIn2D(RasterData.RootList.Objects[i]).yi], ' ');
     writeln(SinkCellFile);
     closefile(SinkCellFile);
+    end;
   end;
 end;
 (* ------------------------------------------------------------------------------
@@ -585,7 +592,7 @@ end;
   ------------------------------------------------------------------------------ *)
 
 
-procedure TSubmodRoot2DDiffNitrate.Get_Sink(x_loc, y_loc: word; var s: real);
+procedure TSubmodRoot2DNitrate.Get_Sink(x_loc, y_loc: word; var s: real);
 (* ------------------------------------------------------------------------------
   DESCRIPTION: calculation of sink terms (uptake and mineralization)
   [mol/d-1] in a computational element
@@ -597,6 +604,8 @@ var
   // nitrogen uptake rate for current root [dg/dt]
   SumUptake, x, Db: real;
   De_SinkGrid: double;
+
+
 begin
   get_minGrid(x_loc, y_loc, s); // calculate mineralization
   NUptake := 0.0;
@@ -605,16 +614,18 @@ begin
   for i := 0 to trunc(Num_Roots.v)-1 do
   begin
     // test whether a sink exists in the computational element, then calculate uptake
-    if ((TRootObject(RasterData.RootList.Objects[i]).xi = x_loc) and (TRootObject(RasterData.RootList.Objects[i]).yi = y_loc))
+    if ((TRootObjectIn2D(RasterData.RootList.Objects[i]).xi = x_loc) and (TRootObjectIn2D(RasterData.RootList.Objects[i]).yi = y_loc))
     then
     begin
-      x := sqrt(dx.v * dy.v / pi);
       // radius of a circle corresponding to the central cell
+      x := sqrt(dx.v * dy.v / pi);
+
       Db := Dl.v * 3.35 * theta.v * theta.v * theta.v; //
       { Inner boundary condition: constant influx; this scenario can be controlled
         via parameter Ar; another influencing factor is the calculated wl_ha }
       If NitrateUptakeFunction.Option = lowercase('ConstInflux') then
         NUptake := Imax.v; // mol/cm*d
+
       // Innere Randbedingung: Zero sink
       If NitrateUptakeFunction.Option = lowercase('ZeroSink') then
 
@@ -670,17 +681,18 @@ begin
         // NUptake :=  Influx_f( Imax.v, Km.v, C_xy[x_loc, y_loc]);
         NUptake := influx_fVar(Imax.v, Km.v, C_xy[x_loc, y_loc], x, Db);
       // influx into the sink during the time step
-      TRootObject(RasterData.RootList.Objects[i]).NInflux := NUptake;
+
+      TRootObjectIn2D(RasterData.RootList.Objects[i]).NInflux := NUptake;
       If NitrateUptakeFunction.Option <> lowercase('ZeroSink') then
         SumUptake := SumUptake + NUptake
       else
         SumUptake := NUptake;
       // calculate cumulative N uptake for the sinks
 /// <summary>Problem: there is still a conceptual error here</summary>
-      NAmountRootdt := TRootObject(RasterData.RootList.Objects[i]).NInflux * 14 / 1000 * int_dt.v;
-      // NAmountRootdt:=TRootObject(RasterData.PosList.Objects[i]).NInflux*14/1000*86400/int_dt.V;
-      TRootObject(RasterData.RootList.Objects[i]).NAmountdt := NAmountRootdt;
-      TRootObject(RasterData.RootList.Objects[i]).NAmount := TRootObject(RasterData.RootList.Objects[i]).NAmount +
+      NAmountRootdt := TRootObjectIn2D(RasterData.RootList.Objects[i]).NInflux * 14 / 1000 * int_dt.v;
+      // NAmountRootdt:=TRootObjectIn2D(RasterData.PosList.Objects[i]).NInflux*14/1000*86400/int_dt.V;
+      TRootObjectIn2D(RasterData.RootList.Objects[i]).NAmountdt := NAmountRootdt;
+      TRootObjectIn2D(RasterData.RootList.Objects[i]).NAmount := TRootObjectIn2D(RasterData.RootList.Objects[i]).NAmount +
         NAmountRootdt;
     end;
   end;
@@ -688,7 +700,7 @@ begin
   s := s - SumUptake;
 end;
 
-procedure TSubmodRoot2DDiffNitrate.get_minGrid(x_loc, y_loc: word; var s: real);
+procedure TSubmodRoot2DNitrate.get_minGrid(x_loc, y_loc: word; var s: real);
 (* ------------------------------------------------------------------------------
   DESCRIPTION: calculation of mineralization [mol/d-1] in a computational element
   Problem: Do the units match?
@@ -700,7 +712,7 @@ begin
   s := Min_S.v * vol_Element;
 end;
 
-procedure TSubmodRoot2DDiffNitrate.CalcRates;
+procedure TSubmodRoot2DNitrate.CalcRates;
 (* ------------------------------------------------------------------------------
   DESCRIPTION: This method invokes the control flow of the submodel for rate
   calculation.
@@ -728,7 +740,7 @@ begin
   // create new file with outputs for the sinks:
   for i := 0 to RasterData.RootList.Count-1 do
   begin
-    TRootObject(RasterData.RootList.Objects[i]).NAmount := 0;
+    TRootObjectIn2D(RasterData.RootList.Objects[i]).NAmount := 0;
   end;
   if FileWasCreated = false then
   begin
@@ -774,7 +786,7 @@ begin
       sinks are summed. Return value is the total N amount the roots have taken
       up in a time step }
     sumNAmountRootsdt := calcAmountUptakeRoots;
-    Sum_N_AmountRoots.v := Sum_N_AmountRoots.v + sumNAmountRootsdt;
+    SumNUptake.v := SumNUptake.v + sumNAmountRootsdt;
     { At the end of each internal time step the absorbed influx is redistributed
       to the computational elements }
     { If a steady-state condition should be generated, the constant concentration
@@ -828,7 +840,7 @@ end; // End TSubmodRootDiff.CalcRates
 
 
 
-procedure TSubmodRoot2DDiffNitrate.InitConc;
+procedure TSubmodRoot2DNitrate.InitConc;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG: Berechnung der Startkonz. aus der initialen N-Menge
   ------------------------------------------------------------------------------ *)
@@ -841,7 +853,7 @@ begin
 
   // NAmountGridzell:=N_AmountSoil.V*1000/(dim_x.v*dim_y.v*10000*vol_Element);  //g N/cm3
   // NAmountGridzell/(theta.v*14*Tiefe.V);   //mol/cm^3
-  c_start.v := Cl_func(Depth.v, theta.v, N_amountsoil.v);
+  c_start.v := Cl_func(Depth.v, theta.v, NAmount.v);
   // c_start.v := NAmountGridzell/(theta.v*Tiefe.v*1e8*14)*1000; //alte Implement.
   For x_ndx := 0 to trunc(dim_x.v + 1) do
   begin
@@ -854,7 +866,7 @@ begin
 end;
 
 
-procedure TSubmodRoot2DDiffNitrate.Init(var GlobMod: TMod);
+procedure TSubmodRoot2DNitrate.Init(var GlobMod: TMod);
 
 var
   DimXMiddle, // Dimension der mittigen Fläche in x-Richtung [cm]
@@ -914,7 +926,7 @@ begin
     der initialen N-Menge im Boden. Zu diesem Zeitpunkt haben sämtliche Rechenelemente, egal
     ob in der Mitte oder in den Rändern die gleichen Konz. Berechnung o.k. }
   InitConc;
-  N_amountsoil.v := Mg_func(Depth.v, theta.v, c_start.v); // Debuggen
+  NAmount.v := Mg_func(Depth.v, theta.v, c_start.v); // Debuggen
   c_av.v := avg_conz;
   // N_AmountSoil.v := mg_func(Tiefe.v, Theta.v, c_av.v);//Debuggen
   int_dt.v := ini_dt.v; // Zuweisung der Startzeitschrittweite ...
@@ -925,7 +937,7 @@ begin
   volume.v := Area.v * Depth.v;
   { Volumen der betrachteten Bodenschicht[cm3] }
   { Berechnung Mineralisationsrate in [Mol/cm^3*d] }
-  Min_S.v := minera.v / 14 * 1000 / 86400 * 1 / (Depth.v * 1E8);
+  Min_S.v := NMinerRate_kgNha.v / 14 * 1000 / 86400 * 1 / (Depth.v * 1E8);
   // Initialisieren der Visuallisierung der Nährstoffaufnahme
 
 
@@ -962,7 +974,7 @@ begin
   If wl_ha.v > 0.0 then
   begin
     { Berechnung scheint korrekt s. Manuskript Hängeregister Vgl 1D2D }
-    Imax.v := potNUptakerate.v / 14 * 1000 / wl_ha.v;
+    Imax.v := NUptakeratepot.v / 14 * 1000 / wl_ha.v;
     { Berechnung Influxrate [mol/(cm/d)] }
     // Imax.V := Ar.v*1000/(14*86400*WL_ha.v);  //Debuggen
   end
@@ -980,7 +992,7 @@ begin
 end;
 
 
-procedure TSubmodRoot2DDiffNitrate.createSteadyState(DiffSteadyState: double);
+procedure TSubmodRoot2DNitrate.createSteadyState(DiffSteadyState: double);
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG: Erzeugt einen Steady-State-Zustand nach folgendem Verfahren
   ------------------------------------------------------------------------------ *)
@@ -997,7 +1009,7 @@ end;
 
 
 
-function TSubmodRoot2DDiffNitrate.avg_conz: double;
+function TSubmodRoot2DNitrate.avg_conz: double;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG:  Berechnung von Durchschnittskonzentrationen
   Problem: Sollen randständige Rechenelemente von Berechnung ausgeschlossen werden?
@@ -1054,7 +1066,7 @@ begin
 end;
 
 
-function TSubmodRoot2DDiffNitrate.influx_fVar(Imax, Km, ClAv, x, Db: double): double;
+function TSubmodRoot2DNitrate.influx_fVar(Imax, Km, ClAv, x, Db: double): double;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG: alternative Berechnung des Influx mit Michaelis-Menten-Randbedingung
   unter der Voraussetzung, dass im Einzelwurzelzylinder mit dem quasistationären
@@ -1079,7 +1091,7 @@ begin
   Result := influx;
 end;
 
-function TSubmodRoot2DDiffNitrate.calcAmountUptakeRoots: double;
+function TSubmodRoot2DNitrate.calcAmountUptakeRoots: double;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG: Summe aus den kumulierten N-Aufnahmen aller gültigen Wurzeln (im
   Beobachtungsfenster vorhanden, aber nicht in den Rändern). Eigentlich Ratenbe-
@@ -1094,11 +1106,11 @@ begin
   for i := 1 to trunc(RasterData.NRoots) do
   begin
     // Punkt nicht in den vertikalen Rändern
-    if (TRootObject(RasterData.RootList.Objects[i]).x >= verticMargin.v) and
-      (TRootObject(RasterData.RootList.Objects[i]).x <= DimensionX.v - verticMargin.v)
+    if (TRootObjectIn2D(RasterData.RootList.Objects[i]).x >= verticMargin.v) and
+      (TRootObjectIn2D(RasterData.RootList.Objects[i]).x <= DimensionX.v - verticMargin.v)
     // Punkt nicht in den horizontalen Rändern
-      and (TRootObject(RasterData.RootList.Objects[i]).y >= horizMargin.v) and
-      (TRootObject(RasterData.RootList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
+      and (TRootObjectIn2D(RasterData.RootList.Objects[i]).y >= horizMargin.v) and
+      (TRootObjectIn2D(RasterData.RootList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
     begin
       NAmountRoot := NAmountRoot + convertConcToAmount(i);
     end;
@@ -1110,7 +1122,7 @@ begin
     Sum_N_AmountRoots.V:=Sum_N_AmountRoots.V+Ar.v; }
 end;
 
-function TSubmodRoot2DDiffNitrate.convertConcToAmount(i: integer): double;
+function TSubmodRoot2DNitrate.convertConcToAmount(i: integer): double;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG: Rechnet die Aufnahme [mol/cm*d] in Menge [kg/d], für übergebene
   Wurzeln.
@@ -1122,11 +1134,11 @@ var
   NAmountRoot: double;
 begin
   { NINflux in [mol/cm/d }
-  NAmountRoot := TRootObject(RasterData.RootList.Objects[i]).NInflux * kg_mol * Depth.v * int_dt.v;
+  NAmountRoot := TRootObjectIn2D(RasterData.RootList.Objects[i]).NInflux * kg_mol * Depth.v * int_dt.v;
   Result := NAmountRoot;
 end;
 
-function TSubmodRoot2DDiffNitrate.calcActArdt: double;
+function TSubmodRoot2DNitrate.calcActArdt: double;
 (* ------------------------------------------------------------------------------
   Berechnet die Aktuelle im internen Zeitschritt:
   Aufnahmerate, wobei nur Wurzeln berücksichtigt werden,
@@ -1144,14 +1156,14 @@ begin
   for i := 1 to trunc(RasterData.NRoots) do
   begin
     // Punkt nicht in den vertikalen Rändern
-    if (TRootObject(RasterData.RootList.Objects[i]).x >= verticMargin.v) and
-      (TRootObject(RasterData.RootList.Objects[i]).x <= DimensionX.v - verticMargin.v)
+    if (TRootObjectIn2D(RasterData.RootList.Objects[i]).x >= verticMargin.v) and
+      (TRootObjectIn2D(RasterData.RootList.Objects[i]).x <= DimensionX.v - verticMargin.v)
     // Punkt nicht in den horizontalen Rändern
-      and (TRootObject(RasterData.RootList.Objects[i]).y >= horizMargin.v) and
-      (TRootObject(RasterData.RootList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
+      and (TRootObjectIn2D(RasterData.RootList.Objects[i]).y >= horizMargin.v) and
+      (TRootObjectIn2D(RasterData.RootList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
     begin
-      AVInflux := AVInflux + TRootObject(RasterData.RootList.Objects[i]).NInflux;
-      AvNMenge := AvNMenge + TRootObject(RasterData.RootList.Objects[i]).NAmount;
+      AVInflux := AVInflux + TRootObjectIn2D(RasterData.RootList.Objects[i]).NInflux;
+      AvNMenge := AvNMenge + TRootObjectIn2D(RasterData.RootList.Objects[i]).NAmount;
       inc(rootCounter);
     end;
   end;
@@ -1167,7 +1179,7 @@ begin
 end;
 
 
-procedure TSubmodRoot2DDiffNitrate.writeNitrateUptakeSinkToFile;
+procedure TSubmodRoot2DNitrate.writeNitrateUptakeSinkToFile;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG: Schreibt eine Datei mit der N-Aufnahme aller Senken (und wg. Zu-
   ordnung auch mit lf. Nr. und Koord.
@@ -1177,7 +1189,7 @@ var
   i, j: integer;
   { Nur Senken, die nicht im Rand und im Beobachtungsfenster liegen werden ausgege-
     ben }
-  PosArr_middle: Array of TRootObject;
+  PosArr_middle: Array of TRootObjectIn2D;
 
 begin
   { Wenn Datei noch nicht vorhanden, neu anlegen }
@@ -1192,20 +1204,20 @@ begin
   for i := 1 to trunc(RasterData.NRoots) do
   begin
     // Punkt nicht in den vertikalen Rändern
-    if (TRootObject(RasterData.RootList.Objects[i]).x >= verticMargin.v) and
-      (TRootObject(RasterData.RootList.Objects[i]).x <= DimensionX.v - verticMargin.v)
+    if (TRootObjectIn2D(RasterData.RootList.Objects[i]).x >= verticMargin.v) and
+      (TRootObjectIn2D(RasterData.RootList.Objects[i]).x <= DimensionX.v - verticMargin.v)
     // Punkt nicht in den horizontalen Rändern
-      and (TRootObject(RasterData.RootList.Objects[i]).y >= horizMargin.v) and
-      (TRootObject(RasterData.RootList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
+      and (TRootObjectIn2D(RasterData.RootList.Objects[i]).y >= horizMargin.v) and
+      (TRootObjectIn2D(RasterData.RootList.Objects[i]).y <= DimensionY.v - horizMargin.v) then
     begin
-      PosArr_middle[j].x := TRootObject(RasterData.RootList.Objects[i]).x;
-      PosArr_middle[j].y := TRootObject(RasterData.RootList.Objects[i]).y;
-      PosArr_middle[j].xi := TRootObject(RasterData.RootList.Objects[i]).xi;
-      PosArr_middle[j].yi := TRootObject(RasterData.RootList.Objects[i]).yi;
-      PosArr_middle[j].NInflux := TRootObject(RasterData.RootList.Objects[i]).NInflux;
-      PosArr_middle[j].WInflux := TRootObject(RasterData.RootList.Objects[i]).WInflux;
-      PosArr_middle[j].nroot := TRootObject(RasterData.RootList.Objects[i]).nroot;
-      PosArr_middle[j].area := TRootObject(RasterData.RootList.Objects[i]).area;
+      PosArr_middle[j].x := TRootObjectIn2D(RasterData.RootList.Objects[i]).x;
+      PosArr_middle[j].y := TRootObjectIn2D(RasterData.RootList.Objects[i]).y;
+      PosArr_middle[j].xi := TRootObjectIn2D(RasterData.RootList.Objects[i]).xi;
+      PosArr_middle[j].yi := TRootObjectIn2D(RasterData.RootList.Objects[i]).yi;
+      PosArr_middle[j].NInflux := TRootObjectIn2D(RasterData.RootList.Objects[i]).NInflux;
+      PosArr_middle[j].WInflux := TRootObjectIn2D(RasterData.RootList.Objects[i]).WInflux;
+      PosArr_middle[j].nroot := TRootObjectIn2D(RasterData.RootList.Objects[i]).nroot;
+      PosArr_middle[j].area := TRootObjectIn2D(RasterData.RootList.Objects[i]).area;
       inc(j);
     end;
   end;
@@ -1230,7 +1242,7 @@ begin
 end;
 
 
-procedure TSubmodRoot2DDiffNitrate.Integrate;
+procedure TSubmodRoot2DNitrate.Integrate;
 (* ------------------------------------------------------------------------------
   ZUGEHÖRIGE KLASSE:  TSubmodRootDiff
   BESCHREIBUNG: Methode wurde überschrieben, um die Zeitschrittweite sukzessive
@@ -1245,14 +1257,14 @@ begin
     exit;
   inherited Integrate;
   // in der Basisklasse geschieht nichts auch kein inherited
-  n_me_alt := N_amountsoil.v;
+  n_me_alt := NAmount.v;
   c_av.v := avg_conz; // Durchschnittskonz.
-  N_amountsoil.v := Mg_func(Depth.v, theta.v, c_av.v);
+  NAmount.v := Mg_func(Depth.v, theta.v, c_av.v);
 end; // End TSubmodRootDiff2D.Integrate
 
 
 
-procedure TSubmodRoot2DDiffNitrate.showActConc;
+procedure TSubmodRoot2DNitrate.showActConc;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG: Zeigt die aktuelle Konzentration im TMathImage an
   ------------------------------------------------------------------------------ *)
@@ -1312,7 +1324,7 @@ Prozedur wird für Komponenten benötigt: Registrierung der Komponenten auf eine
 Palette.
 ------------------------------------------------------------------------------*)
 begin
-  RegisterComponents('Soil2D', [TSubmodRoot2DDiffNitrate]);
+  RegisterComponents('Soil2D', [TSubmodRoot2DNitrate]);
 end;//End Register
 
 

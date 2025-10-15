@@ -203,6 +203,12 @@ begin
   VarCreate('SRL', '[cm.cm-2]', 0.0, false, SRL, 'som of root length');
   VarCreate('SRL_eff', '[cm.cm-2]', 0.0, false, SRL_eff,
     'sum of effective root length');
+
+  OptCreate('OptWithRoots', 'true', OptWithRoots);
+  OptWithRoots.OptionList.Add('true');
+  OptWithRoots.OptionList.Add('false');
+
+
   fwithRoots := true;
   OptWithRoots.Option := 'true';
   OptCreate('Rootdepthgrowth', 'linear', depthgrowthOptStr);

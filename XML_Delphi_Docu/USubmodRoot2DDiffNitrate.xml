@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="USubmodRoot2DDiffNitrate" platform="Win32">
-  <class name="TSubmodRoot2DDiffNitrate" file="USubmodRoot2DDiffNitrate.pas" line="21">
+  <class name="TSubmodRoot2DNitrate" file="USubmodRoot2DDiffNitrate.pas" line="21">
     <devnotes>
        <summary>Type declarations</summary>
        <summary>Records and sets</summary>
@@ -8,54 +8,46 @@
        implements further details for nitrate transport
        </summary>
     </devnotes>
-    <ancestor name="TBaseSubmodRootDiffNitrate" namespace="U2DSoilBaseClassNitrate">
-      <methodref name="influx_fVar" visibility="protected" />
-      <methodref name="ConvertConcToAmount" visibility="protected" />
-      <methodref name="calcActArdt" visibility="protected" />
-      <methodref name="writeNitrateUptakeSinkToFile" visibility="protected" />
-      <methodref name="CreateAll" visibility="public" procflags="override">
+    <ancestor name="TSubmodRootBase2D" namespace="U2DSoilBaseClasses">
+      <methodref name="fillChartRootDistr" visibility="public">
       </methodref>
-      <methodref name="Init" visibility="public" procflags="override" />
-      <ancestor name="TBaseSubmodRootDiff" namespace="U2DSoilBaseClasses">
-        <methodref name="fillChartRootDistr" visibility="protected">
-        </methodref>
-        <methodref name="fillGridRasterData" visibility="protected">
-        </methodref>
-        <methodref name="CalcEqualDistribution" visibility="protected">
-        </methodref>
-        <methodref name="distributeHexagonRow" visibility="protected">
-        </methodref>
-        <methodref name="distributeHexagonCol" visibility="protected">
-        </methodref>
-        <methodref name="writeOutputToFile" visibility="protected" procflags="virtual">
-        </methodref>
-        <methodref name="removeMarginRoots" visibility="protected">
-        </methodref>
-        <methodref name="CalcRootPosAsIndex" visibility="protected">
-        </methodref>
-        <methodref name="calcNumberConsRoots" visibility="protected">
-        </methodref>
-        <methodref name="testForContBorder" visibility="protected">
-        </methodref>
-        <methodref name="calcAbsValue2D" visibility="protected" />
-        <methodref name="vectorSubtrakt2D" visibility="protected" />
+      <methodref name="fillGridRasterData" visibility="public">
+      </methodref>
+      <methodref name="CalcEqualDistribution" visibility="public">
+      </methodref>
+      <methodref name="distributeHexagonRow" visibility="public">
+      </methodref>
+      <methodref name="distributeHexagonCol" visibility="public">
+      </methodref>
+      <methodref name="writeOutputToFile" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="removeMarginRoots" visibility="public">
+      </methodref>
+      <methodref name="CalcRootPosAsIndex" visibility="public">
+      </methodref>
+      <methodref name="calcNumberConsRoots" visibility="public">
+      </methodref>
+      <methodref name="testForContBorder" visibility="public">
+      </methodref>
+      <methodref name="calcAbsValue2D" visibility="public" />
+      <methodref name="vectorSubtrakt2D" visibility="public" />
+      <methodref name="getRasterData" visibility="public">
+      </methodref>
+      <methodref name="CreateAll" visibility="public" procflags="override" />
+      <methodref name="Init" visibility="public" procflags="override">
+      </methodref>
+      <propertyref name="MyChart" visibility="published">
+      </propertyref>
+      <propertyref name="MyMathImage" visibility="published" />
+      <propertyref name="MyAdvStringGrid" visibility="published">
+      </propertyref>
+      <propertyref name="MyStructModel" visibility="published">
+      </propertyref>
+      <ancestor name="TSubmodRootBase" namespace="U2DSoilBaseClasses">
         <methodref name="CreateAll" visibility="public" procflags="override">
-        </methodref>
-        <methodref name="CalcRates" visibility="public" procflags="override">
-        </methodref>
-        <methodref name="Integrate" visibility="public" procflags="override">
         </methodref>
         <methodref name="Init" visibility="public" procflags="override">
         </methodref>
-        <methodref name="getRasterData" visibility="public">
-        </methodref>
-        <propertyref name="MyChart" visibility="published">
-        </propertyref>
-        <propertyref name="MyMathImage" visibility="published" />
-        <propertyref name="MyAdvStringGrid" visibility="published">
-        </propertyref>
-        <propertyref name="MyStructModel" visibility="published">
-        </propertyref>
         <ancestor name="TSubmodel" namespace="UMod">
           <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
           </methodref>
@@ -1255,7 +1247,7 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="Diffuptake" type="Double" visibility="private" size="8" offset="1776" file="USubmodRoot2DDiffNitrate.pas" line="26">
+      <field name="Diffuptake" type="Double" visibility="private" size="8" offset="1720" file="USubmodRoot2DDiffNitrate.pas" line="26">
         <devnotes>
            <summary>
              diffusive nitrate uptake rate
@@ -1304,7 +1296,7 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <field name="C_xy" type=":TSubmodRoot2DDiffNitrate.:2" visibility="protected" size="4" offset="1784" file="USubmodRoot2DDiffNitrate.pas" line="49">
+      <field name="C_xy" type=":TSubmodRoot2DNitrate.:2" visibility="protected" size="4" offset="1728" file="USubmodRoot2DDiffNitrate.pas" line="49">
         <devnotes>
            <summary> C_xy: array for concentrations in the computational elements.
            c_xy was declared as a dynamic array (see NG, p.65 ff) because the size of
@@ -1313,34 +1305,34 @@
            </summary>
         </devnotes>
       </field>
-      <field name="ActArFromConc" type="TVar" visibility="protected" size="4" offset="1788" file="USubmodRoot2DDiffNitrate.pas" line="58">
+      <field name="ActArFromConc" type="TVar" visibility="protected" size="4" offset="1732" file="USubmodRoot2DDiffNitrate.pas" line="58">
         <devnotes>
            <summary>Protected declarations, also accessible by derived classes</summary>
           
            <remarks>Margins are necessary so that edge effects can be excluded when the root exit points are hexagonally distributed</remarks>
         </devnotes>
       </field>
-      <field name="OutputSink" type="TOption" visibility="protected" size="4" offset="1792" file="USubmodRoot2DDiffNitrate.pas" line="60" />
-      <field name="RootDistribution" type="TOption" visibility="protected" size="4" offset="1796" file="USubmodRoot2DDiffNitrate.pas" line="62" />
-      <field name="CalcModeSteadyState" type="TOption" visibility="protected" size="4" offset="1800" file="USubmodRoot2DDiffNitrate.pas" line="64" />
-      <field name="ShowConc" type="TOption" visibility="protected" size="4" offset="1804" file="USubmodRoot2DDiffNitrate.pas" line="66" />
-      <field name="SteadyState" type="TOption" visibility="protected" size="4" offset="1808" file="USubmodRoot2DDiffNitrate.pas" line="68" />
-      <field name="RootSinkOutpDataFile" type="TOption" visibility="protected" size="4" offset="1812" file="USubmodRoot2DDiffNitrate.pas" line="70" />
-      <field name="writeConcField" type="TOption" visibility="protected" size="4" offset="1816" file="USubmodRoot2DDiffNitrate.pas" line="73" />
-      <field name="writeSinkCellFile" type="TOption" visibility="protected" size="4" offset="1820" file="USubmodRoot2DDiffNitrate.pas" line="74" />
-      <field name="ConcFieldDataFile" type="TOption" visibility="protected" size="4" offset="1824" file="USubmodRoot2DDiffNitrate.pas" line="75" />
-      <field name="SinkCellFileFile" type="TOption" visibility="protected" size="4" offset="1828" file="USubmodRoot2DDiffNitrate.pas" line="78" />
-      <field name="DelMarginRoots" type="TOption" visibility="protected" size="4" offset="1832" file="USubmodRoot2DDiffNitrate.pas" line="81">
+      <field name="OutputSink" type="TOption" visibility="protected" size="4" offset="1736" file="USubmodRoot2DDiffNitrate.pas" line="60" />
+      <field name="RootDistribution" type="TOption" visibility="protected" size="4" offset="1740" file="USubmodRoot2DDiffNitrate.pas" line="62" />
+      <field name="CalcModeSteadyState" type="TOption" visibility="protected" size="4" offset="1744" file="USubmodRoot2DDiffNitrate.pas" line="64" />
+      <field name="ShowConc" type="TOption" visibility="protected" size="4" offset="1748" file="USubmodRoot2DDiffNitrate.pas" line="66" />
+      <field name="SteadyState" type="TOption" visibility="protected" size="4" offset="1752" file="USubmodRoot2DDiffNitrate.pas" line="68" />
+      <field name="RootSinkOutpDataFile" type="TOption" visibility="protected" size="4" offset="1756" file="USubmodRoot2DDiffNitrate.pas" line="70" />
+      <field name="writeConcField" type="TOption" visibility="protected" size="4" offset="1760" file="USubmodRoot2DDiffNitrate.pas" line="73" />
+      <field name="writeSinkCellFile" type="TOption" visibility="protected" size="4" offset="1764" file="USubmodRoot2DDiffNitrate.pas" line="74" />
+      <field name="ConcFieldDataFile" type="TOption" visibility="protected" size="4" offset="1768" file="USubmodRoot2DDiffNitrate.pas" line="75" />
+      <field name="SinkCellFileFile" type="TOption" visibility="protected" size="4" offset="1772" file="USubmodRoot2DDiffNitrate.pas" line="78" />
+      <field name="DelMarginRoots" type="TOption" visibility="protected" size="4" offset="1776" file="USubmodRoot2DDiffNitrate.pas" line="81">
         <devnotes>
            <summary>deletes boundary roots from PosArr</summary>
         </devnotes>
       </field>
-      <field name="ContGrowth" type="TOption" visibility="protected" size="4" offset="1836" file="USubmodRoot2DDiffNitrate.pas" line="83">
+      <field name="ContGrowth" type="TOption" visibility="protected" size="4" offset="1780" file="USubmodRoot2DDiffNitrate.pas" line="83">
         <devnotes>
            <summary>switch for growth in pots</summary>
         </devnotes>
       </field>
-      <field name="max_c" type="Double" visibility="public" size="8" offset="1840" file="USubmodRoot2DDiffNitrate.pas" line="89">
+      <field name="max_c" type="Double" visibility="public" size="8" offset="1784" file="USubmodRoot2DDiffNitrate.pas" line="89">
         <devnotes>
            <summary>
              maximum nitrate concentration in grid [mol/cm3]
