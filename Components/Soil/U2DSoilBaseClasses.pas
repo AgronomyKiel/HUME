@@ -74,6 +74,11 @@ type
   fdim_yMiddle : real;
   fAreaMiddle  : real;
 
+  /// <summary>
+  ///   field for container dimension [cm]
+  /// </summary>
+  fContRad: real;
+
 
   protected
     /// <summary>Protected declarations</summary>
@@ -145,9 +150,8 @@ type
 
     procedure init(NCols, NRows:word;
                            ColWidth, RowWidth,
-                           verticMargin, horizMargin,
+                           verticMargin, horizMargin, ContRad,
                            C_Start:real);
-
 
     procedure ExtractMiddle;
 
@@ -604,7 +608,7 @@ end;
 /// <param name="C_Start">Initial concentration in the grid [mol/cm3]</param>
 procedure TRasterData.init(NCols, NRows:word;
                            ColWidth, RowWidth,
-                           verticMargin, horizMargin,
+                           verticMargin, horizMargin, ContRad,
                            C_Start:real);
 
 var
@@ -616,6 +620,7 @@ begin
   self.NRows := NRows;
   self.ColWidth := ColWidth;
   self.RowHeight := RowWidth;
+  self.fContRad := ContRad;
 
 // set the dimensions of the computational domain
   setLength(x_arr, NCols);
@@ -1823,7 +1828,7 @@ begin
       VektBottRight_ContCent[1] := self.ContPosy - bottomRight[1];
       distUpperLeft := calcAbsValue2D(VektUppLeft_ContCent);
       distBottomRight := calcAbsValue2D(VektBottRight_ContCent);
-      if (distUpperLeft > ContRad.v) and (distBottomRight < ContRad.v) then
+      if (distUpperLeft > fContRad) and (distBottomRight < fContRad) then
       begin
         start_ := i;
         cutContWall := true;
@@ -1831,19 +1836,19 @@ begin
       end;
 
     end;
-    for i := trunc(dim_x.v) downto 1 do // determine the start cell
+    for i := trunc(self.NCols-1) downto 0 do // determine the start cell
     begin
-      upperLeft[0] := (i - 1) * dx.v;
-      upperLeft[1] := (y_ndx - 1) * dy.v;
-      bottomRight[0] := (i) * dx.v;
-      bottomRight[1] := (y_ndx) * dy.v;
+      upperLeft[0] := (i ) * colwidth;// dx.v;
+      upperLeft[1] := (y_ndx ) * rowheight;// dy.v;
+      bottomRight[0] := (i+1) * self.colwidth;//dx.v;
+      bottomRight[1] := (y_ndx+1) * RowHeight;//dy.v;
       VektUppLeft_ContCent[0] := self.ContPosx - upperLeft[0];
       VektUppLeft_ContCent[1] := self.ContPosy - upperLeft[1];
       VektBottRight_ContCent[0] := self.ContPosx - bottomRight[0];
       VektBottRight_ContCent[1] := self.ContPosy - bottomRight[1];
       distUpperLeft := calcAbsValue2D(VektUppLeft_ContCent);
       distBottomRight := calcAbsValue2D(VektBottRight_ContCent);
-      if (distUpperLeft > ContRad.v) and (distBottomRight < ContRad.v) then
+      if (distUpperLeft > fContRad) and (distBottomRight < fContRad) then
       begin
         ende_ := i;
         break; // break necessary because only the first occurrence is used
@@ -1853,19 +1858,19 @@ begin
   end
   else // columns are scanned
   begin
-    for i := 1 to trunc(dim_y.v) do // determine the start cell
+    for i := 0 to trunc(NRows-1) do // determine the start cell
     begin
-      upperLeft[0] := (x_ndx - 1) * dx.v;
-      upperLeft[1] := (i - 1) * dy.v;
-      bottomRight[0] := (x_ndx - 1) * dx.v;
-      bottomRight[1] := (i) * dy.v;
+      upperLeft[0] := (x_ndx ) * colwidth;//dx.v;
+      upperLeft[1] := (i+1) * rowheight;//dy.v;
+      bottomRight[0] := (x_ndx) * colwidth;//dx.v;
+      bottomRight[1] := (i+1) * rowHeight;//dy.v;
       VektUppLeft_ContCent[0] := self.ContPosx - upperLeft[0];
       VektUppLeft_ContCent[1] := self.ContPosy - upperLeft[1];
       VektBottRight_ContCent[0] := self.ContPosx - bottomRight[0];
       VektBottRight_ContCent[1] := self.ContPosy - bottomRight[1];
       distUpperLeft := calcAbsValue2D(VektUppLeft_ContCent);
       distBottomRight := calcAbsValue2D(VektBottRight_ContCent);
-      if (distUpperLeft > ContRad.v) and (distBottomRight < ContRad.v) then
+      if (distUpperLeft > fContRad) and (distBottomRight < fContRad) then
       begin
         start_ := i;
         cutContWall := true;
@@ -1873,19 +1878,19 @@ begin
       end;
 
     end;
-    for i := trunc(dim_y.v) downto 1 do // determine the start cell
+    for i := trunc(NRows-1) downto 0 do // determine the start cell
     begin
-      upperLeft[0] := (x_ndx - 1) * dx.v;
-      upperLeft[1] := (i - 1) * dy.v;
-      bottomRight[0] := (x_ndx - 1) * dx.v;
-      bottomRight[1] := (i) * dy.v;
+      upperLeft[0] := (x_ndx -1) * colwidth;//dx.v;
+      upperLeft[1] := (i ) * rowheight;//dy.v;
+      bottomRight[0] := (x_ndx ) * colwidth;//dx.v;
+      bottomRight[1] := (i-1) * rowheight;//dy.v;
       VektUppLeft_ContCent[0] := self.ContPosx - upperLeft[0];
       VektUppLeft_ContCent[1] := self.ContPosy - upperLeft[1];
       VektBottRight_ContCent[0] := self.ContPosx - bottomRight[0];
       VektBottRight_ContCent[1] := self.ContPosy - bottomRight[1];
       distUpperLeft := calcAbsValue2D(VektUppLeft_ContCent);
       distBottomRight := calcAbsValue2D(VektBottRight_ContCent);
-      if (distUpperLeft > ContRad.v) and (distBottomRight < ContRad.v) then
+      if (distUpperLeft > fContRad) and (distBottomRight < fContRad) then
       begin
         ende_ := i;
         break; // break necessary because only the first occurrence is used
@@ -1896,18 +1901,18 @@ begin
   if (cutContWall = false) and (zeile = true) then
   begin
     start_ := 1;
-    ende_ := trunc(dim_x.v);
+    ende_ := NCols;
   end;
   if (cutContWall = false) and (zeile = true) then
   begin
     start_ := 1;
-    ende_ := trunc(dim_y.v);
+    ende_ := NRows;
   end;
 
 end;
 
 
-function TSubmodRootBase2D.calcAbsValue2D(vect: r2): double;
+function TRasterData.calcAbsValue2D(vect: r2): double;
 (* ------------------------------------------------------------------------------
   Calculates the magnitude = length of a vector
   ------------------------------------------------------------------------------ *)
@@ -1918,7 +1923,7 @@ begin
   Result := length;
 end;
 
-function TSubmodRootBase2D.vectorSubtrakt2D(vect2, vect1: r2): r2;
+function TRasterData.vectorSubtrakt2D(vect2, vect1: r2): r2;
 (* ------------------------------------------------------------------------------
   DESCRIPTION: Subtracts vector_2 from vector_1 and returns the resulting vector
   pointing in the direction of vector 1.
@@ -1932,7 +1937,7 @@ begin
 end;
 
 
-procedure TSubmodRootBase2D.calcRootPosAsIndex;
+procedure TRasterData.calcRootPosAsIndex;
 (* ------------------------------------------------------------------------------
   BESCHREIBUNG:
   Methode berechnet die Wurzelpositionen als Index (=berechnet die Rechenzelle in
@@ -1943,20 +1948,22 @@ var
   { Um die Orignalen Werte nach der Rundung wiederherzustellen, müssen sie zwischen-
     gespeichert werden }
   xTemp, yTemp: double;
+  ARoot : TRootObjectIn2D;
+
 begin
-  for i := 0 to trunc(Num_Roots.v)-1 do
+  for i := 0 to NRoots-1 do
   begin
-    xTemp := TRootObjectIn2D(RasterData.RootList.Objects[i]).x;
-    yTemp := TRootObjectIn2D(RasterData.RootList.Objects[i]).y;
-    TRootObjectIn2D(RasterData.RootList.Objects[i]).xi := min(trunc(dim_x.v) - 1,
-      max(1, round(TRootObjectIn2D(RasterData.RootList.Objects[i]).x / (trunc(DimensionX.v)) *
-      trunc(dim_x.v))));
-    TRootObjectIn2D(RasterData.RootList.Objects[i]).yi := min(trunc(dim_y.v) - 1,
-      max(1, round(TRootObjectIn2D(RasterData.RootList.Objects[i]).y / (trunc(DimensionY.v)) *
-      trunc(dim_y.v))));
+    ARoot := TRootObjectIn2D(RootList.Objects[i]);
+    xTemp := ARoot.x;
+    yTemp := ARoot.y;
+    ARoot.xi := min(NCOLS - 1,
+      max(1, round(ARoot.x / (NCols) *
+      trunc(NCOLS))));
+    ARoot.yi := min(NROWS - 1,
+      max(1, round(ARoot.y / NRows) * NROWS));
     // Rückspeichern
-    TRootObjectIn2D(RasterData.RootList.Objects[i]).x := xTemp;
-    TRootObjectIn2D(RasterData.RootList.Objects[i]).y := yTemp;
+    ARoot.x := xTemp;
+    ARoot.y := yTemp;
   end;
 end;
 
