@@ -685,10 +685,10 @@ begin
   Readln(F, RowHeight); { Fifth line: row height [cm] }
   Readln(F, ColWidth); { Sixth line: column width [cm] }
 
-  setLength(CountArr, trunc(NCols));
-  for i := 0 to NRows-1 do
+  setLength(CountArr, Integer(NCols));
+  for i := 0 to NCols - 1 do
   begin
-    setLength(CountArr[i], trunc(NRows));
+    setLength(CountArr[i], Integer(NRows));
   end;
 
   // Repeatedly read data until end of file
@@ -1741,14 +1741,14 @@ var
   ARoot : TRootObjectIn2D;
 
 begin
-  for i := 0 to NRoots-1 do
+  for i := RootList.Count - 1 downto 0 do
   begin
     ARoot := TRootObjectIn2D(RootList.Objects[i]);
     // Point not in vertical margins
-    if (ARoot.x <= fhorizMargin) and
+    if (ARoot.x <= fhorizMargin) or
       (ARoot.x >= fdimensionX - fhorizMargin)
     // Point not in horizontal margins
-      and (ARoot.y <= fVerticMargin) and
+      or (ARoot.y <= fVerticMargin) or
       (ARoot.y >= fdimensionY - fVerticMargin) then
     begin
       ARoot.free;
