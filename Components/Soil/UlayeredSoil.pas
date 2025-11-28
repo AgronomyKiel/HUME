@@ -1,4 +1,5 @@
-unit UlayeredSoil; // Nur Vorläufer für TSoilwatermod, nicht installieren
+// Nur VorlÃ¤ufer fÃ¼r TSoilwatermod, nicht installieren
+unit UlayeredSoil;
 
 interface
 
@@ -40,9 +41,9 @@ type
     Thick: TSoilArray;
     /// Vektor der Kompartimentdicken [cm] }
     Depth: TSoilVarArray;
-    /// Abstand der unteren Kompartimentgrenze von der Bodenoberfläche in [cm] }
+    /// Abstand der unteren Kompartimentgrenze von der BodenoberflÃ¤che in [cm] }
     upper_w_f: TSoilArray;
-    /// Wichtungsfaktoren zur Errechnung der mittleren Leitfähigkeit zwischen 2 Kompartimenten }
+    /// Wichtungsfaktoren zur Errechnung der mittleren LeitfÃ¤higkeit zwischen 2 Kompartimenten }
     lower_w_f: TSoilArray;
     /// dito
     Texture_versionOption: TOption;
@@ -59,13 +60,21 @@ type
     property p_NComp: Integer read n_comp write n_comp;
   end;
 
-function trdiag(rep: boolean; { Wiederholungsflagge }
-  max_n, min_n: Integer; { Dimension der Matrix }
-  var lower, { Subdiagonale }
-  diag, { Diagonale }
-  upper, { Superdiagonale }
-  b: TSoilArray { Rechte Seite des Systems }
-  ): byte; { Fehlerparameter }
+/// <summary>Solves a tridiagonal linear system using LU decomposition.</summary>
+{ Wiederholungsflagge }
+function trdiag(rep: boolean;
+  { Dimension der Matrix }
+  max_n, min_n: Integer;
+  { Subdiagonale }
+  var lower,
+  { Diagonale }
+  diag,
+  { Superdiagonale }
+  upper,
+  { Rechte Seite des Systems }
+  b: TSoilArray
+  ): byte;
+{ Fehlerparameter }
 
 function ndx_str(i: Integer): string;
 procedure Register;
@@ -91,10 +100,10 @@ begin
 
 {$IFNDEF NONVISUAL}
     ShowMessage('Initialisierung eines Bodenobjektes mit ' +
-      'zu großer Zahl an Kompartimenten');
+      'zu groÃŸer Zahl an Kompartimenten');
 {$ELSE}
     writeln('Initialisierung eines Bodenobjektes mit ' +
-      'zu großer Zahl an Kompartimenten');
+      'zu groÃŸer Zahl an Kompartimenten');
 {$ENDIF}
     exit;
   end;
@@ -105,11 +114,11 @@ begin
     Depth[i].v := power(geo_fact * (i), 1 / potenz_f);
 
   { Belegung des Tiefenvektors mit geometrisch steigenden Tiefen,
-    auch eine freie Belegung ist möglich.
-    Tiefe[0] ist die Oberfl„che (=0),
+    auch eine freie Belegung ist mÃ¶glich.
+    Tiefe[0] ist die OberflÂ„che (=0),
     Tiefe[n_comp+1] ist die Unterkannte des untersten berechneten
     Kompartimentes,
-    Tiefe[n_com+2] ist die Unterkannte des gedachten n„chsten
+    Tiefe[n_com+2] ist die Unterkannte des gedachten nÂ„chsten
     Kompartimentes }
 
   for i := 1 to n_comp + 1 do
@@ -123,7 +132,7 @@ begin
     Dist[i] := (Thick[i + 1] + Thick[i]) / 2;
   Dist[n_comp + 1] := Dist[n_comp];
 
-  { Abstände der Mittelpunkte der einzelnen Kompartimente,
+  { AbstÃ¤nde der Mittelpunkte der einzelnen Kompartimente,
     Abst[1] ist der Abstand zwischen ersten und zweitem
     Kompartimentmittelpunkt }
 
@@ -133,7 +142,7 @@ begin
     lower_w_f[i] := Thick[i + 1] / (Thick[i] + Thick[i + 1]) * 2;
   end;
 
-  { Wichtungsfaktoren für die Berechnung gemittelter Leitfähigkeiten
+  { Wichtungsfaktoren fÃ¼r die Berechnung gemittelter LeitfÃ¤higkeiten
     bei unterschiedlich dicken Kompartimenten }
 
 end;
@@ -152,7 +161,8 @@ begin
 
   for i := 0 to n_comp + 2 do
   begin
-    ConstCreate('Tiefe' + ndx_str(i), '[cm]', 0.0, false, Depth[i]); // richtig
+    // richtig
+    ConstCreate('Tiefe' + ndx_str(i), '[cm]', 0.0, false, Depth[i]);
     Depth[i].writeToFile := false;
   end;
   OptCreate('Texture_version', 'KA', Texture_versionOption,
@@ -181,17 +191,25 @@ end;
 
 { -------------------------------------------------------------------- }
 { -------------------------   MODUL TRDIAG  -------------------------- }
-{ ------------ Lösung eines tridiagonalen Gleichungssystems ---------- }
+{ ------------ LÃ¶sung eines tridiagonalen Gleichungssystems ---------- }
 { ----------- Aus Formelsammlung zur numerischen Mathematik ---------- }
 { --------------------------------------------------------------------- }
 
-function trdiag(rep: boolean; { Wiederholungsflagge }
-  max_n, min_n: Integer; { Dimension der Matrix }
-  var lower, { Subdiagonale }
-  diag, { Diagonale }
-  upper, { Superdiagonale }
-  b: TSoilArray { Rechte Seite des Systems }
-  ): byte; { Fehlerparameter }
+{ Wiederholungsflagge }
+function trdiag(rep: boolean;
+  { Dimension der Matrix }
+  max_n, min_n: Integer;
+  { Subdiagonale }
+  var lower,
+  { Diagonale }
+  diag,
+  { Superdiagonale }
+  upper,
+  { Rechte Seite des Systems }
+  b: TSoilArray
+  );
+{ Fehlerparameter }
+  byte;
 { ==================================================================== }
 { trdiag bestimmt die Loesung x des linearen Gleichungssystems }
 { A * x = b mit tridiagonaler n x n Koeffizientenmatrix A, die in }
@@ -251,16 +269,19 @@ var
 
 begin
 
-  if not(rep) then { Wenn rep:=false ist, }
-  begin { Dreieckzerlegung der }
-    for i := min_n + 1 to max_n do { Matrix bestimmen }
+  { Wenn rep := false ist, }
+  if not(rep) then
+  begin
+    { Dreieckzerlegung der Matrix bestimmen }
+    for i := min_n + 1 to max_n do
     begin
-      if (abs(diag[i - 1]) < 1E-16) then { Wenn ein diag[i] = 0 }
+      { Wenn ein diag[i] = 0 ist, existiert keine Zerlegung }
+      if (abs(diag[i - 1]) < 1E-16) then
       begin
         trdiag := 2;
         exit;
-      end; { ist, ex. keine Zerle- }
-      lower[i] := lower[i] / diag[i - 1]; { gung. }
+      end;
+      lower[i] := lower[i] / diag[i - 1];
       diag[i] := diag[i] - lower[i] * upper[i - 1];
     end;
     if (abs(diag[max_n]) < 1E-16) then
@@ -269,9 +290,11 @@ begin
       exit
     end;
   end;
-  for i := min_n + 1 to max_n do { Vorwaertselimination }
+  { Vorwaertselimination }
+  for i := min_n + 1 to max_n do
     b[i] := b[i] - lower[i] * b[i - 1];
-  b[max_n] := b[max_n] / diag[max_n]; { Rueckwaertselimination }
+  { Rueckwaertselimination }
+  b[max_n] := b[max_n] / diag[max_n];
   for i := max_n - 1 downto min_n do
     b[i] := (b[i] - upper[i] * b[i + 1]) / diag[i];
   trdiag := 0;
