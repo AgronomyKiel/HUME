@@ -1,0 +1,2664 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="JclSynch" platform="Win32">
+  <const name="wrAbandoned" type="TJclWaitResult" file="JclSynch.pas" line="101">
+    <value>
+      wrAbandoned
+    </value>
+  </const>
+  <const name="wrError" type="TJclWaitResult" file="JclSynch.pas" line="101">
+    <value>
+      wrError
+    </value>
+  </const>
+  <const name="wrIoCompletion" type="TJclWaitResult" file="JclSynch.pas" line="101">
+    <value>
+      wrIoCompletion
+    </value>
+  </const>
+  <const name="wrSignaled" type="TJclWaitResult" file="JclSynch.pas" line="101">
+    <value>
+      wrSignaled
+    </value>
+  </const>
+  <const name="wrTimeout" type="TJclWaitResult" file="JclSynch.pas" line="101">
+    <value>
+      wrTimeout
+    </value>
+  </const>
+  <enum name="TJclWaitResult" file="JclSynch.pas" line="101">
+    <element value="0" name="wrAbandoned" file="JclSynch.pas" line="101" />
+    <element value="1" name="wrError" file="JclSynch.pas" line="101" />
+    <element value="2" name="wrIoCompletion" file="JclSynch.pas" line="101" />
+    <element value="3" name="wrSignaled" file="JclSynch.pas" line="101" />
+    <element value="4" name="wrTimeout" file="JclSynch.pas" line="101" />
+  </enum>
+  <type name="TJclWaitHandle" type="cardinal" loBound="0" hiBound="-1" file="System.pas" line="12" />
+  <class name="TJclDispatcherObject" file="JclSynch.pas" line="105">
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public" procflags="inline">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="QualifiedClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitScope" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+      <methodref name="GetDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <propertyref name="Disposed" visibility="protected">
+      </propertyref>
+    </ancestor>
+    <members>
+      <field name="FExisted" type="Boolean" visibility="private" size="1" offset="4" file="JclSynch.pas" line="107" />
+      <field name="FHandle" type="Cardinal" visibility="private" size="4" offset="8" file="JclSynch.pas" line="108" />
+      <field name="FName" type="string" visibility="private" size="4" offset="12" file="JclSynch.pas" line="109" />
+      <constructor name="Attach" visibility="public" file="JclSynch.pas" line="111">
+        <parameters>
+          <parameter name="AHandle" type="Cardinal" />
+        </parameters>
+      </constructor>
+      <destructor name="Destroy" visibility="public" file="JclSynch.pas" line="112">
+        <parameters>
+        </parameters>
+      </destructor>
+      <function name="SignalAndWait" visibility="public" file="JclSynch.pas" line="115">
+        <parameters>
+          <parameter name="Obj" type="TJclDispatcherObject" paramflags="const" />
+          <parameter name="TimeOut" type="Cardinal" />
+          <parameter name="Alertable" type="Boolean" />
+          <retval type="TJclWaitResult" />
+        </parameters>
+      </function>
+      <function name="WaitAlertable" visibility="public" file="JclSynch.pas" line="117">
+        <parameters>
+          <parameter name="TimeOut" type="Cardinal" paramflags="const" />
+          <retval type="TJclWaitResult" />
+        </parameters>
+      </function>
+      <function name="WaitFor" visibility="public" file="JclSynch.pas" line="118">
+        <parameters>
+          <parameter name="TimeOut" type="Cardinal" paramflags="const" />
+          <retval type="TJclWaitResult" />
+        </parameters>
+      </function>
+      <function name="WaitForever" visibility="public" file="JclSynch.pas" line="119">
+        <parameters>
+          <retval type="TJclWaitResult" />
+        </parameters>
+      </function>
+      <property name="Existed" visibility="public" read="FExisted" type="Boolean" file="JclSynch.pas" line="120" />
+      <property name="Handle" visibility="public" read="FHandle" type="Cardinal" file="JclSynch.pas" line="121" />
+      <property name="Name" visibility="public" read="FName" type="string" default="0" file="JclSynch.pas" line="122" />
+    </members>
+  </class>
+  <const name="mpReaders" type="TMrewPreferred" file="JclSynch.pas" line="228">
+    <value>
+      mpReaders
+    </value>
+  </const>
+  <const name="mpWriters" type="TMrewPreferred" file="JclSynch.pas" line="228">
+    <value>
+      mpWriters
+    </value>
+  </const>
+  <const name="mpEqual" type="TMrewPreferred" file="JclSynch.pas" line="228">
+    <value>
+      mpEqual
+    </value>
+  </const>
+  <class name="TJclCriticalSection" file="JclSynch.pas" line="135">
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public" procflags="inline">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="QualifiedClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitScope" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+      <methodref name="GetDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <propertyref name="Disposed" visibility="protected">
+      </propertyref>
+    </ancestor>
+    <members>
+      <field name="FCriticalSection" type="_RTL_CRITICAL_SECTION" visibility="private" size="24" offset="4" file="JclSynch.pas" line="137" />
+      <constructor name="Create" visibility="public" file="JclSynch.pas" line="139">
+        <parameters>
+        </parameters>
+      </constructor>
+      <destructor name="Destroy" visibility="public" file="JclSynch.pas" line="140">
+        <parameters>
+        </parameters>
+      </destructor>
+      <procedure name="CreateAndEnter" visibility="public" procflags="class" file="JclSynch.pas" line="141">
+        <parameters>
+          <parameter name="CS" type="TJclCriticalSection" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="Enter" visibility="public" file="JclSynch.pas" line="142">
+      </procedure>
+      <procedure name="Leave" visibility="public" file="JclSynch.pas" line="143">
+      </procedure>
+    </members>
+  </class>
+  <class name="TJclCriticalSectionEx" file="JclSynch.pas" line="146">
+    <ancestor name="TJclCriticalSection" namespace="JclSynch">
+      <methodref name="Create" visibility="public" procflags="constructor virtual" />
+      <methodref name="Destroy" visibility="public" procflags="destructor override" />
+      <methodref name="CreateAndEnter" visibility="public" procflags="class" />
+      <methodref name="Enter" visibility="public" />
+      <methodref name="Leave" visibility="public" />
+      <ancestor name="TObject" namespace="System">
+        <methodref name="Create" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="Free" visibility="public">
+        </methodref>
+        <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+        </methodref>
+        <methodref name="InitInstance" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="CleanupInstance" visibility="public">
+        </methodref>
+        <methodref name="ClassType" visibility="public" procflags="inline">
+        </methodref>
+        <methodref name="ClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassNameIs" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassParent" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="ClassInfo" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InstanceSize" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InheritsFrom" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="QualifiedClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="GetInterface" visibility="public">
+        </methodref>
+        <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="UnitName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="UnitScope" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="Equals" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetHashCode" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ToString" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="SafeCallException" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Dispatch" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="NewInstance" visibility="public" procflags="class virtual">
+        </methodref>
+        <methodref name="FreeInstance" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+        </methodref>
+        <methodref name="GetDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <propertyref name="Disposed" visibility="protected">
+        </propertyref>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="FSpinCount" type="Cardinal" visibility="private" size="4" offset="28" file="JclSynch.pas" line="148" />
+      <function name="GetSpinCount" visibility="private" file="JclSynch.pas" line="149">
+        <parameters>
+          <retval type="Cardinal" />
+        </parameters>
+      </function>
+      <procedure name="SetSpinCount" visibility="private" file="JclSynch.pas" line="150">
+        <parameters>
+          <parameter name="Value" type="Cardinal" paramflags="const" />
+        </parameters>
+      </procedure>
+      <constructor name="Create" visibility="public" file="JclSynch.pas" line="152">
+        <parameters>
+        </parameters>
+      </constructor>
+      <constructor name="CreateEx" visibility="public" file="JclSynch.pas" line="153">
+        <parameters>
+          <parameter name="SpinCount" type="Cardinal" />
+          <parameter name="NoFailEnter" type="Boolean" />
+        </parameters>
+      </constructor>
+      <function name="GetSpinTimeOut" visibility="public" procflags="class" file="JclSynch.pas" line="154">
+        <parameters>
+          <retval type="Cardinal" />
+        </parameters>
+      </function>
+      <procedure name="SetSpinTimeOut" visibility="public" procflags="class" file="JclSynch.pas" line="155">
+        <parameters>
+          <parameter name="Value" type="Cardinal" paramflags="const" />
+        </parameters>
+      </procedure>
+      <function name="TryEnter" visibility="public" file="JclSynch.pas" line="156">
+        <parameters>
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <property name="SpinCount" visibility="public" read="GetSpinCount" write="SetSpinCount" type="Cardinal" file="JclSynch.pas" line="157" />
+    </members>
+  </class>
+  <class name="TJclEvent" file="JclSynch.pas" line="160">
+    <ancestor name="TJclDispatcherObject" namespace="JclSynch">
+      <methodref name="Attach" visibility="public" procflags="constructor" />
+      <methodref name="Destroy" visibility="public" procflags="destructor override" />
+      <methodref name="SignalAndWait" visibility="public" />
+      <methodref name="WaitAlertable" visibility="public" />
+      <methodref name="WaitFor" visibility="public" />
+      <methodref name="WaitForever" visibility="public" />
+      <propertyref name="Existed" visibility="public" />
+      <propertyref name="Handle" visibility="public" />
+      <propertyref name="Name" visibility="public" />
+      <ancestor name="TObject" namespace="System">
+        <methodref name="Create" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="Free" visibility="public">
+        </methodref>
+        <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+        </methodref>
+        <methodref name="InitInstance" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="CleanupInstance" visibility="public">
+        </methodref>
+        <methodref name="ClassType" visibility="public" procflags="inline">
+        </methodref>
+        <methodref name="ClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassNameIs" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassParent" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="ClassInfo" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InstanceSize" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InheritsFrom" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="QualifiedClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="GetInterface" visibility="public">
+        </methodref>
+        <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="UnitName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="UnitScope" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="Equals" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetHashCode" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ToString" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="SafeCallException" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Dispatch" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="NewInstance" visibility="public" procflags="class virtual">
+        </methodref>
+        <methodref name="FreeInstance" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+        </methodref>
+        <methodref name="GetDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <propertyref name="Disposed" visibility="protected">
+        </propertyref>
+      </ancestor>
+    </ancestor>
+    <members>
+      <constructor name="Create" visibility="public" file="JclSynch.pas" line="162">
+        <parameters>
+          <parameter name="SecAttr" type="PSecurityAttributes" />
+          <parameter name="Manual" type="Boolean" />
+          <parameter name="Signaled" type="Boolean" />
+          <parameter name="Name" type="string" paramflags="const" />
+        </parameters>
+      </constructor>
+      <constructor name="Open" visibility="public" file="JclSynch.pas" line="163">
+        <parameters>
+          <parameter name="Access" type="Cardinal" />
+          <parameter name="Inheritable" type="Boolean" />
+          <parameter name="Name" type="string" paramflags="const" />
+        </parameters>
+      </constructor>
+      <function name="Pulse" visibility="public" file="JclSynch.pas" line="164">
+        <parameters>
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="ResetEvent" visibility="public" file="JclSynch.pas" line="165">
+        <parameters>
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="SetEvent" visibility="public" file="JclSynch.pas" line="166">
+        <parameters>
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+    </members>
+  </class>
+  <class name="TJclWaitableTimer" file="JclSynch.pas" line="169">
+    <ancestor name="TJclDispatcherObject" namespace="JclSynch">
+      <methodref name="Attach" visibility="public" procflags="constructor" />
+      <methodref name="Destroy" visibility="public" procflags="destructor override" />
+      <methodref name="SignalAndWait" visibility="public" />
+      <methodref name="WaitAlertable" visibility="public" />
+      <methodref name="WaitFor" visibility="public" />
+      <methodref name="WaitForever" visibility="public" />
+      <propertyref name="Existed" visibility="public" />
+      <propertyref name="Handle" visibility="public" />
+      <propertyref name="Name" visibility="public" />
+      <ancestor name="TObject" namespace="System">
+        <methodref name="Create" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="Free" visibility="public">
+        </methodref>
+        <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+        </methodref>
+        <methodref name="InitInstance" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="CleanupInstance" visibility="public">
+        </methodref>
+        <methodref name="ClassType" visibility="public" procflags="inline">
+        </methodref>
+        <methodref name="ClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassNameIs" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassParent" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="ClassInfo" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InstanceSize" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InheritsFrom" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="QualifiedClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="GetInterface" visibility="public">
+        </methodref>
+        <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="UnitName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="UnitScope" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="Equals" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetHashCode" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ToString" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="SafeCallException" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Dispatch" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="NewInstance" visibility="public" procflags="class virtual">
+        </methodref>
+        <methodref name="FreeInstance" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+        </methodref>
+        <methodref name="GetDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <propertyref name="Disposed" visibility="protected">
+        </propertyref>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="FResume" type="Boolean" visibility="private" size="1" offset="16" file="JclSynch.pas" line="171" />
+      <constructor name="Create" visibility="public" file="JclSynch.pas" line="173">
+        <parameters>
+          <parameter name="SecAttr" type="PSecurityAttributes" />
+          <parameter name="Manual" type="Boolean" />
+          <parameter name="Name" type="string" paramflags="const" />
+        </parameters>
+      </constructor>
+      <constructor name="Open" visibility="public" file="JclSynch.pas" line="174">
+        <parameters>
+          <parameter name="Access" type="Cardinal" />
+          <parameter name="Inheritable" type="Boolean" />
+          <parameter name="Name" type="string" paramflags="const" />
+        </parameters>
+      </constructor>
+      <function name="Cancel" visibility="public" file="JclSynch.pas" line="175">
+        <parameters>
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="SetTimer" visibility="public" file="JclSynch.pas" line="176">
+        <parameters>
+          <parameter name="DueTime" type="Int64" paramflags="const" />
+          <parameter name="Period" type="Integer" />
+          <parameter name="Resume" type="Boolean" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="SetTimerApc" visibility="public" file="JclSynch.pas" line="177">
+        <parameters>
+          <parameter name="DueTime" type="Int64" paramflags="const" />
+          <parameter name="Period" type="Integer" />
+          <parameter name="Resume" type="Boolean" />
+          <parameter name="Apc" type="Pointer" />
+          <parameter name="Arg" type="Pointer" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+    </members>
+  </class>
+  <class name="TJclSemaphore" file="JclSynch.pas" line="180">
+    <ancestor name="TJclDispatcherObject" namespace="JclSynch">
+      <methodref name="Attach" visibility="public" procflags="constructor" />
+      <methodref name="Destroy" visibility="public" procflags="destructor override" />
+      <methodref name="SignalAndWait" visibility="public" />
+      <methodref name="WaitAlertable" visibility="public" />
+      <methodref name="WaitFor" visibility="public" />
+      <methodref name="WaitForever" visibility="public" />
+      <propertyref name="Existed" visibility="public" />
+      <propertyref name="Handle" visibility="public" />
+      <propertyref name="Name" visibility="public" />
+      <ancestor name="TObject" namespace="System">
+        <methodref name="Create" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="Free" visibility="public">
+        </methodref>
+        <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+        </methodref>
+        <methodref name="InitInstance" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="CleanupInstance" visibility="public">
+        </methodref>
+        <methodref name="ClassType" visibility="public" procflags="inline">
+        </methodref>
+        <methodref name="ClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassNameIs" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassParent" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="ClassInfo" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InstanceSize" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InheritsFrom" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="QualifiedClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="GetInterface" visibility="public">
+        </methodref>
+        <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="UnitName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="UnitScope" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="Equals" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetHashCode" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ToString" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="SafeCallException" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Dispatch" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="NewInstance" visibility="public" procflags="class virtual">
+        </methodref>
+        <methodref name="FreeInstance" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+        </methodref>
+        <methodref name="GetDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <propertyref name="Disposed" visibility="protected">
+        </propertyref>
+      </ancestor>
+    </ancestor>
+    <members>
+      <constructor name="Create" visibility="public" file="JclSynch.pas" line="182">
+        <parameters>
+          <parameter name="SecAttr" type="PSecurityAttributes" />
+          <parameter name="Initial" type="Integer" />
+          <parameter name="Maximum" type="Integer" />
+          <parameter name="Name" type="string" paramflags="const" />
+        </parameters>
+      </constructor>
+      <constructor name="Open" visibility="public" file="JclSynch.pas" line="183">
+        <parameters>
+          <parameter name="Access" type="Cardinal" />
+          <parameter name="Inheritable" type="Boolean" />
+          <parameter name="Name" type="string" paramflags="const" />
+        </parameters>
+      </constructor>
+      <function name="Release" visibility="public" file="JclSynch.pas" line="184">
+        <parameters>
+          <parameter name="ReleaseCount" type="Integer" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="ReleasePrev" visibility="public" file="JclSynch.pas" line="185">
+        <parameters>
+          <parameter name="ReleaseCount" type="Integer" />
+          <parameter name="PrevCount" type="Integer" paramflags="var" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+    </members>
+  </class>
+  <class name="TJclMutex" file="JclSynch.pas" line="188">
+    <ancestor name="TJclDispatcherObject" namespace="JclSynch">
+      <methodref name="Attach" visibility="public" procflags="constructor" />
+      <methodref name="Destroy" visibility="public" procflags="destructor override" />
+      <methodref name="SignalAndWait" visibility="public" />
+      <methodref name="WaitAlertable" visibility="public" />
+      <methodref name="WaitFor" visibility="public" />
+      <methodref name="WaitForever" visibility="public" />
+      <propertyref name="Existed" visibility="public" />
+      <propertyref name="Handle" visibility="public" />
+      <propertyref name="Name" visibility="public" />
+      <ancestor name="TObject" namespace="System">
+        <methodref name="Create" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="Free" visibility="public">
+        </methodref>
+        <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+        </methodref>
+        <methodref name="InitInstance" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="CleanupInstance" visibility="public">
+        </methodref>
+        <methodref name="ClassType" visibility="public" procflags="inline">
+        </methodref>
+        <methodref name="ClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassNameIs" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassParent" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="ClassInfo" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InstanceSize" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InheritsFrom" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="QualifiedClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="GetInterface" visibility="public">
+        </methodref>
+        <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="UnitName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="UnitScope" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="Equals" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetHashCode" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ToString" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="SafeCallException" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Dispatch" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="NewInstance" visibility="public" procflags="class virtual">
+        </methodref>
+        <methodref name="FreeInstance" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+        </methodref>
+        <methodref name="GetDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <propertyref name="Disposed" visibility="protected">
+        </propertyref>
+      </ancestor>
+    </ancestor>
+    <members>
+      <constructor name="Create" visibility="public" file="JclSynch.pas" line="190">
+        <parameters>
+          <parameter name="SecAttr" type="PSecurityAttributes" />
+          <parameter name="InitialOwner" type="Boolean" />
+          <parameter name="Name" type="string" paramflags="const" />
+        </parameters>
+      </constructor>
+      <constructor name="Open" visibility="public" file="JclSynch.pas" line="192">
+        <parameters>
+          <parameter name="Access" type="Cardinal" />
+          <parameter name="Inheritable" type="Boolean" />
+          <parameter name="Name" type="string" paramflags="const" />
+        </parameters>
+      </constructor>
+      <function name="Acquire" visibility="public" file="JclSynch.pas" line="193">
+        <parameters>
+          <parameter name="TimeOut" type="Cardinal" paramflags="const">
+            <value>
+              $FFFFFFFF
+            </value>
+          </parameter>
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="Release" visibility="public" file="JclSynch.pas" line="194">
+        <parameters>
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+    </members>
+  </class>
+  <pointer name="POptexSharedInfo" type="TOptexSharedInfo" indircnt="1" file="JclSynch.pas" line="197" />
+  <struct name="TOptexSharedInfo" size="16" file="JclSynch.pas" line="198">
+    <field name="SpinCount" type="Integer" visibility="public" size="4" offset="0" file="JclSynch.pas" line="199" />
+    <field name="LockCount" type="Integer" visibility="public" size="4" offset="4" file="JclSynch.pas" line="201" />
+    <field name="ThreadId" type="Cardinal" visibility="public" size="4" offset="8" file="JclSynch.pas" line="202" />
+    <field name="RecursionCount" type="Integer" visibility="public" size="4" offset="12" file="JclSynch.pas" line="203" />
+  </struct>
+  <class name="TJclOptex" file="JclSynch.pas" line="206">
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public" procflags="inline">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="QualifiedClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitScope" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+      <methodref name="GetDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <propertyref name="Disposed" visibility="protected">
+      </propertyref>
+    </ancestor>
+    <members>
+      <field name="FEvent" type="TJclEvent" visibility="private" size="4" offset="4" file="JclSynch.pas" line="208" />
+      <field name="FExisted" type="Boolean" visibility="private" size="1" offset="8" file="JclSynch.pas" line="209" />
+      <field name="FFileMapping" type="Cardinal" visibility="private" size="4" offset="12" file="JclSynch.pas" line="210" />
+      <field name="FName" type="string" visibility="private" size="4" offset="16" file="JclSynch.pas" line="211" />
+      <field name="FSharedInfo" type="POptexSharedInfo" visibility="private" size="4" offset="20" file="JclSynch.pas" line="212" />
+      <function name="GetUniProcess" visibility="private" file="JclSynch.pas" line="213">
+        <parameters>
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="GetSpinCount" visibility="private" file="JclSynch.pas" line="214">
+        <parameters>
+          <retval type="Integer" />
+        </parameters>
+      </function>
+      <procedure name="SetSpinCount" visibility="private" file="JclSynch.pas" line="215">
+        <parameters>
+          <parameter name="Value" type="Integer" />
+        </parameters>
+      </procedure>
+      <constructor name="Create" visibility="public" file="JclSynch.pas" line="217">
+        <parameters>
+          <parameter name="Name" type="string" paramflags="const">
+            <value>
+              
+            </value>
+          </parameter>
+          <parameter name="SpinCount" type="Integer">
+            <value>
+              $FA0
+            </value>
+          </parameter>
+        </parameters>
+      </constructor>
+      <destructor name="Destroy" visibility="public" file="JclSynch.pas" line="218">
+        <parameters>
+        </parameters>
+      </destructor>
+      <procedure name="Enter" visibility="public" file="JclSynch.pas" line="219">
+      </procedure>
+      <procedure name="Leave" visibility="public" file="JclSynch.pas" line="220">
+      </procedure>
+      <function name="TryEnter" visibility="public" file="JclSynch.pas" line="221">
+        <parameters>
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <property name="Existed" visibility="public" read="FExisted" type="Boolean" file="JclSynch.pas" line="222" />
+      <property name="Name" visibility="public" read="FName" type="string" default="0" file="JclSynch.pas" line="223" />
+      <property name="SpinCount" visibility="public" read="GetSpinCount" write="SetSpinCount" type="Integer" file="JclSynch.pas" line="224" />
+      <property name="UniProcess" visibility="public" read="GetUniProcess" type="Boolean" file="JclSynch.pas" line="225" />
+    </members>
+  </class>
+  <enum name="TMrewPreferred" file="JclSynch.pas" line="228">
+    <element value="0" name="mpReaders" file="JclSynch.pas" line="228" />
+    <element value="1" name="mpWriters" file="JclSynch.pas" line="228" />
+    <element value="2" name="mpEqual" file="JclSynch.pas" line="228" />
+  </enum>
+  <struct name="TMrewThreadInfo" size="12" file="JclSynch.pas" line="230">
+    <field name="ThreadId" type="Cardinal" visibility="public" size="4" offset="0" file="JclSynch.pas" line="231" />
+    <field name="RecursionCount" type="Integer" visibility="public" size="4" offset="4" file="JclSynch.pas" line="232" />
+    <field name="Reader" type="Boolean" visibility="public" size="1" offset="8" file="JclSynch.pas" line="233" />
+  </struct>
+  <array name="TMrewThreadInfoArray" file="JclSynch.pas" line="235">
+    <element type="TMrewThreadInfo" />
+  </array>
+  <class name="TJclMultiReadExclusiveWrite" file="JclSynch.pas" line="237">
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public" procflags="inline">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="QualifiedClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitScope" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+      <methodref name="GetDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <propertyref name="Disposed" visibility="protected">
+      </propertyref>
+    </ancestor>
+    <members>
+      <field name="FLock" type="TJclCriticalSection" visibility="private" size="4" offset="4" file="JclSynch.pas" line="239" />
+      <field name="FPreferred" type="TMrewPreferred" visibility="private" size="1" offset="8" file="JclSynch.pas" line="240" />
+      <field name="FSemReaders" type="TJclSemaphore" visibility="private" size="4" offset="12" file="JclSynch.pas" line="241" />
+      <field name="FSemWriters" type="TJclSemaphore" visibility="private" size="4" offset="16" file="JclSynch.pas" line="242" />
+      <field name="FState" type="Integer" visibility="private" size="4" offset="20" file="JclSynch.pas" line="243" />
+      <field name="FThreads" type="TMrewThreadInfoArray" visibility="private" size="4" offset="24" file="JclSynch.pas" line="244" />
+      <field name="FWaitingReaders" type="Integer" visibility="private" size="4" offset="28" file="JclSynch.pas" line="245" />
+      <field name="FWaitingWriters" type="Integer" visibility="private" size="4" offset="32" file="JclSynch.pas" line="246" />
+      <procedure name="AddToThreadList" visibility="private" file="JclSynch.pas" line="247">
+        <parameters>
+          <parameter name="ThreadId" type="Cardinal" />
+          <parameter name="Reader" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="RemoveFromThreadList" visibility="private" file="JclSynch.pas" line="248">
+        <parameters>
+          <parameter name="Index" type="Integer" />
+        </parameters>
+      </procedure>
+      <function name="FindThread" visibility="private" file="JclSynch.pas" line="249">
+        <parameters>
+          <parameter name="ThreadId" type="Cardinal" />
+          <retval type="Integer" />
+        </parameters>
+      </function>
+      <procedure name="ReleaseWaiters" visibility="private" file="JclSynch.pas" line="250">
+        <parameters>
+          <parameter name="WasReading" type="Boolean" />
+        </parameters>
+      </procedure>
+      <procedure name="Release" visibility="protected" file="JclSynch.pas" line="252">
+      </procedure>
+      <constructor name="Create" visibility="public" file="JclSynch.pas" line="254">
+        <parameters>
+          <parameter name="Preferred" type="TMrewPreferred" />
+        </parameters>
+      </constructor>
+      <destructor name="Destroy" visibility="public" file="JclSynch.pas" line="256">
+        <parameters>
+        </parameters>
+      </destructor>
+      <procedure name="BeginRead" visibility="public" file="JclSynch.pas" line="257">
+      </procedure>
+      <procedure name="BeginWrite" visibility="public" file="JclSynch.pas" line="258">
+      </procedure>
+      <procedure name="EndRead" visibility="public" file="JclSynch.pas" line="259">
+      </procedure>
+      <procedure name="EndWrite" visibility="public" file="JclSynch.pas" line="260">
+      </procedure>
+    </members>
+  </class>
+  <pointer name="PMetSectSharedInfo" type="TMetSectSharedInfo" indircnt="1" file="JclSynch.pas" line="263" />
+  <struct name="TMetSectSharedInfo" size="20" file="JclSynch.pas" line="264">
+    <field name="Initialized" type="LongBool" visibility="public" size="4" offset="0" file="JclSynch.pas" line="265" />
+    <field name="SpinLock" type="Integer" visibility="public" size="4" offset="4" file="JclSynch.pas" line="266" />
+    <field name="ThreadsWaiting" type="Integer" visibility="public" size="4" offset="8" file="JclSynch.pas" line="267" />
+    <field name="AvailableCount" type="Integer" visibility="public" size="4" offset="12" file="JclSynch.pas" line="268" />
+    <field name="MaximumCount" type="Integer" visibility="public" size="4" offset="16" file="JclSynch.pas" line="269" />
+  </struct>
+  <pointer name="PMeteredSection" type="TMeteredSection" indircnt="1" file="JclSynch.pas" line="272" />
+  <struct name="TMeteredSection" size="12" file="JclSynch.pas" line="273">
+    <field name="Event" type="Cardinal" visibility="public" size="4" offset="0" file="JclSynch.pas" line="274" />
+    <field name="FileMap" type="Cardinal" visibility="public" size="4" offset="4" file="JclSynch.pas" line="275" />
+    <field name="SharedInfo" type="PMetSectSharedInfo" visibility="public" size="4" offset="8" file="JclSynch.pas" line="276" />
+  </struct>
+  <class name="TJclMeteredSection" file="JclSynch.pas" line="279">
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public" procflags="inline">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="QualifiedClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitScope" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+      <methodref name="GetDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <propertyref name="Disposed" visibility="protected">
+      </propertyref>
+    </ancestor>
+    <members>
+      <field name="FMetSect" type="PMeteredSection" visibility="private" size="4" offset="4" file="JclSynch.pas" line="281" />
+      <procedure name="CloseMeteredSection" visibility="private" file="JclSynch.pas" line="282">
+      </procedure>
+      <function name="InitMeteredSection" visibility="private" file="JclSynch.pas" line="283">
+        <parameters>
+          <parameter name="InitialCount" type="Integer" />
+          <parameter name="MaxCount" type="Integer" />
+          <parameter name="Name" type="string" paramflags="const" />
+          <parameter name="OpenOnly" type="Boolean" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="CreateMetSectEvent" visibility="private" file="JclSynch.pas" line="284">
+        <parameters>
+          <parameter name="Name" type="string" paramflags="const" />
+          <parameter name="OpenOnly" type="Boolean" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="CreateMetSectFileView" visibility="private" file="JclSynch.pas" line="285">
+        <parameters>
+          <parameter name="InitialCount" type="Integer" />
+          <parameter name="MaxCount" type="Integer" />
+          <parameter name="Name" type="string" paramflags="const" />
+          <parameter name="OpenOnly" type="Boolean" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <procedure name="AcquireLock" visibility="protected" file="JclSynch.pas" line="287">
+      </procedure>
+      <procedure name="ReleaseLock" visibility="protected" file="JclSynch.pas" line="288">
+      </procedure>
+      <constructor name="Create" visibility="public" file="JclSynch.pas" line="290">
+        <parameters>
+          <parameter name="InitialCount" type="Integer" />
+          <parameter name="MaxCount" type="Integer" />
+          <parameter name="Name" type="string" paramflags="const" />
+        </parameters>
+      </constructor>
+      <constructor name="Open" visibility="public" file="JclSynch.pas" line="291">
+        <parameters>
+          <parameter name="Name" type="string" paramflags="const" />
+        </parameters>
+      </constructor>
+      <destructor name="Destroy" visibility="public" file="JclSynch.pas" line="292">
+        <parameters>
+        </parameters>
+      </destructor>
+      <function name="Enter" visibility="public" file="JclSynch.pas" line="293">
+        <parameters>
+          <parameter name="TimeOut" type="Cardinal" />
+          <retval type="TJclWaitResult" />
+        </parameters>
+      </function>
+      <function name="Leave" visibility="public" procflags="overload" file="JclSynch.pas" line="294">
+        <parameters>
+          <parameter name="ReleaseCount" type="Integer" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="Leave" visibility="public" procflags="overload" file="JclSynch.pas" line="295">
+        <parameters>
+          <parameter name="ReleaseCount" type="Integer" />
+          <parameter name="PrevCount" type="Integer" paramflags="out" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+    </members>
+  </class>
+  <struct name="TEventInfo" size="8" file="JclSynch.pas" line="305">
+    <field name="EventType" type="Integer" visibility="public" size="4" offset="0" file="JclSynch.pas" line="306" />
+    <field name="Signaled" type="LongBool" visibility="public" size="4" offset="4" file="JclSynch.pas" line="307" />
+  </struct>
+  <struct name="TMutexInfo" size="8" file="JclSynch.pas" line="310">
+    <field name="SignalState" type="Integer" visibility="public" size="4" offset="0" file="JclSynch.pas" line="311" />
+    <field name="Owned" type="ByteBool" visibility="public" size="1" offset="4" file="JclSynch.pas" line="312" />
+    <field name="Abandoned" type="ByteBool" visibility="public" size="1" offset="5" file="JclSynch.pas" line="313" />
+  </struct>
+  <struct name="TSemaphoreCounts" size="8" file="JclSynch.pas" line="316">
+    <field name="CurrentCount" type="Integer" visibility="public" size="4" offset="0" file="JclSynch.pas" line="317" />
+    <field name="MaximumCount" type="Integer" visibility="public" size="4" offset="4" file="JclSynch.pas" line="318" />
+  </struct>
+  <struct name="TTimerInfo" size="16" file="JclSynch.pas" line="321">
+    <field name="Remaining" type="Int64" visibility="public" size="8" offset="0" file="JclSynch.pas" line="322" />
+    <field name="Signaled" type="ByteBool" visibility="public" size="1" offset="8" file="JclSynch.pas" line="323" />
+  </struct>
+  <class name="EJclWin32HandleObjectError" file="JclSynch.pas" line="335">
+    <ancestor name="EJclWin32Error" namespace="JclWin32">
+      <methodref name="Create" visibility="public" procflags="constructor" />
+      <methodref name="CreateFmt" visibility="public" procflags="constructor" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <propertyref name="LastError" visibility="public" />
+      <propertyref name="LastErrorMsg" visibility="public" />
+      <ancestor name="EJclError" namespace="JclBase">
+        <ancestor name="Exception" namespace="System.SysUtils">
+          <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+          </methodref>
+          <methodref name="Destroy@" visibility="class private" procflags="class destructor noself">
+          </methodref>
+          <methodref name="SetInnerException" visibility="protected">
+          </methodref>
+          <methodref name="SetStackInfo" visibility="protected">
+          </methodref>
+          <methodref name="GetStackTrace" visibility="protected">
+          </methodref>
+          <methodref name="RaisingException" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Create" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmt" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmtHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="GetBaseException" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ToString" visibility="public" procflags="override">
+          </methodref>
+          <propertyref name="BaseException" visibility="public">
+          </propertyref>
+          <propertyref name="HelpContext" visibility="public">
+          </propertyref>
+          <propertyref name="InnerException" visibility="public">
+          </propertyref>
+          <propertyref name="Message" visibility="public">
+          </propertyref>
+          <propertyref name="StackTrace" visibility="public">
+          </propertyref>
+          <propertyref name="StackInfo" visibility="public">
+          </propertyref>
+          <methodref name="RaiseOuterException" visibility="public" procflags="static">
+          </methodref>
+          <methodref name="ThrowOuterException" visibility="public" procflags="static">
+          </methodref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+  </class>
+  <class name="EJclDispatcherObjectError" file="JclSynch.pas" line="336">
+    <ancestor name="EJclWin32Error" namespace="JclWin32">
+      <methodref name="Create" visibility="public" procflags="constructor" />
+      <methodref name="CreateFmt" visibility="public" procflags="constructor" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <propertyref name="LastError" visibility="public" />
+      <propertyref name="LastErrorMsg" visibility="public" />
+      <ancestor name="EJclError" namespace="JclBase">
+        <ancestor name="Exception" namespace="System.SysUtils">
+          <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+          </methodref>
+          <methodref name="Destroy@" visibility="class private" procflags="class destructor noself">
+          </methodref>
+          <methodref name="SetInnerException" visibility="protected">
+          </methodref>
+          <methodref name="SetStackInfo" visibility="protected">
+          </methodref>
+          <methodref name="GetStackTrace" visibility="protected">
+          </methodref>
+          <methodref name="RaisingException" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Create" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmt" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmtHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="GetBaseException" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ToString" visibility="public" procflags="override">
+          </methodref>
+          <propertyref name="BaseException" visibility="public">
+          </propertyref>
+          <propertyref name="HelpContext" visibility="public">
+          </propertyref>
+          <propertyref name="InnerException" visibility="public">
+          </propertyref>
+          <propertyref name="Message" visibility="public">
+          </propertyref>
+          <propertyref name="StackTrace" visibility="public">
+          </propertyref>
+          <propertyref name="StackInfo" visibility="public">
+          </propertyref>
+          <methodref name="RaiseOuterException" visibility="public" procflags="static">
+          </methodref>
+          <methodref name="ThrowOuterException" visibility="public" procflags="static">
+          </methodref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+  </class>
+  <class name="EJclCriticalSectionError" file="JclSynch.pas" line="337">
+    <ancestor name="EJclWin32Error" namespace="JclWin32">
+      <methodref name="Create" visibility="public" procflags="constructor" />
+      <methodref name="CreateFmt" visibility="public" procflags="constructor" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <propertyref name="LastError" visibility="public" />
+      <propertyref name="LastErrorMsg" visibility="public" />
+      <ancestor name="EJclError" namespace="JclBase">
+        <ancestor name="Exception" namespace="System.SysUtils">
+          <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+          </methodref>
+          <methodref name="Destroy@" visibility="class private" procflags="class destructor noself">
+          </methodref>
+          <methodref name="SetInnerException" visibility="protected">
+          </methodref>
+          <methodref name="SetStackInfo" visibility="protected">
+          </methodref>
+          <methodref name="GetStackTrace" visibility="protected">
+          </methodref>
+          <methodref name="RaisingException" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Create" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmt" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmtHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="GetBaseException" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ToString" visibility="public" procflags="override">
+          </methodref>
+          <propertyref name="BaseException" visibility="public">
+          </propertyref>
+          <propertyref name="HelpContext" visibility="public">
+          </propertyref>
+          <propertyref name="InnerException" visibility="public">
+          </propertyref>
+          <propertyref name="Message" visibility="public">
+          </propertyref>
+          <propertyref name="StackTrace" visibility="public">
+          </propertyref>
+          <propertyref name="StackInfo" visibility="public">
+          </propertyref>
+          <methodref name="RaiseOuterException" visibility="public" procflags="static">
+          </methodref>
+          <methodref name="ThrowOuterException" visibility="public" procflags="static">
+          </methodref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+  </class>
+  <class name="EJclEventError" file="JclSynch.pas" line="338">
+    <ancestor name="EJclWin32Error" namespace="JclWin32">
+      <methodref name="Create" visibility="public" procflags="constructor" />
+      <methodref name="CreateFmt" visibility="public" procflags="constructor" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <propertyref name="LastError" visibility="public" />
+      <propertyref name="LastErrorMsg" visibility="public" />
+      <ancestor name="EJclError" namespace="JclBase">
+        <ancestor name="Exception" namespace="System.SysUtils">
+          <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+          </methodref>
+          <methodref name="Destroy@" visibility="class private" procflags="class destructor noself">
+          </methodref>
+          <methodref name="SetInnerException" visibility="protected">
+          </methodref>
+          <methodref name="SetStackInfo" visibility="protected">
+          </methodref>
+          <methodref name="GetStackTrace" visibility="protected">
+          </methodref>
+          <methodref name="RaisingException" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Create" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmt" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmtHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="GetBaseException" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ToString" visibility="public" procflags="override">
+          </methodref>
+          <propertyref name="BaseException" visibility="public">
+          </propertyref>
+          <propertyref name="HelpContext" visibility="public">
+          </propertyref>
+          <propertyref name="InnerException" visibility="public">
+          </propertyref>
+          <propertyref name="Message" visibility="public">
+          </propertyref>
+          <propertyref name="StackTrace" visibility="public">
+          </propertyref>
+          <propertyref name="StackInfo" visibility="public">
+          </propertyref>
+          <methodref name="RaiseOuterException" visibility="public" procflags="static">
+          </methodref>
+          <methodref name="ThrowOuterException" visibility="public" procflags="static">
+          </methodref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+  </class>
+  <class name="EJclWaitableTimerError" file="JclSynch.pas" line="339">
+    <ancestor name="EJclWin32Error" namespace="JclWin32">
+      <methodref name="Create" visibility="public" procflags="constructor" />
+      <methodref name="CreateFmt" visibility="public" procflags="constructor" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <propertyref name="LastError" visibility="public" />
+      <propertyref name="LastErrorMsg" visibility="public" />
+      <ancestor name="EJclError" namespace="JclBase">
+        <ancestor name="Exception" namespace="System.SysUtils">
+          <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+          </methodref>
+          <methodref name="Destroy@" visibility="class private" procflags="class destructor noself">
+          </methodref>
+          <methodref name="SetInnerException" visibility="protected">
+          </methodref>
+          <methodref name="SetStackInfo" visibility="protected">
+          </methodref>
+          <methodref name="GetStackTrace" visibility="protected">
+          </methodref>
+          <methodref name="RaisingException" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Create" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmt" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmtHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="GetBaseException" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ToString" visibility="public" procflags="override">
+          </methodref>
+          <propertyref name="BaseException" visibility="public">
+          </propertyref>
+          <propertyref name="HelpContext" visibility="public">
+          </propertyref>
+          <propertyref name="InnerException" visibility="public">
+          </propertyref>
+          <propertyref name="Message" visibility="public">
+          </propertyref>
+          <propertyref name="StackTrace" visibility="public">
+          </propertyref>
+          <propertyref name="StackInfo" visibility="public">
+          </propertyref>
+          <methodref name="RaiseOuterException" visibility="public" procflags="static">
+          </methodref>
+          <methodref name="ThrowOuterException" visibility="public" procflags="static">
+          </methodref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+  </class>
+  <class name="EJclSemaphoreError" file="JclSynch.pas" line="340">
+    <ancestor name="EJclWin32Error" namespace="JclWin32">
+      <methodref name="Create" visibility="public" procflags="constructor" />
+      <methodref name="CreateFmt" visibility="public" procflags="constructor" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <propertyref name="LastError" visibility="public" />
+      <propertyref name="LastErrorMsg" visibility="public" />
+      <ancestor name="EJclError" namespace="JclBase">
+        <ancestor name="Exception" namespace="System.SysUtils">
+          <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+          </methodref>
+          <methodref name="Destroy@" visibility="class private" procflags="class destructor noself">
+          </methodref>
+          <methodref name="SetInnerException" visibility="protected">
+          </methodref>
+          <methodref name="SetStackInfo" visibility="protected">
+          </methodref>
+          <methodref name="GetStackTrace" visibility="protected">
+          </methodref>
+          <methodref name="RaisingException" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Create" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmt" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmtHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="GetBaseException" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ToString" visibility="public" procflags="override">
+          </methodref>
+          <propertyref name="BaseException" visibility="public">
+          </propertyref>
+          <propertyref name="HelpContext" visibility="public">
+          </propertyref>
+          <propertyref name="InnerException" visibility="public">
+          </propertyref>
+          <propertyref name="Message" visibility="public">
+          </propertyref>
+          <propertyref name="StackTrace" visibility="public">
+          </propertyref>
+          <propertyref name="StackInfo" visibility="public">
+          </propertyref>
+          <methodref name="RaiseOuterException" visibility="public" procflags="static">
+          </methodref>
+          <methodref name="ThrowOuterException" visibility="public" procflags="static">
+          </methodref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+  </class>
+  <class name="EJclMutexError" file="JclSynch.pas" line="341">
+    <ancestor name="EJclWin32Error" namespace="JclWin32">
+      <methodref name="Create" visibility="public" procflags="constructor" />
+      <methodref name="CreateFmt" visibility="public" procflags="constructor" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <methodref name="CreateRes" visibility="public" procflags="constructor overload" />
+      <propertyref name="LastError" visibility="public" />
+      <propertyref name="LastErrorMsg" visibility="public" />
+      <ancestor name="EJclError" namespace="JclBase">
+        <ancestor name="Exception" namespace="System.SysUtils">
+          <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+          </methodref>
+          <methodref name="Destroy@" visibility="class private" procflags="class destructor noself">
+          </methodref>
+          <methodref name="SetInnerException" visibility="protected">
+          </methodref>
+          <methodref name="SetStackInfo" visibility="protected">
+          </methodref>
+          <methodref name="GetStackTrace" visibility="protected">
+          </methodref>
+          <methodref name="RaisingException" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Create" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmt" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmtHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="GetBaseException" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ToString" visibility="public" procflags="override">
+          </methodref>
+          <propertyref name="BaseException" visibility="public">
+          </propertyref>
+          <propertyref name="HelpContext" visibility="public">
+          </propertyref>
+          <propertyref name="InnerException" visibility="public">
+          </propertyref>
+          <propertyref name="Message" visibility="public">
+          </propertyref>
+          <propertyref name="StackTrace" visibility="public">
+          </propertyref>
+          <propertyref name="StackInfo" visibility="public">
+          </propertyref>
+          <methodref name="RaiseOuterException" visibility="public" procflags="static">
+          </methodref>
+          <methodref name="ThrowOuterException" visibility="public" procflags="static">
+          </methodref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+  </class>
+  <class name="EJclMeteredSectionError" file="JclSynch.pas" line="342">
+    <ancestor name="EJclError" namespace="JclBase">
+      <ancestor name="Exception" namespace="System.SysUtils">
+        <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+        </methodref>
+        <methodref name="Destroy@" visibility="class private" procflags="class destructor noself">
+        </methodref>
+        <methodref name="SetInnerException" visibility="protected">
+        </methodref>
+        <methodref name="SetStackInfo" visibility="protected">
+        </methodref>
+        <methodref name="GetStackTrace" visibility="protected">
+        </methodref>
+        <methodref name="RaisingException" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="Create" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="CreateFmt" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateHelp" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="CreateFmtHelp" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor override">
+        </methodref>
+        <methodref name="GetBaseException" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ToString" visibility="public" procflags="override">
+        </methodref>
+        <propertyref name="BaseException" visibility="public">
+        </propertyref>
+        <propertyref name="HelpContext" visibility="public">
+        </propertyref>
+        <propertyref name="InnerException" visibility="public">
+        </propertyref>
+        <propertyref name="Message" visibility="public">
+        </propertyref>
+        <propertyref name="StackTrace" visibility="public">
+        </propertyref>
+        <propertyref name="StackInfo" visibility="public">
+        </propertyref>
+        <methodref name="RaiseOuterException" visibility="public" procflags="static">
+        </methodref>
+        <methodref name="ThrowOuterException" visibility="public" procflags="static">
+        </methodref>
+        <ancestor name="TObject" namespace="System">
+          <methodref name="Create" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="Free" visibility="public">
+          </methodref>
+          <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+          </methodref>
+          <methodref name="InitInstance" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="CleanupInstance" visibility="public">
+          </methodref>
+          <methodref name="ClassType" visibility="public" procflags="inline">
+          </methodref>
+          <methodref name="ClassName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="ClassNameIs" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="ClassParent" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="ClassInfo" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="InstanceSize" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="InheritsFrom" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="MethodAddress" visibility="public" procflags="class overload">
+          </methodref>
+          <methodref name="MethodAddress" visibility="public" procflags="class overload">
+          </methodref>
+          <methodref name="MethodName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="QualifiedClassName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="FieldAddress" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="FieldAddress" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="GetInterface" visibility="public">
+          </methodref>
+          <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="UnitName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="UnitScope" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="Equals" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="GetHashCode" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ToString" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="SafeCallException" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Dispatch" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="NewInstance" visibility="public" procflags="class virtual">
+          </methodref>
+          <methodref name="FreeInstance" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+          </methodref>
+          <methodref name="GetDisposed" visibility="protected" procflags="inline">
+          </methodref>
+          <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+          </methodref>
+          <propertyref name="Disposed" visibility="protected">
+          </propertyref>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+  </class>
+  <function name="LockedAdd" visibility="public" procflags="overload" file="JclSynch.pas" line="375">
+    <parameters>
+      <parameter name="Target" type="Integer" paramflags="var" />
+      <parameter name="Value" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LockedCompareExchange" visibility="public" procflags="overload" file="JclSynch.pas" line="396">
+    <parameters>
+      <parameter name="Target" type="Integer" paramflags="var" />
+      <parameter name="Exch" type="Integer" />
+      <parameter name="Comp" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LockedCompareExchange" visibility="public" procflags="overload" file="JclSynch.pas" line="422">
+    <parameters>
+      <parameter name="Target" type="Pointer" paramflags="var" />
+      <parameter name="Exch" type="Pointer" />
+      <parameter name="Comp" type="Pointer" />
+      <retval type="Pointer" />
+    </parameters>
+  </function>
+  <function name="LockedCompareExchange" visibility="public" procflags="overload" file="JclSynch.pas" line="448">
+    <parameters>
+      <parameter name="Target" type="TObject" paramflags="var" />
+      <parameter name="Exch" type="TObject" />
+      <parameter name="Comp" type="TObject" />
+      <retval type="TObject" />
+    </parameters>
+  </function>
+  <function name="LockedDec" visibility="public" procflags="overload" file="JclSynch.pas" line="474">
+    <parameters>
+      <parameter name="Target" type="Integer" paramflags="var" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LockedExchange" visibility="public" procflags="overload" file="JclSynch.pas" line="493">
+    <parameters>
+      <parameter name="Target" type="Integer" paramflags="var" />
+      <parameter name="Value" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LockedExchangeAdd" visibility="public" procflags="overload" file="JclSynch.pas" line="516">
+    <parameters>
+      <parameter name="Target" type="Integer" paramflags="var" />
+      <parameter name="Value" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LockedExchangeDec" visibility="public" procflags="overload" file="JclSynch.pas" line="539">
+    <parameters>
+      <parameter name="Target" type="Integer" paramflags="var" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LockedExchangeInc" visibility="public" procflags="overload" file="JclSynch.pas" line="556">
+    <parameters>
+      <parameter name="Target" type="Integer" paramflags="var" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LockedExchangeSub" visibility="public" procflags="overload" file="JclSynch.pas" line="573">
+    <parameters>
+      <parameter name="Target" type="Integer" paramflags="var" />
+      <parameter name="Value" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LockedInc" visibility="public" procflags="overload" file="JclSynch.pas" line="598">
+    <parameters>
+      <parameter name="Target" type="Integer" paramflags="var" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LockedSub" visibility="public" procflags="overload" file="JclSynch.pas" line="617">
+    <parameters>
+      <parameter name="Target" type="Integer" paramflags="var" />
+      <parameter name="Value" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="WaitForMultipleObjects" visibility="public" file="JclSynch.pas" line="824">
+    <parameters>
+      <parameter name="Objects" paramflags="const">
+        <array name="Objects" file="JclSynch.pas" line="823">
+          <element type="TJclDispatcherObject" />
+        </array>
+      </parameter>
+      <parameter name="WaitAll" type="Boolean" />
+      <parameter name="TimeOut" type="Cardinal" />
+      <retval type="Cardinal" />
+    </parameters>
+  </function>
+  <function name="WaitAlertableForMultipleObjects" visibility="public" file="JclSynch.pas" line="837">
+    <parameters>
+      <parameter name="Objects" paramflags="const">
+        <array name="Objects" file="JclSynch.pas" line="836">
+          <element type="TJclDispatcherObject" />
+        </array>
+      </parameter>
+      <parameter name="WaitAll" type="Boolean" />
+      <parameter name="TimeOut" type="Cardinal" />
+      <retval type="Cardinal" />
+    </parameters>
+  </function>
+  <function name="QueryCriticalSection" visibility="public" file="JclSynch.pas" line="1696">
+    <parameters>
+      <parameter name="CS" type="TJclCriticalSection" />
+      <parameter name="Info" type="_RTL_CRITICAL_SECTION" paramflags="var" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="QueryEvent" visibility="public" file="JclSynch.pas" line="1738">
+    <parameters>
+      <parameter name="Handle" type="Cardinal" />
+      <parameter name="Info" type="TEventInfo" paramflags="var" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="QueryMutex" visibility="public" file="JclSynch.pas" line="1743">
+    <parameters>
+      <parameter name="Handle" type="Cardinal" />
+      <parameter name="Info" type="TMutexInfo" paramflags="var" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="QuerySemaphore" visibility="public" file="JclSynch.pas" line="1748">
+    <parameters>
+      <parameter name="Handle" type="Cardinal" />
+      <parameter name="Info" type="TSemaphoreCounts" paramflags="var" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="QueryTimer" visibility="public" file="JclSynch.pas" line="1753">
+    <parameters>
+      <parameter name="Handle" type="Cardinal" />
+      <parameter name="Info" type="TTimerInfo" paramflags="var" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="ValidateMutexName" visibility="public" file="JclSynch.pas" line="1758">
+    <parameters>
+      <parameter name="aName" type="string" paramflags="const" />
+      <retval type="string" />
+    </parameters>
+  </function>
+</namespace>

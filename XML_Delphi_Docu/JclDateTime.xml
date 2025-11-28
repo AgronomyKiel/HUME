@@ -1,0 +1,706 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="JclDateTime" platform="Win32">
+  <const name="UnixTimeStart" type="Integer" file="JclDateTime.pas" line="86">
+    <value>
+      $63E1
+    </value>
+  </const>
+  <type name="TDosDateTime" type="integer" loBound="-2147483648" hiBound="2147483647" file="System.pas" line="12" />
+  <type name="TJclUnixTime32" type="cardinal" loBound="0" hiBound="-1" file="System.pas" line="12" />
+  <class name="EJclDateTimeError" file="JclDateTime.pas" line="217">
+    <ancestor name="EJclError" namespace="JclBase">
+      <ancestor name="Exception" namespace="System.SysUtils">
+        <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+        </methodref>
+        <methodref name="Destroy@" visibility="class private" procflags="class destructor noself">
+        </methodref>
+        <methodref name="SetInnerException" visibility="protected">
+        </methodref>
+        <methodref name="SetStackInfo" visibility="protected">
+        </methodref>
+        <methodref name="GetStackTrace" visibility="protected">
+        </methodref>
+        <methodref name="RaisingException" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="Create" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="CreateFmt" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateHelp" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="CreateFmtHelp" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor override">
+        </methodref>
+        <methodref name="GetBaseException" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ToString" visibility="public" procflags="override">
+        </methodref>
+        <propertyref name="BaseException" visibility="public">
+        </propertyref>
+        <propertyref name="HelpContext" visibility="public">
+        </propertyref>
+        <propertyref name="InnerException" visibility="public">
+        </propertyref>
+        <propertyref name="Message" visibility="public">
+        </propertyref>
+        <propertyref name="StackTrace" visibility="public">
+        </propertyref>
+        <propertyref name="StackInfo" visibility="public">
+        </propertyref>
+        <methodref name="RaiseOuterException" visibility="public" procflags="static">
+        </methodref>
+        <methodref name="ThrowOuterException" visibility="public" procflags="static">
+        </methodref>
+        <ancestor name="TObject" namespace="System">
+          <methodref name="Create" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="Free" visibility="public">
+          </methodref>
+          <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+          </methodref>
+          <methodref name="InitInstance" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="CleanupInstance" visibility="public">
+          </methodref>
+          <methodref name="ClassType" visibility="public" procflags="inline">
+          </methodref>
+          <methodref name="ClassName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="ClassNameIs" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="ClassParent" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="ClassInfo" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="InstanceSize" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="InheritsFrom" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="MethodAddress" visibility="public" procflags="class overload">
+          </methodref>
+          <methodref name="MethodAddress" visibility="public" procflags="class overload">
+          </methodref>
+          <methodref name="MethodName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="QualifiedClassName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="FieldAddress" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="FieldAddress" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="GetInterface" visibility="public">
+          </methodref>
+          <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="UnitName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="UnitScope" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="Equals" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="GetHashCode" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ToString" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="SafeCallException" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Dispatch" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="NewInstance" visibility="public" procflags="class virtual">
+          </methodref>
+          <methodref name="FreeInstance" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+          </methodref>
+          <methodref name="GetDisposed" visibility="protected" procflags="inline">
+          </methodref>
+          <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+          </methodref>
+          <propertyref name="Disposed" visibility="protected">
+          </propertyref>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+  </class>
+  <function name="EncodeDate" visibility="public" procflags="overload" file="JclDateTime.pas" line="266">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Word" />
+      <parameter name="Day" type="Word" />
+      <retval type="TDateTime" />
+    </parameters>
+  </function>
+  <procedure name="DecodeDate" visibility="public" procflags="overload" file="JclDateTime.pas" line="285">
+    <parameters>
+      <parameter name="Date" type="TDateTime" />
+      <parameter name="Year" type="Word" paramflags="out" />
+      <parameter name="Month" type="Word" paramflags="out" />
+      <parameter name="Day" type="Word" paramflags="out" />
+    </parameters>
+  </procedure>
+  <procedure name="DecodeDate" visibility="public" procflags="overload" file="JclDateTime.pas" line="290">
+    <parameters>
+      <parameter name="Date" type="TDateTime" />
+      <parameter name="Year" type="Integer" paramflags="out" />
+      <parameter name="Month" type="Integer" paramflags="out" />
+      <parameter name="Day" type="Integer" paramflags="out" />
+    </parameters>
+  </procedure>
+  <procedure name="DecodeDate" visibility="public" procflags="overload" file="JclDateTime.pas" line="299">
+    <parameters>
+      <parameter name="Date" type="TDateTime" />
+      <parameter name="Year" type="Integer" paramflags="out" />
+      <parameter name="Month" type="Word" paramflags="out" />
+      <parameter name="Day" type="Word" paramflags="out" />
+    </parameters>
+  </procedure>
+  <function name="CenturyBaseYear" visibility="public" file="JclDateTime.pas" line="343">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="CenturyOfDate" visibility="public" file="JclDateTime.pas" line="353">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="DayOfDate" visibility="public" file="JclDateTime.pas" line="364">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="MonthOfDate" visibility="public" file="JclDateTime.pas" line="373">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="YearOfDate" visibility="public" file="JclDateTime.pas" line="382">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="DayOfTheYear" visibility="public" procflags="overload" file="JclDateTime.pas" line="389">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <parameter name="Year" type="Integer" paramflags="out" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="DayOfTheYear" visibility="public" procflags="overload" file="JclDateTime.pas" line="400">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="DayOfTheYearToDateTime" visibility="public" file="JclDateTime.pas" line="407">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Day" type="Integer" paramflags="const" />
+      <retval type="TDateTime" />
+    </parameters>
+  </function>
+  <function name="HourOfTime" visibility="public" file="JclDateTime.pas" line="412">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="MinuteOfTime" visibility="public" file="JclDateTime.pas" line="420">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="SecondOfTime" visibility="public" file="JclDateTime.pas" line="428">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="TimeOfDateTimeToSeconds" visibility="public" file="JclDateTime.pas" line="436">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="TimeOfDateTimeToMSecs" visibility="public" file="JclDateTime.pas" line="441">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="DaysInMonth" visibility="public" file="JclDateTime.pas" line="446">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="ISODayOfWeek" visibility="public" file="JclDateTime.pas" line="463">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Word" />
+    </parameters>
+  </function>
+  <function name="IsISOLongYear" visibility="public" procflags="overload" file="JclDateTime.pas" line="478">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsISOLongYear" visibility="public" procflags="overload" file="JclDateTime.pas" line="486">
+    <parameters>
+      <parameter name="Year" type="Word" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="GetISOYearNumberOfWeeks" visibility="public" file="JclDateTime.pas" line="494">
+    <parameters>
+      <parameter name="Year" type="Word" paramflags="const" />
+      <retval type="Word" />
+    </parameters>
+  </function>
+  <function name="ISOWeekNumber" visibility="public" procflags="overload" file="JclDateTime.pas" line="505">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" />
+      <parameter name="YearOfWeekNumber" type="Integer" paramflags="out" />
+      <parameter name="WeekDay" type="Integer" paramflags="out" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="ISOWeekNumber" visibility="public" procflags="overload" file="JclDateTime.pas" line="539">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" />
+      <parameter name="YearOfWeekNumber" type="Integer" paramflags="out" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="ISOWeekNumber" visibility="public" procflags="overload" file="JclDateTime.pas" line="546">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="ISOWeekToDateTime" visibility="public" file="JclDateTime.pas" line="553">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Week" type="Integer" paramflags="const" />
+      <parameter name="Day" type="Integer" paramflags="const" />
+      <retval type="TDateTime" />
+    </parameters>
+  </function>
+  <function name="IsLeapYear" visibility="public" procflags="overload" file="JclDateTime.pas" line="566">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsLeapYear" visibility="public" procflags="overload" file="JclDateTime.pas" line="571">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="Make4DigitYear" visibility="public" file="JclDateTime.pas" line="576">
+    <parameters>
+      <parameter name="Year" type="Integer" />
+      <parameter name="Pivot" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="MakeYear4Digit" visibility="public" file="JclDateTime.pas" line="597">
+    <parameters>
+      <parameter name="Year" type="Integer" />
+      <parameter name="WindowsillYear" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="EasterSunday" visibility="public" file="JclDateTime.pas" line="619">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <retval type="TDateTime" />
+    </parameters>
+  </function>
+  <function name="DateTimeToLocalDateTime" visibility="public" file="JclDateTime.pas" line="664">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" />
+      <retval type="TDateTime" />
+    </parameters>
+  </function>
+  <function name="LocalDateTimeToDateTime" visibility="public" file="JclDateTime.pas" line="702">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" />
+      <retval type="TDateTime" />
+    </parameters>
+  </function>
+  <function name="HoursToMSecs" visibility="public" file="JclDateTime.pas" line="739">
+    <parameters>
+      <parameter name="Hours" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="MinutesToMSecs" visibility="public" file="JclDateTime.pas" line="745">
+    <parameters>
+      <parameter name="Minutes" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="SecondsToMSecs" visibility="public" file="JclDateTime.pas" line="751">
+    <parameters>
+      <parameter name="Seconds" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="FileTimeToDateTime" visibility="public" file="JclDateTime.pas" line="764">
+    <parameters>
+      <parameter name="FileTime" type="_FILETIME" paramflags="const" />
+      <retval type="TDateTime" />
+    </parameters>
+  </function>
+  <function name="FileTimeToLocalDateTime" visibility="public" file="JclDateTime.pas" line="772">
+    <parameters>
+      <parameter name="FileTime" type="_FILETIME" paramflags="const" />
+      <retval type="TDateTime" />
+    </parameters>
+  </function>
+  <function name="LocalDateTimeToFileTime" visibility="public" file="JclDateTime.pas" line="783">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" />
+      <retval type="_FILETIME" />
+    </parameters>
+  </function>
+  <function name="DateTimeToFileTime" visibility="public" file="JclDateTime.pas" line="796">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" />
+      <retval type="_FILETIME" />
+    </parameters>
+  </function>
+  <function name="DosDateTimeToSystemTime" visibility="public" file="JclDateTime.pas" line="808">
+    <parameters>
+      <parameter name="DosTime" type="Integer" paramflags="const" />
+      <retval type="_SYSTEMTIME" />
+    </parameters>
+  </function>
+  <function name="SystemTimeToDosDateTime" visibility="public" file="JclDateTime.pas" line="816">
+    <parameters>
+      <parameter name="SystemTime" type="_SYSTEMTIME" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="DosDateTimeToDateTime" visibility="public" file="JclDateTime.pas" line="836">
+    <parameters>
+      <parameter name="DosTime" type="Integer" paramflags="const" />
+      <retval type="TDateTime" />
+    </parameters>
+  </function>
+  <function name="DateTimeToDosDateTime" visibility="public" file="JclDateTime.pas" line="853">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="FileTimeToSystemTime" visibility="public" procflags="overload" file="JclDateTime.pas" line="860">
+    <parameters>
+      <parameter name="FileTime" type="_FILETIME" paramflags="const" />
+      <retval type="_SYSTEMTIME" />
+    </parameters>
+  </function>
+  <procedure name="FileTimeToSystemTime" visibility="public" procflags="overload" file="JclDateTime.pas" line="865">
+    <parameters>
+      <parameter name="FileTime" type="_FILETIME" paramflags="const" />
+      <parameter name="ST" type="_SYSTEMTIME" paramflags="out" />
+    </parameters>
+  </procedure>
+  <function name="SystemTimeToFileTime" visibility="public" procflags="overload" file="JclDateTime.pas" line="873">
+    <parameters>
+      <parameter name="SystemTime" type="_SYSTEMTIME" paramflags="const" />
+      <retval type="_FILETIME" />
+    </parameters>
+  </function>
+  <procedure name="SystemTimeToFileTime" visibility="public" procflags="overload" file="JclDateTime.pas" line="880">
+    <parameters>
+      <parameter name="SystemTime" type="_SYSTEMTIME" paramflags="const" />
+      <parameter name="FTime" type="_FILETIME" />
+    </parameters>
+  </procedure>
+  <function name="DateTimeToSystemTime" visibility="public" procflags="overload" file="JclDateTime.pas" line="885">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" />
+      <retval type="_SYSTEMTIME" />
+    </parameters>
+  </function>
+  <procedure name="DateTimeToSystemTime" visibility="public" procflags="overload" file="JclDateTime.pas" line="890">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" />
+      <parameter name="SysTime" type="_SYSTEMTIME" paramflags="out" />
+    </parameters>
+  </procedure>
+  <function name="DosDateTimeToFileTime" visibility="public" procflags="overload" file="JclDateTime.pas" line="895">
+    <parameters>
+      <parameter name="DosTime" type="Integer" />
+      <retval type="_FILETIME" />
+    </parameters>
+  </function>
+  <procedure name="DosDateTimeToFileTime" visibility="public" procflags="overload" file="JclDateTime.pas" line="902">
+    <parameters>
+      <parameter name="DTH" type="Word" />
+      <parameter name="DTL" type="Word" />
+      <parameter name="FT" type="_FILETIME" />
+    </parameters>
+  </procedure>
+  <function name="FileTimeToDosDateTime" visibility="public" procflags="overload" file="JclDateTime.pas" line="907">
+    <parameters>
+      <parameter name="FileTime" type="_FILETIME" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <procedure name="FileTimeToDosDateTime" visibility="public" procflags="overload" file="JclDateTime.pas" line="917">
+    <parameters>
+      <parameter name="FileTime" type="_FILETIME" paramflags="const" />
+      <parameter name="Date" type="Word" paramflags="out" />
+      <parameter name="Time" type="Word" paramflags="out" />
+    </parameters>
+  </procedure>
+  <function name="FileTimeToStr" visibility="public" file="JclDateTime.pas" line="926">
+    <parameters>
+      <parameter name="FileTime" type="_FILETIME" paramflags="const" />
+      <retval type="string" />
+    </parameters>
+  </function>
+  <function name="DosDateTimeToStr" visibility="public" file="JclDateTime.pas" line="934">
+    <parameters>
+      <parameter name="DateTime" type="Integer" />
+      <retval type="string" />
+    </parameters>
+  </function>
+  <function name="SystemTimeToStr" visibility="public" file="JclDateTime.pas" line="947">
+    <parameters>
+      <parameter name="SystemTime" type="_SYSTEMTIME" paramflags="const" />
+      <retval type="string" />
+    </parameters>
+  </function>
+  <function name="CreationDateTimeOfFile" visibility="public" file="JclDateTime.pas" line="952">
+    <parameters>
+      <parameter name="Sr" type="TSearchRec" paramflags="const" />
+      <retval type="TDateTime" />
+    </parameters>
+  </function>
+  <function name="LastAccessDateTimeOfFile" visibility="public" file="JclDateTime.pas" line="957">
+    <parameters>
+      <parameter name="Sr" type="TSearchRec" paramflags="const" />
+      <retval type="TDateTime" />
+    </parameters>
+  </function>
+  <function name="LastWriteDateTimeOfFile" visibility="public" file="JclDateTime.pas" line="962">
+    <parameters>
+      <parameter name="Sr" type="TSearchRec" paramflags="const" />
+      <retval type="TDateTime" />
+    </parameters>
+  </function>
+  <function name="FormatDateTime" visibility="public" file="JclDateTime.pas" line="978">
+    <parameters>
+      <parameter name="Form" type="string" />
+      <parameter name="DateTime" type="TDateTime" />
+      <retval type="string" />
+    </parameters>
+  </function>
+  <function name="FATDatesEqual" visibility="public" procflags="overload" file="JclDateTime.pas" line="1142">
+    <parameters>
+      <parameter name="FileTime1" type="Int64" paramflags="const" />
+      <parameter name="FileTime2" type="Int64" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="FATDatesEqual" visibility="public" procflags="overload" file="JclDateTime.pas" line="1149">
+    <parameters>
+      <parameter name="FileTime1" type="_FILETIME" paramflags="const" />
+      <parameter name="FileTime2" type="_FILETIME" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="DateTimeToUnixTime" visibility="public" file="JclDateTime.pas" line="1156">
+    <parameters>
+      <parameter name="DateTime" type="TDateTime" />
+      <retval type="Cardinal" />
+    </parameters>
+  </function>
+  <function name="UnixTimeToDateTime" visibility="public" file="JclDateTime.pas" line="1161">
+    <parameters>
+      <parameter name="UnixTime" type="Cardinal" paramflags="const" />
+      <retval type="TDateTime" />
+    </parameters>
+  </function>
+  <function name="UnixTimeToFileTime" visibility="public" file="JclDateTime.pas" line="1170">
+    <parameters>
+      <parameter name="AValue" type="Cardinal" paramflags="const" />
+      <retval type="_FILETIME" />
+    </parameters>
+  </function>
+  <function name="FileTimeToUnixTime" visibility="public" file="JclDateTime.pas" line="1175">
+    <parameters>
+      <parameter name="AValue" type="_FILETIME" paramflags="const" />
+      <retval type="Cardinal" />
+    </parameters>
+  </function>
+  <function name="NullStamp" visibility="public" file="JclDateTime.pas" line="1185">
+    <parameters>
+      <retval type="TTimeStamp" />
+    </parameters>
+  </function>
+  <function name="CompareTimeStamps" visibility="public" file="JclDateTime.pas" line="1191">
+    <parameters>
+      <parameter name="Stamp1" type="TTimeStamp" paramflags="const" />
+      <parameter name="Stamp2" type="TTimeStamp" paramflags="const" />
+      <retval type="Int64" />
+    </parameters>
+  </function>
+  <function name="EqualTimeStamps" visibility="public" file="JclDateTime.pas" line="1211">
+    <parameters>
+      <parameter name="Stamp1" type="TTimeStamp" paramflags="const" />
+      <parameter name="Stamp2" type="TTimeStamp" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsNullTimeStamp" visibility="public" file="JclDateTime.pas" line="1216">
+    <parameters>
+      <parameter name="Stamp" type="TTimeStamp" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="TimeStampDOW" visibility="public" file="JclDateTime.pas" line="1221">
+    <parameters>
+      <parameter name="Stamp" type="TTimeStamp" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="FirstWeekDay" visibility="public" procflags="overload" file="JclDateTime.pas" line="1228">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Integer" paramflags="const" />
+      <parameter name="DOW" type="Integer" paramflags="out" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="FirstWeekDay" visibility="public" procflags="overload" file="JclDateTime.pas" line="1240">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Integer" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LastWeekDay" visibility="public" procflags="overload" file="JclDateTime.pas" line="1247">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Integer" paramflags="const" />
+      <parameter name="DOW" type="Integer" paramflags="out" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LastWeekDay" visibility="public" procflags="overload" file="JclDateTime.pas" line="1259">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Integer" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="IndexedWeekDay" visibility="public" file="JclDateTime.pas" line="1266">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Integer" paramflags="const" />
+      <parameter name="Index" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="FirstWeekendDay" visibility="public" procflags="overload" file="JclDateTime.pas" line="1318">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Integer" paramflags="const" />
+      <parameter name="DOW" type="Integer" paramflags="out" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="FirstWeekendDay" visibility="public" procflags="overload" file="JclDateTime.pas" line="1330">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Integer" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LastWeekendDay" visibility="public" procflags="overload" file="JclDateTime.pas" line="1337">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Integer" paramflags="const" />
+      <parameter name="DOW" type="Integer" paramflags="out" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LastWeekendDay" visibility="public" procflags="overload" file="JclDateTime.pas" line="1349">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Integer" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="IndexedWeekendDay" visibility="public" file="JclDateTime.pas" line="1356">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Integer" paramflags="const" />
+      <parameter name="Index" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="FirstDayOfWeek" visibility="public" file="JclDateTime.pas" line="1399">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Integer" paramflags="const" />
+      <parameter name="DayOfWeek" type="Integer" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="LastDayOfWeek" visibility="public" file="JclDateTime.pas" line="1413">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Integer" paramflags="const" />
+      <parameter name="DayOfWeek" type="Integer" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="IndexedDayOfWeek" visibility="public" file="JclDateTime.pas" line="1427">
+    <parameters>
+      <parameter name="Year" type="Integer" paramflags="const" />
+      <parameter name="Month" type="Integer" paramflags="const" />
+      <parameter name="DayOfWeek" type="Integer" paramflags="const" />
+      <parameter name="Index" type="Integer" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+</namespace>

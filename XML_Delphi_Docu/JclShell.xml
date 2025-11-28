@@ -1,0 +1,676 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="JclShell" platform="Win32">
+  <const name="doSilent" type="TSHDeleteOption" file="JclShell.pas" line="66">
+    <value>
+      doSilent
+    </value>
+  </const>
+  <const name="doAllowUndo" type="TSHDeleteOption" file="JclShell.pas" line="66">
+    <value>
+      doAllowUndo
+    </value>
+  </const>
+  <const name="doFilesOnly" type="TSHDeleteOption" file="JclShell.pas" line="66">
+    <value>
+      doFilesOnly
+    </value>
+  </const>
+  <const name="roSilent" type="TSHRenameOption" file="JclShell.pas" line="68">
+    <value>
+      roSilent
+    </value>
+  </const>
+  <const name="roRenameOnCollision" type="TSHRenameOption" file="JclShell.pas" line="68">
+    <value>
+      roRenameOnCollision
+    </value>
+  </const>
+  <const name="coSilent" type="TSHCopyOption" file="JclShell.pas" line="70">
+    <value>
+      coSilent
+    </value>
+  </const>
+  <const name="coAllowUndo" type="TSHCopyOption" file="JclShell.pas" line="70">
+    <value>
+      coAllowUndo
+    </value>
+  </const>
+  <const name="coFilesOnly" type="TSHCopyOption" file="JclShell.pas" line="70">
+    <value>
+      coFilesOnly
+    </value>
+  </const>
+  <const name="coNoConfirmation" type="TSHCopyOption" file="JclShell.pas" line="70">
+    <value>
+      coNoConfirmation
+    </value>
+  </const>
+  <const name="moSilent" type="TSHMoveOption" file="JclShell.pas" line="72">
+    <value>
+      moSilent
+    </value>
+  </const>
+  <const name="moAllowUndo" type="TSHMoveOption" file="JclShell.pas" line="72">
+    <value>
+      moAllowUndo
+    </value>
+  </const>
+  <const name="moFilesOnly" type="TSHMoveOption" file="JclShell.pas" line="72">
+    <value>
+      moFilesOnly
+    </value>
+  </const>
+  <const name="moNoConfirmation" type="TSHMoveOption" file="JclShell.pas" line="72">
+    <value>
+      moNoConfirmation
+    </value>
+  </const>
+  <enum name="TSHDeleteOption" file="JclShell.pas" line="66">
+    <element value="0" name="doSilent" file="JclShell.pas" line="66" />
+    <element value="1" name="doAllowUndo" file="JclShell.pas" line="66" />
+    <element value="2" name="doFilesOnly" file="JclShell.pas" line="66" />
+  </enum>
+  <set name="TSHDeleteOptions" type="TSHDeleteOption" file="JclShell.pas" line="67">
+    <element name="doSilent" />
+    <element name="doAllowUndo" />
+    <element name="doFilesOnly" />
+  </set>
+  <enum name="TSHRenameOption" file="JclShell.pas" line="68">
+    <element value="0" name="roSilent" file="JclShell.pas" line="68" />
+    <element value="1" name="roRenameOnCollision" file="JclShell.pas" line="68" />
+  </enum>
+  <set name="TSHRenameOptions" type="TSHRenameOption" file="JclShell.pas" line="69">
+    <element name="roSilent" />
+    <element name="roRenameOnCollision" />
+  </set>
+  <enum name="TSHCopyOption" file="JclShell.pas" line="70">
+    <element value="0" name="coSilent" file="JclShell.pas" line="70" />
+    <element value="1" name="coAllowUndo" file="JclShell.pas" line="70" />
+    <element value="2" name="coFilesOnly" file="JclShell.pas" line="70" />
+    <element value="3" name="coNoConfirmation" file="JclShell.pas" line="70" />
+  </enum>
+  <set name="TSHCopyOptions" type="TSHCopyOption" file="JclShell.pas" line="71">
+    <element name="coSilent" />
+    <element name="coAllowUndo" />
+    <element name="coFilesOnly" />
+    <element name="coNoConfirmation" />
+  </set>
+  <enum name="TSHMoveOption" file="JclShell.pas" line="72">
+    <element value="0" name="moSilent" file="JclShell.pas" line="72" />
+    <element value="1" name="moAllowUndo" file="JclShell.pas" line="72" />
+    <element value="2" name="moFilesOnly" file="JclShell.pas" line="72" />
+    <element value="3" name="moNoConfirmation" file="JclShell.pas" line="72" />
+  </enum>
+  <set name="TSHMoveOptions" type="TSHMoveOption" file="JclShell.pas" line="73">
+    <element name="moSilent" />
+    <element name="moAllowUndo" />
+    <element name="moFilesOnly" />
+    <element name="moNoConfirmation" />
+  </set>
+  <const name="efFolders" type="TEnumFolderFlag" file="JclShell.pas" line="82">
+    <value>
+      efFolders
+    </value>
+  </const>
+  <const name="efNonFolders" type="TEnumFolderFlag" file="JclShell.pas" line="82">
+    <value>
+      efNonFolders
+    </value>
+  </const>
+  <const name="efIncludeHidden" type="TEnumFolderFlag" file="JclShell.pas" line="82">
+    <value>
+      efIncludeHidden
+    </value>
+  </const>
+  <enum name="TEnumFolderFlag" file="JclShell.pas" line="82">
+    <element value="0" name="efFolders" file="JclShell.pas" line="82" />
+    <element value="1" name="efNonFolders" file="JclShell.pas" line="82" />
+    <element value="2" name="efIncludeHidden" file="JclShell.pas" line="82" />
+  </enum>
+  <set name="TEnumFolderFlags" type="TEnumFolderFlag" file="JclShell.pas" line="83">
+    <element name="efFolders" />
+    <element name="efNonFolders" />
+    <element name="efIncludeHidden" />
+  </set>
+  <struct name="TEnumFolderRec" size="28" file="JclShell.pas" line="85">
+    <field name="DisplayName" type="string" visibility="public" size="4" offset="0" file="JclShell.pas" line="86" />
+    <field name="Attributes" type="Cardinal" visibility="public" size="4" offset="4" file="JclShell.pas" line="87" />
+    <field name="IconLarge" type="HICON" visibility="public" size="4" offset="8" file="JclShell.pas" line="88" />
+    <field name="IconSmall" type="HICON" visibility="public" size="4" offset="12" file="JclShell.pas" line="89" />
+    <field name="Item" type="PItemIDList" visibility="public" size="4" offset="16" file="JclShell.pas" line="90" />
+    <field name="EnumIdList" type="IEnumIDList" visibility="public" size="4" offset="20" file="JclShell.pas" line="91" />
+    <field name="Folder" type="IShellFolder" visibility="public" size="4" offset="24" file="JclShell.pas" line="92" />
+  </struct>
+  <pointer name="PShellLink" type="TShellLink" indircnt="1" file="JclShell.pas" line="139" />
+  <struct name="TShellLink" size="36" file="JclShell.pas" line="140">
+    <field name="Arguments" type="string" visibility="public" size="4" offset="0" file="JclShell.pas" line="141" />
+    <field name="ShowCmd" type="Integer" visibility="public" size="4" offset="4" file="JclShell.pas" line="142" />
+    <field name="WorkingDirectory" type="string" visibility="public" size="4" offset="8" file="JclShell.pas" line="143" />
+    <field name="IdList" type="PItemIDList" visibility="public" size="4" offset="12" file="JclShell.pas" line="144" />
+    <field name="Target" type="string" visibility="public" size="4" offset="16" file="JclShell.pas" line="145" />
+    <field name="Description" type="string" visibility="public" size="4" offset="20" file="JclShell.pas" line="146" />
+    <field name="IconLocation" type="string" visibility="public" size="4" offset="24" file="JclShell.pas" line="147" />
+    <field name="IconIndex" type="Integer" visibility="public" size="4" offset="28" file="JclShell.pas" line="148" />
+    <field name="HotKey" type="Word" visibility="public" size="2" offset="32" file="JclShell.pas" line="149" />
+  </struct>
+  <const name="etError" type="TJclFileExeType" file="JclShell.pas" line="186">
+    <value>
+      etError
+    </value>
+  </const>
+  <const name="etMsDos" type="TJclFileExeType" file="JclShell.pas" line="186">
+    <value>
+      etMsDos
+    </value>
+  </const>
+  <const name="etWin16" type="TJclFileExeType" file="JclShell.pas" line="186">
+    <value>
+      etWin16
+    </value>
+  </const>
+  <const name="etWin32Gui" type="TJclFileExeType" file="JclShell.pas" line="186">
+    <value>
+      etWin32Gui
+    </value>
+  </const>
+  <const name="etWin32Con" type="TJclFileExeType" file="JclShell.pas" line="186">
+    <value>
+      etWin32Con
+    </value>
+  </const>
+  <enum name="TJclFileExeType" file="JclShell.pas" line="186">
+    <element value="0" name="etError" file="JclShell.pas" line="186" />
+    <element value="1" name="etMsDos" file="JclShell.pas" line="186" />
+    <element value="2" name="etWin16" file="JclShell.pas" line="186" />
+    <element value="3" name="etWin32Gui" file="JclShell.pas" line="186" />
+    <element value="4" name="etWin32Con" file="JclShell.pas" line="186" />
+  </enum>
+  <type name="INSTALLSTATE" type="integer" loBound="-2147483648" hiBound="2147483647" file="System.pas" line="12" />
+  <const name="MSILIB" type="string" file="JclShell.pas" line="196">
+    <value>
+      msi.dll
+    </value>
+  </const>
+  <const name="GetShortcutTargetName" type="string" file="JclShell.pas" line="197">
+    <value>
+      MsiGetShortcutTargetW
+    </value>
+  </const>
+  <const name="GetComponentPathName" type="string" file="JclShell.pas" line="198">
+    <value>
+      MsiGetComponentPathW
+    </value>
+  </const>
+  <variable name="RtdlMsiLibHandle" type="Cardinal" visibility="public" file="JclShell.pas" line="201" />
+  <variable name="RtdlMsiGetShortcutTarget" type="function(szShortcutPath: PWideChar; szProductCode: PWideChar; szFeatureId: PWideChar; szComponentCode: PWideChar): Cardinal;" visibility="public" file="JclShell.pas" line="202" />
+  <variable name="RtdlMsiGetComponentPath" type="function(szProduct: PWideChar; szComponent: PWideChar; lpPathBuf: PWideChar; pcchBuf: PDWORD): Integer;" visibility="public" file="JclShell.pas" line="205" />
+  <function name="SHDeleteFiles" visibility="public" file="JclShell.pas" line="263">
+    <parameters>
+      <parameter name="Parent" type="Cardinal" />
+      <parameter name="Files" type="string" paramflags="const" />
+      <parameter name="Options" type="TSHDeleteOptions" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="SHDeleteFolder" visibility="public" file="JclShell.pas" line="281">
+    <parameters>
+      <parameter name="Parent" type="Cardinal" />
+      <parameter name="Folder" type="string" paramflags="const" />
+      <parameter name="Options" type="TSHDeleteOptions" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="SHRenameFile" visibility="public" file="JclShell.pas" line="300">
+    <parameters>
+      <parameter name="Src" type="string" paramflags="const" />
+      <parameter name="Dest" type="string" paramflags="const" />
+      <parameter name="Options" type="TSHRenameOptions" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="SHCopy" visibility="public" file="JclShell.pas" line="332">
+    <parameters>
+      <parameter name="Parent" type="Cardinal" />
+      <parameter name="Src" type="string" paramflags="const" />
+      <parameter name="Dest" type="string" paramflags="const" />
+      <parameter name="Options" type="TSHCopyOptions" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="SHMove" visibility="public" file="JclShell.pas" line="361">
+    <parameters>
+      <parameter name="Parent" type="Cardinal" />
+      <parameter name="Src" type="string" paramflags="const" />
+      <parameter name="Dest" type="string" paramflags="const" />
+      <parameter name="Options" type="TSHMoveOptions" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <procedure name="SHEnumFolderClose" visibility="public" file="JclShell.pas" line="407">
+    <parameters>
+      <parameter name="F" type="TEnumFolderRec" paramflags="var" />
+    </parameters>
+  </procedure>
+  <function name="SHEnumFolderNext" visibility="public" file="JclShell.pas" line="412">
+    <parameters>
+      <parameter name="F" type="TEnumFolderRec" paramflags="var" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="SHEnumSpecialFolderFirst" visibility="public" file="JclShell.pas" line="457">
+    <parameters>
+      <parameter name="SpecialFolder" type="Cardinal" />
+      <parameter name="Flags" type="TEnumFolderFlags" />
+      <parameter name="F" type="TEnumFolderRec" paramflags="var" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="SHEnumFolderFirst" visibility="public" file="JclShell.pas" line="491">
+    <parameters>
+      <parameter name="Folder" type="string" paramflags="const" />
+      <parameter name="Flags" type="TEnumFolderFlags" />
+      <parameter name="F" type="TEnumFolderRec" paramflags="var" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="GetSpecialFolderLocation" visibility="public" file="JclShell.pas" line="510">
+    <parameters>
+      <parameter name="FolderID" type="Integer" paramflags="const" />
+      <retval type="string" />
+    </parameters>
+  </function>
+  <function name="DisplayPropDialog" visibility="public" procflags="overload" file="JclShell.pas" line="523">
+    <parameters>
+      <parameter name="Handle" type="Cardinal" paramflags="const" />
+      <parameter name="FileName" type="string" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="DisplayPropDialog" visibility="public" procflags="overload" file="JclShell.pas" line="544">
+    <parameters>
+      <parameter name="Handle" type="Cardinal" paramflags="const" />
+      <parameter name="Item" type="PItemIDList" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="DisplayContextMenuPidl" visibility="public" file="JclShell.pas" line="617">
+    <parameters>
+      <parameter name="Handle" type="Cardinal" paramflags="const" />
+      <parameter name="Folder" type="IShellFolder" paramflags="const" />
+      <parameter name="Item" type="PItemIDList" />
+      <parameter name="Pos" type="TPoint" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="DisplayContextMenu" visibility="public" file="JclShell.pas" line="664">
+    <parameters>
+      <parameter name="Handle" type="Cardinal" paramflags="const" />
+      <parameter name="FileName" type="string" paramflags="const" />
+      <parameter name="Pos" type="TPoint" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="OpenFolder" visibility="public" file="JclShell.pas" line="678">
+    <parameters>
+      <parameter name="Path" type="string" paramflags="const" />
+      <parameter name="Parent" type="Cardinal">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <parameter name="Explore" type="Boolean">
+        <value>
+          False
+        </value>
+      </parameter>
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="OpenSpecialFolder" visibility="public" file="JclShell.pas" line="705">
+    <parameters>
+      <parameter name="FolderID" type="Integer" />
+      <parameter name="Parent" type="Cardinal">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <parameter name="Explore" type="Boolean">
+        <value>
+          False
+        </value>
+      </parameter>
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="SHAllocMem" visibility="public" file="JclShell.pas" line="744">
+    <parameters>
+      <parameter name="P" type="Pointer" paramflags="out" />
+      <parameter name="Count" type="Integer" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="SHFreeMem" visibility="public" file="JclShell.pas" line="761">
+    <parameters>
+      <parameter name="P" type="Pointer" paramflags="var" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="SHGetMem" visibility="public" file="JclShell.pas" line="777">
+    <parameters>
+      <parameter name="P" type="Pointer" paramflags="var" />
+      <parameter name="Count" type="Integer" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="SHReallocMem" visibility="public" file="JclShell.pas" line="790">
+    <parameters>
+      <parameter name="P" type="Pointer" paramflags="var" />
+      <parameter name="Count" type="Integer" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="DriveToPidlBind" visibility="public" file="JclShell.pas" line="806">
+    <parameters>
+      <parameter name="DriveName" type="string" paramflags="const" />
+      <parameter name="Folder" type="IShellFolder" paramflags="out" />
+      <retval type="PItemIDList" />
+    </parameters>
+  </function>
+  <function name="PathToPidl" visibility="public" file="JclShell.pas" line="840">
+    <parameters>
+      <parameter name="Path" type="string" paramflags="const" />
+      <parameter name="Folder" type="IShellFolder" />
+      <retval type="PItemIDList" />
+    </parameters>
+  </function>
+  <function name="PathToPidlBind" visibility="public" file="JclShell.pas" line="860">
+    <parameters>
+      <parameter name="FileName" type="string" paramflags="const" />
+      <parameter name="Folder" type="IShellFolder" paramflags="out" />
+      <retval type="PItemIDList" />
+    </parameters>
+  </function>
+  <function name="PidlBindToParent" visibility="public" file="JclShell.pas" line="897">
+    <parameters>
+      <parameter name="IdList" type="PItemIDList" />
+      <parameter name="Folder" type="IShellFolder" paramflags="out" />
+      <parameter name="Last" type="PItemIDList" paramflags="out" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="PidlCompare" visibility="public" file="JclShell.pas" line="909">
+    <parameters>
+      <parameter name="Pidl1" type="PItemIDList" />
+      <parameter name="Pidl2" type="PItemIDList" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="PidlCopy" visibility="public" file="JclShell.pas" line="919">
+    <parameters>
+      <parameter name="Source" type="PItemIDList" />
+      <parameter name="Dest" type="PItemIDList" paramflags="out" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="PidlFree" visibility="public" file="JclShell.pas" line="936">
+    <parameters>
+      <parameter name="IdList" type="PItemIDList" paramflags="var" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="PidlGetDepth" visibility="public" file="JclShell.pas" line="955">
+    <parameters>
+      <parameter name="Pidl" type="PItemIDList" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="PidlGetLength" visibility="public" file="JclShell.pas" line="973">
+    <parameters>
+      <parameter name="Pidl" type="PItemIDList" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="PidlGetNext" visibility="public" file="JclShell.pas" line="994">
+    <parameters>
+      <parameter name="Pidl" type="PItemIDList" />
+      <retval type="PItemIDList" />
+    </parameters>
+  </function>
+  <function name="PidlToPath" visibility="public" file="JclShell.pas" line="1005">
+    <parameters>
+      <parameter name="IdList" type="PItemIDList" />
+      <retval type="string" />
+    </parameters>
+  </function>
+  <function name="StrRetFreeMem" visibility="public" file="JclShell.pas" line="1014">
+    <parameters>
+      <parameter name="StrRet" type="_STRRET" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="StrRetToString" visibility="public" file="JclShell.pas" line="1021">
+    <parameters>
+      <parameter name="IdList" type="PItemIDList" />
+      <parameter name="StrRet" type="_STRRET" />
+      <parameter name="Free" type="Boolean" />
+      <retval type="string" />
+    </parameters>
+  </function>
+  <procedure name="ShellLinkFree" visibility="public" file="JclShell.pas" line="1044">
+    <parameters>
+      <parameter name="Link" type="TShellLink" paramflags="var" />
+    </parameters>
+  </procedure>
+  <function name="ShellLinkCreateSystem" visibility="public" file="JclShell.pas" line="1059">
+    <parameters>
+      <parameter name="Link" type="TShellLink" paramflags="const" />
+      <parameter name="Folder" type="Integer" paramflags="const" />
+      <parameter name="FileName" type="string" paramflags="const" />
+      <retval type="HRESULT" />
+    </parameters>
+  </function>
+  <function name="ShellLinkCreate" visibility="public" file="JclShell.pas" line="1081">
+    <parameters>
+      <parameter name="Link" type="TShellLink" paramflags="const" />
+      <parameter name="FileName" type="string" paramflags="const" />
+      <retval type="HRESULT" />
+    </parameters>
+  </function>
+  <function name="ShellLinkResolve" visibility="public" procflags="overload" file="JclShell.pas" line="1124">
+    <parameters>
+      <parameter name="FileName" type="string" paramflags="const" />
+      <parameter name="Link" type="TShellLink" paramflags="out" />
+      <retval type="HRESULT" />
+    </parameters>
+  </function>
+  <function name="ShellLinkResolve" visibility="public" procflags="overload" file="JclShell.pas" line="1130">
+    <parameters>
+      <parameter name="FileName" type="string" paramflags="const" />
+      <parameter name="Link" type="TShellLink" paramflags="out" />
+      <parameter name="ResolveFlags" type="Cardinal" paramflags="const" />
+      <retval type="HRESULT" />
+    </parameters>
+  </function>
+  <function name="ShellLinkIcon" visibility="public" procflags="overload" file="JclShell.pas" line="1217">
+    <parameters>
+      <parameter name="Link" type="TShellLink" paramflags="const" />
+      <retval type="HICON" />
+    </parameters>
+  </function>
+  <function name="ShellLinkIcon" visibility="public" procflags="overload" file="JclShell.pas" line="1253">
+    <parameters>
+      <parameter name="FileName" type="string" paramflags="const" />
+      <retval type="HICON" />
+    </parameters>
+  </function>
+  <function name="ShellLinkShortCut" visibility="public" file="JclShell.pas" line="1266">
+    <parameters>
+      <parameter name="Link" type="TShellLink" paramflags="const" />
+      <retval type="TShortCut" />
+    </parameters>
+  </function>
+  <function name="SHGetItemInfoTip" visibility="public" file="JclShell.pas" line="1290">
+    <parameters>
+      <parameter name="Folder" type="IShellFolder" paramflags="const" />
+      <parameter name="Item" type="PItemIDList" />
+      <retval type="string" />
+    </parameters>
+  </function>
+  <function name="SHDllGetVersion" visibility="public" file="JclShell.pas" line="1310">
+    <parameters>
+      <parameter name="FileName" type="string" paramflags="const" />
+      <parameter name="Version" type="_DLLVERSIONINFO" paramflags="var" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="OverlayIcon" visibility="public" file="JclShell.pas" line="1331">
+    <parameters>
+      <parameter name="Icon" type="HICON" paramflags="var" />
+      <parameter name="Overlay" type="HICON" />
+      <parameter name="Large" type="Boolean" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="OverlayIconShortCut" visibility="public" file="JclShell.pas" line="1367">
+    <parameters>
+      <parameter name="Large" type="HICON" paramflags="var" />
+      <parameter name="Small" type="HICON" paramflags="var" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="OverlayIconShared" visibility="public" file="JclShell.pas" line="1381">
+    <parameters>
+      <parameter name="Large" type="HICON" paramflags="var" />
+      <parameter name="Small" type="HICON" paramflags="var" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="GetSystemIcon" visibility="public" file="JclShell.pas" line="1395">
+    <parameters>
+      <parameter name="IconIndex" type="Integer" />
+      <parameter name="Flags" type="Cardinal" />
+      <retval type="HICON" />
+    </parameters>
+  </function>
+  <function name="ShellExecEx" visibility="public" file="JclShell.pas" line="1409">
+    <parameters>
+      <parameter name="FileName" type="string" paramflags="const" />
+      <parameter name="Parameters" type="string" paramflags="const">
+        <value>
+          
+        </value>
+      </parameter>
+      <parameter name="Verb" type="string" paramflags="const">
+        <value>
+          
+        </value>
+      </parameter>
+      <parameter name="CmdShow" type="Integer">
+        <value>
+          $1
+        </value>
+      </parameter>
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="ShellExec" visibility="public" file="JclShell.pas" line="1429">
+    <parameters>
+      <parameter name="Wnd" type="Integer" />
+      <parameter name="Operation" type="string" paramflags="const" />
+      <parameter name="FileName" type="string" paramflags="const" />
+      <parameter name="Parameters" type="string" paramflags="const" />
+      <parameter name="Directory" type="string" paramflags="const" />
+      <parameter name="ShowCommand" type="Integer" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="ShellExecAndWait" visibility="public" file="JclShell.pas" line="1436">
+    <parameters>
+      <parameter name="FileName" type="string" paramflags="const" />
+      <parameter name="Parameters" type="string" paramflags="const">
+        <value>
+          
+        </value>
+      </parameter>
+      <parameter name="Verb" type="string" paramflags="const">
+        <value>
+          
+        </value>
+      </parameter>
+      <parameter name="CmdShow" type="Integer">
+        <value>
+          $1
+        </value>
+      </parameter>
+      <parameter name="Directory" type="string" paramflags="const">
+        <value>
+          
+        </value>
+      </parameter>
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="ShellOpenAs" visibility="public" file="JclShell.pas" line="1473">
+    <parameters>
+      <parameter name="FileName" type="string" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="ShellRasDial" visibility="public" file="JclShell.pas" line="1482">
+    <parameters>
+      <parameter name="EntryName" type="string" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="ShellRunControlPanel" visibility="public" file="JclShell.pas" line="1514">
+    <parameters>
+      <parameter name="NameOrFileName" type="string" paramflags="const" />
+      <parameter name="AppletNumber" type="Integer">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="RunAsAdmin" visibility="public" file="JclShell.pas" line="1540">
+    <parameters>
+      <parameter name="FileName" type="string" paramflags="const" />
+      <parameter name="Parameters" type="string" paramflags="const">
+        <value>
+          
+        </value>
+      </parameter>
+      <parameter name="Parent" type="Cardinal" paramflags="const">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="GetFileExeType" visibility="public" file="JclShell.pas" line="1560">
+    <parameters>
+      <parameter name="FileName" type="TFileName" paramflags="const" />
+      <retval type="TJclFileExeType" />
+    </parameters>
+  </function>
+  <function name="ShellFindExecutable" visibility="public" file="JclShell.pas" line="1582">
+    <parameters>
+      <parameter name="FileName" type="string" paramflags="const" />
+      <parameter name="DefaultDir" type="string" paramflags="const" />
+      <retval type="string" />
+    </parameters>
+  </function>
+  <function name="GetFileNameIcon" visibility="public" file="JclShell.pas" line="1603">
+    <parameters>
+      <parameter name="FileName" type="string" paramflags="const" />
+      <parameter name="Flags" type="Cardinal">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="HICON" />
+    </parameters>
+  </function>
+</namespace>
