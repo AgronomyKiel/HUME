@@ -1,4 +1,4 @@
-unit UlayeredSoil; // Nur Vorläufer für TSoilwatermod, nicht installieren
+ï»¿unit UlayeredSoil; // Nur VorlÃ¤ufer fÃ¼r TSoilwatermod, nicht installieren
 
 interface
 
@@ -40,9 +40,9 @@ type
     Thick: TSoilArray;
     /// Vektor der Kompartimentdicken [cm] }
     Depth: TSoilVarArray;
-    /// Abstand der unteren Kompartimentgrenze von der Bodenoberfläche in [cm] }
+    /// Abstand der unteren Kompartimentgrenze von der BodenoberflÃ¤che in [cm] }
     upper_w_f: TSoilArray;
-    /// Wichtungsfaktoren zur Errechnung der mittleren Leitfähigkeit zwischen 2 Kompartimenten }
+    /// Wichtungsfaktoren zur Errechnung der mittleren LeitfÃ¤higkeit zwischen 2 Kompartimenten }
     lower_w_f: TSoilArray;
     /// dito
     Texture_versionOption: TOption;
@@ -91,10 +91,10 @@ begin
 
 {$IFNDEF NONVISUAL}
     ShowMessage('Initialisierung eines Bodenobjektes mit ' +
-      'zu großer Zahl an Kompartimenten');
+      'zu groÃŸer Zahl an Kompartimenten');
 {$ELSE}
     writeln('Initialisierung eines Bodenobjektes mit ' +
-      'zu großer Zahl an Kompartimenten');
+      'zu groÃŸer Zahl an Kompartimenten');
 {$ENDIF}
     exit;
   end;
@@ -105,11 +105,11 @@ begin
     Depth[i].v := power(geo_fact * (i), 1 / potenz_f);
 
   { Belegung des Tiefenvektors mit geometrisch steigenden Tiefen,
-    auch eine freie Belegung ist möglich.
-    Tiefe[0] ist die Oberfl„che (=0),
+    auch eine freie Belegung ist mÃ¶glich.
+    Tiefe[0] ist die Oberflâ€žche (=0),
     Tiefe[n_comp+1] ist die Unterkannte des untersten berechneten
     Kompartimentes,
-    Tiefe[n_com+2] ist die Unterkannte des gedachten n„chsten
+    Tiefe[n_com+2] ist die Unterkannte des gedachten nâ€žchsten
     Kompartimentes }
 
   for i := 1 to n_comp + 1 do
@@ -123,7 +123,7 @@ begin
     Dist[i] := (Thick[i + 1] + Thick[i]) / 2;
   Dist[n_comp + 1] := Dist[n_comp];
 
-  { Abstände der Mittelpunkte der einzelnen Kompartimente,
+  { AbstÃ¤nde der Mittelpunkte der einzelnen Kompartimente,
     Abst[1] ist der Abstand zwischen ersten und zweitem
     Kompartimentmittelpunkt }
 
@@ -133,7 +133,7 @@ begin
     lower_w_f[i] := Thick[i + 1] / (Thick[i] + Thick[i + 1]) * 2;
   end;
 
-  { Wichtungsfaktoren für die Berechnung gemittelter Leitfähigkeiten
+  { Wichtungsfaktoren fÃ¼r die Berechnung gemittelter LeitfÃ¤higkeiten
     bei unterschiedlich dicken Kompartimenten }
 
 end;
@@ -181,7 +181,7 @@ end;
 
 { -------------------------------------------------------------------- }
 { -------------------------   MODUL TRDIAG  -------------------------- }
-{ ------------ Lösung eines tridiagonalen Gleichungssystems ---------- }
+{ ------------ LÃ¶sung eines tridiagonalen Gleichungssystems ---------- }
 { ----------- Aus Formelsammlung zur numerischen Mathematik ---------- }
 { --------------------------------------------------------------------- }
 
