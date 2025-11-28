@@ -1,4 +1,6 @@
 ﻿unit UlayeredSoil; // Nur Vorläufer für TSoilwatermod, nicht installieren
+// Nur Vorläufer für TSoilwatermod, nicht installieren
+unit UlayeredSoil;
 
 interface
 
@@ -66,6 +68,21 @@ function trdiag(rep: boolean; { Wiederholungsflagge }
   upper, { Superdiagonale }
   b: TSoilArray { Rechte Seite des Systems }
   ): byte; { Fehlerparameter }
+/// <summary>Solves a tridiagonal linear system using LU decomposition.</summary>
+{ Wiederholungsflagge }
+function trdiag(rep: boolean;
+  { Dimension der Matrix }
+  max_n, min_n: Integer;
+  { Subdiagonale }
+  var lower,
+  { Diagonale }
+  diag,
+  { Superdiagonale }
+  upper,
+  { Rechte Seite des Systems }
+  b: TSoilArray
+  ): byte;
+{ Fehlerparameter }
 
 function ndx_str(i: Integer): string;
 procedure Register;
@@ -107,9 +124,11 @@ begin
   { Belegung des Tiefenvektors mit geometrisch steigenden Tiefen,
     auch eine freie Belegung ist möglich.
     Tiefe[0] ist die Oberfl„che (=0),
+    Tiefe[0] ist die Oberflche (=0),
     Tiefe[n_comp+1] ist die Unterkannte des untersten berechneten
     Kompartimentes,
     Tiefe[n_com+2] ist die Unterkannte des gedachten n„chsten
+    Tiefe[n_com+2] ist die Unterkannte des gedachten nchsten
     Kompartimentes }
 
   for i := 1 to n_comp + 1 do
@@ -153,6 +172,8 @@ begin
   for i := 0 to n_comp + 2 do
   begin
     ConstCreate('Tiefe' + ndx_str(i), '[cm]', 0.0, false, Depth[i]); // richtig
+    // richtig
+    ConstCreate('Tiefe' + ndx_str(i), '[cm]', 0.0, false, Depth[i]);
     Depth[i].writeToFile := false;
   end;
   OptCreate('Texture_version', 'KA', Texture_versionOption,
@@ -192,6 +213,21 @@ function trdiag(rep: boolean; { Wiederholungsflagge }
   upper, { Superdiagonale }
   b: TSoilArray { Rechte Seite des Systems }
   ): byte; { Fehlerparameter }
+{ Wiederholungsflagge }
+function trdiag(rep: boolean;
+  { Dimension der Matrix }
+  max_n, min_n: Integer;
+  { Subdiagonale }
+  var lower,
+  { Diagonale }
+  diag,
+  { Superdiagonale }
+  upper,
+  { Rechte Seite des Systems }
+  b: TSoilArray
+  );
+{ Fehlerparameter }
+  byte;
 { ==================================================================== }
 { trdiag bestimmt die Loesung x des linearen Gleichungssystems }
 { A * x = b mit tridiagonaler n x n Koeffizientenmatrix A, die in }
