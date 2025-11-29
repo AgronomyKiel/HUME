@@ -2019,125 +2019,142 @@ type
     PWP: real;
   end;
 var
-  defaults: array [1 .. 6] of THorizonDefaults;
-  b_satPars: array [1 .. 6] of TPar;
-  b_restPars: array [1 .. 6] of TPar;
-  alphaPars: array [1 .. 6] of TPar;
-  n_parPars: array [1 .. 6] of TPar;
-  l_parPars: array [1 .. 6] of TPar;
-  KsPars: array [1 .. 6] of TPar;
-  FKPars: array [1 .. 6] of TPar;
-  nFKPars: array [1 .. 6] of TPar;
-  PWPPars: array [1 .. 6] of TPar;
+  defaults: THorizonDefaults;
   i: integer;
 begin
-  defaults[1].b_sat := 0.4298;
-  defaults[1].b_rest := 0.09;
-  defaults[1].alpha := 0.00677;
-  defaults[1].n_par := 1.29494;
-  defaults[1].l_par := 0.5;
-  defaults[1].Ks := 50;
-  defaults[1].FK := 0.35;
-  defaults[1].nFK := 0.25;
-  defaults[1].PWP := 0.1;
+  defaults.b_sat := 0.4298;
+  defaults.b_rest := 0.09;
+  defaults.alpha := 0.00677;
+  defaults.n_par := 1.29494;
+  defaults.l_par := 0.5;
+  defaults.Ks := 50;
+  defaults.FK := 0.35;
+  defaults.nFK := 0.25;
+  defaults.PWP := 0.1;
 
-  for i := 2 to 6 do
-  begin
-    defaults[i].b_sat := 0.45;
-    defaults[i].b_rest := 0.09;
-    defaults[i].alpha := 0.00677;
-    defaults[i].n_par := 1.29494;
-    defaults[i].l_par := 0.5;
-    defaults[i].Ks := 50;
-    defaults[i].FK := 0.35;
-    defaults[i].nFK := 0.25;
-    defaults[i].PWP := 0.1;
-  end;
 
-  b_satPars[1] := b_sat1;
-  b_satPars[2] := b_sat2;
-  b_satPars[3] := b_sat3;
-  b_satPars[4] := b_sat4;
-  b_satPars[5] := b_sat5;
-  b_satPars[6] := b_sat6;
 
-  b_restPars[1] := b_rest1;
-  b_restPars[2] := b_rest2;
-  b_restPars[3] := b_rest3;
-  b_restPars[4] := b_rest4;
-  b_restPars[5] := b_rest5;
-  b_restPars[6] := b_rest6;
-
-  alphaPars[1] := alpha1;
-  alphaPars[2] := alpha2;
-  alphaPars[3] := alpha3;
-  alphaPars[4] := alpha4;
-  alphaPars[5] := alpha5;
-  alphaPars[6] := alpha6;
-
-  n_parPars[1] := n_par1;
-  n_parPars[2] := n_par2;
-  n_parPars[3] := n_par3;
-  n_parPars[4] := n_par4;
-  n_parPars[5] := n_par5;
-  n_parPars[6] := n_par6;
-
-  l_parPars[1] := l_par1;
-  l_parPars[2] := l_par2;
-  l_parPars[3] := l_par3;
-  l_parPars[4] := l_par4;
-  l_parPars[5] := l_par5;
-  l_parPars[6] := l_par6;
-
-  KsPars[1] := Ks1;
-  KsPars[2] := Ks2;
-  KsPars[3] := Ks3;
-  KsPars[4] := Ks4;
-  KsPars[5] := Ks5;
-  KsPars[6] := Ks6;
-
-  FKPars[1] := FK1;
-  FKPars[2] := FK2;
-  FKPars[3] := FK3;
-  FKPars[4] := FK4;
-  FKPars[5] := FK5;
-  FKPars[6] := FK6;
-
-  nFKPars[1] := nFK1;
-  nFKPars[2] := nFK2;
-  nFKPars[3] := nFK3;
-  nFKPars[4] := nFK4;
-  nFKPars[5] := nFK5;
-  nFKPars[6] := nFK6;
-
-  PWPPars[1] := PWP1;
-  PWPPars[2] := PWP2;
-  PWPPars[3] := PWP3;
-  PWPPars[4] := PWP4;
-  PWPPars[5] := PWP5;
-  PWPPars[6] := PWP6;
-
-  for i := 1 to 6 do
-  begin
-    ParCreate(Format('b_sat%d', [i]), '[cm3.cm-3]', defaults[i].b_sat,
-      b_satPars[i], 'Van Genuchten parameter b_sat');
-    ParCreate(Format('b_rest%d', [i]), '[cm3.cm-3]', defaults[i].b_rest,
-      b_restPars[i], 'Van Genuchten parameter b_rest');
-    ParCreate(Format('alpha%d', [i]), '[1/cm]', defaults[i].alpha, alphaPars[i],
-      Format('Van Genuchten parameter alpha for horizon %d', [i]));
-    ParCreate(Format('n_par%d', [i]), '[-]', defaults[i].n_par,
-      n_parPars[i], 'Van Genuchten parameter n');
-    ParCreate(Format('l_par%d', [i]), '[-]', defaults[i].l_par,
-      l_parPars[i], Format('Van Genuchten parameter l for %dth horizon', [i]));
-    ParCreate(Format('Ks_%d', [i]), '[-]', defaults[i].Ks, KsPars[i],
+// Create parameters for all 6 horizons
+// has to be without a loop because of the ParCreate procedure
+    ParCreate('b_sat1', '[cm3.cm-3]', defaults.b_sat,
+      b_sat1, 'Van Genuchten parameter b_sat');
+    ParCreate('b_rest1', '[cm3.cm-3]', defaults.b_rest,
+      b_rest1, 'Van Genuchten parameter b_rest');
+    ParCreate('alpha1', '[1/cm]', defaults.alpha, alpha1,
+      'Van Genuchten parameter alpha for horizon 1',);
+    ParCreate('n_par1', '[-]', defaults.n_par,
+      n_par1, 'Van Genuchten parameter n');
+    ParCreate('l_par1', '[-]', defaults.l_par,
+      l_par1, 'Van Genuchten parameter l for 1th horizon',);
+    ParCreate('Ks_1', '[-]', defaults.Ks, Ks1,
       'Van Genuchten parameter K_sat');
-    ParCreate(Format('FK_%d', [i]), '[cm3/cm3]', defaults[i].FK, FKPars[i],
+    ParCreate('FK_1', '[cm3/cm3]', defaults.FK, FK1,
       'field capacity');
-    ParCreate(Format('nFK_%d', [i]), '[cm3/cm3]', defaults[i].nFK,
-      nFKPars[i], 'plant available soil water content');
-    ParCreate(Format('PWP_%d', [i]), '[cm3/cm3]', defaults[i].PWP,
-      PWPPars[i], 'residual soil water, not plant available content');
-  end;
+    ParCreate('nFK_1', '[cm3/cm3]', defaults.nFK,
+      nFK1, 'plant available soil water content');
+    ParCreate('PWP_1', '[cm3/cm3]', defaults.PWP,
+      PWP1, 'residual soil water, not plant available content');
+
+
+    ParCreate('b_sat2', '[cm3.cm-3]', defaults.b_sat,
+      b_sat2, 'Van Genuchten parameter b_sat');
+    ParCreate('b_rest2', '[cm3.cm-3]', defaults.b_rest,
+      b_rest2, 'Van Genuchten parameter b_rest');
+    ParCreate('alpha2', '[1/cm]', defaults.alpha, alpha2,
+      'Van Genuchten parameter alpha for horizon 2',);
+    ParCreate('n_par2', '[-]', defaults.n_par,
+      n_par2, 'Van Genuchten parameter n');
+    ParCreate('l_par2', '[-]', defaults.l_par,
+      l_par2, 'Van Genuchten parameter l for 2th horizon',);
+    ParCreate('Ks_2', '[-]', defaults.Ks, Ks2,
+      'Van Genuchten parameter K_sat');
+    ParCreate('FK_2', '[cm3/cm3]', defaults.FK, FK2,
+      'field capacity');
+    ParCreate('nFK_2', '[cm3/cm3]', defaults.nFK,
+      nFK2, 'plant available soil water content');
+    ParCreate('PWP_2', '[cm3/cm3]', defaults.PWP,
+      PWP2, 'residual soil water, not plant available content');
+
+    ParCreate('b_sat3', '[cm3.cm-3]', defaults.b_sat,
+      b_sat3, 'Van Genuchten parameter b_sat');
+    ParCreate('b_rest3', '[cm3.cm-3]', defaults.b_rest,
+      b_rest3, 'Van Genuchten parameter b_rest');
+    ParCreate('alpha3', '[1/cm]', defaults.alpha, alpha3,
+      'Van Genuchten parameter alpha for horizon 3',);
+    ParCreate('n_par3', '[-]', defaults.n_par,
+      n_par3, 'Van Genuchten parameter n');
+    ParCreate('l_par3', '[-]', defaults.l_par,
+      l_par3, 'Van Genuchten parameter l for 3th horizon',);
+    ParCreate('Ks_3', '[-]', defaults.Ks, Ks3,
+      'Van Genuchten parameter K_sat');
+    ParCreate('FK_3', '[cm3/cm3]', defaults.FK, FK3,
+      'field capacity');
+    ParCreate('nFK_3', '[cm3/cm3]', defaults.nFK,
+      nFK3, 'plant available soil water content');
+    ParCreate('PWP_3', '[cm3/cm3]', defaults.PWP,
+      PWP3, 'residual soil water, not plant available content');
+
+   ParCreate('b_sat4', '[cm3.cm-3]', defaults.b_sat,
+      b_sat4, 'Van Genuchten parameter b_sat');
+    ParCreate('b_rest4', '[cm3.cm-3]', defaults.b_rest,
+      b_rest4, 'Van Genuchten parameter b_rest');
+    ParCreate('alpha4', '[1/cm]', defaults.alpha, alpha4,
+      'Van Genuchten parameter alpha for horizon 4',);
+    ParCreate('n_par4', '[-]', defaults.n_par,
+      n_par4, 'Van Genuchten parameter n');
+    ParCreate('l_par4', '[-]', defaults.l_par,
+      l_par4, 'Van Genuchten parameter l for 4th horizon',);
+    ParCreate('Ks_4', '[-]', defaults.Ks, Ks4,
+      'Van Genuchten parameter K_sat');
+    ParCreate('FK_4', '[cm3/cm3]', defaults.FK, FK4,
+      'field capacity');
+    ParCreate('nFK_4', '[cm3/cm3]', defaults.nFK,
+      nFK4, 'plant available soil water content');
+    ParCreate('PWP_4', '[cm3/cm3]', defaults.PWP,
+      PWP4, 'residual soil water, not plant available content');
+
+  ParCreate('b_sat5', '[cm3.cm-3]', defaults.b_sat,
+      b_sat5, 'Van Genuchten parameter b_sat');
+    ParCreate('b_rest5', '[cm3.cm-3]', defaults.b_rest,
+      b_rest5, 'Van Genuchten parameter b_rest');
+    ParCreate('alpha5', '[1/cm]', defaults.alpha, alpha5,
+      'Van Genuchten parameter alpha for horizon 5',);
+    ParCreate('n_par5', '[-]', defaults.n_par,
+      n_par5, 'Van Genuchten parameter n');
+    ParCreate('l_par5', '[-]', defaults.l_par,
+      l_par5, 'Van Genuchten parameter l for 5th horizon',);
+    ParCreate('Ks_5', '[-]', defaults.Ks, Ks5,
+      'Van Genuchten parameter K_sat');
+    ParCreate('FK_5', '[cm3/cm3]', defaults.FK, FK5,
+      'field capacity');
+    ParCreate('nFK_5', '[cm3/cm3]', defaults.nFK,
+      nFK5, 'plant available soil water content');
+    ParCreate('PWP_5', '[cm3/cm3]', defaults.PWP,
+      PWP5, 'residual soil water, not plant available content');
+
+    ParCreate('b_sat6', '[cm3.cm-3]', defaults.b_sat,
+        b_sat6, 'Van Genuchten parameter b_sat');
+      ParCreate('b_rest6', '[cm3.cm-3]', defaults.b_rest,
+        b_rest6, 'Van Genuchten parameter b_rest');
+      ParCreate('alpha6', '[1/cm]', defaults.alpha, alpha6,
+        'Van Genuchten parameter alpha for horizon 6',);
+      ParCreate('n_par6', '[-]', defaults.n_par,
+        n_par6, 'Van Genuchten parameter n');
+      ParCreate('l_par6', '[-]', defaults.l_par,
+        l_par6, 'Van Genuchten parameter l for 6th horizon',);
+      ParCreate('Ks_6', '[-]', defaults.Ks, Ks6,
+        'Van Genuchten parameter K_sat');
+      ParCreate('FK_6', '[cm3/cm3]', defaults.FK, FK6,
+        'field capacity');
+      ParCreate('nFK_6', '[cm3/cm3]', defaults.nFK,
+        nFK6, 'plant available soil water content');
+      ParCreate('PWP_6', '[cm3/cm3]', defaults.PWP,
+        PWP6, 'residual soil water, not plant available content');
+
+
+
+
+
 end;
 
 procedure TSoilWaterMod.CreateParameters;
