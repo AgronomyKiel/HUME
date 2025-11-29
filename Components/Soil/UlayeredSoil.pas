@@ -7,17 +7,18 @@ uses
 
 type
   real = double;
+  /// basic array type for soil layer states
   TSoilStateArray = array [0 .. max_comp + 1] of TState;
-  /// basic array type for soil layer state variables
-  TSoilVarArray = array [0 .. max_comp + 2] of TVar;
   /// basic array type for soil layer variables
-  TSoilExtArray = array [0 .. max_comp + 1] of TExternV;
+  TSoilVarArray = array [0 .. max_comp + 2] of TVar;
   /// basic array type for soil layer external variables
+  TSoilExtArray = array [0 .. max_comp + 1] of TExternV;
+  /// basic array type for soil layer variables
   TSoilArray = array [0 .. max_comp + 1] of real;
-  /// basic array type for soil layer floating point fields
+  /// type for pedotransfer function version, RR= Rote Reihe, KA= addendum to KA5
   TTexture_version = (RR, KA);
-  /// type for pedotransfer function RR= Rote Reihe
 
+  
   TLayeredSoil = class(TPlantRelatedSubMod)
 
   private

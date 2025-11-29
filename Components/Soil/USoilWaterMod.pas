@@ -1,5 +1,5 @@
 ﻿/// <summary>
-/// Implemtents different methods for vertical soil water transport either with differen veriants
+/// Implemtents different methods for vertical soil water transport either with differen variants
 /// of the potential based water transport or as a simple tipping bucket approach.
 /// </summary>
 /// <remarks>
