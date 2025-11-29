@@ -191,6 +191,7 @@ type
     function getPotEvap: TExternV;
     /// <summary>wrapper for all parameter creation</summary>
     procedure CreateParameters;
+    procedure CreateHorizonParameters;
     /// <summary>wrapper for all option creation</summary>
     procedure CreateOptions;
     
@@ -272,6 +273,7 @@ type
     function ndx_str(i: integer): string;
     function getTexture(i: integer): TTextureClass;
     function getLD(i: integer): TLDClass;
+    function GetHorizonIndexForLayer(i: integer): integer;
 
   public
     /// <summary>actual number of layers to be calculated, variable in case of groundwater influence</summary>
@@ -788,62 +790,44 @@ uses
 procedure TSoilWaterMod.update_Wcont_Values;
 
 var
-  i: integer;
+  procedure SetRangeAverage(var target: TVAR; startIdx, endIdx: integer);
+  var
+    i: integer;
+  begin
+    target.v := 0;
+    for i := startIdx to endIdx do
+      target.v := target.v + theta_arr[i].v;
+    target.v := target.v / (endIdx - startIdx + 1);
+  end;
 begin
   // Calculation of derived water contents for different soil layers
 
-  WG0_30.v := (theta_arr[1].v + theta_arr[2].v + theta_arr[3].v) / 3;
-  WG30_60.v := (theta_arr[4].v + theta_arr[5].v + theta_arr[6].v) / 3;
-  WG60_90.v := (theta_arr[7].v + theta_arr[8].v + theta_arr[9].v) / 3;
-  WG90_120.v := (theta_arr[10].v + theta_arr[11].v + theta_arr[12].v) / 3;
+  SetRangeAverage(WG0_30, 1, 3);
+  SetRangeAverage(WG30_60, 4, 6);
+  SetRangeAverage(WG60_90, 7, 9);
+  SetRangeAverage(WG90_120, 10, 12);
 
-  WG0_10.v := theta_arr[1].v;
-  WG20_30.v := theta_arr[3].v;
-  WG30_40.v := theta_arr[4].v;
+  SetRangeAverage(WG0_10, 1, 1);
+  SetRangeAverage(WG20_30, 3, 3);
+  SetRangeAverage(WG30_40, 4, 4);
 
-  WG0_20.v := (theta_arr[1].v + theta_arr[2].v) / 2;
-  WG20_40.v := (theta_arr[3].v + theta_arr[4].v) / 2;
-  WG10_30.v := (theta_arr[2].v + theta_arr[3].v) / 2;
-  WG30_50.v := (theta_arr[4].v + theta_arr[5].v) / 2;
-  WG40_60.v := (theta_arr[5].v + theta_arr[6].v) / 2;
-  WG60_80.v := (theta_arr[7].v + theta_arr[8].v) / 2;
-  WG80_100.v := (theta_arr[9].v + theta_arr[10].v) / 2;
-  WG90_110.v := (theta_arr[10].v + theta_arr[11].v) / 2;
+  SetRangeAverage(WG0_20, 1, 2);
+  SetRangeAverage(WG20_40, 3, 4);
+  SetRangeAverage(WG10_30, 2, 3);
+  SetRangeAverage(WG30_50, 4, 5);
+  SetRangeAverage(WG40_60, 5, 6);
+  SetRangeAverage(WG60_80, 7, 8);
+  SetRangeAverage(WG80_100, 9, 10);
+  SetRangeAverage(WG90_110, 10, 11);
 
-  WG0_120.v := 0;
-  WG0_100.v := 0;
-  wg0_90.v := 0;
-  WG0_60.v := 0;
-  WG0_40.v := 0;
-  WG30_120.v := 0;
-  WG30_100.v := 0;
-  WG60_100.v := 0;
-
-  for i := 4 to 12 do
-    WG30_120.v := WG30_120.v + theta_arr[i].v;
-  for i := 4 to 10 do
-    WG30_100.v := WG30_100.v + theta_arr[i].v;
-  for i := 1 to 4 do
-    WG0_40.v := WG0_40.v + theta_arr[i].v;
-  for i := 1 to 6 do
-    WG0_60.v := WG0_60.v + theta_arr[i].v;
-  for i := 1 to 9 do
-    wg0_90.v := wg0_90.v + theta_arr[i].v;
-  for i := 1 to 10 do
-    WG0_100.v := WG0_100.v + theta_arr[i].v;
-  for i := 1 to 12 do
-    WG0_120.v := WG0_120.v + theta_arr[i].v;
-  for i := 7 to 10 do
-    WG60_100.v := WG60_100.v + theta_arr[i].v;
-
-  WG0_60.v := WG0_60.v / 6;
-  WG0_40.v := WG0_40.v / 4;
-  wg0_90.v := wg0_90.v / 9;
-  WG0_100.v := WG0_100.v / 10;
-  WG0_120.v := WG0_120.v / 12;
-  WG30_100.v := WG30_100.v / 7;
-  WG30_120.v := WG30_120.v / 9;
-  WG60_100.v := WG60_100.v / 4;
+  SetRangeAverage(WG0_120, 1, 12);
+  SetRangeAverage(WG0_100, 1, 10);
+  SetRangeAverage(wg0_90, 1, 9);
+  SetRangeAverage(WG0_60, 1, 6);
+  SetRangeAverage(WG0_40, 1, 4);
+  SetRangeAverage(WG30_120, 4, 12);
+  SetRangeAverage(WG30_100, 4, 10);
+  SetRangeAverage(WG60_100, 7, 10);
 end;
 
 /// <summary>returns string for index with leading underscore if index < 10</summary>
@@ -855,23 +839,41 @@ begin
     result := IntToStr(i);
 end;
 
+function TSoilWaterMod.GetHorizonIndexForLayer(i: integer): integer;
+begin
+  result := 6;
+  if i <= HoriNdx5.v then
+    result := 5;
+  if i <= HoriNdx4.v then
+    result := 4;
+  if i <= HoriNdx3.v then
+    result := 3;
+  if i <= HoriNdx2.v then
+    result := 2;
+  if i <= HoriNdx1.v then
+    result := 1;
+end;
+
 /// <summary>returns the texture class for horizon i</summary>
 function TSoilWaterMod.getTexture(i: integer): TTextureClass;
 // var
 // nHorizons : integer;
 begin
   // nHorizons := round(nHorizons.v);
-  result := FTextureClass6;
-  if i <= HoriNdx5.v then
-    result := FTextureClass5;
-  if i <= HoriNdx4.v then
-    result := FTextureClass4;
-  if i <= HoriNdx3.v then
-    result := FTextureClass3;
-  if i <= HoriNdx2.v then
-    result := FTextureClass2;
-  if i <= HoriNdx1.v then
-    result := FTextureClass1;
+  case GetHorizonIndexForLayer(i) of
+    1:
+      result := FTextureClass1;
+    2:
+      result := FTextureClass2;
+    3:
+      result := FTextureClass3;
+    4:
+      result := FTextureClass4;
+    5:
+      result := FTextureClass5;
+  else
+    result := FTextureClass6;
+  end;
 end;
 
 /// <summary>returns the layer density class for horizon i</summary>
@@ -880,17 +882,20 @@ function TSoilWaterMod.getLD(i: integer): TLDClass;
 // nHorizons : integer;
 begin
   // nHorizons := round(nHorizons.v);
-  result := FLDClass6;
-  if i <= HoriNdx5.v then
-    result := FLDClass5;
-  if i <= HoriNdx4.v then
-    result := FLDClass4;
-  if i <= HoriNdx3.v then
-    result := FLDClass3;
-  if i <= HoriNdx2.v then
-    result := FLDClass2;
-  if i <= HoriNdx1.v then
-    result := fLDClass1;
+  case GetHorizonIndexForLayer(i) of
+    1:
+      result := fLDClass1;
+    2:
+      result := FLDClass2;
+    3:
+      result := FLDClass3;
+    4:
+      result := FLDClass4;
+    5:
+      result := FLDClass5;
+  else
+    result := FLDClass6;
+  end;
 end;
 
 /// <summary>creation of all parameters, options, states and external variables</summary>
@@ -1122,34 +1127,49 @@ end;
 
 /// <summary>calculation of FK, PWP and nFK for all horizons from van-Genuchten parameters</summary>
 procedure TSoilWaterMod.Calc_nFKparsForHorizons;
-
+var
+  horizonIndex: integer;
+  horizonBoundaries: array [1 .. 6] of TPar;
+  fkPars: array [1 .. 6] of TPar;
+  pwpPars: array [1 .. 6] of TPar;
+  nfkPars: array [1 .. 6] of TPar;
+  i: integer;
 begin
+  { Calculation von FK, PWP und nFK aus van-Genuchten-Parametern mit der Funktion b_psi_f (unit UGenucht) }
+  horizonBoundaries[1] := HoriNdx1;
+  horizonBoundaries[2] := HoriNdx2;
+  horizonBoundaries[3] := HoriNdx3;
+  horizonBoundaries[4] := HoriNdx4;
+  horizonBoundaries[5] := HoriNdx5;
+  horizonBoundaries[6] := HoriNdx6;
+
+  fkPars[1] := Par_FK1;
+  fkPars[2] := Par_FK2;
+  fkPars[3] := Par_FK3;
+  fkPars[4] := Par_FK4;
+  fkPars[5] := FK5;
+  fkPars[6] := FK6;
+
+  pwpPars[1] := Par_PWP1;
+  pwpPars[2] := Par_PWP2;
+  pwpPars[3] := Par_PWP3;
+  pwpPars[4] := Par_PWP4;
+  pwpPars[5] := PWP5;
+  pwpPars[6] := PWP6;
+
+  nfkPars[1] := Par_nFK1;
+  nfkPars[2] := Par_nFK2;
+  nfkPars[3] := Par_nFK3;
+  nfkPars[4] := Par_nFK4;
+  nfkPars[5] := nFK5;
+  nfkPars[6] := nFK6;
+
+  for i := 1 to 6 do
   begin
-    { Calculation von FK, PWP und nFK aus van-Genuchten-Parametern mit der Funktion b_psi_f (unit UGenucht) }
-    Par_FK1.v := WPar[round(HoriNdx1.v)].b_psi_f(power(10, 1.8));
-    Par_PWP1.v := WPar[round(HoriNdx1.v)].b_psi_f(power(10, 4.2));
-    Par_nFK1.v := Par_FK1.v - Par_PWP1.v;
-
-    Par_FK2.v := WPar[round(HoriNdx2.v)].b_psi_f(power(10, 1.8));
-    Par_PWP2.v := WPar[round(HoriNdx2.v)].b_psi_f(power(10, 4.2));
-    Par_nFK2.v := Par_FK2.v - Par_PWP2.v;
-
-    Par_FK3.v := WPar[round(HoriNdx3.v)].b_psi_f(power(10, 1.8));
-    Par_PWP3.v := WPar[round(HoriNdx3.v)].b_psi_f(power(10, 4.2));
-    Par_nFK3.v := Par_FK3.v - Par_PWP3.v;
-
-    Par_FK4.v := WPar[round(HoriNdx4.v)].b_psi_f(power(10, 1.8));
-    Par_PWP4.v := WPar[round(HoriNdx4.v)].b_psi_f(power(10, 4.2));
-    Par_nFK4.v := Par_FK4.v - Par_PWP4.v;
-
-    FK5.v := WPar[round(HoriNdx5.v)].b_psi_f(power(10, 1.8));
-    PWP5.v := WPar[round(HoriNdx5.v)].b_psi_f(power(10, 4.2));
-    nFK5.v := FK5.v - PWP5.v;
-
-    FK6.v := WPar[round(HoriNdx6.v)].b_psi_f(power(10, 1.8));
-    PWP6.v := WPar[round(HoriNdx6.v)].b_psi_f(power(10, 4.2));
-    nFK6.v := FK6.v - PWP6.v;
-
+    horizonIndex := round(horizonBoundaries[i].v);
+    fkPars[i].v := WPar[horizonIndex].b_psi_f(power(10, 1.8));
+    pwpPars[i].v := WPar[horizonIndex].b_psi_f(power(10, 4.2));
+    nfkPars[i].v := fkPars[i].v - pwpPars[i].v;
   end;
 end;
 
@@ -1981,6 +2001,141 @@ begin
 
 end;
 
+procedure TSoilWaterMod.CreateHorizonParameters;
+type
+  THorizonDefaults = record
+    b_sat: real;
+    b_rest: real;
+    alpha: real;
+    n_par: real;
+    l_par: real;
+    Ks: real;
+    FK: real;
+    nFK: real;
+    PWP: real;
+  end;
+var
+  defaults: array [1 .. 6] of THorizonDefaults;
+  b_satPars: array [1 .. 6] of TPar;
+  b_restPars: array [1 .. 6] of TPar;
+  alphaPars: array [1 .. 6] of TPar;
+  n_parPars: array [1 .. 6] of TPar;
+  l_parPars: array [1 .. 6] of TPar;
+  KsPars: array [1 .. 6] of TPar;
+  FKPars: array [1 .. 6] of TPar;
+  nFKPars: array [1 .. 6] of TPar;
+  PWPPars: array [1 .. 6] of TPar;
+  i: integer;
+begin
+  defaults[1].b_sat := 0.4298;
+  defaults[1].b_rest := 0.09;
+  defaults[1].alpha := 0.00677;
+  defaults[1].n_par := 1.29494;
+  defaults[1].l_par := 0.5;
+  defaults[1].Ks := 50;
+  defaults[1].FK := 0.35;
+  defaults[1].nFK := 0.25;
+  defaults[1].PWP := 0.1;
+
+  for i := 2 to 6 do
+  begin
+    defaults[i].b_sat := 0.45;
+    defaults[i].b_rest := 0.09;
+    defaults[i].alpha := 0.00677;
+    defaults[i].n_par := 1.29494;
+    defaults[i].l_par := 0.5;
+    defaults[i].Ks := 50;
+    defaults[i].FK := 0.35;
+    defaults[i].nFK := 0.25;
+    defaults[i].PWP := 0.1;
+  end;
+
+  b_satPars[1] := b_sat1;
+  b_satPars[2] := b_sat2;
+  b_satPars[3] := b_sat3;
+  b_satPars[4] := b_sat4;
+  b_satPars[5] := b_sat5;
+  b_satPars[6] := b_sat6;
+
+  b_restPars[1] := b_rest1;
+  b_restPars[2] := b_rest2;
+  b_restPars[3] := b_rest3;
+  b_restPars[4] := b_rest4;
+  b_restPars[5] := b_rest5;
+  b_restPars[6] := b_rest6;
+
+  alphaPars[1] := alpha1;
+  alphaPars[2] := alpha2;
+  alphaPars[3] := alpha3;
+  alphaPars[4] := alpha4;
+  alphaPars[5] := alpha5;
+  alphaPars[6] := alpha6;
+
+  n_parPars[1] := n_par1;
+  n_parPars[2] := n_par2;
+  n_parPars[3] := n_par3;
+  n_parPars[4] := n_par4;
+  n_parPars[5] := n_par5;
+  n_parPars[6] := n_par6;
+
+  l_parPars[1] := l_par1;
+  l_parPars[2] := l_par2;
+  l_parPars[3] := l_par3;
+  l_parPars[4] := l_par4;
+  l_parPars[5] := l_par5;
+  l_parPars[6] := l_par6;
+
+  KsPars[1] := Ks1;
+  KsPars[2] := Ks2;
+  KsPars[3] := Ks3;
+  KsPars[4] := Ks4;
+  KsPars[5] := Ks5;
+  KsPars[6] := Ks6;
+
+  FKPars[1] := FK1;
+  FKPars[2] := FK2;
+  FKPars[3] := FK3;
+  FKPars[4] := FK4;
+  FKPars[5] := FK5;
+  FKPars[6] := FK6;
+
+  nFKPars[1] := nFK1;
+  nFKPars[2] := nFK2;
+  nFKPars[3] := nFK3;
+  nFKPars[4] := nFK4;
+  nFKPars[5] := nFK5;
+  nFKPars[6] := nFK6;
+
+  PWPPars[1] := PWP1;
+  PWPPars[2] := PWP2;
+  PWPPars[3] := PWP3;
+  PWPPars[4] := PWP4;
+  PWPPars[5] := PWP5;
+  PWPPars[6] := PWP6;
+
+  for i := 1 to 6 do
+  begin
+    ParCreate(Format('b_sat%d', [i]), '[cm3.cm-3]', defaults[i].b_sat,
+      b_satPars[i], 'Van Genuchten Parameter b_sat');
+    ParCreate(Format('b_rest%d', [i]), '[cm3.cm-3]', defaults[i].b_rest,
+      b_restPars[i], 'Van Genuchten Parameter b_rest');
+    ParCreate(Format('alpha%d', [i]), '[1/cm]', defaults[i].alpha, alphaPars[i],
+      Format('Van-Genuchten-Parameter alpha for horizon %d', [i]));
+    ParCreate(Format('n_par%d', [i]), '[-]', defaults[i].n_par,
+      n_parPars[i], 'Van-Genuchten-Parameter n');
+    ParCreate(Format('l_par%d', [i]), '[-]', defaults[i].l_par,
+      l_parPars[i], Format('Van-Genuchten-Parameter l for %dth horizon', [i]));
+    ParCreate(Format('Ks_%d', [i]), '[-]', defaults[i].Ks, KsPars[i],
+      'Van Genuchten Parameter K_sat');
+    ParCreate(Format('FK_%d', [i]), '[cm3/cm3]', defaults[i].FK, FKPars[i],
+      'field capacity');
+    ParCreate(Format('nFK_%d', [i]), '[cm3/cm3]', defaults[i].nFK,
+      nFKPars[i], 'plant available soil water content');
+    ParCreate(Format('PWP_%d', [i]), '[cm3/cm3]', defaults[i].PWP,
+      PWPPars[i], 'residual soil water, not plant available content');
+  end;
+end;
+
 procedure TSoilWaterMod.CreateParameters;
 var
   i: integer;
@@ -2021,72 +2176,7 @@ begin
     'Skalierungsfaktor for bsat (wird in allen Horizonten mit diesem Faktor multipliziert)');
   ParCreate('alpha_scaling', '[-]', 1, alpha_scaling,
     'Parameter for linear scaling of soil hydraulic Parameter alpha');
-  ParCreate('b_sat1', '[cm3.cm-3]', 0.4298, b_sat1,
-    'Van Genuchten Parameter b_sat');
-  ParCreate('b_rest1', '[cm3.cm-3]', 0.09, b_rest1,
-    'Van Genuchten Parameter b_rest');
-  ParCreate('alpha1', '[1/cm]', 0.00677, alpha1,
-    'Van-Genuchten-Parameter alpha for den 1. Bodenhorizont');
-  ParCreate('n_par1', '[-]', 1.29494, n_par1,
-    'Van-Genuchten-Parameter n for den 1. Bodenhorizont');
-  ParCreate('l_par1', '[-]', 0.5, l_par1,
-    'Van-Genuchten-Parameter l for 1st horizon');
-  ParCreate('l_par2', '[-]', 0.5, l_par2,
-    'Van-Genuchten-Parameter l for 2nd horizon');
-  ParCreate('l_par3', '[-]', 0.5, l_par3,
-    'Van-Genuchten-Parameter l for 3rd horizon');
-  ParCreate('l_par4', '[-]', 0.5, l_par4,
-    'Van-Genuchten-Parameter l for 4th horizon');
-  ParCreate('l_par5', '[-]', 0.5, l_par5,
-    'Van-Genuchten-Parameter l for 5th horizon');
-  ParCreate('l_par6', '[-]', 0.5, l_par6,
-    'Van-Genuchten-Parameter l for 6th horizon');
-  ParCreate('Ks_1', '[-]', 50, Ks1, 'Van Genuchten Parameter K_sat');
-  ParCreate('FK_1', '[cm3/cm3]', 0.35, FK1, 'field capacity');
-  ParCreate('nFK_1', '[cm3/cm3]', 0.25, nFK1,
-    'plant available soil water content');
-  ParCreate('PWP_1', '[cm3/cm3]', 0.1, PWP1,
-    'residual soil water, not plant available content');
-  ParCreate('b_sat2', '[cm3.cm-3]', 0.45, b_sat2);
-  ParCreate('b_rest2', '[cm3.cm-3]', 0.09, b_rest2);
-  ParCreate('alpha2', '[1/cm]', 0.00677, alpha2);
-  ParCreate('n_par2', '[-]', 1.29494, n_par2);
-  ParCreate('Ks_2', '[-]', 50, Ks2);
-  ParCreate('FK_2', '[cm3/cm3]', 0.35, FK2);
-  ParCreate('nFK_2', '[cm3/cm3]', 0.25, nFK2);
-  ParCreate('PWP_2', '[cm3/cm3]', 0.1, PWP2);
-  ParCreate('b_sat3', '[cm3.cm-3]', 0.45, b_sat3);
-  ParCreate('b_rest3', '[cm3.cm-3]', 0.09, b_rest3);
-  ParCreate('alpha3', '[1/cm]', 0.00677, alpha3);
-  ParCreate('n_par3', '[-]', 1.29494, n_par3);
-  ParCreate('Ks_3', '[-]', 50, Ks3);
-  ParCreate('FK_3', '[cm3/cm3]', 0.35, FK3);
-  ParCreate('nFK_3', '[cm3/cm3]', 0.25, nFK3);
-  ParCreate('PWP_3', '[cm3/cm3]', 0.1, PWP3);
-  ParCreate('b_sat4', '[cm3.cm-3]', 0.45, b_sat4);
-  ParCreate('b_rest4', '[cm3.cm-3]', 0.09, b_rest4);
-  ParCreate('alpha4', '[1/cm]', 0.00677, alpha4);
-  ParCreate('n_par4', '[-]', 1.29494, n_par4);
-  ParCreate('Ks_4', '[-]', 50, Ks4);
-  ParCreate('FK_4', '[cm3/cm3]', 0.35, FK4);
-  ParCreate('nFK_4', '[cm3/cm3]', 0.25, nFK4);
-  ParCreate('PWP_4', '[cm3/cm3]', 0.1, PWP4);
-  ParCreate('b_sat5', '[cm3.cm-3]', 0.45, b_sat5);
-  ParCreate('b_rest5', '[cm3.cm-3]', 0.09, b_rest5);
-  ParCreate('alpha5', '[1/cm]', 0.00677, alpha5);
-  ParCreate('n_par5', '[-]', 1.29494, n_par5);
-  ParCreate('Ks_5', '[-]', 50, Ks5);
-  ParCreate('FK_5', '[cm3/cm3]', 0.35, FK5);
-  ParCreate('nFK_5', '[cm3/cm3]', 0.25, nFK5);
-  ParCreate('PWP_5', '[cm3/cm3]', 0.1, PWP5);
-  ParCreate('b_sat6', '[cm3.cm-3]', 0.45, b_sat6);
-  ParCreate('b_rest6', '[cm3.cm-3]', 0.09, b_rest6);
-  ParCreate('alpha6', '[1/cm]', 0.00677, alpha6);
-  ParCreate('n_par6', '[-]', 1.29494, n_par6);
-  ParCreate('Ks_6', '[-]', 50, Ks6);
-  ParCreate('FK_6', '[cm3/cm3]', 0.35, FK6);
-  ParCreate('nFK_6', '[cm3/cm3]', 0.25, nFK6);
-  ParCreate('PWP_6', '[cm3/cm3]', 0.1, PWP6);
+  CreateHorizonParameters;
   ParCreate('PsiStart1', '[cm]', 500, PsiStart1,
     'Initial matric potential of uppermost layer at simulation start');
   ParCreate('Weff', '[cm]', 100, Weff, 'effective rooting deph [cm]');
