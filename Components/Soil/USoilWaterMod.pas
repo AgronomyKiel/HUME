@@ -163,6 +163,9 @@ type
     procedure CalcTempFactor;
     /// <summary>Calculation of conductivities</summary>
     procedure CalcConductivities;
+    /// <summary>Shared conductivity/capacity setup for Richards and Mixed solvers</summary>
+    procedure CalcLeitfaehigkeiten(const useGeometricMean,
+      includeCoefficients, applyFreezing: Boolean);
     /// <summary>caculation of water transport according to diffusivity approach</summary>
     procedure CapWatSolut;
     procedure get_water_contents;
@@ -2587,6 +2590,58 @@ begin
 
 end;
 
+procedure TSoilWaterMod.CalcLeitfaehigkeiten(const useGeometricMean,
+  includeCoefficients, applyFreezing: Boolean);
+
+var
+  i: byte;
+
+begin
+  for i := 1 to n_comp + 1 do
+  begin
+    c_arr[i] := WPar[i].C_psi_f(psi_neu[i]);
+    Ku_arr[i] := WPar[i].Ku_b_f(theta_new[i]);
+  end;
+
+  for i := 1 to n_comp do
+  begin
+    if useGeometricMean then
+      avg_Ku[i] := sqrt(Ku_arr[i] * Ku_arr[i + 1])
+    else
+      avg_Ku[i] := (Ku_arr[i] + Ku_arr[i + 1]) / 2;
+  end;
+
+  if includeCoefficients then
+  begin
+    avg_Ku[0] := (WPar[1].Ks + Ku_arr[1]) / 2; // aritmethic mean
+
+    for i := 1 to n_comp do
+    begin
+      if c_arr[i] >= 0.0 then
+        P[i] := 0.0
+      else
+        P[i] := dt.v / (c_arr[i] * Thick[i]);
+      kf[i] := avg_Ku[i] / Dist[i];
+      wf[i] := 1;
+    end;
+
+    kf[0] := 2 * avg_Ku[0] / Dist[1];
+  end;
+
+  if applyFreezing and (FSoilHeatModel <> nil) then
+  begin
+    for i := 1 to n_comp + 1 do
+    begin
+      if FSoilHeatModel.Temp[i].v <= 0 then
+      begin
+        avg_Ku[i] := 0.0;
+        Ku_fact[i] := 0.0;
+        kf[i] := 0.0;
+      end;
+    end;
+  end;
+end;
+
 procedure TSoilWaterMod.CalcTempFactor;
 
 var
@@ -3350,64 +3405,6 @@ var
 
     ExcessWater: real;
 
-  procedure Leitfaehigkeiten;
-
-  var
-    i: byte;
-
-  begin
-
-    for i := 1 to n_comp + 1 do
-    begin
-      c_arr[i] := WPar[i].C_psi_f(psi_neu[i]);
-      Ku_arr[i] := WPar[i].Ku_b_f(theta_new[i]);
-    end;
-
-    for i := 1 to n_comp do
-    begin
-      avg_Ku[i] := (Ku_arr[i] { *upper_w_f[i] } + Ku_arr[i + 1]
-      { *lower_w_f[i] } ) / 2;
-    end;
-    // avg_ku[0] := sqrt(Wpar[1].ks*Ku_arr[1]);  // geometric mean
-    avg_Ku[0] := (WPar[1].Ks + Ku_arr[1]) / 2; // aritmethic mean
-
-    { Calculation of coefficients for constructing the system of equations }
-    for i := 1 to n_comp do
-    begin
-      if c_arr[i] >= 0.0 then { Does saturation occur? }
-        P[i] := 0.0 { => no further change in water contents }
-      else
-        P[i] := dt.v / (c_arr[i] * Thick[i]);
-      kf[i] := avg_Ku[i] / Dist[i];
-    end;
-    kf[0] := 2 * avg_Ku[0] / Dist[1];
-    for i := 1 to n_comp do
-      if psi_neu[i] > 10 then
-        wf[i] := 1
-      else
-        wf[i] := min(1.0, max(0, (psi_neu[i]) / (10 - 1)));
-    // wf[1] := 1.0;
-
-    for i := 1 to n_comp do
-      wf[i] := 1;
-
-    { Calculation der Koeffizienten for die Aufstellung des Gleichungssystems }
-
-    if FSoilHeatModel <> nil then
-    begin
-      for i := 1 to n_comp + 1 do
-      begin
-        if FSoilHeatModel.Temp[i].v <= 0 then
-        begin
-          // avg_Ku[i] := 0.0;
-          // Ku_fact[i] := 0.0;
-          // P[i] := 0.0;
-          // kf[i] := 0.0;
-        end;
-      end;
-    end;
-  end;
-
   procedure UpperBoundary;
 
   var
@@ -3647,7 +3644,7 @@ begin { procedure Richardswater_solut }
   success := false;
   iter := 0;
   repeat
-    Leitfaehigkeiten;
+    CalcLeitfaehigkeiten(false, true, false);
     UpperBoundary;
     Mittelteil;
     LowerBoundary;
@@ -3672,40 +3669,6 @@ procedure TSoilWaterMod.Mixedwater_solut;
 var
   result: byte;
   i: integer;
-
-  procedure Leitfaehigkeiten;
-
-  var
-    i: byte;
-
-  begin
-
-    for i := 1 to n_comp + 1 do
-    begin
-      c_arr[i] := WPar[i].C_psi_f(psi_neu[i]);
-      Ku_arr[i] := WPar[i].Ku_b_f(theta_new[i]);
-    end;
-
-    for i := 1 to n_comp do
-    begin
-      // avg_Ku[i] := (Ku_arr[i] {*upper_w_f[i]} + Ku_arr[i + 1] {*lower_w_f[i]}) / 2;
-      avg_Ku[i] := sqrt(Ku_arr[i] * Ku_arr[i + 1]);
-    end;
-
-    if FSoilHeatModel <> nil then
-    begin
-      for i := 1 to n_comp + 1 do
-      begin
-        if FSoilHeatModel.Temp[i].v <= 0 then
-        begin
-          avg_Ku[i] := 0.0;
-          Ku_fact[i] := 0.0;
-          // P[i] := 0.0;
-          kf[i] := 0.0;
-        end;
-      end;
-    end;
-  end;
 
   procedure UpperBoundary;
 
@@ -3879,7 +3842,7 @@ begin { procedure Mixedwater_solut }
   success := false;
   iter := 0;
   repeat
-    Leitfaehigkeiten;
+    CalcLeitfaehigkeiten(true, false, true);
     UpperBoundary;
     Mittelteil;
     LowerBoundary;
