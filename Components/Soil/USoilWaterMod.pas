@@ -89,9 +89,9 @@ type
     max_IterErrorsave: real;
     /// <summary>number of layer where solution of equation system starts, mostly the first sometimes the second ..</summary>
     start: byte;
-    /// <summary>S�ttigung im obersten Kompartiment ?</summary>
+    /// <summary>Saturation in the uppermost compartment?</summary>
     wet: boolean;
-    /// <summary>Wassergehalt kleiner b_rest im obersten Komp.?</summary>
+    /// <summary>Water content below b_rest in the uppermost compartment?</summary>
     dry: boolean;
     /// <summary>solution converged</summary>
     success: boolean;
@@ -130,9 +130,9 @@ type
     fWriteParsFromTexture: boolean;
     /// <summary>Option for soil evaporation reduction function</summary>
     fred_f: Tred_f;
-    /// <summary>alte Zeitschrittweite [d]</summary>
+    /// <summary>previous time step width [d]</summary>
     dt_old,
-    /// <summary>maximale Wassergehalts�nderung</summary>
+    /// <summary>maximum change in water content</summary>
     MaxActChangeSWC: real;
     /// <summary></summary>
     TempFactor: real;
@@ -282,34 +282,34 @@ type
     SumBalanceError: real;
     /// <summary>sum of soil and ponded water [mm]</summary>
     SWCStart, global_WaterBalance, old_global_WaterBalance: real;
-    /// <summary>Wassergehaltsvektor [cm3/cm3]</summary>
+    /// <summary>water content vector [cm3/cm3]</summary>
     theta_arr: TSoilvarArray;
     /// <summary>new soil water contents</summary>
     theta_new: TSoilArray;
-    /// <summary>Wassermenge je Schicht [cm]</summary>
+    /// <summary>water amount per layer [cm]</summary>
     WAmount: TSoilStateArray;
-    /// <summary>Wasserspannungsvektor [cm]</summary>
+    /// <summary>water tension vector [cm]</summary>
     psi_arr: TSoilvarArray;
-    /// <summary>Flussvektor [cm/d]</summary>
+    /// <summary>flow vector [cm/d]</summary>
     Wflow_arr: TSoilvarArray;
-    /// <summary>Flussvektor [cm/d] for internen Zeitschritt</summary>
+    /// <summary>flow vector [cm/d] for internal time step</summary>
     WflowInt_arr: TSoilvarArray;
-    /// <summary>Sinkvektor [cm]</summary>
+    /// <summary>sink vector [cm]</summary>
     Sink_arr: TSoilvarArray;
-    /// <summary>Sinkvektor [cm/d] for internen Zeitschritt</summary>
+    /// <summary>sink vector [cm/d] for internal time step</summary>
     SinkInt_arr: TSoilvarArray;
-    /// <summary>Feldkapazit�t [cm3/cm3]</summary>
+    /// <summary>field capacity [cm3/cm3]</summary>
     FK_Arr: TSoilArray;
-    /// <summary>permanenter Welkepunkt [cm3/cm3]</summary>
+    /// <summary>permanent wilting point [cm3/cm3]</summary>
     PWP_Arr: TSoilArray;
-    /// <summary>nutzbare Feldkapazit�t [cm3/cm3]</summary>
+    /// <summary>usable field capacity [cm3/cm3]</summary>
     nFK_Arr: TSoilArray;
-    /// <summary>Array der Van-Genuchten Parameter for jede Schicht</summary>
+    /// <summary>array of van Genuchten parameters for each layer</summary>
     WPar: TSoilWaterParams;
 
     /// <summary>old water flows</summary [cm/d]>
     Wflow_old: TSoilArray;
-    /// <summary>alte Wassergehalte</summary>
+    /// <summary>previous water contents</summary>
     theta_old: TSoilArray;
     /// <summary>New estimate of water potential [cm]</summary>
     psi_neu: TSoilArray;
@@ -321,7 +321,7 @@ type
     /// <summary>number of soil horizons with different textures</summary>
     nHorizons: TPar;
 
-    /// <summary>Index der untersten Schicht im jeweiligen Horizont</summary>
+    /// <summary>index of the lowest layer in each horizon</summary>
     HoriNdx1, HoriNdx2, HoriNdx3, HoriNdx4, HoriNdx5, HoriNdx6: TPar;
 
     /// <summary>Texture_versionOption: TOption;</summary>
@@ -382,7 +382,7 @@ type
     
     /// <summary> Saturation water content [cm3/cm3] for horizon 1 </summary>
     b_sat1: TPar;
-    /// <summary>"Restwassergehalt" [cm3/cm3] }</summary>
+    /// <summary>"residual water content" [cm3/cm3]</summary>
 
     /// <summary> residual water content  for horizon 1 </summary>
     b_rest1: TPar;
@@ -410,9 +410,9 @@ type
     b_sat2: TPar;
     /// <summary> residual water content  for horizon 2 </summary>
     b_rest2: TPar;
-    /// <summary>Fitparameter "" [1/cm] }</summary>
+    /// <summary>fitting parameter "alpha" [1/cm]</summary>
     alpha2: TPar;
-    /// <summary>Fitparameter "n" dimensionslos }</summary>
+    /// <summary>fitting parameter "n" dimensionless</summary>
     n_par2: TPar;
     /// <summary>parameter for hydraulic conductivity shape</summary>
     l_par2: TPar;
@@ -425,14 +425,14 @@ type
     /// <summary>usable field capacity for horizon 2</summary>
     nFK2: TPar;
 
-    /// <summary>van-Genuchten Parameter fuer Horizont 3</summary>
-    /// <summary>Wassergehalt bei Sättigung [cm3/cm3] }</summary>
+    /// <summary>van Genuchten parameters for horizon 3</summary>
+    /// <summary>water content at saturation [cm3/cm3]</summary>
     b_sat3: TPar;
-    /// <summary>"Restwassergehalt" [cm3/cm3] }</summary>
+    /// <summary>"residual water content" [cm3/cm3]</summary>
     b_rest3: TPar;
-    /// <summary>Fitparameter "" [1/cm] }</summary>
+    /// <summary>fitting parameter "alpha" [1/cm]</summary>
     alpha3: TPar;
-    /// <summary>Fitparameter "n" dimensionslos }</summary>
+    /// <summary>fitting parameter "n" dimensionless</summary>
     n_par3: TPar;
     /// <summary>parameter for hydraulic conductivity shape</summary>
     l_par3: TPar;
@@ -445,14 +445,14 @@ type
     /// <summary>usable field capacity for horizon 3</summary>
     nFK3: TPar;
 
-    /// <summary>van-Genuchten Parameter fuer Horizont 4</summary>
-    /// <summary>Wassergehalt bei Sättigung [cm3/cm3] }</summary>
+    /// <summary>van Genuchten parameters for horizon 4</summary>
+    /// <summary>water content at saturation [cm3/cm3]</summary>
     b_sat4: TPar;
-    /// <summary>"Restwassergehalt" [cm3/cm3] }</summary>
+    /// <summary>"residual water content" [cm3/cm3]</summary>
     b_rest4: TPar;
-    /// <summary>Fitparameter "" [1/cm] }</summary>
+    /// <summary>fitting parameter "alpha" [1/cm]</summary>
     alpha4: TPar;
-    /// <summary>Fitparameter "n" dimensionslos }</summary>
+    /// <summary>fitting parameter "n" dimensionless</summary>
     n_par4: TPar;
     /// <summary>parameter for hydraulic conductivity shape</summary>
     l_par4: TPar;
@@ -464,45 +464,45 @@ type
     PWP4: TPar;
     /// <summary>usable field capacity for horizon 4</summary>
     nFK4: TPar;
-    /// <summary>van-Genuchten Parameter fuer Horizont 5</summary>
+    /// <summary>van Genuchten parameters for horizon 5</summary>
     nFK5: TPar;
-    /// <summary>Wassergehalt bei Sättigung [cm3/cm3] }</summary>
+    /// <summary>water content at saturation [cm3/cm3]</summary>
     b_sat5: TPar;
-    /// <summary>"Restwassergehalt" [cm3/cm3] }</summary>
+    /// <summary>"residual water content" [cm3/cm3]</summary>
     b_rest5: TPar;
-    /// <summary>Fitparameter "" [1/cm] }</summary>
+    /// <summary>fitting parameter "alpha" [1/cm]</summary>
     alpha5: TPar;
-    /// <summary>Fitparameter "n" dimensionslos }</summary>
+    /// <summary>fitting parameter "n" dimensionless</summary>
     n_par5: TPar;
     /// <summary>parameter for hydraulic conductivity shape</summary>
     l_par5: TPar;
-    /// <summary>gesättigte conductivity [cm.d-1]</summary>
+    /// <summary>saturated conductivity [cm/d]</summary>
     Ks5: TPar;
-    /// <summary>Feldkapazität [cm3/cm3]</summary>
+    /// <summary>field capacity [cm3/cm3]</summary>
     FK5: TPar;
-    /// <summary>permanenter Welkepunkt</summary>
+    /// <summary>permanent wilting point</summary>
     PWP5: TPar;
-    /// <summary>nutzbare Feldkapazität</summary>
+    /// <summary>usable field capacity</summary>
     nFK5: TPar;
-    /// <summary>van-Genuchten Parameter fuer Horizont 6</summary>
+    /// <summary>van Genuchten parameters for horizon 6</summary>
     nFK6: TPar;
-    /// <summary>Wassergehalt bei Sättigung [cm3/cm3] }</summary>
+    /// <summary>water content at saturation [cm3/cm3]</summary>
     b_sat6: TPar;
-    /// <summary>"Restwassergehalt" [cm3/cm3] }</summary>
+    /// <summary>"residual water content" [cm3/cm3]</summary>
     b_rest6: TPar;
-    /// <summary>Fitparameter "" [1/cm] }</summary>
+    /// <summary>fitting parameter "alpha" [1/cm]</summary>
     alpha6: TPar;
-    /// <summary>Fitparameter "n" dimensionslos }</summary>
+    /// <summary>fitting parameter "n" dimensionless</summary>
     n_par6: TPar;
     /// <summary>parameter for hydraulic conductivity shape</summary>
     l_par6: TPar;
-    /// <summary>gesättigte conductivity [cm.d-1]</summary>
+    /// <summary>saturated conductivity [cm/d]</summary>
     Ks6: TPar;
-    /// <summary>Feldkapazität [cm3/cm3]</summary>
+    /// <summary>field capacity [cm3/cm3]</summary>
     FK6: TPar;
-    /// <summary>permanenter Welkepunkt</summary>
+    /// <summary>permanent wilting point</summary>
     PWP6: TPar;
-    /// <summary>nutzbare Feldkapazität</summary>
+    /// <summary>usable field capacity</summary>
     /// <summary></summary>
     /// <summary></summary>
     nFK6: TPar;
@@ -512,28 +512,28 @@ type
     bil_nr: TPar;
     /// <summary>effective rooting deph [cm]</summary>
     Weff: TPar;
-    /// <summary>Wasserspannung ab der Evaporation abnimmt [hPa]</summary>
+    /// <summary>matric potential at which evaporation declines [hPa]</summary>
     psi_critEvap: TPar;
-    /// <summary>NetRain = Niederschlag - Interception</summary>
+    /// <summary>NetRain = precipitation - interception</summary>
     NetRain: TExternV;
-    /// <summary>NetRain = Niederschlag - Interception</summary>
+    /// <summary>NetRain = precipitation - interception</summary>
     // THumeNumEntity;
-    /// <summary>kumulativer Niederschlag [mm]</summary>
+    /// <summary>cumulative precipitation [mm]</summary>
     CumNetRain: TState;
-    /// <summary>potentielle Evaporationsrate</summary>
+    /// <summary>potential evaporation rate</summary>
     Pot_Evap: THumeNumEntity;
 
-    /// <summary>Reduktionsfaktor for Evaporation</summary>
+    /// <summary>reduction factor for evaporation</summary>
     red_evap: TVAR;
-    /// <summary>aktuelle Evaporationsrate</summary>
+    /// <summary>actual evaporation rate</summary>
     Act_Evap: TVAR;
     /// <summary>Estimation of maximum exfiltration rate</summary>
     Exfiltration: TVAR;
-    /// <summary>kumulative Transpiration [mm]</summary>
+    /// <summary>cumulative transpiration [mm]</summary>
     CumTrans: TState;
-    /// <summary>kumulative Evaporation</summary>
+    /// <summary>cumulative evaporation</summary>
     CumEvap: TState;
-    /// <summary>kumulative Sickerwasserspende/kapillarer Aufstieg [mm]</summary>
+    /// <summary>cumulative drainage/capillary rise [mm]</summary>
     CumDrainage: TState;
     /// <summary></summary>
     CumWaterBalance: TState;
@@ -547,7 +547,7 @@ type
     /// <summary>maximum ponding height [mm];</summary>
     PondMax: TPar;
 
-    /// <summary>kumulative Bilanz [mm] zur Kontrolle!</summary>
+    /// <summary>cumulative balance [mm] for verification</summary>
     /// <summary>cumulative Runoff [mm]</summary>
     CumRunoff: TState;
 
@@ -560,7 +560,7 @@ type
     /// <summary>total number of iterations over the simulation run</summary>
     global_iter: TVAR;
 
-    /// <summary>interne Zeitschrittweite des Diff. Wassertransportmodells</summary>
+    /// <summary>internal time step width of the diffusive water transport model</summary>
     dt: TVAR;
     /// <summary>number of time steps per day</summary>
     n_int_timesteps: TVAR;
@@ -661,11 +661,11 @@ type
     property Par_n1: TPar read n_par1 write n_par1;
     property Par_lpar1: TPar read l_par1 write l_par1;
     property Par_alpha1: TPar read alpha1 write alpha1;
-    /// <summary>Feldkapazit�t [cm3/cm3]</summary>
+    /// <summary>field capacity [cm3/cm3]</summary>
     property Par_FK1: TPar read FK1 write FK1;
-    /// <summary>permanenter Welkepunkt</summary>
+    /// <summary>permanent wilting point</summary>
     property Par_PWP1: TPar read PWP1 write PWP1;
-    /// <summary>nutzbare Feldkapazit�t</summary>
+    /// <summary>usable field capacity</summary>
     property Par_nFK1: TPar read nFK1;
 
     property Par_b_sat2: TPar read b_sat2 write b_sat2;
@@ -674,11 +674,11 @@ type
     property Par_n2: TPar read n_par2 write n_par2;
     property Par_lpar2: TPar read l_par2 write l_par2;
     property Par_alpha2: TPar read alpha2 write alpha2;
-    /// <summary>Feldkapazit�t [cm3/cm3]</summary>
+    /// <summary>field capacity [cm3/cm3]</summary>
     property Par_FK2: TPar read FK2 write FK2;
-    /// <summary>permanenter Welkepunkt</summary>
+    /// <summary>permanent wilting point</summary>
     property Par_PWP2: TPar read PWP2 write PWP2;
-    /// <summary>nutzbare Feldkapazit�t</summary>
+    /// <summary>usable field capacity</summary>
     property Par_nFK2: TPar read nFK2;
 
     property Par_b_sat3: TPar read b_sat3 write b_sat3;
@@ -1562,9 +1562,9 @@ begin
     kf[i] := 0;
     /// <summary>unsaturated hydraulic conductivities [cm/d]</summary>
     Ku_arr[i] := 0;
-    /// <summary>Mittelwert der Diffusivit�t zwischen 2 Kompartimenten [cm2/d] }</summary>
+    /// <summary>mean diffusivity between two compartments [cm2/d]</summary>
     avg_Dw[i] := 0;
-    /// <summary>Mittelwert der unsaturatedn hydr. conductivity zwischen 2 Kompartimenten [cm/d] }</summary>
+    /// <summary>mean unsaturated hydraulic conductivity between two compartments [cm/d]</summary>
     avg_Ku[i] := 0;
     /// <summary>Intermediate variable</summary>
     Dw_fact[i] := 0;
@@ -1578,20 +1578,20 @@ begin
     diag[i] := 0;
     /// <summary>upper vector of the tri-diagonal matrix</summary>
     upper[i] := 0;
-    /// <summary>Wassergehalte bei der letzten Iteration [cm3/cm3 }</summary>
+    /// <summary>water contents at the last iteration [cm3/cm3]</summary>
     last_iter_theta[i] := 0;
     est_theta[i] := 0;
     /// <summary>new soil water contents</summary>
     theta_new[i] := 0;
-    /// <summary>Feldkapazit�t [cm3/cm3]</summary>
+    /// <summary>field capacity [cm3/cm3]</summary>
     FK_Arr[i] := 0;
-    /// <summary>permanenter Welkepunkt [cm3/cm3]</summary>
+    /// <summary>permanent wilting point [cm3/cm3]</summary>
     PWP_Arr[i] := 0;
-    /// <summary>nutzbare Feldkapazit�t [cm3/cm3]</summary>
+    /// <summary>usable field capacity [cm3/cm3]</summary>
     nFK_Arr[i] := 0;
-    /// <summary>alte Wasserfl�sse [cm/d]</summary>
+    /// <summary>previous water flows [cm/d]</summary>
     Wflow_old[i] := 0;
-    /// <summary>alte Wassergehalte</summary>
+    /// <summary>previous water contents</summary>
     theta_old[i] := 0;
     /// <summary>New estimate of water potential [cm]</summary>
     psi_neu[i] := 0;
@@ -2186,11 +2186,11 @@ begin
 
   Max_dt.v := min(Max_dt.v, GlobMod.Time.c);
   // value of maximum timestep
-  // UB 20.1.16: Min eingef�gt, damit kleinere maximale Zeitschritte �ber property
-  // einstellbar sind.
-  // hk 25.1.01: sollte eigentlich �ber die Property einzustellen sein ...
-  // keine Ahnung wer das reingeschrieben hatte ...
-  // max_aenderWG := 0.01; // maximale Wassergehalts�nderung pro Zeitschritt
+  // UB 20.1.16: minimum added so smaller maximum time steps can be set via
+  // property.
+  // hk 25.1.01: should actually be set via the property ...
+  // no idea who wrote this ...
+  // max_aenderWG := 0.01; // maximum change in water content per time step
 
   // set "property Variable" according to option choise in Options.ini
   if OptIniMethod.Option = 'watercontents' then
@@ -2309,19 +2309,18 @@ end;
 
 procedure TSoilWaterMod.CalcEvap_red_f;
 { ********************************************************************** }
-{ Zweck : Ermittlung eines Reduktionsfaktors der die potentielle
-  Evaporation um den Einflu� einer geringen Bodenfeuchte an der
-  Bodenfl�che korrigiert
+{ Purpose: Determination of a reduction factor that adjusts potential
+  evaporation for the influence of low soil moisture at the soil surface
 
-  Parameter :
+  Parameters:
 
-  Name             Inhalt                          Einheit      Typ
+  Name             Content                         Unit         Type
 
-  Psi              Bodenwasserspannung im          [cm]         I
-  obersten Kompartimente (10 cm Tiefe)
+  Psi              Soil water tension in the       [cm]         I
+  uppermost compartment (10 cm depth)
 
-  evap_red_f       Reduktionsfaktor der            [-]           O
-  potentiellen Evaporation
+  evap_red_f       Reduction factor for            [-]           O
+  potential evaporation
 
   { ********************************************************************** }
 
@@ -2381,7 +2380,7 @@ var
   Overflow: real;
 begin
   { if (iter = 0) and (fCompMethod = Diffusion) then
-    begin // lineare Extrapolation der Wassergehalte bei der ersten Iteration
+    begin // linear extrapolation of water contents during the first iteration
     for i := 1 to n_comp do begin
     est_theta[i + 1] := 0.5 * (1 + dt.v / (2 * dt_alt)) *
     (theta_arr[i].v + theta_arr[i + 1].v) - 0.25 * dt.v / dt_alt *
@@ -2403,10 +2402,10 @@ begin
     end;
     end
     else }
-  // begin // weitere Iterationen
-  // Calculation der Wasserdiffusivit�t und der unsaturatedn hydraulischen
-  // conductivity for jedes Kompartiment aus dem Mittelwert der Wassergehalte
-  // zu Beginn des Zeitschrittes und zum Ende des Zeitschrittes
+  // begin // further iterations
+  // Calculation of water diffusivity and unsaturated hydraulic conductivity
+  // for each compartment from the mean water contents at the start and end of
+  // the time step
 
   { for i := 1 to n_comp + 1 do
     begin
@@ -2414,7 +2413,8 @@ begin
     // Dw_arr[i] := WPar[i].Dw_f((theta_neu[i] + theta_arr[i].v) / 2.0);
     // Ku_arr[i] := WPar[i].Ku_b_f((theta_neu[i] + theta_arr[i].v) / 2.0);
 
-    // Version mit C gemittelt �ber Beginn und Ende Zeitschritt und impliziter Calculation der Leitf�higkeiten
+    // Version with C averaged over start and end of the time step and implicit
+    // calculation of conductivities
     // c_arr[i]  := (WPar[i].C_psi_f(psi_neu[i])+WPar[i].C_psi_f(psi_arr[i].v))/2;
     Dw_arr[i] := max(0, WPar[i].Dw_f(max(self.WPar[i].b_rest, theta_new[i])));
     Ku_arr[i] := max(0, WPar[i].Ku_b_f(max(self.WPar[i].b_rest, theta_new[i])));
@@ -2469,7 +2469,7 @@ begin
 
   for i := 1 to n_comp + 1 do
   begin
-    { unter PWP  => keine Fl�sse }   // Ratjen 20.07.17
+    { below PWP  => no flows }   // Ratjen 20.07.17
     { if ((theta_neu[i] < PWP_Arr[i]) and (Dw_fact[i] > 0)) then
       begin
       avg_Dw[i] := 0.0;
@@ -2482,7 +2482,7 @@ begin
       Dw_fact[i] := avg_Dw[i] * dt.v / Dist[i - 1];
       Ku_fact[i] := avg_Ku[i] * dt.v;
     end;
-    { Bei WG > Sat  => keine Fl�sse }   // Ratjen
+    { If water content > saturation => no flows }   // Ratjen
     { if ((theta_neu[i] >= WPar[i].b_sat) and (Dw_fact[i]<0)) then
       begin
       avg_Dw[i] := 0.0;
@@ -2541,18 +2541,18 @@ end;
 procedure TSoilWaterMod.GetWaterBalance;
 
 { ********************************************************************** }
-{ Zweck : Calculation der Massenbilanz und der maximalen Wassergehalts-
-  �nderung im Simulationszeitschritt
+{ Purpose: Calculation of the mass balance and the maximum change in
+  water content during the simulation time step
 
-  Parameter :
+  Parameters:
 
-  Name             Inhalt                          Einheit      Typ
-  w_rec            Record mit den Wasserdaten                    I
-  ( siehe Typdefinitionen )
-  geo_rec          Record mit den Geometriedaten                 I
-  comps            Zahl der Kompartimente           [-]          I
+  Name             Content                         Unit         Type
+  w_rec            Record with the water data                    I
+  (see type definitions)
+  geo_rec          Record with the geometry data                 I
+  comps            Number of compartments           [-]          I
 
-  max_d_WaGe       maximale Wassergehalts�nderung   [cm3/cm3]    O }
+  max_d_WaGe       maximum change in water content  [cm3/cm3]    O }
 { ********************************************************************** }
 
 var
@@ -2642,24 +2642,24 @@ end;
 procedure TSoilWaterMod.get_new_dt;
 
 { ********************************************************************** }
-{ Zweck :  Calculation der neuen Zeitschrittweite "dt" aufgrund des Verh�ltnisses
-  der maximal erlaubten Wassergehalts�nderung zur maximalen aktuellen
-  Wassergehalts�nderung
+{ Purpose:  Calculation of the new time step width "dt" based on the ratio
+  of the maximum permitted change in water content to the maximum current
+  change in water content
 
-  Parameter :
+  Parameters:
 
-  Name             Inhalt                          Einheit      Typ
+  Name             Content                         Unit         Type
 
-  max_aender       maximal erlaubte �nderung       [cm3/cm3]    I
-  der Wassergehalte in einem
-  Zeitschritt
+  max_aender       maximum permitted change        [cm3/cm3]    I
+  of water content in a
+  time step
 
-  akt_aender       maximale �nderung des Wasser-   [cm3/cm3]    I
-  gehaltes in einem Kompartiment
-  im letzten Zeitschritt
+  akt_aender       maximum change in water         [cm3/cm3]    I
+  content in a compartment
+  during the last time step
 
-  dt               Zeitschrittweite                [d]          O
-  dt_alt           letzte Zeitschrittweite         [d]          O }
+  dt               time step width                 [d]          O
+  dt_alt           previous time step width        [d]          O }
 
 { ********************************************************************** }
 
@@ -2684,7 +2684,7 @@ begin
   // dt_neu := min(dt_neu, dt_neu_flow);
 
   if ((dt_neu > (1.5 * dt.v)) { and (dt_neu > min_dt*100) } ) then
-    dt_neu := dt.v * 1.5; { Zu gro�er Zeitschrittsprung ? }
+    dt_neu := dt.v * 1.5; { Time step increase too large? }
   dt.v := dt_neu;
   if SumOfInternalTimeSteps.v + dt.v > GlobTime.c then
   begin
@@ -2698,8 +2698,8 @@ end;
 
 procedure TSoilWaterMod.get_delt_iter_max;
 { ********************************************************************** }
-{ Zweck : Calculation des maximalen Wassergehaltsunterschiedes in einem
-  Kompartiment von einem Iterationsschritt zum n�chsten }
+{ Purpose: Calculation of the maximum difference in water content within
+  a compartment from one iteration step to the next }
 { ********************************************************************** }
 
 var
@@ -2796,17 +2796,17 @@ begin
   CalcSinks;
 
   if fCompMethod = Capacity then
-    CapWatSolut; // Kapazit�tsbasiertes Modell
+    CapWatSolut; // capacity-based model
   if fCompMethod = Diffusion then
-    Diffwater_solut; // Potentialbasiertes Modell mit Wassergehalten
+    Diffwater_solut; // potential-based model using water contents
   if fCompMethod = Richards then
-    Richardswater_solut; // Potentialbasiertes Modell mit Wasserspannungen
+    Richardswater_solut; // potential-based model using water potentials
   if fCompMethod = Mixed then
-    Mixedwater_solut; // Potentialbasiertes Modell mit Wasserspannungen
+    Mixedwater_solut; // potential-based model using water potentials
   if fCompMethod = MixedHydrus then
-    MixedHydruswater_solut; // Potentialbasiertes Modell mit Wasserspannungen
+    MixedHydruswater_solut; // potential-based model using water potentials
 
-  // Calculation der abgeleiteten Wassergehalte for verschiedene Bodenschichten
+  // Calculation of derived water contents for different soil layers
   update_Wcont_Values;
 
   // CumEvap.c := CumEvap.c +
@@ -2832,8 +2832,8 @@ var
 begin
   if rep = false then
   begin
-    { Calculation der Wasserspannungen [cm] bei Feldkapazit�t bzw. beim
-      permanenten Welkepunkt }
+    { Calculation of water potentials [cm] at field capacity and at the
+      permanent wilting point }
     psiWP := power(10, 4.2);
     psiFK := power(10, 1.8);
 
@@ -2966,8 +2966,8 @@ end;
 
 procedure TSoilWaterMod.set_new_state_vars;
 { ********************************************************************** }
-{ Zweck : Umsetzen der errechneten Wassergehalte in die globale
-  "state"-Variable, Errechnung der Wasserspannungen }
+{ Purpose: Transfer the calculated water contents into the global
+  "state" variable and calculate the water potentials }
 { ********************************************************************** }
 
 var
@@ -3007,11 +3007,10 @@ end;
 
 procedure TSoilWaterMod.obere_Randbedingung;
 
-{ zur Verhinderung von ung�ltigen Funktionsaufrufen wird zuerst
-  eine Pr�fung vorgenommen, ob ein Absinken des Wassergehaltes unter den
-  "Restwassergehalt b_rest" oder ein Ansteigen �ber den "S�ttigungs-
-  wassergehalt b_sat" zu erwarten ist. Das Ergebniss dieser Pr�fung wird
-  in den Variablen "Wet", bzw. "Dry" gespeichert. }
+{ To prevent invalid function calls, first check whether a decline of the
+  water content below the residual water content b_rest or a rise above the
+  saturated water content b_sat is expected. The result of this check is
+  stored in the variables "Wet" and "Dry". }
 var
   psi_top, MaxFlow1: real;
 
@@ -3032,7 +3031,7 @@ begin
 
   if ((MaxFlow1 > MaxInfil)) then
   begin
-    wet := true; { Pr�fung auf S�ttigung }
+    wet := true; { Check for saturation }
     WflowInt_arr[1].v := MaxInfil;
   end;
 
@@ -3108,7 +3107,7 @@ var
         Thick[act_n_comp + 1] - Sink_arr[act_n_comp].v * dt.v /
         Thick[act_n_comp]
     else if (LowerBoundaryCondition = NoFlow) then
-      { No Flow Flu�-Randbedingung }
+      { no-flow flux boundary condition }
       B_vektor[n_comp] := theta_arr[n_comp].v + Ku_fact[n_comp] / Thick[n_comp]
         - WflowInt_arr[n_comp + 1].v / Thick[n_comp] - Sink_arr[n_comp].v * dt.v
         / Thick[n_comp]
@@ -3289,11 +3288,11 @@ var
     // avg_ku[0] := sqrt(Wpar[1].ks*Ku_arr[1]);  // geometric mean
     avg_Ku[0] := (WPar[1].Ks + Ku_arr[1]) / 2; // aritmethic mean
 
-    { Calculation von Koeffizienten for die Aufstellung des Gleichungssystems }
+    { Calculation of coefficients for constructing the system of equations }
     for i := 1 to n_comp do
     begin
-      if c_arr[i] >= 0.0 then { Tritt S�ttigung auf ? }
-        P[i] := 0.0 { => keine weitere �nderung der Wassergehalte }
+      if c_arr[i] >= 0.0 then { Does saturation occur? }
+        P[i] := 0.0 { => no further change in water contents }
       else
         P[i] := dt.v / (c_arr[i] * Thick[i]);
       kf[i] := avg_Ku[i] / Dist[i];
@@ -3334,11 +3333,10 @@ var
     psi_top1: real;
     i: integer;
 
-    { zur Verhinderung von ung�ltigen Funktionsaufrufen wird zuerst
-      eine Pr�fung vorgenommen, ob ein Absinken des Wassergehaltes unter den
-      "Restwassergehalt b_rest" oder ein Ansteigen �ber den "S�ttigungs-
-      wassergehalt b_sat" zu erwarten ist. Das Ergebniss dieser Pr�fung wird
-      in den Variablen "Wet", bzw. "Dry" gespeichert. }
+    { To prevent invalid function calls, first check whether a decline of the
+      water content below the residual water content b_rest or a rise above the
+      saturation water content b_sat is expected. The result of this check is
+      stored in the variables "Wet" and "Dry". }
   begin
     // est_theta_1 := WPar[1].b_psi_f(psi_neu[1]) + (NetRain.v -Sink_arr[1].v) * dt.v / Dicke[1];
     // est_theta_1 := WPar[1].b_psi_f(psi_arr[1].v) + (NetRain.v*10 -Sink_arr[1].v) * dt.v / Dicke[1]-
@@ -3444,7 +3442,7 @@ var
     end
     else if (LowerBoundaryCondition = NoFlow) then
     begin
-      { No Flow Flu�-Randbedingung }
+      { no-flow flux boundary condition }
 
       B_vektor[n_comp] := psi_arr[n_comp].v + P[n_comp] * (avg_Ku[n_comp - 1]) -
         Sink_arr[n_comp].v * P[n_comp];
@@ -3634,11 +3632,10 @@ var
   var
     est_theta_1: real;
 
-    { zur Verhinderung von ung�ltigen Funktionsaufrufen wird zuerst
-      eine Pr�fung vorgenommen, ob ein Absinken des Wassergehaltes unter den
-      "Restwassergehalt b_rest" oder ein Ansteigen �ber den "S�ttigungs-
-      wassergehalt b_sat" zu erwarten ist. Das Ergebniss dieser Pr�fung wird
-      in den Variablen "Wet", bzw. "Dry" gespeichert. }
+    { To prevent invalid function calls, first check whether a decline of the
+      water content below the residual water content b_rest or a rise above the
+      saturation water content b_sat is expected. The result of this check is
+      stored in the variables "Wet" and "Dry". }
   begin
     // est_theta_1 := WPar[1].b_psi_f(psi_arr[1].v) + NetRain.v * dt.v/dicke[1];
     // theta_airdryness := WPar[1].b_psi_f(Airdryness);
@@ -3699,7 +3696,7 @@ var
     end
     else if (LowerBoundaryCondition = NoFlow) then
     begin
-      // No Flow Flu�-Randbedingung }
+      // no-flow flux boundary condition }
 
       Res[n_comp] := avg_Ku[n_comp - 1] / (Thick[n_comp] * Dist[n_comp]) *
         (psi_arr[n_comp].v - psi_arr[n_comp - 1].v) // inflow from upper layer
@@ -3900,11 +3897,10 @@ var
     psi_top1: real;
     i: integer;
 
-    { zur Verhinderung von ung�ltigen Funktionsaufrufen wird zuerst
-      eine Pr�fung vorgenommen, ob ein Absinken des Wassergehaltes unter den
-      "Restwassergehalt b_rest" oder ein Ansteigen �ber den "S�ttigungs-
-      wassergehalt b_sat" zu erwarten ist. Das Ergebniss dieser Pr�fung wird
-      in den Variablen "Wet", bzw. "Dry" gespeichert. }
+    { To prevent invalid function calls, first check whether a decline of the
+      water content below the residual water content b_rest or a rise above the
+      saturation water content b_sat is expected. The result of this check is
+      stored in the variables "Wet" and "Dry". }
 
   begin
     // est_theta_1 := WPar[1].b_psi_f(psi_arr[1].v) + NetRain.v * dt.v/dicke[1];
@@ -4019,7 +4015,7 @@ var
     end
     else if (LowerBoundaryCondition = NoFlow) then
     begin
-      // No Flow Flu�-Randbedingung }
+      // no-flow flux boundary condition }
       Res[n_comp] := psi_neu[n_comp] * P[n_comp] + avg_Ku[n_comp - 1] -
         (theta_new[n_comp] - theta_arr[n_comp].v) * Thick[n_comp] / dt.v -
         Sink_arr[n_comp].v;
@@ -4070,7 +4066,7 @@ var
       last_iter_theta[i] := theta_new[i];
       { Umsetzen der berechneten Spannungen }
       psi_neu[i] := max(0, Res[i]);
-      // TODO ggf. weiter pr�fen ob eine Nullsetzung notwendig ist ...
+      // TODO if necessary, further check whether resetting to zero is required ...
       // Neue Wassergehalte aus Ableitung
       theta_new[i] := WPar[i].b_psi_f(psi_neu[i]);
       if ShowWarnings then
