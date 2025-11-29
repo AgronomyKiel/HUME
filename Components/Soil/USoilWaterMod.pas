@@ -187,6 +187,9 @@ type
     procedure set_new_state_vars;
     /// <summary>calculation of runoff</summary>
     procedure CalcOverflow;
+
+    procedure SetRangeAverage(var target: TVAR; startIdx, endIdx: integer);
+
     function getNetRain: TExternV;
     function getPotEvap: TExternV;
     /// <summary>wrapper for all parameter creation</summary>
@@ -229,7 +232,7 @@ type
     procedure InitDailySums_and_Changes(var OldSumSoilwater: real);
     procedure CalcProfile_and_HorizonSums;
     procedure TransferWGsToNextINI;
-    procedure obere_Randbedingung;
+    procedure UpperBoundaryCondition;
 
   protected
     /// <summary>soil water diffusivities [cm2/d] }</summary>
@@ -485,8 +488,6 @@ type
     /// <summary>permanent wilting point</summary>
     PWP5: TPar;
     /// <summary>usable field capacity</summary>
-    nFK5: TPar;
-    /// <summary>van Genuchten parameters for horizon 6</summary>
     nFK6: TPar;
     /// <summary>water content at saturation [cm3/cm3]</summary>
     b_sat6: TPar;
@@ -504,10 +505,6 @@ type
     FK6: TPar;
     /// <summary>permanent wilting point</summary>
     PWP6: TPar;
-    /// <summary>usable field capacity</summary>
-    /// <summary></summary>
-    /// <summary></summary>
-    nFK6: TPar;
     /// <summary>For initalisation of Soil water contents and suction values</summary>
     PsiStart1: TPar;
     /// <summary>Index of Layer where lower boundary fluxes are calculated</summary>
@@ -786,19 +783,23 @@ uses
 {$ENDIF}
     ;
 
-/// <summary>Update of aggregated soil water contents in different soil layers</summary>
-procedure TSoilWaterMod.update_Wcont_Values;
+
+procedure TSoilWaterMod.SetRangeAverage(var target: TVAR; startIdx, endIdx: integer);
 
 var
-  procedure SetRangeAverage(var target: TVAR; startIdx, endIdx: integer);
-  var
     i: integer;
-  begin
-    target.v := 0;
-    for i := startIdx to endIdx do
-      target.v := target.v + theta_arr[i].v;
-    target.v := target.v / (endIdx - startIdx + 1);
-  end;
+begin
+  target.v := 0;
+  for i := startIdx to endIdx do
+    target.v := target.v + theta_arr[i].v;
+  target.v := target.v / (endIdx - startIdx + 1);
+end;
+
+
+
+    /// <summary>Update of aggregated soil water contents in different soil layers</summary>
+procedure TSoilWaterMod.update_Wcont_Values;
+
 begin
   // Calculation of derived water contents for different soil layers
 
@@ -1772,17 +1773,17 @@ begin
   for i := 1 to n_comp + 1 do
   begin
     VarCreate('WG' + ndx_str(i), '[cm3.cm-3]', 0.3, true, theta_arr[i],
-      'Wassergehaltsvektor [cm3/cm3]');
+      'soil water content vector [cm3/cm3]');
     theta_arr[i].ReadFromIniFile := true;
     VarCreate('Psi' + ndx_str(i), '[cm]', WPar[i].psi_b_f(theta_arr[i].v), true,
-      psi_arr[i], '// Wasserspannungsvektor [cm]');
+      psi_arr[i], 'soil water potential vector [cm]');
     VarCreate('WFlowInt' + ndx_str(i), '[cm.d-1]', 0, false, WflowInt_arr[i]);
     WflowInt_arr[i].writetoFile := false;
     VarCreate('WFlow' + ndx_str(i), '[cm.d-1]', 0, false, Wflow_arr[i],
-      'Flussvektor [cm/d]');
+      'flow vector [cm/d]');
     Wflow_arr[i].writetoFile := true;
     VarCreate('Sink' + ndx_str(i), '[cm.d-1]', 0, false, Sink_arr[i],
-      'Sinkvektor [cm]');
+      'sink vector [cm]');
     VarCreate('SinkInt_' + ndx_str(i), '[cm.d-1]', 0, false, SinkInt_arr[i]);
     SinkInt_arr[i].writetoFile := false;
   end;
@@ -1832,7 +1833,7 @@ begin
   VarCreate('ProzNFK0_Weff', '[%]', 0.0, false, ProzNFK0_Weff);
   VarCreate('ProzNFK0_100', '[%]', 0.0, false, ProzNFK0_100);
   VarCreate('ProzNFK0_30', '[%]', 0.0, false, ProzNFK0_30,
-    'Anteil pflanzenverf�gbares Wasser an der nFK in Prozent');
+    'proportion of plant available water at field capacity in percent from 0-30cm');
 
 end;
 
@@ -1858,7 +1859,7 @@ begin
   for i := 1 to n_comp + 1 do
   begin
     StateCreate('WMenge' + ndx_str(i), '[cm]', theta_arr[i].v * Thick[i], false,
-      WAmount[i], 'Wassermenge je Schicht [cm]');
+      WAmount[i], 'Water amount per layer [cm]');
     WAmount[i].ReadFromIniFile := false;
   end;
 end;
@@ -1954,7 +1955,7 @@ begin
   fLD6Option.AddLD;
 
   OptCreate('Untere_Randb', 'freeflow', OptLowerBoundary,
-    'Option for lower boundary condition, 4 options implemented, constant water content/matrix potential (�ConstContent�), n_comp + 1 keeps constant, (�FreeFlow�) (�NoFlow�)');
+    'Option for lower boundary condition, 4 options implemented, constant water content/matrix potential (ConstContent), n_comp + 1 keeps constant, (FreeFlow) (NoFlow)');
   OptLowerBoundary.OptionList.Add('ConstContent');
   OptLowerBoundary.OptionList.Add('NoFlux');
   OptLowerBoundary.OptionList.Add('Groundwater');
@@ -2116,17 +2117,17 @@ begin
   for i := 1 to 6 do
   begin
     ParCreate(Format('b_sat%d', [i]), '[cm3.cm-3]', defaults[i].b_sat,
-      b_satPars[i], 'Van Genuchten Parameter b_sat');
+      b_satPars[i], 'Van Genuchten parameter b_sat');
     ParCreate(Format('b_rest%d', [i]), '[cm3.cm-3]', defaults[i].b_rest,
-      b_restPars[i], 'Van Genuchten Parameter b_rest');
+      b_restPars[i], 'Van Genuchten parameter b_rest');
     ParCreate(Format('alpha%d', [i]), '[1/cm]', defaults[i].alpha, alphaPars[i],
-      Format('Van-Genuchten-Parameter alpha for horizon %d', [i]));
+      Format('Van Genuchten parameter alpha for horizon %d', [i]));
     ParCreate(Format('n_par%d', [i]), '[-]', defaults[i].n_par,
-      n_parPars[i], 'Van-Genuchten-Parameter n');
+      n_parPars[i], 'Van Genuchten parameter n');
     ParCreate(Format('l_par%d', [i]), '[-]', defaults[i].l_par,
-      l_parPars[i], Format('Van-Genuchten-Parameter l for %dth horizon', [i]));
+      l_parPars[i], Format('Van Genuchten parameter l for %dth horizon', [i]));
     ParCreate(Format('Ks_%d', [i]), '[-]', defaults[i].Ks, KsPars[i],
-      'Van Genuchten Parameter K_sat');
+      'Van Genuchten parameter K_sat');
     ParCreate(Format('FK_%d', [i]), '[cm3/cm3]', defaults[i].FK, FKPars[i],
       'field capacity');
     ParCreate(Format('nFK_%d', [i]), '[cm3/cm3]', defaults[i].nFK,
@@ -2148,32 +2149,28 @@ begin
     'minimum time step length for internal calculation');
   ParCreate('Itermax ', '[n]', 7, IterMax,
     'minimum number of iterations before time step is adjusted');
-  // Index for Bilanzierung
   ParCreate('Max_aenderWG', '[cm3/cm3]', 0.001, max_aenderWG,
     'maximum WChange during one internal time step');
-  // Index for Bilanzierung
   ParCreate('Max_IterError', '[cm3/cm3]', 0.0001, max_IterError,
     'maximum Change of Water content during one (Picard)-Iteration ');
-  // Index for Bilanzierung
   ParCreate('bil_nr', '[]', 18, bil_nr);
-  // Index for Bilanzierung
   for i := 1 to n_comp + 1 do
     if WPar[i] = nil then
       WPar[i] := TGenucht.create;
   ParCreate('HoriNdx1', '[-]', 3, HoriNdx1,
-    'unterste Schicht des 1. Bodenhorizonts');
+    'lowest layer of the 1st soil horizon');
   ParCreate('HoriNdx2', '[-]', 6, HoriNdx2,
-    'unterste Schicht des 2. Bodenhorizonts');
+    'lowest layer of the 2nd soil horizon');
   ParCreate('HoriNdx3', '[-]', 10, HoriNdx3,
-    'unterste Schicht des 3. Bodenhorizonts');
+    'lowest layer of the 3rd soil horizon');
   ParCreate('HoriNdx4', '[-]', 20, HoriNdx4,
-    'unterste Schicht des 4. Bodenhorizonts');
+    'lowest layer of the 4th soil horizon');
   ParCreate('HoriNdx5', '[-]', 20, HoriNdx5,
-    'unterste Schicht des 5. Bodenhorizonts');
+    'lowest layer of the 5th soil horizon');
   ParCreate('HoriNdx6', '[-]', 20, HoriNdx6,
-    'unterste Schicht des 6. Bodenhorizonts');
+    'lowest layer of the 6th soil horizon');
   ParCreate('bsat_scaling', '[-]', 1, bsat_scaling,
-    'Skalierungsfaktor for bsat (wird in allen Horizonten mit diesem Faktor multipliziert)');
+    'Scaling factor for bsat (multiplied in all horizons)');
   ParCreate('alpha_scaling', '[-]', 1, alpha_scaling,
     'Parameter for linear scaling of soil hydraulic Parameter alpha');
   CreateHorizonParameters;
@@ -2242,7 +2239,7 @@ begin
     FKsFromTexture := FromTexture;
   SetGenuchtenPars; // Init Genuchten Pars
   SetLDPars; // Init LDs
-  SetLDnumbers; // Init numercial LD classes
+  SetLDnumbers; // Init numerical LD classes
 
   self.max_IterErrorsave := self.max_aenderWG.v;
   Iter_save := trunc(IterMax.v);
@@ -2648,12 +2645,12 @@ procedure TSoilWaterMod.GetWaterBalance;
 var
   i: byte;
 
-  net_flow, { Netto-Fluss                       [cm] }
-  d_WaMe, { Aenderung der Wassermenge im Kompartiment                  [cm] }
+  net_flow, { Net flow                      [cm] }
+  d_WaMe, { Change in water amount in the compartment                  [cm] }
   d_WaGe,
-  { Aenderung des Wassergehaltes  im Kompartiment                  [cm3/cm3] }
-  sum_d_WaMe, { Summe der Wassermengen-aenderungen                       [cm] }
-  sum_sink { Summe der Sink-Terme            [cm] }
+  { Change in water content  in the compartment                  [cm3/cm3] }
+  sum_d_WaMe, { Sum of water amount changes                       [cm] }
+  sum_sink { Sum of sink terms            [cm] }
 
     : real;
 
@@ -2874,9 +2871,6 @@ begin
   Iter_save := trunc(IterMax.v); // save maximum iteration step number
   Exfiltration.v := Dw_arr[1] * theta_arr[1].v / (0.5 * Thick[1]) * 10;
   CalcEvap_red_f;
-
-  // for Debugging    Act_Evap.v := 0.0;
-
   Act_Evap.v := Pot_Evap.v * red_evap.v;
 
   if (uppercase(act_EvaporationOption.Option) = uppercase('inclExfiltration'))
@@ -2987,11 +2981,10 @@ begin
       end;
     end;
     rep := true;
-  end; { Ende Initialisierungssequenz }
+  end; { End initial rep=false }
 
+  // for capacity-based model always time step of global model
   dt.v := GlobTime.c;
-  // bei Kapazitätswassermodell immer Zeitschritt des globalen
-  // Modells
 
   for i := 1 to n_comp + 1 do
   begin
@@ -3095,7 +3088,7 @@ begin
   end;
 end;
 
-procedure TSoilWaterMod.obere_Randbedingung;
+procedure TSoilWaterMod.UpperBoundaryCondition;
 
 { To prevent invalid function calls, first check whether a decline of the
   water content below the residual water content b_rest or a rise above the
@@ -3181,7 +3174,7 @@ var
       end; }
   end;
 
-  procedure untere_Randbedingung;
+  procedure LowerBoundary;
 
   { In diesem Fall ist ein vorgegebener unterer Wassergehalt,
     bzw. eine 0-Gradienten Randbedingung vorgegeben }
@@ -3222,9 +3215,9 @@ var
       if ShowWarnings then
 
 {$IFNDEF NONVISUAL}
-        showmessage('Fehler beim L�sen des Gleichungssystems');
+        showmessage('Error solving equation system');
 {$ELSE}
-        writeln('Fehler beim L�sen des Gleichungssystems');
+        writeln('Error solving equation system');
 {$ENDIF}
     if (LowerBoundaryCondition = Groundwatertable) then
       for i := n_comp downto act_n_comp { + 1 } do
@@ -3330,9 +3323,9 @@ begin { procedure Diffwater_solut }
   iter := 0;
   repeat
     CalcConductivities;
-    obere_Randbedingung;
+    UpperBoundaryCondition;
     Mittelteil;
-    untere_Randbedingung;
+    LowerBoundary;
     Loesung_Gleichungssystem;
     get_delt_iter_max;
 {$IFNDEF NONVISUAL}
@@ -3415,7 +3408,7 @@ var
     end;
   end;
 
-  procedure obere_Randbedingung;
+  procedure UpperBoundary;
 
   var
     est_theta_1: real;
@@ -3516,11 +3509,11 @@ var
     end;
   end;
 
-  procedure untere_Randbedingung;
+  procedure LowerBoundary;
+
   { In diesem Fall ist ein vorgegebener unterer Wassergehalt,
     bzw. eine 0-Gradienten Randbedingung vorgegeben }
-
-  begin
+ begin
     if (LowerBoundaryCondition = ConstContent) or
       (LowerBoundaryCondition = Groundwatertable) or
       (LowerBoundaryCondition = FreeFlow) then
@@ -3556,7 +3549,7 @@ var
       diag[n_comp] := -P[n_comp] * kf[n_comp - 1] - P[n_comp] * kf[n_comp] + 1; }
   end;
 
-  procedure Loesung_Gleichungssystem;
+  procedure SolvingEquationSystem;
   var
     i: byte;
     c: real; // specific soil water capacity [1/cm])
@@ -3566,10 +3559,10 @@ var
       if ShowWarnings then
 
 {$IFNDEF NONVISUAL}
-        showmessage('Fehler beim L�sen des Gleichungssystems');
+        showmessage('Error solving equation system');
 
 {$ELSE}
-        writeln('Fehler beim L�sen des Gleichungssystems');
+        writeln('Error solving equation system');
 
 {$ENDIF}
     if (LowerBoundaryCondition = Groundwatertable) then
@@ -3655,10 +3648,10 @@ begin { procedure Richardswater_solut }
   iter := 0;
   repeat
     Leitfaehigkeiten;
-    obere_Randbedingung;
+    UpperBoundary;
     Mittelteil;
-    untere_Randbedingung;
-    Loesung_Gleichungssystem;
+    LowerBoundary;
+    SolvingEquationSystem;
     get_delt_iter_max;
 {$IFNDEF NONVISUAL}
     if (DebugForm <> NIL) and Debugmodus then
@@ -3714,7 +3707,7 @@ var
     end;
   end;
 
-  procedure obere_Randbedingung;
+  procedure UpperBoundary;
 
   const
     AirDryness = 20000;
@@ -3766,7 +3759,7 @@ var
     end;
   end;
 
-  procedure untere_Randbedingung;
+  procedure LowerBoundary;
   { In diesem Fall ist ein vorgegebener unterer Wassergehalt,
     bzw. eine 0-Gradienten Randbedingung vorgegeben }
 
@@ -3825,9 +3818,9 @@ var
       if ShowWarnings then
 
 {$IFNDEF NONVISUAL}
-        showmessage('Fehler beim L�sen des Gleichungssystems');
+        showmessage('Error solving equation system');
 {$ELSE}
-        writeln('Fehler beim L�sen des Gleichungssystems');
+        writeln('Error solving equation system');
 {$ENDIF}
     if (LowerBoundaryCondition = Groundwatertable) then
       for i := n_comp downto act_n_comp + 1 do
@@ -3887,9 +3880,9 @@ begin { procedure Mixedwater_solut }
   iter := 0;
   repeat
     Leitfaehigkeiten;
-    obere_Randbedingung;
+    UpperBoundary;
     Mittelteil;
-    untere_Randbedingung;
+    LowerBoundary;
     Loesung_Gleichungssystem;
     get_delt_iter_max;
 {$IFNDEF NONVISUAL}
@@ -4140,10 +4133,10 @@ var
       if ShowWarnings then
 
 {$IFNDEF NONVISUAL}
-        showmessage('Fehler beim Lösen des Gleichungssystems');
+        showmessage('Error solving equation system');
 
 {$ELSE}
-        writeln('Fehler beim L�sen des Gleichungssystems');
+        writeln('Error solving equation system');
 
 {$ENDIF}
     if (LowerBoundaryCondition = Groundwatertable) then
