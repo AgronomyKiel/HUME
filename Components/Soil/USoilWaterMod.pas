@@ -3147,7 +3147,7 @@ var
   result: byte;
   i: integer;
 
-  procedure Mittelteil;
+  procedure MainLoop;
   var
     i: integer;
   begin
@@ -3324,7 +3324,7 @@ begin { procedure Diffwater_solut }
   repeat
     CalcConductivities;
     UpperBoundaryCondition;
-    Mittelteil;
+    MainLoop;
     LowerBoundary;
     Loesung_Gleichungssystem;
     get_delt_iter_max;
@@ -3479,7 +3479,7 @@ var
 
   end;
 
-  procedure Mittelteil;
+  procedure MainLoop;
   var
     i: integer;
   begin
@@ -3649,7 +3649,7 @@ begin { procedure Richardswater_solut }
   repeat
     Leitfaehigkeiten;
     UpperBoundary;
-    Mittelteil;
+    MainLoop;
     LowerBoundary;
     SolvingEquationSystem;
     get_delt_iter_max;
@@ -3739,7 +3739,7 @@ var
     gamma[1] := -avg_Ku[1] / (Dist[1] * Thick[1]);
   end;
 
-  procedure Mittelteil;
+  procedure MainLoop;
   var
     i: integer;
   begin
@@ -3881,7 +3881,7 @@ begin { procedure Mixedwater_solut }
   repeat
     Leitfaehigkeiten;
     UpperBoundary;
-    Mittelteil;
+    MainLoop;
     LowerBoundary;
     Loesung_Gleichungssystem;
     get_delt_iter_max;
