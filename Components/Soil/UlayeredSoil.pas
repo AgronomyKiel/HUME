@@ -1,30 +1,35 @@
-﻿unit UlayeredSoil; // Nur Vorläufer für TSoilwatermod, nicht installieren
+// Nur Vorläufer für TSoilwatermod, nicht installieren
+unit UlayeredSoil;
 
 interface
 
 uses
   UMod, UState, classes, UAbstractPlant;
 
-type
-  real = double;
-  TSoilStateArray = array [0 .. max_comp + 1] of TState;
-  /// basic array type for soil layer state variables
-  TSoilVarArray = array [0 .. max_comp + 2] of TVar;
-  /// basic array type for soil layer variables
-  TSoilExtArray = array [0 .. max_comp + 1] of TExternV;
-  /// basic array type for soil layer external variables
-  TSoilArray = array [0 .. max_comp + 1] of real;
-  /// basic array type for soil layer floating point fields
-  TTexture_version = (RR, KA);
-  /// type for pedotransfer function RR= Rote Reihe
+  type
+    real = double;
+    TSoilStateArray = array [0 .. max_comp + 1] of TState;
+    /// basic array type for soil layer state variables
+    TSoilVarArray = array [0 .. max_comp + 2] of TVar;
+    /// basic array type for soil layer variables
+    TSoilExtArray = array [0 .. max_comp + 1] of TExternV;
+    /// basic array type for soil layer external variables
+    TSoilArray = array [0 .. max_comp + 1] of real;
+    /// basic array type for soil layer floating point fields
+    TTexture_version = (RR, KA);
+    /// type for pedotransfer function RR= Rote Reihe
 
-  TLayeredSoil = class(TPlantRelatedSubMod)
+    TLayeredSoil = class(TPlantRelatedSubMod)
 
-  private
+    private
 
-  protected
+    protected
 
-    procedure LayerInit(max_Tiefe, potenz_f: real; n_comp: byte); virtual;
+      /// <summary>Initializes geometrically distributed soil layers.</summary>
+      /// <param name="max_Tiefe">Maximum depth of the soil profile.</param>
+      /// <param name="potenz_f">Exponent shaping the geometric distribution.</param>
+      /// <param name="n_comp">Number of compartments to create.</param>
+      procedure LayerInit(max_Tiefe, potenz_f: real; n_comp: byte); virtual;
 
   public
     n_comp: Integer;
@@ -59,13 +64,20 @@ type
     property p_NComp: Integer read n_comp write n_comp;
   end;
 
-function trdiag(rep: boolean; { Wiederholungsflagge }
-  max_n, min_n: Integer; { Dimension der Matrix }
-  var lower, { Subdiagonale }
-  diag, { Diagonale }
-  upper, { Superdiagonale }
-  b: TSoilArray { Rechte Seite des Systems }
-  ): byte; { Fehlerparameter }
+{ Wiederholungsflagge }
+function trdiag(rep: boolean;
+  { Dimension der Matrix }
+  max_n, min_n: Integer;
+  { Subdiagonale }
+  var lower,
+  { Diagonale }
+  diag,
+  { Superdiagonale }
+  upper,
+  { Rechte Seite des Systems }
+  b: TSoilArray
+  { Fehlerparameter }
+  ): byte;
 
 function ndx_str(i: Integer): string;
 procedure Register;
@@ -152,7 +164,8 @@ begin
 
   for i := 0 to n_comp + 2 do
   begin
-    ConstCreate('Tiefe' + ndx_str(i), '[cm]', 0.0, false, Depth[i]); // richtig
+    // richtig
+    ConstCreate('Tiefe' + ndx_str(i), '[cm]', 0.0, false, Depth[i]);
     Depth[i].writeToFile := false;
   end;
   OptCreate('Texture_version', 'KA', Texture_versionOption,
@@ -185,13 +198,20 @@ end;
 { ----------- Aus Formelsammlung zur numerischen Mathematik ---------- }
 { --------------------------------------------------------------------- }
 
-function trdiag(rep: boolean; { Wiederholungsflagge }
-  max_n, min_n: Integer; { Dimension der Matrix }
-  var lower, { Subdiagonale }
-  diag, { Diagonale }
-  upper, { Superdiagonale }
-  b: TSoilArray { Rechte Seite des Systems }
-  ): byte; { Fehlerparameter }
+{ Wiederholungsflagge }
+function trdiag(rep: boolean;
+  { Dimension der Matrix }
+  max_n, min_n: Integer;
+  { Subdiagonale }
+  var lower,
+  { Diagonale }
+  diag,
+  { Superdiagonale }
+  upper,
+  { Rechte Seite des Systems }
+  b: TSoilArray
+  { Fehlerparameter }
+  ): byte;
 { ==================================================================== }
 { trdiag bestimmt die Loesung x des linearen Gleichungssystems }
 { A * x = b mit tridiagonaler n x n Koeffizientenmatrix A, die in }
@@ -251,16 +271,20 @@ var
 
 begin
 
-  if not(rep) then { Wenn rep:=false ist, }
-  begin { Dreieckzerlegung der }
-    for i := min_n + 1 to max_n do { Matrix bestimmen }
+  { Wenn rep:=false ist, }
+  if not(rep) then
+  begin
+    { Dreieckzerlegung der Matrix bestimmen }
+    for i := min_n + 1 to max_n do
     begin
-      if (abs(diag[i - 1]) < 1E-16) then { Wenn ein diag[i] = 0 }
+      { Wenn ein diag[i] = 0 }
+      if (abs(diag[i - 1]) < 1E-16) then
       begin
         trdiag := 2;
         exit;
-      end; { ist, ex. keine Zerle- }
-      lower[i] := lower[i] / diag[i - 1]; { gung. }
+      end;
+      { ist, ex. keine Zerle- gung. }
+      lower[i] := lower[i] / diag[i - 1];
       diag[i] := diag[i] - lower[i] * upper[i - 1];
     end;
     if (abs(diag[max_n]) < 1E-16) then
@@ -269,9 +293,11 @@ begin
       exit
     end;
   end;
-  for i := min_n + 1 to max_n do { Vorwaertselimination }
+  { Vorwaertselimination }
+  for i := min_n + 1 to max_n do
     b[i] := b[i] - lower[i] * b[i - 1];
-  b[max_n] := b[max_n] / diag[max_n]; { Rueckwaertselimination }
+  { Rueckwaertselimination }
+  b[max_n] := b[max_n] / diag[max_n];
   for i := max_n - 1 downto min_n do
     b[i] := (b[i] - upper[i] * b[i + 1]) / diag[i];
   trdiag := 0;
