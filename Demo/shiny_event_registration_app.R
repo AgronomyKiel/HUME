@@ -59,7 +59,7 @@ ensure_sheet <- function() {
     )
   }
 
-  as_sheets_id(created)
+  created$spreadsheet_id
 }
 
 ui <- fluidPage(
