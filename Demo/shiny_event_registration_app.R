@@ -11,6 +11,15 @@
 # EVENT_REGISTRATION_FOLDER_ID so the sheet is created inside a specific
 # folder. Otherwise, it will be created in your drive root. If you already
 # created a sheet, set EVENT_REGISTRATION_SHEET_NAME to its name to reuse it.
+#
+# To target the folder "AnmeldungenMarktfruchtforum", run once in R:
+#   library(googledrive)
+#   folder <- drive_get("AnmeldungenMarktfruchtforum")
+#   Sys.setenv(EVENT_REGISTRATION_FOLDER_ID = folder$id)
+#
+# To persist that setting across sessions, add this line to ~/.Renviron
+# (replace the ID with the value from drive_get):
+#   EVENT_REGISTRATION_FOLDER_ID=1Abc2D...xyz
 
 library(shiny)
 library(googledrive)
@@ -20,11 +29,15 @@ library(tibble)
 sheet_name <- Sys.getenv("EVENT_REGISTRATION_SHEET_NAME", unset = "Event registrations")
 parent_folder_id <- Sys.getenv("EVENT_REGISTRATION_FOLDER_ID", unset = NA)
 
+if (is.character(parent_folder_id) && parent_folder_id == "") {
+  parent_folder_id <- NA
+}
+
 ensure_sheet <- function() {
-  existing <- suppressMessages(gs4_find(sheet_name))
+  existing <- suppressMessages(gs4_find(sheet_name, exact = TRUE))
 
   if (nrow(existing) > 0) {
-    return(existing$spreadsheet_id[[1]])
+    return(as_sheets_id(existing))
   }
 
   empty_registrations <- tibble(
