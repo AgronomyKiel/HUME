@@ -1037,16 +1037,16 @@ begin
   istage.comment := ' Phenologicalstages in integer values';
   rdr_p.comment := 'relative development rate of photoperiod';
   rdr_v.comment := 'relative development rate of vernalization';
-  Teff.comment := 'Tagestemperatur >=0 zur Basistemperatur';
+  Teff.comment := 'effective day temperature, i.e. temperature above base temperature';
   zstage.comment := 'Zadocks stages';
   vernf.comment := 'vernalisation factor';
   c.comment := 'variable photoperiodic influence factor (0..1)';
   k_v.comment := 'vernalisation variable';
-  tempsumemergence.comment := '';
+  tempsumemergence.comment := 'temperature sum until emergence';
   d10.comment := 'Day when EC equals 10';
   d29.comment := 'Day when EC equals 29';
   ECa.comment := '';
-  DayOfYearSowingDate.comment := 'Dayof Year of sowingdate';
+  DayOfYearSowingDate.comment := 'Day of Year of sowing date';
   DaySSow.comment := 'days since sowing';
   cumvern.comment := 'cumulative vernalisation';
   ec.comment := 'EC stage';
@@ -1056,24 +1056,24 @@ begin
   nL_MS.comment := 'number of leaves on main stem';
   TSumEC30.comment := 'Temperature sum since EC30';
   inL_MS.comment := 'initial leaf number on main stem';
-  inl_MS_xstage2.comment := 'Anzahl nicht ausgebildeter Bl�tter zum Zeitpunkt Xstage 2';
+  inl_MS_xstage2.comment := 'number of not emerged leaves at Xstage 2';
   daylengthp.comment := 'photoperiodic daylength';
   TMPM.comment := 'mean air temperature';
-  dayofyear.comment := '';
-  Ph39.comment := 'TSUM 37 bis 39';
+  dayofyear.comment := 'day of year';
+  Ph39.comment := 'TSUM 37 to 39';
   p1d.comment := 'genetic specific parameter of photoperiod sensitivity';
   p1v.comment := 'genetic specific parameter of vernalisation sensitivity';
   sdepth.comment := 'sowing depth (cm), not actual in use';
   phint.comment := 'the phyllochron interval, the interval in thermal time' + '(degree days) between successive leaf and tiller appearances';
-  p4.comment := 'thermal time between Pre-anthesis ear growth to beginning of' + ' grain filling (anthesis occurs during this phase)in�Cd';
-  p5.comment := 'thermal time between beginning of grain fill and maturity in�Cd';
-  p9.comment := 'thermal timen from germination to seedling emergence in �Cd';
+  p4.comment := 'thermal time between Pre-anthesis ear growth to beginning of' + ' grain filling (anthesis occurs during this phase)in °Cd';
+  p5.comment := 'thermal time between beginning of grain fill and maturity in °Cd';
+  p9.comment := 'thermal timen from germination to seedling emergence in °Cd';
   tBase.comment := 'base temperature';
   Internode.comment := 'Multiplikator des Phyllochronintervalls in der Schossphase';
-  sowingdate.comment := '';
+  sowingdate.comment := 'sowing date in day of year';
   plastochron.comment := 'interval in thermal time between leaf initiation';
-  xstage_fin_leaf_prim.comment := 'xstage an dem keine weiteren leaf primordien angelegt werden';
-  TSumInternode.comment := 'te�mperature sumd between two internodes';
+  xstage_fin_leaf_prim.comment := 'xstage at which  xstage at which no further leaf primordia are formed';
+  TSumInternode.comment := 'temperature sumd between two internodes';
   minLeaf_number.comment := '';
   MaxVernDays.comment := 'maximum number of vernalisation days which increase developmental rate';
   MaxPhotoperiod.comment := 'maximum daylength which increase developmental rate';
@@ -1092,7 +1092,7 @@ begin
   OptCreate('RecalcSowingDate', 'True', RecalcSowingDate);
   RecalcSowingDate.OptionList.Add('True');
   RecalcSowingDate.OptionList.Add('False');
-  OptCreate('optTSumInternode', 'constant', OptTSumInternode);
+  OptCreate('optTSumInternode', 'constant', OptTSumInternode, 'option to set daylength effect on TSumInternode');
    OptTSumInternode.OptionList.Add('constant');
    OptTSumInternode.OptionList.Add('daylength');
    optTSumInternode.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/TDevelopment.html#day-length-effects'
@@ -1102,44 +1102,47 @@ end;
 procedure TDevelopment.CreateExterns;
 begin
   // neu angepasst 17.01.
-  ExternVCreate('daylengthp', 'h', ratefield, daylengthp);
-  ExternVCreate('dayofyear', 'n', statefield, dayofyear);
-  ExternVCreate('TMPM', '[�C]', ratefield, TMPM);
+  ExternVCreate('daylengthp', 'h', ratefield, daylengthp, 'photoperiodic daylength');
+  ExternVCreate('dayofyear', 'n', statefield, dayofyear, 'day of year');
+  ExternVCreate('TMPM', '[°C]', ratefield, TMPM, 'mean air temperature');
 end;
 
 procedure TDevelopment.CreatePars;
 begin
   Parcreate('p1d', '', 2.76, p1d);
-  //aktualisiert nach John-Manuskript 29.Jan.09
+  p1d.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/TDevelopment.html#photoperiod';
+    //aktualisiert nach John-Manuskript 29.Jan.09
   Parcreate('p1v', '', 2.84, p1v);
+  p1v.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/TDevelopment.html#vernalisation';
+
   //aktualisiert nach John-Manuskript 29.Jan.09
   Parcreate('sdepth', 'cm', 3, sdepth);
-  Parcreate('phint', '�Cd', 91.74, phint);
+  Parcreate('phint', '°Cd', 91.74, phint);
   //aktualisiert nach John-Manuskript 29.Jan.09
   Parcreate('tBase', '', 0, tBase);
   Parcreate('sowingdate', 'doy', 300, sowingdate);
   ParCreate('fdl', '-', 0, fdl);
-  Parcreate('p3', '�Cd', 183.48, p3);
+  Parcreate('p3', '°Cd', 183.48, p3);
 
-  Parcreate('p4', '�Cd', 200, p4);
+  Parcreate('p4', '°Cd', 200, p4);
   Parcreate('p5', '-', 11.67, p5);
   //aktualisiert nach Johnen-Manuskript 29.Jan.09
-  ParCreate('p9', '�Cd', 139.9, p9);
+  ParCreate('p9', '°Cd', 139.9, p9);
   //aktualisiert nach Johnen-Manuskript 29.Jan.09
-  ParCreate('plastochron', '�Cd', 68.3914, plastochron);
+  ParCreate('plastochron', '°Cd', 68.3914, plastochron);
   //aktualisiert am 17.01.
   ParCreate('Ini_inLMS', 'n', 4, Ini_inLMS);
   //aktualisiert am 17.01. nach Kage 2012
-  ParCreate('TSumInternode', '�Cd', 97.09, TSumInternode);
+  ParCreate('TSumInternode', '°Cd', 97.09, TSumInternode);
   //aktualisiert nach John-Manuskript 29.Jan.09
   ParCreate('minLeaf_number', '', 7, minLeaf_number);
   ParCreate('Internode', '', 3, Internode);
   ParCreate('MaxVernDays', 'd', 50, MaxVernDays);
   ParCreate('MaxPhotoperiod', 'h', 20, MaxPhotoperiod);
-  ParCreate('VernMinTemp', '�C', -0.5, VernMinTemp);
-  ParCreate('VernOptTemp1', '�C', 0.5, VernOptTemp1);
-  ParCreate('VernOptTemp2', '�C', 6, VernOptTemp2);
-  ParCreate('VernMaxTemp', '�C', 18, VernMaxTemp);
+  ParCreate('VernMinTemp', '°C', -0.5, VernMinTemp);
+  ParCreate('VernOptTemp1', '°C', 0.5, VernOptTemp1);
+  ParCreate('VernOptTemp2', '°C', 6, VernOptTemp2);
+  ParCreate('VernMaxTemp', '°C', 18, VernMaxTemp);
   ParCreate('Ph39', '-', 101.56, Ph39);
   //aktualisiert nach John-Manuskript 29.Jan.09
   ParCreate(' xstage_fin_leaf_prim', '-', 1.78171, xstage_fin_leaf_prim);
@@ -1147,40 +1150,41 @@ end;
 
 procedure TDevelopment.CreateStates;
 begin
-  StateCreate('cumvern', '', 0, true, cumvern);
-  StateCreate('ec', '', 0, true, ec);
+  StateCreate('cumvern', '', 0, true, cumvern, 'cumulative vernalisation days');
+  StateCreate('ec', '', 0, true, ec, 'EC stage');
   ec.PlotTograpH := true;
-  StateCreate('tdu', '', 0, true, tdu);
+  StateCreate('tdu', '', 0, true, tdu, 'thermal developmental units');
   StateCreate('tsums', '', 0, true, tsums);
-  StateCreate('xstage', '', 0, true, xstage);
-  StateCreate('nl_MS', 'n', 0, false, nl_MS);
-  StateCreate('inl_MS', 'n', 5, false, inl_MS);
-  StateCreate('DaySSow', 'n', 0, false, DaySSow);
-  StateCreate('TSumEC30', '', 0, true, TSumEC30);
+  StateCreate('xstage', '', 0, true, xstage, 'non integer growth stage indicator ranging from zero to six');
+  StateCreate('nl_MS', 'n', 0, false, nl_MS, 'number of leaves on main stem');
+  StateCreate('inl_MS', 'n', 5, false, inl_MS, 'initial leaf number on main stem');
+  StateCreate('DaySSow', 'n', 0, false, DaySSow, 'day since sowing');
+  StateCreate('TSumEC30', '', 0, true, TSumEC30, 'Temperature sum since EC30');
   StateCreate('TSum_until_EC_30', '', 0, true, TSum_until_EC_30);
   StateCreate('TSum_until_EC_37', '', 0, true, TSum_until_EC_37);
 end;
 
 procedure TDevelopment.CreateVars;
 begin
-  //M�glichkeit, die Methoden des Vorg�ngermodells
-  //aufzurufen, so da� mit einer einzigen Anweisung die ganze Funktionalit�t der
-  // Vorg�ngermethoden �bernommen werden
+  //Möglichkeit, die Methoden des Vorgängermodells
+  //aufzurufen, so daß mit einer einzigen Anweisung die ganze Funktionalität der
+  // Vorgängermethoden übernommen werden
+  
   VarCreate('c', '', 0, true, c);
   // Define Value
-  VarCreate('devrates1', '', 0, true, devrates1);
-  VarCreate('devrates2', '', 0, true, devrates2);
-  VarCreate('devrates3', '', 0, true, devrates3);
-  VarCreate('devrates4', '', 0, true, devrates4);
-  VarCreate('devrates5', '', 0, true, devrates5);
-  VarCreate('devrates6', '', 0, true, devrates6);
-  VarCreate('devrates9', '', 0, true, devrates9);
-  VarCreate('dvs10', '', 0, true, dvs10);
-  VarCreate('istage', '', 0, true, istage);
-  VarCreate('k_v', '', 0, true, k_v);
+  VarCreate('devrates1', '', 0, true, devrates1, 'development rate during istage 1');
+  VarCreate('devrates2', '', 0, true, devrates2, 'development rate during istage 2');
+  VarCreate('devrates3', '', 0, true, devrates3, 'development rate during istage 3');
+  VarCreate('devrates4', '', 0, true, devrates4, 'development rate during istage 4');
+  VarCreate('devrates5', '', 0, true, devrates5, 'development rate during istage 5');
+  VarCreate('devrates6', '', 0, true, devrates6, 'development rate during istage 6');
+  VarCreate('devrates9', '', 0, true, devrates9, 'development rate during istage 9');
+  VarCreate('dvs10', '', 0, true, dvs10, 'xstage times 10, for convenience of plotting');
+  VarCreate('istage', '', 0, true, istage, ' Phenologicalstages in integer values');
+  VarCreate('k_v', '', 0, true, k_v, 'vernalisation variable');
   // Define Value
-  VarCreate('rdr_p', '', 0, true, rdr_p);
-  VarCreate('rdr_v', '', 0, true, rdr_v);
+  VarCreate('rdr_p', '', 0, true, rdr_p, 'relative development rate effect of photoperiod');
+  VarCreate('rdr_v', '', 0, true, rdr_v, 'relative development rate effect of vernalisation');
   VarCreate('TSEC32', '', 0, true, TSEC32, 'Date of BBCH32 (needed for calibration');
   VarCreate('TSEC33', '', 0, true, TSEC33, 'Date of BBCH33 (needed for calibration');
   VarCreate('TSEC37', '', 0, true, TSEC37, 'Date of BBCH37 (needed for calibration');
@@ -1191,19 +1195,19 @@ begin
   VarCreate('TSEC65', '', 0, true, TSEC65, 'Date of BBCH65 (needed for calibration');
   VarCreate('TSEC69', '', 0, true, TSEC69, 'Date of BBCH69 (needed for calibration');
   VarCreate('TSEC71', '', 0, true, TSEC71, 'Date of BBCH71 (needed for calibration');
-  VarCreate('tempsumemergence', '', 0, true, tempsumemergence);
-  VarCreate('TSumInternode_opt',    '[�Cd]', 0, true, TSumInternode_opt, 'a function of phint and day length');
+  VarCreate('tempsumemergence', '', 0, true, tempsumemergence, 'temperature sum since emergence');
+  VarCreate('TSumInternode_opt',    '[°Cd]', 0, true, TSumInternode_opt, 'a function of phint and day length');
 
   // Define Value
-  VarCreate('tsuminc', '', 0, true, Teff);
+  VarCreate('tsuminc', '', 0, true, Teff, 'effective day temperature, i.e. temperature above base temperature');
   // 0 = max(0,TMPM-tbase)
-  VarCreate('ph39_opt',    '[�Cd]', 0, true, ph39_opt, 'a function of phint and day length');
+  VarCreate('ph39_opt',    '[°Cd]', 0, true, ph39_opt, 'a function of phint and day length');
 
-  VarCreate('zstage', '', 0, true, zstage);
-  VarCreate('vernf', '', 0, true, vernf);
+  VarCreate('zstage', '', 0, true, zstage, 'Zadocks stages');
+  VarCreate('vernf', '', 0, true, vernf, 'vernalisation factor');
   VarCreate('GS_EC25', '', 0, true, GS_EC25);
-  VarCreate('d10', '', 0, true, d10);
-  VarCreate('d29', '', 0, true, d29);
+  VarCreate('d10', '', 0, true, d10, 'Day of year when EC was equal 10');
+  VarCreate('d29', '', 0, true, d29, 'Day when EC equals 29');
   VarCreate('d50', '', 0, true, d50, 'Day when EC equals 50');
   VarCreate('d59', '[DOY]', 0, true, d59, 'Day when EC equals 59');
   VarCreate('d75', '', 0, true, d75, 'Day when EC equals 75');
