@@ -110,34 +110,34 @@ type
     { Protected-Deklarationen }
   public
     { Public-Deklarationen }
-    /// developmet rate during istage 1
+    /// <summary>Development rate during istage 1.</summary>
     devrates1: TVar;
-    /// developmet rate during istage 2
+    /// <summary>Development rate during istage 2.</summary>
     devrates2: TVar;
-    /// developmet rate during istage 3
+    /// <summary>Development rate during istage 3.</summary>
     devrates3: TVar;
-    /// developmet rate during istage 4
+    /// <summary>Development rate during istage 4.</summary>
     devrates4: TVar;
-    /// developmet rate during istage 5
+    /// <summary>Development rate during istage 5.</summary>
     devrates5: TVar;
-    /// developmet rate during istage 6
+    /// <summary>Development rate during istage 6.</summary>
     devrates6: TVar;
-    /// developmet rate during istage 9
+    /// <summary>Development rate during istage 9.</summary>
     devrates9: TVar;
-    /// xstage times 10, for convenience of plotting
+    /// <summary>Xstage multiplied by ten for easier plotting.</summary>
     dvs10: TVar;
-    /// integer value of dev stage
+    /// <summary>Integer value of the development stage.</summary>
     istage: TVar;
 
-    /// relative development rate of photoperiod
+    /// <summary>Relative development rate influenced by photoperiod.</summary>
     rdr_p: TVar;   
-    /// relative development rate of vernalization
+    /// <summary>Relative development rate influenced by vernalization.</summary>
     rdr_v: TVar;   
-    /// effective day temperature >=0 zur Basistemperatur
+    /// <summary>Effective day temperature above the base temperature.</summary>
     Teff: TVar;   
-    /// Zadock's stages
+    /// <summary>Zadock's stages.</summary>
     zstage: TVar;  
-    /// vernalisation factor
+    /// <summary>Vernalisation factor.</summary>
     vernf: TVar;   
     GS_EC25: TVar;
     TSEC32: Tvar;
@@ -153,128 +153,130 @@ type
     TSEC71: Tvar;
     Ph39_opt: Tvar;
     TSumInternode_opt: TVar;
-    c: TVar;                   /// variable photoperiodic influence factor (0..1)
-    k_v: TVar;                 /// vernalisation variable
-    /// temperature sum from emergence to EC30
+    /// <summary>Variable photoperiodic influence factor (0..1).</summary>
+    c: TVar;
+    /// <summary>Vernalisation variable.</summary>
+    k_v: TVar;
+    /// <summary>Temperature sum from emergence to EC30.</summary>
     tempsumemergence: TVar;
-    /// Day when EC equals 10
+    /// <summary>Day when EC equals 10.</summary>
     d10: TVar;
-    /// Day when EC equals 29
+    /// <summary>Day when EC equals 29.</summary>
     d29: TVar;
-    /// Day when EC equals 50
+    /// <summary>Day when EC equals 50.</summary>
     d50: TVar;
-    /// Day when EC equals 59
+    /// <summary>Day when EC equals 59.</summary>
     d59: TVar;
-    /// Day when EC equals 75
+    /// <summary>Day when EC equals 75.</summary>
     d75: TVar;
-    /// Day when EC equals 90
+    /// <summary>Day when EC equals 90.</summary>
     d90: TVar;
-    /// DOY for begin stem elongation
+    /// <summary>Day of year for beginning of stem elongation.</summary>
     DOY_BegStemElong: TVar;
-    /// DOY when BBCH 51
+    /// <summary>Day of year when BBCH 51 occurs.</summary>
     DOY_BegHeading: TVar;
-    /// DOY when BBCH 59
+    /// <summary>Day of year when BBCH 59 occurs.</summary>
     DOY_EndHeading: TVar;
-    /// DOY for begin of flowering
+    /// <summary>Day of year for beginning of flowering.</summary>
     DOY_BegFlower: TVar;
-    /// DOY when BBCH 88
+    /// <summary>Day of year when BBCH 88 occurs.</summary>
     DOY_YellowRipeness: TVar;
-    /// DOY for physiological ripeness
+    /// <summary>Day of year for physiological ripeness.</summary>
     DOY_PhysRipe: TVar;
     ECa: TVar;
-    /// Dayof Year of sowingdate
+    /// <summary>Day of year of the sowing date.</summary>
     DayOfYearSowingDate: TVar;
-    /// Anzahl nicht ausgebildeter Blätter zum Zeitpunkt Xstage 2
+    /// <summary>Number of leaves not formed at Xstage 2.</summary>
     inl_MS_xstage2 : TVar;
 
-    /// days since sowing
+    /// <summary>Days since sowing.</summary>
     DaySSow,
-    /// cumulative vernalisation
+    /// <summary>Cumulative vernalisation.</summary>
     cumvern,
 
-    /// EC stage
+    /// <summary>EC stage.</summary>
     ec: TState;
-    /// thermal developmental units
+    /// <summary>Thermal developmental units.</summary>
     tdu: TState;
-    /// temperature sum since sowing
+    /// <summary>Temperature sum since sowing.</summary>
     tsums: TState;
-    /// non integer growth stage indicator ranging from zero to six
+    /// <summary>Non-integer growth stage indicator ranging from zero to six.</summary>
     xstage: TState;
-    /// number of leaves on main stem
+    /// <summary>Number of leaves on the main stem.</summary>
     nL_MS: TState;
-    /// Temperature sum since EC30
+    /// <summary>Temperature sum since EC30.</summary>
     TSumEC30: TState;
-    /// Temperature sum until EC30
+    /// <summary>Temperature sum until EC30.</summary>
     TSum_until_EC_30: TState;
-    /// Temperature sum until EC37
+    /// <summary>Temperature sum until EC37.</summary>
     TSum_until_EC_37: TState;
 
-    /// initial leaf number on main stem
+    /// <summary>Initial leaf number on the main stem.</summary>
     inL_MS: TState;
 
-    /// photoperiodic daylength
+    /// <summary>Photoperiodic daylength.</summary>
     daylengthp,
-    /// mean air temperature
+    /// <summary>Mean air temperature.</summary>
     TMPM,
     dayofyear: TExternV;
 
-    /// TSUM 37 bis 39
+    /// <summary>Temperature sum from stage 37 to 39.</summary>
     Ph39: TPar;
-    /// genetic specific parameter of photoperiod sensitivity
+    /// <summary>Genotype-specific parameter of photoperiod sensitivity.</summary>
     p1d: TPar;
-    /// genetic specific parameter of vernalisation sensitivity
+    /// <summary>Genotype-specific parameter of vernalisation sensitivity.</summary>
     p1v: TPar;
-    /// sowing depth (cm): not actual in use
+    /// <summary>Sowing depth in centimeters (not currently in use).</summary>
     sdepth: TPar;
-    /// the phyllochron interval: the interval in thermal time (degree days) between successive leaf and tiller appearances
+    /// <summary>Phyllochron interval in thermal time (degree days) between successive leaf and tiller appearances.</summary>
     phint: TPar;
-    /// End of leaf growth and beginning of ear growth to end of pre-anthesis ear growth
+    /// <summary>Thermal time from end of leaf growth through pre-anthesis ear growth.</summary>
     p3: TPar;
-    /// thermal time between Pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase)in°Cd
+    /// <summary>Thermal time between pre-anthesis ear growth and beginning of grain filling (anthesis occurs during this phase) in °Cd.</summary>
     p4: TPar;
-    /// thermal time between beginning of grain fill and maturity in°Cd
+    /// <summary>Thermal time between beginning of grain fill and maturity in °Cd.</summary>
     p5: TPar;
-    /// thermal timen from germination to seedling emergence in °Cd
+    /// <summary>Thermal time from germination to seedling emergence in °Cd.</summary>
     p9: TPar;
-    /// base temperature
+    /// <summary>Base temperature.</summary>
     tBase: TPar;
-    /// Multiplikator des Phyllochronintervalls in der Schossenphase
+    /// <summary>Multiplier of the phyllochron interval during stem elongation.</summary>
     Internode: TPar;
     sowingdate: TPar;
-    /// interval in thermal time between leaf initiation
+    /// <summary>Interval in thermal time between leaf initiation.</summary>
     plastochron: TPar;
-    /// initial number of initiated leaves at emergence
+    /// <summary>Initial number of initiated leaves at emergence.</summary>
     ini_inLMS: TPar;
-    /// xstage an dem keine weiteren leaf primordien angelegt werden
+    /// <summary>Xstage value at which no further leaf primordia are initiated.</summary>
     xstage_fin_leaf_prim: TPar;
 
-    /// temperature sum between two internodes
+    /// <summary>Temperature sum between two internodes.</summary>
     TSumInternode: TPar;
     minLeaf_number: TPar;
-    /// maximum number of vernalisation days which increase developmental rate
+    /// <summary>Maximum number of vernalisation days that increase developmental rate.</summary>
     MaxVernDays: TPar;
-    /// maximum daylength which increase developmental rate
+    /// <summary>Maximum daylength that increases developmental rate.</summary>
     MaxPhotoperiod: TPar;
-    /// minimum vernalisation temperature
+    /// <summary>Minimum vernalisation temperature.</summary>
     VernMinTemp: TPar;
-    /// temperature where vernalisation is starting to be optimal
+    /// <summary>Temperature at which vernalisation starts to be optimal.</summary>
     VernOptTemp1: TPar;
-    /// temperature where vernalisation is ending to be optimal
+    /// <summary>Temperature at which vernalisation stops being optimal.</summary>
     VernOptTemp2: TPar;
-    /// temperature where vernalisation is getting zero
+    /// <summary>Temperature at which vernalisation effect becomes zero.</summary>
     VernMaxTemp: TPar;
-    /// weighting factor for daylength influence
+    /// <summary>Weighting factor for daylength influence.</summary>
     fdl: TPar;  
-    /// option for data initialization method
+    /// <summary>Option for selecting the data initialization method.</summary>
     DataInitMethod: Toption;
 
-    /// option for recalculating sowing date
+    /// <summary>Option for recalculating the sowing date.</summary>
     ReCalcSowingDate : Toption;
 
-    /// option for TSumInternode calculation
+    /// <summary>Option for TSumInternode calculation.</summary>
     OptTSumInternode: Toption;
     
-    /// option for using measured dates for development
+    /// <summary>Option for using measured dates for development.</summary>
     procedure createAll; override;
 
     /// <summary>
@@ -302,63 +304,63 @@ type
    property Var_c : TVar read c write c;
 
    /// <summary>
-    /// development rate during istage 1
+    /// Development rate during istage 1.
     /// </summary>
    property Var_devrates1 : TVar read devrates1 write devrates1;
 
    /// <summary>
-   /// development rate during istage 2
+   /// Development rate during istage 2.
    /// </summary>
    property Var_devrates2 : TVar read devrates2 write devrates2;
  
    /// <summary>
-   /// development rate during istage 3
+   /// Development rate during istage 3.
    /// </summary>
    property Var_devrates3 : TVar read devrates3 write devrates3;
    
    /// <summary>
-    /// development rate during istage 4
+    /// Development rate during istage 4.
     /// </summary>
    property Var_devrates4 : TVar read devrates4 write devrates4;
 
    /// <summary>
-    /// development rate during istage 5
+    /// Development rate during istage 5.
     /// </summary>
    property Var_devrates5 : TVar read devrates5 write devrates5;
    
    /// <summary>
-    /// development rate during istage 6
+    /// Development rate during istage 6.
     /// </summary>  
    property Var_devrates6 : TVar read devrates6 write devrates6;
 
    /// <summary>
-    /// development rate during istage 9
+    /// Development rate during istage 9.
     /// </summary>    
    property Var_devrates9 : TVar read devrates9 write devrates9;
    
    /// <summary>
-    /// xstage times 10, for convenience of plotting
+    /// Xstage multiplied by ten for convenience of plotting.
     /// </summary>
    property Var_dvs10 : TVar read dvs10 write dvs10;
    
    
    /// <summary>
-    /// integer value of development stage
+    /// Integer value of the development stage.
     /// </summary>  
    property Var_istage : TVar read istage write istage;
    
    /// <summary>
-    /// vernalisation factor
+    /// Vernalisation factor.
     /// </summary>
    property Var_k_v : TVar read k_v write k_v;
    
    /// <summary>
-    /// relative development rate effect of photoperiod
+    /// Relative development rate effect of photoperiod.
     /// </summary>
    property Var_rdr_p : TVar read rdr_p write rdr_p;
    
    /// <summary>
-    /// relative development rate effect of vernalisation
+    /// Relative development rate effect of vernalisation.
     /// </summary>
    property Var_rdr_v : TVar read rdr_v write rdr_v;
 
@@ -554,8 +556,8 @@ begin
   // calculate vernalisation influence factor
   rdr_v.v := min(1,max(0,1-k_v.v*(MaxVernDays.v-cumvern.v)));
 
-  /// calculate daylength influence factor
-  ///  http://localhost:4685/Components/CERES%20Wheat/Documentation/TDevelopment.html#photoperiod
+  /// <summary>Calculates the daylength influence factor.</summary>
+  /// <remarks>See http://localhost:4685/Components/CERES%20Wheat/Documentation/TDevelopment.html#photoperiod.</remarks>
   rdr_p.v := min(1,max(0,1-c.v*sqr(MaxPhotoperiod.v-daylengthp.v)));
 
   CalcStage9DevRate;
