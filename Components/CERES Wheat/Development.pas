@@ -137,7 +137,7 @@ type
     Teff: TVar;   
     /// Zadock's stages
     zstage: TVar;  
-    /// vernalisationfactor
+    /// vernalisation factor
     vernf: TVar;   
     GS_EC25: TVar;
     TSEC32: Tvar;
