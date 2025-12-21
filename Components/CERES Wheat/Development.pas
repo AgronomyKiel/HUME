@@ -1118,10 +1118,12 @@ begin
   //aktualisiert nach John-Manuskript 29.Jan.09
   Parcreate('sdepth', 'cm', 3, sdepth);
   Parcreate('phint', '°Cd', 91.74, phint);
+  phint.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/TDevelopment.html#eq-dnLMS';
   //aktualisiert nach John-Manuskript 29.Jan.09
   Parcreate('tBase', '', 0, tBase);
   Parcreate('sowingdate', 'doy', 300, sowingdate);
   ParCreate('fdl', '-', 0, fdl);
+  fdl.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/TDevelopment.html#day-length-effects';
   Parcreate('p3', '°Cd', 183.48, p3);
 
   Parcreate('p4', '°Cd', 200, p4);
