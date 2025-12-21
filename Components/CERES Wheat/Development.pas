@@ -624,10 +624,15 @@ if (xstage.v>=0)and(xstage.v<2) then
     EC.c := zstage.v - EC.v;
   end else
 
+  // development rate during pre-anthesis ear growth
   devrates4.v := Teff.v/p4.v;                     // p4 ~ 200 degree days
 
+  // development rate during grain filling, temperature sum is derived from p5
   devrates5.v := (max(0,Teff.v-1))/((p5.v+21.5)/0.05); //
 
+  // calculation of zstage from xstage
+  // and calculation of EC change rate from zstage
+  // between EC 62 and 65
   if (xstage.v>=4)and(xstage.v<4.4) then
     begin
       zstage.v := 5.7 + 0.8*(xstage.v-4.0);   // EC 62
@@ -635,6 +640,9 @@ if (xstage.v>=0)and(xstage.v<2) then
       EC.c := zstage.v - EC.v;
     end else
 
+// calculation of zstage from xstage
+// and calculation of EC change rate from zstage
+// between EC 65 and 69
 if (xstage.v>=4.4)and(xstage.v<6) then
   begin
     zstage.v := 6.02 + 1.86*(xstage.v-4.4); // from CERES nitrogen module
@@ -642,6 +650,9 @@ if (xstage.v>=4.4)and(xstage.v<6) then
     EC.c := zstage.v - EC.v;
   end else
 
+// calculation of zstage from xstage
+// and calculation of EC change rate from zstage
+// between EC 69 and 71
 if (xstage.v>= 6) and (xstage.v <7) then
   begin
     zstage.v := 9 + (xstage.v-6);           // from CERES nitrogen module
