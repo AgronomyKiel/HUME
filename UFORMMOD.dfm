@@ -34,11 +34,12 @@ object FormMod: TFormMod
     Top = 44
     Width = 1090
     Height = 589
-    ActivePage = TabSheetGlobal
+    ActivePage = TabSheetDocumentation
     Align = alClient
     HotTrack = True
     TabOrder = 1
     TabPosition = tpBottom
+    OnChange = PageControlChange
     object TabSheetGlobal: TTabSheet
       AlignWithMargins = True
       Caption = 'Global'
@@ -1607,6 +1608,164 @@ object FormMod: TFormMod
           ThumbColor = clCrimson
           OnClick = ToggleSwitchVarContOutputClick
         end
+      end
+    end
+    object Constants: TTabSheet
+      Caption = 'Constants'
+      ImageIndex = 12
+      object ToolBarConstPage: TToolBar
+        Left = 0
+        Top = 0
+        Width = 1082
+        Height = 24
+        AutoSize = True
+        ButtonHeight = 20
+        EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
+        TabOrder = 0
+        ExplicitTop = 8
+        object ToggleSwitch1: TToggleSwitch
+          Left = 0
+          Top = 0
+          Width = 77
+          Height = 20
+          Alignment = taLeftJustify
+          ParentShowHint = False
+          ShowHint = True
+          State = tssOn
+          StateCaptions.CaptionOn = '  on'
+          StateCaptions.CaptionOff = '  off'
+          TabOrder = 0
+          ThumbColor = clCrimson
+          OnClick = ToggleSwitchVarContOutputClick
+        end
+      end
+      object AdvStringGridConstants: TAdvStringGrid
+        Left = 0
+        Top = 24
+        Width = 1082
+        Height = 537
+        Cursor = crDefault
+        Align = alClient
+        ColCount = 7
+        DefaultColWidth = 120
+        FixedCols = 2
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing]
+        ScrollBars = ssBoth
+        TabOrder = 1
+        OnButtonClick = AdvStringGridVarButtonClick
+        OnCheckBoxMouseUp = AdvStringGridVarCheckBoxClick
+        HintColor = clYellow
+        ActiveCellFont.Charset = DEFAULT_CHARSET
+        ActiveCellFont.Color = clWindowText
+        ActiveCellFont.Height = -11
+        ActiveCellFont.Name = 'Tahoma'
+        ActiveCellFont.Style = [fsBold]
+        ActiveCellColor = 15387318
+        AutoNumAlign = True
+        Bands.Active = True
+        CellNode.NodeType = cnFlat
+        ControlLook.FixedGradientFrom = clWhite
+        ControlLook.FixedGradientTo = clBtnFace
+        ControlLook.FixedGradientHoverFrom = 13619409
+        ControlLook.FixedGradientHoverTo = 12502728
+        ControlLook.FixedGradientHoverMirrorFrom = 12502728
+        ControlLook.FixedGradientHoverMirrorTo = 11254975
+        ControlLook.FixedGradientDownFrom = 8816520
+        ControlLook.FixedGradientDownTo = 7568510
+        ControlLook.FixedGradientDownMirrorFrom = 7568510
+        ControlLook.FixedGradientDownMirrorTo = 6452086
+        ControlLook.FixedGradientDownBorder = 14007466
+        ControlLook.DropDownHeader.Font.Charset = DEFAULT_CHARSET
+        ControlLook.DropDownHeader.Font.Color = clWindowText
+        ControlLook.DropDownHeader.Font.Height = -11
+        ControlLook.DropDownHeader.Font.Name = 'Tahoma'
+        ControlLook.DropDownHeader.Font.Style = []
+        ControlLook.DropDownHeader.Visible = True
+        ControlLook.DropDownHeader.Buttons = <>
+        ControlLook.DropDownFooter.Font.Charset = DEFAULT_CHARSET
+        ControlLook.DropDownFooter.Font.Color = clWindowText
+        ControlLook.DropDownFooter.Font.Height = -11
+        ControlLook.DropDownFooter.Font.Name = 'Tahoma'
+        ControlLook.DropDownFooter.Font.Style = []
+        ControlLook.DropDownFooter.Visible = True
+        ControlLook.DropDownFooter.Buttons = <>
+        EnhRowColMove = False
+        Filter = <>
+        FilterDropDown.Font.Charset = DEFAULT_CHARSET
+        FilterDropDown.Font.Color = clWindowText
+        FilterDropDown.Font.Height = -11
+        FilterDropDown.Font.Name = 'MS Sans Serif'
+        FilterDropDown.Font.Style = []
+        FilterDropDownClear = '(All)'
+        FixedColWidth = 120
+        FixedRowHeight = 22
+        FixedFont.Charset = DEFAULT_CHARSET
+        FixedFont.Color = clWindowText
+        FixedFont.Height = -13
+        FixedFont.Name = 'MS Sans Serif'
+        FixedFont.Style = []
+        FloatFormat = '%.2f'
+        MouseActions.WheelAction = waMoveSelection
+        Navigation.AdvanceAutoEdit = False
+        Navigation.AdvanceDirection = adTopBottom
+        Navigation.AllowClipboardShortCuts = True
+        PrintSettings.DateFormat = 'dd/mm/yyyy'
+        PrintSettings.Font.Charset = DEFAULT_CHARSET
+        PrintSettings.Font.Color = clWindowText
+        PrintSettings.Font.Height = -13
+        PrintSettings.Font.Name = 'MS Sans Serif'
+        PrintSettings.Font.Style = []
+        PrintSettings.FixedFont.Charset = DEFAULT_CHARSET
+        PrintSettings.FixedFont.Color = clWindowText
+        PrintSettings.FixedFont.Height = -11
+        PrintSettings.FixedFont.Name = 'MS Sans Serif'
+        PrintSettings.FixedFont.Style = []
+        PrintSettings.HeaderFont.Charset = DEFAULT_CHARSET
+        PrintSettings.HeaderFont.Color = clWindowText
+        PrintSettings.HeaderFont.Height = -13
+        PrintSettings.HeaderFont.Name = 'MS Sans Serif'
+        PrintSettings.HeaderFont.Style = []
+        PrintSettings.FooterFont.Charset = DEFAULT_CHARSET
+        PrintSettings.FooterFont.Color = clWindowText
+        PrintSettings.FooterFont.Height = -13
+        PrintSettings.FooterFont.Name = 'MS Sans Serif'
+        PrintSettings.FooterFont.Style = []
+        PrintSettings.Borders = pbNoborder
+        PrintSettings.Centered = False
+        PrintSettings.PagePrefix = 'page'
+        PrintSettings.PageNumSep = '/'
+        ScrollWidth = 18
+        SearchFooter.ColorTo = 13160660
+        SearchFooter.FindNextCaption = 'Find &next'
+        SearchFooter.FindPrevCaption = 'Find &previous'
+        SearchFooter.Font.Charset = DEFAULT_CHARSET
+        SearchFooter.Font.Color = clWindowText
+        SearchFooter.Font.Height = -11
+        SearchFooter.Font.Name = 'MS Sans Serif'
+        SearchFooter.Font.Style = []
+        SearchFooter.HighLightCaption = 'Highlight'
+        SearchFooter.HintClose = 'Close'
+        SearchFooter.HintFindNext = 'Find next occurence'
+        SearchFooter.HintFindPrev = 'Find previous occurence'
+        SearchFooter.HintHighlight = 'Highlight occurences'
+        SearchFooter.MatchCaseCaption = 'Match case'
+        SortSettings.HeaderColor = 16579058
+        SortSettings.HeaderColorTo = 16579058
+        SortSettings.HeaderMirrorColor = 16380385
+        SortSettings.HeaderMirrorColorTo = 16182488
+        URLColor = clBlack
+        Version = '5.0.3.1'
+        WordWrap = False
+        ExplicitWidth = 1080
+        ExplicitHeight = 535
+        ColWidths = (
+          120
+          120
+          78
+          82
+          97
+          72
+          120)
       end
     end
     object TabSheetExternalValues: TTabSheet

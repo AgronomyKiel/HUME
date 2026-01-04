@@ -493,16 +493,14 @@ begin
     fTSumInternode := constant
   else
     fTSumInternode := daylength;
-
-
-
 end;
 
 procedure TDevelopment.CalcRates;
 
 begin
   if(fTSumInternode = daylength) then begin
-    TSumInternode_opt.v:= phint.v + fdl.v*daylengthp.v*daylengthp.v; // calculate TSumInternode_opt from phint, fdl, and daylengthp
+    //TSumInternode_opt.v:= phint.v + fdl.v*daylengthp.v*daylengthp.v; // calculate TSumInternode_opt from phint, fdl, and daylengthp
+    TSumInternode_opt.v := phint.v-fdl.v*max(0,daylengthp.v-12);
     ph39_opt.v:=TSumInternode_opt.v;
   end else begin
     TSumInternode_opt.v:= TSumInternode.v; // use TSumInternode as constant value
@@ -1183,7 +1181,6 @@ begin
   //aufzurufen, so daß mit einer einzigen Anweisung die ganze Funktionalität der
   // Vorgängermethoden übernommen werden
   
-  VarCreate('c', '', 0, true, c);
   // Define Value
   VarCreate('devrates1', '', 0, true, devrates1, 'development rate during istage 1');
   VarCreate('devrates2', '', 0, true, devrates2, 'development rate during istage 2');
@@ -1194,7 +1191,6 @@ begin
   VarCreate('devrates9', '', 0, true, devrates9, 'development rate during istage 9');
   VarCreate('dvs10', '', 0, true, dvs10, 'xstage times 10, for convenience of plotting');
   VarCreate('istage', '', 0, true, istage, ' Phenologicalstages in integer values');
-  VarCreate('k_v', '', 0, true, k_v, 'vernalisation variable');
   // Define Value
   VarCreate('rdr_p', '', 0, true, rdr_p, 'relative development rate effect of photoperiod');
   VarCreate('rdr_v', '', 0, true, rdr_v, 'relative development rate effect of vernalisation');
@@ -1234,6 +1230,8 @@ begin
   VarCreate('DOY_BegFlower', '[DOY]', 0, true, DOY_BegFlower, 'DOY for begin of flowering');
   VarCreate('DOY_YellowRipeness', '[DOY]', 0, true, DOY_YellowRipeness, 'DOY for yellow ripeness');
   VarCreate('DOY_PhysRipe', '[DOY]', 0, true, DOY_PhysRipe, 'DOY for physiological ripeness');
+  ConstCreate('k_v', '', 0, true, k_v, 'vernalisation variable');
+  ConstCreate('c', '', 0, true, c);
 end;
 
 procedure Register;
