@@ -107,37 +107,52 @@
       MixedHydrus
     </value>
   </const>
-  <const name="FromParameter" type="TnFKCalcMethod" file="USoilWaterMod.pas" line="49">
+  <const name="ccDiffusion" type="TConductivityContext" file="USoilWaterMod.pas" line="48">
+    <value>
+      ccDiffusion
+    </value>
+  </const>
+  <const name="ccRichardsMixed" type="TConductivityContext" file="USoilWaterMod.pas" line="48">
+    <value>
+      ccRichardsMixed
+    </value>
+  </const>
+  <const name="ccMixedHydrus" type="TConductivityContext" file="USoilWaterMod.pas" line="48">
+    <value>
+      ccMixedHydrus
+    </value>
+  </const>
+  <const name="FromParameter" type="TnFKCalcMethod" file="USoilWaterMod.pas" line="51">
     <value>
       FromParameter
     </value>
   </const>
-  <const name="Input" type="TnFKCalcMethod" file="USoilWaterMod.pas" line="49">
+  <const name="Input" type="TnFKCalcMethod" file="USoilWaterMod.pas" line="51">
     <value>
       Input
     </value>
   </const>
-  <const name="Watercontents" type="TIniMethod" file="USoilWaterMod.pas" line="52">
+  <const name="Watercontents" type="TIniMethod" file="USoilWaterMod.pas" line="54">
     <value>
       Watercontents
     </value>
   </const>
-  <const name="Potentials" type="TIniMethod" file="USoilWaterMod.pas" line="52">
+  <const name="Potentials" type="TIniMethod" file="USoilWaterMod.pas" line="54">
     <value>
       Potentials
     </value>
   </const>
-  <const name="Parameter" type="TIniMethod" file="USoilWaterMod.pas" line="52">
+  <const name="Parameter" type="TIniMethod" file="USoilWaterMod.pas" line="54">
     <value>
       Parameter
     </value>
   </const>
-  <const name="modifiedBeese" type="Tred_f" file="USoilWaterMod.pas" line="55">
+  <const name="modifiedBeese" type="Tred_f" file="USoilWaterMod.pas" line="57">
     <value>
       modifiedBeese
     </value>
   </const>
-  <const name="Beese1978" type="Tred_f" file="USoilWaterMod.pas" line="55">
+  <const name="Beese1978" type="Tred_f" file="USoilWaterMod.pas" line="57">
     <value>
       Beese1978
     </value>
@@ -183,29 +198,37 @@
     <element value="3" name="Mixed" file="USoilWaterMod.pas" line="46" />
     <element value="4" name="MixedHydrus" file="USoilWaterMod.pas" line="46" />
   </enum>
-  <enum name="TnFKCalcMethod" file="USoilWaterMod.pas" line="49">
+  <enum name="TConductivityContext" file="USoilWaterMod.pas" line="48">
+    <devnotes>
+       <summary>type for specifying conductivity calculation context</summary>
+    </devnotes>
+    <element value="0" name="ccDiffusion" file="USoilWaterMod.pas" line="48" />
+    <element value="1" name="ccRichardsMixed" file="USoilWaterMod.pas" line="48" />
+    <element value="2" name="ccMixedHydrus" file="USoilWaterMod.pas" line="48" />
+  </enum>
+  <enum name="TnFKCalcMethod" file="USoilWaterMod.pas" line="51">
     <devnotes>
        <summary>type for specifying computation method for nFK</summary>
     </devnotes>
-    <element value="0" name="FromParameter" file="USoilWaterMod.pas" line="49" />
-    <element value="1" name="Input" file="USoilWaterMod.pas" line="49" />
+    <element value="0" name="FromParameter" file="USoilWaterMod.pas" line="51" />
+    <element value="1" name="Input" file="USoilWaterMod.pas" line="51" />
   </enum>
-  <enum name="TIniMethod" file="USoilWaterMod.pas" line="52">
+  <enum name="TIniMethod" file="USoilWaterMod.pas" line="54">
     <devnotes>
        <summary>type for initialization method</summary>
     </devnotes>
-    <element value="0" name="Watercontents" file="USoilWaterMod.pas" line="52" />
-    <element value="1" name="Potentials" file="USoilWaterMod.pas" line="52" />
-    <element value="2" name="Parameter" file="USoilWaterMod.pas" line="52" />
+    <element value="0" name="Watercontents" file="USoilWaterMod.pas" line="54" />
+    <element value="1" name="Potentials" file="USoilWaterMod.pas" line="54" />
+    <element value="2" name="Parameter" file="USoilWaterMod.pas" line="54" />
   </enum>
-  <enum name="Tred_f" file="USoilWaterMod.pas" line="55">
+  <enum name="Tred_f" file="USoilWaterMod.pas" line="57">
     <devnotes>
        <summary>Type of soil evaporation reduction function</summary>
     </devnotes>
-    <element value="0" name="modifiedBeese" file="USoilWaterMod.pas" line="55" />
-    <element value="1" name="Beese1978" file="USoilWaterMod.pas" line="55" />
+    <element value="0" name="modifiedBeese" file="USoilWaterMod.pas" line="57" />
+    <element value="1" name="Beese1978" file="USoilWaterMod.pas" line="57" />
   </enum>
-  <array name="TSoilWaterParams" low="1" high="50" file="USoilWaterMod.pas" line="58">
+  <array name="TSoilWaterParams" low="1" high="50" file="USoilWaterMod.pas" line="60">
     <devnotes>
        <summary>Type for soil water parameters</summary>
     </devnotes>
@@ -215,23 +238,18 @@
       </devnotes>
     </element>
   </array>
-  <class name="TSoilWaterMod" file="USoilWaterMod.pas" line="61">
+  <class name="TSoilWaterMod" file="USoilWaterMod.pas" line="63">
     <devnotes>
        <summary>Component implementing vertical soil water transport</summary>
     </devnotes>
     <ancestor name="TLayeredSoil" namespace="UlayeredSoil">
-      <methodref name="LayerInit" visibility="protected" procflags="virtual">
-      </methodref>
+      <methodref name="LayerInit" visibility="protected" procflags="virtual" />
       <methodref name="CreateAll" visibility="public" procflags="override">
       </methodref>
-      <methodref name="Init" visibility="public" procflags="override">
-      </methodref>
-      <methodref name="CalcRates" visibility="public" procflags="override">
-      </methodref>
-      <propertyref name="parMaxTiefe" visibility="published">
-      </propertyref>
-      <propertyref name="p_NComp" visibility="published">
-      </propertyref>
+      <methodref name="Init" visibility="public" procflags="override" />
+      <methodref name="CalcRates" visibility="public" procflags="override" />
+      <propertyref name="parMaxTiefe" visibility="published" />
+      <propertyref name="p_NComp" visibility="published" />
       <ancestor name="TPlantRelatedSubMod" namespace="UAbstractPlant">
         <methodref name="GetIsPlantModelset" visibility="protected">
         </methodref>
@@ -239,8 +257,7 @@
         </methodref>
         <methodref name="Init" visibility="public" procflags="override">
         </methodref>
-        <propertyref name="IsPlantModelSet" visibility="public">
-        </propertyref>
+        <propertyref name="IsPlantModelSet" visibility="public" />
         <propertyref name="PlantModel" visibility="published">
         </propertyref>
         <ancestor name="TSubmodel" namespace="UMod">
@@ -258,30 +275,18 @@
           </methodref>
           <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
           </methodref>
-          <methodref name="set_State" visibility="private" procflags="virtual">
-          </methodref>
-          <methodref name="get_State" visibility="private">
-          </methodref>
-          <methodref name="set_Par" visibility="private">
-          </methodref>
-          <methodref name="Get_Par" visibility="private">
-          </methodref>
-          <methodref name="set_Var" visibility="private">
-          </methodref>
-          <methodref name="Get_Var" visibility="private">
-          </methodref>
-          <methodref name="set_Const" visibility="private">
-          </methodref>
-          <methodref name="get_Const" visibility="private">
-          </methodref>
-          <methodref name="set_Option" visibility="private">
-          </methodref>
-          <methodref name="get_Option" visibility="private">
-          </methodref>
-          <methodref name="set_ExternVar" visibility="private">
-          </methodref>
-          <methodref name="get_ExternVar" visibility="private">
-          </methodref>
+          <methodref name="set_State" visibility="private" procflags="virtual" />
+          <methodref name="get_State" visibility="private" />
+          <methodref name="set_Par" visibility="private" />
+          <methodref name="Get_Par" visibility="private" />
+          <methodref name="set_Var" visibility="private" />
+          <methodref name="Get_Var" visibility="private" />
+          <methodref name="set_Const" visibility="private" />
+          <methodref name="get_Const" visibility="private" />
+          <methodref name="set_Option" visibility="private" />
+          <methodref name="get_Option" visibility="private" />
+          <methodref name="set_ExternVar" visibility="private" />
+          <methodref name="get_ExternVar" visibility="private" />
           <methodref name="InitStates" visibility="private" procflags="virtual">
           </methodref>
           <methodref name="InitParms" visibility="private" procflags="virtual">
@@ -300,12 +305,10 @@
           </methodref>
           <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
           </methodref>
-          <methodref name="UpdateValue" visibility="protected">
-          </methodref>
+          <methodref name="UpdateValue" visibility="protected" />
           <methodref name="Paint" visibility="protected" procflags="override">
           </methodref>
-          <methodref name="Notification" visibility="protected" procflags="virtual">
-          </methodref>
+          <methodref name="Notification" visibility="protected" procflags="virtual" />
           <methodref name="Create" visibility="public" procflags="constructor override">
           </methodref>
           <methodref name="free" visibility="public">
@@ -404,18 +407,12 @@
           </propertyref>
           <propertyref name="OptContOutput" visibility="published">
           </propertyref>
-          <propertyref name="Parent" visibility="published">
-          </propertyref>
-          <propertyref name="Canvas" visibility="published">
-          </propertyref>
-          <propertyref name="Visible" visibility="published">
-          </propertyref>
-          <propertyref name="color" visibility="published">
-          </propertyref>
-          <propertyref name="DebugForm" visibility="published">
-          </propertyref>
-          <propertyref name="OnDblclick" visibility="published">
-          </propertyref>
+          <propertyref name="Parent" visibility="published" />
+          <propertyref name="Canvas" visibility="published" />
+          <propertyref name="Visible" visibility="published" />
+          <propertyref name="color" visibility="published" />
+          <propertyref name="DebugForm" visibility="published" />
+          <propertyref name="OnDblclick" visibility="published" />
           <ancestor name="TGraphicControl" namespace="Vcl.Controls">
             <methodref name="WMPaint" visibility="private" procflags="message">
             </methodref>
@@ -1442,237 +1439,233 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="ResetTimeStep" type="Boolean" visibility="private" size="1" offset="2568" file="USoilWaterMod.pas" line="65">
+      <field name="ResetTimeStep" type="Boolean" visibility="private" size="1" offset="2568" file="USoilWaterMod.pas" line="67">
         <devnotes>
            <summary>flag for resetting time step</summary>
         </devnotes>
       </field>
-      <field name="NewDay" type="Boolean" visibility="private" size="1" offset="2569" file="USoilWaterMod.pas" line="67">
+      <field name="NewDay" type="Boolean" visibility="private" size="1" offset="2569" file="USoilWaterMod.pas" line="69">
         <devnotes>
            <summary>flag for start of a new day</summary>
         </devnotes>
       </field>
-      <field name="last_iter" type="Integer" visibility="private" size="4" offset="2572" file="USoilWaterMod.pas" line="69">
+      <field name="last_iter" type="Integer" visibility="private" size="4" offset="2572" file="USoilWaterMod.pas" line="71">
         <devnotes>
            <summary>number of iterations during previous internal time step</summary>
         </devnotes>
       </field>
-      <field name="Iter_save" type="Integer" visibility="private" size="4" offset="2576" file="USoilWaterMod.pas" line="71">
+      <field name="Iter_save" type="Integer" visibility="private" size="4" offset="2576" file="USoilWaterMod.pas" line="73">
         <devnotes>
            <summary>field for saving itermax</summary>
         </devnotes>
       </field>
-      <field name="total_iter" type="Integer" visibility="private" size="4" offset="2580" file="USoilWaterMod.pas" line="73">
+      <field name="total_iter" type="Integer" visibility="private" size="4" offset="2580" file="USoilWaterMod.pas" line="75">
         <devnotes>
            <summary>total number of iterations during internal time step</summary>
         </devnotes>
       </field>
-      <field name="delt_iter_max" type="Double" visibility="private" size="8" offset="2584" file="USoilWaterMod.pas" line="75">
+      <field name="delt_iter_max" type="Double" visibility="private" size="8" offset="2584" file="USoilWaterMod.pas" line="77">
         <devnotes>
            <summary>maximum water content change within a single layer during an internal time step</summary>
         </devnotes>
       </field>
-      <field name="max_flow_ratio" type="Double" visibility="private" size="8" offset="2592" file="USoilWaterMod.pas" line="77">
+      <field name="max_flow_ratio" type="Double" visibility="private" size="8" offset="2592" file="USoilWaterMod.pas" line="79">
         <devnotes>
            <summary>maximum ratio of flow to soil water storage during iteration in any layer</summary>
         </devnotes>
       </field>
-      <field name="theta_airdryness" type="Double" visibility="private" size="8" offset="2600" file="USoilWaterMod.pas" line="79">
+      <field name="theta_airdryness" type="Double" visibility="private" size="8" offset="2600" file="USoilWaterMod.pas" line="81">
         <devnotes>
            <summary>lower limit to soil water content [cm3/cm3]</summary>
         </devnotes>
       </field>
-      <field name="DayFlow1" type="Double" visibility="private" size="8" offset="2608" file="USoilWaterMod.pas" line="81">
+      <field name="DayFlow1" type="Double" visibility="private" size="8" offset="2608" file="USoilWaterMod.pas" line="83">
         <devnotes>
            <summary>upper flow rate, constant over one day  [cm/d]</summary>
         </devnotes>
       </field>
-      <field name="CumDayFlow1" type="Double" visibility="private" size="8" offset="2616" file="USoilWaterMod.pas" line="83">
+      <field name="CumDayFlow1" type="Double" visibility="private" size="8" offset="2616" file="USoilWaterMod.pas" line="85">
         <devnotes>
            <summary>cumulative flow into layer 1 over the day [cm/d]</summary>
         </devnotes>
       </field>
-      <field name="oldrunoff" type="Double" visibility="private" size="8" offset="2624" file="USoilWaterMod.pas" line="85">
+      <field name="oldrunoff" type="Double" visibility="private" size="8" offset="2624" file="USoilWaterMod.pas" line="87">
         <devnotes>
            <summary>for saving old runoff rate value</summary>
         </devnotes>
       </field>
-      <field name="MaxInfil" type="Double" visibility="private" size="8" offset="2632" file="USoilWaterMod.pas" line="87">
+      <field name="MaxInfil" type="Double" visibility="private" size="8" offset="2632" file="USoilWaterMod.pas" line="89">
         <devnotes>
            <summary>maximum infiltration rate</summary>
         </devnotes>
       </field>
-      <field name="max_IterErrorsave" type="Double" visibility="private" size="8" offset="2640" file="USoilWaterMod.pas" line="89">
+      <field name="max_IterErrorsave" type="Double" visibility="private" size="8" offset="2640" file="USoilWaterMod.pas" line="91">
         <devnotes>
            <summary>for saving max_IterError</summary>
         </devnotes>
       </field>
-      <field name="start" type="Byte" visibility="private" size="1" offset="2648" file="USoilWaterMod.pas" line="91">
+      <field name="start" type="Byte" visibility="private" size="1" offset="2648" file="USoilWaterMod.pas" line="93">
         <devnotes>
            <summary>number of layer where solution of equation system starts, mostly the first sometimes the second ..</summary>
         </devnotes>
       </field>
-      <field name="wet" type="Boolean" visibility="private" size="1" offset="2649" file="USoilWaterMod.pas" line="93">
+      <field name="wet" type="Boolean" visibility="private" size="1" offset="2649" file="USoilWaterMod.pas" line="95">
         <devnotes>
            <summary>Saturation in the uppermost compartment?</summary>
         </devnotes>
       </field>
-      <field name="dry" type="Boolean" visibility="private" size="1" offset="2650" file="USoilWaterMod.pas" line="95">
+      <field name="dry" type="Boolean" visibility="private" size="1" offset="2650" file="USoilWaterMod.pas" line="97">
         <devnotes>
            <summary>Water content below b_rest in the uppermost compartment?</summary>
         </devnotes>
       </field>
-      <field name="success" type="Boolean" visibility="private" size="1" offset="2651" file="USoilWaterMod.pas" line="97">
+      <field name="success" type="Boolean" visibility="private" size="1" offset="2651" file="USoilWaterMod.pas" line="99">
         <devnotes>
            <summary>solution converged</summary>
         </devnotes>
       </field>
-      <field name="dt_set" type="Boolean" visibility="private" size="1" offset="2652" file="USoilWaterMod.pas" line="99">
+      <field name="dt_set" type="Boolean" visibility="private" size="1" offset="2652" file="USoilWaterMod.pas" line="101">
         <devnotes>
            <summary>was dt set during act. iteration</summary>
         </devnotes>
       </field>
-      <field name="fCompMethod" type="TCompMethod" visibility="private" size="1" offset="2653" file="USoilWaterMod.pas" line="102">
+      <field name="fCompMethod" type="TCompMethod" visibility="private" size="1" offset="2653" file="USoilWaterMod.pas" line="104">
         <devnotes>
            <summary>Enumeration type variable for computation method</summary>
         </devnotes>
       </field>
-      <field name="fShowWarnings" type="Boolean" visibility="private" size="1" offset="2654" file="USoilWaterMod.pas" line="104">
+      <field name="fShowWarnings" type="Boolean" visibility="private" size="1" offset="2654" file="USoilWaterMod.pas" line="106">
         <devnotes>
            <summary>Switch for put Warnings on and off</summary>
         </devnotes>
       </field>
-      <field name="FVGParsFromTexture" type="TVGParsFromTexture" visibility="private" size="1" offset="2655" file="USoilWaterMod.pas" line="106">
+      <field name="FVGParsFromTexture" type="TVGParsFromTexture" visibility="private" size="1" offset="2655" file="USoilWaterMod.pas" line="108">
         <devnotes>
            <summary>Option to take Van-Genuchten-Parameters from texture estimates</summary>
         </devnotes>
       </field>
-      <field name="Texture_version" type="TTexture_version" visibility="private" size="1" offset="2656" file="USoilWaterMod.pas" line="108">
+      <field name="Texture_version" type="TTexture_version" visibility="private" size="1" offset="2656" file="USoilWaterMod.pas" line="110">
         <devnotes>
            <summary>type for defining pedotransfer function either KA5 or RR</summary>
         </devnotes>
       </field>
-      <field name="FKsFromTexture" type="TVGParsFromTexture" visibility="private" size="1" offset="2657" file="USoilWaterMod.pas" line="110">
+      <field name="FKsFromTexture" type="TVGParsFromTexture" visibility="private" size="1" offset="2657" file="USoilWaterMod.pas" line="112">
         <devnotes>
            <summary>FKsFromTexture;</summary>
         </devnotes>
       </field>
-      <field name="FTextureClass1" type="TTextureClass" visibility="private" size="1" offset="2658" file="USoilWaterMod.pas" line="113">
+      <field name="FTextureClass1" type="TTextureClass" visibility="private" size="1" offset="2658" file="USoilWaterMod.pas" line="115">
         <devnotes>
           
         </devnotes>
       </field>
-      <field name="FTextureClass2" type="TTextureClass" visibility="private" size="1" offset="2659" file="USoilWaterMod.pas" line="115" />
-      <field name="FTextureClass3" type="TTextureClass" visibility="private" size="1" offset="2660" file="USoilWaterMod.pas" line="115" />
-      <field name="FTextureClass4" type="TTextureClass" visibility="private" size="1" offset="2661" file="USoilWaterMod.pas" line="115" />
-      <field name="FTextureClass5" type="TTextureClass" visibility="private" size="1" offset="2662" file="USoilWaterMod.pas" line="115" />
-      <field name="FTextureClass6" type="TTextureClass" visibility="private" size="1" offset="2663" file="USoilWaterMod.pas" line="116" />
-      <field name="fLDClass1" type="TLDClass" visibility="private" size="1" offset="2664" file="USoilWaterMod.pas" line="121">
+      <field name="FTextureClass2" type="TTextureClass" visibility="private" size="1" offset="2659" file="USoilWaterMod.pas" line="117" />
+      <field name="FTextureClass3" type="TTextureClass" visibility="private" size="1" offset="2660" file="USoilWaterMod.pas" line="117" />
+      <field name="FTextureClass4" type="TTextureClass" visibility="private" size="1" offset="2661" file="USoilWaterMod.pas" line="117" />
+      <field name="FTextureClass5" type="TTextureClass" visibility="private" size="1" offset="2662" file="USoilWaterMod.pas" line="117" />
+      <field name="FTextureClass6" type="TTextureClass" visibility="private" size="1" offset="2663" file="USoilWaterMod.pas" line="118" />
+      <field name="fLDClass1" type="TLDClass" visibility="private" size="1" offset="2664" file="USoilWaterMod.pas" line="123">
         <devnotes>
            <summary>
            soil bulk density classes in Horizon x }
            </summary>
         </devnotes>
       </field>
-      <field name="FLDClass2" type="TLDClass" visibility="private" size="1" offset="2665" file="USoilWaterMod.pas" line="122" />
-      <field name="FLDClass3" type="TLDClass" visibility="private" size="1" offset="2666" file="USoilWaterMod.pas" line="122" />
-      <field name="FLDClass4" type="TLDClass" visibility="private" size="1" offset="2667" file="USoilWaterMod.pas" line="122" />
-      <field name="FLDClass5" type="TLDClass" visibility="private" size="1" offset="2668" file="USoilWaterMod.pas" line="122" />
-      <field name="FLDClass6" type="TLDClass" visibility="private" size="1" offset="2669" file="USoilWaterMod.pas" line="122" />
-      <field name="fLD1" type="TLD" visibility="private" size="1" offset="2670" file="USoilWaterMod.pas" line="125">
+      <field name="FLDClass2" type="TLDClass" visibility="private" size="1" offset="2665" file="USoilWaterMod.pas" line="124" />
+      <field name="FLDClass3" type="TLDClass" visibility="private" size="1" offset="2666" file="USoilWaterMod.pas" line="124" />
+      <field name="FLDClass4" type="TLDClass" visibility="private" size="1" offset="2667" file="USoilWaterMod.pas" line="124" />
+      <field name="FLDClass5" type="TLDClass" visibility="private" size="1" offset="2668" file="USoilWaterMod.pas" line="124" />
+      <field name="FLDClass6" type="TLDClass" visibility="private" size="1" offset="2669" file="USoilWaterMod.pas" line="124" />
+      <field name="fLD1" type="TLD" visibility="private" size="1" offset="2670" file="USoilWaterMod.pas" line="127">
         <devnotes>
            <summary>numerical bulk density as constants for each of the six possible soil horizons</summary>
         </devnotes>
       </field>
-      <field name="fLD2" type="TLD" visibility="private" size="1" offset="2671" file="USoilWaterMod.pas" line="125" />
-      <field name="fLD3" type="TLD" visibility="private" size="1" offset="2672" file="USoilWaterMod.pas" line="125" />
-      <field name="fLD4" type="TLD" visibility="private" size="1" offset="2673" file="USoilWaterMod.pas" line="125" />
-      <field name="fLD5" type="TLD" visibility="private" size="1" offset="2674" file="USoilWaterMod.pas" line="125" />
-      <field name="fLD6" type="TLD" visibility="private" size="1" offset="2675" file="USoilWaterMod.pas" line="125" />
-      <field name="fm_model" type="Tm_model" visibility="private" size="1" offset="2676" file="USoilWaterMod.pas" line="128">
+      <field name="fLD2" type="TLD" visibility="private" size="1" offset="2671" file="USoilWaterMod.pas" line="127" />
+      <field name="fLD3" type="TLD" visibility="private" size="1" offset="2672" file="USoilWaterMod.pas" line="127" />
+      <field name="fLD4" type="TLD" visibility="private" size="1" offset="2673" file="USoilWaterMod.pas" line="127" />
+      <field name="fLD5" type="TLD" visibility="private" size="1" offset="2674" file="USoilWaterMod.pas" line="127" />
+      <field name="fLD6" type="TLD" visibility="private" size="1" offset="2675" file="USoilWaterMod.pas" line="127" />
+      <field name="fm_model" type="Tm_model" visibility="private" size="1" offset="2676" file="USoilWaterMod.pas" line="130">
         <devnotes>
            <summary>type of m_model used</summary>
         </devnotes>
       </field>
-      <field name="fWriteParsFromTexture" type="Boolean" visibility="private" size="1" offset="2677" file="USoilWaterMod.pas" line="130">
+      <field name="fWriteParsFromTexture" type="Boolean" visibility="private" size="1" offset="2677" file="USoilWaterMod.pas" line="132">
         <devnotes>
            <summary>flag for writing texture VG-Pars into Param-Ini-file</summary>
         </devnotes>
       </field>
-      <field name="fred_f" type="Tred_f" visibility="private" size="1" offset="2678" file="USoilWaterMod.pas" line="132">
+      <field name="fred_f" type="Tred_f" visibility="private" size="1" offset="2678" file="USoilWaterMod.pas" line="134">
         <devnotes>
            <summary>Option for soil evaporation reduction function</summary>
         </devnotes>
       </field>
-      <field name="dt_old" type="Double" visibility="private" size="8" offset="2680" file="USoilWaterMod.pas" line="134">
+      <field name="dt_old" type="Double" visibility="private" size="8" offset="2680" file="USoilWaterMod.pas" line="136">
         <devnotes>
            <summary>previous time step width [d]</summary>
         </devnotes>
       </field>
-      <field name="MaxActChangeSWC" type="Double" visibility="private" size="8" offset="2688" file="USoilWaterMod.pas" line="136">
+      <field name="MaxActChangeSWC" type="Double" visibility="private" size="8" offset="2688" file="USoilWaterMod.pas" line="138">
         <devnotes>
            <summary>maximum change in water content</summary>
         </devnotes>
       </field>
-      <field name="TempFactor" type="Double" visibility="private" size="8" offset="2696" file="USoilWaterMod.pas" line="138">
+      <field name="TempFactor" type="Double" visibility="private" size="8" offset="2696" file="USoilWaterMod.pas" line="140">
         <devnotes>
            <summary></summary>
         </devnotes>
       </field>
-      <field name="ndx_Weff" type="Integer" visibility="private" size="4" offset="2704" file="USoilWaterMod.pas" line="141">
+      <field name="ndx_Weff" type="Integer" visibility="private" size="4" offset="2704" file="USoilWaterMod.pas" line="143">
         <devnotes>
            <summary>index of layer where maximum Weff is reached</summary>
         </devnotes>
       </field>
-      <field name="PSI_dummy" type="TVar" visibility="private" size="4" offset="2708" file="USoilWaterMod.pas" line="144">
+      <field name="PSI_dummy" type="TVar" visibility="private" size="4" offset="2708" file="USoilWaterMod.pas" line="146">
         <devnotes>
            <summary>dummy to set array settings</summary>
         </devnotes>
       </field>
-      <field name="IniMethod" type="TIniMethod" visibility="private" size="1" offset="2712" file="USoilWaterMod.pas" line="147">
+      <field name="IniMethod" type="TIniMethod" visibility="private" size="1" offset="2712" file="USoilWaterMod.pas" line="149">
         <devnotes>
            <summary>Enumeration type variable for initialisation method</summary>
         </devnotes>
       </field>
-      <field name="nFKCalcMethod" type="TnFKCalcMethod" visibility="private" size="1" offset="2713" file="USoilWaterMod.pas" line="150">
+      <field name="nFKCalcMethod" type="TnFKCalcMethod" visibility="private" size="1" offset="2713" file="USoilWaterMod.pas" line="152">
         <devnotes>
            <summary> type of calculation method for plant available soil water </summary>
         </devnotes>
       </field>
-      <field name="fWeffOpt" type="TSource" visibility="private" size="1" offset="2714" file="USoilWaterMod.pas" line="153">
+      <field name="fWeffOpt" type="TSource" visibility="private" size="1" offset="2714" file="USoilWaterMod.pas" line="155">
         <devnotes>
            <summary>Source of effective rooting depth (Weff)</summary>
         </devnotes>
       </field>
-      <field name="FSoilHeatModel" type="TAbstractSoilHeat" visibility="private" size="4" offset="2716" file="USoilWaterMod.pas" line="156">
+      <field name="FSoilHeatModel" type="TAbstractSoilHeat" visibility="private" size="4" offset="2716" file="USoilWaterMod.pas" line="158">
         <devnotes>
            <summary>Link to soil temperature model</summary>
         </devnotes>
       </field>
-      <field name="fTransferWGs" type="Boolean" visibility="private" size="1" offset="2720" file="USoilWaterMod.pas" line="159">
+      <field name="fTransferWGs" type="Boolean" visibility="private" size="1" offset="2720" file="USoilWaterMod.pas" line="161">
         <devnotes>
            <summary>Option field, if true water contents are written into the next state ini-File of the control file</summary>
         </devnotes>
       </field>
-      <field name="alpha" type="TSoilArray" visibility="private" size="416" offset="2728" file="USoilWaterMod.pas" line="160" />
-      <field name="beta" type="TSoilArray" visibility="private" size="416" offset="3144" file="USoilWaterMod.pas" line="160" />
-      <field name="gamma" type="TSoilArray" visibility="private" size="416" offset="3560" file="USoilWaterMod.pas" line="160" />
-      <field name="Res" type="TSoilArray" visibility="private" size="416" offset="3976" file="USoilWaterMod.pas" line="160" />
-      <procedure name="CalcTempFactor" visibility="private" file="USoilWaterMod.pas" line="163">
+      <field name="alpha" type="TSoilArray" visibility="private" size="416" offset="2728" file="USoilWaterMod.pas" line="162" />
+      <field name="beta" type="TSoilArray" visibility="private" size="416" offset="3144" file="USoilWaterMod.pas" line="162" />
+      <field name="gamma" type="TSoilArray" visibility="private" size="416" offset="3560" file="USoilWaterMod.pas" line="162" />
+      <field name="Res" type="TSoilArray" visibility="private" size="416" offset="3976" file="USoilWaterMod.pas" line="162" />
+      <procedure name="CalcTempFactor" visibility="private" file="USoilWaterMod.pas" line="165">
         <devnotes>
            <summary>Calculation of freezing effect</summary>
         </devnotes>
       </procedure>
-      <procedure name="CalcConductivities" visibility="private" file="USoilWaterMod.pas" line="165">
+      <procedure name="CalcConductivities" visibility="private" file="USoilWaterMod.pas" line="167">
         <devnotes>
            <summary>Calculation of conductivities</summary>
         </devnotes>
-      </procedure>
-      <procedure name="CalcLeitfaehigkeiten" visibility="private" file="USoilWaterMod.pas" line="167">
-        <devnotes>
-           <summary>Shared conductivity/capacity setup for Richards and Mixed solvers</summary>
-        </devnotes>
         <parameters>
+          <parameter name="context" type="TConductivityContext" paramflags="const" />
           <parameter name="useGeometricMean" type="Boolean" paramflags="const" />
           <parameter name="includeCoefficients" type="Boolean" paramflags="const" />
           <parameter name="applyFreezing" type="Boolean" paramflags="const" />
@@ -2971,6 +2964,6 @@
     </members>
   </class>
   <variable name="SoilWaterMod" type="TSoilWaterMod" file="USoilWaterMod.pas" line="778" />
-  <procedure name="Register" visibility="public" file="USoilWaterMod.pas" line="4243">
+  <procedure name="Register" visibility="public" file="USoilWaterMod.pas" line="4111">
   </procedure>
 </namespace>

@@ -49,7 +49,7 @@ type
   TNImpact = (NImpact, NoNImpact);
 
   /// <summary> two options for partitioning of shoot/root according to Ceres Wheat or Kage 2000 </summary>
-  TPTF_version = (PTF_CERES, PTF_Kage); 
+  TPTF_version = (PTF_CERES, PTF_Kage);
 
   /// <summary> <summary> </summary>
   /// <summary> Represents the partitioning of resources in a wheat plant. </summary>
@@ -57,25 +57,31 @@ type
   THumeWheatPartitioning = class(TAbstractPlant)
   private
   /// <summary> Type of grain filling algorithm </summary>
-  fRSWT: TRSWT;  
+  fRSWT: TRSWT;
   /// <summary> change rate of N-storage pool leaf </summary>
-  dNSP_l: real; 
+  dNSP_l: real;
   /// <summary> change rate of N-storage pool stem </summary>
-  dNSP_s: real; 
+  dNSP_s: real;
   /// <summary> structural leaf N per square meter </summary>
-  NLStruc_m2: real;  
+  NLStruc_m2: real;
   /// <summary> CumPAR for Q45 </summary>
-  PAR_arr: array [1 .. 45] of real; 
+  PAR_arr: array [1 .. 45] of real;
   /// <summary> CumMTemp for Q45 </summary>
   MTEMP_arr: array [1 .. 45] of real;   // ProzN, critN: real;
     Nph_c: real;
     NDeg: real;
     NSyn: real;
     Np2, nc_: real;
+ 
     Swmin: real;
+    /// <summary> minimum stem weight per plant for translocation and senescence calculations, determined at stage 37 </summary>
+    swmin_min: real;
     SumGRHI: real;
     SumTempHI: real;
     Ndsen: real;
+
+ 
+
     procedure CreateAllVars;
     procedure CreateAllStates;
     procedure CreateAllExternV;
@@ -778,17 +784,22 @@ end;
 
 /// <summary> Calculates the potential harvest index (HI) for wheat. </summary>
 procedure THumeWheatPartitioning.CalcPotHI;
+
 begin
+
+
   //potHI: potential harvest index, calculated from the ratio of global radiation and temperature sum
   // by an empirical regression function
   potHI.v := QHI_INC.v * QHI.v + QHI_INT.v;
   /// <summary> C:/Users/h_kage/Documents/R_Statistik/HumeWheatDoku/HUMEWheatDocu.html#potential-harvest-index </summary>
     // file:
   // SWmin: Minimum stem weight of a plant after anthesis, used to calculate amount of reserves that can be used to fill grain - g
-  Swmin := max(0, (STMWT_m2.v - (TSDM_m2.v * potHI.v - GRNWT_m2.v)) / Plants.v);
-  
+
+  Swmin := max(swmin_min, (STMWT_m2.v - (TSDM_m2.v * potHI.v - GRNWT_m2.v)) / Plants.v);
+
   //RSWT: stem reserves during grain filling in g/m²
-  RSWT.v := STMWT_m2.v - (Swmin * Plants.v);
+  RSWT.v := max(0,STMWT_m2.v - (Swmin * Plants.v));
+
 end;
 
 /// <summary> Calculates the QHI (Harvest Index) for the wheat partitioning. </summary>
@@ -1203,6 +1214,9 @@ begin
   begin
     TEMPsum.c := max(TEMPM.v, 0); // rate of change of temperature sum
   end;
+  if ( (swmin_min <=0) and (EC.v > 37) ) then
+    swmin_min := TOPWT_pl.v;
+
 
   CalcSeedReserveChange;
   CalcRootDMandN;
@@ -1785,6 +1799,7 @@ begin
   SumGRHI := 0;
   SumTempHI := 0;
   Swmin := 0;
+  swmin_min := 0;
   if OptDroughtimpact.option = 'droughtimpact' then
   begin
     fDroughtImpact := DroughtImpact;
