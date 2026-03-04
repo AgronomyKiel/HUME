@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Agronomy and Crop Science Group, Kiel University">
-<meta name="dcterms.date" content="2026-01-09">
+<meta name="dcterms.date" content="2026-03-04">
 
 <title>TDevelopment – Hume Documentation</title>
 <style>
@@ -4040,6 +4040,12 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../../Components/CERES Wheat/Documentation/THumeWheatPartitioning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">THumeWheatPartitioning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../../Components/CERES Wheat/Documentation/THumeWheatLeafArea.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">THumeWheatLeafArea</span></a>
   </div>
@@ -4139,7 +4145,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 9, 2026</p>
+      <p class="date">March 4, 2026</p>
     </div>
   </div>
   
@@ -4154,18 +4160,29 @@ window.Quarto = {
 <section id="summary" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Summary</h1>
 <div class="cell" data-layout-align="center">
-<p>Development class, a core component of the HUME-Wheat crop model, responsible for simulating the phenological development (growth stages) of wheat. The class models the progression of the crop through its life cycle, from sowing and emergence to maturity and harvest, using temperature, daylength, and genetic parameters.</p>
-<pre><code>   Key features:
-   - Growth Stage Tracking: Uses both integer (EC, BBCH, Zadoks) and continuous (xstage) scales to represent crop development.
-   - Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).
-   - Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.
-   - Event Timing: Records the day of year (DOY) for key phenological events (e.g., stem elongation, heading, flowering, ripeness).
-   - Parameterization: Supports genetic and environmental parameters (e.g., base temperature, photoperiod sensitivity, vernalization requirements).
-   - Data Integration: Can initialize and calibrate development using measured data (e.g., measured EC dates).
-   - Modular Design: Integrates with other model components via external variables and options.
-   
-   Typical usage:
-   This module is used to drive the timing of crop processes (e.g., leaf growth, flowering, grain filling) in response to weather and management, providing the developmental framework for the rest of the crop model.</code></pre>
+<p>This unit defines the TDevelopment class, a core component of the HUME-Wheat crop model, responsible for simulating the phenological development (growth stages) of wheat. The class models the progression of the crop through its life cycle, from sowing and emergence to maturity and harvest, using temperature, daylength, and genetic parameters.</p>
+<p><strong>Key features:</strong></p>
+<ul>
+<li>Growth Stage Tracking: Uses both integer (EC, BBCH, Zadoks) and continuous (xstage) scales to represent crop development.</li>
+<li>Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).</li>
+<li>Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.</li>
+<li>Event Timing: Records the day of year (DOY) for key phenological events (e.g., stem elongation, heading, flowering, ripeness).</li>
+<li>Parameterization: Supports genetic and environmental parameters (e.g., base temperature, photoperiod sensitivity, vernalization requirements).</li>
+<li>Data Integration: Can initialize and calibrate development using measured data (e.g., measured EC dates).</li>
+<li>Modular Design: Integrates with other model components via external variables and options, allowing for flexible coupling with growth, water, and nitrogen modules.</li>
+</ul>
+<p>Phenological stages in integer values and corresponding BBCH stages:</p>
+<ul>
+<li>1 Emergence to terminal spikelet(TS), BBCH 10-30</li>
+<li>2 TS to end of vegetative growth, BBCH 30-39</li>
+<li>3 End of vegetative growth and beginning ear growth to end of pre-anthesis ear growth, BBCH 40-57</li>
+<li>4 End of pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase), BBCH 57-71</li>
+<li>5 Beginning of grain filling to physiological maturity, BBCH 71-90</li>
+<li>6 Physiological maturity to fallow (harvest), BBCH 90-99</li>
+<li>7 Fallow to sowing</li>
+<li>8 Sowing to germination</li>
+<li>9 Germination to emergence Typical usage: This module is used to drive the timing of crop processes (e.g., leaf growth, flowering, grain filling) in response to weather and management, providing the developmental framework for the rest of the crop model.</li>
+</ul>
 </div>
 </section>
 <section id="lists-of-model-objects" class="level1" data-number="2">
@@ -4438,7 +4455,7 @@ window.Quarto = {
 <h2 data-number="2.3" class="anchored" data-anchor-id="variables"><span class="header-section-number">2.3</span> Variables</h2>
 <p>The class TDevelopment has 44 following variable(s).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(df.var,  <span class="at">escape =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(df.var,  <span class="at">escape =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>

@@ -1,17 +1,15 @@
 ﻿
 /// <summary>
 /// Module for carbon and nitrogen partitioning at the organ level (root, stem, leaves, grains) in wheat.
-/// </summary>
-/// <remarks>
 /// Implements C translocation to grains based on experimental results (see Appendix, Ratjen Diss. 2012).
 /// N concentrations in organs during vegetative growth are adapted from TSubPartitioningVegNew (U. Böttcher, Meyer-Schatz), with modifications for drought stress according to 2010 experimental results (see Ratjen Diss. Appendix).
 /// Leaf N distribution is calculated for specific leaf layers at anthesis, based on 2010 experimental results (see Ratjen Diss. Appendix).
 /// N dynamics are modeled similarly to Bertheloot 2008 (see Ratjen Diss. Appendix).
 /// Implements sigmoid grain filling (October 2015).
 /// Partitioning of N deficit follows Ratjen & Kage 2016 (JACS).
-/// Main authors: A.M. Ratjen, U. Böttcher, H. Kage et al.
+/// Main authors: A.M. Ratjen, U. Böttcher, D. Neukam, H. Kage et al.
 /// Restructured and commented by H. Kage, 2024.
-/// </remarks>
+/// </summary>
 
 unit UHumeWheatPartitioning;
 
@@ -51,9 +49,17 @@ type
   /// <summary> two options for partitioning of shoot/root according to Ceres Wheat or Kage 2000 </summary>
   TPTF_version = (PTF_CERES, PTF_Kage);
 
-  /// <summary> <summary> </summary>
-  /// <summary> Represents the partitioning of resources in a wheat plant. </summary>
-  /// <summary> </summary> </summary>
+/// <summary>
+/// Module for carbon and nitrogen partitioning at the organ level (root, stem, leaves, grains) in wheat.
+/// Implements C translocation to grains based on experimental results (see Appendix, Ratjen Diss. 2012).
+/// N concentrations in organs during vegetative growth are adapted from TSubPartitioningVegNew (U. Böttcher, Meyer-Schatz), with modifications for drought stress according to 2010 experimental results (see Ratjen Diss. Appendix).
+/// Leaf N distribution is calculated for specific leaf layers at anthesis, based on 2010 experimental results (see Ratjen Diss. Appendix).
+/// N dynamics are modeled similarly to Bertheloot 2008 (see Ratjen Diss. Appendix).
+/// Implements sigmoid grain filling (October 2015).
+/// Partitioning of N deficit follows Ratjen & Kage 2016 (JACS).
+/// Main authors: A.M. Ratjen, U. Böttcher, D. Neukam, H. Kage et al.
+/// Restructured and commented by H. Kage, 2024.
+/// </summary>
   THumeWheatPartitioning = class(TAbstractPlant)
   private
   /// <summary> Type of grain filling algorithm </summary>
@@ -275,13 +281,13 @@ type
     /// <summary> Dead Leaf weight per square meter [g/m2] </summary>
         SENWT_m2: TVar;
     // Nmob_m2:   TVar;        // N available in the common pool (J. Bertheloot et al. 2008)
-    /// <summary> Total Shoot drymatter (incl. Stroh) </summary>
+    /// <summary> Total Shoot drymatter ((STMWT + LFWT + SENWT + GRNWT + DMTrans)) </summary>
         TSDM_m2: TVar;
     /// <summary> stem N-amount (g/m²) </summary>
         NStem_m2: TVar;
     /// <summary> translozierbare Trockenmasse (g/plant) </summary>
         DMTrans_pl: TVar;
-    /// <summary> weight of tops without grains [g/plant] </summary>
+    /// <summary> weight of tops  [g/plant] (LFWT + STMWT + SEEDRV + GRNWT) </summary>
         TOPWT_pl: TVar;
     TOPWT_m2: TVar;
     /// <summary> Daily leaf growth [g/plant/d] </summary>
@@ -798,7 +804,7 @@ begin
   Swmin := max(swmin_min, (STMWT_m2.v - (TSDM_m2.v * potHI.v - GRNWT_m2.v)) / Plants.v);
 
   //RSWT: stem reserves during grain filling in g/m²
-  RSWT.v := max(0,STMWT_m2.v - (Swmin * Plants.v));
+   RSWT.v := max(0,STMWT_m2.v - (Swmin * Plants.v));
 
 end;
 
@@ -1144,7 +1150,7 @@ begin
   VarCreate('NDemand', '[kg/ha/d]', 0, true, NDemand, 'Nitrogen demand per hectare');
   VarCreate('NStemstruc_pl', '[g/plant]', 0, true, NStemstruc_pl);
   VarCreate('NNI60', '[-]', 0, true, NNI60);
-  VarCreate('TSDM_m2', '[g/m2]', 0, true, TSDM_m2, 'Total shoot DM per m²');
+  VarCreate('TSDM_m2', '[g/m2]', 0, true, TSDM_m2, 'Total shoot DM per m² (STMWT + LFWT + SENWT + GRNWT + DMTrans)');
   VarCreate('GRNWT_m2', '[g/m2]', 0, true, GRNWT_m2, 'Grain dry weight per m2');
   VarCreate('HI', '[-]', 0, true, HI, 'Harvest index');
   VarCreate('potHI', '[-]', 0, true, potHI, 'potential harvest index');
@@ -1166,7 +1172,7 @@ begin
   VarCreate('PTF', '[-]', 0, true, PTF);
   VarCreate('Nc_optLeaf', '[%]', 0, true, Nc_optLeaf, 'optimum leaf N concentration');
   VarCreate('NoptStem', '[%]', 0, true, NoptStem, 'optimum stem N concentration');
-  VarCreate('TOPWT_pl', '[g/plant]', 0, true, TOPWT_pl, 'Shoot dry weight per plant');
+  VarCreate('TOPWT_pl', '[g/plant]', 0, true, TOPWT_pl, 'Shoot dry weight per plant ((LFWT + STMWT + SEEDRV + GRNWT)  )');
   VarCreate('TOPWT_m2', '[g/m2] ', 0, true, TOPWT_m2, 'Shoot dry weight per m2');
   VarCreate('Nbal', '[g/plant] ', 0, true, Nbal);
   VarCreate('QHI', '[MJ/�C]', 0, true, QHI);
@@ -1215,7 +1221,7 @@ begin
     TEMPsum.c := max(TEMPM.v, 0); // rate of change of temperature sum
   end;
   if ( (swmin_min <=0) and (EC.v > 37) ) then
-    swmin_min := TOPWT_pl.v;
+    swmin_min := TOPWT_pl.v;
 
 
   CalcSeedReserveChange;
@@ -1665,7 +1671,6 @@ begin
       InitStatesAfterEmergence;
 
 
-  TOPWT_pl.v := LFWT_pl.v + STMWT_pl.v + SEEDRV.v; // top weight per plant
   STMWT_m2.v := STMWT_pl.v * Plants.v;
   SENWT_m2.v := Senwt_pl.v * Plants.v;
   NSEN_m2.v := NSen_pl.v * Plants.v;

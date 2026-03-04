@@ -1,31 +1,37 @@
-﻿/// <summary>
+﻿
+
+unit Development; 
+
+/// <summary>
 /// This unit defines the TDevelopment class, a core component of the HUME-Wheat crop model, responsible for simulating the phenological development (growth stages) of wheat. 
 /// The class models the progression of the crop through its life cycle, from sowing and emergence to maturity and harvest, using temperature, daylength, and genetic parameters.
-/// 
-/// **Key features:**
-/// - **Growth Stage Tracking: Extends the XSTAGE stages of Ceres Wheat with EC, BBCH stages scales to represent crop development.
-/// - **Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).
-/// - **Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.
-/// - **Modular Design: Integrates with other model components via external variables and options.
-///
-///   **Phenological stages in integer values and corresponding BBCH stages:**
-/// 1 **Emergence to terminal spikelet(TS), BBCH 10-30
-/// 2 **TS to end of vegetative growth, BBCH 30-39
-/// 3 **End of vegetative growth and beginning ear growth to end of pre-anthesis ear growth, BBCH 40-57
-/// 4 **End of pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase), BBCH 57-71
-/// 5 **Beginning of grain filling to physiological maturity, BBCH 71-90
-/// 6 **Physiological maturity to fallow (harvest), BBCH 90-99
-/// 7 **Fallow to sowing
-/// 8 **Sowing to germination
-/// 9 **Germination to emergence
-///
-/// **Typical usage:**
+/// <para><b>Key features:</b></para>
+/// <list type="bullet">
+/// <item><description> Growth Stage Tracking: Uses both integer (EC, BBCH, Zadoks) and continuous (xstage) scales to represent crop development.</description></item>
+/// <item><description>Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).</description></item>
+/// <item><description>Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.</description></item>
+/// <item><description>Event Timing: Records the day of year (DOY) for key phenological events (e.g., stem elongation, heading, flowering, ripeness).</description></item>
+/// <item><description>Parameterization: Supports genetic and environmental parameters (e.g., base temperature, photoperiod sensitivity, vernalization requirements).</description></item>
+/// <item><description>Data Integration: Can initialize and calibrate development using measured data (e.g., measured EC dates).</description></item>
+/// <item><description>Modular Design: Integrates with other model components via external variables and options, allowing for flexible coupling with growth, water, and nitrogen modules.</description></item>
+/// </list>
+///   <para> Phenological stages in integer values and corresponding BBCH stages:</para>
+/// <list type="bullet">
+/// <item><description>1 Emergence to terminal spikelet(TS), BBCH 10-30</description></item>
+/// <item><description>2 TS to end of vegetative growth, BBCH 30-39</description></item>
+/// <item><description>3 End of vegetative growth and beginning ear growth to end of pre-anthesis ear growth, BBCH 40-57</description></item>
+/// <item><description>4 End of pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase), BBCH 57-71</description></item>
+/// <item><description>5 Beginning of grain filling to physiological maturity, BBCH 71-90</description></item>
+/// <item><description>6 Physiological maturity to fallow (harvest), BBCH 90-99</description></item>
+/// <item><description>7 Fallow to sowing</description></item>
+/// <item><description>8 Sowing to germination</description></item>
+/// <item><description>9 Germination to emergence</description></item>
+/// </list>
+/// Typical usage:
 /// This module is used to drive the timing of crop processes (e.g., leaf growth, flowering, grain filling) in response to weather and management, providing the developmental framework for the rest of the crop model.
 /// </summary>
 
-{@author(Ulf Boettcher <boettcher@pflanzenbau.uni-kiel.de>)}
 
-unit Development; 
 
 {$IFDEF LINUX}
 {$DEFINE NONVISUAL}
@@ -53,25 +59,39 @@ type
   TDataInitMethod = (EC_Date, Days_to_EC);
 
 /// <summary>
-/// Enumeration for options related to Phyllochron/TSumIndernode calculation.
+/// Enumeration for options related to Phyllochron/TSumInternode calculation.
 /// </summary>
   TOptTSumInternode = (constant, daylength);
 
 /// <summary>
-/// Development class, a core component of the HUME-Wheat crop model, responsible for simulating the phenological development (growth stages) of wheat. The class models the progression of the crop through its life cycle, from sowing and emergence to maturity and harvest, using temperature, daylength, and genetic parameters.
-/// 
-/// Key features:
-/// - Growth Stage Tracking: Uses both integer (EC, BBCH, Zadoks) and continuous (xstage) scales to represent crop development.
-/// - Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).
-/// - Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.
-/// - Event Timing: Records the day of year (DOY) for key phenological events (e.g., stem elongation, heading, flowering, ripeness).
-/// - Parameterization: Supports genetic and environmental parameters (e.g., base temperature, photoperiod sensitivity, vernalization requirements).
-/// - Data Integration: Can initialize and calibrate development using measured data (e.g., measured EC dates).
-/// - Modular Design: Integrates with other model components via external variables and options.
-/// 
+/// This unit defines the TDevelopment class, a core component of the HUME-Wheat crop model, responsible for simulating the phenological development (growth stages) of wheat. 
+/// The class models the progression of the crop through its life cycle, from sowing and emergence to maturity and harvest, using temperature, daylength, and genetic parameters.
+/// <para><b>Key features:</b></para>
+/// <list type="bullet">
+/// <item><description> Growth Stage Tracking: Uses both integer (EC, BBCH, Zadoks) and continuous (xstage) scales to represent crop development.</description></item>
+/// <item><description>Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).</description></item>
+/// <item><description>Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.</description></item>
+/// <item><description>Event Timing: Records the day of year (DOY) for key phenological events (e.g., stem elongation, heading, flowering, ripeness).</description></item>
+/// <item><description>Parameterization: Supports genetic and environmental parameters (e.g., base temperature, photoperiod sensitivity, vernalization requirements).</description></item>
+/// <item><description>Data Integration: Can initialize and calibrate development using measured data (e.g., measured EC dates).</description></item>
+/// <item><description>Modular Design: Integrates with other model components via external variables and options, allowing for flexible coupling with growth, water, and nitrogen modules.</description></item>
+/// </list>
+///   <para> Phenological stages in integer values and corresponding BBCH stages:</para>
+/// <list type="bullet">
+/// <item><description>1 Emergence to terminal spikelet(TS), BBCH 10-30</description></item>
+/// <item><description>2 TS to end of vegetative growth, BBCH 30-39</description></item>
+/// <item><description>3 End of vegetative growth and beginning ear growth to end of pre-anthesis ear growth, BBCH 40-57</description></item>
+/// <item><description>4 End of pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase), BBCH 57-71</description></item>
+/// <item><description>5 Beginning of grain filling to physiological maturity, BBCH 71-90</description></item>
+/// <item><description>6 Physiological maturity to fallow (harvest), BBCH 90-99</description></item>
+/// <item><description>7 Fallow to sowing</description></item>
+/// <item><description>8 Sowing to germination</description></item>
+/// <item><description>9 Germination to emergence</description></item>
+/// </list>
 /// Typical usage:
 /// This module is used to drive the timing of crop processes (e.g., leaf growth, flowering, grain filling) in response to weather and management, providing the developmental framework for the rest of the crop model.
 /// </summary>
+
   TDevelopment = class(TSubmodel)
   private
     fReCalcSowingDate : boolean;
@@ -92,18 +112,33 @@ type
     TSEC71_min, TSEC71_max : real;
 
   fDataInitMethod : TDataInitMethod;
+
+
+///<summary> procedure to create variables for the TDevelopment class. </summary>  
     procedure CreateVars;
+///<summary> procedure to create states for the TDevelopment class. </summary>
     procedure CreateStates;
+///<summary> procedure to create parameters for the TDevelopment class. </summary>
     procedure CreatePars;
+///<summary> procedure to create extern variables for the TDevelopment class. </summary>
     procedure CreateExterns;
+///<summary> procedure to create options for the TDevelopment class. </summary>
     procedure CreateOptions;
+///<summary> procedure to initialize comments for the TDevelopment class. </summary>
     procedure InitComments;
+///<summary> procedure to look for EC30 measurement date in the data series. </summary>
     procedure LookForEC30MeasurementDate;
+///<summary> procedure set all variable values to zero. </summary>
     procedure SetVarsToZero;
+/// <summary> procedure to calculate development rates for different stages. </summary>     
     procedure CalcLeafAppearanceRate;
+/// <summary> procedure to calculate development rates for different stages. </summary>    
     procedure CalcLeafInitiationRate;
+/// <summary> procedure to calculate development rates for different stages. </summary>    
     procedure CalcVernalisationRate;
+/// <summary> procedure to calculate development rate at GS9. </summary>    
     procedure CalcStage9DevRate;
+/// <summary> procedure to calculate development rates for different stages. </summary>    
     procedure CalcXStageChangeRate;
     procedure CalcSpecificDays_and_TemperatureSums;
       protected
