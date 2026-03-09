@@ -1,4 +1,25 @@
 
+GetClassDevNotes <- function(ClassName, XMLFilename) {
+  # 2. Locate the TDevelopment class using XPath
+  doc <- xml2::read_xml(XMLFilename)
+  target_class <- xml_find_first(doc, paste0(".//class[@name='", ClassName, "']"))
+
+  if (length(target_class) > 0) {
+    devnotes <- xml_find_first(target_class, "devnotes")
+
+    if (length(devnotes) > 0) {
+      # 3. Convert content to Markdown and cat() it to the document
+      md_output <- xml_to_markdown(devnotes)
+      cat(trimws(md_output))
+    } else {
+      cat("No <devnotes> found for TSoilWaterModelR")
+    }
+  } else {
+    cat(paste0("Class ", ClassName, " not found in the XML."))
+  }
+}
+
+
 
 # Recursive function to convert XML nodes to Markdown
 xml_to_markdown <- function(node) {

@@ -44,9 +44,108 @@ library(Weatherfunctions)
 library(xml2)
 library(ggpmisc)
 library(tidyr)
+source("Q:/HUME/HUME/docs/DokuUtilFunctions.R")
+
 options("citation_format" = "pandoc")
 
 ```
 
+```{r}
+#| include: false
+fn_source <- "Q:/HUME/HUME/Components/Soil/URootedSoil.pas"
+fn_xml_docu <- "Q:/HUME/HUME/XML_Delphi_Docu/URootedSoil.xml"
+```
+
+
 
 # Introduction
+
+```{r}
+#| echo: false
+#| results: "asis"
+#| message: false
+#| warning: false
+
+# 1. Load the XML file
+doc <- xml2::read_xml(fn_xml_docu)
+
+
+```
+
+
+```{r}
+#| echo: false
+#| results: "asis"
+#| message: false
+#| warning: false
+
+GetClassDevNotes("TSoilWaterModelR",fn_xml_docu)
+```
+
+
+# Scientific Background
+
+## Soil water transport
+
+## Root water uptake
+
+## Soil evaporation
+
+Actual evaporation [mm d^-1^] (E~act~) is calculated by a reduction factor (f~evap~), which corrects E~pot~ by the influence of low soil water content in the top soil layer.
+
+$${{E}_{act}}={{E}_{pot}}\cdot {{red}_{evap}}$$	{#eq-Eact}
+
+Within the module two different options for calculation of evaporation are included. The option called *modified Beese* is the default: 
+
+$${{red}_{evap}}=max\left(0, min \left(1,\frac{-1\cdot (\log 10(ps{{i}_{arr[1]}})-4.2)}{4.2-\log 10(ps{{i}_{critevap}})}\right)\right)$$ {#eq-fevap}	
+
+the original function according to Beese1978 however is available as well:
+
+$$red_{evap} = max\left(0, min \left(1,-0.5767 * log_{10}(psi_{arr1}) + 1.78\right)\right)$$ {#eq-fevapBeese}	
+
+Thereby psi~arr~[1] is the soil water tension in the top soil compartment and psi~critevap~ is the soil water tension at which evaporation is reduced.
+The initiation of soil water potential (psi) is simply done by a parameter psi~ini~.
+The parameter value of psi~critevap~ has a default value of 500 [hPa].
+
+
+
+```{r}
+#| echo: false
+#| results: "asis"
+#| message: false
+#| warning: false
+#| fig.cap: "Reduction factor for soil evaporation (f~evap~) as a function of soil water tension in the top soil layer (psi~arr~[1]) for a given critical soil water tension for evaporation reduction (psicritevap)."
+
+
+
+psi_arr_1 <- seq(-14000, -1, by = 1) # Soil water tension in the top soil layer
+
+psicritevap <- -500 # Critical soil water tension for evaporation reduction
+fevap <- length(psi_arr_1)
+fevap <- pmax(0, pmin(1,(-1 * (log10(-psi_arr_1) - 4.2)) / (4.2 - log10(-psicritevap))))
+fevapBeese <- pmax(0, pmin(1, -0.5767 * log10(-psi_arr_1) + 1.78))
+
+
+illu <- data.frame(psi_arr_1, fevap, fevapBeese)
+illu <- pivot_longer(illu, cols = c("fevap", "fevapBeese"), names_to = "Method", values_to = "ReductionFactor")
+
+
+p <- ggplot(data = illu) +
+  geom_line( aes(x = abs(psi_arr_1), y = ReductionFactor, group=Method, color=Method), size = 1) +
+  scale_x_log10() +
+  scale_color_manual(values = c("blue", "red"), labels = c("Modified Beese", "Original Beese")) +
+  labs(x = "Soil water tension in the top soil layer (psi_arr[1]) [kPa]",
+       y = "Reduction factor for soil evaporation (fevap)") +
+  theme_minimal()
+p
+
+```
+
+
+
+
+
+
+
+
+

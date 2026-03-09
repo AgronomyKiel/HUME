@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Agronomy and Crop Science Group, Kiel University">
-<meta name="dcterms.date" content="2026-03-03">
+<meta name="dcterms.date" content="2026-03-09">
 
 <title>THumeWheatPartitioning – Hume Documentation</title>
 <style>
@@ -4120,7 +4120,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 3, 2026</p>
+      <p class="date">March 9, 2026</p>
     </div>
   </div>
   
@@ -4132,46 +4132,21 @@ window.Quarto = {
 </header>
 
 
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># helper: normalize whitespace</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>clean_ws <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">gsub</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">s+&quot;</span>, <span class="st">&quot; &quot;</span>, <span class="fu">trimws</span>(x))</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>devnotes_xml_to_md <span class="ot">&lt;-</span> <span class="cf">function</span>(devnotes_node) {</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.na</span>(devnotes_node) <span class="sc">||</span> <span class="fu">length</span>(devnotes_node) <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">return</span>(<span class="cn">NA_character_</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">character</span>()</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (ch <span class="cf">in</span> <span class="fu">xml_children</span>(devnotes_node)) {</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    nm <span class="ot">&lt;-</span> <span class="fu">xml_name</span>(ch)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (nm <span class="sc">==</span> <span class="st">&quot;para&quot;</span>) {</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>      <span class="co"># keep inline markup as text; you can post-process ** if needed</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">c</span>(out, <span class="fu">clean_ws</span>(<span class="fu">xml_text</span>(ch)))</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">c</span>(out, <span class="st">&quot;&quot;</span>) <span class="co"># blank line between paragraphs</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (nm <span class="sc">==</span> <span class="st">&quot;list&quot;</span>) {</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>      <span class="co"># bullet list</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>      items <span class="ot">&lt;-</span> <span class="fu">xml_find_all</span>(ch, <span class="st">&quot;./item/description&quot;</span>)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(items)) {</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        bullets <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;- &quot;</span>, <span class="fu">clean_ws</span>(<span class="fu">xml_text</span>(items)))</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        out <span class="ot">&lt;-</span> <span class="fu">c</span>(out, bullets, <span class="st">&quot;&quot;</span>)  <span class="co"># blank line after list</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>      <span class="co"># fallback: include any other node content</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">c</span>(out, <span class="fu">clean_ws</span>(<span class="fu">xml_text</span>(ch)), <span class="st">&quot;&quot;</span>)</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="co"># remove trailing blank lines</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> (<span class="fu">length</span>(out) <span class="sc">&amp;&amp;</span> out[<span class="fu">length</span>(out)] <span class="sc">==</span> <span class="st">&quot;&quot;</span>) out <span class="ot">&lt;-</span> out[<span class="sc">-</span><span class="fu">length</span>(out)]</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(out, <span class="at">collapse =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
 <section id="summary" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Summary</h1>
 <div class="cell" data-layout-align="center">
-<p>Module for carbon and nitrogen partitioning at the organ level (root, stem, leaves, grains) in wheat. Implements C translocation to grains based on experimental results (see Appendix, Ratjen Diss. 2012). N concentrations in organs during vegetative growth are adapted from TSubPartitioningVegNew (U. Böttcher, Meyer-Schatz), with modifications for drought stress according to 2010 experimental results (see Ratjen Diss. Appendix). Leaf N distribution is calculated for specific leaf layers at anthesis, based on 2010 experimental results (see Ratjen Diss. Appendix). N dynamics are modeled similarly to Bertheloot 2008 (see Ratjen Diss. Appendix). Implements sigmoid grain filling (October 2015). Partitioning of N deficit follows Ratjen &amp; Kage 2016 (JACS). Main authors: A.M. Ratjen, U. Böttcher, D. Neukam, H. Kage et al. Restructured and commented by H. Kage, 2024.</p>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GetClassDevNotes</span>(<span class="st">&quot;THumeWheatPartitioning&quot;</span>,fn_xml_docu)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Module for carbon and nitrogen partitioning at the organ level (root, stem, leaves, grains) in wheat.
+       Implements C translocation to grains based on experimental results (see Appendix, Ratjen Diss. 2012).
+       N concentrations in organs during vegetative growth are adapted from TSubPartitioningVegNew (U. Böttcher, Meyer-Schatz), with modifications for drought stress according to 2010 experimental results (see Ratjen Diss. Appendix).
+       Leaf N distribution is calculated for specific leaf layers at anthesis, based on 2010 experimental results (see Ratjen Diss. Appendix).
+       N dynamics are modeled similarly to Bertheloot 2008 (see Ratjen Diss. Appendix).
+       Implements sigmoid grain filling (October 2015).
+       Partitioning of N deficit follows Ratjen &amp; Kage 2016 (JACS).
+       Main authors: A.M. Ratjen, U. Böttcher, D. Neukam, H. Kage et al.
+       Restructured and commented by H. Kage, 2024.</code></pre>
+</div>
 </div>
 </section>
 <section id="lists-of-model-objects" class="level1" data-number="2">
@@ -4708,7 +4683,7 @@ window.Quarto = {
 <h2 data-number="2.3" class="anchored" data-anchor-id="variables"><span class="header-section-number">2.3</span> Variables</h2>
 <p>The class THumePartitioning has 102 following variable(s).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(df.var,  <span class="at">escape =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(df.var,  <span class="at">escape =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>

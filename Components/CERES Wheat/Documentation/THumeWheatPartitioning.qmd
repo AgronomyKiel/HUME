@@ -37,10 +37,10 @@ library(knitcitations)
 library(kableExtra)
 library(xml2)
 library(ggpmisc)
+source("Q:/HUME/HUME/docs/DokuUtilFunctions.R")
 options("citation_format" = "pandoc")
 
 ```
-
 
 ```{r}
 #| include: false
@@ -54,24 +54,9 @@ InstanceName <- "HumeWheatPartitioning1"
 
 # Summary
 
-
-```{r, results='asis', echo=FALSE}
-doc <- read_xml(fn_xml_docu)
-classes <- xml_find_all(doc, ".//class")
-
-result <- data.frame(
-  class_name = xml_attr(classes, "name"),
-  devnotes_md = vapply(classes, function(class_node) {
-    dev <- xml_find_first(class_node, "./devnotes")
-    if (inherits(dev, "xml_missing")) return(NA_character_)
-    devnotes_xml_to_md(dev)
-  }, character(1)),
-  stringsAsFactors = FALSE
-)
-
-cat(result$devnotes_md, sep = "\n\n")
+```{r}
+GetClassDevNotes("THumeWheatPartitioning",fn_xml_docu)
 ```
-
 
 
 
@@ -187,8 +172,8 @@ kable(df.opt,  escape = FALSE)
 The partitioning model module of HumeWheat is based mainly based on allometric approaches. The partitioning of dry matter between root, stem and leaf is calculated in two steps: first the root-shoot partitioning is calculated, followed by the leaf-stem partitioning. Both steps are modified under water limited conditions.
 
 ### Root-Shoot partitioning
-According to Kage (2000) the fraction of dry matter allocated to the shoot is calculated assuming linear decrease of the root fraction with temperature sum (TS, base temperature of 0°C) since emergence. If the transpiration is not water limited, the potential plant top fraction ptfp (dimensionless) is calculated as follows:
 
+According to Kage (2000) the fraction of dry matter allocated to the shoot is calculated assuming linear decrease of the root fraction with temperature sum (TS, base temperature of 0°C) since emergence. If the transpiration is not water limited, the potential plant top fraction ptfp (dimensionless) is calculated as follows:
 
 $$
 \begin{align}
@@ -200,20 +185,19 @@ pt f_p(t) &=
 \end{align}
 $$ {#eq-ShootRootAllometric}
 
-where ISTAGE<5 is the period before grain filling (Ritchie et al., 1985), fR0 is the initial fraction of dry matter allocated to the root fraction and fRdec is the decrease of this fraction per unit of accumulated temperature. Drought stress not only decreases plant total dry mass, but also changes proportion among root stem, and leaf. Under drought, root:shoot ratio is usually increased, whereas leaf shoot ratio is usually decreased (e.g. Stützel and Liu 2003). According to CERES-WHEAT, the potential plant top fraction is reduced under water limited conditions:
+where ISTAGE\<5 is the period before grain filling (Ritchie et al., 1985), fR0 is the initial fraction of dry matter allocated to the root fraction and fRdec is the decrease of this fraction per unit of accumulated temperature. Drought stress not only decreases plant total dry mass, but also changes proportion among root stem, and leaf. Under drought, root:shoot ratio is usually increased, whereas leaf shoot ratio is usually decreased (e.g. Stützel and Liu 2003). According to CERES-WHEAT, the potential plant top fraction is reduced under water limited conditions:
 
-$$\text{ptf(t)}=pt{{f}_{p}}\text{ - 0}\text{.1}\cdot \text{(1-}{{\text{R}}_{\text{T}}}\text{(t))}$$.	Eq.I.8
-The increase of shoot dry matter is therefore:
+$$\text{ptf(t)}=pt{{f}_{p}}\text{ - 0}\text{.1}\cdot \text{(1-}{{\text{R}}_{\text{T}}}\text{(t))}$$. Eq.I.8 The increase of shoot dry matter is therefore:
 
-$$\frac{d{{W}_{shoot}}}{dt}=\frac{d{{W}_{tot}}}{dt}\cdot ptf(t)$$,	Eq.I.9
+$$\frac{d{{W}_{shoot}}}{dt}=\frac{d{{W}_{tot}}}{dt}\cdot ptf(t)$$, Eq.I.9
 
 while the increase in root dry matter is calculated as:
 
-$$\frac{d{{W}_{root}}}{dt}=\frac{d{{W}_{tot}}}{dt}-\frac{d{{W}_{shoot}}}{dt}$$.	Eq.I.10.
-
+$$\frac{d{{W}_{root}}}{dt}=\frac{d{{W}_{tot}}}{dt}-\frac{d{{W}_{shoot}}}{dt}$$. Eq.I.10.
 
 ### Leaf-Stem partitioning
-The development driven concept for leaf-stem partitioning of shoot dry matter used in CERES-WHEAT was replaced by an allometric approach according to Stützel et al. (1988), Stützel and Aufhammer (1991), Kage et Stützel (1999b). The data base for the parameterization of leaf-stem partitioning originates from several field experiments on the experimental farm Hohenschulen and includes destructive measurements of several cultivars (Meyer-Schatz et al., in preparation). The fraction of stem growth fstem (dimensionless) on shoot growth is thereby expressed as a function of leaf dry matter Wleaf [g.m-2], with two allometric fit parameters (g, h).
+
+The development driven concept for leaf-stem partitioning of shoot dry matter used in CERES-WHEAT was replaced by an allometric approach according to Stützel et al. (1988), Stützel and Aufhammer (1991), Kage et Stützel (1999b). The data base for the parameterization of leaf-stem partitioning originates from several field experiments on the experimental farm Hohenschulen and includes destructive measurements of several cultivars (Meyer-Schatz et al., in preparation). The fraction of stem growth fstem (dimensionless) on shoot growth is thereby expressed as a function of leaf dry matter Wleaf \[g.m-2\], with two allometric fit parameters (g, h).
 
 $$\frac{d{{W}_{L}}}{dt}=\frac{d{{W}_{V}}}{dt}\frac{1}{1+{{e}^{h}}W_{L}^{g-1}g}$$ {#eq-LeafStemmAllometric}
 
@@ -221,19 +205,14 @@ $$\frac{d{{W}_{L}}}{dt}=\frac{d{{W}_{V}}}{dt}\frac{1}{1+{{e}^{h}}W_{L}^{g-1}g}$$
 
 For considering the drought induced decrease in leaf mass accumulation a correction factor kf (dimensionless) was added to the allometric equation:
 
-$${{\text{f}}_{\text{stem}}}\text{(t)=min(1,1-}\frac{1}{\text{(1}+{{\text{e}}^{\text{h}}}\cdot \text{g}\cdot {{\text{W}}_{\text{L}}}{{\text{(t)}}^{\text{g-1}}}\text{)}}\cdot kf\text{(t))}$$	{#eq-LeafStemmAllometricDrought}
-The minimum value of kf is one, but increases linearly if pFroot Eq.I.6) exceeds the threshold value pFcrit. Thereby, kfinc describes the slope of the increase, proportional to the difference between pFroot and pFcrit:
+$${{\text{f}}_{\text{stem}}}\text{(t)=min(1,1-}\frac{1}{\text{(1}+{{\text{e}}^{\text{h}}}\cdot \text{g}\cdot {{\text{W}}_{\text{L}}}{{\text{(t)}}^{\text{g-1}}}\text{)}}\cdot kf\text{(t))}$$ {#eq-LeafStemmAllometricDrought} The minimum value of kf is one, but increases linearly if pFroot Eq.I.6) exceeds the threshold value pFcrit. Thereby, kfinc describes the slope of the increase, proportional to the difference between pFroot and pFcrit:
 
-$$\text{kf(t)=max(1,1}+\text{(p}{{\text{F}}_{\text{root}}}\text{(t)-p}{{\text{F}}_{\text{crit}}}\text{)}\cdot \text{k}{{\text{f}}_{\text{inc}}})$$	{#eq-kfAllometricDrought}
+$$\text{kf(t)=max(1,1}+\text{(p}{{\text{F}}_{\text{root}}}\text{(t)-p}{{\text{F}}_{\text{crit}}}\text{)}\cdot \text{k}{{\text{f}}_{\text{inc}}})$$ {#eq-kfAllometricDrought}
 
-The Rain out shelter experiment 2010 (Exp.I.6) was used for the parameterization of the concept using measured water contents and destructive shoot, leaf and stem dry mass. The calibration contained measurements between 27.04. and 27.05.2010. The measured dry matter accumulation between two sample dates was linear interpolated against thermal time. The daily pFroot Eq.I.6 values, linearly interpolated between measurements, were related from measured water contents and simulated vertical root distribution. Starting with measured stem dry matter for each plot the allometric parameters (g,h) were optimized by minimizing the RMSE between estimated and measured stem dry mass without consideration of the kf correction. As a second step the pFcrit and kfinc were calibrated considering pFroot by minimizing the RMSE between estimated and measured stem dry mass. 
-The daily increase of stem dry matter Wstem [g.m-2] is calculated as a function of fstem and increase in shoot dry matter:
+The Rain out shelter experiment 2010 (Exp.I.6) was used for the parameterization of the concept using measured water contents and destructive shoot, leaf and stem dry mass. The calibration contained measurements between 27.04. and 27.05.2010. The measured dry matter accumulation between two sample dates was linear interpolated against thermal time. The daily pFroot Eq.I.6 values, linearly interpolated between measurements, were related from measured water contents and simulated vertical root distribution. Starting with measured stem dry matter for each plot the allometric parameters (g,h) were optimized by minimizing the RMSE between estimated and measured stem dry mass without consideration of the kf correction. As a second step the pFcrit and kfinc were calibrated considering pFroot by minimizing the RMSE between estimated and measured stem dry mass. The daily increase of stem dry matter Wstem \[g.m-2\] is calculated as a function of fstem and increase in shoot dry matter:
 
-$$\frac{\text{d}{{\text{W}}_{\text{stem}}}}{\text{dt}}\text{=}\frac{\text{d}{{\text{W}}_{\text{shoot}}}}{\text{dt}}\cdot {{f}_{stem}}(t)$$,	{#eq-dWstemdt}
+$$\frac{\text{d}{{\text{W}}_{\text{stem}}}}{\text{dt}}\text{=}\frac{\text{d}{{\text{W}}_{\text{shoot}}}}{\text{dt}}\cdot {{f}_{stem}}(t)$$, {#eq-dWstemdt}
 
-where the increase of leaf dry matter Wleaf [g.m-2] is the difference between shoot and stem dry matter accumulation:
+where the increase of leaf dry matter Wleaf \[g.m-2\] is the difference between shoot and stem dry matter accumulation:
 
-$$\frac{\text{d}{{\text{W}}_{leaf}}}{\text{dt}}\text{=}\frac{\text{d}{{\text{W}}_{\text{shoot}}}}{\text{dt}}\text{-}\frac{\text{d}{{\text{W}}_{\text{stem}}}}{\text{dt}}$$	{#eq-dWleaf_dt}
-
-
-
+$$\frac{\text{d}{{\text{W}}_{leaf}}}{\text{dt}}\text{=}\frac{\text{d}{{\text{W}}_{\text{shoot}}}}{\text{dt}}\text{-}\frac{\text{d}{{\text{W}}_{\text{stem}}}}{\text{dt}}$$ {#eq-dWleaf_dt}
