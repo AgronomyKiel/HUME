@@ -28,6 +28,9 @@ type
   T_Sqrwl_Funct = (ReductionFactor, NoReductionFactor);
   // TSource = (fromParameter, fromPlantModel); // Source of Psi2 value
 
+
+/// <summary> Model compontent for simulation of soil water transport and root soil water uptake
+///  </summary>
   TSoilWaterModelR = class(TSoilWaterMod)
 
   private

@@ -157,8 +157,10 @@ type
     devrates5: TVar;
     /// <summary>Development rate during istage 6.</summary>
     devrates6: TVar;
+
     /// <summary>Development rate during istage 9.</summary>
     devrates9: TVar;
+
     /// <summary>Xstage multiplied by ten for easier plotting.</summary>
     dvs10: TVar;
     /// <summary>Integer value of the development stage.</summary>

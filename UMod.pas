@@ -2912,7 +2912,10 @@ begin
   fContOutput := NoContOutput;
   for Iter := 1 to SensOpt.Steps do
   begin
+ {$IFNDEF NONVISUAL}
     chdir(ExtractFiledir(application.ExeName));
+ {$ENDIF}
+
     run;
     AllMeasVal.LeastSquares;
     // write parameter and variable values to output

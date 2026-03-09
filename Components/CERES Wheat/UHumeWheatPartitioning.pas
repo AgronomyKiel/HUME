@@ -1,17 +1,4 @@
-﻿
-/// <summary>
-/// Module for carbon and nitrogen partitioning at the organ level (root, stem, leaves, grains) in wheat.
-/// Implements C translocation to grains based on experimental results (see Appendix, Ratjen Diss. 2012).
-/// N concentrations in organs during vegetative growth are adapted from TSubPartitioningVegNew (U. Böttcher, Meyer-Schatz), with modifications for drought stress according to 2010 experimental results (see Ratjen Diss. Appendix).
-/// Leaf N distribution is calculated for specific leaf layers at anthesis, based on 2010 experimental results (see Ratjen Diss. Appendix).
-/// N dynamics are modeled similarly to Bertheloot 2008 (see Ratjen Diss. Appendix).
-/// Implements sigmoid grain filling (October 2015).
-/// Partitioning of N deficit follows Ratjen & Kage 2016 (JACS).
-/// Main authors: A.M. Ratjen, U. Böttcher, D. Neukam, H. Kage et al.
-/// Restructured and commented by H. Kage, 2024.
-/// </summary>
-
-unit UHumeWheatPartitioning;
+﻿unit UHumeWheatPartitioning;
 
 interface
 
@@ -49,6 +36,10 @@ type
   /// <summary> two options for partitioning of shoot/root according to Ceres Wheat or Kage 2000 </summary>
   TPTF_version = (PTF_CERES, PTF_Kage);
 
+/// <summary> option for harvest index calculation </summary>
+  THIcalcversion = (HI_Ratjen, HI_Rose);
+
+
 /// <summary>
 /// Module for carbon and nitrogen partitioning at the organ level (root, stem, leaves, grains) in wheat.
 /// Implements C translocation to grains based on experimental results (see Appendix, Ratjen Diss. 2012).
@@ -78,7 +69,7 @@ type
     NDeg: real;
     NSyn: real;
     Np2, nc_: real;
- 
+
     Swmin: real;
     /// <summary> minimum stem weight per plant for translocation and senescence calculations, determined at stage 37 </summary>
     swmin_min: real;
@@ -99,8 +90,10 @@ type
     procedure CalcNStem;
     procedure CalcSenescenceAndTranslocation;
     procedure TransferToSenescentPools;
+
+ /// <summary> calculates the harvest index according to the empirical approach by Ratjen </summary>
     procedure CalcQHI;
-    /// <summary> fraction of senescent leaf N wich is caused by drought stress </summary>
+
         procedure CalcPotHI;
     // not going into the mobile N pool;
 
@@ -133,6 +126,18 @@ type
     maxNNI: TPar;
     QHI_INT: TPar;
     QHI_INC: TPar;
+
+    DroughtImpact_crit: TPar;
+    /// <summary> intercept parameter for empirical HI approach according to Rose </summary>
+    pintercept : TPar;
+    /// <summary> slope parameter for biomass post anthesis effect on empirical HI approach according to Rose </summary> 
+    pBioPostAnth: TPar; 
+    /// <summary> slope parameter for biomass pre anthesis effect on empirical HI approach according to Rose </summary>
+    pBioPreAnth: TPar;
+    /// <summary> quadratic parameter for biomass pre anthesis effect on empirical HI approach according to Rose </summary>
+    pBioPreAnth2: TPar;
+
+
     /// <summary> initial ratio of RootN/ShootN </summary>
         fRootN_ini: TPar;
     /// <summary> minimum ratio of RootN/ShootN </summary>
@@ -387,6 +392,21 @@ type
         NphLeaf: array [1 .. 4] of TVar;
 
 
+/// <summary> biomass pre anthesis </summary>
+        BioPreAnthesis: TVar;
+/// <summary> biomass post anthesis </summary>
+        BioPostAnthesis: TVar;
+  /// <summary> harvest index according to the empirical approach by Ratjen </summary>
+        HI_Ratjen: TVar;
+ /// <summary> harvest index according to the empirical approach by Rose </summary>       
+  HI_Rose: TVar;
+/// <summary> translozierbare Biomasse (g/m2) </summary>
+  Translocation: TVar;
+/// <summary> translozierbare Biomasse (g/plant) </summary>
+  Translocation_pl: TVar;
+
+
+
     fdsen: TExternV;
     TransIntRatio: TExternV;
     /// <summary> average daily air temperature </summary>
@@ -422,6 +442,8 @@ type
     optRSWT: TOption;
     OptDroughtimpact: TOption;
     OptNimpact: TOption;
+    OptHIcalcversion: TOption;
+
 
     /// <summary> average specific leaf area </summary>
         avSLA: TExternV;
@@ -431,6 +453,7 @@ type
     procedure setRootModel(AModel: TSimpleRootModDM);
     procedure createAll; override;
     procedure Init(var GlobMod: TMod); override;
+    procedure CalcVars; override;
     procedure CalcRates; override;
     procedure Integrate; override;
     procedure CalcNNI;
@@ -947,6 +970,11 @@ begin
   OptNimpact.OptionList.Clear;
   OptNimpact.OptionList.Add('NImpact');
   OptNimpact.OptionList.Add('NoNImpact');
+  OptCreate('optHIcalcversion', 'ratjen', OptHIcalcversion);
+  OptHIcalcversion.OptionList.Clear;
+  OptHIcalcversion.OptionList.Add('ratjen');
+  OptHIcalcversion.OptionList.Add('rose');
+
 end;
 
 procedure THumeWheatPartitioning.CreateAllPars;
@@ -1028,6 +1056,13 @@ begin
   ParCreate('fRootN_min', '[]', 0.1, fRootN_min);
   ParCreate('TTfRootN', '[]', 2000, TTfRootN, 'Tsum at which fRootN_min is reached');
   ParCreate('maxNupTake', '[kgN/ha]', 6, maxNupTake, 'parameter to avoid unrealistic high N uptake if maxNupTake is faulty');
+
+  ParCreate('pintercept', '[-]', 33.989, pintercept, 'intercept parameter for empirical HI approach according to Rose');
+  ParCreate('pBioPostAnth', '[-]', -0.48536, pBioPostAnth, 'slope parameter for biomass post anthesis effect on empirical HI approach according to Rose');
+  ParCreate('pBioPreAnth', '[-]', 0.50254, pBioPreAnth, 'slope parameter for biomass pre anthesis effect on empirical HI approach according to Rose');
+  ParCreate('pBioPreAnth2', '[-]', -0.0000046665, pBioPreAnth2, 'quadratic parameter for biomass pre anthesis effect on empirical HI approach according to Rose');
+
+
 end;
 
 procedure THumeWheatPartitioning.CreateAllExternV;
@@ -1208,6 +1243,149 @@ begin
   VarCreate('TSUMEffGF', '[C�]', 0, true, TSUMEffGF);
   VarCreate('GlobRadSum', '[MJ]', 0, true, GlobRadSum, 'sum of global radiation');
   VarCreate('QEffGF', '[MJ/C�]', 0, true, QEffGF, 'Photo-Thermal-Ratio during BBCH65 until LAI=0');
+
+  VarCreate('BioPreAnthesis', '[g/m2]', 0, true, BioPreAnthesis, 'biomass per m2 at anthesis');
+  VarCreate('BioPostAnthesis', '[g/m2]', 0, true, BioPostAnthesis, 'biomass per m2 at the end of grain filling');
+  VarCreate('HI_Rose', '[-]', 0, true, HI_Rose, 'Harvest index calculated with empirical approach according to Rose');
+  VarCreate('HI_Ratjen', '[-]', 0, true, HI_Ratjen, 'Harvest index calculated with empirical approach according to Ratjen');
+  VarCreate('Translocation', '[g/m2]', 0, true, Translocation, 'amount of translocated dry matter per m2');
+  VarCreate('Translocation_pl', '[g/plant]', 0, true, Translocation_pl, 'amount of translocated dry matter per plant');
+
+
+end;
+
+
+/// <summary> Calculates the variables for the Hume Wheat Partitioning component. Execution is before rate calculations </summary>
+procedure THumeWheatPartitioning.CalcVars;
+begin
+  inherited;
+  If (ISTAGE.v < 5) then
+    If (ISTAGE.v >= 1) and (LFWT_pl.v <= 0) and (EC.v < 20) then
+      InitStatesAfterEmergence;
+
+
+  STMWT_m2.v := STMWT_pl.v * Plants.v;
+  SENWT_m2.v := Senwt_pl.v * Plants.v;
+  NSEN_m2.v := NSen_pl.v * Plants.v;
+  LFWT_m2.v := LFWT_pl.v * Plants.v;
+  if(LFWT_m2.v<>0) and (STMWT_m2.v<>0) and (EC.v <= 65) then begin
+    Leaf_Stem_WT_Ratio.v:=LFWT_m2.v / STMWT_m2.v;
+    Stem_Leaf_WT_Ratio.v:=STMWT_m2.v / LFWT_m2.v;
+  end else begin
+    Leaf_Stem_WT_Ratio.v:=0;
+    Stem_Leaf_WT_Ratio.v:=0;
+  end;
+
+  if LFWT_pl.v > 0 then
+    NcLeaf.v := NLeaf_pl.v / LFWT_pl.v * 100
+  else
+    NcLeaf.v := 0; // aktuelle leaf N-concentration
+  if (EC.v >= EC_LGend.v) and (NcLeaf_ECLGE.v = 0) then
+    NcLeaf_ECLGE.v := NcLeaf.v;
+  if STMWT_pl.v > 0 then
+    NcStem.v := NStem_pl.v / STMWT_pl.v * 100;
+  // actual Stem N-concentration
+  if TOPWT_m2.v > 0 then
+    NcShoot.v := NShoot_m2.v / TOPWT_m2.v * 100
+  else
+    NcShoot.v := 0;
+  if (GRNWT_m2.v > 0) then
+    HI.v := GRNWT_m2.v / TSDM_m2.v;
+  if GPSM.v > 0 then
+  begin
+    TKM.v := (GRNWT_pl.v * Plants.v) / GPSM.v * 1000;
+    GRYD.v := ((GRNWT_pl.v * Plants.v) / 10) * 1.1627907; // 14% residual moisture
+    NSEN_m2.v := NSen_pl.v * Plants.v;
+  end;
+
+  NShoot_pl.v := NLeaf_pl.v + NStem_pl.v + NStoragepool_pl.v + NGrain_pl.v;
+  TOPWT_pl.v := LFWT_pl.v + STMWT_pl.v + SEEDRV.v + GRNWT_pl.v;
+  NStoragepool_m2.v := NStoragepool_pl.v * Plants.v;
+  NSEN_m2.v := NSen_pl.v * Plants.v;
+
+  TOPWT_m2.v := TOPWT_pl.v * Plants.v;
+  NShoot_m2.v := NShoot_pl.v * Plants.v;
+  NLeaf_m2.v := NLeaf_pl.v * Plants.v;
+  NRoot_m2.v := NRoot_pl.v * Plants.v;
+  NStem_m2.v := NStem_pl.v * Plants.v;
+  if LAI.v > 0 then begin
+    SLN.v := NLeaf_m2.v / LAI.v;
+    optSLN.v := ((Nc_optLeaf.v/100)*LFWT_m2.v) / LAI.v
+  end else begin
+    SLN.v := 0;
+    optSLN.v :=0;
+  end;
+  GRNWT_m2.v := GRNWT_pl.v * Plants.v;
+  NGrain_m2.v := NGrain_pl.v * Plants.v;
+  if NGrain_m2.v > 0 then
+    NHI.v := NGrain_m2.v / (NShoot_m2.v + NSEN_m2.v);
+  TSDM_m2.v := STMWT_m2.v + LFWT_m2.v + SENWT_m2.v + GRNWT_m2.v + DMTrans_pl.v * Plants.v;
+  if (SENWT_m2.v > 0) then
+    NcStraw.v := (NSen_pl.v / Senwt_pl.v) * 100;
+  if (GRNWT_pl.v > 0) then
+  begin
+    NcGrain.v := 100 * (NGrain_pl.v / GRNWT_pl.v);
+    ProtGrain.v := NcGrain.v * 5.7;
+    KernelN.v := NGrain_m2.v * 10; // kgN/ha
+  end;
+  if SumMLAL.v > 0 then
+  begin
+    relTM_L1.v := MLAL[1].v / SumMLAL.v;
+    relTM_L2.v := MLAL[2].v / SumMLAL.v;
+    relTM_L3.v := MLAL[3].v / SumMLAL.v;
+    relTM_L4.v := MLAL[4].v / SumMLAL.v;
+  end
+  else
+  begin
+    relTM_L1.v := 0;
+    relTM_L2.v := 0;
+    relTM_L3.v := 0;
+    relTM_L4.v := 0;
+  end;
+  if SumLAL.v > 0 then
+  begin
+    relBF_L1.v := LAL[1].v / SumLAL.v;
+    relBF_L2.v := LAL[2].v / SumLAL.v;
+    relBF_L3.v := LAL[3].v / SumLAL.v;
+    relBF_L4.v := LAL[4].v / SumLAL.v;
+  end
+  else
+  begin
+    relBF_L1.v := 0;
+    relBF_L2.v := 0;
+    relBF_L3.v := 0;
+    relBF_L4.v := 0;
+  end;
+
+  if SumMLAL.v > 0 then
+    NcLeaf.v := sumNLAL.v / SumMLAL.v * 100
+  else
+    NcLeaf.v := 0; // act leaf N concentration
+  NDemand.v := NDemand_pl.v * Plants.v * 10; // kg/ha
+
+  if((EC.v>64) and (LAI.v>0))then begin
+  // no impact, just for labeling
+    DaysEffGF.v:=DaysEffGF.v+1;
+    TSUMEffGF.v:=TSUMEffGF.v+ TEMPM.v;
+    GlobRadSum.v:=GlobRad.v;
+    QEffGF.v:=  GlobRadSum.v/TSUMEffGF.v;
+  end;
+
+
+  if self.EC.v <= 65 then
+    self.BioPreAnthesis.v := TSDM_m2.v
+  else
+    self.BioPostAnthesis.v := TSDM_m2.v-BioPreAnthesis.v;
+
+  if self.EC.v > 90 then begin
+  Translocation.v := pintercept.v + pBioPostAnth.v * BioPostAnthesis.v + pBioPreAnth.v * BioPreAnthesis.v + pBioPreAnth2.v * sqr(BioPreAnthesis.v);
+  Translocation_pl.v := Translocation.v / Plants.v;
+  HI_Rose.v := (BioPostAnthesis.v + Translocation.v)/(BioPreAnthesis.v + BioPostAnthesis.v);
+
+  if lowercase(OptHIcalcversion.Option) = 'rose' then
+    GRYD.v := (TOPWT_pl.v + Senwt_pl.v)*Plants.v/10 * HI_Rose.v * 1.1627907;//        ((GRNWT_pl.v * Plants.v) / 10) * 1.1627907;
+  end;
+
 end;
 
 procedure THumeWheatPartitioning.CalcRates;
@@ -1666,117 +1844,7 @@ begin
   end;
 
   inherited Integrate;
-  If (ISTAGE.v < 5) then
-    If (ISTAGE.v >= 1) and (LFWT_pl.v <= 0) and (EC.v < 20) then
-      InitStatesAfterEmergence;
 
-
-  STMWT_m2.v := STMWT_pl.v * Plants.v;
-  SENWT_m2.v := Senwt_pl.v * Plants.v;
-  NSEN_m2.v := NSen_pl.v * Plants.v;
-  LFWT_m2.v := LFWT_pl.v * Plants.v;
-  if(LFWT_m2.v<>0) and (STMWT_m2.v<>0) and (EC.v <= 65) then begin
-    Leaf_Stem_WT_Ratio.v:=LFWT_m2.v / STMWT_m2.v;
-    Stem_Leaf_WT_Ratio.v:=STMWT_m2.v / LFWT_m2.v;
-  end else begin
-    Leaf_Stem_WT_Ratio.v:=0;
-    Stem_Leaf_WT_Ratio.v:=0;
-  end;
-
-  if LFWT_pl.v > 0 then
-    NcLeaf.v := NLeaf_pl.v / LFWT_pl.v * 100
-  else
-    NcLeaf.v := 0; // aktuelle leaf N-concentration
-  if (EC.v >= EC_LGend.v) and (NcLeaf_ECLGE.v = 0) then
-    NcLeaf_ECLGE.v := NcLeaf.v;
-  if STMWT_pl.v > 0 then
-    NcStem.v := NStem_pl.v / STMWT_pl.v * 100;
-  // actual Stem N-concentration
-  if TOPWT_m2.v > 0 then
-    NcShoot.v := NShoot_m2.v / TOPWT_m2.v * 100
-  else
-    NcShoot.v := 0;
-  if (GRNWT_m2.v > 0) then
-    HI.v := GRNWT_m2.v / TSDM_m2.v;
-  if GPSM.v > 0 then
-  begin
-    TKM.v := (GRNWT_pl.v * Plants.v) / GPSM.v * 1000;
-    GRYD.v := ((GRNWT_pl.v * Plants.v) / 10) * 1.1627907; // 14% residual moisture
-    NSEN_m2.v := NSen_pl.v * Plants.v;
-  end;
-
-  NShoot_pl.v := NLeaf_pl.v + NStem_pl.v + NStoragepool_pl.v + NGrain_pl.v;
-  TOPWT_pl.v := LFWT_pl.v + STMWT_pl.v + SEEDRV.v + GRNWT_pl.v;
-  NStoragepool_m2.v := NStoragepool_pl.v * Plants.v;
-  NSEN_m2.v := NSen_pl.v * Plants.v;
-
-  TOPWT_m2.v := TOPWT_pl.v * Plants.v;
-  NShoot_m2.v := NShoot_pl.v * Plants.v;
-  NLeaf_m2.v := NLeaf_pl.v * Plants.v;
-  NRoot_m2.v := NRoot_pl.v * Plants.v;
-  NStem_m2.v := NStem_pl.v * Plants.v;
-  if LAI.v > 0 then begin
-    SLN.v := NLeaf_m2.v / LAI.v;
-    optSLN.v := ((Nc_optLeaf.v/100)*LFWT_m2.v) / LAI.v
-  end else begin
-    SLN.v := 0;
-    optSLN.v :=0;
-  end;
-  GRNWT_m2.v := GRNWT_pl.v * Plants.v;
-  NGrain_m2.v := NGrain_pl.v * Plants.v;
-  if NGrain_m2.v > 0 then
-    NHI.v := NGrain_m2.v / (NShoot_m2.v + NSEN_m2.v);
-  TSDM_m2.v := STMWT_m2.v + LFWT_m2.v + SENWT_m2.v + GRNWT_m2.v + DMTrans_pl.v * Plants.v;
-  if (SENWT_m2.v > 0) then
-    NcStraw.v := (NSen_pl.v / Senwt_pl.v) * 100;
-  if (GRNWT_pl.v > 0) then
-  begin
-    NcGrain.v := 100 * (NGrain_pl.v / GRNWT_pl.v);
-    ProtGrain.v := NcGrain.v * 5.7;
-    KernelN.v := NGrain_m2.v * 10; // kgN/ha
-  end;
-  if SumMLAL.v > 0 then
-  begin
-    relTM_L1.v := MLAL[1].v / SumMLAL.v;
-    relTM_L2.v := MLAL[2].v / SumMLAL.v;
-    relTM_L3.v := MLAL[3].v / SumMLAL.v;
-    relTM_L4.v := MLAL[4].v / SumMLAL.v;
-  end
-  else
-  begin
-    relTM_L1.v := 0;
-    relTM_L2.v := 0;
-    relTM_L3.v := 0;
-    relTM_L4.v := 0;
-  end;
-  if SumLAL.v > 0 then
-  begin
-    relBF_L1.v := LAL[1].v / SumLAL.v;
-    relBF_L2.v := LAL[2].v / SumLAL.v;
-    relBF_L3.v := LAL[3].v / SumLAL.v;
-    relBF_L4.v := LAL[4].v / SumLAL.v;
-  end
-  else
-  begin
-    relBF_L1.v := 0;
-    relBF_L2.v := 0;
-    relBF_L3.v := 0;
-    relBF_L4.v := 0;
-  end;
-
-  if SumMLAL.v > 0 then
-    NcLeaf.v := sumNLAL.v / SumMLAL.v * 100
-  else
-    NcLeaf.v := 0; // act leaf N concentration
-  NDemand.v := NDemand_pl.v * Plants.v * 10; // kg/ha
-
-  if((EC.v>64) and (LAI.v>0))then begin
-  // no impact, just for labeling
-    DaysEffGF.v:=DaysEffGF.v+1;
-    TSUMEffGF.v:=TSUMEffGF.v+ TEMPM.v;
-    GlobRadSum.v:=GlobRad.v;
-    QEffGF.v:=  GlobRadSum.v/TSUMEffGF.v;
-  end;
   if (EC.v >=99) and (not harvested) then begin
     C_Residues.v := (TOPWT_m2.v + DMFineRoot.v)*0.45;
 //    TOPTWT_m2.v := 0.0;
@@ -1840,6 +1908,10 @@ begin
     MTEMP_arr[i] := 0;
   end;
 
+  BioPreAnthesis.v := 0.0;
+  BioPostAnthesis.v := 0.0;
+
+
 end;
 
 /// <summary> <summary> </summary>
@@ -1882,10 +1954,11 @@ begin
       K_RHI := 1; // ((exp(r_GF * Xm) - 1) * INI_GF) / (exp(r_GF * Xm) * INI_GF - 1); // changed to a maximum value of 1
       b_RHI := (K_RHI - RHI_ini) / RHI_ini; // relative HI at start of grain filling
       RHI := K_RHI / (1 + b_RHI * exp(-r_RHI * SUMDTTGF.v)); // logistic development of relative HI
-      
+
       // potential grain growth is calculated TOPWT per plant + senescent weight
       // times the potential HI and acutal relative HI minus the actual grain weight per plant
       potGROGRN.v := (TOPWT_pl.v + Senwt_pl.v) * potHI.v * RHI - GRNWT_pl.v;
+//      potGROGRN.v := (TOPWT_pl.v + Senwt_pl.v) * HI_Rose.v * RHI - GRNWT_pl.v;
 
       // actual grain growth is limited by the potential (sink limited) grain growth and
       GROGRN.v := max(0, min(potGROGRN.v, STMWT_pl.v - Swmin));

@@ -39,3 +39,29 @@ xml_to_markdown <- function(node) {
 
   return(paste(parts, collapse = ""))
 }
+
+
+
+
+
+GetAncestorClasses <- function(XMLFile, ClassName) {
+
+
+  # 1. Load the XML file
+  doc <- read_xml(XMLFile)
+
+  # 2. Locate the specific class node for 'TLayeredSoil'
+  class_node <- xml_find_first(doc, paste0("//class[@name='",ClassName,"']"))
+
+  # 3. Find all nested ancestor nodes descending from this class
+  ancestor_nodes <- xml_find_all(class_node, ".//ancestor")
+
+  # 4. Extract the 'name' and 'namespace' attributes into a data frame
+  ancestors_df <- data.frame(
+    AncestorClass = xml_attr(ancestor_nodes, "name"),
+    Namespace = xml_attr(ancestor_nodes, "namespace"),
+    stringsAsFactors = FALSE
+  )
+return(ancestors_df)
+}
+

@@ -41,43 +41,6 @@ options("citation_format" = "pandoc")
 
 ```
 
-```{r}
-
-# helper: normalize whitespace
-clean_ws <- function(x) gsub("\\s+", " ", trimws(x))
-
-devnotes_xml_to_md <- function(devnotes_node) {
-  if (is.na(devnotes_node) || length(devnotes_node) == 0) return(NA_character_)
-
-  out <- character()
-
-  for (ch in xml_children(devnotes_node)) {
-    nm <- xml_name(ch)
-
-    if (nm == "para") {
-      # keep inline markup as text; you can post-process ** if needed
-      out <- c(out, clean_ws(xml_text(ch)))
-      out <- c(out, "") # blank line between paragraphs
-
-    } else if (nm == "list") {
-      # bullet list
-      items <- xml_find_all(ch, "./item/description")
-      if (length(items)) {
-        bullets <- paste0("- ", clean_ws(xml_text(items)))
-        out <- c(out, bullets, "")  # blank line after list
-      }
-
-    } else {
-      # fallback: include any other node content
-      out <- c(out, clean_ws(xml_text(ch)), "")
-    }
-  }
-
-  # remove trailing blank lines
-  while (length(out) && out[length(out)] == "") out <- out[-length(out)]
-  paste(out, collapse = "\n")
-}
-```
 
 ```{r}
 #| include: false

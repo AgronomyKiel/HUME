@@ -19,6 +19,7 @@ type
 /// Texture classes according to Bodenkundliche Kartieranleitung 5. Auflage
 /// </summary>
   TTextureClass = (Ss,mS,mSgs,mSfs,fS,fSms,Sl2,Sl3,Sl4,Slu,St2,St3,Su2,Su3,Su4,Ls2,Ls3,Ls4,Lt2,Lt3,Lts,Lu,Uu,Uls,Us,Ut2,Ut3,Ut4,Tt,Tl,Ts2,Ts3,Ts4,Tu2,Tu3,Tu4);
+
 /// <summary>
 /// bulk density classes according to KA5
 /// </summary>
