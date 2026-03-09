@@ -257,7 +257,7 @@ begin
     DebugForm.MyCreate;
 {$ENDIF}
   ParCreate('psi_2', '[cm]', 200, psi_2,
-    'soil water tension from which root water uptake reduces if FEDDES option is choosen');
+    'soil water tension from which root water uptake reduces if eíther FEDDES, psi_crit or psicrit_corr option is choosen');
   ParCreate('psi_3', '[cm]', 15000, psi_3,
     'lower limit of soil water extraction');
   ParCreate('feddes_a', '[hPa]', 400, feddes_a,
@@ -793,12 +793,12 @@ begin
   f_SqrWl_Option.OptionList.Add('ReductionFactor');
   f_SqrWl_Option.OptionList.Add('NoReductionFactor');
 
-  OptCreate('AutoIrri', 'no', AutoIrriOptStr);
+  OptCreate('AutoIrri', 'no', AutoIrriOptStr, 'Option for using an automatic irrigation algorithm');
   AutoIrriOptStr.OptionList.Clear;
   AutoIrriOptStr.OptionList.Add('no');
   AutoIrriOptStr.OptionList.Add('yes');
 
-  OptCreate('AutoIrriMethod', 'amProznFKWe', AutoIrriMethodOptStr);
+  OptCreate('AutoIrriMethod', 'amProznFKWe', AutoIrriMethodOptStr, 'Choice for method of automatic irrigation control');
   AutoIrriMethodOptStr.OptionList.Clear;
   AutoIrriMethodOptStr.OptionList.Add('amProznFKWe');
   AutoIrriMethodOptStr.OptionList.Add('amTransRatio');

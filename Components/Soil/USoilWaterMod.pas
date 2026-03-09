@@ -1879,7 +1879,7 @@ begin
     Texture_versionOption.OptionList.Add('RR');
     Texture_versionOption.OptionList.Add('KA'); }
 
-  OptCreate('FKsFromTexture', 'FromPar', FKsFromTextOption);
+  OptCreate('FKsFromTexture', 'FromPar', FKsFromTextOption,'Option to take Ks values either from a texture based table or as specific parameter values');
   FKsFromTextOption.OptionList.Clear;
   FKsFromTextOption.OptionList.Add('FromPar');
   FKsFromTextOption.OptionList.Add('FromTexture');
@@ -1895,6 +1895,9 @@ begin
   red_fOption.OptionList.Clear;
   red_fOption.OptionList.Add('modifiedBeese');
   red_fOption.OptionList.Add('Beese1978');
+  red_fOption.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/Soil/Documentation/TSoilWaterModelR.html#soil-evaporation';
+
+
 
   OptCreate('FTextureClass1', 'Sl3', TOption(FTextClass1Option),
     'texture class for first horizon');
