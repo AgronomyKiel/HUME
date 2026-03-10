@@ -332,8 +332,6 @@ type
 
     /// <PrivateField> flag for writing res.ini files for documentation </PrivateField>
     fChiSqr: real;
-    /// field for total sum of squared differences (sim-meas)
-
     /// <PrivateField> option for continous output, type is TContOutput which defines the options
     /// NoContOutput, SubmodelSpecific and  AllContoutput </PrivateField>
     fContOutput: TContOutput;
@@ -429,6 +427,10 @@ type
     /// write parameters and filenames of simulation run to result file
 
   public
+      ///
+    fShowIniDuringConsoleRun: boolean;
+
+
     FLMOptions: TMarquardOptions;
     // {$IFNDEF NONVISUAL}
     FPropIniFile: TMyIniFile;
@@ -2166,6 +2168,7 @@ begin
       extractfilename(ActIniFile.FileName) + ' (' + IntToStr(i + 1) + '/' +
       IntToStr(FIniFiles.count) + ')';
 {$ELSE}
+   if (fShowIniDuringConsoleRun = true) then
     writeln('Running ' + extractfilename(ActIniFile.FileName) + ' (' +
       IntToStr(i + 1) + '/' + IntToStr(FIniFiles.count) + ')');
 {$ENDIF}

@@ -65,6 +65,15 @@ xml_to_markdown <- function(node) {
 
 
 
+#' Title
+#'
+#' @param XMLFile File path to the XML documentation file
+#' @param ClassName Name of the class for which to retrieve ancestor classes
+#'
+#' @returns a data frame with two columns: 'AncestorClass' and 'Namespace', listing all ancestor classes of the specified class along with their namespaces.
+#' @export
+#'
+#' @examples
 GetAncestorClasses <- function(XMLFile, ClassName) {
 
 
