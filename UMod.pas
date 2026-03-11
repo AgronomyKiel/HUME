@@ -74,7 +74,7 @@ type
   /// NoContOuput: No Outputfile is written, even if Option ContOutput of submodel is true,
   /// AllContOutput: Outputfile is written, even if Option ContOuput of submodel is false
   /// SubmodelSpecific: Outputfile is written, according to Option ContOutpus of submodel </summary>
-  TContOutput = (NoContOutput, AllContoutput, SubmodelSpecific);
+  TContOutput = (NoContOutput , AllContoutput, SubmodelSpecific);
 
 const
 
