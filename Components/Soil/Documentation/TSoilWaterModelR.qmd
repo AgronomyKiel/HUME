@@ -1,5 +1,5 @@
 ---
-title: "TSoilWaterMod"
+title: "TSoilWaterModR"
 author: "Agronomy and Crop Science Group, Kiel University"
 date: "`r Sys.Date()`"
 chunk_output_type: console
@@ -112,11 +112,153 @@ The actual transpiration (T~act~) is then calculated by considering the reductio
 
 The sink term S\[i\], describes the water uptake by the plant roots in a certain layer \[i\], depends on T~pot~, a reduction factor \[-\] (f~sinkred~) and a term, which describes the reduction of water uptake by roots due to competition.
 
-The potential sink term is calculated by the root length in the layer \[cm cm^-2^\] (RL\[i\]), an exponential factor for root competition \[-\] (CompF) divided by the sum of root length in all layers \[cm cm^-2^\] (RL\[j\]) and CompF. The factor 0.1 is the conversion from cm to mm which is used to stay with the units of mm for the evapotranspiration variables and the default unit of the Soil processes which is cm.
+There several options available to distribute the potential transpiration to the different soil layers. The default option is to distribute the potential transpiration according to the root length in the different soil layers, which is a common approach in many agro-ecological models (e.g. CERES-WHEAT, HYBRID-Maize). The root length in the different soil layers is calculated by the component 
+[TRootGrowth](https://agronomykiel.github.io/HUME/Components/RootGrowth/Documentation/TRootGrowth.html) and is provided as an external value to the component TSoilWaterModelR. 
 
-$$S[i]_{pot}=0.1\cdot {{T}_{pot}}\cdot \frac{RL{{[i]}^{CompF}}}{\sum\limits_{j}{RL{{[j]}^{CompF}}}}\cdot {{f}_{\sin kred}}$$ {#eq-SinkTerm}
+The sink term is then calculated by the root length in the layer cm cm^-2^ (RL~[i]~), an exponential factor for root competition [-] (CompF) divided by the sum of root length in all layers [cm cm^-2^] (RL~[j]~) and CompF. The factor 0.1 is the conversion from cm to mm which is used to stay with the units of mm for the evapotranspiration variables and the default unit of the Soil processes which is cm.
+
+$$S[i]_{pot}=0.1\cdot {{T}_{pot}}\cdot \frac{RL{{[i]}^{CompF}}}{\sum\limits_{j}{RL{{[j]}^{CompF}}}}\cdot {{f}_{sinkred}}$$ {#eq-SinkTerm}
 
 f~sinkred~ is calculated by the soil water potential in each soil layer psi~i~ \[hPa\], the soil water potential \[hPa\] psi0 from which on water uptake is 0 and psi~crit~ \[hPa\], a parameter for the soil water potential from which on water uptake decrease.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "Example for the distribution of root length density and potential sink term for different values of the competition factor (CompF)"
+
+# library for adding plots
+library(patchwork)
+
+depths <- seq(5, 125, by = 5)
+
+RLD0 <- 4
+RLDdec <- 0.08
+
+rlds <- RLD0*exp(-RLDdec*depths)
+
+df <- data.frame(depths, rlds)
+p1 <- ggplot(df, aes(y = depths, x = rlds)) +
+  geom_line(size=1.5) +
+  scale_y_reverse() +
+  labs(title = "", y = "Depth (cm)", x = "Root Length Density (cm/cm3)") +
+  theme_minimal(base_size = 12)
+
+CompF <- c(0.5, 0.75, 1, 1.25)
+
+df_comp <- expand.grid(depths = depths, CompF = CompF)
+df_comp$rlds <- RLD0*exp(-RLDdec*df_comp$depths)
+df_comp <- df_comp %>% group_by(CompF) %>% mutate(SumRLDComp = sum(rlds^CompF)) %>% ungroup()
+df_comp <- df_comp %>% mutate(SinkTerm = 0.1*5*df_comp$rlds^CompF/SumRLDComp) 
+
+
+p2 <- ggplot(df_comp, aes(y = depths, x = SinkTerm, color = as.factor(CompF))) +
+  geom_line(size=1.5) +
+  scale_y_reverse() +
+  scale_color_manual(values = c("blue", "green", "orange", "red"), labels = c("0.5", "0.75", "1", "1.25")) +
+  labs(title = "", y = "Depth (cm)", x = "Pot. sink Term (mm/d)", color = "CompF") +
+  theme_minimal(base_size = 12) 
+
+
+
+p <- p1 + p2 
+
+p
+```
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: "Example for the calculation potential sink term together with  soil water potential and soil water content with depth with or without the inclusion of the reduction factor for distribution of potential sink term."
+
+fn_RR <- "./Components/Soil/Documentation/GenuchtenPars_roteReihe.csv"
+Params_RR <- read.table(fn_RR, header = TRUE, comment.char = "[", sep = ";", dec = ".")
+Params_RR$Source <- "RR"
+Params_RR$m <- 1-1/Params_RR$n
+
+
+psis <- 1/depths^1.2*5e4
+df_psis <- data.frame(depths, psis)
+
+
+Params <- Params_RR %>% filter(Bodenart == "Sl3") %>% slice(1)
+df_psis$swc <- Vectorize(swc) (psi=-df_psis$psis, alpha=Params$alpha,
+                  n=Params$n,m=Params$m,theta_sat=Params$theta_s,
+                  theta_res=Params$theta_r, lambda = Params$m * Params$n, type_swc = "VanGenuchten")
+
+FK <- swc (psi=-10^1.8, alpha=Params$alpha,
+                  n=Params$n,m=Params$m,theta_sat=Params$theta_s,
+                  theta_res=Params$theta_r, lambda = Params$m * Params$n, type_swc = "VanGenuchten")
+PWP <- swc (psi=-10^4.2, alpha=Params$alpha,
+                  n=Params$n,m=Params$m,theta_sat=Params$theta_s,
+                  theta_res=Params$theta_r, lambda = Params$m * Params$n, type_swc = "VanGenuchten")
+
+CompF <- 1
+df1 <- df_psis
+df1$rlds <- RLD0*exp(-RLDdec*df1$depths)
+df1 <- df1 %>% mutate(SumRLDComp = sum(rlds^CompF)) %>% ungroup()
+df1 <- df1 %>% mutate(SinkTerm = 0.1*5*df1$rlds^CompF/SumRLDComp) 
+df1$sinkredf <- 1
+df1$option <- "No reduction"
+
+
+psi2 <- 200
+psi3 <- 10^4.2
+
+
+
+df2 <- df_psis
+df2$rlds <- RLD0*exp(-RLDdec*df2$depths)
+df2$sinkredf <- pmax(0,pmin(1, (df2$psis-psi3)/(psi2-psi3)))
+
+df2 <- df2 %>% mutate(SumRLDComp = sum(sinkredf*rlds^CompF)) %>% ungroup()
+df2 <- df2 %>% mutate(SinkTerm = 0.1*5*sinkredf*df2$rlds^CompF/SumRLDComp) 
+df2$option <- "Reduction by soil water potential"
+
+
+df <- rbind(df1, df2)
+
+
+
+p3 <- ggplot(df_psis, aes(y = depths, x = psis)) +
+  geom_line(size=1.5) +
+  geom_abline(xintercept = -10^1.8, linetype = "dashed", color = "blue") +
+  scale_y_reverse() +
+  labs(title = "", y = "Depth (cm)", x = "Soil water potential (hPa)") +
+  theme_minimal(base_size = 12)
+#p3
+
+
+p4 <- ggplot(df_psis, aes(y = depths, x = swc)) +
+  geom_line(size=1.5) +
+  scale_y_reverse() +
+  geom_vline(xintercept = FK, linetype = "dashed", color = "blue", size=1) +
+  geom_vline(xintercept = PWP, linetype = "dashed", color = "red", size=1) +
+  labs(title = "", y = "Depth (cm)", x = "Soil water content (cm3/cm3)") +
+  theme_minimal(base_size = 12)
+#p4
+
+df <- df %>% arrange(option, depths)
+p5 <- ggplot(df, aes(y = depths, x = SinkTerm, color = option)) +
+  geom_line(aes(group=option),size=1.5) +
+  scale_y_reverse() +
+  scale_color_manual(values = c("blue", "red"), labels = c("No reduction", "Reduction by soil water potential")) +
+  labs(title = "", y = "Depth (cm)", x = "Pot. sink Term (mm/d)", color = "Option") +
+  theme_minimal(base_size = 12)
+#p5
+
+p <- p3 + p4 + p5 + plot_layout(ncol = 3, guides = "collect") & theme(legend.position = "bottom")
+
+p
+```
+
+
+Another option considers the actual soil water status already during the initial distribution of the potential transpiration to the different soil layers. In this case, the potential transpiration is distributed according to the root length in the different soil layers and the reduction factor for root water uptake (f~sinkred~) in each layer. The sink term is then calculated by the root length in the layer cm cm^-2^ (RL~[i]~), an exponential factor for root competition [-] (CompF) divided by the sum of root length in all layers [cm cm^-2^] (RL~[j]~) and CompF.
+
+$$S[i]_{pot}=0.1\cdot {{T}_{pot}}\cdot \frac{f_{sinkred} \cdot RL{{[i]}^{CompF}}}{\sum  \limits_{} \left( {f_{sinkred} \cdot RL{{[j]}^{CompF}}}\right)} \cdot f_{sinkred}$$ {#eq-SinkTerm2}
+
+
+
 
 There are different options available to calculate the reduction factor for root water uptake (f~sinkred~).
 
@@ -128,3 +270,7 @@ $${{f}_{\sin kred}}[i]=\left\{ \begin{align}
 The sum of the sink terms of the different soil layers is the actual transpiration \[mm d^-1^\] (T~act~).
 
 $${{T}_{act}}=\sum\limits_{j}{S[j]}$$ {#eq-SumSinkTerm}
+
+### Reduction factors
+
+The reduction factor for root water uptake (f~sinkred~) is calculated based on the soil water potential in each soil layer (psi~i~), the soil water potential from which on water uptake is 0 (psi0) and a parameter for the soil water potential from which on water uptake decrease (psi~crit~). There are different options available to calculate the reduction factor for root water uptake (f~sinkred~) as shown in Eq. @eq-fsinkred.

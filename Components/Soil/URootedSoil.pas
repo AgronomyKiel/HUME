@@ -590,9 +590,8 @@ end;
 procedure TSoilWaterModelR.CalcSinks;
 
 var
-  Sqr_Wl_arr, Wl_fact, iw_max: TSoilArray;
+  Sqr_Wl_arr, iw_max: TSoilArray;
   Sum_Sqr_wl, sum_wl: real;
-  // sum_sink    : real;
   i: integer;
   MFP_, MFPsink: extended;
   Wupmax, rl: TSoilArray;
@@ -612,16 +611,16 @@ begin
 
     if ShowWarnings then
       if act_rooted_comps.v > self.bil_nr.v then
-
 {$IFNDEF NONVISUAL}
         showmessage
-          ('Number of rooted compartments larger than balanance index, computed balance probably not correct');
+          ('Number of rooted compartments larger than balance index, computed balance probably not correct');
 {$ELSE}
-        writeln('Number of rooted compartments larger than balanance index, computed balance probably not correct');
-
+        writeln('Number of rooted compartments larger than balance index, computed balance probably not correct');
 {$ENDIF}
+
     for i := 1 to act_n_comp do
     begin
+    /// Calculation of sink reduction factor based on root length density distribution and potential water uptake per layer
       case f_Sqrwl_funct of
         NoReductionFactor:
           Sqr_Wl_arr[i] := power(ExWld_arr[i].v * Thick[i], CompFactor.v);
@@ -633,23 +632,6 @@ begin
       Sum_Sqr_wl := Sum_Sqr_wl + Sqr_Wl_arr[i];
     end;
 
-    for i := 1 to act_n_comp do
-    begin
-      if sum_wl > 0 then
-        Wl_fact[i] := ExWld_arr[i].v * Thick[i] / sum_wl
-      else
-        Wl_fact[i] := 0.0;
-      if psi_arr[i].v > 0 then
-        psiRoot.v := psiRoot.v + log10(psi_arr[i].v) * Wl_fact[i];
-    end;
-    { if Sum_Sqr_wl > 0 then
-      psiRoot.v := psiRoot.v/Sum_Sqr_wl
-      else
-      psiRoot.v := 0.0; }
-    { if psiRoot.v > 0 then
-      psiRoot.v := log10(psiRoot.v)
-      else psiroot.v := 0.0; }
-
     Sum_Sink := 0.0;
     for i := 1 to act_n_comp do
     begin
@@ -657,7 +639,7 @@ begin
         Sink_arr[i].v := 0.1 * PotTrans.v * Sqr_Wl_arr[i] / Sum_Sqr_wl
       else
         Sink_arr[i].v := 0.0;
-      
+
       // sink term calculation with matrix flux potential based calculation of maximum root water uptake
       if OptSinkTermMethod = MFP then
       begin
@@ -666,7 +648,6 @@ begin
           // calculation of matrix by numerically integration of the unsaturated hydraulic conductivity from PWP to the actual soil water potential
           MFP_ := MFP_arr[i].get_sumku(psi_arr[i].v);
           // from RLD [cm.cm-3] to rl in cm.ha-1
-          
           rl[i] := ExWld_arr[i].v * Thick[i] * 1E8;
           iw_max[i] := Iwmax(theta_arr[i].v, pwp_arr[i], Dw_arr[i] / 86400,
             abstand_func(ExWld_arr[i].v), 0.02);
@@ -691,10 +672,6 @@ begin
         Sink_arr[i].v := ((theta_arr[i].v - WPar[i].b_rest) * Thick[i]) -
           nfk_threshold.v;
       Sum_Sink := Sum_Sink + Sink_arr[i].v;
-      // If Wl_arr[i].v > 0.0 then
-      // w_influx[i].v := sink_arr[i].v/wl_arr[i].v
-      // else
-      // w_influx[i].v := 0.0;
     end;
   end; // withRoots
 end;
