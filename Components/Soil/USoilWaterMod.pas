@@ -59,7 +59,15 @@ type
   /// <summary>Type for soil water parameters</summary>
   TSoilWaterParams = array [1 .. max_comp] of TGenucht;
 
-  /// <summary>Component implementing vertical soil water transport</summary>
+/// <summary>
+/// Implemtents different methods for vertical soil water transport either with differen variants
+/// of the potential based water transport or as a simple tipping bucket approach.
+/// </summary>
+/// <remarks>
+/// <author>
+/// Henning Kage, Ulf Böttcher & Agronomy Group, University of Kiel
+/// </author>
+/// </remarks>
   TSoilWaterMod = class(TLayeredSoil)
 
   private
@@ -195,13 +203,15 @@ type
 
     function getNetRain: TExternV;
     function getPotEvap: TExternV;
-    /// <summary>wrapper for all parameter creation</summary>
+    /// <summary>wrapper for all parameter creation </summary>
     procedure CreateParameters;
+
     procedure CreateHorizonParameters;
-    /// <summary>wrapper for all option creation</summary>
+
+   ///<summary>wrapper for all option creation </summary>
     procedure CreateOptions;
-    
-    /// <summary>wrapper for all state creation</summary>
+
+    ///<summary>wrapper for all state creation</summary>
     procedure CreateStates;
     /// <summary>wrapper for all external variable creation</summary>
     procedure CreateVars;
@@ -1938,8 +1948,7 @@ begin
   fLDClass5Option.AddLDClasses;
   fLDClass6Option.AddLDClasses;
 
-  /// summary> set options for numerical bulk density classes </summary>
-
+/// <summary> set options for numerical bulk density classes in horizon 1 </summary>
   OptCreate('fLD1', 'OldVersion', TOption(fLD1Option),
     'numerical layer density for first horizon');
   OptCreate('fLD2', 'OldVersion', TOption(fLD2Option),
@@ -2008,6 +2017,10 @@ begin
 
 end;
 
+/// <summary>
+/// Code for creating the parameters of the van Genuchten parameters for the
+/// soil horizons
+/// </summary>
 procedure TSoilWaterMod.CreateHorizonParameters;
 type
   THorizonDefaults = record
@@ -2202,7 +2215,7 @@ begin
   ParCreate('Weff', '[cm]', 100, Weff, 'effective rooting deph [cm]');
   ParCreate('PondMax', '[mm]', 10, PondMax,
     'maximum height of ponded Water on Soil Surface');
-  ParCreate('psi_critEvap', '[hPa]', 500.0, psi_critEvap,
+  ParCreate('psi_critEvap', '[hPa]', 100.0, psi_critEvap,
     'suction where evaporation switches from potential to transport limited rate');
 end;
 

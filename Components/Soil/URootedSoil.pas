@@ -29,7 +29,9 @@ type
   // TSource = (fromParameter, fromPlantModel); // Source of Psi2 value
 
 
-/// <summary> Model compontent for simulation of soil water transport and root soil water uptake
+/// <summary> Model component for adding root soil water uptake to the simulation of vertical (1D) soil water transport
+///  The distribution of water uptake over the soil layers and the calculation of drought limited water uptake can
+///  be calculated with several different options
 ///  </summary>
   TSoilWaterModelR = class(TSoilWaterMod)
 
@@ -312,7 +314,7 @@ begin
 
   for i := 1 to Max_Root_Index do
   begin
-    VarCreate('ProzNFK_arr' + ndx_str(i), '[%]', 0.0, false, ProzNFK_arr[i]);
+    VarCreate('ProzNFK_arr' + ndx_str(i), '[%]', 0.0, false, ProzNFK_arr[i], 'percentage of available water (nFK) in the soil compartment');
   end;
 
   for i := 1 to n_comp do
@@ -330,7 +332,7 @@ begin
     begin
       ExternVcreate('effWLD_' + ndx_str(i), '[cm/cm3]', stateField,
         ExWld_arr[i]);
-      VarCreate('WAuf' + ndx_str(i), '[cm.d-1]', 0.0, false, Sink_arr[i]);
+      VarCreate('WAuf' + ndx_str(i), '[cm.d-1]', 0.0, false, Sink_arr[i], 'water uptake rate in the soil compartment');
     end;
   end;
   CreateOptionsRootedSoil;
@@ -348,7 +350,7 @@ begin
         ExternVcreate('effWLD_' + ndx_str(i), '[cm/cm3]', stateField,
           ExWld_arr[i]);
       if Sink_arr[i] = nil then
-        VarCreate('WAuf' + ndx_str(i), '[cm.d-1]', 0.0, false, Sink_arr[i]);
+        VarCreate('WAuf' + ndx_str(i), '[cm.d-1]', 0.0, false, Sink_arr[i], 'water uptake rate in the soil compartment');
     end;
   FWithRoots := settrue;
 end;
@@ -530,21 +532,37 @@ begin
     begin
       if ExWld_arr[i].v > 0.0 then
       begin
-
+        // root length in that layer in cm/ha from RLD [cm.cm-3] to rl in cm.ha-1
         rl[i] := 0.1 * ExWld_arr[i].v * Thick[i] * 1E8;
-        // from RLD [cm.cm-3] to rl in cm.ha-1
+        
+        // water inflow per unit root length [cm3/cm/s], potential water inflow based on potential transpiration and root length
         potMaxInflow[i] := Water_flow_func(self.Sink_arr[i].v * 10, rl[i],
           12, true);
+
+        // average half distance between roots [cm]  
         HalfDistance[i] := abstand_func(ExWld_arr[i].v);
+        
+        // soil water content at root surface based on potential water inflow and soil water diffusivity [cm3/cm3] with steady state flow assumption
         theta_root[i] := baf(theta_arr[i].v, potMaxInflow[i], Dw_arr[i] / 86400,
           HalfDistance[i], 0.02);
+        
+        // maximum soil water influx rate [cm3.cm-1.s-1] based on soil water content at root surface, minimum soil water content at root surface, soil water diffusivity and half distance between roots
         iw_max[i] := Iwmax(theta_arr[i].v, pwp_arr[i], Dw_arr[i] / 86400,
           HalfDistance[i], 0.02);
+        
+        // maximum water uptake per layer [cm/d] based on maximum soil water influx rate and root length in that layer
         Wupmax[i] := iw_max[i] * rl[i] * 1E-4 * 1E-3 * 1E-1;
-        // maximum water uptake per layer [cm/d]
+        
+        // soil water tension at root surface based on soil water content at root surface and soil water retention curve
         Psi_Root[i] := min(power(10, 4.2), WPar[i].psi_b_f(theta_root[i]));
+        
+        // calculation of a soil water content difference between the root surface and the bulk soil
         WcontDiff_arr[i].v := theta_arr[i].v - theta_root[i];
+        
+        // calculation of a soil water tension difference between the root surface and the bulk soil
         PsiRootDiff_arr[i].v := Psi_Root[i] - psi_arr[i].v;
+
+        // now using this soil water tension at the root surface for calculating the sink reduction factor 
         if (fPsi2Opt = fromPlantmodel) and IsPlantModelSet then
           Psi2.v := Plantmodel.Psi2 // Psi2 from plant model
         else
@@ -639,13 +657,17 @@ begin
         Sink_arr[i].v := 0.1 * PotTrans.v * Sqr_Wl_arr[i] / Sum_Sqr_wl
       else
         Sink_arr[i].v := 0.0;
+      
+      // sink term calculation with matrix flux potential based calculation of maximum root water uptake
       if OptSinkTermMethod = MFP then
       begin
         if ExWld_arr[i].v > 0 then
         begin
+          // calculation of matrix by numerically integration of the unsaturated hydraulic conductivity from PWP to the actual soil water potential
           MFP_ := MFP_arr[i].get_sumku(psi_arr[i].v);
-          rl[i] := ExWld_arr[i].v * Thick[i] * 1E8;
           // from RLD [cm.cm-3] to rl in cm.ha-1
+          
+          rl[i] := ExWld_arr[i].v * Thick[i] * 1E8;
           iw_max[i] := Iwmax(theta_arr[i].v, pwp_arr[i], Dw_arr[i] / 86400,
             abstand_func(ExWld_arr[i].v), 0.02);
           Wupmax[i] := iw_max[i] * rl[i] * 1E-4 * 1E-3 * 1E-1;

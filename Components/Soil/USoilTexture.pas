@@ -713,7 +713,6 @@ end;
 /// <param name="TC">Texture class</param>
 /// <param name="ALD">Bulk density class</param>
 /// <returns>Hydraulic conductivity in cm/d</returns>
-
 function KSFromTextureClass_RR(TC: TTextureClass; ALD: TLD): real;
 
 begin

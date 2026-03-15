@@ -1,4 +1,21 @@
 
+
+GetFirstDevNotes <- function(XMLFilename) {
+  # 2. Locate the TDevelopment class using XPath
+  doc <- xml2::read_xml(XMLFilename)
+
+  devnotes <- xml_find_first(doc, "devnotes")
+
+    if (length(devnotes) > 0) {
+      # 3. Convert content to Markdown and cat() it to the document
+      md_output <- xml_to_markdown(devnotes)
+      cat(trimws(md_output))
+    } else {
+      cat("No <devnotes> found")
+    }
+}
+
+
 GetClassDevNotes <- function(ClassName, XMLFilename) {
   # 2. Locate the TDevelopment class using XPath
   doc <- xml2::read_xml(XMLFilename)
