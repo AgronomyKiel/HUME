@@ -201,7 +201,7 @@ begin
   self.LabelIterInt.Caption := 'IterInt: ' + FloatToStrf(fSoilWaterModel.iter,
     ffgeneral, 5, 0);
   self.LabelIntBilFehler.Caption := 'Int. Bilanz [mm]: ' +
-    FloatToStrf(fSoilWaterModel.sum_Bilanz_f * 10, ffgeneral, 5, 2);
+    FloatToStrf(fSoilWaterModel.SumBalanceError * 10, ffgeneral, 5, 2);
   self.LabelGlobTime.Caption := 'Time: ' +
     FloatToStrf(fSoilWaterModel.SumOfInternalTimeSteps.v, ffgeneral, 12, 4);
 

@@ -1113,6 +1113,7 @@ begin
       sumQT_TactTpot.c := 0.0
     end;
 
+// see https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.13600
 
  if OptWithCO2.option = 'withco2effect' then begin
       CO2_ppm := CO2_ppm_f(GlobTime.v);

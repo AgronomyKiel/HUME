@@ -3,57 +3,137 @@
   <const name="D0NO3" type="Extended" file="URootUptakeFunctions.pas" line="9">
     <devnotes>
        <summary>
-        Diffusionskoeffizient von Nitrat in Wasser [cm2/d]
+       Diffusionskoeffizient von Nitrat in Wasser [cm2/d]
        </summary>
     </devnotes>
     <value>
       1.659
     </value>
   </const>
-  <function name="f_Tortuosity" visibility="public" file="URootUptakeFunctions.pas" line="26">
+  <type name="real" type="Double" file="System.pas" line="12" />
+  <function name="f_Tortuosity" visibility="public" file="URootUptakeFunctions.pas" line="98">
     <devnotes>
        <summary>
-        Tortuosity factor for solute diffusion in soil
+       Tortuosity factor for solute diffusion in soil
        empirical function of based on data of Barraclough (1993?)
        </summary>
     </devnotes>
     <parameters>
-      <parameter name="theta" type="Real" />
-      <retval type="Real" />
+      <parameter name="theta" type="Double" />
+      <retval type="Double" />
     </parameters>
   </function>
-  <function name="Imax" visibility="public" file="URootUptakeFunctions.pas" line="60">
+  <function name="Imax_f" visibility="public" file="URootUptakeFunctions.pas" line="131">
     <devnotes>
        <summary>
-        function for calculation of maximum nitrate uptake rates of roots
+       function for calculation of maximum nitrate uptake rates of roots
        </summary>
        parameters:
        <param name="Cl">Soil solution concentration [Kg N/cm3 H2O]</param>
        <param name="clmin">Minimum soil solution concentration [Kg N/cm3 H2O]</param>
        <param name="theta">Volumetric water content [cm3/cm3]</param>
        <param name="w_influx">Water influx [cm3/cm*d]</param>
-       <param name="wld">Mean root length density [cm/cm3]</param>
+       <param name=>Mean root length density [cm/cm3]</param>
        <param name="rad">Mean root radius [cm]</param>
        <returns>Maximum nitrate influx [Kg N/cm*d]</returns>
        <remarks>
        Nitrate Concentrations are in [Kg NO3-N/cm H2O]
        this unusual unit is the consequence of
        giving the amount of water in cm throughout the
-        classes of this class library
-        in order to convert to g N /l
-        multiply by 1000 -&gt; from kg to g
-        multiply by 10000 x 10 from cm to l
-        -&gt; multiply by 1e8
+       classes of this class library
+       in order to convert to g N /l
+       multiply by 1000 -&gt; from kg to g
+       multiply by 10000 x 10 from cm to l
+       -&gt; multiply by 1e8
        </remarks>
     </devnotes>
     <parameters>
-      <parameter name="Cl" type="Real" />
-      <parameter name="clmin" type="Real" />
-      <parameter name="theta" type="Real" />
-      <parameter name="w_influx" type="Real" />
-      <parameter name="wld" type="Real" />
-      <parameter name="rad" type="Real" />
-      <retval type="Real" />
+      <parameter name="Cl" type="Double" />
+      <parameter name="clmin" type="Double" />
+      <parameter name="theta" type="Double" />
+      <parameter name="w_influx" type="Double" />
+      <parameter name="rld" type="Double" />
+      <parameter name="rad" type="Double" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="MM_NInflux" visibility="public" file="URootUptakeFunctions.pas" line="306">
+    <devnotes>
+       <summary>
+       function for calculation of nitrate uptake rates of roots
+       using the Michaelis-Menten-cinetic as an inner boundary
+       </summary>
+       parameters:
+       <param name="Cl">Soil solution concentration [Kg N/cm3 H2O]</param>
+       <param name="clmin">Minimum soil solution concentration [Kg N/cm3 H2O]</param>
+       <param name="theta">Volumetric water content [cm3/cm3]</param>
+       <param name="w_influx">Water influx [cm3/cm*d]</param>
+       <param name="rld">Mean root length density [cm/cm3]</param>
+       <param name="rad">Mean root radius [cm]</param>
+       <returns>Maximum nitrate influx [Kg N/cm*d]</returns>
+       <remarks>
+       Nitrate Concentrations are in [Kg NO3-N/cm H2O]
+       this unusual unit is the consequence of
+       giving the amount of water in cm throughout the
+       classes of this class library
+       in order to convert to g N /l
+       multiply by 1000 -&gt; from kg to g
+       multiply by 10000 x 10 from cm to l
+       -&gt; multiply by 1e8
+       </remarks>
+    </devnotes>
+    <parameters>
+      <parameter name="Cl" type="Double" />
+      <parameter name="rld" type="Double" />
+      <parameter name="rad" type="Double" />
+      <parameter name="theta" type="Double" />
+      <parameter name="w_influx" type="Double" />
+      <parameter name="Imax" type="Double" />
+      <parameter name="Km" type="Double" />
+      <parameter name="clmin" type="Double" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="Iwmax" visibility="public" file="URootUptakeFunctions.pas" line="340">
+    <devnotes>
+       <summary>
+       calculates maximum water uptake rate of roots
+       according to the single root approach of Gardner (1960)
+       </summary>
+       <param name="b">average soil water content of the root cylinder [cm3/cm3]</param>
+       <param name="bmin">minimum soil water content at permanent wilting point [cm]</param>
+       <param name="Dw">diffusion coefficient of water [cm2/d]</param>
+       <param name="xl"> half distance between roots [cm]</param>
+       <param name="a"> root radius [cm]</param>
+    </devnotes>
+    <parameters>
+      <parameter name="b" type="Double" />
+      <parameter name="bmin" type="Double" />
+      <parameter name="Dw" type="Double" />
+      <parameter name="xl" type="Double" />
+      <parameter name="a" type="Double" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="baf" visibility="public" file="URootUptakeFunctions.pas" line="348">
+    <devnotes>
+       <summary>
+       calculates the soil water content at the root surface
+       according to the single root approach of Gardner (1960)
+       </summary>
+       <param name="b">average soil water content of the root cylinder [cm3/cm3]</param>
+       <param name="Iw">water influx [cm3/cm/d]</param>
+       <param name="Dw">diffusion coefficient of water [cm2/d]</param>
+       <param name="xl"> half distance between roots [cm]</param>
+       <param name="a"> root radius [cm]</param>
+    </devnotes>
+    <parameters>
+      <parameter name="b" type="Double" />
+      <parameter name="Iw" type="Double" />
+      <parameter name="Dw" type="Double" />
+      <parameter name="xl" type="Double" />
+      <parameter name="a" type="Double" />
+      <retval type="Double" />
     </parameters>
   </function>
 </namespace>

@@ -1,0 +1,1772 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="USoilWaterETMod" platform="Win32">
+  <const name="l_h_v_water" type="Extended" file="USoilWaterETMod.pas" line="10">
+    <value>
+      2.477e+06
+    </value>
+  </const>
+  <const name="Psycro" type="Extended" file="USoilWaterETMod.pas" line="12">
+    <value>
+      0.000662
+    </value>
+  </const>
+  <const name="FromPar" type="TVGParsFromTexture" file="USoilWaterETMod.pas" line="15">
+    <value>
+      FromPar
+    </value>
+  </const>
+  <const name="FromTexture" type="TVGParsFromTexture" file="USoilWaterETMod.pas" line="15">
+    <value>
+      FromTexture
+    </value>
+  </const>
+  <const name="Mualem" type="Tm_model" file="USoilWaterETMod.pas" line="17">
+    <value>
+      Mualem
+    </value>
+  </const>
+  <const name="Burdine" type="Tm_model" file="USoilWaterETMod.pas" line="17">
+    <value>
+      Burdine
+    </value>
+  </const>
+  <const name="Vereecken" type="Tm_model" file="USoilWaterETMod.pas" line="17">
+    <value>
+      Vereecken
+    </value>
+  </const>
+  <const name="Kochler" type="T_rc_Funct" file="USoilWaterETMod.pas" line="18">
+    <value>
+      Kochler
+    </value>
+  </const>
+  <const name="Campbell" type="T_rc_Funct" file="USoilWaterETMod.pas" line="18">
+    <value>
+      Campbell
+    </value>
+  </const>
+  <const name="Reid" type="T_rc_Funct" file="USoilWaterETMod.pas" line="18">
+    <value>
+      Reid
+    </value>
+  </const>
+  <const name="Gao" type="T_rc_Funct" file="USoilWaterETMod.pas" line="18">
+    <value>
+      Gao
+    </value>
+  </const>
+  <const name="Neukam" type="T_rc_Funct" file="USoilWaterETMod.pas" line="18">
+    <value>
+      Neukam
+    </value>
+  </const>
+  <const name="PenmanMonteith" type="T_ra_Funct" file="USoilWaterETMod.pas" line="19">
+    <value>
+      PenmanMonteith
+    </value>
+  </const>
+  <const name="ThomOliver" type="T_ra_Funct" file="USoilWaterETMod.pas" line="19">
+    <value>
+      ThomOliver
+    </value>
+  </const>
+  <const name="Stockle" type="T_rc_upscaling" file="USoilWaterETMod.pas" line="20">
+    <value>
+      Stockle
+    </value>
+  </const>
+  <const name="BenMehrez" type="T_rc_upscaling" file="USoilWaterETMod.pas" line="20">
+    <value>
+      BenMehrez
+    </value>
+  </const>
+  <enum name="TVGParsFromTexture" file="USoilWaterETMod.pas" line="15">
+    <element value="0" name="FromPar" file="USoilWaterETMod.pas" line="15" />
+    <element value="1" name="FromTexture" file="USoilWaterETMod.pas" line="15" />
+  </enum>
+  <enum name="TKsFromTexture" alias="USoilWaterETMod.TVGParsFromTexture" file="USoilWaterETMod.pas" line="16">
+    <element value="0" name="FromPar" file="USoilWaterETMod.pas" line="15" />
+    <element value="1" name="FromTexture" file="USoilWaterETMod.pas" line="15" />
+  </enum>
+  <enum name="Tm_model" file="USoilWaterETMod.pas" line="17">
+    <element value="0" name="Mualem" file="USoilWaterETMod.pas" line="17" />
+    <element value="1" name="Burdine" file="USoilWaterETMod.pas" line="17" />
+    <element value="2" name="Vereecken" file="USoilWaterETMod.pas" line="17" />
+  </enum>
+  <enum name="T_rc_Funct" file="USoilWaterETMod.pas" line="18">
+    <element value="0" name="Kochler" file="USoilWaterETMod.pas" line="18" />
+    <element value="1" name="Campbell" file="USoilWaterETMod.pas" line="18" />
+    <element value="2" name="Reid" file="USoilWaterETMod.pas" line="18" />
+    <element value="3" name="Gao" file="USoilWaterETMod.pas" line="18" />
+    <element value="4" name="Neukam" file="USoilWaterETMod.pas" line="18" />
+  </enum>
+  <enum name="T_ra_Funct" file="USoilWaterETMod.pas" line="19">
+    <element value="0" name="PenmanMonteith" file="USoilWaterETMod.pas" line="19" />
+    <element value="1" name="ThomOliver" file="USoilWaterETMod.pas" line="19" />
+  </enum>
+  <enum name="T_rc_upscaling" file="USoilWaterETMod.pas" line="20">
+    <element value="0" name="Stockle" file="USoilWaterETMod.pas" line="20" />
+    <element value="1" name="BenMehrez" file="USoilWaterETMod.pas" line="20" />
+  </enum>
+  <class name="TSoilWaterET" file="USoilWaterETMod.pas" line="23">
+    <ancestor name="TLayeredSoil" namespace="UlayeredSoil">
+      <methodref name="LayerInit" visibility="protected" procflags="virtual" />
+      <methodref name="CreateAll" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="Init" visibility="public" procflags="override" />
+      <methodref name="CalcRates" visibility="public" procflags="override" />
+      <propertyref name="parMaxTiefe" visibility="published" />
+      <propertyref name="p_NComp" visibility="published" />
+      <ancestor name="TPlantRelatedSubMod" namespace="UAbstractPlant">
+        <methodref name="GetIsPlantModelset" visibility="protected">
+        </methodref>
+        <methodref name="SetPlantModel" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="Init" visibility="public" procflags="override">
+        </methodref>
+        <propertyref name="IsPlantModelSet" visibility="public" />
+        <propertyref name="PlantModel" visibility="published">
+        </propertyref>
+        <ancestor name="TSubmodel" namespace="UMod">
+          <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="RegistrateOption" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="RegistrateVariable" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="RegistrateStateVar" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="RegistrateConstant" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="RegistrateSubMod" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="set_State" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="get_State" visibility="private">
+          </methodref>
+          <methodref name="set_Par" visibility="private">
+          </methodref>
+          <methodref name="Get_Par" visibility="private">
+          </methodref>
+          <methodref name="set_Var" visibility="private">
+          </methodref>
+          <methodref name="Get_Var" visibility="private">
+          </methodref>
+          <methodref name="set_Const" visibility="private">
+          </methodref>
+          <methodref name="get_Const" visibility="private">
+          </methodref>
+          <methodref name="set_Option" visibility="private">
+          </methodref>
+          <methodref name="get_Option" visibility="private">
+          </methodref>
+          <methodref name="set_ExternVar" visibility="private">
+          </methodref>
+          <methodref name="get_ExternVar" visibility="private">
+          </methodref>
+          <methodref name="InitStates" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="InitParms" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="InitVars" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="InitOptions" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="InitOutputFileNames" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="InitUpdateFile" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="IsOutput" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="Get_GlobMod" visibility="protected">
+          </methodref>
+          <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="UpdateValue" visibility="protected">
+          </methodref>
+          <methodref name="Paint" visibility="protected" procflags="override">
+          </methodref>
+          <methodref name="Notification" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Create" visibility="public" procflags="constructor override">
+          </methodref>
+          <methodref name="free" visibility="public">
+          </methodref>
+          <methodref name="BeforeDestruction" visibility="public" procflags="override">
+          </methodref>
+          <methodref name="ParCreate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="OptCreate" visibility="public">
+          </methodref>
+          <methodref name="VarCreate" visibility="public">
+          </methodref>
+          <methodref name="ConstCreate" visibility="public">
+          </methodref>
+          <methodref name="StateCreate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ExternVcreate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ExternVinit" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CreateAll" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Init" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CalcRates" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Integrate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CalcVars" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="UpdateValues" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="WriteStateName" visibility="public">
+          </methodref>
+          <methodref name="WriteFinalStateName" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="WriteRateName" visibility="public">
+          </methodref>
+          <methodref name="SaveState" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="SaveRate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="SaveFinalState" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="closeOutputfiles" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="activate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="deactivate" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="AddDataValueToDataSeries" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="AddSimValueToDataSeries" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="write_1_1_files" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CalcLinearRegressions" visibility="public">
+          </methodref>
+          <propertyref name="StateVar" visibility="public">
+          </propertyref>
+          <propertyref name="ParamVar" visibility="public">
+          </propertyref>
+          <propertyref name="VarVar" visibility="public">
+          </propertyref>
+          <propertyref name="ConstVar" visibility="public">
+          </propertyref>
+          <propertyref name="Option" visibility="public">
+          </propertyref>
+          <propertyref name="ExternVar" visibility="public">
+          </propertyref>
+          <methodref name="DblClick" visibility="public" procflags="override">
+          </methodref>
+          <propertyref name="SM_GlobMod" visibility="published">
+          </propertyref>
+          <propertyref name="SM_ExternVStrList" visibility="published">
+          </propertyref>
+          <propertyref name="SM_VarStrList" visibility="published">
+          </propertyref>
+          <propertyref name="SM_ConstStrList" visibility="published">
+          </propertyref>
+          <propertyref name="SM_ParStrList" visibility="published">
+          </propertyref>
+          <propertyref name="SM_StateStrList" visibility="published">
+          </propertyref>
+          <propertyref name="CompIndex" visibility="published">
+          </propertyref>
+          <propertyref name="FN_ratefn" visibility="published">
+          </propertyref>
+          <propertyref name="FN_Statefn" visibility="published">
+          </propertyref>
+          <propertyref name="MeasFile" visibility="published">
+          </propertyref>
+          <propertyref name="AssimilatedSubmodList" visibility="published">
+          </propertyref>
+          <propertyref name="DebugModus" visibility="published">
+          </propertyref>
+          <propertyref name="OptContOutput" visibility="published">
+          </propertyref>
+          <propertyref name="Parent" visibility="published">
+          </propertyref>
+          <propertyref name="Canvas" visibility="published">
+          </propertyref>
+          <propertyref name="Visible" visibility="published">
+          </propertyref>
+          <propertyref name="color" visibility="published">
+          </propertyref>
+          <propertyref name="DebugForm" visibility="published">
+          </propertyref>
+          <propertyref name="OnDblclick" visibility="published">
+          </propertyref>
+          <ancestor name="TGraphicControl" namespace="Vcl.Controls">
+            <methodref name="WMPaint" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="Paint" visibility="protected" procflags="virtual">
+            </methodref>
+            <propertyref name="Canvas" visibility="protected">
+            </propertyref>
+            <methodref name="Create" visibility="public" procflags="constructor override">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor override">
+            </methodref>
+            <ancestor name="TControl" namespace="Vcl.Controls">
+              <methodref name="GetCustomHint" visibility="private">
+              </methodref>
+              <methodref name="CalcDockSizes" visibility="private">
+              </methodref>
+              <methodref name="UpdateRootControl" visibility="private">
+              </methodref>
+              <methodref name="CheckNewSize" visibility="private">
+              </methodref>
+              <methodref name="CreateFloatingDockSite" visibility="private">
+              </methodref>
+              <methodref name="DoActionChange" visibility="private">
+              </methodref>
+              <methodref name="DoCanAutoSize" visibility="private">
+              </methodref>
+              <methodref name="DoCanResize" visibility="private">
+              </methodref>
+              <methodref name="DoConstraintsChange" visibility="private">
+              </methodref>
+              <methodref name="DoConstrainedResize" visibility="private">
+              </methodref>
+              <methodref name="DoDragMsg" visibility="private">
+              </methodref>
+              <methodref name="DoMouseActivate" visibility="private">
+              </methodref>
+              <methodref name="DoMouseDown" visibility="private">
+              </methodref>
+              <methodref name="DoMouseUp" visibility="private">
+              </methodref>
+              <methodref name="DoMarginChange" visibility="private">
+              </methodref>
+              <methodref name="FontChanged" visibility="private">
+              </methodref>
+              <methodref name="GetAlignWithMargins" visibility="private" procflags="inline">
+              </methodref>
+              <methodref name="GetBoundsRect" visibility="private">
+              </methodref>
+              <methodref name="GetClientHeight" visibility="private">
+              </methodref>
+              <methodref name="GetClientWidth" visibility="private">
+              </methodref>
+              <methodref name="GetLRDockWidth" visibility="private">
+              </methodref>
+              <methodref name="GetMouseCapture" visibility="private">
+              </methodref>
+              <methodref name="GetTBDockHeight" visibility="private">
+              </methodref>
+              <methodref name="GetUndockWidth" visibility="private">
+              </methodref>
+              <methodref name="GetUndockHeight" visibility="private">
+              </methodref>
+              <methodref name="InvalidateControl" visibility="private">
+              </methodref>
+              <methodref name="IsAnchorsStored" visibility="private">
+              </methodref>
+              <methodref name="IsBiDiModeStored" visibility="private">
+              </methodref>
+              <methodref name="IsCaptionStored" visibility="private">
+              </methodref>
+              <methodref name="IsColorStored" visibility="private">
+              </methodref>
+              <methodref name="IsEnabledStored" visibility="private">
+              </methodref>
+              <methodref name="IsFontStored" visibility="private">
+              </methodref>
+              <methodref name="IsHintStored" visibility="private">
+              </methodref>
+              <methodref name="IsHelpContextStored" visibility="private">
+              </methodref>
+              <methodref name="IsOnClickStored" visibility="private">
+              </methodref>
+              <methodref name="IsShowHintStored" visibility="private">
+              </methodref>
+              <methodref name="IsVisibleStored" visibility="private">
+              </methodref>
+              <methodref name="ReadIsControl" visibility="private">
+              </methodref>
+              <methodref name="ReadExplicitLeft" visibility="private">
+              </methodref>
+              <methodref name="ReadExplicitTop" visibility="private">
+              </methodref>
+              <methodref name="ReadExplicitWidth" visibility="private">
+              </methodref>
+              <methodref name="ReadExplicitHeight" visibility="private">
+              </methodref>
+              <methodref name="SetAlignWithMargins" visibility="private">
+              </methodref>
+              <methodref name="SetAnchors" visibility="private">
+              </methodref>
+              <methodref name="SetAction" visibility="private">
+              </methodref>
+              <methodref name="SetAlign" visibility="private">
+              </methodref>
+              <methodref name="SetBoundsRect" visibility="private">
+              </methodref>
+              <methodref name="SetClientHeight" visibility="private">
+              </methodref>
+              <methodref name="SetClientSize" visibility="private">
+              </methodref>
+              <methodref name="SetClientWidth" visibility="private">
+              </methodref>
+              <methodref name="SetColor" visibility="private">
+              </methodref>
+              <methodref name="SetCursor" visibility="private">
+              </methodref>
+              <methodref name="SetDesktopFont" visibility="private">
+              </methodref>
+              <methodref name="SetFont" visibility="private">
+              </methodref>
+              <methodref name="SetHeight" visibility="private">
+              </methodref>
+              <methodref name="SetHelpContext" visibility="private">
+              </methodref>
+              <methodref name="SetHelpKeyword" visibility="private">
+              </methodref>
+              <methodref name="SetHostDockSite" visibility="private">
+              </methodref>
+              <methodref name="SetLeft" visibility="private">
+              </methodref>
+              <methodref name="SetMouseCapture" visibility="private">
+              </methodref>
+              <methodref name="SetParentColor" visibility="private">
+              </methodref>
+              <methodref name="SetParentFont" visibility="private">
+              </methodref>
+              <methodref name="SetShowHint" visibility="private">
+              </methodref>
+              <methodref name="SetParentShowHint" visibility="private">
+              </methodref>
+              <methodref name="SetParentCustomHint" visibility="private">
+              </methodref>
+              <methodref name="SetPopupMenu" visibility="private">
+              </methodref>
+              <methodref name="SetTop" visibility="private">
+              </methodref>
+              <methodref name="SetVisible" visibility="private">
+              </methodref>
+              <methodref name="SetWidth" visibility="private">
+              </methodref>
+              <methodref name="SetZOrderPosition" visibility="private">
+              </methodref>
+              <methodref name="UpdateAnchorRules" visibility="private">
+              </methodref>
+              <methodref name="WriteIsControl" visibility="private">
+              </methodref>
+              <methodref name="WriteExplicitLeft" visibility="private">
+              </methodref>
+              <methodref name="WriteExplicitTop" visibility="private">
+              </methodref>
+              <methodref name="WriteExplicitWidth" visibility="private">
+              </methodref>
+              <methodref name="WriteExplicitHeight" visibility="private">
+              </methodref>
+              <methodref name="WMLButtonDown" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMNCLButtonDown" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMRButtonDown" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMMButtonDown" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMLButtonDblClk" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMRButtonDblClk" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMMButtonDblClk" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMMouseMove" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMLButtonUp" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMRButtonUp" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMMButtonUp" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMMouseWheel" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMCancelMode" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMWindowPosChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMVisibleChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMEnabledChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMFontChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMColorChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMMouseActivate" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMParentFontChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMSysFontChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMParentColorChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMParentShowHintChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMHintShow" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMHitTest" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMMouseEnter" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMMouseLeave" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMDesignHitTest" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMBiDiModeChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMParentBiDiModeChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMMouseWheel" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMGesture" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="WMContextMenu" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMParentTabletOptionsChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="CMStyleElementsChanged" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="SetConstraints" visibility="private">
+              </methodref>
+              <methodref name="SetMargins" visibility="private">
+              </methodref>
+              <methodref name="SetTouchManager" visibility="private">
+              </methodref>
+              <methodref name="GetText" visibility="private">
+              </methodref>
+              <methodref name="SetText" visibility="private">
+              </methodref>
+              <methodref name="CMFloat" visibility="private" procflags="message">
+              </methodref>
+              <methodref name="GetDesignDpi" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetParentCurrentDpi" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetCurrentPPI" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetDPIForDesigner" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="AsyncSchedule" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="ActionChange" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="AdjustSize" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="AssignTo" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="BeginAutoDrag" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="CanResize" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="Changed" visibility="protected">
+              </methodref>
+              <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
+              </methodref>
+              <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
+              </methodref>
+              <methodref name="Click" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="ConstrainedResize" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="CalcCursorPos" visibility="protected">
+              </methodref>
+              <methodref name="CreateTouchManager" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="DblClick" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DefaultDockImage" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DefineProperties" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="DockTrackNoTarget" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoContextPopup" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoEndDock" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoDock" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoStartDock" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoMouseWheel" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoMouseWheelDown" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoMouseWheelUp" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DragCanceled" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DragOver" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoEndDrag" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoStartDrag" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="DoGesture" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="DoGetGestureOptions" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="DoStyleElementsChanged" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="DrawDragDockImage" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="EraseDragDockImage" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetAction" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetActionLinkClass" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetClientOrigin" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetClientRect" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetDeviceContext" visibility="protected" procflags="overload virtual">
+              </methodref>
+              <methodref name="GetDockEdge" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetEnabled" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetFloating" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetFloatingDockSiteClass" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetPalette" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetPopupMenu" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetDragMode" visibility="protected">
+              </methodref>
+              <methodref name="IsTouchPropertyStored" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="Loaded" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="MouseActivate" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="MouseDown" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="MouseMove" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="MouseUp" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="Notification" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="PositionDockRect" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="PaletteChanged" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="ReadState" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="RequestAlign" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="Resize" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="ScaleConstraints" visibility="protected">
+              </methodref>
+              <methodref name="ScaleMargins" visibility="protected">
+              </methodref>
+              <methodref name="DefaultScalingFlags" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SendCancelMode" visibility="protected">
+              </methodref>
+              <methodref name="SendDockNotification" visibility="protected">
+              </methodref>
+              <methodref name="SetAutoSize" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetDragMode" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetEnabled" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetName" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="SetParent" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetParentBiDiMode" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetBiDiMode" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetStyleElements" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetStyleElements" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetStyleName" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetZOrder" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="SetCustomHint" visibility="protected">
+              </methodref>
+              <methodref name="UpdateExplicitBounds" visibility="protected">
+              </methodref>
+              <methodref name="UpdateBoundsRect" visibility="protected">
+              </methodref>
+              <methodref name="VisibleChanging" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="WndProc" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="UpdateStyleElements" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="DesignWndProc" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetDragImages" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetAllocatedWindowHandle" visibility="protected" procflags="virtual">
+              </methodref>
+              <propertyref name="ActionLink" visibility="protected">
+              </propertyref>
+              <propertyref name="AutoSize" visibility="protected">
+              </propertyref>
+              <propertyref name="Caption" visibility="protected">
+              </propertyref>
+              <propertyref name="DesktopFont" visibility="protected">
+              </propertyref>
+              <propertyref name="DragKind" visibility="protected">
+              </propertyref>
+              <propertyref name="DragCursor" visibility="protected">
+              </propertyref>
+              <propertyref name="DragMode" visibility="protected">
+              </propertyref>
+              <propertyref name="IsControl" visibility="protected">
+              </propertyref>
+              <propertyref name="MouseCapture" visibility="protected">
+              </propertyref>
+              <propertyref name="ParentBiDiMode" visibility="protected">
+              </propertyref>
+              <propertyref name="ParentColor" visibility="protected">
+              </propertyref>
+              <propertyref name="ParentFont" visibility="protected">
+              </propertyref>
+              <propertyref name="ParentShowHint" visibility="protected">
+              </propertyref>
+              <propertyref name="PopupMenu" visibility="protected">
+              </propertyref>
+              <propertyref name="ScalingFlags" visibility="protected">
+              </propertyref>
+              <propertyref name="Text" visibility="protected">
+              </propertyref>
+              <propertyref name="WheelAccumulator" visibility="protected">
+              </propertyref>
+              <propertyref name="Color" visibility="protected">
+              </propertyref>
+              <propertyref name="Font" visibility="protected">
+              </propertyref>
+              <propertyref name="IScaling" visibility="protected">
+              </propertyref>
+              <propertyref name="WindowText" visibility="protected">
+              </propertyref>
+              <eventref name="OnCanResize" visibility="protected">
+              </eventref>
+              <eventref name="OnClick" visibility="protected">
+              </eventref>
+              <eventref name="OnConstrainedResize" visibility="protected">
+              </eventref>
+              <eventref name="OnContextPopup" visibility="protected">
+              </eventref>
+              <eventref name="OnDblClick" visibility="protected">
+              </eventref>
+              <eventref name="OnDragDrop" visibility="protected">
+              </eventref>
+              <eventref name="OnDragOver" visibility="protected">
+              </eventref>
+              <eventref name="OnEndDock" visibility="protected">
+              </eventref>
+              <eventref name="OnEndDrag" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseActivate" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseDown" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseEnter" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseLeave" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseMove" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseUp" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseWheel" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseWheelDown" visibility="protected">
+              </eventref>
+              <eventref name="OnMouseWheelUp" visibility="protected">
+              </eventref>
+              <eventref name="OnResize" visibility="protected">
+              </eventref>
+              <eventref name="OnStartDock" visibility="protected">
+              </eventref>
+              <eventref name="OnStartDrag" visibility="protected">
+              </eventref>
+              <methodref name="Create" visibility="public" procflags="constructor override">
+              </methodref>
+              <methodref name="Destroy" visibility="public" procflags="destructor override">
+              </methodref>
+              <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="IsLightStyleColor" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="ScaleForPPI" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="BeginDrag" visibility="public">
+              </methodref>
+              <methodref name="BringToFront" visibility="public">
+              </methodref>
+              <methodref name="ClientToScreen" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ClientToScreen" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ClientToParent" visibility="public">
+              </methodref>
+              <methodref name="Dock" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="Dragging" visibility="public">
+              </methodref>
+              <methodref name="DragDrop" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="DrawTextBiDiModeFlags" visibility="public">
+              </methodref>
+              <methodref name="DrawTextBiDiModeFlagsReadingOnly" visibility="public">
+              </methodref>
+              <propertyref name="Enabled" visibility="public">
+              </propertyref>
+              <methodref name="EndDrag" visibility="public">
+              </methodref>
+              <methodref name="GetControlsAlignment" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="GetParentComponent" visibility="public" procflags="override">
+              </methodref>
+              <methodref name="HasParent" visibility="public" procflags="override">
+              </methodref>
+              <methodref name="Hide" visibility="public">
+              </methodref>
+              <methodref name="InitiateAction" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="Invalidate" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="MouseWheelHandler" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="IsRightToLeft" visibility="public">
+              </methodref>
+              <methodref name="ManualDock" visibility="public">
+              </methodref>
+              <methodref name="ManualFloat" visibility="public">
+              </methodref>
+              <methodref name="Perform" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="Refresh" visibility="public">
+              </methodref>
+              <methodref name="Repaint" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="ReplaceDockedControl" visibility="public">
+              </methodref>
+              <methodref name="ScreenToClient" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ScreenToClient" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ParentToClient" visibility="public">
+              </methodref>
+              <methodref name="SendToBack" visibility="public">
+              </methodref>
+              <methodref name="SetBounds" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="SetDesignVisible" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="SetParentComponent" visibility="public" procflags="override">
+              </methodref>
+              <methodref name="Show" visibility="public">
+              </methodref>
+              <methodref name="Update" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="UseRightToLeftAlignment" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="UseRightToLeftReading" visibility="public">
+              </methodref>
+              <methodref name="UseRightToLeftScrollBar" visibility="public">
+              </methodref>
+              <methodref name="DefaultHandler" visibility="public" procflags="override">
+              </methodref>
+              <methodref name="GetTextBuf" visibility="public">
+              </methodref>
+              <methodref name="GetTextLen" visibility="public">
+              </methodref>
+              <methodref name="Perform" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="Perform" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="SetTextBuf" visibility="public">
+              </methodref>
+              <methodref name="GetSystemMetrics" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="GetStyleName" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="GetInternalStyleElements" visibility="public">
+              </methodref>
+              <methodref name="ScaleValue" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ScaleValue" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ScaleValue" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ScaleValue" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ScaleValue" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="ScaleRectSize" visibility="public">
+              </methodref>
+              <propertyref name="Action" visibility="public">
+              </propertyref>
+              <propertyref name="Align" visibility="public">
+              </propertyref>
+              <propertyref name="Anchors" visibility="public">
+              </propertyref>
+              <propertyref name="BiDiMode" visibility="public">
+              </propertyref>
+              <propertyref name="BoundsRect" visibility="public">
+              </propertyref>
+              <propertyref name="ClientHeight" visibility="public">
+              </propertyref>
+              <propertyref name="ClientOrigin" visibility="public">
+              </propertyref>
+              <propertyref name="ClientRect" visibility="public">
+              </propertyref>
+              <propertyref name="ClientWidth" visibility="public">
+              </propertyref>
+              <propertyref name="Constraints" visibility="public">
+              </propertyref>
+              <propertyref name="ControlState" visibility="public">
+              </propertyref>
+              <propertyref name="ControlStyle" visibility="public">
+              </propertyref>
+              <propertyref name="CurrentPPI" visibility="public">
+              </propertyref>
+              <propertyref name="DockOrientation" visibility="public">
+              </propertyref>
+              <propertyref name="ExplicitLeft" visibility="public">
+              </propertyref>
+              <propertyref name="ExplicitTop" visibility="public">
+              </propertyref>
+              <propertyref name="ExplicitWidth" visibility="public">
+              </propertyref>
+              <propertyref name="ExplicitHeight" visibility="public">
+              </propertyref>
+              <propertyref name="Floating" visibility="public">
+              </propertyref>
+              <propertyref name="FloatingDockSiteClass" visibility="public">
+              </propertyref>
+              <propertyref name="HostDockSite" visibility="public">
+              </propertyref>
+              <propertyref name="LRDockWidth" visibility="public">
+              </propertyref>
+              <propertyref name="ScaleFactor" visibility="public">
+              </propertyref>
+              <propertyref name="ShowHint" visibility="public">
+              </propertyref>
+              <propertyref name="TBDockHeight" visibility="public">
+              </propertyref>
+              <propertyref name="Touch" visibility="public">
+              </propertyref>
+              <propertyref name="UndockHeight" visibility="public">
+              </propertyref>
+              <propertyref name="UndockWidth" visibility="public">
+              </propertyref>
+              <propertyref name="Visible" visibility="public">
+              </propertyref>
+              <eventref name="WindowProc" visibility="public">
+              </eventref>
+              <propertyref name="Parent" visibility="public">
+              </propertyref>
+              <propertyref name="StyleElements" visibility="public">
+              </propertyref>
+              <propertyref name="StyleName" visibility="public">
+              </propertyref>
+              <eventref name="OnGesture" visibility="public">
+              </eventref>
+              <propertyref name="RaiseOnNonMainThreadUsage" visibility="public">
+              </propertyref>
+              <propertyref name="AlignWithMargins" visibility="published">
+              </propertyref>
+              <propertyref name="Left" visibility="published">
+              </propertyref>
+              <propertyref name="Top" visibility="published">
+              </propertyref>
+              <propertyref name="Width" visibility="published">
+              </propertyref>
+              <propertyref name="Height" visibility="published">
+              </propertyref>
+              <propertyref name="Cursor" visibility="published">
+              </propertyref>
+              <propertyref name="Hint" visibility="published">
+              </propertyref>
+              <propertyref name="HelpType" visibility="published">
+              </propertyref>
+              <propertyref name="HelpKeyword" visibility="published">
+              </propertyref>
+              <propertyref name="HelpContext" visibility="published">
+              </propertyref>
+              <propertyref name="Margins" visibility="published">
+              </propertyref>
+              <propertyref name="CustomHint" visibility="published">
+              </propertyref>
+              <propertyref name="ParentCustomHint" visibility="published">
+              </propertyref>
+              <ancestor name="TComponent" namespace="System.Classes">
+                <interfaces>
+                  <implements name="IInterfaceComponentReference" />
+                  <implements name="IInterface" />
+                </interfaces>
+                <methodref name="GetComObject" visibility="private">
+                </methodref>
+                <methodref name="GetComponent" visibility="private">
+                </methodref>
+                <methodref name="GetComponentCount" visibility="private">
+                </methodref>
+                <methodref name="GetComponentIndex" visibility="private">
+                </methodref>
+                <methodref name="Insert" visibility="private">
+                </methodref>
+                <methodref name="ReadLeft" visibility="private">
+                </methodref>
+                <methodref name="ReadTop" visibility="private">
+                </methodref>
+                <methodref name="Remove" visibility="private">
+                </methodref>
+                <methodref name="RemoveNotification" visibility="private">
+                </methodref>
+                <methodref name="SetComponentIndex" visibility="private">
+                </methodref>
+                <methodref name="SetReference" visibility="private">
+                </methodref>
+                <methodref name="WriteLeft" visibility="private">
+                </methodref>
+                <methodref name="WriteTop" visibility="private">
+                </methodref>
+                <methodref name="IntfGetComponent" visibility="private">
+                </methodref>
+                <methodref name="DoGetDeltaStreams" visibility="private">
+                </methodref>
+                <methodref name="ReadDeltaStream" visibility="private">
+                </methodref>
+                <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="FindSortedComponent" visibility="private">
+                </methodref>
+                <methodref name="AddSortedComponent" visibility="private">
+                </methodref>
+                <methodref name="RemoveSortedComponent" visibility="private" procflags="inline">
+                </methodref>
+                <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+                </methodref>
+                <methodref name="AsyncSchedule" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="ChangeName" visibility="protected">
+                </methodref>
+                <methodref name="DefineProperties" visibility="protected" procflags="override">
+                </methodref>
+                <methodref name="GetChildren" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="GetChildOwner" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="GetChildParent" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="GetOwner" visibility="protected" procflags="override">
+                </methodref>
+                <methodref name="Loaded" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="Notification" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="GetDeltaStreams" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="ReadState" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="CanObserve" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="ObserverAdded" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="GetObservers" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="SetAncestor" visibility="protected">
+                </methodref>
+                <methodref name="SetDesigning" visibility="protected">
+                </methodref>
+                <methodref name="SetInline" visibility="protected">
+                </methodref>
+                <methodref name="SetDesignInstance" visibility="protected">
+                </methodref>
+                <methodref name="SetName" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="SetChildOrder" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="SetParentComponent" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="Updating" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="Updated" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="UpdateRegistry" visibility="protected" procflags="class virtual">
+                </methodref>
+                <methodref name="ValidateRename" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="ValidateContainer" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="ValidateInsert" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="WriteState" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="RemoveFreeNotifications" visibility="protected">
+                </methodref>
+                <methodref name="QueryInterface" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="_AddRef" visibility="protected">
+                </methodref>
+                <methodref name="_Release" visibility="protected">
+                </methodref>
+                <methodref name="GetTypeInfoCount" visibility="protected">
+                </methodref>
+                <methodref name="GetTypeInfo" visibility="protected">
+                </methodref>
+                <methodref name="GetIDsOfNames" visibility="protected">
+                </methodref>
+                <methodref name="Invoke" visibility="protected">
+                </methodref>
+                <eventref name="OnGetDeltaStreams" visibility="protected">
+                </eventref>
+                <methodref name="Create" visibility="public" procflags="constructor virtual">
+                </methodref>
+                <methodref name="Destroy" visibility="public" procflags="destructor override">
+                </methodref>
+                <methodref name="BeforeDestruction" visibility="public" procflags="override">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="BeginInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="EndInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="EndInvoke" visibility="public" procflags="overload">
+                </methodref>
+                <methodref name="EndFunctionInvoke" visibility="public">
+                </methodref>
+                <methodref name="DestroyComponents" visibility="public">
+                </methodref>
+                <methodref name="Destroying" visibility="public">
+                </methodref>
+                <methodref name="ExecuteAction" visibility="public" procflags="dynamic">
+                </methodref>
+                <methodref name="FindComponent" visibility="public">
+                </methodref>
+                <methodref name="FreeNotification" visibility="public">
+                </methodref>
+                <methodref name="RemoveFreeNotification" visibility="public">
+                </methodref>
+                <methodref name="FreeOnRelease" visibility="public">
+                </methodref>
+                <methodref name="GetEnumerator" visibility="public" procflags="inline">
+                </methodref>
+                <methodref name="GetParentComponent" visibility="public" procflags="dynamic">
+                </methodref>
+                <methodref name="GetNamePath" visibility="public" procflags="override">
+                </methodref>
+                <methodref name="HasParent" visibility="public" procflags="dynamic">
+                </methodref>
+                <methodref name="InsertComponent" visibility="public">
+                </methodref>
+                <methodref name="RemoveComponent" visibility="public">
+                </methodref>
+                <methodref name="SetSubComponent" visibility="public">
+                </methodref>
+                <methodref name="SafeCallException" visibility="public" procflags="override">
+                </methodref>
+                <methodref name="UpdateAction" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="IsImplementorOf" visibility="public">
+                </methodref>
+                <methodref name="ReferenceInterface" visibility="public">
+                </methodref>
+                <propertyref name="ComObject" visibility="public">
+                </propertyref>
+                <propertyref name="Components" visibility="public">
+                </propertyref>
+                <propertyref name="ComponentCount" visibility="public">
+                </propertyref>
+                <propertyref name="ComponentIndex" visibility="public">
+                </propertyref>
+                <propertyref name="ComponentState" visibility="public">
+                </propertyref>
+                <propertyref name="ComponentStyle" visibility="public">
+                </propertyref>
+                <propertyref name="DesignInfo" visibility="public">
+                </propertyref>
+                <propertyref name="Owner" visibility="public">
+                </propertyref>
+                <propertyref name="VCLComObject" visibility="public">
+                </propertyref>
+                <propertyref name="Observers" visibility="public">
+                </propertyref>
+                <propertyref name="Name" visibility="published">
+                </propertyref>
+                <propertyref name="Tag" visibility="published">
+                </propertyref>
+                <ancestor name="TPersistent" namespace="System.Classes">
+                  <methodref name="AssignError" visibility="private">
+                  </methodref>
+                  <methodref name="AssignTo" visibility="protected" procflags="virtual">
+                  </methodref>
+                  <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+                  </methodref>
+                  <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+                  </methodref>
+                  <methodref name="Destroy" visibility="public" procflags="destructor override">
+                  </methodref>
+                  <methodref name="Assign" visibility="public" procflags="virtual">
+                  </methodref>
+                  <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+                  </methodref>
+                  <ancestor name="TObject" namespace="System">
+                    <methodref name="Create" visibility="public" procflags="constructor">
+                    </methodref>
+                    <methodref name="Free" visibility="public">
+                    </methodref>
+                    <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+                    </methodref>
+                    <methodref name="InitInstance" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="CleanupInstance" visibility="public">
+                    </methodref>
+                    <methodref name="ClassType" visibility="public" procflags="inline">
+                    </methodref>
+                    <methodref name="ClassName" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="ClassNameIs" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="ClassParent" visibility="public" procflags="class inline">
+                    </methodref>
+                    <methodref name="ClassInfo" visibility="public" procflags="class inline">
+                    </methodref>
+                    <methodref name="InstanceSize" visibility="public" procflags="class inline">
+                    </methodref>
+                    <methodref name="InheritsFrom" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="MethodAddress" visibility="public" procflags="class overload">
+                    </methodref>
+                    <methodref name="MethodAddress" visibility="public" procflags="class overload">
+                    </methodref>
+                    <methodref name="MethodName" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="QualifiedClassName" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="FieldAddress" visibility="public" procflags="overload">
+                    </methodref>
+                    <methodref name="FieldAddress" visibility="public" procflags="overload">
+                    </methodref>
+                    <methodref name="GetInterface" visibility="public">
+                    </methodref>
+                    <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+                    </methodref>
+                    <methodref name="UnitName" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="UnitScope" visibility="public" procflags="class">
+                    </methodref>
+                    <methodref name="Equals" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="GetHashCode" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="ToString" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="SafeCallException" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="Dispatch" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="NewInstance" visibility="public" procflags="class virtual">
+                    </methodref>
+                    <methodref name="FreeInstance" visibility="public" procflags="virtual">
+                    </methodref>
+                    <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+                    </methodref>
+                    <methodref name="GetDisposed" visibility="protected" procflags="inline">
+                    </methodref>
+                    <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+                    </methodref>
+                    <propertyref name="Disposed" visibility="protected">
+                    </propertyref>
+                  </ancestor>
+                </ancestor>
+              </ancestor>
+            </ancestor>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="FVGParsFromTexture" type="TVGParsFromTexture" visibility="private" size="1" offset="2568" file="USoilWaterETMod.pas" line="25" />
+      <field name="FKsFromTexture" type="TVGParsFromTexture" visibility="private" size="1" offset="2569" file="USoilWaterETMod.pas" line="26" />
+      <field name="FTextureClass1" type="TTextureClass" visibility="private" size="1" offset="2570" file="USoilWaterETMod.pas" line="27" />
+      <field name="FTextureClass2" type="TTextureClass" visibility="private" size="1" offset="2571" file="USoilWaterETMod.pas" line="28" />
+      <field name="FTextureClass3" type="TTextureClass" visibility="private" size="1" offset="2572" file="USoilWaterETMod.pas" line="29" />
+      <field name="FTextureClass4" type="TTextureClass" visibility="private" size="1" offset="2573" file="USoilWaterETMod.pas" line="30" />
+      <field name="FTextureClass5" type="TTextureClass" visibility="private" size="1" offset="2574" file="USoilWaterETMod.pas" line="31" />
+      <field name="FTextureClass6" type="TTextureClass" visibility="private" size="1" offset="2575" file="USoilWaterETMod.pas" line="31" />
+      <field name="theta_neu" type="TSoilArray" visibility="private" size="416" offset="2576" file="USoilWaterETMod.pas" line="32" />
+      <field name="MaxAktAenderWaGe" type="Double" visibility="private" size="8" offset="2992" file="USoilWaterETMod.pas" line="33" />
+      <field name="akt_bilanz_f" type="Double" visibility="private" size="8" offset="3000" file="USoilWaterETMod.pas" line="34" />
+      <field name="sum_Bilanz_f" type="Double" visibility="private" size="8" offset="3008" file="USoilWaterETMod.pas" line="35" />
+      <field name="Dw_arr" type="TSoilArray" visibility="private" size="416" offset="3016" file="USoilWaterETMod.pas" line="37" />
+      <field name="Ku_arr" type="TSoilArray" visibility="private" size="416" offset="3432" file="USoilWaterETMod.pas" line="38" />
+      <field name="avg_Dw" type="TSoilArray" visibility="private" size="416" offset="3848" file="USoilWaterETMod.pas" line="39" />
+      <field name="avg_Ku" type="TSoilArray" visibility="private" size="416" offset="4264" file="USoilWaterETMod.pas" line="40" />
+      <field name="Dw_fact" type="TSoilArray" visibility="private" size="416" offset="4680" file="USoilWaterETMod.pas" line="42" />
+      <field name="Ku_fact" type="TSoilArray" visibility="private" size="416" offset="5096" file="USoilWaterETMod.pas" line="43" />
+      <field name="B_vektor" type="TSoilArray" visibility="private" size="416" offset="5512" file="USoilWaterETMod.pas" line="44" />
+      <field name="lower" type="TSoilArray" visibility="private" size="416" offset="5928" file="USoilWaterETMod.pas" line="45" />
+      <field name="diag" type="TSoilArray" visibility="private" size="416" offset="6344" file="USoilWaterETMod.pas" line="46" />
+      <field name="upper" type="TSoilArray" visibility="private" size="416" offset="6760" file="USoilWaterETMod.pas" line="47" />
+      <field name="last_iter_theta" type="TSoilArray" visibility="private" size="416" offset="7176" file="USoilWaterETMod.pas" line="48" />
+      <field name="est_theta" type="TSoilArray" visibility="private" size="416" offset="7592" file="USoilWaterETMod.pas" line="49" />
+      <field name="CompMethod" type="TCompMethod" visibility="private" size="1" offset="8008" file="USoilWaterETMod.pas" line="52" />
+      <field name="fm_model" type="Tm_model" visibility="private" size="1" offset="8009" file="USoilWaterETMod.pas" line="53" />
+      <field name="f_rc_Funct" type="T_rc_Funct" visibility="private" size="1" offset="8010" file="USoilWaterETMod.pas" line="54" />
+      <field name="f_ra_Funct" type="T_ra_Funct" visibility="private" size="1" offset="8011" file="USoilWaterETMod.pas" line="55" />
+      <field name="Untere_Randb" type="TLowerBoundaryCondition" visibility="private" size="1" offset="8012" file="USoilWaterETMod.pas" line="58" />
+      <field name="IniMethod" type="TIniMethod" visibility="private" size="1" offset="8013" file="USoilWaterETMod.pas" line="59" />
+      <field name="nFKCalcMethod" type="TnFKCalcMethod" visibility="private" size="1" offset="8014" file="USoilWaterETMod.pas" line="60" />
+      <field name="max_aenderWG" type="Double" visibility="private" size="8" offset="8016" file="USoilWaterETMod.pas" line="61" />
+      <field name="FHoriNdx1" type="Integer" visibility="private" size="4" offset="8024" file="USoilWaterETMod.pas" line="62" />
+      <field name="FHoriNdx2" type="Integer" visibility="private" size="4" offset="8028" file="USoilWaterETMod.pas" line="63" />
+      <field name="FHoriNdx3" type="Integer" visibility="private" size="4" offset="8032" file="USoilWaterETMod.pas" line="64" />
+      <field name="FHoriNdx4" type="Integer" visibility="private" size="4" offset="8036" file="USoilWaterETMod.pas" line="65" />
+      <field name="FHoriNdx5" type="Integer" visibility="private" size="4" offset="8040" file="USoilWaterETMod.pas" line="65" />
+      <field name="fHoriNdx6" type="Integer" visibility="private" size="4" offset="8044" file="USoilWaterETMod.pas" line="65" />
+      <field name="fLDClass1" type="TLDClass" visibility="private" size="1" offset="8048" file="USoilWaterETMod.pas" line="70">
+        <devnotes>
+           <summary>
+           soil bulk density classes in Horizon x }
+           </summary>
+        </devnotes>
+      </field>
+      <field name="FLDClass2" type="TLDClass" visibility="private" size="1" offset="8049" file="USoilWaterETMod.pas" line="71" />
+      <field name="FLDClass3" type="TLDClass" visibility="private" size="1" offset="8050" file="USoilWaterETMod.pas" line="71" />
+      <field name="FLDClass4" type="TLDClass" visibility="private" size="1" offset="8051" file="USoilWaterETMod.pas" line="71" />
+      <field name="FLDClass5" type="TLDClass" visibility="private" size="1" offset="8052" file="USoilWaterETMod.pas" line="71" />
+      <field name="FLDClass6" type="TLDClass" visibility="private" size="1" offset="8053" file="USoilWaterETMod.pas" line="71" />
+      <field name="fLD1" type="TLD" visibility="private" size="1" offset="8054" file="USoilWaterETMod.pas" line="74">
+        <devnotes>
+           <summary>numerical bulk density as constants for each of the six possible soil horizons</summary>
+        </devnotes>
+      </field>
+      <field name="fLD2" type="TLD" visibility="private" size="1" offset="8055" file="USoilWaterETMod.pas" line="74" />
+      <field name="fLD3" type="TLD" visibility="private" size="1" offset="8056" file="USoilWaterETMod.pas" line="74" />
+      <field name="fLD4" type="TLD" visibility="private" size="1" offset="8057" file="USoilWaterETMod.pas" line="74" />
+      <field name="fLD5" type="TLD" visibility="private" size="1" offset="8058" file="USoilWaterETMod.pas" line="74" />
+      <field name="fLD6" type="TLD" visibility="private" size="1" offset="8059" file="USoilWaterETMod.pas" line="74" />
+      <procedure name="CapWatSolut" visibility="private" file="USoilWaterETMod.pas" line="77">
+      </procedure>
+      <procedure name="get_water_contents" visibility="private" file="USoilWaterETMod.pas" line="78">
+      </procedure>
+      <procedure name="Diffwater_solut" visibility="private" file="USoilWaterETMod.pas" line="79">
+      </procedure>
+      <field name="dt_alt" type="Double" visibility="protected" size="8" offset="8064" file="USoilWaterETMod.pas" line="82" />
+      <field name="pTI" type="Double" visibility="protected" size="8" offset="8072" file="USoilWaterETMod.pas" line="84" />
+      <field name="SumOfInternalTimeSteps" type="Double" visibility="protected" size="8" offset="8080" file="USoilWaterETMod.pas" line="85" />
+      <field name="Max_dt" type="Double" visibility="protected" size="8" offset="8088" file="USoilWaterETMod.pas" line="86" />
+      <field name="FDebug" type="Boolean" visibility="protected" size="1" offset="8096" file="USoilWaterETMod.pas" line="87" />
+      <field name="SumSinks_int" type="Extended" visibility="protected" size="10" offset="8104" file="USoilWaterETMod.pas" line="88" />
+      <field name="f_rc_upscaling" type="T_rc_upscaling" visibility="protected" size="1" offset="8114" file="USoilWaterETMod.pas" line="89" />
+      <procedure name="CheckSinks" visibility="protected" file="USoilWaterETMod.pas" line="90">
+      </procedure>
+      <procedure name="Interzeption_p" visibility="protected" file="USoilWaterETMod.pas" line="92">
+      </procedure>
+      <function name="Evaporation_f" visibility="protected" file="USoilWaterETMod.pas" line="93">
+        <parameters>
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <function name="f_Evap" visibility="protected" file="USoilWaterETMod.pas" line="94">
+        <parameters>
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <function name="pressure_f" visibility="protected" file="USoilWaterETMod.pas" line="95">
+        <parameters>
+          <parameter name="Elev" type="Double" />
+          <parameter name="Temp" type="Double" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <function name="sat_vap_press_f" visibility="protected" file="USoilWaterETMod.pas" line="96">
+        <parameters>
+          <parameter name="Temp" type="Double" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <function name="delta_f" visibility="protected" file="USoilWaterETMod.pas" line="97">
+        <parameters>
+          <parameter name="sat_vap_press" type="Double" />
+          <parameter name="Temp" type="Double" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <function name="ra_f" visibility="protected" file="USoilWaterETMod.pas" line="98">
+        <parameters>
+          <parameter name="wind_speed" type="Double" />
+          <parameter name="crop_height" type="Double" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <function name="rc_f" visibility="protected" file="USoilWaterETMod.pas" line="99">
+        <parameters>
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <function name="Penman" visibility="protected" file="USoilWaterETMod.pas" line="101">
+        <parameters>
+          <parameter name="Temp" type="Double" />
+          <parameter name="Sat_def" type="Double" />
+          <parameter name="Net_beam" type="Double" />
+          <parameter name="delta" type="Double" />
+          <parameter name="gamma" type="Double" />
+          <parameter name="l_h_v_water" type="Double" />
+          <parameter name="ra" type="Double" />
+          <parameter name="rc" type="Double" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <function name="dens_air" visibility="protected" file="USoilWaterETMod.pas" line="102">
+        <parameters>
+          <parameter name="Temp" type="Double" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <function name="r_soil_f" visibility="protected" file="USoilWaterETMod.pas" line="103">
+        <parameters>
+          <parameter name="lrv" type="Double" />
+          <parameter name="a" type="Double" />
+          <parameter name="K" type="Double" />
+          <parameter name="dz" type="Double" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <function name="r_interf_f" visibility="protected" file="USoilWaterETMod.pas" line="104">
+        <parameters>
+          <parameter name="Rrr" type="Double" />
+          <parameter name="theta" type="Double" />
+          <parameter name="theta_s" type="Double" />
+          <parameter name="Lrv" type="Double" />
+          <parameter name="dz" type="Double" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <function name="getPsiRoot" visibility="protected" procflags="virtual" file="USoilWaterETMod.pas" line="105">
+        <parameters>
+          <retval type="Extended" />
+        </parameters>
+      </function>
+      <procedure name="CalcWGs" visibility="protected" procflags="virtual" file="USoilWaterETMod.pas" line="106">
+      </procedure>
+      <function name="rc_upscaling_f" visibility="protected" file="USoilWaterETMod.pas" line="107">
+        <parameters>
+          <parameter name="rs_leaf" type="Double" />
+          <parameter name="upscaling_opt" type="T_rc_upscaling" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <field name="Elev" type="TPar" visibility="public" size="4" offset="8116" file="USoilWaterETMod.pas" line="110" />
+      <field name="rc0" type="TPar" visibility="public" size="4" offset="8120" file="USoilWaterETMod.pas" line="111" />
+      <field name="exk_GlobRad" type="TPar" visibility="public" size="4" offset="8124" file="USoilWaterETMod.pas" line="112" />
+      <field name="sic" type="TPar" visibility="public" size="4" offset="8128" file="USoilWaterETMod.pas" line="113" />
+      <field name="measure_height" type="TPar" visibility="public" size="4" offset="8132" file="USoilWaterETMod.pas" line="114" />
+      <field name="TMPM" type="TExternV" visibility="public" size="4" offset="8136" file="USoilWaterETMod.pas" line="116" />
+      <field name="GlobRad" type="TExternV" visibility="public" size="4" offset="8140" file="USoilWaterETMod.pas" line="117" />
+      <field name="Sat_def" type="TExternV" visibility="public" size="4" offset="8144" file="USoilWaterETMod.pas" line="118" />
+      <field name="wind_speed" type="TExternV" visibility="public" size="4" offset="8148" file="USoilWaterETMod.pas" line="119" />
+      <field name="CropHeight" type="TExternV" visibility="public" size="4" offset="8152" file="USoilWaterETMod.pas" line="120" />
+      <field name="LAI" type="TExternV" visibility="public" size="4" offset="8156" file="USoilWaterETMod.pas" line="121" />
+      <field name="rain" type="TExternV" visibility="public" size="4" offset="8160" file="USoilWaterETMod.pas" line="122" />
+      <field name="aETP" type="TVar" visibility="public" size="4" offset="8164" file="USoilWaterETMod.pas" line="125" />
+      <field name="pETP" type="TVar" visibility="public" size="4" offset="8168" file="USoilWaterETMod.pas" line="126" />
+      <field name="psi_leaf" type="TVar" visibility="public" size="4" offset="8172" file="USoilWaterETMod.pas" line="127" />
+      <field name="pot_trans" type="TVar" visibility="public" size="4" offset="8176" file="USoilWaterETMod.pas" line="128" />
+      <field name="pot_Evap" type="TVar" visibility="public" size="4" offset="8180" file="USoilWaterETMod.pas" line="129" />
+      <field name="interzeption" type="TVar" visibility="public" size="4" offset="8184" file="USoilWaterETMod.pas" line="130" />
+      <field name="NetRain" type="TVar" visibility="public" size="4" offset="8188" file="USoilWaterETMod.pas" line="131" />
+      <field name="netRad" type="TVar" visibility="public" size="4" offset="8192" file="USoilWaterETMod.pas" line="132" />
+      <field name="ra" type="TVar" visibility="public" size="4" offset="8196" file="USoilWaterETMod.pas" line="133" />
+      <field name="rc" type="TVar" visibility="public" size="4" offset="8200" file="USoilWaterETMod.pas" line="134" />
+      <field name="rstom" type="TVar" visibility="public" size="4" offset="8204" file="USoilWaterETMod.pas" line="135" />
+      <field name="gstom" type="TVar" visibility="public" size="4" offset="8208" file="USoilWaterETMod.pas" line="136" />
+      <field name="f_rc_Option" type="TOption" visibility="public" size="4" offset="8212" file="USoilWaterETMod.pas" line="139" />
+      <field name="f_ra_Option" type="TOption" visibility="public" size="4" offset="8216" file="USoilWaterETMod.pas" line="140" />
+      <field name="f_rc_upscaling_Option" type="TOption" visibility="public" size="4" offset="8220" file="USoilWaterETMod.pas" line="141" />
+      <field name="int_stor" type="TState" visibility="public" size="4" offset="8224" file="USoilWaterETMod.pas" line="143" />
+      <field name="int_stor_" type="TState" visibility="public" size="4" offset="8228" file="USoilWaterETMod.pas" line="144" />
+      <field name="theta_arr" type="TSoilVarArray" visibility="public" size="212" offset="8232" file="USoilWaterETMod.pas" line="146" />
+      <field name="thetaadj_arr" type="TSoilStateArray" visibility="public" size="208" offset="8444" file="USoilWaterETMod.pas" line="147" />
+      <field name="WMenge" type="TSoilStateArray" visibility="public" size="208" offset="8652" file="USoilWaterETMod.pas" line="148" />
+      <field name="psi_arr" type="TSoilVarArray" visibility="public" size="212" offset="8860" file="USoilWaterETMod.pas" line="149" />
+      <field name="rs_arr" type="TSoilVarArray" visibility="public" size="212" offset="9072" file="USoilWaterETMod.pas" line="150" />
+      <field name="ri_arr" type="TSoilVarArray" visibility="public" size="212" offset="9284" file="USoilWaterETMod.pas" line="150" />
+      <field name="intWflow_arr" type="TSoilVarArray" visibility="public" size="212" offset="9496" file="USoilWaterETMod.pas" line="151" />
+      <field name="Wflow_arr" type="TSoilVarArray" visibility="public" size="212" offset="9708" file="USoilWaterETMod.pas" line="152" />
+      <field name="Sink_arr" type="TSoilVarArray" visibility="public" size="212" offset="9920" file="USoilWaterETMod.pas" line="153" />
+      <field name="SumSinks" type="TVar" visibility="public" size="4" offset="10132" file="USoilWaterETMod.pas" line="154" />
+      <field name="FK_Arr" type="TSoilArray" visibility="public" size="416" offset="10136" file="USoilWaterETMod.pas" line="155" />
+      <field name="PWP_Arr" type="TSoilArray" visibility="public" size="416" offset="10552" file="USoilWaterETMod.pas" line="156" />
+      <field name="nFK_Arr" type="TSoilArray" visibility="public" size="416" offset="10968" file="USoilWaterETMod.pas" line="157" />
+      <field name="WPar" type="TSoilWaterParams" visibility="public" size="200" offset="11384" file="USoilWaterETMod.pas" line="158" />
+      <field name="rs_voll" type="TPar" visibility="public" size="4" offset="11584" file="USoilWaterETMod.pas" line="159" />
+      <field name="rs_null" type="TPar" visibility="public" size="4" offset="11588" file="USoilWaterETMod.pas" line="159" />
+      <field name="rc_par_a" type="TPar" visibility="public" size="4" offset="11592" file="USoilWaterETMod.pas" line="160" />
+      <field name="rc_par_b" type="TPar" visibility="public" size="4" offset="11596" file="USoilWaterETMod.pas" line="161" />
+      <field name="rc_par_c" type="TPar" visibility="public" size="4" offset="11600" file="USoilWaterETMod.pas" line="162" />
+      <field name="rc_par_d" type="TPar" visibility="public" size="4" offset="11604" file="USoilWaterETMod.pas" line="163" />
+      <field name="rc_par_e" type="TPar" visibility="public" size="4" offset="11608" file="USoilWaterETMod.pas" line="164" />
+      <field name="rc_par_f" type="TPar" visibility="public" size="4" offset="11612" file="USoilWaterETMod.pas" line="165" />
+      <field name="rc_par_h" type="TPar" visibility="public" size="4" offset="11616" file="USoilWaterETMod.pas" line="166" />
+      <field name="rc_par_r" type="TPar" visibility="public" size="4" offset="11620" file="USoilWaterETMod.pas" line="167" />
+      <field name="rc_par_s" type="TPar" visibility="public" size="4" offset="11624" file="USoilWaterETMod.pas" line="168" />
+      <field name="r_fact" type="TPar" visibility="public" size="4" offset="11628" file="USoilWaterETMod.pas" line="169" />
+      <field name="g_fact" type="TPar" visibility="public" size="4" offset="11632" file="USoilWaterETMod.pas" line="170" />
+      <field name="rs_Rn" type="TVar" visibility="public" size="4" offset="11636" file="USoilWaterETMod.pas" line="172" />
+      <field name="rs_T" type="TVar" visibility="public" size="4" offset="11640" file="USoilWaterETMod.pas" line="172" />
+      <field name="rs_VPD" type="TVar" visibility="public" size="4" offset="11644" file="USoilWaterETMod.pas" line="172" />
+      <field name="mkf" type="TPar" visibility="public" size="4" offset="11648" file="USoilWaterETMod.pas" line="173" />
+      <field name="p_Campbell" type="TPar" visibility="public" size="4" offset="11652" file="USoilWaterETMod.pas" line="174" />
+      <field name="p_Reid_int" type="TPar" visibility="public" size="4" offset="11656" file="USoilWaterETMod.pas" line="175" />
+      <field name="p_Reid_slope" type="TPar" visibility="public" size="4" offset="11660" file="USoilWaterETMod.pas" line="175" />
+      <field name="p_Gao_1" type="TPar" visibility="public" size="4" offset="11664" file="USoilWaterETMod.pas" line="178" />
+      <field name="p_Gao_2" type="TPar" visibility="public" size="4" offset="11668" file="USoilWaterETMod.pas" line="179" />
+      <field name="p_Gao_3" type="TPar" visibility="public" size="4" offset="11672" file="USoilWaterETMod.pas" line="180" />
+      <field name="p_Gao_4" type="TPar" visibility="public" size="4" offset="11676" file="USoilWaterETMod.pas" line="181" />
+      <field name="Wflow_alt" type="TSoilArray" visibility="public" size="416" offset="11680" file="USoilWaterETMod.pas" line="183" />
+      <field name="theta_alt" type="TSoilArray" visibility="public" size="416" offset="12096" file="USoilWaterETMod.pas" line="184" />
+      <field name="HoriNdx1" type="TPar" visibility="public" size="4" offset="12512" file="USoilWaterETMod.pas" line="186" />
+      <field name="HoriNdx2" type="TPar" visibility="public" size="4" offset="12516" file="USoilWaterETMod.pas" line="187" />
+      <field name="HoriNdx3" type="TPar" visibility="public" size="4" offset="12520" file="USoilWaterETMod.pas" line="188" />
+      <field name="HoriNdx4" type="TPar" visibility="public" size="4" offset="12524" file="USoilWaterETMod.pas" line="189" />
+      <field name="HoriNdx5" type="TPar" visibility="public" size="4" offset="12528" file="USoilWaterETMod.pas" line="189" />
+      <field name="HoriNdx6" type="TPar" visibility="public" size="4" offset="12532" file="USoilWaterETMod.pas" line="189" />
+      <field name="bsat_scaling" type="TPar" visibility="public" size="4" offset="12536" file="USoilWaterETMod.pas" line="191" />
+      <field name="alpha_scaling" type="TPar" visibility="public" size="4" offset="12540" file="USoilWaterETMod.pas" line="192" />
+      <field name="WG_scaling" type="TPar" visibility="public" size="4" offset="12544" file="USoilWaterETMod.pas" line="193" />
+      <field name="FVGParsFromTextOption" type="TOption" visibility="public" size="4" offset="12548" file="USoilWaterETMod.pas" line="195" />
+      <field name="FKsFromTextOption" type="TOption" visibility="public" size="4" offset="12552" file="USoilWaterETMod.pas" line="196" />
+      <field name="FTextClass1Option" type="TTextClassOption" visibility="public" size="4" offset="12556" file="USoilWaterETMod.pas" line="197" />
+      <field name="FTextClass2Option" type="TTextClassOption" visibility="public" size="4" offset="12560" file="USoilWaterETMod.pas" line="198" />
+      <field name="FTextClass3Option" type="TTextClassOption" visibility="public" size="4" offset="12564" file="USoilWaterETMod.pas" line="199" />
+      <field name="FTextClass4Option" type="TTextClassOption" visibility="public" size="4" offset="12568" file="USoilWaterETMod.pas" line="200" />
+      <field name="FTextClass5Option" type="TTextClassOption" visibility="public" size="4" offset="12572" file="USoilWaterETMod.pas" line="201" />
+      <field name="FTextClass6Option" type="TTextClassOption" visibility="public" size="4" offset="12576" file="USoilWaterETMod.pas" line="201" />
+      <field name="b_sat1" type="TPar" visibility="public" size="4" offset="12580" file="USoilWaterETMod.pas" line="205" />
+      <field name="b_rest1" type="TPar" visibility="public" size="4" offset="12584" file="USoilWaterETMod.pas" line="206" />
+      <field name="alpha1" type="TPar" visibility="public" size="4" offset="12588" file="USoilWaterETMod.pas" line="207" />
+      <field name="n_par1" type="TPar" visibility="public" size="4" offset="12592" file="USoilWaterETMod.pas" line="208" />
+      <field name="Ks1" type="TPar" visibility="public" size="4" offset="12596" file="USoilWaterETMod.pas" line="209" />
+      <field name="FK1" type="TPar" visibility="public" size="4" offset="12600" file="USoilWaterETMod.pas" line="210" />
+      <field name="PWP1" type="TPar" visibility="public" size="4" offset="12604" file="USoilWaterETMod.pas" line="211" />
+      <field name="nFK1" type="TPar" visibility="public" size="4" offset="12608" file="USoilWaterETMod.pas" line="212" />
+      <field name="b_sat2" type="TPar" visibility="public" size="4" offset="12612" file="USoilWaterETMod.pas" line="215" />
+      <field name="b_rest2" type="TPar" visibility="public" size="4" offset="12616" file="USoilWaterETMod.pas" line="216" />
+      <field name="alpha2" type="TPar" visibility="public" size="4" offset="12620" file="USoilWaterETMod.pas" line="217" />
+      <field name="n_par2" type="TPar" visibility="public" size="4" offset="12624" file="USoilWaterETMod.pas" line="218" />
+      <field name="Ks2" type="TPar" visibility="public" size="4" offset="12628" file="USoilWaterETMod.pas" line="219" />
+      <field name="FK2" type="TPar" visibility="public" size="4" offset="12632" file="USoilWaterETMod.pas" line="220" />
+      <field name="PWP2" type="TPar" visibility="public" size="4" offset="12636" file="USoilWaterETMod.pas" line="221" />
+      <field name="nFK2" type="TPar" visibility="public" size="4" offset="12640" file="USoilWaterETMod.pas" line="222" />
+      <field name="b_sat3" type="TPar" visibility="public" size="4" offset="12644" file="USoilWaterETMod.pas" line="225" />
+      <field name="b_rest3" type="TPar" visibility="public" size="4" offset="12648" file="USoilWaterETMod.pas" line="226" />
+      <field name="alpha3" type="TPar" visibility="public" size="4" offset="12652" file="USoilWaterETMod.pas" line="227" />
+      <field name="n_par3" type="TPar" visibility="public" size="4" offset="12656" file="USoilWaterETMod.pas" line="228" />
+      <field name="Ks3" type="TPar" visibility="public" size="4" offset="12660" file="USoilWaterETMod.pas" line="229" />
+      <field name="FK3" type="TPar" visibility="public" size="4" offset="12664" file="USoilWaterETMod.pas" line="230" />
+      <field name="PWP3" type="TPar" visibility="public" size="4" offset="12668" file="USoilWaterETMod.pas" line="231" />
+      <field name="nFK3" type="TPar" visibility="public" size="4" offset="12672" file="USoilWaterETMod.pas" line="232" />
+      <field name="b_sat4" type="TPar" visibility="public" size="4" offset="12676" file="USoilWaterETMod.pas" line="235" />
+      <field name="b_rest4" type="TPar" visibility="public" size="4" offset="12680" file="USoilWaterETMod.pas" line="236" />
+      <field name="alpha4" type="TPar" visibility="public" size="4" offset="12684" file="USoilWaterETMod.pas" line="237" />
+      <field name="n_par4" type="TPar" visibility="public" size="4" offset="12688" file="USoilWaterETMod.pas" line="238" />
+      <field name="Ks4" type="TPar" visibility="public" size="4" offset="12692" file="USoilWaterETMod.pas" line="239" />
+      <field name="FK4" type="TPar" visibility="public" size="4" offset="12696" file="USoilWaterETMod.pas" line="240" />
+      <field name="PWP4" type="TPar" visibility="public" size="4" offset="12700" file="USoilWaterETMod.pas" line="241" />
+      <field name="nFK4" type="TPar" visibility="public" size="4" offset="12704" file="USoilWaterETMod.pas" line="242" />
+      <field name="PsiStart1" type="TPar" visibility="public" size="4" offset="12708" file="USoilWaterETMod.pas" line="244" />
+      <field name="psi_critEvap" type="TPar" visibility="public" size="4" offset="12712" file="USoilWaterETMod.pas" line="245" />
+      <field name="bil_nr" type="TPar" visibility="public" size="4" offset="12716" file="USoilWaterETMod.pas" line="246" />
+      <field name="CumWaterBalance" type="TState" visibility="public" size="4" offset="12720" file="USoilWaterETMod.pas" line="249" />
+      <field name="CumDrainage" type="TState" visibility="public" size="4" offset="12724" file="USoilWaterETMod.pas" line="250" />
+      <field name="Act_Drainage" type="TVar" visibility="public" size="4" offset="12728" file="USoilWaterETMod.pas" line="251" />
+      <field name="CumNetRain" type="TState" visibility="public" size="4" offset="12732" file="USoilWaterETMod.pas" line="253" />
+      <field name="red_evap" type="TVar" visibility="public" size="4" offset="12736" file="USoilWaterETMod.pas" line="254" />
+      <field name="Act_Evap" type="TVar" visibility="public" size="4" offset="12740" file="USoilWaterETMod.pas" line="255" />
+      <field name="CumEvap" type="TState" visibility="public" size="4" offset="12744" file="USoilWaterETMod.pas" line="256" />
+      <field name="CumInterzept" type="TState" visibility="public" size="4" offset="12748" file="USoilWaterETMod.pas" line="257" />
+      <field name="SumSoilWater" type="TVar" visibility="public" size="4" offset="12752" file="USoilWaterETMod.pas" line="258" />
+      <field name="SumPAVSoilWater" type="TVar" visibility="public" size="4" offset="12756" file="USoilWaterETMod.pas" line="259" />
+      <field name="dt" type="TVar" visibility="public" size="4" offset="12760" file="USoilWaterETMod.pas" line="260" />
+      <field name="n_int_timesteps" type="TVar" visibility="public" size="4" offset="12764" file="USoilWaterETMod.pas" line="261" />
+      <field name="ActWaterBalance" type="TVar" visibility="public" size="4" offset="12768" file="USoilWaterETMod.pas" line="262" />
+      <field name="psiRoot" type="TVar" visibility="public" size="4" offset="12772" file="USoilWaterETMod.pas" line="264" />
+      <field name="WG0_30" type="TVar" visibility="public" size="4" offset="12776" file="USoilWaterETMod.pas" line="266" />
+      <field name="WG30_60" type="TVar" visibility="public" size="4" offset="12780" file="USoilWaterETMod.pas" line="267" />
+      <field name="WG60_90" type="TVar" visibility="public" size="4" offset="12784" file="USoilWaterETMod.pas" line="268" />
+      <field name="WG90_120" type="TVar" visibility="public" size="4" offset="12788" file="USoilWaterETMod.pas" line="269" />
+      <field name="WG0_10" type="TVar" visibility="public" size="4" offset="12792" file="USoilWaterETMod.pas" line="271" />
+      <field name="WG0_20" type="TVar" visibility="public" size="4" offset="12796" file="USoilWaterETMod.pas" line="272" />
+      <field name="WG10_30" type="TVar" visibility="public" size="4" offset="12800" file="USoilWaterETMod.pas" line="273" />
+      <field name="WG20_30" type="TVar" visibility="public" size="4" offset="12804" file="USoilWaterETMod.pas" line="274" />
+      <field name="WG30_40" type="TVar" visibility="public" size="4" offset="12808" file="USoilWaterETMod.pas" line="275" />
+      <field name="WG40_60" type="TVar" visibility="public" size="4" offset="12812" file="USoilWaterETMod.pas" line="276" />
+      <field name="WG60_80" type="TVar" visibility="public" size="4" offset="12816" file="USoilWaterETMod.pas" line="277" />
+      <field name="WG80_100" type="TVar" visibility="public" size="4" offset="12820" file="USoilWaterETMod.pas" line="278" />
+      <field name="WG0_100" type="TVar" visibility="public" size="4" offset="12824" file="USoilWaterETMod.pas" line="279" />
+      <field name="WG60_100" type="TVar" visibility="public" size="4" offset="12828" file="USoilWaterETMod.pas" line="280" />
+      <field name="ProzNFK0_100" type="TVar" visibility="public" size="4" offset="12832" file="USoilWaterETMod.pas" line="281" />
+      <procedure name="Init" visibility="public" procflags="override" file="USoilWaterETMod.pas" line="283">
+        <parameters>
+          <parameter name="GlobMod" type="TMod" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="CalcEvap_red_f" visibility="public" file="USoilWaterETMod.pas" line="284">
+      </procedure>
+      <procedure name="Integrate" visibility="public" procflags="override" file="USoilWaterETMod.pas" line="285">
+      </procedure>
+      <procedure name="CalcRatesAndIntegrate" visibility="public" procflags="virtual" file="USoilWaterETMod.pas" line="286">
+      </procedure>
+      <procedure name="CalcRates" visibility="public" procflags="override" file="USoilWaterETMod.pas" line="288">
+      </procedure>
+      <procedure name="CreateAll" visibility="public" procflags="override" file="USoilWaterETMod.pas" line="289">
+      </procedure>
+      <procedure name="CalcSinks" visibility="public" procflags="virtual" file="USoilWaterETMod.pas" line="291">
+      </procedure>
+      <procedure name="writeValues" visibility="public" procflags="virtual" file="USoilWaterETMod.pas" line="292">
+        <parameters>
+          <parameter name="FirstTime" type="Boolean" />
+          <parameter name="s" type="string" />
+        </parameters>
+      </procedure>
+      <procedure name="writeDebug" visibility="public" procflags="virtual" file="USoilWaterETMod.pas" line="293">
+        <parameters>
+          <parameter name="Schicht" type="Integer" />
+          <parameter name="dt" type="Double" />
+          <parameter name="InFlow" type="Double" />
+          <parameter name="OutFlow" type="Double" />
+          <parameter name="Sink" type="Double" />
+          <parameter name="Thick" type="Double" />
+          <parameter name="WGalt" type="Double" />
+          <parameter name="WGneu" type="Double" />
+          <parameter name="Bil" type="Double" />
+        </parameters>
+      </procedure>
+      <property name="m_model" visibility="published" read="fm_model" write="fm_model" type="Tm_model" file="USoilWaterETMod.pas" line="296" />
+      <property name="Ex_Temp" visibility="published" read="TMPM" write="TMPM" type="TExternV" file="USoilWaterETMod.pas" line="297" />
+      <property name="Ex_GlobRad" visibility="published" read="GlobRad" write="GlobRad" type="TExternV" file="USoilWaterETMod.pas" line="298" />
+      <property name="Ex_Sat_def" visibility="published" read="Sat_def" write="Sat_def" type="TExternV" file="USoilWaterETMod.pas" line="299" />
+      <property name="Ex_Windspeed" visibility="published" read="wind_speed" write="wind_speed" type="TExternV" file="USoilWaterETMod.pas" line="300" />
+      <property name="Ex_CropHeight" visibility="published" read="CropHeight" write="CropHeight" type="TExternV" file="USoilWaterETMod.pas" line="301" />
+      <property name="Ex_LAI" visibility="published" read="LAI" write="LAI" type="TExternV" file="USoilWaterETMod.pas" line="302" />
+      <property name="Ex_Rain" visibility="published" read="rain" write="rain" type="TExternV" file="USoilWaterETMod.pas" line="303" />
+      <property name="Par_RC0" visibility="published" read="rc0" write="rc0" type="TPar" file="USoilWaterETMod.pas" line="304" />
+      <property name="Par_Exk_Glob" visibility="published" read="exk_GlobRad" write="exk_GlobRad" type="TPar" file="USoilWaterETMod.pas" line="305" />
+      <property name="Par_Elev" visibility="published" read="Elev" write="Elev" type="TPar" file="USoilWaterETMod.pas" line="306" />
+      <property name="Par_SIC" visibility="published" read="sic" write="sic" type="TPar" file="USoilWaterETMod.pas" line="307" />
+      <property name="Var_pETP" visibility="published" read="pETP" write="pETP" type="TVar" file="USoilWaterETMod.pas" line="309" />
+      <property name="Var_PotTrans" visibility="published" read="pot_trans" write="pot_trans" type="TVar" file="USoilWaterETMod.pas" line="310" />
+      <property name="Var_PotEvap" visibility="published" read="pot_Evap" write="pot_Evap" type="TVar" file="USoilWaterETMod.pas" line="311" />
+      <property name="Var_interzeption" visibility="published" read="interzeption" write="interzeption" type="TVar" file="USoilWaterETMod.pas" line="312" />
+      <property name="Var_NetRain" visibility="published" read="NetRain" write="NetRain" type="TVar" file="USoilWaterETMod.pas" line="313" />
+      <property name="Var_ra" visibility="published" read="ra" write="ra" type="TVar" file="USoilWaterETMod.pas" line="314" />
+      <property name="Var_NetRad" visibility="published" read="netRad" write="netRad" type="TVar" file="USoilWaterETMod.pas" line="315" />
+      <property name="Opt_CompMethod" visibility="published" read="CompMethod" write="CompMethod" type="TCompMethod" file="USoilWaterETMod.pas" line="317" />
+      <property name="Opt_maxWGchange" visibility="published" read="max_aenderWG" write="max_aenderWG" type="Double" default="0" file="USoilWaterETMod.pas" line="318" />
+      <property name="Opt_Randbed" visibility="published" read="Untere_Randb" write="Untere_Randb" type="TLowerBoundaryCondition" file="USoilWaterETMod.pas" line="319" />
+      <property name="Opt_IniMethod" visibility="published" read="IniMethod" write="IniMethod" type="TIniMethod" file="USoilWaterETMod.pas" line="320" />
+      <property name="Opt_maxdt" visibility="published" read="Max_dt" write="Max_dt" type="Double" default="0" file="USoilWaterETMod.pas" line="321" />
+      <property name="Opt_nFKCalcMethod" visibility="published" read="nFKCalcMethod" write="nFKCalcMethod" type="TnFKCalcMethod" file="USoilWaterETMod.pas" line="322" />
+      <property name="Opt_VanGenPars_from_Texture" visibility="published" read="FVGParsFromTexture" write="FVGParsFromTexture" type="TVGParsFromTexture" file="USoilWaterETMod.pas" line="323" />
+      <property name="Opt_Ks_from_Texture" visibility="published" read="FKsFromTexture" write="FKsFromTexture" type="TVGParsFromTexture" file="USoilWaterETMod.pas" line="324" />
+      <property name="Opt_TextureClass1" visibility="published" read="FTextureClass1" write="FTextureClass1" type="TTextureClass" file="USoilWaterETMod.pas" line="325" />
+      <property name="Opt_TextureClass2" visibility="published" read="FTextureClass2" write="FTextureClass2" type="TTextureClass" file="USoilWaterETMod.pas" line="326" />
+      <property name="Opt_TextureClass3" visibility="published" read="FTextureClass3" write="FTextureClass3" type="TTextureClass" file="USoilWaterETMod.pas" line="327" />
+      <property name="Opt_TextureClass4" visibility="published" read="FTextureClass4" write="FTextureClass4" type="TTextureClass" file="USoilWaterETMod.pas" line="328" />
+      <property name="Opt_TextureClass5" visibility="published" read="FTextureClass5" write="FTextureClass5" type="TTextureClass" file="USoilWaterETMod.pas" line="329" />
+      <property name="Opt_TextureClass6" visibility="published" read="FTextureClass6" write="FTextureClass6" type="TTextureClass" file="USoilWaterETMod.pas" line="330" />
+      <property name="Par_b_sat1" visibility="published" read="b_sat1" write="b_sat1" type="TPar" file="USoilWaterETMod.pas" line="332" />
+      <property name="Par_b_rest1" visibility="published" read="b_rest1" write="b_rest1" type="TPar" file="USoilWaterETMod.pas" line="333" />
+      <property name="Par_b_KS1" visibility="published" read="Ks1" write="Ks1" type="TPar" file="USoilWaterETMod.pas" line="334" />
+      <property name="Par_n1" visibility="published" read="n_par1" write="n_par1" type="TPar" file="USoilWaterETMod.pas" line="335" />
+      <property name="Par_alpha1" visibility="published" read="alpha1" write="alpha1" type="TPar" file="USoilWaterETMod.pas" line="336" />
+      <property name="Par_FK1" visibility="published" read="FK1" write="FK1" type="TPar" file="USoilWaterETMod.pas" line="337" />
+      <property name="Par_PWP1" visibility="published" read="PWP1" write="PWP1" type="TPar" file="USoilWaterETMod.pas" line="338" />
+      <property name="Par_nFK1" visibility="published" read="nFK1" type="TPar" file="USoilWaterETMod.pas" line="339" />
+      <property name="Par_b_sat2" visibility="published" read="b_sat2" write="b_sat2" type="TPar" file="USoilWaterETMod.pas" line="341" />
+      <property name="Par_b_rest2" visibility="published" read="b_rest2" write="b_rest2" type="TPar" file="USoilWaterETMod.pas" line="342" />
+      <property name="Par_b_KS2" visibility="published" read="Ks2" write="Ks2" type="TPar" file="USoilWaterETMod.pas" line="343" />
+      <property name="Par_n2" visibility="published" read="n_par2" write="n_par2" type="TPar" file="USoilWaterETMod.pas" line="344" />
+      <property name="Par_alpha2" visibility="published" read="alpha2" write="alpha2" type="TPar" file="USoilWaterETMod.pas" line="345" />
+      <property name="Par_FK2" visibility="published" read="FK2" write="FK2" type="TPar" file="USoilWaterETMod.pas" line="346" />
+      <property name="Par_PWP2" visibility="published" read="PWP2" write="PWP2" type="TPar" file="USoilWaterETMod.pas" line="347" />
+      <property name="Par_nFK2" visibility="published" read="nFK2" type="TPar" file="USoilWaterETMod.pas" line="348" />
+      <property name="Par_b_sat3" visibility="published" read="b_sat3" write="b_sat3" type="TPar" file="USoilWaterETMod.pas" line="350" />
+      <property name="Par_b_rest3" visibility="published" read="b_rest3" write="b_rest3" type="TPar" file="USoilWaterETMod.pas" line="351" />
+      <property name="Par_b_KS3" visibility="published" read="Ks3" write="Ks3" type="TPar" file="USoilWaterETMod.pas" line="352" />
+      <property name="Par_n3" visibility="published" read="n_par3" write="n_par3" type="TPar" file="USoilWaterETMod.pas" line="353" />
+      <property name="Par_alpha3" visibility="published" read="alpha3" write="alpha3" type="TPar" file="USoilWaterETMod.pas" line="354" />
+      <property name="Par_FK3" visibility="published" read="FK3" write="FK3" type="TPar" file="USoilWaterETMod.pas" line="355" />
+      <property name="Par_PWP3" visibility="published" read="PWP3" write="PWP3" type="TPar" file="USoilWaterETMod.pas" line="356" />
+      <property name="Par_nFK3" visibility="published" read="nFK3" type="TPar" file="USoilWaterETMod.pas" line="357" />
+      <property name="Par_b_sat4" visibility="published" read="b_sat4" write="b_sat4" type="TPar" file="USoilWaterETMod.pas" line="359" />
+      <property name="Par_b_rest4" visibility="published" read="b_rest4" write="b_rest4" type="TPar" file="USoilWaterETMod.pas" line="360" />
+      <property name="Par_b_KS4" visibility="published" read="Ks4" write="Ks4" type="TPar" file="USoilWaterETMod.pas" line="361" />
+      <property name="Par_n4" visibility="published" read="n_par4" write="n_par4" type="TPar" file="USoilWaterETMod.pas" line="362" />
+      <property name="Par_alpha4" visibility="published" read="alpha4" write="alpha4" type="TPar" file="USoilWaterETMod.pas" line="363" />
+      <property name="Par_FK4" visibility="published" read="FK4" write="FK4" type="TPar" file="USoilWaterETMod.pas" line="364" />
+      <property name="Par_PWP4" visibility="published" read="PWP4" write="PWP4" type="TPar" file="USoilWaterETMod.pas" line="365" />
+      <property name="Par_nFK4" visibility="published" read="nFK4" type="TPar" file="USoilWaterETMod.pas" line="366" />
+      <property name="Par_PsiStart1" visibility="published" read="PsiStart1" write="PsiStart1" type="TPar" file="USoilWaterETMod.pas" line="368" />
+      <property name="Var_WG0_30" visibility="published" read="WG0_30" write="WG0_30" type="TVar" file="USoilWaterETMod.pas" line="370" />
+      <property name="Var_WG30_60" visibility="published" read="WG30_60" write="WG30_60" type="TVar" file="USoilWaterETMod.pas" line="371" />
+      <property name="Var_WG60_90" visibility="published" read="WG60_90" write="WG60_90" type="TVar" file="USoilWaterETMod.pas" line="372" />
+      <property name="Var_WG90_120" visibility="published" read="WG90_120" write="WG90_120" type="TVar" file="USoilWaterETMod.pas" line="373" />
+      <property name="Var_WG0_100" visibility="published" read="WG0_100" write="WG0_100" type="TVar" file="USoilWaterETMod.pas" line="374" />
+      <property name="Var_ActEvap" visibility="published" read="Act_Evap" write="Act_Evap" type="TVar" file="USoilWaterETMod.pas" line="376" />
+      <property name="Var_ActDrainage" visibility="published" read="Act_Drainage" write="Act_Drainage" type="TVar" file="USoilWaterETMod.pas" line="377" />
+      <property name="St_CumEvap" visibility="published" read="CumEvap" write="CumEvap" type="TState" file="USoilWaterETMod.pas" line="379" />
+      <property name="St_CumNetRain" visibility="published" read="CumNetRain" write="CumNetRain" type="TState" file="USoilWaterETMod.pas" line="380" />
+      <property name="Par_psi_critEvap" visibility="published" read="psi_critEvap" write="psi_critEvap" type="TPar" file="USoilWaterETMod.pas" line="382" />
+      <property name="Par_Horindx1" visibility="published" read="HoriNdx1" write="HoriNdx1" type="TPar" file="USoilWaterETMod.pas" line="384" />
+      <property name="Par_Horindx2" visibility="published" read="HoriNdx2" write="HoriNdx2" type="TPar" file="USoilWaterETMod.pas" line="385" />
+      <property name="Par_Horindx3" visibility="published" read="HoriNdx3" write="HoriNdx3" type="TPar" file="USoilWaterETMod.pas" line="386" />
+      <property name="Par_Horindx4" visibility="published" read="HoriNdx4" write="HoriNdx4" type="TPar" file="USoilWaterETMod.pas" line="387" />
+      <property name="Par_Horindx5" visibility="published" read="HoriNdx5" write="HoriNdx5" type="TPar" file="USoilWaterETMod.pas" line="388" />
+      <property name="Par_Horindx6" visibility="published" read="HoriNdx6" write="HoriNdx6" type="TPar" file="USoilWaterETMod.pas" line="389" />
+    </members>
+  </class>
+  <procedure name="Register" visibility="public" file="USoilWaterETMod.pas" line="2050">
+  </procedure>
+</namespace>

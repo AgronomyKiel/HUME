@@ -12,16 +12,31 @@
 <ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
 <h1 class="unit">Unit URootUptakeFunctions</h1>
 <div class="sections">
-<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section">Classes, Interfaces, Objects and Records</div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section">Types</div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section">Variables</div></div>
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section">Classes, Interfaces, Objects and Records</div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section">Variables</div></div>
 <span id="PasDoc-Description"></span><h2 class="description">Description</h2>
 <p class="nodescription">This item has no description.</p><span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
 <span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code>function <strong><a href="URootUptakeFunctions.html#f_Tortuosity-real-">f_Tortuosity</a></strong>(theta: <a href="U2DSoilBaseClasses.html#real">real</a>): <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+<td class="itemcode"><code>function <strong><a href="URootUptakeFunctions.html#baf-real-real-real-real-real-">baf</a></strong>(b, Iw, Dw, xl, a:<a href="URootUptakeFunctions.html#real">real</a>):<a href="URootUptakeFunctions.html#real">real</a>;</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code>function <strong><a href="URootUptakeFunctions.html#Imax-real-real-real-real-real-real-">Imax</a></strong>(Cl, clmin, theta, w_influx, wld, rad: <a href="U2DSoilBaseClasses.html#real">real</a>): <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+<td class="itemcode"><code>function <strong><a href="URootUptakeFunctions.html#f_Tortuosity-real-">f_Tortuosity</a></strong>(theta: <a href="URootUptakeFunctions.html#real">real</a>): <a href="URootUptakeFunctions.html#real">real</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a href="URootUptakeFunctions.html#Imax_f-real-real-real-real-real-real-">Imax_f</a></strong>(Cl, clmin, theta, w_influx, rld, rad: <a href="URootUptakeFunctions.html#real">real</a>): <a href="URootUptakeFunctions.html#real">real</a>;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>function <strong><a href="URootUptakeFunctions.html#Iwmax-real-real-real-real-real-">Iwmax</a></strong>(b, bmin, Dw, xl, a: <a href="URootUptakeFunctions.html#real">real</a>):<a href="URootUptakeFunctions.html#real">real</a>;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>function <strong><a href="URootUptakeFunctions.html#MM_NInflux-real-real-real-real-real-real-real-real-">MM_NInflux</a></strong>(Cl, rld, rad, theta, w_influx, Imax, Km, clmin: <a href="URootUptakeFunctions.html#real">real</a>): <a href="URootUptakeFunctions.html#real">real</a>;</code></td>
+</tr>
+</table>
+<span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><strong><a href="URootUptakeFunctions.html#real">real</a></strong> = double;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
@@ -34,21 +49,166 @@
 <h3 class="detail">Functions and Procedures</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="f_Tortuosity-real-"></span><code>function <strong>f_Tortuosity</strong>(theta: <a href="U2DSoilBaseClasses.html#real">real</a>): <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+<td class="itemcode"><span id="baf-real-real-real-real-real-"></span><code>function <strong>baf</strong>(b, Iw, Dw, xl, a:<a href="URootUptakeFunctions.html#real">real</a>):<a href="URootUptakeFunctions.html#real">real</a>;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
- Tortuosity factor </p>
+ calculates the soil water content at the root surface according to the single root approach of Gardner (1960) </p>
+<p>
+ 
+
+<p>
+
+<p>
+
+<p>
+
+<p></p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>b</dt>
+<dd>average soil water content of the root cylinder [cm3/cm3]</dd>
+<dt>Iw</dt>
+<dd>water influx [cm3/cm/d]</dd>
+<dt>Dw</dt>
+<dd>diffusion coefficient of water [cm2/d]</dd>
+<dt>xl</dt>
+<dd>half distance between roots [cm]</dd>
+<dt>a</dt>
+<dd>root radius [cm]</dd>
+</dl>
 </td></tr>
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="Imax-real-real-real-real-real-real-"></span><code>function <strong>Imax</strong>(Cl, clmin, theta, w_influx, wld, rad: <a href="U2DSoilBaseClasses.html#real">real</a>): <a href="U2DSoilBaseClasses.html#real">real</a>;</code></td>
+<td class="itemcode"><span id="f_Tortuosity-real-"></span><code>function <strong>f_Tortuosity</strong>(theta: <a href="URootUptakeFunctions.html#real">real</a>): <a href="URootUptakeFunctions.html#real">real</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+ Tortuosity factor for solute diffusion in soil empirical function of based on data of Barraclough (1993?) </p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Imax_f-real-real-real-real-real-real-"></span><code>function <strong>Imax_f</strong>(Cl, clmin, theta, w_influx, rld, rad: <a href="URootUptakeFunctions.html#real">real</a>): <a href="URootUptakeFunctions.html#real">real</a>;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
  function for calculation of maximum nitrate uptake rates of roots </p>
+<p>
+ parameters: 
+
+<p>
+
+<p>
+
+<p>
+
+<p>
+
+<p>
+
+<p>
+
+<p>Nitrate Concentrations are in [Kg NO3-N/cm H2O] this unusual unit is the consequence of giving the amount of water in cm throughout the classes of this class library in order to convert to g N /l multiply by 1000 -&gt; from kg to g multiply by 10000 x 10 from cm to l -&gt; multiply by 1e8</p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>Cl</dt>
+<dd>Soil solution concentration [Kg N/cm3 H2O]</dd>
+<dt>clmin</dt>
+<dd>Minimum soil solution concentration [Kg N/cm3 H2O]</dd>
+<dt>theta</dt>
+<dd>Volumetric water content [cm3/cm3]</dd>
+<dt>w_influx</dt>
+<dd>Water influx [cm3/cm*d]</dd>
+<dt>wld</dt>
+<dd>Mean root length density [cm/cm3]</dd>
+<dt>rad</dt>
+<dd>Mean root radius [cm]</dd>
+</dl>
+<h6 class="description_section">Returns</h6>
+<p class="return">Maximum nitrate influx [Kg N/cm*d]</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="Iwmax-real-real-real-real-real-"></span><code>function <strong>Iwmax</strong>(b, bmin, Dw, xl, a: <a href="URootUptakeFunctions.html#real">real</a>):<a href="URootUptakeFunctions.html#real">real</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+ calculates maximum water uptake rate of roots according to the single root approach of Gardner (1960) </p>
+<p>
+ 
+
+<p>
+
+<p>
+
+<p>
+
+<p></p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>b</dt>
+<dd>average soil water content of the root cylinder [cm3/cm3]</dd>
+<dt>bmin</dt>
+<dd>minimum soil water content at permanent wilting point [cm]</dd>
+<dt>Dw</dt>
+<dd>diffusion coefficient of water [cm2/d]</dd>
+<dt>xl</dt>
+<dd>half distance between roots [cm]</dd>
+<dt>a</dt>
+<dd>root radius [cm]</dd>
+</dl>
 </td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="MM_NInflux-real-real-real-real-real-real-real-real-"></span><code>function <strong>MM_NInflux</strong>(Cl, rld, rad, theta, w_influx, Imax, Km, clmin: <a href="URootUptakeFunctions.html#real">real</a>): <a href="URootUptakeFunctions.html#real">real</a>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+ function for calculation of nitrate uptake rates of roots using the Michaelis-Menten-cinetic as an inner boundary </p>
+<p>
+ parameters: 
+
+<p>
+
+<p>
+
+<p>
+
+<p>
+
+<p>
+
+<p>
+
+<p>Nitrate Concentrations are in [Kg NO3-N/cm H2O] this unusual unit is the consequence of giving the amount of water in cm throughout the classes of this class library in order to convert to g N /l multiply by 1000 -&gt; from kg to g multiply by 10000 x 10 from cm to l -&gt; multiply by 1e8</p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>Cl</dt>
+<dd>Soil solution concentration [Kg N/cm3 H2O]</dd>
+<dt>clmin</dt>
+<dd>Minimum soil solution concentration [Kg N/cm3 H2O]</dd>
+<dt>theta</dt>
+<dd>Volumetric water content [cm3/cm3]</dd>
+<dt>w_influx</dt>
+<dd>Water influx [cm3/cm*d]</dd>
+<dt>rld</dt>
+<dd>Mean root length density [cm/cm3]</dd>
+<dt>rad</dt>
+<dd>Mean root radius [cm]</dd>
+</dl>
+<h6 class="description_section">Returns</h6>
+<p class="return">Maximum nitrate influx [Kg N/cm*d]</p></td></tr>
+</table>
+<h3 class="detail">Types</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="real"></span><code><strong>real</strong> = double;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <h3 class="detail">Constants</h3>
 <table class="detail wide_list">

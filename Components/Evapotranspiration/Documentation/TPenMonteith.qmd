@@ -91,8 +91,6 @@ Entities <- ExtractInformationFromCSV(fn_csv)
 
 ```
 
-
-
 The class TPenMonteith has `r trunc(nrow(Entities$df.state))` following state variable(s).
 
 ```{r}
@@ -103,7 +101,6 @@ kable(Entities$df.state)
 ```
 
 ## Parameters
-
 
 The class TPenMonteith has `r trunc(nrow(Entities$df.par))` following parameter(s).
 
@@ -124,7 +121,6 @@ kable(Entities$df.var,  escape = FALSE)
 
 ## External variables
 
-
 The class TPenMonteith has `r trunc(nrow(Entities$df.ext))` following external variable(s).
 
 ```{r}
@@ -135,7 +131,6 @@ kable(Entities$df.ext,  escape = FALSE)
 ```
 
 ## Options
-
 
 The class TPenMonteith has `r trunc(nrow(Entities$df.opt))` following option(s).
 
@@ -247,7 +242,7 @@ In order to calculate the evaporation rate, the Penman-Monteith equation require
 
 The net radiation is the difference between the incoming shortwave radiation and the reflected shortwave radiation plus the incoming longwave radiation minus the outgoing longwave radiation and the soil heat flux. The vapour pressure deficit is the difference between the saturation vapour pressure and the actual vapour pressure. The canopy resistance is the resistance to water vapour transfer from the crop surface to the atmosphere. The aerodynamic resistance is the resistance to water vapour transfer from the leaf surface to the atmosphere.
 
-### Net radiation
+## Net radiation
 
 The net radiation R~n~ \[W^.^m^-2^\] is computed from the global radiation, GR \[W^.^m^-2^\], using an empirical regression equation derived from measurements of global and net radiation over grass at the experimental field 'Ruthe' (@fig-NetRadhourly):
 
@@ -381,7 +376,7 @@ p
 
 ```
 
-### Vapour pressure deficit
+## Vapour pressure deficit
 
 The vapour pressure deficit is the difference between the saturation vapour pressure and the actual vapour pressure. The saturation vapour pressure is the maximum amount of water vapour that the air can hold at a given temperature. The actual vapour pressure can be calculated from the relative humidity and the saturation vapour pressure. The relative humidity is the ratio of the actual vapour pressure to the saturation vapour pressure. The vapour pressure deficit is the difference between the saturation vapour pressure and the actual vapour pressure. The vapour pressure deficit is a measure of the drying power of the air. The greater the vapour pressure deficit, the greater the drying power of the air.
 
@@ -430,13 +425,13 @@ p
 
 ```
 
-### Slope of saturation vapour pressure curve
+## Slope of saturation vapour pressure curve
 
 The slope of the saturation vapour pressure curve s \[hPa^.^K^-1^\] is calculated as the derivative of the saturation vapour pressure with respect to temperature:
 
 $$s = 239.0 \cdot 17.4 \cdot \frac{e_s} {(Temp + 239.0)^2}$$ {#eq-s}
 
-### Air pressure
+## Air pressure
 
 The pressure of the air \[hPa\] can be calculated from the elevation \[m\] and the temperature \[°C\] using the barometric formula:
 
@@ -444,7 +439,7 @@ $$P = 1013.0 \cdot e^{\left(\frac{-0.034 \cdot Elev } {Temp + 273}\right)}$$ {#e
 
 Note that the class TPenMonteith uses the pressure in \[hPa\] for historical reasons.
 
-### CO_2 concentration
+## CO_2 concentration
 
 The CO_2 concentration \[ppm\] can be supplied as an external variable or calculated from the date using a quadratic regression equation derived from measurements of CO_2 concentration at the Mauna Loa Observatory:
 
@@ -452,7 +447,7 @@ $$CO_2 = 45549.96 -47.00505 \cdot year + 0.01220744 \cdot year^2$$ {#eq-CO2}
 
 where Year is the year of the measurement.
 
-### Density of dry air
+## Density of dry air
 
 The density of dry air $\rho_a$ \[kg^.^m^-3^\] can be calculated from the pressure of the air \[hPa\], the temperature \[°C\] and the gas constant for dry air \[J^.^kg^-1.^K^-1^\] using the ideal gas law:
 
@@ -460,7 +455,7 @@ $$\rho_a = 1.2917 - 0.00434 \cdot T$$ {#eq-rhoa}
 
 where $T$ is the temperature \[°C\].
 
-### Psychrometer constant
+## Psychrometer constant
 
 $$ \gamma =\frac{ \left( c_p \right)_{air} *  P }{ \lambda_v * MW_{ratio} }$$ {#eq-gamma}
 
@@ -488,7 +483,7 @@ gamma_value <- gamma(1013, 10)
 
 At an air pressure of 1013 hPa and a temperature of 10°C the psychrometer constant is `r round(gamma_value, 3)` \[hPa K^-1^\].
 
-### Aerodynamic resistance
+## Aerodynamic resistance
 
 The aerodynamic resistance depends on wind speed and the height of the vegetation. Under so called stable conditions (canopy temperature equals air temperature) a logarithmic wind profile can be found, i.e. wind speed is linearly related to the logarithm of the height. From the measurement height (z) the wind speed (u) decreases down to zero at a height z~0~ which can be found by linear extrapolation on the semi-logarithmic plot of height vs wind speed. The term z~0~ is also called the aerodynamic roughness length. It can be approximated by 0.13^.^h, where h is the crop height \[m\].
 
@@ -510,7 +505,7 @@ where d is the zero plane displacement height, i.e. the height to which plant ca
 
 Within the TPenMoneith class there is an option to calculate the aerodynamic resistance using either the Penman-Monteith equation or the Thom-Oliver equation.
 
-#### FAO-56 method for aerodynamic resistance
+### FAO-56 method for aerodynamic resistance
 
 The FAO-56 method differs in some details from the above approach.
 

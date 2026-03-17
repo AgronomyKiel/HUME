@@ -1,31 +1,8 @@
-﻿/// <summary>
-/// This unit defines the TDevelopment class, a core component of the HUME-Wheat crop model, responsible for simulating the phenological development (growth stages) of wheat. 
-/// The class models the progression of the crop through its life cycle, from sowing and emergence to maturity and harvest, using temperature, daylength, and genetic parameters.
-/// 
-/// **Key features:**
-/// - **Growth Stage Tracking: Extends the XSTAGE stages of Ceres Wheat with EC, BBCH stages scales to represent crop development.
-/// - **Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).
-/// - **Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.
-/// - **Modular Design: Integrates with other model components via external variables and options.
-///
-///   **Phenological stages in integer values and corresponding BBCH stages:**
-/// 1 **Emergence to terminal spikelet(TS), BBCH 10-30
-/// 2 **TS to end of vegetative growth, BBCH 30-39
-/// 3 **End of vegetative growth and beginning ear growth to end of pre-anthesis ear growth, BBCH 40-57
-/// 4 **End of pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase), BBCH 57-71
-/// 5 **Beginning of grain filling to physiological maturity, BBCH 71-90
-/// 6 **Physiological maturity to fallow (harvest), BBCH 90-99
-/// 7 **Fallow to sowing
-/// 8 **Sowing to germination
-/// 9 **Germination to emergence
-///
-/// **Typical usage:**
-/// This module is used to drive the timing of crop processes (e.g., leaf growth, flowering, grain filling) in response to weather and management, providing the developmental framework for the rest of the crop model.
-/// </summary>
-
-{@author(Ulf Boettcher <boettcher@pflanzenbau.uni-kiel.de>)}
+﻿
 
 unit Development; 
+
+
 
 {$IFDEF LINUX}
 {$DEFINE NONVISUAL}
@@ -53,22 +30,35 @@ type
   TDataInitMethod = (EC_Date, Days_to_EC);
 
 /// <summary>
-/// Enumeration for options related to Phyllochron/TSumIndernode calculation.
+/// Enumeration for options related to Phyllochron/TSumInternode calculation.
 /// </summary>
   TOptTSumInternode = (constant, daylength);
 
 /// <summary>
-/// Development class, a core component of the HUME-Wheat crop model, responsible for simulating the phenological development (growth stages) of wheat. The class models the progression of the crop through its life cycle, from sowing and emergence to maturity and harvest, using temperature, daylength, and genetic parameters.
-/// 
-/// Key features:
-/// - Growth Stage Tracking: Uses both integer (EC, BBCH, Zadoks) and continuous (xstage) scales to represent crop development.
-/// - Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).
-/// - Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.
-/// - Event Timing: Records the day of year (DOY) for key phenological events (e.g., stem elongation, heading, flowering, ripeness).
-/// - Parameterization: Supports genetic and environmental parameters (e.g., base temperature, photoperiod sensitivity, vernalization requirements).
-/// - Data Integration: Can initialize and calibrate development using measured data (e.g., measured EC dates).
-/// - Modular Design: Integrates with other model components via external variables and options.
-/// 
+/// This unit defines the TDevelopment class, a core component of the HUME-Wheat crop model, responsible for simulating the phenological development (growth stages) of wheat. 
+/// The class models the progression of the crop through its life cycle, from sowing and emergence to maturity and harvest, using temperature, daylength, and genetic parameters.
+/// <para><b>Key features:</b></para>
+/// <list type="bullet">
+/// <item><description> Growth Stage Tracking: Uses both integer (EC, BBCH, Zadoks) and continuous (xstage) scales to represent crop development.</description></item>
+/// <item><description>Development Rates: Calculates stage-specific development rates, including the effects of temperature (thermal time), photoperiod (daylength), and vernalization (cold exposure).</description></item>
+/// <item><description>Leaf Appearance and Initiation: Simulates the initiation and appearance of leaves on the main stem, using phyllochron and plastochron intervals.</description></item>
+/// <item><description>Event Timing: Records the day of year (DOY) for key phenological events (e.g., stem elongation, heading, flowering, ripeness).</description></item>
+/// <item><description>Parameterization: Supports genetic and environmental parameters (e.g., base temperature, photoperiod sensitivity, vernalization requirements).</description></item>
+/// <item><description>Data Integration: Can initialize and calibrate development using measured data (e.g., measured EC dates).</description></item>
+/// <item><description>Modular Design: Integrates with other model components via external variables and options, allowing for flexible coupling with growth, water, and nitrogen modules.</description></item>
+/// </list>
+///   <para> Phenological stages in integer values and corresponding BBCH stages:</para>
+/// <list type="bullet">
+/// <item><description>1 Emergence to terminal spikelet(TS), BBCH 10-30</description></item>
+/// <item><description>2 TS to end of vegetative growth, BBCH 30-39</description></item>
+/// <item><description>3 End of vegetative growth and beginning ear growth to end of pre-anthesis ear growth, BBCH 40-57</description></item>
+/// <item><description>4 End of pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase), BBCH 57-71</description></item>
+/// <item><description>5 Beginning of grain filling to physiological maturity, BBCH 71-90</description></item>
+/// <item><description>6 Physiological maturity to fallow (harvest), BBCH 90-99</description></item>
+/// <item><description>7 Fallow to sowing</description></item>
+/// <item><description>8 Sowing to germination</description></item>
+/// <item><description>9 Germination to emergence</description></item>
+/// </list>
 /// Typical usage:
 /// This module is used to drive the timing of crop processes (e.g., leaf growth, flowering, grain filling) in response to weather and management, providing the developmental framework for the rest of the crop model.
 /// </summary>
@@ -92,52 +82,69 @@ type
     TSEC71_min, TSEC71_max : real;
 
   fDataInitMethod : TDataInitMethod;
+
+
+///<summary> procedure to create variables for the TDevelopment class. </summary>  
     procedure CreateVars;
+///<summary> procedure to create states for the TDevelopment class. </summary>
     procedure CreateStates;
+///<summary> procedure to create parameters for the TDevelopment class. </summary>
     procedure CreatePars;
+///<summary> procedure to create extern variables for the TDevelopment class. </summary>
     procedure CreateExterns;
+///<summary> procedure to create options for the TDevelopment class. </summary>
     procedure CreateOptions;
+///<summary> procedure to initialize comments for the TDevelopment class. </summary>
     procedure InitComments;
+///<summary> procedure to look for EC30 measurement date in the data series. </summary>
     procedure LookForEC30MeasurementDate;
+///<summary> procedure set all variable values to zero. </summary>
     procedure SetVarsToZero;
+/// <summary> procedure to calculate development rates for different stages. </summary>     
     procedure CalcLeafAppearanceRate;
+/// <summary> procedure to calculate development rates for different stages. </summary>    
     procedure CalcLeafInitiationRate;
+/// <summary> procedure to calculate development rates for different stages. </summary>    
     procedure CalcVernalisationRate;
+/// <summary> procedure to calculate development rate at GS9. </summary>    
     procedure CalcStage9DevRate;
+/// <summary> procedure to calculate development rates for different stages. </summary>    
     procedure CalcXStageChangeRate;
     procedure CalcSpecificDays_and_TemperatureSums;
       protected
     { Protected-Deklarationen }
   public
     { Public-Deklarationen }
-    /// developmet rate during istage 1
+    /// <summary>Development rate during istage 1.</summary>
     devrates1: TVar;
-    /// developmet rate during istage 2
+    /// <summary>Development rate during istage 2.</summary>
     devrates2: TVar;
-    /// developmet rate during istage 3
+    /// <summary>Development rate during istage 3.</summary>
     devrates3: TVar;
-    /// developmet rate during istage 4
+    /// <summary>Development rate during istage 4.</summary>
     devrates4: TVar;
-    /// developmet rate during istage 5
+    /// <summary>Development rate during istage 5.</summary>
     devrates5: TVar;
-    /// developmet rate during istage 6
+    /// <summary>Development rate during istage 6.</summary>
     devrates6: TVar;
-    /// developmet rate during istage 9
+
+    /// <summary>Development rate during istage 9.</summary>
     devrates9: TVar;
-    /// xstage times 10, for convenience of plotting
+
+    /// <summary>Xstage multiplied by ten for easier plotting.</summary>
     dvs10: TVar;
-    /// integer value of dev stage
+    /// <summary>Integer value of the development stage.</summary>
     istage: TVar;
 
-    /// relative development rate of photoperiod
+    /// <summary>Relative development rate influenced by photoperiod.</summary>
     rdr_p: TVar;   
-    /// relative development rate of vernalization
+    /// <summary>Relative development rate influenced by vernalization.</summary>
     rdr_v: TVar;   
-    /// effective day temperature >=0 zur Basistemperatur
+    /// <summary>Effective day temperature above the base temperature.</summary>
     Teff: TVar;   
-    /// Zadock's stages
+    /// <summary>Zadock's stages.</summary>
     zstage: TVar;  
-    /// vernalisationfactor
+    /// <summary>Vernalisation factor.</summary>
     vernf: TVar;   
     GS_EC25: TVar;
     TSEC32: Tvar;
@@ -153,128 +160,130 @@ type
     TSEC71: Tvar;
     Ph39_opt: Tvar;
     TSumInternode_opt: TVar;
-    c: TVar;                   /// variable photoperiodic influence factor (0..1)
-    k_v: TVar;                 /// vernalisation variable
-    /// temperature sum from emergence to EC30
+    /// <summary>Variable photoperiodic influence factor (0..1).</summary>
+    c: TVar;
+    /// <summary>Vernalisation variable.</summary>
+    k_v: TVar;
+    /// <summary>Temperature sum from emergence to EC30.</summary>
     tempsumemergence: TVar;
-    /// Day when EC equals 10
+    /// <summary>Day when EC equals 10.</summary>
     d10: TVar;
-    /// Day when EC equals 29
+    /// <summary>Day when EC equals 29.</summary>
     d29: TVar;
-    /// Day when EC equals 50
+    /// <summary>Day when EC equals 50.</summary>
     d50: TVar;
-    /// Day when EC equals 59
+    /// <summary>Day when EC equals 59.</summary>
     d59: TVar;
-    /// Day when EC equals 75
+    /// <summary>Day when EC equals 75.</summary>
     d75: TVar;
-    /// Day when EC equals 90
+    /// <summary>Day when EC equals 90.</summary>
     d90: TVar;
-    /// DOY for begin stem elongation
+    /// <summary>Day of year for beginning of stem elongation.</summary>
     DOY_BegStemElong: TVar;
-    /// DOY when BBCH 51
+    /// <summary>Day of year when BBCH 51 occurs.</summary>
     DOY_BegHeading: TVar;
-    /// DOY when BBCH 59
+    /// <summary>Day of year when BBCH 59 occurs.</summary>
     DOY_EndHeading: TVar;
-    /// DOY for begin of flowering
+    /// <summary>Day of year for beginning of flowering.</summary>
     DOY_BegFlower: TVar;
-    /// DOY when BBCH 88
+    /// <summary>Day of year when BBCH 88 occurs.</summary>
     DOY_YellowRipeness: TVar;
-    /// DOY for physiological ripeness
+    /// <summary>Day of year for physiological ripeness.</summary>
     DOY_PhysRipe: TVar;
     ECa: TVar;
-    /// Dayof Year of sowingdate
+    /// <summary>Day of year of the sowing date.</summary>
     DayOfYearSowingDate: TVar;
-    /// Anzahl nicht ausgebildeter Blätter zum Zeitpunkt Xstage 2
+    /// <summary>Number of leaves not formed at Xstage 2.</summary>
     inl_MS_xstage2 : TVar;
 
-    /// days since sowing
+    /// <summary>Days since sowing.</summary>
     DaySSow,
-    /// cumulative vernalisation
+    /// <summary>Cumulative vernalisation.</summary>
     cumvern,
 
-    /// EC stage
+    /// <summary>EC stage.</summary>
     ec: TState;
-    /// thermal developmental units
+    /// <summary>Thermal developmental units.</summary>
     tdu: TState;
-    /// temperature sum since sowing
+    /// <summary>Temperature sum since sowing.</summary>
     tsums: TState;
-    /// non integer growth stage indicator ranging from zero to six
+    /// <summary>Non-integer growth stage indicator ranging from zero to six.</summary>
     xstage: TState;
-    /// number of leaves on main stem
+    /// <summary>Number of leaves on the main stem.</summary>
     nL_MS: TState;
-    /// Temperature sum since EC30
+    /// <summary>Temperature sum since EC30.</summary>
     TSumEC30: TState;
-    /// Temperature sum until EC30
+    /// <summary>Temperature sum until EC30.</summary>
     TSum_until_EC_30: TState;
-    /// Temperature sum until EC37
+    /// <summary>Temperature sum until EC37.</summary>
     TSum_until_EC_37: TState;
 
-    /// initial leaf number on main stem
+    /// <summary>Initial leaf number on the main stem.</summary>
     inL_MS: TState;
 
-    /// photoperiodic daylength
+    /// <summary>Photoperiodic daylength.</summary>
     daylengthp,
-    /// mean air temperature
+    /// <summary>Mean air temperature.</summary>
     TMPM,
     dayofyear: TExternV;
 
-    /// TSUM 37 bis 39
+    /// <summary>Temperature sum from stage 37 to 39.</summary>
     Ph39: TPar;
-    /// genetic specific parameter of photoperiod sensitivity
+    /// <summary>Genotype-specific parameter of photoperiod sensitivity.</summary>
     p1d: TPar;
-    /// genetic specific parameter of vernalisation sensitivity
+    /// <summary>Genotype-specific parameter of vernalisation sensitivity.</summary>
     p1v: TPar;
-    /// sowing depth (cm): not actual in use
+    /// <summary>Sowing depth in centimeters (not currently in use).</summary>
     sdepth: TPar;
-    /// the phyllochron interval: the interval in thermal time (degree days) between successive leaf and tiller appearances
+    /// <summary>Phyllochron interval in thermal time (degree days) between successive leaf and tiller appearances.</summary>
     phint: TPar;
-    /// End of leaf growth and beginning of ear growth to end of pre-anthesis ear growth
+    /// <summary>Thermal time from end of leaf growth through pre-anthesis ear growth.</summary>
     p3: TPar;
-    /// thermal time between Pre-anthesis ear growth to beginning of grain filling (anthesis occurs during this phase)in°Cd
+    /// <summary>Thermal time between pre-anthesis ear growth and beginning of grain filling (anthesis occurs during this phase) in °Cd.</summary>
     p4: TPar;
-    /// thermal time between beginning of grain fill and maturity in°Cd
+    /// <summary>Thermal time between beginning of grain fill and maturity in °Cd.</summary>
     p5: TPar;
-    /// thermal timen from germination to seedling emergence in °Cd
+    /// <summary>Thermal time from germination to seedling emergence in °Cd.</summary>
     p9: TPar;
-    /// base temperature
+    /// <summary>Base temperature.</summary>
     tBase: TPar;
-    /// Multiplikator des Phyllochronintervalls in der Schossenphase
+    /// <summary>Multiplier of the phyllochron interval during stem elongation.</summary>
     Internode: TPar;
     sowingdate: TPar;
-    /// interval in thermal time between leaf initiation
+    /// <summary>Interval in thermal time between leaf initiation.</summary>
     plastochron: TPar;
-    /// initial number of initiated leaves at emergence
+    /// <summary>Initial number of initiated leaves at emergence.</summary>
     ini_inLMS: TPar;
-    /// xstage an dem keine weiteren leaf primordien angelegt werden
+    /// <summary>Xstage value at which no further leaf primordia are initiated.</summary>
     xstage_fin_leaf_prim: TPar;
 
-    /// temperature sum between two internodes
+    /// <summary>Temperature sum between two internodes.</summary>
     TSumInternode: TPar;
     minLeaf_number: TPar;
-    /// maximum number of vernalisation days which increase developmental rate
+    /// <summary>Maximum number of vernalisation days that increase developmental rate.</summary>
     MaxVernDays: TPar;
-    /// maximum daylength which increase developmental rate
+    /// <summary>Maximum daylength that increases developmental rate.</summary>
     MaxPhotoperiod: TPar;
-    /// minimum vernalisation temperature
+    /// <summary>Minimum vernalisation temperature.</summary>
     VernMinTemp: TPar;
-    /// temperature where vernalisation is starting to be optimal
+    /// <summary>Temperature at which vernalisation starts to be optimal.</summary>
     VernOptTemp1: TPar;
-    /// temperature where vernalisation is ending to be optimal
+    /// <summary>Temperature at which vernalisation stops being optimal.</summary>
     VernOptTemp2: TPar;
-    /// temperature where vernalisation is getting zero
+    /// <summary>Temperature at which vernalisation effect becomes zero.</summary>
     VernMaxTemp: TPar;
-    /// weighting factor for daylength influence
+    /// <summary>Weighting factor for daylength influence.</summary>
     fdl: TPar;  
-    /// option for data initialization method
+    /// <summary>Option for selecting the data initialization method.</summary>
     DataInitMethod: Toption;
 
-    /// option for recalculating sowing date
+    /// <summary>Option for recalculating the sowing date.</summary>
     ReCalcSowingDate : Toption;
 
-    /// option for TSumInternode calculation
+    /// <summary>Option for TSumInternode calculation.</summary>
     OptTSumInternode: Toption;
     
-    /// option for using measured dates for development
+    /// <summary>Option for using measured dates for development.</summary>
     procedure createAll; override;
 
     /// <summary>
@@ -302,63 +311,63 @@ type
    property Var_c : TVar read c write c;
 
    /// <summary>
-    /// development rate during istage 1
+    /// Development rate during istage 1.
     /// </summary>
    property Var_devrates1 : TVar read devrates1 write devrates1;
 
    /// <summary>
-   /// development rate during istage 2
+   /// Development rate during istage 2.
    /// </summary>
    property Var_devrates2 : TVar read devrates2 write devrates2;
  
    /// <summary>
-   /// development rate during istage 3
+   /// Development rate during istage 3.
    /// </summary>
    property Var_devrates3 : TVar read devrates3 write devrates3;
    
    /// <summary>
-    /// development rate during istage 4
+    /// Development rate during istage 4.
     /// </summary>
    property Var_devrates4 : TVar read devrates4 write devrates4;
 
    /// <summary>
-    /// development rate during istage 5
+    /// Development rate during istage 5.
     /// </summary>
    property Var_devrates5 : TVar read devrates5 write devrates5;
    
    /// <summary>
-    /// development rate during istage 6
+    /// Development rate during istage 6.
     /// </summary>  
    property Var_devrates6 : TVar read devrates6 write devrates6;
 
    /// <summary>
-    /// development rate during istage 9
+    /// Development rate during istage 9.
     /// </summary>    
    property Var_devrates9 : TVar read devrates9 write devrates9;
    
    /// <summary>
-    /// xstage times 10, for convenience of plotting
+    /// Xstage multiplied by ten for convenience of plotting.
     /// </summary>
    property Var_dvs10 : TVar read dvs10 write dvs10;
    
    
    /// <summary>
-    /// integer value of development stage
+    /// Integer value of the development stage.
     /// </summary>  
    property Var_istage : TVar read istage write istage;
    
    /// <summary>
-    /// vernalisation factor
+    /// Vernalisation factor.
     /// </summary>
    property Var_k_v : TVar read k_v write k_v;
    
    /// <summary>
-    /// relative development rate effect of photoperiod
+    /// Relative development rate effect of photoperiod.
     /// </summary>
    property Var_rdr_p : TVar read rdr_p write rdr_p;
    
    /// <summary>
-    /// relative development rate effect of vernalisation
+    /// Relative development rate effect of vernalisation.
     /// </summary>
    property Var_rdr_v : TVar read rdr_v write rdr_v;
 
@@ -491,16 +500,14 @@ begin
     fTSumInternode := constant
   else
     fTSumInternode := daylength;
-
-
-
 end;
 
 procedure TDevelopment.CalcRates;
 
 begin
   if(fTSumInternode = daylength) then begin
-    TSumInternode_opt.v:= phint.v + fdl.v*daylengthp.v*daylengthp.v; // calculate TSumInternode_opt from phint, fdl, and daylengthp
+    //TSumInternode_opt.v:= phint.v + fdl.v*daylengthp.v*daylengthp.v; // calculate TSumInternode_opt from phint, fdl, and daylengthp
+    TSumInternode_opt.v := phint.v-fdl.v*max(0,daylengthp.v-12);
     ph39_opt.v:=TSumInternode_opt.v;
   end else begin
     TSumInternode_opt.v:= TSumInternode.v; // use TSumInternode as constant value
@@ -554,8 +561,8 @@ begin
   // calculate vernalisation influence factor
   rdr_v.v := min(1,max(0,1-k_v.v*(MaxVernDays.v-cumvern.v)));
 
-  /// calculate daylength influence factor
-  ///  http://localhost:4685/Components/CERES%20Wheat/Documentation/TDevelopment.html#photoperiod
+  /// <summary>Calculates the daylength influence factor.</summary>
+  /// <remarks>See http://localhost:4685/Components/CERES%20Wheat/Documentation/TDevelopment.html#photoperiod.</remarks>
   rdr_p.v := min(1,max(0,1-c.v*sqr(MaxPhotoperiod.v-daylengthp.v)));
 
   CalcStage9DevRate;
@@ -622,10 +629,15 @@ if (xstage.v>=0)and(xstage.v<2) then
     EC.c := zstage.v - EC.v;
   end else
 
+  // development rate during pre-anthesis ear growth
   devrates4.v := Teff.v/p4.v;                     // p4 ~ 200 degree days
 
+  // development rate during grain filling, temperature sum is derived from p5
   devrates5.v := (max(0,Teff.v-1))/((p5.v+21.5)/0.05); //
 
+  // calculation of zstage from xstage
+  // and calculation of EC change rate from zstage
+  // between EC 62 and 65
   if (xstage.v>=4)and(xstage.v<4.4) then
     begin
       zstage.v := 5.7 + 0.8*(xstage.v-4.0);   // EC 62
@@ -633,6 +645,9 @@ if (xstage.v>=0)and(xstage.v<2) then
       EC.c := zstage.v - EC.v;
     end else
 
+// calculation of zstage from xstage
+// and calculation of EC change rate from zstage
+// between EC 65 and 69
 if (xstage.v>=4.4)and(xstage.v<6) then
   begin
     zstage.v := 6.02 + 1.86*(xstage.v-4.4); // from CERES nitrogen module
@@ -640,6 +655,9 @@ if (xstage.v>=4.4)and(xstage.v<6) then
     EC.c := zstage.v - EC.v;
   end else
 
+// calculation of zstage from xstage
+// and calculation of EC change rate from zstage
+// between EC 69 and 71
 if (xstage.v>= 6) and (xstage.v <7) then
   begin
     zstage.v := 9 + (xstage.v-6);           // from CERES nitrogen module
@@ -1035,16 +1053,16 @@ begin
   istage.comment := ' Phenologicalstages in integer values';
   rdr_p.comment := 'relative development rate of photoperiod';
   rdr_v.comment := 'relative development rate of vernalization';
-  Teff.comment := 'Tagestemperatur >=0 zur Basistemperatur';
+  Teff.comment := 'effective day temperature, i.e. temperature above base temperature';
   zstage.comment := 'Zadocks stages';
   vernf.comment := 'vernalisation factor';
   c.comment := 'variable photoperiodic influence factor (0..1)';
   k_v.comment := 'vernalisation variable';
-  tempsumemergence.comment := '';
+  tempsumemergence.comment := 'temperature sum until emergence';
   d10.comment := 'Day when EC equals 10';
   d29.comment := 'Day when EC equals 29';
   ECa.comment := '';
-  DayOfYearSowingDate.comment := 'Dayof Year of sowingdate';
+  DayOfYearSowingDate.comment := 'Day of Year of sowing date';
   DaySSow.comment := 'days since sowing';
   cumvern.comment := 'cumulative vernalisation';
   ec.comment := 'EC stage';
@@ -1054,24 +1072,24 @@ begin
   nL_MS.comment := 'number of leaves on main stem';
   TSumEC30.comment := 'Temperature sum since EC30';
   inL_MS.comment := 'initial leaf number on main stem';
-  inl_MS_xstage2.comment := 'Anzahl nicht ausgebildeter Bl�tter zum Zeitpunkt Xstage 2';
+  inl_MS_xstage2.comment := 'number of not emerged leaves at Xstage 2';
   daylengthp.comment := 'photoperiodic daylength';
   TMPM.comment := 'mean air temperature';
-  dayofyear.comment := '';
-  Ph39.comment := 'TSUM 37 bis 39';
+  dayofyear.comment := 'day of year';
+  Ph39.comment := 'TSUM 37 to 39';
   p1d.comment := 'genetic specific parameter of photoperiod sensitivity';
   p1v.comment := 'genetic specific parameter of vernalisation sensitivity';
   sdepth.comment := 'sowing depth (cm), not actual in use';
   phint.comment := 'the phyllochron interval, the interval in thermal time' + '(degree days) between successive leaf and tiller appearances';
-  p4.comment := 'thermal time between Pre-anthesis ear growth to beginning of' + ' grain filling (anthesis occurs during this phase)in�Cd';
-  p5.comment := 'thermal time between beginning of grain fill and maturity in�Cd';
-  p9.comment := 'thermal timen from germination to seedling emergence in �Cd';
+  p4.comment := 'thermal time between Pre-anthesis ear growth to beginning of' + ' grain filling (anthesis occurs during this phase)in °Cd';
+  p5.comment := 'thermal time between beginning of grain fill and maturity in °Cd';
+  p9.comment := 'thermal timen from germination to seedling emergence in °Cd';
   tBase.comment := 'base temperature';
   Internode.comment := 'Multiplikator des Phyllochronintervalls in der Schossphase';
-  sowingdate.comment := '';
+  sowingdate.comment := 'sowing date in day of year';
   plastochron.comment := 'interval in thermal time between leaf initiation';
-  xstage_fin_leaf_prim.comment := 'xstage an dem keine weiteren leaf primordien angelegt werden';
-  TSumInternode.comment := 'te�mperature sumd between two internodes';
+  xstage_fin_leaf_prim.comment := 'xstage at which  xstage at which no further leaf primordia are formed';
+  TSumInternode.comment := 'temperature sumd between two internodes';
   minLeaf_number.comment := '';
   MaxVernDays.comment := 'maximum number of vernalisation days which increase developmental rate';
   MaxPhotoperiod.comment := 'maximum daylength which increase developmental rate';
@@ -1090,7 +1108,7 @@ begin
   OptCreate('RecalcSowingDate', 'True', RecalcSowingDate);
   RecalcSowingDate.OptionList.Add('True');
   RecalcSowingDate.OptionList.Add('False');
-  OptCreate('optTSumInternode', 'constant', OptTSumInternode);
+  OptCreate('optTSumInternode', 'constant', OptTSumInternode, 'option to set daylength effect on TSumInternode');
    OptTSumInternode.OptionList.Add('constant');
    OptTSumInternode.OptionList.Add('daylength');
    optTSumInternode.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/TDevelopment.html#day-length-effects'
@@ -1100,44 +1118,49 @@ end;
 procedure TDevelopment.CreateExterns;
 begin
   // neu angepasst 17.01.
-  ExternVCreate('daylengthp', 'h', ratefield, daylengthp);
-  ExternVCreate('dayofyear', 'n', statefield, dayofyear);
-  ExternVCreate('TMPM', '[�C]', ratefield, TMPM);
+  ExternVCreate('daylengthp', 'h', ratefield, daylengthp, 'photoperiodic daylength');
+  ExternVCreate('dayofyear', 'n', statefield, dayofyear, 'day of year');
+  ExternVCreate('TMPM', '[°C]', ratefield, TMPM, 'mean air temperature');
 end;
 
 procedure TDevelopment.CreatePars;
 begin
   Parcreate('p1d', '', 2.76, p1d);
-  //aktualisiert nach John-Manuskript 29.Jan.09
+  p1d.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/TDevelopment.html#photoperiod';
+    //aktualisiert nach John-Manuskript 29.Jan.09
   Parcreate('p1v', '', 2.84, p1v);
+  p1v.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/TDevelopment.html#vernalisation';
+
   //aktualisiert nach John-Manuskript 29.Jan.09
   Parcreate('sdepth', 'cm', 3, sdepth);
-  Parcreate('phint', '�Cd', 91.74, phint);
+  Parcreate('phint', '°Cd', 91.74, phint);
+  phint.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/TDevelopment.html#eq-dnLMS';
   //aktualisiert nach John-Manuskript 29.Jan.09
   Parcreate('tBase', '', 0, tBase);
   Parcreate('sowingdate', 'doy', 300, sowingdate);
   ParCreate('fdl', '-', 0, fdl);
-  Parcreate('p3', '�Cd', 183.48, p3);
+  fdl.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/TDevelopment.html#day-length-effects';
+  Parcreate('p3', '°Cd', 183.48, p3);
 
-  Parcreate('p4', '�Cd', 200, p4);
+  Parcreate('p4', '°Cd', 200, p4);
   Parcreate('p5', '-', 11.67, p5);
   //aktualisiert nach Johnen-Manuskript 29.Jan.09
-  ParCreate('p9', '�Cd', 139.9, p9);
+  ParCreate('p9', '°Cd', 139.9, p9);
   //aktualisiert nach Johnen-Manuskript 29.Jan.09
-  ParCreate('plastochron', '�Cd', 68.3914, plastochron);
+  ParCreate('plastochron', '°Cd', 68.3914, plastochron);
   //aktualisiert am 17.01.
   ParCreate('Ini_inLMS', 'n', 4, Ini_inLMS);
   //aktualisiert am 17.01. nach Kage 2012
-  ParCreate('TSumInternode', '�Cd', 97.09, TSumInternode);
+  ParCreate('TSumInternode', '°Cd', 97.09, TSumInternode);
   //aktualisiert nach John-Manuskript 29.Jan.09
   ParCreate('minLeaf_number', '', 7, minLeaf_number);
   ParCreate('Internode', '', 3, Internode);
   ParCreate('MaxVernDays', 'd', 50, MaxVernDays);
   ParCreate('MaxPhotoperiod', 'h', 20, MaxPhotoperiod);
-  ParCreate('VernMinTemp', '�C', -0.5, VernMinTemp);
-  ParCreate('VernOptTemp1', '�C', 0.5, VernOptTemp1);
-  ParCreate('VernOptTemp2', '�C', 6, VernOptTemp2);
-  ParCreate('VernMaxTemp', '�C', 18, VernMaxTemp);
+  ParCreate('VernMinTemp', '°C', -0.5, VernMinTemp);
+  ParCreate('VernOptTemp1', '°C', 0.5, VernOptTemp1);
+  ParCreate('VernOptTemp2', '°C', 6, VernOptTemp2);
+  ParCreate('VernMaxTemp', '°C', 18, VernMaxTemp);
   ParCreate('Ph39', '-', 101.56, Ph39);
   //aktualisiert nach John-Manuskript 29.Jan.09
   ParCreate(' xstage_fin_leaf_prim', '-', 1.78171, xstage_fin_leaf_prim);
@@ -1145,40 +1168,39 @@ end;
 
 procedure TDevelopment.CreateStates;
 begin
-  StateCreate('cumvern', '', 0, true, cumvern);
-  StateCreate('ec', '', 0, true, ec);
+  StateCreate('cumvern', '', 0, true, cumvern, 'cumulative vernalisation days');
+  StateCreate('ec', '', 0, true, ec, 'EC stage');
   ec.PlotTograpH := true;
-  StateCreate('tdu', '', 0, true, tdu);
+  StateCreate('tdu', '', 0, true, tdu, 'thermal developmental units');
   StateCreate('tsums', '', 0, true, tsums);
-  StateCreate('xstage', '', 0, true, xstage);
-  StateCreate('nl_MS', 'n', 0, false, nl_MS);
-  StateCreate('inl_MS', 'n', 5, false, inl_MS);
-  StateCreate('DaySSow', 'n', 0, false, DaySSow);
-  StateCreate('TSumEC30', '', 0, true, TSumEC30);
+  StateCreate('xstage', '', 0, true, xstage, 'non integer growth stage indicator ranging from zero to six');
+  StateCreate('nl_MS', 'n', 0, false, nl_MS, 'number of leaves on main stem');
+  StateCreate('inl_MS', 'n', 5, false, inl_MS, 'initial leaf number on main stem');
+  StateCreate('DaySSow', 'n', 0, false, DaySSow, 'day since sowing');
+  StateCreate('TSumEC30', '', 0, true, TSumEC30, 'Temperature sum since EC30');
   StateCreate('TSum_until_EC_30', '', 0, true, TSum_until_EC_30);
   StateCreate('TSum_until_EC_37', '', 0, true, TSum_until_EC_37);
 end;
 
 procedure TDevelopment.CreateVars;
 begin
-  //M�glichkeit, die Methoden des Vorg�ngermodells
-  //aufzurufen, so da� mit einer einzigen Anweisung die ganze Funktionalit�t der
-  // Vorg�ngermethoden �bernommen werden
-  VarCreate('c', '', 0, true, c);
+  //Möglichkeit, die Methoden des Vorgängermodells
+  //aufzurufen, so daß mit einer einzigen Anweisung die ganze Funktionalität der
+  // Vorgängermethoden übernommen werden
+  
   // Define Value
-  VarCreate('devrates1', '', 0, true, devrates1);
-  VarCreate('devrates2', '', 0, true, devrates2);
-  VarCreate('devrates3', '', 0, true, devrates3);
-  VarCreate('devrates4', '', 0, true, devrates4);
-  VarCreate('devrates5', '', 0, true, devrates5);
-  VarCreate('devrates6', '', 0, true, devrates6);
-  VarCreate('devrates9', '', 0, true, devrates9);
-  VarCreate('dvs10', '', 0, true, dvs10);
-  VarCreate('istage', '', 0, true, istage);
-  VarCreate('k_v', '', 0, true, k_v);
+  VarCreate('devrates1', '', 0, true, devrates1, 'development rate during istage 1');
+  VarCreate('devrates2', '', 0, true, devrates2, 'development rate during istage 2');
+  VarCreate('devrates3', '', 0, true, devrates3, 'development rate during istage 3');
+  VarCreate('devrates4', '', 0, true, devrates4, 'development rate during istage 4');
+  VarCreate('devrates5', '', 0, true, devrates5, 'development rate during istage 5');
+  VarCreate('devrates6', '', 0, true, devrates6, 'development rate during istage 6');
+  VarCreate('devrates9', '', 0, true, devrates9, 'development rate during istage 9');
+  VarCreate('dvs10', '', 0, true, dvs10, 'xstage times 10, for convenience of plotting');
+  VarCreate('istage', '', 0, true, istage, ' Phenologicalstages in integer values');
   // Define Value
-  VarCreate('rdr_p', '', 0, true, rdr_p);
-  VarCreate('rdr_v', '', 0, true, rdr_v);
+  VarCreate('rdr_p', '', 0, true, rdr_p, 'relative development rate effect of photoperiod');
+  VarCreate('rdr_v', '', 0, true, rdr_v, 'relative development rate effect of vernalisation');
   VarCreate('TSEC32', '', 0, true, TSEC32, 'Date of BBCH32 (needed for calibration');
   VarCreate('TSEC33', '', 0, true, TSEC33, 'Date of BBCH33 (needed for calibration');
   VarCreate('TSEC37', '', 0, true, TSEC37, 'Date of BBCH37 (needed for calibration');
@@ -1189,19 +1211,19 @@ begin
   VarCreate('TSEC65', '', 0, true, TSEC65, 'Date of BBCH65 (needed for calibration');
   VarCreate('TSEC69', '', 0, true, TSEC69, 'Date of BBCH69 (needed for calibration');
   VarCreate('TSEC71', '', 0, true, TSEC71, 'Date of BBCH71 (needed for calibration');
-  VarCreate('tempsumemergence', '', 0, true, tempsumemergence);
-  VarCreate('TSumInternode_opt',    '[�Cd]', 0, true, TSumInternode_opt, 'a function of phint and day length');
+  VarCreate('tempsumemergence', '', 0, true, tempsumemergence, 'temperature sum since emergence');
+  VarCreate('TSumInternode_opt',    '[°Cd]', 0, true, TSumInternode_opt, 'a function of phint and day length');
 
   // Define Value
-  VarCreate('tsuminc', '', 0, true, Teff);
+  VarCreate('tsuminc', '', 0, true, Teff, 'effective day temperature, i.e. temperature above base temperature');
   // 0 = max(0,TMPM-tbase)
-  VarCreate('ph39_opt',    '[�Cd]', 0, true, ph39_opt, 'a function of phint and day length');
+  VarCreate('ph39_opt',    '[°Cd]', 0, true, ph39_opt, 'a function of phint and day length');
 
-  VarCreate('zstage', '', 0, true, zstage);
-  VarCreate('vernf', '', 0, true, vernf);
+  VarCreate('zstage', '', 0, true, zstage, 'Zadocks stages');
+  VarCreate('vernf', '', 0, true, vernf, 'vernalisation factor');
   VarCreate('GS_EC25', '', 0, true, GS_EC25);
-  VarCreate('d10', '', 0, true, d10);
-  VarCreate('d29', '', 0, true, d29);
+  VarCreate('d10', '', 0, true, d10, 'Day of year when EC was equal 10');
+  VarCreate('d29', '', 0, true, d29, 'Day when EC equals 29');
   VarCreate('d50', '', 0, true, d50, 'Day when EC equals 50');
   VarCreate('d59', '[DOY]', 0, true, d59, 'Day when EC equals 59');
   VarCreate('d75', '', 0, true, d75, 'Day when EC equals 75');
@@ -1215,6 +1237,8 @@ begin
   VarCreate('DOY_BegFlower', '[DOY]', 0, true, DOY_BegFlower, 'DOY for begin of flowering');
   VarCreate('DOY_YellowRipeness', '[DOY]', 0, true, DOY_YellowRipeness, 'DOY for yellow ripeness');
   VarCreate('DOY_PhysRipe', '[DOY]', 0, true, DOY_PhysRipe, 'DOY for physiological ripeness');
+  ConstCreate('k_v', '', 0, true, k_v, 'vernalisation variable');
+  ConstCreate('c', '', 0, true, c);
 end;
 
 procedure Register;

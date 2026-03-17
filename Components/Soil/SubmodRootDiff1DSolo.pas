@@ -20,7 +20,7 @@ type
   /// <summary>
   /// Class for the solo variant of the 1D diffusion model
   /// </summary>
-  TSubmodRootDiff1DSolo = class(TBaseSubmodRootDiffNitrate)
+  TSubmodRootDiff1DSolo = class(TSubmodRootBaseNitrate)
 
   private
     { Private declarations }
@@ -139,10 +139,12 @@ type
     /// </summary>
     Par_AreaVC: TVar;
 
-    NInfluxrates := array[0..Z_d_Momente-1] of TVar;
-    NAmounts := array[0..Z_d_Momente-1] of TVar;
-    WInfluxrates := array[0..Z_d_Momente-1] of TVar;
-    WAmounts := array[0..Z_d_Momente-1] of TVar
+    RootList: TStringlist;
+
+    NInfluxrates : array[0..Z_d_Momente-1] of TVar;
+    NAmounts : array[0..Z_d_Momente-1] of TVar;
+    WInfluxrates : array[0..Z_d_Momente-1] of TVar;
+    WAmounts : array[0..Z_d_Momente-1] of TVar;
 
 
     (* -----------------------------------------------------------------------------
@@ -201,8 +203,12 @@ implementation
 /// </summary>
 
 procedure TSubmodRootDiff1DSolo.createAll;
+
+var
+  i : integer;
 begin
   inherited;
+  self.RootList := TStringlist.Create;
   // Create and initialize TVar
   VarCreate('Area_mean', '[cm^2]', 0, false, Area_mean,
     'Mean area [cm^2]');
@@ -231,13 +237,13 @@ begin
     'Water amount in the soil layer under consideration [l]');
 
   for i:= 0 to Z_d_Momente-1 do begin
-    TVarCreate(Format('NInfluxrate_%d',[i]), '[g N/cm/d]', 0, false, NInfluxrates[i],
+    VarCreate(Format('NInfluxrate_%d',[i]), '[g N/cm/d]', 0, false, NInfluxrates[i],
       Format('Nitrate influx rate of class %d [g N/cm/d]',[i]));
-    TVarCreate(Format('NAmount_%d',[i]), '[kg N]', 0, false, NAmounts[i],
+    VarCreate(Format('NAmount_%d',[i]), '[kg N]', 0, false, NAmounts[i],
       Format('Nitrate amount of class %d [kg N]',[i]));
-    TVarCreate(Format('WInfluxrate_%d',[i]), '[cm/d]', 0, false, WInfluxrates[i],
+    VarCreate(Format('WInfluxrate_%d',[i]), '[cm/d]', 0, false, WInfluxrates[i],
       Format('Water influx rate of class %d [cm/d]',[i]));
-    TVarCreate(Format('WAmount_%d',[i]), '[l]', 0, false, WAmounts[i],
+    VarCreate(Format('WAmount_%d',[i]), '[l]', 0, false, WAmounts[i],
       Format('Water amount of class %d [l]',[i]));
   end;
 
@@ -288,21 +294,20 @@ var
 begin
   inherited;
 
+
   // the 1D-solo object calculates with pre defined classes of RLD
   // either 10 or 20, which are represented by a single root object
   // therefore previously initiated roots have to be removed from
   // the rootlist
-  RasterData.RootList.clear;
+  RootList.Clear;
 
   // create a list of TRootObjects within TRasterData
   for i := 0 to trunc(self.number_classes.v) - 1 do
   begin
     ARoot := TRootObject.create;
-    self.RasterData.RootList.AddObject(IntToStr(i), ARoot);
+    RootList.AddObject(IntToStr(i), ARoot);
   end;
 
-  if iniMethod.Option = 'inppar' then
-  begin
     { When mWLD and VC are read in as parameters, the corresponding variables must be
       set. VarKoeff_RLD is adjusted depending on the distribution function. }
 
@@ -318,7 +323,6 @@ begin
     // issue: check if the method init Root Objects handles this
     if RootDistribution.Option = 'regular' then
       VarKoeff_RLD.v := 0;
-  end;
   // initialise the root objects
   InitRootObjects;
 end;
@@ -343,7 +347,7 @@ begin
   For i := 0 to trunc(number_classes.v - 1) do
   begin
 
-    ARoot := TRootObject(RasterData.RootList.Objects[i]);
+    ARoot := TRootObject(RootList.Objects[i]);
     MaxNInflux := ARoot.MaxNitrateInflux;
     ARoot.Ninflux := min(Imax.v, MaxNInflux);
     NInfluxrates[i].v := ARoot.Ninflux;
@@ -354,7 +358,7 @@ begin
   // SumInflux is in [g N/cm/d]
   // wl_ha.v is in [cm/ha]
   // N_AmountSoil.c is in [kg N/ha/d]  
-  N_AmountSoil.c := sumNInflux * wl_ha.v;
+  NAmount.c := sumNInflux * wl_ha.v;
 
 end; // End  TSubmodRootDiff1DSolo.CalcRates
 
@@ -363,16 +367,17 @@ procedure TSubmodRootDiff1DSolo.Integrate;
   DESCRIPTION: Solve the differential equations.
   ------------------------------------------------------------------------------ *)
 var 
-  ARoot
+  ARoot : TRootObject;
+  i : integer;
 
 begin
   inherited;
   For i := 0 to trunc(number_classes.v - 1) do
   begin
-    ARoot := TRootObject(RasterData.RootList.Objects[i]);
-    ARoot.NAmount := ARoot.NAmount - NInfluxrates[i].v * Timestep.v / 1E8; // conversion from g N/cm/d to kg N
+    ARoot := TRootObject(RootList.Objects[i]);
+    ARoot.NAmount := ARoot.NAmount - NInfluxrates[i].v * GlobMod.Time.c / 1E8; // conversion from g N/cm/d to kg N
     NAmounts[i].v := ARoot.NAmount;
-    ARoot.WAmount := ARoot.WAmount - WInfluxrates[i].v * Timestep.v / 1E5; // conversion from cm/d to l
+    ARoot.WAmount := ARoot.WAmount - WInfluxrates[i].v * GlobMod.Time.c / 1E5; // conversion from cm/d to l
     WAmounts[i].v := ARoot.WAmount;
   end;
 
@@ -411,13 +416,10 @@ begin
 
   for i := 0 to trunc(number_classes.v - 1) do
     begin
-      ARoot := TRootObject(RasterData.RootList.Objects[i]);
+      ARoot := TRootObject(RootList.Objects[i]);
 
       // calculate 10 "moments" of the log-normal distribution function for root length density
       ARoot.RLD := RLD_moments[i];
-      ARoot.HalfDistance := 1 / sqrt(ARoot.RLD);
-      ARoot.area := pi * sqr(ARoot.HalfDistance);
-      ARoot.nroot := i+1;
       // the amount of water is initalised with the average water content
       // times the area of the root object. It represents
       ARoot.WAmount := ARoot.area * theta.v / Z_d_Momente;
@@ -450,7 +452,7 @@ begin
     cl_avClass := cl_avClass;
     cl_av.V := cl_av.V + cl_avClass;
   end;
-  N_AmountSoil.V := Mg_func(Depth.V, theta.V, cl_av.V);
+  NAmount.V := Mg_func(Depth.V, theta.V, cl_av.V);
 end;
 
 

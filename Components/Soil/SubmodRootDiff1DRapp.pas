@@ -25,7 +25,7 @@ type
     constructor create;
   end;
 
-  TSubmodRootDiff1DRapp = class(TBaseSubmodRootDiffNitrate)
+  TSubmodRootDiff1DRapp = class(TSubmodRootBaseNitrate)
   private
 
     widthMiddle, heigthMiddle, RLD_m, { Wurzellängendichte [m/m^3] }
@@ -244,7 +244,7 @@ begin
   if NitrateuptakeFunction.Option = 'zerosink' then
     K.V := 1;
   // Speichern der Menge N, die sich initial im Boden befindet
-  initAmountNSoil := N_AmountSoil.V;
+  initAmountNSoil := NAmount.V;
   // Ausgabedatei für Distanzen neu schreiben
   assignfile(DistFile, distanceFile.Option);
   rewrite(DistFile);
@@ -332,12 +332,12 @@ begin
     If Model.Option = 'tinkernye' then
     begin
       N_MengeAnteil.V := sumUptake;
-      Sum_N_AmountRoots.V := N_MengeAnteil.V * initAmountNSoil;
+      SumNUptake.V := N_MengeAnteil.V * initAmountNSoil;
     end;
     if Model.Option = 'youngsgardner' then
     begin
-      Sum_N_AmountRoots.V := initAmountNSoil / (1 - v_s.V);
-      N_MengeAnteil.V := Sum_N_AmountRoots.V / initAmountNSoil;
+      SumNUptake.V := initAmountNSoil / (1 - v_s.V);
+      N_MengeAnteil.V := SumNUptake.V / initAmountNSoil;
     end;
   end;
   // N_AmountSoil.v:=
@@ -1146,7 +1146,7 @@ begin
     cl_avClass := cl_avClass * weightArr[i];
     cl_av.V := cl_av.V + cl_avClass;
   end;
-  N_AmountSoil.V := Mg_func( Depth.v, theta.V, cl_av.V);
+  NAmount.V := Mg_func( Depth.v, theta.V, cl_av.V);
 end;
 
 procedure TSubmodRootDiff1DRapp.calcArr;

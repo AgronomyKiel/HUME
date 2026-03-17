@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{ABD34998-2FCB-4D37-AD9E-90A3EEFCF1E2}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="OSR.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\Soil\SoilWaterPackage.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="OSR">
+        <MSBuild Projects="OSR.dproj"/>
+    </Target>
+    <Target Name="OSR:Clean">
+        <MSBuild Projects="OSR.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OSR:Make">
+        <MSBuild Projects="OSR.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SoilWaterPackage">
+        <MSBuild Projects="..\Soil\SoilWaterPackage.dproj"/>
+    </Target>
+    <Target Name="SoilWaterPackage:Clean">
+        <MSBuild Projects="..\Soil\SoilWaterPackage.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SoilWaterPackage:Make">
+        <MSBuild Projects="..\Soil\SoilWaterPackage.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="OSR;SoilWaterPackage"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="OSR:Clean;SoilWaterPackage:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="OSR:Make;SoilWaterPackage:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

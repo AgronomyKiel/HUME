@@ -74,7 +74,7 @@ type
   /// NoContOuput: No Outputfile is written, even if Option ContOutput of submodel is true,
   /// AllContOutput: Outputfile is written, even if Option ContOuput of submodel is false
   /// SubmodelSpecific: Outputfile is written, according to Option ContOutpus of submodel </summary>
-  TContOutput = (NoContOutput, AllContoutput, SubmodelSpecific);
+  TContOutput = (NoContOutput , AllContoutput, SubmodelSpecific);
 
 const
 
@@ -332,8 +332,6 @@ type
 
     /// <PrivateField> flag for writing res.ini files for documentation </PrivateField>
     fChiSqr: real;
-    /// field for total sum of squared differences (sim-meas)
-
     /// <PrivateField> option for continous output, type is TContOutput which defines the options
     /// NoContOutput, SubmodelSpecific and  AllContoutput </PrivateField>
     fContOutput: TContOutput;
@@ -429,6 +427,10 @@ type
     /// write parameters and filenames of simulation run to result file
 
   public
+      ///
+    fShowIniDuringConsoleRun: boolean;
+
+
     FLMOptions: TMarquardOptions;
     // {$IFNDEF NONVISUAL}
     FPropIniFile: TMyIniFile;
@@ -1291,30 +1293,28 @@ function TMod.Get_ControlFileFn: string; // TMyFileName;
 
 var
   // FPropIniFile: TMyIniFile;
-  fn, fn_ctrl, NewCtrlFileFN, prop_path: string;
+  fn, NewCtrlFileFN, prop_path: string;
 
   procedure GetControlFN_from_properties_ini(var ControlFileFN: string);
 
   begin
+    // extract path of application
+    prop_path := ExtractFilePath(ParamStr(0));
+
+    // construct path of properties.ini
+    fn := prop_path + FNModProperties;
+    // fn :=  FNModProperties;
+    // fn := self.FPropIniFile.FileName;
+
+    // check if properties.ini exists
+    if fileexists(fn) then
+    // if yes, read control file name from properties.ini
     begin
-      // extract path of application
-      prop_path := ExtractFilePath(ParamStr(0));
-
-      // construct path of properties.ini
-      fn := prop_path + FNModProperties;
-      // fn :=  FNModProperties;
-      // fn := self.FPropIniFile.FileName;
-
-      // check if properties.ini exists
-      if fileexists(fn) then
-      // if yes, read control file name from properties.ini
-      begin
-        if FPropIniFile = nil then
-          FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
-        // if FPropIniFile.FileName = '' then
-        // FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
-        NewCtrlFileFN := FPropIniFile.ReadString('Files', 'ControlFile', '');
-      end;
+      if FPropIniFile = nil then
+        FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
+      // if FPropIniFile.FileName = '' then
+      // FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
+      NewCtrlFileFN := FPropIniFile.ReadString('Files', 'ControlFile', '');
     end;
     // if control file exists, return control file name
     if fileexists(NewCtrlFileFN) then
@@ -1327,11 +1327,15 @@ var
   procedure GetControlFN_from_Dialog(var ControlFileFN: string);
 
   begin
+    NewCtrlFileFN := '';
 {$IFNDEF NONVISUAL}
     LookForControlfile(NewCtrlFileFN);
 {$ENDIF}
-    if fileexists(ControlFileFN) then
+    if fileexists(NewCtrlFileFN) then
     begin
+      // ensure properties.ini path is initialized before creating FPropIniFile
+      prop_path := ExtractFilePath(ParamStr(0));
+      fn := prop_path + FNModProperties;
       if FPropIniFile = nil then
         FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
       FPropIniFile.WriteString('Files', 'ControlFile', NewCtrlFileFN);
@@ -2164,6 +2168,7 @@ begin
       extractfilename(ActIniFile.FileName) + ' (' + IntToStr(i + 1) + '/' +
       IntToStr(FIniFiles.count) + ')';
 {$ELSE}
+   if (fShowIniDuringConsoleRun = true) then
     writeln('Running ' + extractfilename(ActIniFile.FileName) + ' (' +
       IntToStr(i + 1) + '/' + IntToStr(FIniFiles.count) + ')');
 {$ENDIF}
@@ -2885,7 +2890,9 @@ begin
     OldParameterValues[i] := ActparamInifile.ReadFloat(submodname,
       SensOpt.SelSenspar.Name, OldParameterValues[i]); // , success);
   end;
-  // chdir(ExtractFiledir(application.ExeName));
+
+
+
   chdir(GM_OutPutPath);
   // start with minimal value as actual value
   SensOpt.SelSenspar.SelForOpt := true;
@@ -2908,9 +2915,14 @@ begin
   fContOutput := NoContOutput;
   for Iter := 1 to SensOpt.Steps do
   begin
+ {$IFNDEF NONVISUAL}
+    chdir(ExtractFiledir(application.ExeName));
+ {$ENDIF}
+
     run;
     AllMeasVal.LeastSquares;
     // write parameter and variable values to output
+    chdir(GM_OutPutPath);
     write(SensOpt.fSens_final, FloatToStrf(SensOpt.SelSenspar.v, ffgeneral, 8,
       4), Separator);
     writeln(SensOpt.fSens_final, AllMeasVal.count, Separator,
@@ -3209,6 +3221,7 @@ var
   actState: TState;
   actExtern: TExternV;
   ActVar: TVar;
+  ActConst: TVar;
   ActPar: TPar;
   actOption: TOption;
   k, l, m: Integer;
@@ -3341,6 +3354,15 @@ begin
           floatToStr(ActVar.v) + ';' + 'NA' + ';' + ActVar.Comment;
         f2.WriteLine(line);
       end;
+      for j := 0 to ActSubMod.ConstStrList.count - 1 do
+      begin
+        ActConst := TVar(ActSubMod.ConstStrList.Objects[j]);
+        line := self.IniFileNames[h] + ';' + SubModel[i].Name + ';';
+        line := line + 'Constant' + ';' + ActConst.Name + ';' + ActConst.U + ';' +
+          floatToStr(ActConst.v) + ';' + 'NA' + ';' + ActConst.Comment;
+        f2.WriteLine(line);
+      end;
+
       for k := 0 to ActSubMod.ParStrList.count - 1 do
       begin
         ActPar := TPar(ActSubMod.ParStrList.Objects[k]);

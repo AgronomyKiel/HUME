@@ -27,7 +27,8 @@ private
   FTextureClass1,         { Bodenart in Horizont 1 bei TVGParsFromTexture = FromTexture}
   FTextureClass2,
   FTextureClass3,
-  FTextureClass4: TTextureClass;
+  FTextureClass4,
+  FTextureClass5,FTextureClass6: TTextureClass;
   theta_neu : TSoilArray;       // neue
   MaxAktAenderWaGe,             // maximale Wassergehaltsänderung
   akt_bilanz_f,
@@ -61,7 +62,18 @@ private
   FHoriNdx1,
   FHoriNdx2,
   FHoriNdx3,
-  FHoriNdx4 : integer;
+  FHoriNdx4, FHoriNdx5, fHoriNdx6: integer;
+
+      /// <summary>
+    /// soil bulk density classes in Horizon x }
+    /// </summary>
+    fLDClass1,
+    FLDClass2, FLDClass3, FLDClass4, FLDClass5, FLDClass6: TLDClass;
+
+    /// <summary>numerical bulk density as constants for each of the six possible soil horizons</summary>
+    fLD1, fLD2, fLD3, fLD4, fLD5, fLD6: TLD;
+
+
   procedure CapWatSolut;
   procedure get_water_contents;
   Procedure Diffwater_solut;
@@ -174,7 +186,7 @@ public
   HoriNdx1,
   HoriNdx2,
   HoriNdx3,
-  HoriNdx4 : TPar;             //Index der untersten Schicht im jeweiligen Horizont
+  HoriNdx4, HoriNdx5,HoriNdx6: TPar;             //Index der untersten Schicht im jeweiligen Horizont
 
   bsat_scaling: TPar;
   alpha_scaling: TPar;
@@ -185,7 +197,8 @@ public
   FTextClass1Option,
   FTextClass2Option,
   FTextClass3Option,
-  FTextClass4Option: TTextClassOption;
+  FTextClass4Option,
+  FTextClass5Option,FTextClass6Option: TTextClassOption;
 
 // van-Genuchten Parameter fuer Horizont 1
 
@@ -313,6 +326,8 @@ published
   property Opt_TextureClass2: TTextureClass read FTextureClass2 write FTextureClass2;
   property Opt_TextureClass3: TTextureClass read FTextureClass3 write FTextureClass3;
   property Opt_TextureClass4: TTextureClass read FTextureClass4 write FTextureClass4;
+  property Opt_TextureClass5: TTextureClass read FTextureClass5 write FTextureClass5;
+  property Opt_TextureClass6: TTextureClass read FTextureClass6 write FTextureClass6;
 
   property Par_b_sat1       : TPar read B_sat1 write b_sat1;
   property Par_b_rest1      : TPar read B_rest1 write b_rest1;
@@ -370,6 +385,8 @@ published
   property Par_Horindx2 :TPar read HoriNdx2 write HoriNdx2;
   property Par_Horindx3 :TPar read HoriNdx3 write HoriNdx3;
   property Par_Horindx4 :TPar read HoriNdx4 write HoriNdx4;
+  property Par_Horindx5 :TPar read HoriNdx5 write HoriNdx5;
+  property Par_Horindx6 :TPar read HoriNdx6 write HoriNdx6;
 
 end;
 
@@ -828,6 +845,8 @@ begin
   ParCreate('HoriNdx2', '[-]', 6, HoriNdx2);
   ParCreate('HoriNdx3', '[-]', 10, HoriNdx3);
   ParCreate('HoriNdx4', '[-]', 20, HoriNdx4);
+  ParCreate('HoriNdx5', '[-]', 20, HoriNdx4);
+  ParCreate('HoriNdx6', '[-]', 20, HoriNdx4);
 
   ParCreate('bsat_scaling', '[-]', 1, bsat_scaling);
   ParCreate('alpha_scaling', '[-]', 1, alpha_scaling);
@@ -879,10 +898,14 @@ begin
   OptCreate('FTextureClass2','Sl3',TOption(FTextClass2Option));
   OptCreate('FTextureClass3','Sl3',TOption(FTextClass3Option));
   OptCreate('FTextureClass4','Sl3',TOption(FTextClass4Option));
+  OptCreate('FTextureClass5','Sl3',TOption(FTextClass5Option));
+  OptCreate('FTextureClass6','Sl3',TOption(FTextClass6Option));
   FTextClass1Option.AddTextureClasses;
   FTextClass2Option.AddTextureClasses;
   FTextClass3Option.AddTextureClasses;
   FTextClass4Option.AddTextureClasses;
+  FTextClass5Option.AddTextureClasses;
+  FTextClass6Option.AddTextureClasses;
   OptCreate('FKsFromTexture', 'FromPar', FKsFromTextOption);
   FKsFromTextOption.OptionList.Clear;
   FKsFromTextOption.OptionList.Add('FromPar');
@@ -1096,21 +1119,35 @@ begin
   if FKsFromTexture = FromTexture then
   begin
     for i := 1 to round(HoriNdx1.v) do
-     if uppercase(Texture_versionOption.Option) = 'RR' then
-        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass1) else
+      if uppercase(Texture_versionOption.Option) = 'RR' then
+        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass1, fLD1)
+      else
         WPar[i].Ks := KSFromTextureClass_KA(FTextureClass1);
     for i := round(HoriNdx1.v) + 1 to round(HoriNdx2.v) do
       if uppercase(Texture_versionOption.Option) = 'RR' then
-        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass2) else
+        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass2, fLD2)
+      else
         WPar[i].Ks := KSFromTextureClass_KA(FTextureClass2);
     for i := round(HoriNdx2.v) + 1 to round(HoriNdx3.v) do
       if uppercase(Texture_versionOption.Option) = 'RR' then
-        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass3) else
+        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass3, fLD3)
+      else
         WPar[i].Ks := KSFromTextureClass_KA(FTextureClass3);
-    for i := round(HoriNdx3.v) + 1 to n_comp + 1 do
+    for i := round(HoriNdx3.v) + 1 to round(HoriNdx4.v) do
       if uppercase(Texture_versionOption.Option) = 'RR' then
-        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass4) else
+        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass4, fLD4)
+      else
         WPar[i].Ks := KSFromTextureClass_KA(FTextureClass4);
+    for i := round(HoriNdx4.v) + 1 to round(HoriNdx5.v) do
+      if uppercase(Texture_versionOption.Option) = 'RR' then
+        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass5, fLD5)
+      else
+        WPar[i].Ks := KSFromTextureClass_KA(FTextureClass5);
+    for i := round(HoriNdx5.v) + 1 to n_comp + 1 do
+      if uppercase(Texture_versionOption.Option) = 'RR' then
+        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass6, fLD6)
+      else
+        WPar[i].Ks := KSFromTextureClass_KA(FTextureClass6);
   end;
 
   for i := 1 to n_comp+1 do begin

@@ -1,0 +1,683 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="Snmp" platform="Win32">
+  <pointer name="PAsnOctetString" type="TAsnOctetString" indircnt="1" file="Snmp.pas" line="78" />
+  <struct name="TAsnOctetString" size="12" file="Snmp.pas" line="79">
+    <field name="stream" type="PAnsiChar" visibility="public" size="4" offset="0" file="Snmp.pas" line="80" />
+    <field name="length" type="Cardinal" visibility="public" size="4" offset="4" file="Snmp.pas" line="81" />
+    <field name="dynamic_" type="Boolean" visibility="public" size="1" offset="8" file="Snmp.pas" line="82" />
+  </struct>
+  <pointer name="PAsnObjectIdentifier" type="TAsnObjectIdentifier" indircnt="1" file="Snmp.pas" line="85" />
+  <struct name="TAsnObjectIdentifier" size="8" file="Snmp.pas" line="86">
+    <field name="idLength" type="Cardinal" visibility="public" size="4" offset="0" file="Snmp.pas" line="87" />
+    <field name="ids" type="PUINT" visibility="public" size="4" offset="4" file="Snmp.pas" line="88" />
+  </struct>
+  <type name="TAsnInteger32" type="integer" loBound="-2147483648" hiBound="2147483647" file="System.pas" line="12" />
+  <type name="TAsnUnsigned32" type="cardinal" loBound="0" hiBound="-1" file="System.pas" line="12" />
+  <struct name="TAsnCounter64" alias="Winapi.Windows._ULARGE_INTEGER" size="8" file="Snmp.pas" line="95">
+    <field name="LowPart" type="Cardinal" visibility="public" variant="true" size="4" offset="0" file="Winapi.Windows.pas" line="325">
+    </field>
+    <field name="HighPart" type="Cardinal" visibility="public" variant="true" size="4" offset="4" file="Winapi.Windows.pas" line="326">
+    </field>
+    <field name="QuadPart" type="UInt64" visibility="public" variant="true" size="8" offset="0" file="Winapi.Windows.pas" line="328">
+    </field>
+  </struct>
+  <type name="TAsnCounter32" type="cardinal" loBound="0" hiBound="-1" file="System.pas" line="12" />
+  <type name="TAsnGauge32" type="cardinal" loBound="0" hiBound="-1" file="System.pas" line="12" />
+  <type name="TAsnTimeticks" type="cardinal" loBound="0" hiBound="-1" file="System.pas" line="12" />
+  <struct name="TAsnBits" alias="Snmp.TAsnOctetString" size="12" file="Snmp.pas" line="103">
+    <field name="stream" type="PAnsiChar" visibility="public" size="4" offset="0" file="Snmp.pas" line="80" />
+    <field name="length" type="Cardinal" visibility="public" size="4" offset="4" file="Snmp.pas" line="81" />
+    <field name="dynamic_" type="Boolean" visibility="public" size="1" offset="8" file="Snmp.pas" line="82" />
+  </struct>
+  <struct name="TAsnSequence" alias="Snmp.TAsnOctetString" size="12" file="Snmp.pas" line="105">
+    <field name="stream" type="PAnsiChar" visibility="public" size="4" offset="0" file="Snmp.pas" line="80" />
+    <field name="length" type="Cardinal" visibility="public" size="4" offset="4" file="Snmp.pas" line="81" />
+    <field name="dynamic_" type="Boolean" visibility="public" size="1" offset="8" file="Snmp.pas" line="82" />
+  </struct>
+  <struct name="TAsnImplicitSequence" alias="Snmp.TAsnOctetString" size="12" file="Snmp.pas" line="107">
+    <field name="stream" type="PAnsiChar" visibility="public" size="4" offset="0" file="Snmp.pas" line="80" />
+    <field name="length" type="Cardinal" visibility="public" size="4" offset="4" file="Snmp.pas" line="81" />
+    <field name="dynamic_" type="Boolean" visibility="public" size="1" offset="8" file="Snmp.pas" line="82" />
+  </struct>
+  <struct name="TAsnIPAddress" alias="Snmp.TAsnOctetString" size="12" file="Snmp.pas" line="109">
+    <field name="stream" type="PAnsiChar" visibility="public" size="4" offset="0" file="Snmp.pas" line="80" />
+    <field name="length" type="Cardinal" visibility="public" size="4" offset="4" file="Snmp.pas" line="81" />
+    <field name="dynamic_" type="Boolean" visibility="public" size="1" offset="8" file="Snmp.pas" line="82" />
+  </struct>
+  <struct name="TAsnNetworkAddress" alias="Snmp.TAsnOctetString" size="12" file="Snmp.pas" line="111">
+    <field name="stream" type="PAnsiChar" visibility="public" size="4" offset="0" file="Snmp.pas" line="80" />
+    <field name="length" type="Cardinal" visibility="public" size="4" offset="4" file="Snmp.pas" line="81" />
+    <field name="dynamic_" type="Boolean" visibility="public" size="1" offset="8" file="Snmp.pas" line="82" />
+  </struct>
+  <struct name="TAsnDisplayString" alias="Snmp.TAsnOctetString" size="12" file="Snmp.pas" line="113">
+    <field name="stream" type="PAnsiChar" visibility="public" size="4" offset="0" file="Snmp.pas" line="80" />
+    <field name="length" type="Cardinal" visibility="public" size="4" offset="4" file="Snmp.pas" line="81" />
+    <field name="dynamic_" type="Boolean" visibility="public" size="1" offset="8" file="Snmp.pas" line="82" />
+  </struct>
+  <struct name="TAsnOpaque" alias="Snmp.TAsnOctetString" size="12" file="Snmp.pas" line="115">
+    <field name="stream" type="PAnsiChar" visibility="public" size="4" offset="0" file="Snmp.pas" line="80" />
+    <field name="length" type="Cardinal" visibility="public" size="4" offset="4" file="Snmp.pas" line="81" />
+    <field name="dynamic_" type="Boolean" visibility="public" size="1" offset="8" file="Snmp.pas" line="82" />
+  </struct>
+  <pointer name="PAsnAny" type="TAsnAny" indircnt="1" file="Snmp.pas" line="118" />
+  <struct name="TAsnAny" size="16" file="Snmp.pas" line="119">
+    <field name="asnType" type="Byte" visibility="public" size="1" offset="0" file="Snmp.pas" line="120" />
+    <field name="number" type="Integer" visibility="public" variant="true" size="4" offset="4" file="Snmp.pas" line="122" />
+    <field name="unsigned32" type="Cardinal" visibility="public" variant="true" size="4" offset="4" file="Snmp.pas" line="123" />
+    <field name="counter64" type="_ULARGE_INTEGER" visibility="public" variant="true" size="8" offset="4" file="Snmp.pas" line="124" />
+    <field name="string_" type="TAsnOctetString" visibility="public" variant="true" size="12" offset="4" file="Snmp.pas" line="125" />
+    <field name="bits" type="TAsnOctetString" visibility="public" variant="true" size="12" offset="4" file="Snmp.pas" line="126" />
+    <field name="object_" type="TAsnObjectIdentifier" visibility="public" variant="true" size="8" offset="4" file="Snmp.pas" line="127" />
+    <field name="sequence" type="TAsnOctetString" visibility="public" variant="true" size="12" offset="4" file="Snmp.pas" line="128" />
+    <field name="address" type="TAsnOctetString" visibility="public" variant="true" size="12" offset="4" file="Snmp.pas" line="129" />
+    <field name="counter" type="Cardinal" visibility="public" variant="true" size="4" offset="4" file="Snmp.pas" line="130" />
+    <field name="gauge" type="Cardinal" visibility="public" variant="true" size="4" offset="4" file="Snmp.pas" line="131" />
+    <field name="ticks" type="Cardinal" visibility="public" variant="true" size="4" offset="4" file="Snmp.pas" line="132" />
+    <field name="arbitrary" type="TAsnOctetString" visibility="public" variant="true" size="12" offset="4" file="Snmp.pas" line="133" />
+  </struct>
+  <struct name="TAsnObjectName" alias="Snmp.TAsnObjectIdentifier" size="8" file="Snmp.pas" line="136">
+    <field name="idLength" type="Cardinal" visibility="public" size="4" offset="0" file="Snmp.pas" line="87" />
+    <field name="ids" type="PUINT" visibility="public" size="4" offset="4" file="Snmp.pas" line="88" />
+  </struct>
+  <struct name="TAsnObjectSyntax" alias="Snmp.TAsnAny" size="16" file="Snmp.pas" line="137">
+    <field name="asnType" type="Byte" visibility="public" size="1" offset="0" file="Snmp.pas" line="120" />
+    <field name="number" type="Integer" visibility="public" variant="true" size="4" offset="4" file="Snmp.pas" line="122" />
+    <field name="unsigned32" type="Cardinal" visibility="public" variant="true" size="4" offset="4" file="Snmp.pas" line="123" />
+    <field name="counter64" type="_ULARGE_INTEGER" visibility="public" variant="true" size="8" offset="4" file="Snmp.pas" line="124" />
+    <field name="string_" type="TAsnOctetString" visibility="public" variant="true" size="12" offset="4" file="Snmp.pas" line="125" />
+    <field name="bits" type="TAsnOctetString" visibility="public" variant="true" size="12" offset="4" file="Snmp.pas" line="126" />
+    <field name="object_" type="TAsnObjectIdentifier" visibility="public" variant="true" size="8" offset="4" file="Snmp.pas" line="127" />
+    <field name="sequence" type="TAsnOctetString" visibility="public" variant="true" size="12" offset="4" file="Snmp.pas" line="128" />
+    <field name="address" type="TAsnOctetString" visibility="public" variant="true" size="12" offset="4" file="Snmp.pas" line="129" />
+    <field name="counter" type="Cardinal" visibility="public" variant="true" size="4" offset="4" file="Snmp.pas" line="130" />
+    <field name="gauge" type="Cardinal" visibility="public" variant="true" size="4" offset="4" file="Snmp.pas" line="131" />
+    <field name="ticks" type="Cardinal" visibility="public" variant="true" size="4" offset="4" file="Snmp.pas" line="132" />
+    <field name="arbitrary" type="TAsnOctetString" visibility="public" variant="true" size="12" offset="4" file="Snmp.pas" line="133" />
+  </struct>
+  <pointer name="PSnmpVarBind" type="TSnmpVarBind" indircnt="1" file="Snmp.pas" line="139" />
+  <struct name="TSnmpVarBind" size="24" file="Snmp.pas" line="140">
+    <field name="name" type="TAsnObjectIdentifier" visibility="public" size="8" offset="0" file="Snmp.pas" line="141" />
+    <field name="value" type="TAsnAny" visibility="public" size="16" offset="8" file="Snmp.pas" line="142" />
+  </struct>
+  <pointer name="PSnmpVarBindList" type="TSnmpVarBindList" indircnt="1" file="Snmp.pas" line="145" />
+  <struct name="TSnmpVarBindList" size="8" file="Snmp.pas" line="146">
+    <field name="list" type="PSnmpVarBind" visibility="public" size="4" offset="0" file="Snmp.pas" line="147" />
+    <field name="len" type="Cardinal" visibility="public" size="4" offset="4" file="Snmp.pas" line="148" />
+  </struct>
+  <const name="ASN_UNIVERSAL" type="Integer" file="Snmp.pas" line="155">
+    <value>
+      $0
+    </value>
+  </const>
+  <const name="ASN_APPLICATION" type="Integer" file="Snmp.pas" line="157">
+    <value>
+      $40
+    </value>
+  </const>
+  <const name="ASN_CONTEXT" type="Integer" file="Snmp.pas" line="159">
+    <value>
+      $80
+    </value>
+  </const>
+  <const name="ASN_PRIVATE" type="Integer" file="Snmp.pas" line="161">
+    <value>
+      $C0
+    </value>
+  </const>
+  <const name="ASN_PRIMITIVE" type="Integer" file="Snmp.pas" line="164">
+    <value>
+      $0
+    </value>
+  </const>
+  <const name="ASN_CONSTRUCTOR" type="Integer" file="Snmp.pas" line="166">
+    <value>
+      $20
+    </value>
+  </const>
+  <const name="SNMP_PDU_GET" type="Integer" file="Snmp.pas" line="171">
+    <value>
+      $A0
+    </value>
+  </const>
+  <const name="SNMP_PDU_GETNEXT" type="Integer" file="Snmp.pas" line="173">
+    <value>
+      $A1
+    </value>
+  </const>
+  <const name="SNMP_PDU_RESPONSE" type="Integer" file="Snmp.pas" line="175">
+    <value>
+      $A2
+    </value>
+  </const>
+  <const name="SNMP_PDU_SET" type="Integer" file="Snmp.pas" line="177">
+    <value>
+      $A3
+    </value>
+  </const>
+  <const name="SNMP_PDU_V1TRAP" type="Integer" file="Snmp.pas" line="179">
+    <value>
+      $A4
+    </value>
+  </const>
+  <const name="SNMP_PDU_GETBULK" type="Integer" file="Snmp.pas" line="181">
+    <value>
+      $A5
+    </value>
+  </const>
+  <const name="SNMP_PDU_INFORM" type="Integer" file="Snmp.pas" line="183">
+    <value>
+      $A6
+    </value>
+  </const>
+  <const name="SNMP_PDU_TRAP" type="Integer" file="Snmp.pas" line="185">
+    <value>
+      $A7
+    </value>
+  </const>
+  <const name="ASN_INTEGER" type="Integer" file="Snmp.pas" line="190">
+    <value>
+      $2
+    </value>
+  </const>
+  <const name="ASN_BITS" type="Integer" file="Snmp.pas" line="192">
+    <value>
+      $3
+    </value>
+  </const>
+  <const name="ASN_OCTETSTRING" type="Integer" file="Snmp.pas" line="194">
+    <value>
+      $4
+    </value>
+  </const>
+  <const name="ASN_NULL" type="Integer" file="Snmp.pas" line="196">
+    <value>
+      $5
+    </value>
+  </const>
+  <const name="ASN_OBJECTIDENTIFIER" type="Integer" file="Snmp.pas" line="198">
+    <value>
+      $6
+    </value>
+  </const>
+  <const name="ASN_INTEGER32" type="Integer" file="Snmp.pas" line="200">
+    <value>
+      $2
+    </value>
+  </const>
+  <const name="ASN_SEQUENCE" type="Integer" file="Snmp.pas" line="205">
+    <value>
+      $30
+    </value>
+  </const>
+  <const name="ASN_SEQUENCEOF" type="Integer" file="Snmp.pas" line="207">
+    <value>
+      $30
+    </value>
+  </const>
+  <const name="ASN_IPADDRESS" type="Integer" file="Snmp.pas" line="212">
+    <value>
+      $40
+    </value>
+  </const>
+  <const name="ASN_COUNTER32" type="Integer" file="Snmp.pas" line="214">
+    <value>
+      $41
+    </value>
+  </const>
+  <const name="ASN_GAUGE32" type="Integer" file="Snmp.pas" line="216">
+    <value>
+      $42
+    </value>
+  </const>
+  <const name="ASN_TIMETICKS" type="Integer" file="Snmp.pas" line="218">
+    <value>
+      $43
+    </value>
+  </const>
+  <const name="ASN_OPAQUE" type="Integer" file="Snmp.pas" line="220">
+    <value>
+      $44
+    </value>
+  </const>
+  <const name="ASN_COUNTER64" type="Integer" file="Snmp.pas" line="222">
+    <value>
+      $46
+    </value>
+  </const>
+  <const name="ASN_UNSIGNED32" type="Integer" file="Snmp.pas" line="224">
+    <value>
+      $47
+    </value>
+  </const>
+  <const name="SNMP_EXCEPTION_NOSUCHOBJECT" type="Integer" file="Snmp.pas" line="229">
+    <value>
+      $80
+    </value>
+  </const>
+  <const name="SNMP_EXCEPTION_NOSUCHINSTANCE" type="Integer" file="Snmp.pas" line="231">
+    <value>
+      $81
+    </value>
+  </const>
+  <const name="SNMP_EXCEPTION_ENDOFMIBVIEW" type="Integer" file="Snmp.pas" line="233">
+    <value>
+      $82
+    </value>
+  </const>
+  <const name="SNMP_EXTENSION_GET" type="Integer" file="Snmp.pas" line="238">
+    <value>
+      $A0
+    </value>
+  </const>
+  <const name="SNMP_EXTENSION_GET_NEXT" type="Integer" file="Snmp.pas" line="240">
+    <value>
+      $A1
+    </value>
+  </const>
+  <const name="SNMP_EXTENSION_GET_BULK" type="Integer" file="Snmp.pas" line="242">
+    <value>
+      $A5
+    </value>
+  </const>
+  <const name="SNMP_EXTENSION_SET_TEST" type="Integer" file="Snmp.pas" line="244">
+    <value>
+      $E0
+    </value>
+  </const>
+  <const name="SNMP_EXTENSION_SET_COMMIT" type="Integer" file="Snmp.pas" line="246">
+    <value>
+      $A3
+    </value>
+  </const>
+  <const name="SNMP_EXTENSION_SET_UNDO" type="Integer" file="Snmp.pas" line="248">
+    <value>
+      $E1
+    </value>
+  </const>
+  <const name="SNMP_EXTENSION_SET_CLEANUP" type="Integer" file="Snmp.pas" line="250">
+    <value>
+      $E2
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_NOERROR" type="Integer" file="Snmp.pas" line="255">
+    <value>
+      $0
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_TOOBIG" type="Integer" file="Snmp.pas" line="257">
+    <value>
+      $1
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_NOSUCHNAME" type="Integer" file="Snmp.pas" line="259">
+    <value>
+      $2
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_BADVALUE" type="Integer" file="Snmp.pas" line="261">
+    <value>
+      $3
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_READONLY" type="Integer" file="Snmp.pas" line="263">
+    <value>
+      $4
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_GENERR" type="Integer" file="Snmp.pas" line="265">
+    <value>
+      $5
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_NOACCESS" type="Integer" file="Snmp.pas" line="267">
+    <value>
+      $6
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_WRONGTYPE" type="Integer" file="Snmp.pas" line="269">
+    <value>
+      $7
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_WRONGLENGTH" type="Integer" file="Snmp.pas" line="271">
+    <value>
+      $8
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_WRONGENCODING" type="Integer" file="Snmp.pas" line="273">
+    <value>
+      $9
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_WRONGVALUE" type="Integer" file="Snmp.pas" line="275">
+    <value>
+      $A
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_NOCREATION" type="Integer" file="Snmp.pas" line="277">
+    <value>
+      $B
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_INCONSISTENTVALUE" type="Integer" file="Snmp.pas" line="279">
+    <value>
+      $C
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_RESOURCEUNAVAILABLE" type="Integer" file="Snmp.pas" line="281">
+    <value>
+      $D
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_COMMITFAILED" type="Integer" file="Snmp.pas" line="283">
+    <value>
+      $E
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_UNDOFAILED" type="Integer" file="Snmp.pas" line="285">
+    <value>
+      $F
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_AUTHORIZATIONERROR" type="Integer" file="Snmp.pas" line="287">
+    <value>
+      $10
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_NOTWRITABLE" type="Integer" file="Snmp.pas" line="289">
+    <value>
+      $11
+    </value>
+  </const>
+  <const name="SNMP_ERRORSTATUS_INCONSISTENTNAME" type="Integer" file="Snmp.pas" line="291">
+    <value>
+      $12
+    </value>
+  </const>
+  <const name="SNMP_GENERICTRAP_COLDSTART" type="Integer" file="Snmp.pas" line="296">
+    <value>
+      $0
+    </value>
+  </const>
+  <const name="SNMP_GENERICTRAP_WARMSTART" type="Integer" file="Snmp.pas" line="298">
+    <value>
+      $1
+    </value>
+  </const>
+  <const name="SNMP_GENERICTRAP_LINKDOWN" type="Integer" file="Snmp.pas" line="300">
+    <value>
+      $2
+    </value>
+  </const>
+  <const name="SNMP_GENERICTRAP_LINKUP" type="Integer" file="Snmp.pas" line="302">
+    <value>
+      $3
+    </value>
+  </const>
+  <const name="SNMP_GENERICTRAP_AUTHFAILURE" type="Integer" file="Snmp.pas" line="304">
+    <value>
+      $4
+    </value>
+  </const>
+  <const name="SNMP_GENERICTRAP_EGPNEIGHLOSS" type="Integer" file="Snmp.pas" line="306">
+    <value>
+      $5
+    </value>
+  </const>
+  <const name="SNMP_GENERICTRAP_ENTERSPECIFIC" type="Integer" file="Snmp.pas" line="308">
+    <value>
+      $6
+    </value>
+  </const>
+  <const name="SNMP_ACCESS_NONE" type="Integer" file="Snmp.pas" line="313">
+    <value>
+      $0
+    </value>
+  </const>
+  <const name="SNMP_ACCESS_NOTIFY" type="Integer" file="Snmp.pas" line="315">
+    <value>
+      $1
+    </value>
+  </const>
+  <const name="SNMP_ACCESS_READ_ONLY" type="Integer" file="Snmp.pas" line="317">
+    <value>
+      $2
+    </value>
+  </const>
+  <const name="SNMP_ACCESS_READ_WRITE" type="Integer" file="Snmp.pas" line="319">
+    <value>
+      $3
+    </value>
+  </const>
+  <const name="SNMP_ACCESS_READ_CREATE" type="Integer" file="Snmp.pas" line="321">
+    <value>
+      $4
+    </value>
+  </const>
+  <type name="SNMPAPI" type="integer" loBound="-2147483648" hiBound="2147483647" file="System.pas" line="12" />
+  <const name="SNMPAPI_NOERROR" type="Boolean" file="Snmp.pas" line="330">
+    <value>
+      True
+    </value>
+  </const>
+  <const name="SNMPAPI_ERROR" type="Boolean" file="Snmp.pas" line="332">
+    <value>
+      False
+    </value>
+  </const>
+  <type name="TSnmpExtensionInit" file="Snmp.pas" line="338" procflags="">
+  </type>
+  <type name="TSnmpExtensionInitEx" file="Snmp.pas" line="341" procflags="">
+  </type>
+  <type name="TSnmpExtensionMonitor" file="Snmp.pas" line="343" procflags="">
+  </type>
+  <type name="TSnmpExtensionQuery" file="Snmp.pas" line="345" procflags="">
+  </type>
+  <type name="TSnmpExtensionQueryEx" file="Snmp.pas" line="348" procflags="">
+  </type>
+  <type name="TSnmpExtensionTrap" file="Snmp.pas" line="351" procflags="">
+  </type>
+  <type name="TSnmpExtensionClose" file="Snmp.pas" line="354" procflags="">
+  </type>
+  <variable name="SnmpUtilOidCpy" type="function(pOidDst: PAsnObjectIdentifier; pOidSrc: PAsnObjectIdentifier): Integer;" file="Snmp.pas" line="361" />
+  <variable name="SnmpUtilOidAppend" type="function(pOidDst: PAsnObjectIdentifier; pOidSrc: PAsnObjectIdentifier): Integer;" file="Snmp.pas" line="362" />
+  <variable name="SnmpUtilOidNCmp" type="function(pOid1: PAsnObjectIdentifier; pOid2: PAsnObjectIdentifier; nSubIds: Cardinal): Integer;" file="Snmp.pas" line="363" />
+  <variable name="SnmpUtilOidCmp" type="function(pOid1: PAsnObjectIdentifier; pOid2: PAsnObjectIdentifier): Integer;" file="Snmp.pas" line="364" />
+  <variable name="SnmpUtilOidFree" type="procedure(pOid: PAsnObjectIdentifier)" file="Snmp.pas" line="365" />
+  <variable name="SnmpUtilOctetsCmp" type="function(pOctets1: PAsnOctetString; pOctets2: PAsnOctetString): Integer;" file="Snmp.pas" line="366" />
+  <variable name="SnmpUtilOctetsNCmp" type="function(pOctets1: PAsnOctetString; pOctets2: PAsnOctetString; nChars: Cardinal): Integer;" file="Snmp.pas" line="367" />
+  <variable name="SnmpUtilOctetsCpy" type="function(pOctetsDst: PAsnOctetString; pOctetsSrc: PAsnOctetString): Integer;" file="Snmp.pas" line="368" />
+  <variable name="SnmpUtilOctetsFree" type="procedure(pOctets: PAsnOctetString)" file="Snmp.pas" line="369" />
+  <variable name="SnmpUtilAsnAnyCpy" type="function(pAnyDst: PAsnAny; pAnySrc: PAsnAny): Integer;" file="Snmp.pas" line="370" />
+  <variable name="SnmpUtilAsnAnyFree" type="procedure(pAny: PAsnAny)" file="Snmp.pas" line="371" />
+  <variable name="SnmpUtilVarBindCpy" type="function(pVbDst: PSnmpVarBind; pVbSrc: PSnmpVarBind): Integer;" file="Snmp.pas" line="372" />
+  <variable name="SnmpUtilVarBindFree" type="procedure(pVb: PSnmpVarBind)" file="Snmp.pas" line="373" />
+  <variable name="SnmpUtilVarBindListCpy" type="function(pVblDst: PSnmpVarBindList; pVblSrc: PSnmpVarBindList): Integer;" file="Snmp.pas" line="374" />
+  <variable name="SnmpUtilVarBindListFree" type="procedure(pVbl: PSnmpVarBindList)" file="Snmp.pas" line="375" />
+  <variable name="SnmpUtilMemFree" type="procedure(pMem: Pointer)" file="Snmp.pas" line="376" />
+  <variable name="SnmpUtilMemAlloc" type="function(nBytes: Cardinal): Pointer;" file="Snmp.pas" line="377" />
+  <variable name="SnmpUtilMemReAlloc" type="function(pMem: Pointer; nBytes: Cardinal): Pointer;" file="Snmp.pas" line="378" />
+  <variable name="SnmpUtilOidToA" type="function(Oid: PAsnObjectIdentifier): PAnsiChar;" file="Snmp.pas" line="379" />
+  <variable name="SnmpUtilIdsToA" type="function(Ids: PUINT; IdLength: Cardinal): PAnsiChar;" file="Snmp.pas" line="380" />
+  <variable name="SnmpUtilPrintOid" type="procedure(Oid: PAsnObjectIdentifier)" file="Snmp.pas" line="381" />
+  <variable name="SnmpUtilPrintAsnAny" type="procedure(pAny: PAsnAny)" file="Snmp.pas" line="382" />
+  <variable name="SnmpSvcGetUptime" type="function: Cardinal;" file="Snmp.pas" line="383" />
+  <variable name="SnmpSvcSetLogLevel" type="procedure(nLogLevel: Integer)" file="Snmp.pas" line="384" />
+  <variable name="SnmpSvcSetLogType" type="procedure(nLogType: Integer)" file="Snmp.pas" line="385" />
+  <const name="SNMP_LOG_SILENT" type="Integer" file="Snmp.pas" line="446">
+    <value>
+      $0
+    </value>
+  </const>
+  <const name="SNMP_LOG_FATAL" type="Integer" file="Snmp.pas" line="448">
+    <value>
+      $1
+    </value>
+  </const>
+  <const name="SNMP_LOG_ERROR" type="Integer" file="Snmp.pas" line="450">
+    <value>
+      $2
+    </value>
+  </const>
+  <const name="SNMP_LOG_WARNING" type="Integer" file="Snmp.pas" line="452">
+    <value>
+      $3
+    </value>
+  </const>
+  <const name="SNMP_LOG_TRACE" type="Integer" file="Snmp.pas" line="454">
+    <value>
+      $4
+    </value>
+  </const>
+  <const name="SNMP_LOG_VERBOSE" type="Integer" file="Snmp.pas" line="456">
+    <value>
+      $5
+    </value>
+  </const>
+  <const name="SNMP_OUTPUT_TO_CONSOLE" type="Integer" file="Snmp.pas" line="459">
+    <value>
+      $1
+    </value>
+  </const>
+  <const name="SNMP_OUTPUT_TO_LOGFILE" type="Integer" file="Snmp.pas" line="461">
+    <value>
+      $2
+    </value>
+  </const>
+  <const name="SNMP_OUTPUT_TO_EVENTLOG" type="Integer" file="Snmp.pas" line="463">
+    <value>
+      $4
+    </value>
+  </const>
+  <const name="SNMP_OUTPUT_TO_DEBUGGER" type="Integer" file="Snmp.pas" line="465">
+    <value>
+      $8
+    </value>
+  </const>
+  <variable name="SnmpUtilDbgPrint" type="procedure(nLogLevel: Integer; szFormat: PAnsiChar)" file="Snmp.pas" line="477" />
+  <const name="DEFINE_NULLOID" type="TAsnObjectIdentifier" visibility="public" file="Snmp.pas" line="486" />
+  <const name="DEFINE_NULLOCTETS" type="TAsnOctetString" visibility="public" file="Snmp.pas" line="488" />
+  <const name="DEFAULT_SNMP_PORT_UDP" type="Integer" file="Snmp.pas" line="491">
+    <value>
+      $A1
+    </value>
+  </const>
+  <const name="DEFAULT_SNMP_PORT_IPX" type="Integer" file="Snmp.pas" line="493">
+    <value>
+      $900F
+    </value>
+  </const>
+  <const name="DEFAULT_SNMPTRAP_PORT_UDP" type="Integer" file="Snmp.pas" line="495">
+    <value>
+      $A2
+    </value>
+  </const>
+  <const name="DEFAULT_SNMPTRAP_PORT_IPX" type="Integer" file="Snmp.pas" line="497">
+    <value>
+      $9010
+    </value>
+  </const>
+  <const name="SNMP_MAX_OID_LEN" type="Integer" file="Snmp.pas" line="499">
+    <value>
+      $80
+    </value>
+  </const>
+  <const name="SNMP_MEM_ALLOC_ERROR" type="Integer" file="Snmp.pas" line="504">
+    <value>
+      $1
+    </value>
+  </const>
+  <const name="SNMP_BERAPI_INVALID_LENGTH" type="Integer" file="Snmp.pas" line="506">
+    <value>
+      $A
+    </value>
+  </const>
+  <const name="SNMP_BERAPI_INVALID_TAG" type="Integer" file="Snmp.pas" line="508">
+    <value>
+      $B
+    </value>
+  </const>
+  <const name="SNMP_BERAPI_OVERFLOW" type="Integer" file="Snmp.pas" line="510">
+    <value>
+      $C
+    </value>
+  </const>
+  <const name="SNMP_BERAPI_SHORT_BUFFER" type="Integer" file="Snmp.pas" line="512">
+    <value>
+      $D
+    </value>
+  </const>
+  <const name="SNMP_BERAPI_INVALID_OBJELEM" type="Integer" file="Snmp.pas" line="514">
+    <value>
+      $E
+    </value>
+  </const>
+  <const name="SNMP_PDUAPI_UNRECOGNIZED_PDU" type="Integer" file="Snmp.pas" line="516">
+    <value>
+      $14
+    </value>
+  </const>
+  <const name="SNMP_PDUAPI_INVALID_ES" type="Integer" file="Snmp.pas" line="518">
+    <value>
+      $15
+    </value>
+  </const>
+  <const name="SNMP_PDUAPI_INVALID_GT" type="Integer" file="Snmp.pas" line="520">
+    <value>
+      $16
+    </value>
+  </const>
+  <const name="SNMP_AUTHAPI_INVALID_VERSION" type="Integer" file="Snmp.pas" line="522">
+    <value>
+      $1E
+    </value>
+  </const>
+  <const name="SNMP_AUTHAPI_INVALID_MSG_TYPE" type="Integer" file="Snmp.pas" line="524">
+    <value>
+      $1F
+    </value>
+  </const>
+  <const name="SNMP_AUTHAPI_TRIV_AUTH_FAILED" type="Integer" file="Snmp.pas" line="526">
+    <value>
+      $20
+    </value>
+  </const>
+  <variable name="SnmpExtensionInit" type="TSnmpExtensionInit" file="Snmp.pas" line="650" />
+  <variable name="SnmpExtensionInitEx" type="TSnmpExtensionInitEx" file="Snmp.pas" line="652" />
+  <variable name="SnmpExtensionMonitor" type="TSnmpExtensionMonitor" file="Snmp.pas" line="654" />
+  <variable name="SnmpExtensionQuery" type="TSnmpExtensionQuery" file="Snmp.pas" line="656" />
+  <variable name="SnmpExtensionQueryEx" type="TSnmpExtensionQueryEx" file="Snmp.pas" line="658" />
+  <variable name="SnmpExtensionTrap" type="TSnmpExtensionTrap" file="Snmp.pas" line="660" />
+  <variable name="SnmpExtensionClose" type="TSnmpExtensionClose" file="Snmp.pas" line="662" />
+  <function name="SnmpExtensionLoaded" visibility="public" file="Snmp.pas" line="699">
+    <parameters>
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="LoadSnmpExtension" visibility="public" file="Snmp.pas" line="704">
+    <parameters>
+      <parameter name="LibName" type="string" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="UnloadSnmpExtension" visibility="public" file="Snmp.pas" line="727">
+    <parameters>
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="SnmpLoaded" visibility="public" file="Snmp.pas" line="750">
+    <parameters>
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="UnloadSnmp" visibility="public" file="Snmp.pas" line="755">
+    <parameters>
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="LoadSnmp" visibility="public" file="Snmp.pas" line="809">
+    <parameters>
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+</namespace>
