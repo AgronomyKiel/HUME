@@ -3,6 +3,19 @@ title: "TSubDevelopmentMaize"
 author: "K. Holzhauser / Agronomy and Crop Science Group, Kiel University"
 date: "`r Sys.Date()`"
 bibliography: Literatur.bib
+csl: european-journal-of-agronomy.csl
+chunk_output_type: console
+html-math-method: katex
+number-sections: true
+toc: true
+toc-expand: 4
+toc-depth: 4
+toc-location: left
+crossref:
+  eq-prefix: Eq.
+format: 
+  html:
+    embed-resources: true 
 ---
 
 ```{r}
@@ -49,7 +62,21 @@ options("citation_format" = "pandoc")
 
 # Introduction
 
-Maize development is regulated by the effective temperature (T~eff~) – derived by the positive difference of daily mean temperature and a defined base temperature (T1) of 6°C in agreement with [@Pages.1994] and Bonhomme et al. (1994)). Furthermore, the development process is separated into five stages further named XStage, following HYBRID-Maize, based on the approach of Yang et al. (2016). The XStages represent the development stages emergence, tassel initiation, silking, effective grain filling and maturity (Figure 1). Development rates between sowing and emergence (DevRateS0), emergence and tassel initiation (DevRateS1), tassel initiation and silking (DevRateS2), silking and grain filling (DevRateS3) are calculated as simple ratio of Teff and the temperature sum (GDD) between the respective XStages (@eq-DevRateS0 - @eq-DevRateS3 ). Compared to the approach of Yang et al. (2016), an additional GDD is introduced from emergence till silking (GDDsilk) to calculate the development rate from grain filling until maturity (DevRateS4, E5).The GDDs are defined cultivar specific parameters assigned according to the assumptions of Bignon (1990) for a mid-early cultivar at a soil with medium warming dynamics, harvested at the dough stage, which is the harvest date of whole crop silage maize with a typical DM content of 35%.
+Maize development is regulated by the effective temperature (\$T\_{eff}\$), which is calculated as the positive difference between the daily mean temperature and a defined base temperature (@par-T1) of 6 °C, following @Pages.1994 and @Bonhomme.1994.
+
+The development process is divided into five stages, hereafter referred to as **XStages**, following the HYBRID-Maize framework and the approach of @Yang.2016. These XStages represent the key phenological stages of maize development: emergence, tassel initiation, silking, effective grain filling, and maturity (Figure @fig-DevScheme).
+
+Development rates between the individual stages are calculated as the ratio between effective temperature (\$T\_{eff}\$) and the corresponding temperature sums (growing degree days, GDD). Specifically, development rates are defined for the phases between sowing and emergence (@eq-DevRateS0), emergence and tassel initiation (@eq-DevRateS1), tassel initiation and silking (@eq-DevRateS2), and silking and grain filling (@eq-DevRateS3). The corresponding temperature sums are defined by the parameters @par-GDDemer, @par-GDDtasini, @par-GDDS2, and @par-GDDS3 (Table @tbl-parameters).
+
+Compared to the approach of @Yang.2016, an additional temperature sum from emergence to silking (@par-GDDsilk) is introduced. This parameter is used to calculate the development rate from grain filling until maturity (@eq-DevRateS4). The development rate is derived from the remaining temperature requirement between the total temperature sum to maturity (@par-GDDtotal) and the temperature sums of the preceding stages.
+
+All temperature sums are defined as cultivar-specific parameters according to the assumptions of @Bignon.1990 for a mid-early maize cultivar grown on soils with medium warming dynamics. The crop is assumed to be harvested at the dough stage, corresponding to the typical harvest time of whole-crop silage maize with a dry matter content of approximately 35 %.
+
+Leaf appearance is simulated following the approaches implemented in HYBRID-Maize and CERES-Maize (@Jones.1986; @Yang.2016). The rate of leaf appearance is calculated as the ratio between effective temperature (\$T\_{eff}\$) and the phyllochron parameter (@par-phy; @eq-phy).
+
+During the early growth period, when the plant has fewer than five leaves (\< BBCH15), leaf appearance is assumed to occur at a higher rate. To account for this effect, a reduction factor (\$f\_{phy}\$) is applied to the phyllochron (@eq-fphy).
+
+In the field trials used for model evaluation, phenological stages were recorded according to the BBCH scale of @Lancashire.1991. These observations were subsequently converted into the corresponding XStages for comparison with the model simulations (Figure @fig-DevScheme).
 
 $$DevRate_{S0} = \frac{T_{eff}}{{GDD}_{emer}}$$ {#eq-DevRateS0}
 
@@ -65,26 +92,28 @@ DevRateS2: Development rate between tassel initiation and silking, Teff: effecti
 
 $$\mathrm{DevRateS3=}\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{S3}}}$$ {#eq-DevRateS3}
 
-![A drawing of an elephant.](Bild1.png){#fig-DevScheme}
+DevRateS4: Development rate between grain filling and maturity, Teff: effective temperature, GDDtotal: growing degree days from sowing till maturity, GDDemer: growing degree days from sowing till emergence, GDDsilk: growing degree days from emergence till silking, GDDS3: growing degree days from silking till grain filling
+
+$$\mathrm{DevRateS4=}\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{total}}\mathrm{-} {\mathrm{GDD}}_{\mathrm{emer}}\mathrm{-} {\mathrm{GDD}}_{\mathrm{silk}}\mathrm{-} {\mathrm{GDD}}_{\mathrm{S3}}}$$ {#eq-DevRateS4}
+
+LeafNo: number of leaves, Teff: effective temperature, phy: phyllochron, fphy: reduction factor for early growth phase.
+
+$$\frac{{\mathrm{dLeaf}}_{\mathrm{No}}}{\mathrm{dt}}\mathrm{\mathrm{=}}\frac{\mathrm{Teff}}{\mathrm{phy\ *\ }\mathrm{f}_{\mathrm{phy}}}$$ {#eq-LeafNo}
+
+fphy: reduction factor for early growth phase, LeafNo: number of leaves, constants (0.66, and 0.068) are parameters according to @Yang.2016, @Jones.1986.
+
+$$\mathrm{f}_{\mathrm{phy}}\mathrm{\mathrm{=}}0.66+0.068 * LeafNo \quad |\quad LeafNo < 5 \\1 \quad |\quad LeafNo ≥ 5$$ {#eq-phy}
+
+![The XStages 1-5 represent the development stages emergence, tassel initiation, silking, effective grain filling and maturity. XStages can be converted to respected values of BBCH scale (@Lancashire.1991)](Bild1.png){#fig-DevScheme}
 
 ```{r}
 #| label: fig-DevScheme
-#| fig.cap: "Development scheme of maize according to HYBRID-Maize."
+#| fig.cap: "Development scheme of maize used in HUME-Maize"
 #| include: true
 #| message: false
 #| warning: false
 
 
-x <- seq(1, 100, by = 1)
-y <- 0.4+x*2+x^2*3
-
-df <- data.frame(x, y)
-
-p <- ggplot(df, aes(x = x, y = y)) +
-  geom_line() +
-  labs(title = "Title", x = "X", y = "Y") +
-  theme_minimal()
-p
 ```
 
 ## Descendence
@@ -104,6 +133,7 @@ df <- read.delim(fn, header = TRUE, sep = ";")
 
 df.state <- df %>% filter( EntityType == "State") %>% dplyr::select(EntityName, Units, Value, Comment)
 names(df.state) <- c("State variable", "Units", "InitialValue", "Description")
+
 ```
 
 The class TSubDevelopent has `r trunc(nrow(df.state))` following state variable(s).
@@ -120,20 +150,32 @@ kable(df.state)
 ## Parameters
 
 ```{r}
-#| message: false
-#| warning: false
-#| include: false
-
-df.par <- df %>% filter( EntityType == "Parameter") %>% dplyr::select(EntityName, Units, Value, Comment)
-names(df.par) <- c("Parameter", "Units", "Value", "Description")
-
-```
-
-The class TSubDevlopemt_Maiz has `r trunc(nrow(df.par))` following parameter(s).
-
-```{r}
+#| label: tab-Parameter
 #| echo: false
 #| message: false
 #| warning: false
-kable(df.par,  escape = FALSE)
+#| table-cap: Model Parameter
+kable(df %>% filter( EntityType == "Parameter") %>% dplyr::select(EntityName, Units, Value, Comment) %>% rename(Parameter = EntityName, Description = Comment))
+```
+
+| Parameter | Value | Unit | Description | Source |
+|---------------|---------------|---------------|---------------|---------------|
+| $T_{1}$ | 6 | °C | Base temperature for calculating $T_{eff}$ | @Pages.1994; @Bonhomme.1994 |
+| $GDD_{emer}$ | 100 | °C d | Temperature sum from sowing until emergence | @Bignon.1990 |
+| $GDD_{tasini}$ | 320 | °C d | Temperature sum from emergence until tassel initiation | @Bignon.1990 |
+| $GDD_{S2}$ | 510 | °C d | Temperature sum from tassel initiation until silking | @Bignon.1990 |
+| $GDD_{S3}$ | 200 | °C d | Temperature sum from silking until grain filling | @Bignon.1990 |
+| $GDD_{silk}$ | 830 | °C d | Temperature sum from emergence until silking | @Bignon.1990 |
+| $GDD_{total}$ | 1890 | °C d | Temperature sum from sowing until maturity | @Bignon.1990 |
+| $phy$ | 50.8 | °C d leaf⁻¹ | Phyllochron | @Jones.1986; @Yang.2016 |
+
+## Variables
+
+```{r}
+#| label: tab-Variable
+#| echo: false
+#| message: false
+#| warning: false
+#| table-cap: Model Variables
+kable(df %>% filter( EntityType == "Variable") %>% dplyr::select(EntityName, Units, Value, Comment) %>% rename(Variable = EntityName, Description = Comment))
 ```
