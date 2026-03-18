@@ -172,26 +172,11 @@ $$\theta {{_{n}^{t+1}}^{.}}z_{n}^{{}}=\theta {{_{n}^{t}}^{.}}z_{n}^{{}}+{{({{F}_
 
 The root water uptake is considered in the water balance equation as a sink term. The potential transpiration (Tpot) is calculated based on the Penman-Monteith equation, which considers the atmospheric demand for water and the resistance to water flow from the soil to the atmosphere through the plant. The actual transpiration (Tact) is then calculated by considering the reduction of water uptake due to low soil water content and root competition.
 
-The sind term S\[i\], describes the water uptake by the plant roots in a certain layer \[i\], depends on Tpot, a reduction factor \[-\] (f~sinkred~) and a term, which describes the reduction of water uptake by roots due to competition. This term is calculated by the root length in the layer \[cm cm^-2^\] (RL\[i\]), an exponential factor for root competition \[-\] (CompF) divided by the sum of root length in all layers \[cm cm^-2^\] (RL\[j\]) and CompF. 0.1 is simply the conversion from cm to mm.
-
-$$S[i]=0.1\cdot {{T}_{pot}}\cdot \frac{RL{{[i]}^{CompF}}}{\sum\limits_{j}{RL{{[j]}^{CompF}}}}\cdot {{f}_{\sin kred}}$$ {#eq-SinkTerm}
-
-f~sinkred~ is calculated by the soil water potential in each soil layer psi~i~ \[hPa\], the soil water potential \[hPa\] psi0 from which on water uptake is 0 and psi~crit~ \[hPa\], a parameter for the soil water potential from which on water uptake decrease.
-
-There are different options available to calculate the reduction factor for root water uptake (f~sinkred~).
-
-$${{f}_{\sin kred}}[i]=\left\{ \begin{align}
-  & 1\quad \quad \quad \quad \quad \quad \quad \quad \quad |ps{{i}_{i}}\ge ps{{i}_{crit}} \\ 
- & \frac{\log (ps{{i}_{i}})-\log (ps{{i}_{0}})}{\log (ps{{i}_{crit}})-\log (ps{{i}_{0}})}\quad |ps{{i}_{i}}\ge ps{{i}_{crit}} \\ 
-\end{align} \right.$$ (Eq. 3)
-
-The sum of the sink terms of the different soil layers is the actual transpiration \[mm d^-1^\] (T~act~).
-
-${{T}_{act}}=\sum\limits_{j}{S[j]}$ (Eq. 4)
+The details are given in the documentation of the derived class [TSoilWaterModelR](https://agronomykiel.github.io/HUME/Components/Soil/Documentation/TSoilWaterModelR.html).
 
 ## Soil evaporation
 
-Actual evaporation \[mm d^-1^\] (E~act~) is calculated by a reduction factor (f~evap~), which corrects E~pot~ by the influence of low soil water content in the top soil layer.
+Actual evaporation \[mm d^-1^\] (E~act~) is calculated by a reduction factor (f~evap~), which corrects E~pot~ by the influence of low soil water content in the top soil layer (@fig-evapredf).
 
 $${{E}_{act}}={{E}_{pot}}\cdot {{red}_{evap}}$$ {#eq-Eact}
 
@@ -203,14 +188,14 @@ the original function according to Beese1978 however is available as well:
 
 $$red_{evap} = max\left(0, min \left(1,-0.5767 * log_{10}(psi_{arr1}) + 1.78\right)\right)$$ {#eq-fevapBeese}
 
-Thereby psi~arr~\[1\] is the soil water tension in the top soil compartment and psi~critevap~ is the soil water tension at which evaporation is reduced. The initiation of soil water potential (psi) is simply done by a parameter psi~ini~. The parameter value of psi~critevap~ has a default value of 500 \[hPa\].
+Thereby psi~arr~[1] is the soil water tension in the top soil compartment and psi~critevap~ is the soil water tension at which evaporation is reduced. The initiation of soil water potential (psi) is simply done by a parameter psi~ini~. The parameter value of psi~critevap~ has a default value of 500 [hPa].
 
 ```{r}
 #| echo: false
-#| results: "asis"
 #| message: false
 #| warning: false
-#| fig-cap: "Reduction factor for soil evaporation (f~evap~) as a function of soil water tension in the top soil layer (psi~arr~[1]) for a given critical soil water tension for evaporation reduction (psicritevap)."
+#| label: fig-evapredf
+#| fig-cap: Reduction factor for soil evaporation (fevap) as a function of soil water tension in the top soil layer (psiarr[1]) for a given critical soil water tension for evaporation reduction (psicritevap).
 
 
 

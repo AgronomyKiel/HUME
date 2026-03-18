@@ -22,16 +22,19 @@ const
 type
   real = double;
 
+  /// <summary> Options for calculation of sink reduction factor for root water uptake </summary>
   TSinkTermMethod = (nFK_crit, Psicrit, Psicrit_corr, Feddes, MFP);
-  // TAutoIrri = (no, yes); depracted is now an Option
+  
+  /// <summary> Options for calculation of automatic irrigation </summary>
   TAutoirriMethod = (amTransRatio, amProznFKWe, amProznFKActRootedComps);
+  
+  /// <summary> Options for calculation of sink reduction factor based on root length distribution and potential water uptake </summary>
   T_Sqrwl_Funct = (ReductionFactor, NoReductionFactor);
-  // TSource = (fromParameter, fromPlantModel); // Source of Psi2 value
 
 
 /// <summary> Model component for adding root soil water uptake to the simulation of vertical (1D) soil water transport
 ///  The distribution of water uptake over the soil layers and the calculation of drought limited water uptake can
-///  be calculated with several different options
+///  be calculated with different options
 ///  </summary>
   TSoilWaterModelR = class(TSoilWaterMod)
 
@@ -264,9 +267,9 @@ begin
     'lower limit of soil water extraction');
   ParCreate('feddes_a', '[hPa]', 400, feddes_a,
     'Enhancement of psi_2 at high pot. Transp.');
-  ParCreate('feddes_b', '[mm]', 5, feddes_b, 'threshold for psi_2 calculation');
-  ParCreate('feddes_c', '[hPa]', 1, feddes_c,
-    'threshold for psi_2 calculation');
+  ParCreate('feddes_b', '[mm/d]', 5, feddes_b, 'Transpiration threshold for psi_2 calculation');
+  ParCreate('feddes_c', '[mm/d]', 1, feddes_c,
+    'lower transpiration rate threshold for psi_2 calculation, for lower transpiration rates psi_2 not further increased');
   ParCreate('nfk_threshold', '[-]', 0.01, nfk_threshold,
     'threshold (water buffer) for sink reduction');
   ParCreate('CompFactor', '[-]', 0.5, CompFactor,
@@ -446,8 +449,16 @@ begin
     end;
 end;
 
+
+
+/// <summary> Sink reduction calculation with 5 options
+/// 1) Feddes: reduction factor based on soil water tension thresholds and potential transpiration rate following Feddes et al. (1978)
+/// 2) Psicrit: reduction factor based on soil water tension threshold (Psi2) following Van Genuchten (1987)
+/// 3) nFKcrit: reduction factor based on relative soil water content (nFK) threshold following Van Genuchten (1987)
+/// 4) Psicrit_corr: reduction factor based on soil water tension at the root surface, which is calculated based on potential water uptake and root length distribution, and soil water retention curve
+/// 5) MFP: reduction factor based on soil water tension at the root surface, which is calculated based on potential water uptake and root length distribution, and soil water retention curve, with a maximum flow principle (MFP) approach for calculating the potential water uptake
+/// </summary>
 procedure TSoilWaterModelR.Calcsink_red_f;
-/// Sink reduction calculation with 3 options
 
 var
   red_f, psi2_, psi2_low, rPAW: real;
@@ -472,7 +483,7 @@ begin
     psi2_low := Psi2.v + feddes_a.v;
     if (PotTrans.v < feddes_c.v) then
       psi2_ := psi2_low
-    else if (PotTrans.v > 5) then
+    else if (PotTrans.v > feddes_b.v) then
       psi2_ := Psi2.v
     else
       psi2_ := psi2_low + (PotTrans.v - feddes_b.v) *

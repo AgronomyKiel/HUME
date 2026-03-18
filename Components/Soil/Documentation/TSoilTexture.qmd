@@ -91,12 +91,17 @@ Where $\theta$ is the soil water content, $\theta_r$ is the residual soil water 
 
 ### Pedo-transfer functions
 
-The parameters of this equation can be determined based on soil texture and bulk density using pedotransfer functions, which are empirical relationships that relate soil properties to the parameters of the Van Genuchten-Mualem model. The module includes currently two sets of pedotransfer functions for different soil textures, which can be used to estimate the parameters based on the soil texture and bulk density. The first is based on the Bodenkundliche Kartieranleitung (KA5) and the second is based on the publication of Renger et al. (2012). The user can choose between these two sets of pedotransfer functions based on the soil texture and bulk density of the soil being simulated. It is, however also possible to use specific values of the parameters of the Van Genuchten-Mualem model.
+The parameters of this equation can be determined based on soil texture and bulk density using pedotransfer functions, which are empirical relationships that relate soil texture properties to the parameters of the Van Genuchten-Mualem model. The module includes currently two sets of pedotransfer functions for different soil textures, which can be used to estimate the parameters based on the soil texture and bulk density. The first is based on the *Bodenkundliche Kartieranleitung* (KA5) and the second is based on the publication of Renger et al. (2012). Both appproaches are based on the texture classes of the German Soil Classification (KA5) (@fig-TextureTriangel).
+The user can choose between these two sets of pedotransfer functions based on the soil texture and bulk density of the soil being simulated. It is, however also possible to use specific values of the parameters of the Van Genuchten-Mualem model.
 
-![Texture classes according to the German Soil Classification (KA5)](TextureTriangel_wiki.png)
+![Texture classes according to the German Soil Classification (KA5)](TextureTriangel_wiki.png){#fig-TextureTriangel}
+
+The parameters of the Van Genuchten-Mualem model for different soil textures based on the two sets of pedotransfer functions are shown in @tbl-GenuchtenPars.
 
 ```{r}
 #| include: false
+#
+
 
 fn_KA5 <- "./Components/Soil/Documentation/GenuchtenPars.csv"
 Params_KA5 <- read.table(fn_KA5, header = TRUE, comment.char = "[", sep = ";", dec = ".")
@@ -126,12 +131,13 @@ Params$nFK <- Params$FK-Params$PWP
 
 ```{r}
 #| echo: false
-#| results: "asis"
 #| message: false
 #| warning: false
 #| include: true
-#| tbl-cap: "Parameters of the Van Genuchten-Mualem model for different soil textures based on two sets of pedotransfer functions. The parameters are the residual soil water content (theta_r), the saturated soil water content (theta_s), the alpha parameter, the n parameter, the m parameter, the soil water content at field capacity (FK), the soil water content at permanent wilting point (PWP) and the difference between FK and PWP (nFK)."
-#| fig-lab: fig-GenuchtenPars
+#| label: tbl-GenuchtenPars
+#| tbl-cap: Parameters of the Van Genuchten-Mualem model for different soil textures based on two sets of pedotransfer functions. The parameters are the residual soil water content (theta_r), the saturated soil water content (theta_s), the alpha parameter, the n parameter, the m parameter, the soil water content at field capacity (FK), the soil water content at permanent wilting point (PWP) and the difference between FK and PWP (nFK).
+
+
 library(dplyr)
 library(DT)
 library(htmlwidgets)
@@ -177,11 +183,13 @@ Params_shared <- SharedData$new(Params, key = ~Bodenart)
 
 ```
 
+In the interactive figure below you can explore the parameters of the Van Genuchten-Mualem model for different soil textures based on the two sets of pedotransfer functions. You can filter the data by soil texture and source of the pedotransfer function using the dropdown menu and checkboxes above the figure. The figure shows the soil water retention curves for different soil textures based on the parameters of the Van Genuchten-Mualem model.
+
 ```{r}
 #| include: false
 
 
-logpsi <- seq(from=0, to = 4.2, by=0.05)
+logpsi <- seq(from=1, to = 4.3, by=0.05)
 psi <- 10^logpsi
 #psi <- -psi
 
@@ -206,13 +214,20 @@ curves <- Params %>%
 
 ```{r}
 #| echo: false
+#| message: false
+#| warning: false
+#| include: true
+#| label: fig-retention_curves
+#| fig-cap: "Soil water retention curves for different soil textures based on the parameters of the Van Genuchten-Mualem model. The curves are based on two sets of pedotransfer functions for different soil textures, which can be used to estimate the parameters based on the soil texture and bulk density. The first is based on the *Bodenkundliche Kartieranleitung* (KA5) and the second is based on the publication of Renger et al. (2012). Both appproaches are based on the texture classes of the German Soil Classification (KA5)."
+
 shared_curves <- SharedData$new(curves)
 
 bscols(
   widths = c(3,9),
   list(
-  filter_select("boden", "Texture", shared_curves, ~Bodenart, multiple = TRUE),
-  filter_checkbox("Source", "PTF", shared_curves, ~Source, inline = TRUE)),
+    filter_select("boden", "Texture", shared_curves, ~Bodenart, multiple = TRUE),
+    filter_checkbox("Source", "PTF", shared_curves, ~Source, inline = TRUE)
+  ),
 
   plot_ly(
     shared_curves,
@@ -225,7 +240,27 @@ bscols(
   ) %>%
   layout(
     xaxis = list(title = "Soil suction (hPa)", type = "log"),
-    yaxis = list(title = "Water content")
+    yaxis = list(title = "Water content"),
+
+    shapes = list(
+      list(
+        type = "line",
+        x0 = 10^1.8, x1 = 10^1.8,
+        y0 = 0, y1 = 1,
+        yref = "paper",
+        line = list(color = "black", dash = "dash")
+      ),
+      list(
+        type = "line",
+        x0 = 10^4.2, x1 = 10^4.2,
+        y0 = 0, y1 = 1,
+        yref = "paper",
+        line = list(color = "black", dash = "dash")
+      )
+    )
   )
 )
 ```
+
+
+
