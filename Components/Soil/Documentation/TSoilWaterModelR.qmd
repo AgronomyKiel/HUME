@@ -104,7 +104,7 @@ The TSoilWaterModelR module simulates add root water uptake to its ancestor comp
 
 Root water uptake is induced by the process of canopy transpiration in order to compensate plant water loss. But there exist physical limitations of the rate of total water uptake which can be seen by the sum of the maximum transport rates to the segments of the whole root system. These transport rates are governed by the maximum soil water potential difference between the root surface, the unsaturated hydraulic conductivity in the vicinity of the roots and the water uptake rate per unit of root length which can be approximated in a first step by the ratio of transpiration rate to total root length. However, root water uptake and transpiration are usually regulated down before this situation is reached due to stomata opening control in which physical signals like the leaf water potential, environmental signals like the saturation vapor deficit and the irradiation but also hormonal signalling mechanisms by absissic acid (ABA) are involved.
 
-The component TSoilWaterModelR implements some rather simple approaches for describing these complex processes but efforts have been started to include a more mechanistical approach for simulation of root water uptake.
+The component TSoilWaterModelR implements some rather simple approaches for describing these complex processes but efforts have been started to include a more mechanistical approach for simulation of root water uptake. The development started with the implementation of a simple reduction factor for root water uptake based on the soil water potential in the different soil layers and the potential transpiration rate. This approach is similar to [@feddes1978] but with a more simple calculation of the reduction factor for root water uptake.
 
 ## Implementation
 
@@ -112,11 +112,11 @@ The root water uptake is considered in the water balance equation as a sink term
 
 The actual transpiration (T~act~) is then calculated by considering the reduction of water uptake due to low soil water content and root competition.
 
-The sink term S\[i\], describes the water uptake by the plant roots in a certain layer \[i\], depends on T~pot~, a reduction factor \[-\] (f~sinkred~) and a term, which describes the reduction of water uptake by roots due to competition.
+The sink term for the layer i (S\[i\]), describes the water uptake by the plant roots in a certain layer, depends on T~pot~, a reduction factor \[-\] (f~sinkred~) and a term, which describes the reduction of water uptake by roots due to competition.
 
-There are several options available to distribute the potential transpiration to the different soil layers. The default option is to distribute the potential transpiration according to the root length in the different soil layers, which is a common approach in many agro-ecological models. The root length in the different soil layers is calculated by the component [TRootGrowth](https://agronomykiel.github.io/HUME/Components/RootGrowth/Documentation/TRootGrowth.html) and is provided as an external value to the component TSoilWaterModelR.
+There are several options available to distribute the potential transpiration to the different soil layers. The default option is to distribute the potential transpiration according to the fraction of root length in a soil layer. The root length in the different soil layers is calculated by the component [TRootGrowth](https://agronomykiel.github.io/HUME/Components/RootGrowth/Documentation/TRootGrowth.html) and is provided as an external value to the component TSoilWaterModelR.
 
-The potential sink term is then calculated by the root length in the layer cm cm^-2^ (RL~\[i\]~), an exponential factor for root competition \[-\] (CompF) divided by the sum of root length in all layers \[cm cm^-2^\] (RL~\[j\]~) and CompF (@fig-CompF). The factor 0.1 is the conversion from cm to mm which is used to stay with the units of mm for the evapotranspiration variables and the default unit of the Soil processes which is cm.
+A potential sink term is calculated by the root length in the layer cm cm^-2^ (RL~\[i\]~), an exponential factor for root competition \[-\] (CompF) divided by the sum of root length in all layers \[cm cm^-2^\] (RL~\[j\]~) and CompF (@fig-CompF). The factor 0.1 is the conversion from cm to mm which is used to convert with the units of mm for the evapotranspiration variables and the default unit of the Soil processes which is cm.
 
 $$S[i]_{pot}=0.1\cdot {{T}_{pot}}\cdot \frac{RL{{[i]}^{CompF}}}{\sum\limits_{j}{RL{{[j]}^{CompF}}}}\cdot {{f}_{sinkred}}$$ {#eq-SinkTerm}
 
@@ -291,7 +291,6 @@ $$
 & \text{if } T_{\mathrm{ref,low}} < T_{\mathrm{act}} \le T_{\mathrm{ref,high}}.
 \end{cases}
 $$ {#eq-psi2Feddes}
-
 
 with:
 

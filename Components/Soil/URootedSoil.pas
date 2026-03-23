@@ -40,11 +40,18 @@ type
 
   private
     f_Sqrwl_funct: T_Sqrwl_Funct;
+
+    /// <summary> internal variable for summing up all sink terms </summary>
     Sum_Sink: real;
-    /// internal variable for summing up all sink terms
+    
+    /// <summary> field for option with or without roots, if false water uptake is calculated without considering root distribution and sink reduction,
+    /// if true root distribution and sink reduction are considered </summary>
     FWithRoots: boolean;
-    /// Option for calculation with/without roots
+    
+    /// <summary> field for automatic irrigation  (yes/no) </summary>
     fAutoirri: boolean;
+
+    /// field for automatic irrigation method (amTransRatio, amProznFKWe, amProznFKActRootedComps)
     fAutoirriMethod: TAutoirriMethod;
     fPsi2Opt: TSource;
     /// Source of Psi2 value
@@ -58,21 +65,33 @@ type
   protected
 
   public
+    
+    /// <summary> Option for automatic irrigation yes/no </summary>
     AutoIrriOptStr: Toption;
+
+    /// <summary> Option for method of automatic irrigation (amTransRatio, amProznFKWe, amProznFKActRootedComps) </summary>
     AutoIrriMethodOptStr: Toption;
+
+    /// <summary> Option for method of sink term calculation (Feddes, Psicrit, Psicrit_corr, nFKcrit, MFP) </summary>
     SinkTermMethodOptStr: Toption;
+    
+    /// <summary> Option to write the matrix flux table </summary>
     WriteMFPTable: Toption;
-    /// Option for output of MFP-table functions as txt file
+
+    /// <summary> Array for soil water content differences between bulk soil and root surface for each soil layer </summary>
     WcontDiff_arr: TSoilvarArray;
-    /// Wassergehaltsdifferenzen Wurzeloberfl�che/Bodenraum [cm3/cm3]
+    /// <summary> Matrix potential differences between root surface and bulk soil [cm3/cm3] </summary>
     PsiRootDiff_arr: TSoilvarArray;
-    /// Wasserspannungsdifferenzen Wurzeloberfl�che/Bodenraum [cm3/cm3]
+    
+    /// <summary> Array for proportional nFK values for each soil layer </summary>
     ProzNFK_arr: TSoilvarArray;
 
+    /// <summary> Array for effective root length density distribution [cm/cm3] </summary>
     ExWld_arr: TSoilExtArray;
-    /// Wurzellaengendichten [cm.cm-3]
+    
+    /// <summary> Total root length density [cm/m2] </summary>
     WLges: TVar;
-    /// GesamtWurzell�nge [cm]
+    
     // w_influx : TSoilVarArray; /// Wasserinfluxraten [cm3.cm-1.d-1]
     SinkRedF: TSoilArray;
     /// Reduktionsfaktoren bei Wasseraufnahme
