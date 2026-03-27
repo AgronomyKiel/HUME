@@ -127,7 +127,7 @@ type
     TransIntRatio: TVar;
     /// Verh�ltnis aktuelle zu potentielle Transpiration
     Eact_ETP: TVar;
-    /// Ration of act. evaporation to pot. evapotranspiration
+    /// Ratio of act. evaporation to pot. evapotranspiration
     Psi2: TVar;
     /// water potential at which water uptake by the plant starts to decrease [hPa]
     act_rooted_comps: TVar;
