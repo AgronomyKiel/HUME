@@ -50,7 +50,9 @@ When changing documentation:
 
 - Preserve existing Delphi/VCL structure and naming. Follow the unit/form naming already in use.
 - Keep changes tight and local. Avoid broad refactors unless they are necessary for the task.
-- Check both `.pas` and paired `.dfm` files before modifying forms.
+- Check both .pas and paired .dfm files before modifying forms.
+- Write inline source documentation in Delphi/XML documentation comment style.
+- Existing inline comments may be rewritten into Delphi/XML documentation comment style when touched, and may be translated from German to English when needed for consistency and clarity.
 - Prefer extending existing model/component classes over creating parallel abstractions.
 - Do not silently rewrite project search paths, package dependencies, or IDE config files.
 - Some project files contain machine-specific paths under `C:\Users\...` and `Q:\...`; avoid normalizing them unless the task is specifically about build configuration.
@@ -91,3 +93,4 @@ In your final summary:
 - mention which Delphi project/package or doc source you changed
 - note whether verification was performed in RAD Studio/MSBuild/Quarto, or not run
 - call out any assumptions about local paths, external packages, or unavailable Windows tooling
+

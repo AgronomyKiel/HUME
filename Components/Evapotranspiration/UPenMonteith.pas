@@ -956,6 +956,7 @@ begin
   ParCreate('Elev', '[m]', 50, Elev, 'Heigt above sea level');
   ParCreate('rc0', '[s.m-1]', 50, rc0,
     'canopy resistance at "good water supply", note that if a plant component is coupled to TPenMonteith this value is used');
+  rc0.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/Evapotranspiration/Documentation/TPenMonteith.html#canopy-resistance' ;
   // Stomatawiderstand bei "guter Wasserversorgung"
   ParCreate('exk_GlobRad', '[-]', 0.5, exk_GlobRad,
     'extinction coefficient for global radiation');
