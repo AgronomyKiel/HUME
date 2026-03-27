@@ -55,7 +55,7 @@ When changing documentation:
 - Existing inline comments may be rewritten into Delphi/XML documentation comment style when touched, and may be translated from German to English when needed for consistency and clarity.
 - Prefer extending existing model/component classes over creating parallel abstractions.
 - Do not silently rewrite project search paths, package dependencies, or IDE config files.
-- Some project files contain machine-specific paths under `C:\Users\...` and `Q:\...`; avoid normalizing them unless the task is specifically about build configuration.
+- Some project files and IDE/LSP configs (for example `*.delphilsp.json` such as `Components/CERES Wheat/CeresSubModels.delphilsp.json`) contain machine-specific paths under `C:\Users\...` and `Q:\...`; avoid normalizing or regenerating these in PRs unless the task is specifically about shared build configuration, and prefer not tracking purely local IDE/LSP configs in version control.
 - Expect generated binaries and caches such as `.dcu`, `.dsk`, `.identcache`, `__history/`, `__recovery/`, and `Win32/` outputs. Do not edit or rely on them as source of truth.
 - `docs/` is generated output. Prefer editing `index.qmd`, `CodeBasisOverview.qmd`, component docs, `_quarto.yml`, and related assets instead.
 - R artifacts like `.RData` and `.Rhistory` are user/runtime state, not primary source files.
