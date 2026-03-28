@@ -1,9 +1,5 @@
 ﻿
-
 unit Development; 
-
-
-
 {$IFDEF LINUX}
 {$DEFINE NONVISUAL}
 {$ENDIF LINUX}

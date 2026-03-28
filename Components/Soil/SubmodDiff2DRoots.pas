@@ -21,6 +21,7 @@ type
   (* -----------------------------------------------------------------------------
     Type declarations
     ------------------------------------------------------------------------------ *)
+/// <summary>Arrays</summary>
   { Arrays }
   { Problem: dynamic implementation was removed again due to difficulties with
     array bounds }
