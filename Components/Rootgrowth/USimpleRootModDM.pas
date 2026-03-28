@@ -1249,6 +1249,7 @@ begin
       WL_alt := Wld_arr[i].v * (Tiefe[i].v - Tiefe[i - 1].v);
       Wld_arr[i].v := WLD_z_t_f(Tiefe[i - 1].v, Tiefe[i].v);
       WL_arr[i].v := Wld_arr[i].v * (Tiefe[i].v - Tiefe[i - 1].v);
+      Root_Matrix[i,1] := max(0, Wl_arr[i].v-wl_alt);
       ActiveRL := 0.0;
       for j := 1 to min(trunc(ActiveDuration.v), MaxAgeCl) do
         ActiveRL := ActiveRL + Root_Matrix[i, j];

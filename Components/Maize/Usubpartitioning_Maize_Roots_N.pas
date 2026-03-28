@@ -45,10 +45,12 @@ Type
     NLeafOpt, NStemOpt, NCobOpt, NLeafDef, NStemDef, NCobDef: TVar;
     DummyVar: TVar;
     NcShoot, NcRoot, //
-    NNI, NNIShoot, NNILeaf: TVar; // %
-    NDemandShoot,/// NDemand of the shoot [gN.m-2.d-1]
-    NDemandLeaf, NDemandStem, NDemandCob, NDemandRoot: TVar;/// NDemand of the organs [gN.m-2.d-1]
-    Ntrans,
+      NNI, NNIShoot, NNILeaf: TVar; // %
+    NDemandShoot,
+    /// NDemand of the shoot [gN.m-2.d-1]
+    NDemandLeaf, NDemandStem, NDemandCob, NDemandRoot: TVar;
+    /// NDemand of the organs [gN.m-2.d-1]
+    Ntrans, NNIstem, NNIcob: TVar;
     SupplyDemandRatio: TVar;
 
     // State Variables
@@ -56,11 +58,14 @@ Type
 
     // Parameters
     Ncshoot_min, // niedrigste N Konzentration shoot
-    Ncshoot_max, Ncshoot_a, Ncshoot_b: TPar;// Parameter für Verdünnungsfunktion NShootOpt
-    Ncleaf_a, Ncleaf_b,Ncleaf_max,Ncleaf_min,Ncstem_max,Ncstem_min,
-    Nccob_max,Nccob_min, Ncstem_a, Ncstem_b, Nccob_a, Nccob_b: TPar;// Parameter für organspezifische Verdünnungsfunktionen             //(holzhauser)
+    Ncshoot_max, Ncshoot_a, Ncshoot_b: TPar;
+    // Parameter für Verdünnungsfunktion NShootOpt
+    Ncleaf_a, Ncleaf_b, Ncleaf_max, Ncleaf_min, Ncstem_max, Ncstem_min,
+      Nccob_max, Nccob_min, Ncstem_a, Ncstem_b, Nccob_a, Nccob_b: TPar;
+    // Parameter für organspezifische Verdünnungsfunktionen             //(holzhauser)
     Ncroot_min, // niedrigste N Konzentration root
-    Ncroot_max, Ncroot_a, Ncroot_b: TPar;// Parameter für Verdünnungsfunktion NRootOpt
+    Ncroot_max, Ncroot_a, Ncroot_b: TPar;
+    // Parameter für Verdünnungsfunktion NRootOpt
     DMStubble_par: TPar; // Stoppel-TM als Parameter
 
     // External Variables
@@ -106,7 +111,8 @@ Type
 
     // Options
 
-    Property opt_NcShoot_Calc: TNcShoot_Calc read fNcShoot_Calc write fNcShoot_Calc;
+    Property opt_NcShoot_Calc: TNcShoot_Calc read fNcShoot_Calc
+      write fNcShoot_Calc;
 
   end; // SubmodelName
 
@@ -135,21 +141,25 @@ begin
 end;
 
 procedure Tsubpartitioning_Maize_Roots_N.CreateAll;
-//var
-//  i: Integer;
-//  ndx_str: string;
+// var
+// i: Integer;
+// ndx_str: string;
 
 begin
   inherited CreateAll;
   // Variables
 
-  VarCreate('NDemand', 'g m-2 d-1', 0, true, NDemand,'potenzielle N-Aufnahmerate (g.m-2.d-1)');
-  VarCreate('NDemandShoot', 'g m-2 d-1', 0, true, NDemandShoot,'potential N uptake rate shoot (g.m-2.d-1)');
-  VarCreate('NDemandRoot', 'g m-2 d-1', 0, true, NDemandRoot,'potential N uptake rate root (g.m-2.d-1)');
+  VarCreate('NDemand', 'g m-2 d-1', 0, true, NDemand,
+    'potenzielle N-Aufnahmerate (g.m-2.d-1)');
+  VarCreate('NDemandShoot', 'g m-2 d-1', 0, true, NDemandShoot,
+    'potential N uptake rate shoot (g.m-2.d-1)');
+  VarCreate('NDemandRoot', 'g m-2 d-1', 0, true, NDemandRoot,
+    'potential N uptake rate root (g.m-2.d-1)');
   VarCreate('NDemandLeaf', 'g m-2 d-1', 0, true, NDemandLeaf);
   VarCreate('NDemandStem', 'g m-2 d-1', 0, true, NDemandStem);
   VarCreate('NDemandCob', 'g m-2 d-1', 0, true, NDemandCob);
-  VarCreate('NUptakeRate_act', 'g m-2 d-1', 0, true, NUptakeRate_act,'maximale N-Aufnahmerate (g.m-2.d-1)');
+  VarCreate('NUptakeRate_act', 'g m-2 d-1', 0, true, NUptakeRate_act,
+    'maximale N-Aufnahmerate (g.m-2.d-1)');
   VarCreate('NcOptShoot', '', 0, true, NcOptShoot);
   VarCreate('NcOptStem', '', 0, true, NcOptStem); // (holzhauser)
   VarCreate('NcOptLeaf', '', 0, true, NcOptLeaf); // (holzhauser)
@@ -161,7 +171,7 @@ begin
   VarCreate('NcOptRoot', '', 0, true, NcOptRoot);
   VarCreate('NcShoot', '', 0, true, NcShoot);
   VarCreate('NcRoot', '', 0, true, NcRoot);
- // VarCreate('NcStem', '', 0, true, NcStem, 'N concentration stem, supposed to be half of N-concentration shoot');
+  // VarCreate('NcStem', '', 0, true, NcStem, 'N concentration stem, supposed to be half of N-concentration shoot');
   VarCreate('DummyVar', '', 0, true, DummyVar);
   VarCreate('NNI', '', 1, true, NNI);
   VarCreate('NNIshoot', '', 0, true, NNIShoot);
@@ -177,9 +187,11 @@ begin
   VarCreate('NStemOpt', '', 0, true, NStemOpt);
   VarCreate('NCobDef', '', 0, true, NCobDef);
   VarCreate('NCobOpt', '', 0, true, NCobOpt);
-  VarCreate('Ntrans','',0,true,Ntrans);
-  VarCreate('SupplyDemandRatio','[-]', 0, true, SupplyDemandRatio);
-
+  VarCreate('Ntrans', '', 0, true, Ntrans);
+  VarCreate('NNIleaf', '', 0, true, NNILeaf);
+  VarCreate('NNIstem', '', 0, true, NNIstem);
+  VarCreate('NNIcob', '', 0, true, NNIcob);
+  VarCreate('SupplyDemandRatio', '', 0, true, SupplyDemandRatio);
 
   // State Variables
 
@@ -196,31 +208,35 @@ begin
 
   // Parameter Verdünnungsfunktion Sproß aus Daten geschätzt
   // Biogas-Expert 2007/2008 HS, KD, M1, N3, N4
-  ParCreate('Ncshoot_max', '', 3.4, Ncshoot_max);// 4.944      3.4 nach Plenet /Herrmann
-  ParCreate('Ncshoot_a', '', 3.412, Ncshoot_a);// Koeffizienten a und b nach Herrmann und Taube.
-  ParCreate('Ncshoot_b', '', -0.391, Ncshoot_b);// in der Veröffentlichung a: 34.12   gilt für ein Nkrit in gN/kgDM also eine promille -> 3.4 ergibt NKrit in Prozent (g/100gDM)
+  ParCreate('Ncshoot_max', '', 3.4, Ncshoot_max);
+  // 4.944      3.4 nach Plenet /Herrmann
+  ParCreate('Ncshoot_a', '', 3.412, Ncshoot_a);
+  // Koeffizienten a und b nach Herrmann und Taube.
+  ParCreate('Ncshoot_b', '', -0.391, Ncshoot_b);
+  // in der Veröffentlichung a: 34.12   gilt für ein Nkrit in gN/kgDM also eine promille -> 3.4 ergibt NKrit in Prozent (g/100gDM)
   // Parameter für organspezifische Verdünnungsfunktionen (holzhauser)
   // Kalibriert an Biogas-Expert 2007/2008 Datensatz
-  ParCreate('Ncleaf_a', '', 3.870, Ncleaf_a);
-  ParCreate('Ncleaf_b', '', -0.11057, Ncleaf_b);
-  ParCreate('Ncleaf_max','',5.9,Ncleaf_max);
-  ParCreate('Ncstem_max','',4.6,Ncstem_max);
-  ParCreate('Ncstem_a', '', 4.6227, Ncstem_a);
-  ParCreate('Ncstem_b', '', -0.2164, Ncstem_b);
-  ParCreate('Nccob_a', '', 3.1160, Nccob_a);
-  ParCreate('Nccob_b', '', -0.2941, Nccob_b);
+  ParCreate('Ncleaf_a', '', 3.2683049, Ncleaf_a); // 3.870
+  ParCreate('Ncleaf_b', '', -0.1207723, Ncleaf_b); // -0.11057
+  ParCreate('Ncleaf_max', '', 4.5, Ncleaf_max); // 5.9
+  ParCreate('Ncstem_max', '', 4.2, Ncstem_max);
+  ParCreate('Ncstem_a', '', 3.7332590, Ncstem_a); // 4.6227
+  ParCreate('Ncstem_b', '', -0.3019954, Ncstem_b); // -0.2164
+  ParCreate('Nccob_a', '', 2.4154529, Nccob_a); // 3.1160
+  ParCreate('Nccob_b', '', -0.2438779, Nccob_b); // -0.2941
   // Parameter Verdünnungsfunktion Wurzel
   ParCreate('Ncroot_max', '', 1.6, Ncroot_max);
   ParCreate('Ncroot_a', '', 2.0, Ncroot_a);
   ParCreate('Ncroot_b', '', -0.225, Ncroot_b);
-  ParCreate('DMStubble_par', 'g.m-2', 200, DMStubble_par,'Stubble DM [g.m-2] after harvest, default 2t.ha-1');
+  ParCreate('DMStubble_par', 'g.m-2', 200, DMStubble_par,
+    'Stubble DM [g.m-2] after harvest, default 2t.ha-1');
 
   // External Variable
   ExternVCreate('ActNUptake', 'kg N/ha*d', statefield, ActNUptake);
   ExternVCreate('MaxNUptake', 'kg N/ha*d', statefield, MaxNUptake);
 
   // Options
-  OptCreate('NcShoot_Calc','herrmann04',OptNcShoot_Calc);
+  OptCreate('NcShoot_Calc', 'herrmann04', OptNcShoot_Calc);
   OptNcShoot_Calc.OptionList.Clear;
   OptNcShoot_Calc.OptionList.Add('f_ln');
   OptNcShoot_Calc.OptionList.Add('herrmann04');
@@ -232,18 +248,35 @@ procedure Tsubpartitioning_Maize_Roots_N.Init(var GlobMod: TMod);
 
 begin
   inherited Init(GlobMod);
-  //NcMinShoot.v := 0.0;
-  //Nshoot.v := DMShoot.v * Ncshoot_max.v / 100;
-  //NcShoot.v := Ncshoot_max.v;
+  // NcMinShoot.v := 0.0;
+  // Nshoot.v := DMShoot.v * Ncshoot_max.v / 100;
+  // NcShoot.v := Ncshoot_max.v;
   NNI.v := 1;
   NShootDef.v := 0;
   NLeafDef.v := 0;
   NStemDef.v := 0;
   NCobDef.v := 0;
   NRootDef.v := 0;
-  Ntrans.v:= 0;
-
-
+  Ntrans.v := 0;
+  NDemand.v := 0;
+  NDemandLeaf.v := 0;
+  NDemandStem.v := 0;
+  NDemandCob.v := 0;
+  NDemandRoot.v := 0;
+  Nleaf.v := 0;
+  Nstem.v := 0;
+  Ncob.v := 0;
+  Nshoot.v := 0;
+  Ntot.v := 0;
+  SupplyDemandRatio.v := 0;
+  Ncleaf.v:= 0;
+  Ncstem.v:=0;
+  Ncroot.v:=0;
+  Nccob.v:=0;
+  Ncoptleaf.v:= 0;
+  Ncoptstem.v:=0;
+  Ncoptroot.v:=0;
+  Ncoptcob.v:=0;
 
   if OptNcShoot_Calc.option = 'f_ln' then
   begin
@@ -258,58 +291,64 @@ begin
     fNcShoot_Calc := organ_specific;
   end;
 
-
-
 end;
 
 // Verdünnungsfunktionen:
-//Shoot
-function NcOptShoot_f(DMShoot,XStage, Ncshoot_max, Ncshoot_a,Ncshoot_b: real): real;
+// Shoot
+function NcOptShoot_f(DMShoot, XStage, Ncshoot_max, Ncshoot_a,
+  Ncshoot_b: real): real;
 begin
   // potenziell nach Herrmann und Taube (2004)
-  if (DMShoot > 100) then
-  // obere und untere Bedingung(holzhauser): Nach Herrmann und Taube konstantes Nkrit bei DM < 1t/ha
-    NcOptShoot_f := min(Ncshoot_max, Ncshoot_a * power((DMShoot / 100),Ncshoot_b)) // 100 um DM in t/ha umzurechnen;
+  //if (DMShoot > 100) then
+    // obere und untere Bedingung(holzhauser): Nach Herrmann und Taube konstantes Nkrit bei DM < 1t/ha
+   if (DMShoot > 52) then          // holzhauser 2024    berechnet mit Biogas-Expert Datensatz
+    NcOptShoot_f := min(Ncshoot_a, Ncshoot_a * power((DMShoot / 100),
+      Ncshoot_b)) // 100 um DM in t/ha umzurechnen;
   else if (XStage > 0) then
-    NcOptShoot_f := Ncshoot_max
+    NcOptShoot_f := Ncshoot_a
   else
     NcOptShoot_f := 0;
 end;
 
 // Leaves
-function NcOptLeaf_f(DMLeaf,XStage,Ncleaf_max,Ncleaf_a, Ncleaf_b : real): real;
+function NcOptLeaf_f(DMLeaf, XStage, Ncleaf_max, Ncleaf_a,
+  Ncleaf_b: real): real;
 begin
- if (DMLeaf > 2) and (XStage > 0) then
-    NcOptLeaf_f := min(Ncleaf_max, Ncleaf_a * power((DMLeaf / 100), Ncleaf_b))// 100 um DM in t/ha umzurechnen
+  if (DMLeaf > 21) and (XStage > 0) then
+    NcOptLeaf_f := min(Ncleaf_a, Ncleaf_a * power((DMLeaf / 100), Ncleaf_b))
+    // 100 um DM in t/ha umzurechnen
   else
-    NcOptLeaf_f := Ncleaf_max;
+    NcOptLeaf_f := Ncleaf_a;
 end;
 
 // Stems
-function NcOptStem_f(DMStem,XStage,Ncstem_max, Ncstem_a, Ncstem_b: real): real;
+function NcOptStem_f(DMStem, XStage, Ncstem_max, Ncstem_a,
+  Ncstem_b: real): real;
 begin
-  if (DMStem > 1.4) and (XStage >0) then
-    NcOptStem_f :=  min(Ncstem_max, Ncstem_a * exp((DMStem / 100) * Ncstem_b))// 100 um DM in t/ha umzurechnen
+  if (DMStem > 1) and (XStage > 0) then
+    NcOptStem_f := min(Ncstem_a, Ncstem_a * exp((DMStem / 100) * Ncstem_b))
+    // 100 um DM in t/ha umzurechnen
   else
-    NcOptStem_f := Ncstem_max;
+    NcOptStem_f := Ncstem_a;
 end;
 
 // Cobs
-function NcOptCob_f(DMcob, Nccob_a, Nccob_b, XStage: real): real;
+function NcOptCob_f(DMcob, Nccob_a, Nccob_b: real): real;
 begin
-  if (DMcob > 0) then
+  if (DMcob > 98) then
     NcOptCob_f := min(Nccob_a, Nccob_a * power((DMcob / 100), Nccob_b))
     // 100 um DM in t/ha umzurechnen   /5 noch nurch Ncmax ersetzen!
-  else
+  else  if (DMcob > 0) then
+     NcOptCob_f := Nccob_a
+   else
     NcOptCob_f := 0;
 end;
 
 procedure Tsubpartitioning_Maize_Roots_N.CalcRates;
 
-//var
- // i: Integer;
- // Surplus: real;
-
+// var
+// i: Integer;
+// Surplus: real;
 
 begin
   inherited CalcRates;
@@ -319,79 +358,116 @@ begin
 
   If (DMShoot.v + ShootGR.v > 0) then
   begin
-    if fNcShoot_Calc = f_ln then begin // logarithmisch  (nicht funktionsfähig)
-      NcOptShoot.v := min(Ncshoot_max.v, Ncshoot_a.v + Ncshoot_b.v *
-        ln(DMShoot.v + ShootGR.v));
+    if fNcShoot_Calc = f_ln then
+    begin // logarithmisch  (nicht funktionsfähig)
+      NcOptShoot.v := min(Ncshoot_max.v, Ncshoot_a.v + Ncshoot_b.v *ln(DMShoot.v + ShootGR.v));
     end;
 
     // Verdünnungsfunktion nach Herrmann für Gesamtpflanze
     if fNcShoot_Calc = herrmann04 then
     begin
-      NcOptShoot.v := NcOptShoot_f(DMShoot.v,XStage.v,Ncshoot_max.v,Ncshoot_a.v, Ncshoot_b.v);
+      NcOptShoot.v := NcOptShoot_f(DMShoot.v, XStage.v, Ncshoot_max.v,Ncshoot_a.v, Ncshoot_b.v);
     end;
 
     // organspezifische Option
-    if fNcShoot_Calc = organ_specific then begin
-      if NcOptLeaf.v > 0 then      //Absicherung, dass die Verdünnungskurve am Ende ein Minimum-Plateau erreicht.
-      NcOptLeaf.v := min(NcOptLeaf.v, NcOptLeaf_f(DMLeaf.v + DMLeaf.c * Globtime.c, XStage.v,Ncleaf_max.v,Ncleaf_a.v, Ncleaf_b.v))
+    if fNcShoot_Calc = organ_specific then
+    begin
+      if NcOptLeaf.v > 0 then
+      // Absicherung, dass die Verdünnungskurve am Ende ein Minimum-Plateau erreicht.
+        NcOptLeaf.v := min(NcOptLeaf.v,
+          NcOptLeaf_f(DMLeaf.v + DMLeaf.c * Globtime.c, XStage.v, Ncleaf_max.v,
+          Ncleaf_a.v, Ncleaf_b.v))
       else
-      NcOptLeaf.v := NcOptLeaf_f(DMLeaf.v+ DMLeaf.c * Globtime.c,XStage.v,Ncleaf_max.v,Ncleaf_a.v, Ncleaf_b.v);
+        NcOptLeaf.v := NcOptLeaf_f(DMLeaf.v + DMLeaf.c * Globtime.c, XStage.v,
+          Ncleaf_max.v, Ncleaf_a.v, Ncleaf_b.v);
       if (NcOptStem.v > 0) then
-      NcOptStem.v :=min(NcOptStem.v,NcOptStem_f(DMStem.v+ DMStem.c * Globtime.c,XStage.v,Ncstem_max.v,Ncstem_a.v, Ncstem_b.v))
+        NcOptStem.v := min(NcOptStem.v,
+          NcOptStem_f(DMStem.v + DMStem.c * Globtime.c, XStage.v, Ncstem_max.v,
+          Ncstem_a.v, Ncstem_b.v))
       else
-      NcOptStem.v :=NcOptStem_f(DMStem.v+ DMStem.c * Globtime.c,XStage.v,Ncstem_max.v,Ncstem_a.v, Ncstem_b.v);
-      NcOptCob.v := NcOptCob_f(DMcob.v+ DMcob.c * Globtime.c, Nccob_a.v, Nccob_b.v, XStage.v);
+        NcOptStem.v := NcOptStem_f(DMStem.v + DMStem.c * Globtime.c, XStage.v,
+          Ncstem_max.v, Ncstem_a.v, Ncstem_b.v);
+      NcOptCob.v := NcOptCob_f(DMcob.v + DMcob.c * Globtime.c, Nccob_a.v,
+        Nccob_b.v);
     end;
 
   end;
 
   if (DMFineRoot.v + DMFineRoot.c > 0) then
     NcOptRoot.v := min(Ncroot_max.v, Ncroot_a.v + Ncroot_b.v *
-                       ln(DMFineRoot.v + DMFineRoot.c * Globtime.c));
+      ln(DMFineRoot.v + DMFineRoot.c * Globtime.c));
 
- // N-Bedarfsermittlung:      (holzhauser)
+  // N-Bedarfsermittlung:      (holzhauser)
 
   // vorheriger Ansatz; Wenn NShoot.v > NShootOpt dann ist der Demand = 0 und gleichzeitig der Uptake = 0
   // NDemandShoot := max(0,((DMShoot.v + DMShoot.c * Globtime.c) * NcOptShoot.v /100 - (Nshoot.v))/ Globtime.c);
 
-
   if (fNcShoot_Calc = herrmann04) then
-  begin    //Shoot
+  begin // Shoot
     if (DMShoot.v > 0) and (DMShoot.v < 100) then
       NDemandShoot.v := max(0, DMShoot.c * (NcOptShoot.v / 100))
     else
-      NDemandShoot.v := max(0, DMShoot.c * (NcOptShoot.v + ((DMShoot.v / 100) * Ncshoot_a.v *
-        Ncshoot_b.v * power((DMShoot.v / 100), (Ncshoot_b.v - 1)))) / 100)          //Ableitung der Verdünnungsfunktion. Siehe Vorlesungsfolien H.Kage.
+      NDemandShoot.v :=
+        max(0, DMShoot.c * (NcOptShoot.v + ((DMShoot.v / 100) * Ncshoot_a.v *
+        Ncshoot_b.v * power((DMShoot.v / 100), (Ncshoot_b.v - 1)))) / 100)
+      // Ableitung der Verdünnungsfunktion. Siehe Vorlesungsfolien H.Kage.
   end
   else
   begin
     NDemandShoot.v := 0
   end;
 
- if (fNcShoot_Calc = organ_specific) then    //(holzhauser)
- begin
-  //Leaves   (Demand von Blatt und Stängel darf auch negativ werden ->Translokation zu Kolben)
-     NDemandLeaf.v := ((DMLeaf.v + DMLeaf.c * Globtime.c) * NcOptLeaf.v /100 - (Nleaf.v)) / Globtime.c;
-  //Stems
-     NDemandStem.v := ((DMStem.v + DMStem.c * Globtime.c) * NcOptStem.v /100 - (Nstem.v)) / Globtime.c;
-  //Cobs
-     NDemandCob.v := max(0,((DMcob.v + DMcob.c * Globtime.c) * NcOptCob.v / 100 - (Ncob.v)) / Globtime.c);
+  if (fNcShoot_Calc = organ_specific) then // (holzhauser)
+  begin
+    // Leaves   (Demand von Blatt und Stängel darf auch negativ werden ->Translokation zu Kolben)
+    {if DMLeaf.v > 0 then}
+    if DMLeaf.c >0 then
+      NDemandLeaf.v := ((DMLeaf.v + DMLeaf.c * Globtime.c) * (NcOptLeaf.v / 100) -(Nleaf.v)) / Globtime.c
+      else if (DMLeaf.c < 0) then
+      NDemandLeaf.v := DMLeaf.c * NLeaf.v / DMLeaf.v
+      else
+      NDemandLeaf.v := 0;
+
+
+
+    { if (DMLeaf.v > 0) and (DMLeaf.v < 2) then
+      NDemandLeaf.v := max(0, DMLeaf.c * (NcOptLeaf.v / 100))
+      else
+      NDemandLeaf.v :=DMLeaf.c *(NcOptLeaf.v+((DMLeaf.v / 100)*NcLeaf_a.v *NcLeaf_b.v*power((DMLeaf.v / 100), (NcLeaf_b.v - 1)))) / 100; }
+    // Stems
+    if DMStem.c > 0 then
+      NDemandStem.v := ((DMStem.v + DMStem.c * Globtime.c) * (NcOptStem.v / 100) -(Nstem.v)) / Globtime.c
+      else if (DMStem.c < 0) then
+      NDemandStem.v := DMStem.c * NStem.v / DMStem.v
+      else
+      NDemandStem.v := 0;
+
+    { if (DMStem.v > 0) and (DMStem.v < 1.4) then
+      NDemandStem.v := max(0, DMStem.c * (NcOptStem.v / 100))
+      else
+      NDemandStem.v := DMStem.c *(NcOptStem.v+((DMStem.v / 100)*NcStem_a.v *NcStem_b.v*exp((DMStem.v / 100)*NcStem_b.v ))) / 100; }
+    // Cobs
+    if DMcob.v > 0 then
+      NDemandCob.v := max(0, ((DMcob.v + DMcob.c * Globtime.c) * (NcOptCob.v /100) - (Ncob.v)) / Globtime.c);
+
+    // NDemandCob.v := max(0,DMCob.c *(NcOptCob.v+((DMCob.v / 100)*NcCob_a.v *NcCob_b.v*power((DMCob.v / 100), (NcCob_b.v - 1)))) / 100);
   end
   else
   begin
-      NDemandLeaf.v := 0;
-      NDemandStem.v := 0;
-      NDemandCob.v := 0;
+    NDemandLeaf.v := 0;
+    NDemandStem.v := 0;
+    NDemandCob.v := 0;
   end;
 
-  //Roots
-  NDemandRoot.v := max(0, ((DMFineRoot.v + DMFineRoot.c * Globtime.c) * NcOptRoot.v / 100 - (Nroot.v)) / Globtime.c);
+  // Roots
+  NDemandRoot.v := ((DMFineRoot.v + DMFineRoot.c * Globtime.c) * NcOptRoot.v /
+    100 - (Nroot.v)) / Globtime.c;
 
-  //total NDemand (Je nach ausgewählter Option ist NDemandShoot oder der Demand der Organe = 0)
-  NDemand.v := max(0, NDemandShoot.v + NDemandRoot.v + max(0,NDemandLeaf.v) + max(0,NDemandStem.v) + NDemandCob.v);
+  // total NDemand (Je nach ausgewählter Option ist NDemandShoot oder der Demand der Organe = 0)
+  NDemand.v := max(0, NDemandShoot.v + max(0, NDemandRoot.v) + max(0,NDemandLeaf.v) + max(0, NDemandStem.v) + NDemandCob.v);
 
- // If (XStage.v >= 5) or (dayoftheyear(Globtime.v) >= latestharvestdate.v) or (XStage5.v > 0) then
-    if (dayoftheyear(Globtime.v) >= latestharvestdate.v) then
+  // If (XStage.v >= 5) or (dayoftheyear(Globtime.v) >= latestharvestdate.v) or (XStage5.v > 0) then
+  if (dayoftheyear(Globtime.v) >= latestharvestdate.v) then
     NDemand.v := 0;
 
 end;
@@ -399,10 +475,11 @@ end;
 procedure Tsubpartitioning_Maize_Roots_N.Integrate;
 
 var
-   SumNSupply, NSupplyLeft, NDemandVeg: real;
+  // SupplyDemandRatio,
+  NDemandVeg, NSupply: real;
 
 begin
-  if NDemand.v <= 0 then
+  {if NDemand.v = 0 then
   begin
     Nshoot.c := 0.0;
     Nroot.c := 0.0;
@@ -410,7 +487,7 @@ begin
     Nstem.c := 0.0;
     Ncob.c := 0.0;
   end
-  else
+  else   }
   begin // (kage)
     { Nroot.c := NDemandRoot.v + NRootDef.v;
       Nshoot.c := NDemandShoot.v + NShootDef.v;
@@ -419,206 +496,228 @@ begin
       Ncob.c := NDemandCob.v + NCobDef.v; }
     // NDemand.v := NDemand.v + NPlantDef.v;
     // total N supply in [g N/m2]
-    // Translokation von Blatt und Stängel N in den Kolben (holzhauser)
+
+    if (fNcShoot_Calc = herrmann04) then
+    begin
+      If (NDemand.v > 0) then
+        SupplyDemandRatio.v := max(0, min(1, ((MaxNUptake.v / 10)) / NDemand.v))
+        // SupplyDemandRatio := max(0, min(1, (MaxNUptake.v/10) / NDemand.v))
+      else
+        SupplyDemandRatio.v := 1;
+      Nshoot.c := (NDemandShoot.v + NShootDef.v) * SupplyDemandRatio.v;
+      Ntot.c := Nshoot.c + Nroot.c;
+      NUptakeRate_act.v := Ntot.c;
+    end;
+
     if (fNcShoot_Calc = organ_specific) then
     begin
+     // Translokation von Blatt und Stängel N in den Kolben (holzhauser)
+      Ntrans.v := 0;
       if (NDemandLeaf.v < 0) then
       begin
-        Ntrans.v := max(0, -NDemandLeaf.v);
-        // Speichern der translozierten Stickstoffmenge. Negatives Vorzeichen, weil Nleaf.c negativ ist, wenn NDemand <0
+        Ntrans.v := Ntrans.v + max(0, -NDemandLeaf.v);
+        // Speichern der translozierten Stickstoffmenge. Negatives Vorzeichen, weil NDemandleaf.v negativ ist, wenn NDemand <0
       end;
       if (NDemandStem.v < 0) then
       begin
         Ntrans.v := Ntrans.v + max(0, -NDemandStem.v);
         // Aktualisieren der translozierten Stickstoffmenge
       end;
+      if (NDemandRoot.v < 0) then
+      begin
+        Ntrans.v := Ntrans.v + max(0, -NDemandRoot.v);
+        // Aktualisieren der translozierten Stickstoffmenge
+      end;
 
-//      if NDemandCob.v > 0 then
-//        Ncob.c   := NDemandCob.v * SupplyDemandRatio.v
-//      else
-        Ncob.c := min(MaxNUptake.v / 10 + Ntrans.v,NDemandCob.v);
 
-      NDemandVeg := NDemandLeaf.v + NDemandStem.v + NdemandRoot.v;
+      if(Ntrans.v > 0){(XStage.v >= 3)} then
+      begin
+        NSupply := max(0, (MaxNUptake.v / 10)+ Ntrans.v);
 
-      If (NDemandVeg > 0) then
-        SupplyDemandRatio.v :=
-          max(0, min(1, (MaxNUptake.v / 10 + Ntrans.v - Ncob.c) / NDemandVeg))
-        // SupplyDemandRatio := max(0, min(1, (MaxNUptake.v/10) / NDemand.v))
-      else
-        SupplyDemandRatio.v := 1;
-
-      Nshoot.c := NDemandShoot.v * SupplyDemandRatio.v;
-      If NDemandroot.v > 0 then
-        Nroot.c  := NDemandRoot.v * SupplyDemandRatio.v
-      else
-        Nroot.c := NDemandRoot.v;
-      If NDemandleaf.v > 0 then
-        Nleaf.c  := NDemandLeaf.v * SupplyDemandRatio.v
-      else
-        Nleaf.c := NDemandLeaf.v;
-      if NDemandStem.v > 0 then
-        Nstem.c  := NDemandStem.v * SupplyDemandRatio.v
+        if NSupply > NDemandCob.v then
+        begin
+        Ncob.c := NDemandCob.v;
+        end
         else
-        Nstem.c := NDemandStem.v;
-
-      {
-        SumNsupply := MaxNUptake.v/10 + NTrans.v ;
-
-        if SumNsupply >=  (NDemandCob.v + NCobDef.v) then
-        Ncob.c := min(SumNsupply,NDemandCob.v + NCobDef.v);
-        NsupplyLeft := SumNSupply - Ncob.c;
-
-        if NsupplyLeft >=  (NDemandLeaf.v + NLeafDef.v) then
-        NLeaf.c := min(NsupplyLeft, max(0,NDemandLeaf.v) + NLeafDef.v);
-        NsupplyLeft := NsupplyLeft - NLeaf.c;
-
-        if NsupplyLeft >=  (NDemandStem.v + NStemDef.v) then
-        NStem.c := min(NsupplyLeft, max(0,NDemandStem.v)+ NStemDef.v);
-        NsupplyLeft := NsupplyLeft - NStem.c;
-
-        if NsupplyLeft >=  (NDemandRoot.v + NRootDef.v) then
-        NRoot.c := min(NsupplyLeft, NDemandRoot.v + NRootDef.v);
-        NsupplyLeft := NsupplyLeft - NRoot.c;
-
+        begin
+        Ncob.c := NSupply;
         end;
-      }
-      Ntot.c := Nshoot.c + Nroot.c + Nleaf.c + Nstem.c + Ncob.c;
+
+        NDemandVeg := max(0,NDemandLeaf.v) + max(0,NDemandStem.v) + max(0,NDemandRoot.v);
+
+        If (NDemandVeg > 0) then
+          SupplyDemandRatio.v := max(0,min(1,(NSupply-Ncob.c) / NDemandVeg)) ;
+                // SupplyDemandRatio.v := max(0, min(1, (MaxNUptake.v/10) / NDemand.v))
+        {else
+                         SupplyDemandRatio.v := 1;}
+
+        if NDemandRoot.v > 0 then
+          Nroot.c := NDemandRoot.v * SupplyDemandRatio.v
+        else
+          Nroot.c := NDemandRoot.v;
+        if NDemandLeaf.v > 0 then
+          Nleaf.c := NDemandLeaf.v * SupplyDemandRatio.v
+        else
+          Nleaf.c := NDemandLeaf.v;
+        if NDemandStem.v > 0 then
+          Nstem.c := NDemandStem.v * SupplyDemandRatio.v
+        else
+          Nstem.c := NDemandStem.v;
+
+      end
+      else
+      begin
+        if NDemand.v > 0 then
+          SupplyDemandRatio.v := max(0, min(1, (MaxNUptake.v / 10)/ NDemand.v))
+        else
+          SupplyDemandRatio.v := 1;
+        Nroot.c := NDemandRoot.v * SupplyDemandRatio.v;
+        Nleaf.c := NDemandLeaf.v * SupplyDemandRatio.v;
+        Nstem.c := NDemandStem.v * SupplyDemandRatio.v;
+        Ncob.c := NDemandCob.v * SupplyDemandRatio.v;
+      end;
+
+      Ntot.c := Nroot.c + Nleaf.c + Nstem.c + Ncob.c;
       NUptakeRate_act.v := Ntot.c;
-      // - Ntrans.v;       //Wenn Ntrans > 0 wird weniger N vom Boden aufgenommen
 
     end;
   end;
   inherited Integrate;
 
-    { // calculate again optimal N concentration with updated DM values after integration         (kage/holzhauser)
-      If (DMShoot.v + ShootGR.v > 0) then
-      begin
-      if fNcShoot_Calc = f_ln then // logarithmisch
-      NcOptShoot.v := min(Ncshoot_max.v, Ncshoot_a.v + Ncshoot_b.v *ln(DMShoot.v + ShootGR.v));
-
-      if fNcShoot_Calc = herrmann04 then
-      begin
-      NcOptShoot.v := NcOptShoot_f(DMShoot.v,XStage.v,Ncshoot_max.v,Ncshoot_a.v, Ncshoot_b.v);
-      end;
-
-      if fNcShoot_Calc = organ_specific then  begin
-      if NcOptLeaf.v > 0 then
-      NcOptLeaf.v := min(NcOptLeaf.v,NcOptLeaf_f(DMLeaf.v,XStage.v,Ncleaf_max.v,Ncleaf_a.v, Ncleaf_b.v))
-      else
-      NcOptLeaf.v := NcOptLeaf_f(DMLeaf.v,XStage.v,Ncleaf_max.v,Ncleaf_a.v, Ncleaf_b.v);
-      if (NcOptStem.v > 0) then
-      NcOptStem.v :=min(NcOptStem.v,NcOptStem_f(DMStem.v,XStage.v,Ncstem_max.v,Ncstem_a.v, Ncstem_b.v))
-      else
-      NcOptStem.v :=NcOptStem_f(DMStem.v,XStage.v,Ncstem_max.v,Ncstem_a.v, Ncstem_b.v);
-      NcOptCob.v := NcOptCob_f(DMcob.v, Nccob_a.v, Nccob_b.v, XStage.v);
-      end;
-      end;
-
-      if (DMFineRoot.v + DMFineRoot.c > 0) then
-      NcOptRoot.v := min(Ncroot_max.v, Ncroot_a.v + Ncroot_b.v *ln(DMFineRoot.v + DMFineRoot.c)); }
-
-    { // calculate optimum N amounts in organs from updated DM and Nopt values
-      NShootOpt.v := DMShoot.v * NcOptShoot.v / 100;
-      NRootOpt.v := DMFineRoot.v * NcOptRoot.v / 100;
-      NLeafOpt.v := DMLeaf.v * NcOptLeaf.v / 100;
-      NStemOpt.v := DMStem.v * NcOptStem.v / 100;
-      NCobOpt.v := DMcob.v * NcOptCob.v / 100;
-      NPlantOpt.v := NShootOpt.v + NRootOpt.v + NLeafOpt.v + NStemOpt.v + NCobOpt.v; }
-
-    // calculate a possible deficit N amounts        (kage/holzhauser)
-    NRootDef.v := max(0, NRootOpt.v - Nroot.v); // g N/m²
-    NShootDef.v := max(0, NShootOpt.v - Nshoot.v);
-    NLeafDef.v := NLeafOpt.v - Nleaf.v;
-    NStemDef.v := NStemOpt.v - Nstem.v;
-    // NLeafDef.v := max(0,NLeafOpt.v - Nleaf.v);
-    // NStemDef.v := max(0,NStemOpt.v - Nstem.v);
-    NCobDef.v := max(0, NCobOpt.v - Ncob.v);
-    NPlantDef.v := max(0, NRootDef.v + NShootDef.v + NLeafDef.v + NStemDef.v +
-      NCobDef.v);
-
-    // calculate actual N concentrations of organs
-    if (fNcShoot_Calc = herrmann04) then
+  { // calculate again optimal N concentration with updated DM values after integration         (kage/holzhauser)
+    If (DMShoot.v + ShootGR.v > 0) then
     begin
-      If (DMShoot.v > 100) then
-        NcShoot.v := max(0, min(1, (Nshoot.v / DMShoot.v)) * 100)
-      else
-        NcShoot.v := Ncshoot_max.v;
-    end
-    else if (DMShoot.v < 0) then
+    if fNcShoot_Calc = f_ln then // logarithmisch
+    NcOptShoot.v := min(Ncshoot_max.v, Ncshoot_a.v + Ncshoot_b.v *ln(DMShoot.v + ShootGR.v));
+
+    if fNcShoot_Calc = herrmann04 then
     begin
-      NcShoot.v := 0;
+    NcOptShoot.v := NcOptShoot_f(DMShoot.v,XStage.v,Ncshoot_max.v,Ncshoot_a.v, Ncshoot_b.v);
     end;
 
-    If (DMFineRoot.v > 0) then
-      NcRoot.v := min(1, Nroot.v / DMFineRoot.v) * 100
+    if fNcShoot_Calc = organ_specific then  begin
+    if NcOptLeaf.v > 0 then
+    NcOptLeaf.v := min(NcOptLeaf.v,NcOptLeaf_f(DMLeaf.v,XStage.v,Ncleaf_max.v,Ncleaf_a.v, Ncleaf_b.v))
     else
-      NcRoot.v := 0;
-
-    if (fNcShoot_Calc = organ_specific) then
-    begin
-      If (DMLeaf.v > 2) and (XStage.v > 0) then
-        NcLeaf.v := max(0, min(1, (Nleaf.v / DMLeaf.v)) * 100)
-      else
-        NcLeaf.v := NcOptLeaf.v;
-      If (DMStem.v > 1.4) and (XStage.v > 0) then
-        NcStem.v := max(0, min(1, (Nstem.v / DMStem.v)) * 100)
-      else
-        NcStem.v := NcOptStem.v;
-      If (DMcob.v > 0) then
-        NcCob.v := max(0, min(1, (Ncob.v / DMcob.v)) * 100)
-      else
-        NcCob.v := 0;
-    end
+    NcOptLeaf.v := NcOptLeaf_f(DMLeaf.v,XStage.v,Ncleaf_max.v,Ncleaf_a.v, Ncleaf_b.v);
+    if (NcOptStem.v > 0) then
+    NcOptStem.v :=min(NcOptStem.v,NcOptStem_f(DMStem.v,XStage.v,Ncstem_max.v,Ncstem_a.v, Ncstem_b.v))
     else
-    begin
-      NcLeaf.v := 0;
-      NcStem.v := 0;
-      NcCob.v := 0;
+    NcOptStem.v :=NcOptStem_f(DMStem.v,XStage.v,Ncstem_max.v,Ncstem_a.v, Ncstem_b.v);
+    NcOptCob.v := NcOptCob_f(DMcob.v, Nccob_a.v, Nccob_b.v, XStage.v);
+    end;
     end;
 
+    if (DMFineRoot.v + DMFineRoot.c > 0) then
+    NcOptRoot.v := min(Ncroot_max.v, Ncroot_a.v + Ncroot_b.v *ln(DMFineRoot.v + DMFineRoot.c)); }
 
-    // NNI, Kage & Knieß 04/2016
-
-    // if (DMShoot.v + ShootGR.v >100 ) then //
-    // NNI.v := max(0,min(1.0, NcShoot.v / NcOptShoot.v)) //
-    // else
-    // NNI.v := 1;
-
-    // calculate optimum N amounts in organs from updated DM and Nopt values
+  { // calculate optimum N amounts in organs from updated DM and Nopt values
     NShootOpt.v := DMShoot.v * NcOptShoot.v / 100;
     NRootOpt.v := DMFineRoot.v * NcOptRoot.v / 100;
     NLeafOpt.v := DMLeaf.v * NcOptLeaf.v / 100;
     NStemOpt.v := DMStem.v * NcOptStem.v / 100;
     NCobOpt.v := DMcob.v * NcOptCob.v / 100;
-    NPlantOpt.v := NShootOpt.v + NRootOpt.v + NLeafOpt.v + NStemOpt.v +
-      NCobOpt.v;
+    NPlantOpt.v := NShootOpt.v + NRootOpt.v + NLeafOpt.v + NStemOpt.v + NCobOpt.v; }
 
-    // NNI Holzhauser 2024
-    if (fNcShoot_Calc = herrmann04) then
-    begin
-      if (DMShoot.v + ShootGR.v > 100) then
-        NNI.v := max(0, min(1.0, NcShoot.v / NcOptShoot.v))
-      else
-        NNI.v := 1;
-    end;
-    if (fNcShoot_Calc = organ_specific) then
-    begin
-      if (DMShoot.v + ShootGR.v > 100) then
-        NNI.v := max(0, min(1.0, NcLeaf.v / NcOptLeaf.v))
-      else
-        NNI.v := 1;
-    end;
+  // calculate a possible deficit N amounts        (kage/holzhauser)
+  NRootDef.v := max(0, NRootOpt.v - Nroot.v); // g N/m²
+  NShootDef.v := max(0, NShootOpt.v - Nshoot.v);
+  NLeafDef.v := NLeafOpt.v - Nleaf.v;
+  NStemDef.v := NStemOpt.v - Nstem.v;
+  // NLeafDef.v := max(0,NLeafOpt.v - Nleaf.v);
+  // NStemDef.v := max(0,NStemOpt.v - Nstem.v);
+  NCobDef.v := max(0, NCobOpt.v - Ncob.v);
+  NPlantDef.v := max(0, NRootDef.v + NShootDef.v + NLeafDef.v + NStemDef.v +
+    NCobDef.v);
 
-  // auskommentiert für Test der organspezifischen N-Verteilung
+  // calculate actual N concentrations of organs
+  if (fNcShoot_Calc = herrmann04) then
+  begin
+    If (DMShoot.v > 100) then
+      NcShoot.v := max(0, min(1, (Nshoot.v / DMShoot.v)) * 100)
+    else
+      NcShoot.v := Ncshoot_max.v;
+  end
+  else if (DMShoot.v < 0) then
+  begin
+    NcShoot.v := 0;
+  end;
+
+  If (DMFineRoot.v > 0) then
+    NcRoot.v := min(1, Nroot.v / DMFineRoot.v) * 100
+  else
+    NcRoot.v := 0;
+
+  if (fNcShoot_Calc = organ_specific) then
+  begin
+    If (DMLeaf.v > 2) and (XStage.v > 0) then
+      NcLeaf.v := max(0, min(1, (Nleaf.v / DMLeaf.v)) * 100)
+    else
+      NcLeaf.v := NcOptLeaf.v;
+    If (DMStem.v > 1.4) and (XStage.v > 0) then
+      NcStem.v := max(0, min(1, (Nstem.v / DMStem.v)) * 100)
+    else
+      NcStem.v := NcOptStem.v;
+    If (DMcob.v > 0) then
+      NcCob.v := max(0, min(1, (Ncob.v / DMcob.v)) * 100)
+    else
+      NcCob.v := 0;
+  end
+  else
+  begin
+    NcLeaf.v := 0;
+    NcStem.v := 0;
+    NcCob.v := 0;
+  end;
+
+
+  // NNI, Kage & Knieß 04/2016
+
+  // if (DMShoot.v + ShootGR.v >100 ) then //
+  // NNI.v := max(0,min(1.0, NcShoot.v / NcOptShoot.v)) //
+  // else
+  // NNI.v := 1;
+
+  // calculate optimum N amounts in organs from updated DM and Nopt values
+  NShootOpt.v := DMShoot.v * NcOptShoot.v / 100;
+  NRootOpt.v := DMFineRoot.v * NcOptRoot.v / 100;
+  NLeafOpt.v := DMLeaf.v * NcOptLeaf.v / 100;
+  NStemOpt.v := DMStem.v * NcOptStem.v / 100;
+  NCobOpt.v := DMcob.v * NcOptCob.v / 100;
+  NPlantOpt.v := NShootOpt.v + NRootOpt.v + NLeafOpt.v + NStemOpt.v + NCobOpt.v;
+
+  // NNI Holzhauser 2024
+  if (fNcShoot_Calc = herrmann04) then
+  begin
+    if (DMShoot.v + ShootGR.v > 100) then
+      NNI.v := max(0, min(1.0, NcShoot.v / NcOptShoot.v))
+    else
+      NNI.v := 1;
+  end;
+  if (fNcShoot_Calc = organ_specific) then
+  begin
+    if (DMShoot.v + ShootGR.v > 100) then
+      NNI.v := max(0, min(1.0, (NcLeaf.v) / (NcOptLeaf.v)))
+    else
+      NNI.v := 1;
+  end;
+  if (fNcShoot_Calc = organ_specific) then
+  begin
+    if (DMLeaf.v > 10) then
+      NNILeaf.v := max(0, min(1.0, NcLeaf.v / NcOptLeaf.v));
+    if (DMStem.v > 10) then
+      NNIstem.v := max(0, min(1.0, NcStem.v / NcOptStem.v));
+    if (DMcob.v > 0) then
+      NNIcob.v := max(0, min(1.0, NcCob.v / NcOptCob.v));
+  end;
+
+end;
+
+// auskommentiert für Test der organspezifischen N-Verteilung
 // Calculation of Crop-Residues, dneukam 11/2021
 // NcStem.v := NcShoot.v / 2;
 // C_Residues.v := (DMFineRoot.v + DMStubble_par.v) * 0.45;
 // N_Residues.v := Nroot.v + DMStubble_par.v * NcStem.v / 100;
-
- end;
-
-
-
 
 function Tsubpartitioning_Maize_Roots_N.GetNUptakeRate: THumeNumEntity;
 begin

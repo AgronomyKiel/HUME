@@ -22,21 +22,36 @@ const
 type
   real = double;
 
+  /// <summary> Options for calculation of sink reduction factor for root water uptake </summary>
   TSinkTermMethod = (nFK_crit, Psicrit, Psicrit_corr, Feddes, MFP);
-  // TAutoIrri = (no, yes); depracted is now an Option
+  
+  /// <summary> Options for calculation of automatic irrigation </summary>
   TAutoirriMethod = (amTransRatio, amProznFKWe, amProznFKActRootedComps);
+  
+  /// <summary> Options for calculation of sink reduction factor based on root length distribution and potential water uptake </summary>
   T_Sqrwl_Funct = (ReductionFactor, NoReductionFactor);
-  // TSource = (fromParameter, fromPlantModel); // Source of Psi2 value
 
+
+/// <summary> Model component for adding root soil water uptake to the simulation of vertical (1D) soil water transport
+///  The distribution of water uptake over the soil layers and the calculation of drought limited water uptake can
+///  be calculated with different options
+///  </summary>
   TSoilWaterModelR = class(TSoilWaterMod)
 
   private
     f_Sqrwl_funct: T_Sqrwl_Funct;
+
+    /// <summary> internal variable for summing up all sink terms </summary>
     Sum_Sink: real;
-    /// internal variable for summing up all sink terms
+    
+    /// <summary> field for option with or without roots, if false water uptake is calculated without considering root distribution and sink reduction,
+    /// if true root distribution and sink reduction are considered </summary>
     FWithRoots: boolean;
-    /// Option for calculation with/without roots
+    
+    /// <summary> field for automatic irrigation  (yes/no) </summary>
     fAutoirri: boolean;
+
+    /// field for automatic irrigation method (amTransRatio, amProznFKWe, amProznFKActRootedComps)
     fAutoirriMethod: TAutoirriMethod;
     fPsi2Opt: TSource;
     /// Source of Psi2 value
@@ -50,21 +65,33 @@ type
   protected
 
   public
+    
+    /// <summary> Option for automatic irrigation yes/no </summary>
     AutoIrriOptStr: Toption;
+
+    /// <summary> Option for method of automatic irrigation (amTransRatio, amProznFKWe, amProznFKActRootedComps) </summary>
     AutoIrriMethodOptStr: Toption;
+
+    /// <summary> Option for method of sink term calculation (Feddes, Psicrit, Psicrit_corr, nFKcrit, MFP) </summary>
     SinkTermMethodOptStr: Toption;
+    
+    /// <summary> Option to write the matrix flux table </summary>
     WriteMFPTable: Toption;
-    /// Option for output of MFP-table functions as txt file
+
+    /// <summary> Array for soil water content differences between bulk soil and root surface for each soil layer </summary>
     WcontDiff_arr: TSoilvarArray;
-    /// Wassergehaltsdifferenzen Wurzeloberfl�che/Bodenraum [cm3/cm3]
+    /// <summary> Matrix potential differences between root surface and bulk soil [cm3/cm3] </summary>
     PsiRootDiff_arr: TSoilvarArray;
-    /// Wasserspannungsdifferenzen Wurzeloberfl�che/Bodenraum [cm3/cm3]
+    
+    /// <summary> Array for proportional nFK values for each soil layer </summary>
     ProzNFK_arr: TSoilvarArray;
 
+    /// <summary> Array for effective root length density distribution [cm/cm3] </summary>
     ExWld_arr: TSoilExtArray;
-    /// Wurzellaengendichten [cm.cm-3]
+    
+    /// <summary> Total root length density [cm/m2] </summary>
     WLges: TVar;
-    /// GesamtWurzell�nge [cm]
+    
     // w_influx : TSoilVarArray; /// Wasserinfluxraten [cm3.cm-1.d-1]
     SinkRedF: TSoilArray;
     /// Reduktionsfaktoren bei Wasseraufnahme
@@ -100,7 +127,7 @@ type
     TransIntRatio: TVar;
     /// Verh�ltnis aktuelle zu potentielle Transpiration
     Eact_ETP: TVar;
-    /// Ration of act. evaporation to pot. evapotranspiration
+    /// Ratio of act. evaporation to pot. evapotranspiration
     Psi2: TVar;
     /// water potential at which water uptake by the plant starts to decrease [hPa]
     act_rooted_comps: TVar;
@@ -254,14 +281,14 @@ begin
     DebugForm.MyCreate;
 {$ENDIF}
   ParCreate('psi_2', '[cm]', 200, psi_2,
-    'soil water tension from which root water uptake reduces if FEDDES option is choosen');
+    'soil water tension from which root water uptake reduces if eíther FEDDES, psi_crit or psicrit_corr option is choosen');
   ParCreate('psi_3', '[cm]', 15000, psi_3,
     'lower limit of soil water extraction');
   ParCreate('feddes_a', '[hPa]', 400, feddes_a,
     'Enhancement of psi_2 at high pot. Transp.');
-  ParCreate('feddes_b', '[mm]', 5, feddes_b, 'threshold for psi_2 calculation');
-  ParCreate('feddes_c', '[hPa]', 1, feddes_c,
-    'threshold for psi_2 calculation');
+  ParCreate('feddes_b', '[mm/d]', 5, feddes_b, 'Transpiration threshold for psi_2 calculation');
+  ParCreate('feddes_c', '[mm/d]', 1, feddes_c,
+    'lower transpiration rate threshold for psi_2 calculation, for lower transpiration rates psi_2 not further increased');
   ParCreate('nfk_threshold', '[-]', 0.01, nfk_threshold,
     'threshold (water buffer) for sink reduction');
   ParCreate('CompFactor', '[-]', 0.5, CompFactor,
@@ -309,7 +336,7 @@ begin
 
   for i := 1 to Max_Root_Index do
   begin
-    VarCreate('ProzNFK_arr' + ndx_str(i), '[%]', 0.0, false, ProzNFK_arr[i]);
+    VarCreate('ProzNFK_arr' + ndx_str(i), '[%]', 0.0, false, ProzNFK_arr[i], 'percentage of available water (nFK) in the soil compartment');
   end;
 
   for i := 1 to n_comp do
@@ -327,7 +354,7 @@ begin
     begin
       ExternVcreate('effWLD_' + ndx_str(i), '[cm/cm3]', stateField,
         ExWld_arr[i]);
-      VarCreate('WAuf' + ndx_str(i), '[cm.d-1]', 0.0, false, Sink_arr[i]);
+      VarCreate('WAuf' + ndx_str(i), '[cm.d-1]', 0.0, false, Sink_arr[i], 'water uptake rate in the soil compartment');
     end;
   end;
   CreateOptionsRootedSoil;
@@ -345,7 +372,7 @@ begin
         ExternVcreate('effWLD_' + ndx_str(i), '[cm/cm3]', stateField,
           ExWld_arr[i]);
       if Sink_arr[i] = nil then
-        VarCreate('WAuf' + ndx_str(i), '[cm.d-1]', 0.0, false, Sink_arr[i]);
+        VarCreate('WAuf' + ndx_str(i), '[cm.d-1]', 0.0, false, Sink_arr[i], 'water uptake rate in the soil compartment');
     end;
   FWithRoots := settrue;
 end;
@@ -441,8 +468,16 @@ begin
     end;
 end;
 
+
+
+/// <summary> Sink reduction calculation with 5 options
+/// 1) Feddes: reduction factor based on soil water tension thresholds and potential transpiration rate following Feddes et al. (1978)
+/// 2) Psicrit: reduction factor based on soil water tension threshold (Psi2) following Van Genuchten (1987)
+/// 3) nFKcrit: reduction factor based on relative soil water content (nFK) threshold following Van Genuchten (1987)
+/// 4) Psicrit_corr: reduction factor based on soil water tension at the root surface, which is calculated based on potential water uptake and root length distribution, and soil water retention curve
+/// 5) MFP: reduction factor based on soil water tension at the root surface, which is calculated based on potential water uptake and root length distribution, and soil water retention curve, with a maximum flow principle (MFP) approach for calculating the potential water uptake
+/// </summary>
 procedure TSoilWaterModelR.Calcsink_red_f;
-/// Sink reduction calculation with 3 options
 
 var
   red_f, psi2_, psi2_low, rPAW: real;
@@ -467,7 +502,7 @@ begin
     psi2_low := Psi2.v + feddes_a.v;
     if (PotTrans.v < feddes_c.v) then
       psi2_ := psi2_low
-    else if (PotTrans.v > 5) then
+    else if (PotTrans.v > feddes_b.v) then
       psi2_ := Psi2.v
     else
       psi2_ := psi2_low + (PotTrans.v - feddes_b.v) *
@@ -527,21 +562,37 @@ begin
     begin
       if ExWld_arr[i].v > 0.0 then
       begin
-
+        // root length in that layer in cm/ha from RLD [cm.cm-3] to rl in cm.ha-1
         rl[i] := 0.1 * ExWld_arr[i].v * Thick[i] * 1E8;
-        // from RLD [cm.cm-3] to rl in cm.ha-1
+        
+        // water inflow per unit root length [cm3/cm/s], potential water inflow based on potential transpiration and root length
         potMaxInflow[i] := Water_flow_func(self.Sink_arr[i].v * 10, rl[i],
           12, true);
+
+        // average half distance between roots [cm]  
         HalfDistance[i] := abstand_func(ExWld_arr[i].v);
+        
+        // soil water content at root surface based on potential water inflow and soil water diffusivity [cm3/cm3] with steady state flow assumption
         theta_root[i] := baf(theta_arr[i].v, potMaxInflow[i], Dw_arr[i] / 86400,
           HalfDistance[i], 0.02);
+        
+        // maximum soil water influx rate [cm3.cm-1.s-1] based on soil water content at root surface, minimum soil water content at root surface, soil water diffusivity and half distance between roots
         iw_max[i] := Iwmax(theta_arr[i].v, pwp_arr[i], Dw_arr[i] / 86400,
           HalfDistance[i], 0.02);
+        
+        // maximum water uptake per layer [cm/d] based on maximum soil water influx rate and root length in that layer
         Wupmax[i] := iw_max[i] * rl[i] * 1E-4 * 1E-3 * 1E-1;
-        // maximum water uptake per layer [cm/d]
+        
+        // soil water tension at root surface based on soil water content at root surface and soil water retention curve
         Psi_Root[i] := min(power(10, 4.2), WPar[i].psi_b_f(theta_root[i]));
+        
+        // calculation of a soil water content difference between the root surface and the bulk soil
         WcontDiff_arr[i].v := theta_arr[i].v - theta_root[i];
+        
+        // calculation of a soil water tension difference between the root surface and the bulk soil
         PsiRootDiff_arr[i].v := Psi_Root[i] - psi_arr[i].v;
+
+        // now using this soil water tension at the root surface for calculating the sink reduction factor 
         if (fPsi2Opt = fromPlantmodel) and IsPlantModelSet then
           Psi2.v := Plantmodel.Psi2 // Psi2 from plant model
         else
@@ -569,9 +620,8 @@ end;
 procedure TSoilWaterModelR.CalcSinks;
 
 var
-  Sqr_Wl_arr, Wl_fact, iw_max: TSoilArray;
+  Sqr_Wl_arr, iw_max: TSoilArray;
   Sum_Sqr_wl, sum_wl: real;
-  // sum_sink    : real;
   i: integer;
   MFP_, MFPsink: extended;
   Wupmax, rl: TSoilArray;
@@ -591,16 +641,16 @@ begin
 
     if ShowWarnings then
       if act_rooted_comps.v > self.bil_nr.v then
-
 {$IFNDEF NONVISUAL}
         showmessage
-          ('Number of rooted compartments larger than balanance index, computed balance probably not correct');
+          ('Number of rooted compartments larger than balance index, computed balance probably not correct');
 {$ELSE}
-        writeln('Number of rooted compartments larger than balanance index, computed balance probably not correct');
-
+        writeln('Number of rooted compartments larger than balance index, computed balance probably not correct');
 {$ENDIF}
+
     for i := 1 to act_n_comp do
     begin
+    /// Calculation of sink reduction factor based on root length density distribution and potential water uptake per layer
       case f_Sqrwl_funct of
         NoReductionFactor:
           Sqr_Wl_arr[i] := power(ExWld_arr[i].v * Thick[i], CompFactor.v);
@@ -612,23 +662,6 @@ begin
       Sum_Sqr_wl := Sum_Sqr_wl + Sqr_Wl_arr[i];
     end;
 
-    for i := 1 to act_n_comp do
-    begin
-      if sum_wl > 0 then
-        Wl_fact[i] := ExWld_arr[i].v * Thick[i] / sum_wl
-      else
-        Wl_fact[i] := 0.0;
-      if psi_arr[i].v > 0 then
-        psiRoot.v := psiRoot.v + log10(psi_arr[i].v) * Wl_fact[i];
-    end;
-    { if Sum_Sqr_wl > 0 then
-      psiRoot.v := psiRoot.v/Sum_Sqr_wl
-      else
-      psiRoot.v := 0.0; }
-    { if psiRoot.v > 0 then
-      psiRoot.v := log10(psiRoot.v)
-      else psiroot.v := 0.0; }
-
     Sum_Sink := 0.0;
     for i := 1 to act_n_comp do
     begin
@@ -636,13 +669,16 @@ begin
         Sink_arr[i].v := 0.1 * PotTrans.v * Sqr_Wl_arr[i] / Sum_Sqr_wl
       else
         Sink_arr[i].v := 0.0;
+
+      // sink term calculation with matrix flux potential based calculation of maximum root water uptake
       if OptSinkTermMethod = MFP then
       begin
         if ExWld_arr[i].v > 0 then
         begin
+          // calculation of matrix by numerically integration of the unsaturated hydraulic conductivity from PWP to the actual soil water potential
           MFP_ := MFP_arr[i].get_sumku(psi_arr[i].v);
-          rl[i] := ExWld_arr[i].v * Thick[i] * 1E8;
           // from RLD [cm.cm-3] to rl in cm.ha-1
+          rl[i] := ExWld_arr[i].v * Thick[i] * 1E8;
           iw_max[i] := Iwmax(theta_arr[i].v, pwp_arr[i], Dw_arr[i] / 86400,
             abstand_func(ExWld_arr[i].v), 0.02);
           Wupmax[i] := iw_max[i] * rl[i] * 1E-4 * 1E-3 * 1E-1;
@@ -666,10 +702,6 @@ begin
         Sink_arr[i].v := ((theta_arr[i].v - WPar[i].b_rest) * Thick[i]) -
           nfk_threshold.v;
       Sum_Sink := Sum_Sink + Sink_arr[i].v;
-      // If Wl_arr[i].v > 0.0 then
-      // w_influx[i].v := sink_arr[i].v/wl_arr[i].v
-      // else
-      // w_influx[i].v := 0.0;
     end;
   end; // withRoots
 end;
@@ -790,12 +822,12 @@ begin
   f_SqrWl_Option.OptionList.Add('ReductionFactor');
   f_SqrWl_Option.OptionList.Add('NoReductionFactor');
 
-  OptCreate('AutoIrri', 'no', AutoIrriOptStr);
+  OptCreate('AutoIrri', 'no', AutoIrriOptStr, 'Option for using an automatic irrigation algorithm');
   AutoIrriOptStr.OptionList.Clear;
   AutoIrriOptStr.OptionList.Add('no');
   AutoIrriOptStr.OptionList.Add('yes');
 
-  OptCreate('AutoIrriMethod', 'amProznFKWe', AutoIrriMethodOptStr);
+  OptCreate('AutoIrriMethod', 'amProznFKWe', AutoIrriMethodOptStr, 'Choice for method of automatic irrigation control');
   AutoIrriMethodOptStr.OptionList.Clear;
   AutoIrriMethodOptStr.OptionList.Add('amProznFKWe');
   AutoIrriMethodOptStr.OptionList.Add('amTransRatio');

@@ -165,6 +165,10 @@ type
     SpeedButtonNoContOutput: TSpeedButton;
     SpeedButtonAllContOutput: TSpeedButton;
     LMod: TModLink;
+    Constants: TTabSheet;
+    ToolBarConstPage: TToolBar;
+    ToggleSwitch1: TToggleSwitch;
+    AdvStringGridConstants: TAdvStringGrid;
 
     procedure RunModel; virtual;
     procedure Menu_RunClick(Sender: TObject); virtual;
@@ -318,6 +322,7 @@ type
     procedure UpdateStringGridParam;
     procedure UpdateStringGridState;
     procedure UpdateStringGridVar;
+    procedure UpdateStringGridConst;
     procedure UpdateStringGridData;
     procedure UpdatePageIntegration;
     procedure UpdateStringGridOptions;
@@ -821,6 +826,56 @@ begin
   end;
   end;
 end;
+
+
+procedure TFormMod.UpdateStringGridConst;
+var
+  i, actSubModIndex: Integer;
+  SubModel: TSubModel;
+  Constant: TVar;
+  line: string;
+begin
+  if LMod.fModel.StateIniFile <> nil then begin
+
+  EditStateFileName.Text := Lmod.fModel.StateIniFile.FileName;
+  with AdvStringGridConstants do
+  begin
+    BeginUpdate;
+    Clear;
+    Rows[0].commatext := 'Name, Unit, WriteToFile,  Plot, WriteFinalValue,Globaloutput,Info';
+    // Description';
+    RowCount := 2;
+    FixedRows := 1;
+    actSubModIndex := ComboBoxSubMod.ItemIndex;
+    if actSubModIndex >= 0 then
+    begin
+      SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      RowCount := SubModel.ConstStrList.count + 1;
+      for i := 0 to SubModel.ConstStrList.count - 1 do
+      begin
+        Constant := TVar(SubModel.ConstStrList.objects[i]);
+        line := Constant.name + ',' + Constant.u;
+        Rows[i + 1].commatext := line;
+        AddCheckBox(2, i + 1, True, True);
+        SetCheckBoxState(2, i + 1, Constant.writeToFile);
+        AddCheckBox(3, i + 1, True, True);
+        SetCheckBoxState(3, i + 1, Constant.PlotToGraph);
+        AddCheckBox(4, i + 1, True, True);
+        SetCheckBoxState(4, i + 1, Constant.WriteFinalValue);
+        AddCheckBox(5, i + 1, True, True);
+        SetCheckBoxState(5, i + 1, Constant.fGlobalOutput);
+        if Constant.Comment <> '' then
+          AddBitButton(6, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
+      end;
+
+    end;
+    AutoSizeColumns(True);
+    Endupdate;
+  end;
+  end;
+end;
+
+
 
 procedure TFormMod.UpdatePageResultTab;
 var
@@ -3017,6 +3072,7 @@ begin
     UpdateStringGridParam;
     UpdateStringGridState;
     UpdateStringGridVar;
+    UpdateStringGridConst;
     UpdateStringGridExternV;
     UpdateStringGridOptions;
     UpdateStringGridData;

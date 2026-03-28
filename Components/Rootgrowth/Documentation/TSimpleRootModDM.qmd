@@ -1,0 +1,408 @@
+---
+title: "TSimpleRootModDM"
+author: "Agronomy and Crop Science Group, Kiel University"
+date: "`r Sys.Date()`"
+chunk_output_type: console
+html-math-method: katex
+number-sections: true
+toc: true
+toc-expand: 4
+toc-depth: 4
+toc-location: left
+crossref:
+  eq-prefix: Eq.
+format: 
+  html:
+    embed-resources: true 
+---
+
+```{r}
+#| label: SetupLibraries
+#| include: FALSE
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center", fig.width = 12, fig.height = 6, fig.pos = "h", fig.cap = TRUE)
+rm(list = ls(all.names = TRUE))
+
+library(rmarkdown)
+library(bookdown)
+library(soilwater)
+library(pracma)
+library(dplyr)
+library(ggplot2)
+library(extrafont)
+library(gifski)
+library(gganimate)
+library(transformr)
+library(reticulate)
+library(tinytex)
+library(magick)
+library(bibtex)
+library(ggsci)
+library(knitcitations)
+library(kableExtra)
+library(Weatherfunctions)
+library(xml2)
+library(ggpmisc)
+library(tidyr)
+source("Q:/HUME/HUME/RLib/DokuUtilFunctions.R")
+
+options("citation_format" = "pandoc")
+
+```
+
+```{r}
+#| include: false
+fn_source <- "Q:/HUME/HUME/Components/Rootgrowth/USimpleRootModDM.pas"
+fn_xml_docu <- "Q:/HUME/HUME/XML_Delphi_Docu/USimpleRootModDM.xml"
+```
+
+# Summary
+
+```{r}
+#| echo: false
+#| results: "asis"
+#| message: false
+#| warning: false
+
+# 1. Load the XML file
+doc <- xml2::read_xml(fn_xml_docu)
+
+
+```
+
+```{r}
+#| echo: false
+#| results: "asis"
+#| message: false
+#| warning: false
+
+GetClassDevNotes("TSimpleRootModDM",fn_xml_docu)
+```
+
+## Ancestor classes
+
+The class TSimpleRootModDM has the following ancestor classes shown in @tbl-AncestorClasses.
+
+```{r}
+#| label: tbl-AncestorClasses
+#| echo: false
+#| tbl-cap: "Ancestor classes of TSimpleRootModDM"
+
+df <- GetAncestorClasses(fn_xml_docu,"TSimpleRootModDM")
+
+kable(df)
+
+
+
+```
+
+# Scientific Background
+
+## Root length and root length density
+
+In order to estimate the water transport rate towards roots and their possible limitations it is necessary to have a realistic estimate of the total root length, its spatial an temporal variation and furthermore the distribution of water uptake over the parts of the root system. The latter point is often governed by the variation of water tension within the rooted soil layers, as during a drying phase the more densely rooted upper soil layers dry out and the water uptake than focuses on deeper soil layers.
+
+The variation total root length of a crop over time varies between crops and for a specific crop total root length is somewhat related to the total biomass production and its influencing factors. Cereal crops may have maximum total root root length values of 10 $km^2/m^2$ or in other units 100 $[cm\ cm^{-2}]$. Especially grain legumes have much lower total root length values, down to approximately 10% of the values of cereal crops, which may lead to a value of 10 $[cm\ cm^{-2}]$ [@Kage1996d]. For a rooting depth of 100 cm (cereal crop) this leads to an average root length density of 1 $[cm \cdot cm^{-3}]$ and for a lower rooting depth of a grain legume of about 50 \[cm\] we end at values of 0.2 $[cm\ cm^{-2}]$. Root length density in the subsoil, which is most important during drought stress phases, however, is much lower.
+
+## Dynamic of total root length
+
+The growth of the root system is closely linked to the growth of the entire crop and to some extend and under some conditions (drought stress, nutrient deficiency) *vice* *versa*. If the fraction of dry matter increase attributed to fine root growth, ffR, is known, the increase of total fine root length dRL/dt (cm.m-2.d-1) may simply be calculated from the total dry weight increase dWt/dt $(g \cdot m^{-2} \cdot d^{-1)}$ and the average specific root length SRL (sp_WL) $(cm\cdot g^{-1} DM)$ [@Kage2000].
+
+$$
+\frac{dRL}{dt}=\frac{d{{W}_{t}}}{dt}\cdot {{f}_{fR}}\cdot SRL 
+$$ {#eq-dRLdt}
+
+The value of $f_{fR}$ may be assumed to be constant or to decrease during the plant’s development from the vegetative to the generative phase with a minimum value of zero. As a simple approximation a linear decrease of $f_{fR}$ with temperature sum since emergence may be assumed:
+
+$$
+f_{fR}=\max (0,\,\,{{f}_{fR0}}-{{f}_{fRdec}}\cdot TS)
+$$ {#eq-ffR}
+
+where f~fR0~ (-) is the initial fraction of dry matter allocated to the root fraction and f~fRdec~ $(°C^{-1} d^{-1})$ is the decrease of this fraction per unit of accumulated temperature. The value of SRL may regarded as a parameter or be calculated from the average diameter of the roots and the average dry matter content of the roots. A constant value of 7000 $cm\cdot g^{-1}\; DM$ is used here based on data of @Barraclough1984, nevertheless, also much lower values have been reported from soils with a quite high clay content [@Siddique1990; @Savin1994].
+
+## Shoot dry matter production and total dry matter increase
+
+The total dry matter production rate may be estimated from the shoot dry matter increase if one considers only a fine root pool as below-ground biomass:
+
+$$\frac{dW_t}{dt}=\frac{1}{\left( 1-{{f}_{fR}} \right)}\frac{d{{W}_{sh}}}{dt}$$ {#eq-dWtdt}
+
+Shoot dry matter increase may be obtained from a crop growth model or may be derived from an appropriate function fitted to experimental data. Here, as an example an approach, using the Richards-function [@Thornley1990] is shown:
+
+$$
+\frac{dW_{sh}}{dt}=r_{Ws}\cdot T_{eff} \cdot W_{sh} \cdot \left( \frac{W_{shmax}^{rf}-{W_{sh}}^{rf}}{rf\cdot W_{shmax}^{rf}} \right)
+$$ {#eq-dWshdt}
+
+Where $r_{Ws}$ is a growth rate parameter, $T_{eff}$ is the effective temperature, $W_{shmax}$ is the maximum attained shoot dry matter and rf is form parameter. This function can be integrated numerically, using a value for $W_{sh}$ at sowing of 10 $g\cdot m^{-2}$. The effective temperature was calculated from:
+
+$$
+T_{eff}=\max \left( 0,\left( {{T}_{a}}-{{T}_{b}} \right) \right) 
+$$ {#eq-Teff}
+
+Where $T_a$ is the daily average air temperature $T_b$ is a base temperature, assumed to be 4°C.
+
+## Rooting depth
+
+Rooting depth is in the submodel TSimpleRootModDM defined as the depth of the deepest root. It is mainly governed by temperature and the submodel is currently parameterized using air temperature as an input. Additionally soil texture and bulk density may optionally be used to modify the maximum rooting depth and the rate of rooting depth increase.
+
+There are also two choices for modelling rooting depth increase: a simple linear increase with temperature sum and an expo-linear increase with temperature sum, which accounts for the observed lag phases in rooting depth increase during early development stages.
+
+### Linear increase of rooting depth with temperature sum
+
+Rooting depth zr (cm) is often found to increase linearly with accumulated temperature sum within certain development stages, but lag phases in rooting depth increase [@ThorupKristensen1998; @ThorupKristensen1998b] as well as diminishing rooting depth increases during maturity [@Jaafar1993] have been observed. Rooting depth increase $[cm \cdot d^{-1}]$ therefore simply is:
+
+$$
+\frac{dz_r}{dt} =
+\begin{cases}
+0, & z_r > z_{r,\max} \\
+k_{zb}\cdot T_{eff} \cdot f_{texture}, & \text{otherwise}
+\end{cases}
+$$ {#eq-dzrdt}
+
+Where $k_{zb}$ $[cm\cdot°C^{-1}\cdot d^{-1}]$ is a parameter. For many cereal crops it is about 0.1 $[cm\cdot°C^{-1}\cdot d^{-1}]$. The base temperature for root growth was set to 0°C.
+
+The parameter $z_{r,\max}$ is the maximum rooting depth. Its value may be internally modified by the effects effects of soil texture and bulk density, which are considered by the correction factor $f_{texture}$ (see below).
+
+### Expo-linear increase of rooting depth with temperature sum
+
+The linear increase of rooting depth with temperature sum may be modified by an exponential term to account for the observed lag phases in rooting depth increase during early development stagese ([@thorup-kristensen1998][@ThorupKristensen1998c].
+
+During the first phase rooting depth increase, dzr/dt (cm.d-1) therefore is:
+
+$$ \frac{dz_r}{dt}=k_{za} \cdot T_{eff} \cdot z_r$$  {#eq-dzrdtExp}
+
+Where T~eff~ (°C) is the effective temperature for root growth and k~za~ is a constant (°C^-1.^d^-1^).
+
+This equation can be integrated:
+
+$$z_{r}=z_{r0} \cdot {e^{{{k}_{za}}\cdot TS}}$$ {#eq-zrExp}
+
+where z~r0~ is the rooting depth at the day of sowing/transplanting and TS the sum of average daily temperatures above the base temperature.
+
+In order to obtain a continuously derivable function the exponential and the linear part of the function have to predict the same rooting depth increase at the switching point from one part to the other. Therefore, by combining the right hand sides of equation (7-7) and (7-9) and solving for zr at this switching point, zrc, where maximum rooting depth increase is reached can be calculated:
+
+$${{z}_{rc}}=\frac{{{b}_{zr}}}{{{a}_{zr}}}$$    {#eq-zrc}
+
+The temperature sum at which the rooting depth increase switches from the exponential to the linear phase, TScrit, is obtained by substituting zrc from Eqn. 7-10 for zr in Eqn. 7-8. Rearranging gives:
+
+$$T{{S}_{crit}}=\frac{\ln \left( \frac{{{z}_{rc}}}{{{z}_{r0}}} \right)}{{{a}_{zr}}}$$   {#eq-TScrit}
+
+### Effect of texture and bulk density on rooting depth
+
+The german soil classification (KA5) gives values for a parameter called effective rooting depth (W~eff~). This is not equivalent to maximum rooting depth z~max~, W~eff~ is rather a value that gives a rough estimate of available soil water when multiplied by the plant available soil water content. The values of W~eff~ were used to implement a texture and bulk density dependent correction factor for rooting depth increase, $f_{texture}$, which is calculated as the ratio of effective rooting depth of the standard soil being an Ut3 texture with a bulk density class of 3. The values of W~eff~ for different soil textures and bulk density classes are shown in @tbl-TextureBDeffect.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| include: true
+#| label: tbl-TextureBDeffect
+#| tbl-cap: Effective rooting depth [dm] and relative effective rooting depth [-] for different soil textures and bulk density classes.
+
+
+library(dplyr)
+library(DT)
+library(htmlwidgets)
+
+
+fn <- "Components/Rootgrowth/Documentation/Weff.csv"
+df.Weff <- read.csv(fn, header = TRUE, comment.char = "[", sep = ",", dec = ".")
+names(df.Weff) <- c("Texture","BD", "Weff", "Weffrel")
+
+num_cols <- names(df.Weff)[sapply(df.Weff, is.numeric)]
+
+
+
+datatable(
+  df.Weff,
+  rownames = FALSE,
+  filter = "top",
+  options = list(
+    pageLength = 8,
+    autoWidth = TRUE,
+    scrollX = TRUE
+  ),
+  callback = JS(
+    "table.on('init.dt', function() {",
+    "  var headerRows = $(table.table().header()).find('tr');",
+    "  if (headerRows.length > 1) {",
+    "    $(headerRows[1]).find('th').each(function(i) {",
+    "      if (i > 1) {",
+    "        $(this).html('');",
+    "      }",
+    "    });",
+    "  }",
+    "});"
+  )
+) %>%
+  formatRound(columns = num_cols, digits = 3, dec.mark = ".")
+
+
+```
+
+```{r}
+#| label: rooting-depth-static-interactive
+#| echo: false
+#| message: false
+#| warning: false
+#| include: true
+#| fig-cap: "Effect of texture and bulk density on rooting depth dynamics"
+
+library(dplyr)
+library(tidyr)
+library(plotly)
+library(crosstalk)
+library(htmltools)
+
+# Assumptions:
+# df.Weff contains columns Texture, BD, Weffrel
+
+bzr <- 0.1
+zrmax <- 120
+tsum_max <- 2000
+
+plot_df <- df.Weff %>%
+  transmute(
+    texture = Texture,
+    bulkdensity = BD,
+    Weffrel = Weffrel
+  ) %>%
+  filter(!is.na(texture), !is.na(bulkdensity), !is.na(Weffrel)) %>%
+  distinct() %>%
+  expand_grid(TSUM = seq(0, tsum_max, by = 10)) %>%
+  mutate(
+    zrmax_eff = zrmax * Weffrel,
+    zr = pmin(zrmax_eff, TSUM * bzr * Weffrel),
+    scenario = paste0(
+      "Texture=", texture,
+      ", BD=", bulkdensity,
+      ", Weffrel=", round(Weffrel, 3)
+    )
+  )
+
+sd <- SharedData$new(plot_df, group = "rooting")
+
+bscols(
+  widths = c(3, 9),
+  list(
+    filter_select("texture", "Texture class", sd, ~texture, multiple = TRUE),
+    filter_select("bd", "Bulk density class", sd, ~bulkdensity, multiple = TRUE)
+  ),
+  plot_ly(
+    sd,
+    x = ~TSUM,
+    y = ~zr,
+    color = ~scenario,
+    type = "scatter",
+    mode = "lines",
+    hovertemplate = paste(
+      "TSUM=%{x}",
+      "<br>zr=%{y}",
+      "<extra>%{fullData.name}</extra>"
+    )
+  ) %>%
+    layout(
+      title = "Effect of texture and bulk density on rooting depth dynamics",
+      xaxis = list(title = "Temperature sum (TSUM [°C d])"),
+      yaxis = list(title = "Rooting depth zr (cm)", autorange = "reversed")
+    )
+)
+
+
+
+```
+
+## Vertical root distribution
+
+Root length density, however, is not uniform over the soil profile. Typically it is decreasing exponentially from the highest values near the soil surface with depth [@Gerwitz1974; @Barraclough1984; @Greenwood1982]:
+
+$$
+L_{rv}=L_{rv0}\cdot {{e}^{-{{k}_{r}}\cdot z}} 
+$$ {#eq-Lrv}
+
+where the constant $k_r$ $(cm^{-1})$ is the fractional decrease in RLD per unit increase of soil depth and $L_{rv0}$ is the root length density at zero soil depth.
+
+Integration of z=0 to a depth $z=z_r$ were the root length density is very low yields the root length RL $(cm \cdot cm^{-2})$ [see @Kage2000]:
+
+$$
+L_r=\int\limits_{z=0}^{z=z_r}{L_{rv0}\cdot {{e}^{-{{k}_{r}}\cdot z}}\cdot dz}=\frac{L_{rv0}}{{{k}_{r}}}\cdot \left( 1-{{e}^{-{{k}_{r}}\cdot {{z}_{r}}}} \right) 
+$$ {#eq-Lr}
+
+To calculate the average rooting density $\overline{L_{rv}}$ $(cm \cdot cm^{-3})$ within a certain soil layer located between two soil depths z1 and z2 the above equation may be set up for both depths.The difference between RL at z2 and z1 divided by the distance z2-z1 gives the desired value of $RLD_{av}$:
+
+$$
+\overline{L_{rv}}=\frac{L_{rv0}\cdot \left( {{e}^{-{{k}_{r}}\cdot {{z}_{1}}}}-{{e}^{-{{k}_{r}}\cdot {{z}_{2}}}} \right)}{{{k}_{r}}\cdot \left( {{z}_{2}}-{{z}_{1}} \right)} 
+$$ {#eq-avLrv}
+
+At the moment $k_r$ and $L_{rv0}$ remain unknown parameters.
+
+for the depth $z=z_r$ and introducing a new parameter, $r_{RLD}$, describing the ratio of RLD at $z_r$, $RLD_{zr}$, and RLD~0~ the following identity can be found for the parameter $k_r$:
+
+$$
+{{k}_{r}}=-\frac{\ln \left( \frac{RL{{D}_{zr}}}{RL{{D}_{0}}} \right)}{{{z}_{r}}}=-\frac{\ln \left( {{r}_{RLD}} \right)}{{{z}_{r}}} 
+$$ {#eq-kr}
+
+Thereby, the introduction of $r_{RLD}$ avoids the necessity of using an iterative solution of the above set of equations.
+
+Knowing this value the root length density at the soil surface can be calculated:
+
+$$
+RLD_{0}=RL\cdot k_{r}\frac{1}{1-e^{-{k_r}\cdot z_r}} 
+$$ {#eq-RLD0}
+
+For late sown winter wheat on a loess loam soil [@Kage2001] estimated values for $L_{rv0}$ of about 4 $cm \cdot cm^{-3}$ and $K_r$ of about 0.03.
+
+```{r}
+#| label: LrvExample
+#| message: false
+#| warning: false
+#| include: false
+
+# Root length density at depth 0
+Lrv0 <- 4 # cm.cm-3
+
+# depth Lrv decrease parameter 
+kr <- 0.03
+
+# sequence of depths
+z <- seq(0, 150, 5)
+
+# sequence of root length densities
+Lrv <- Lrv0*exp(-kr*z)
+#plot(Lrv, -z )
+# integration over depth gives total root length per area
+Lr <- Lrv0/kr*(1-exp(-kr*max(z)))
+#cat("For these values of Lrv0 and kr the total root length is", format(Lr, digits=4), "cm/cm2.")
+
+```
+
+For these values of $L_{rv0}$ and $k_r$ the total root length is `r format(Lr, digits=4)` $cm\cdot cm^{-2}$.
+
+```{r}
+#| label: fig-LrvDepth
+#| echo: false
+#| fig-align: center
+#| fig-cap: Root length density (Lrv) vs. depth
+#| fig-height: 3.5
+#| fig-width: 3
+
+
+#plot(Lrv, -z , type = "l", ylab="depth [cm]", xlab = "Lrv [cm/cm3]")
+
+illu <- data.frame(-z, Lrv)
+
+minor_breaks <- rep(1:9, 21)*(10^rep(-10:10, each=9))
+MyBreaks <- c(1, 10, 100, 1000, 10000)
+m <- NULL
+m <-ggplot(data=illu)
+m <- m + geom_line(aes(x=Lrv, y=z),lwd=1, lty=1, color="brown")
+m <- m + scale_colour_brewer(palette="Set1")
+m <- m + scale_y_reverse()
+m <- m + scale_fill_brewer(palette="Set1")
+m <- m + scale_x_continuous(position = "top")
+m <- m + xlab("Lrv [cm/cm³]") + ylab("depth [cm]")
+#m <- set_theme(m,14)
+m <- m + theme_bw(base_size = 14)
+#ggsave(filename = "LRV_depth.png", plot=m, units="cm", dpi = 300, height=15, width=22, bg = "transparent")
+m
+
+```

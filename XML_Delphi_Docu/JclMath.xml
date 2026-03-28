@@ -1,0 +1,2962 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="JclMath" platform="Win32">
+  <const name="Bernstein" type="Extended" visibility="public" file="JclMath.pas" line="65" />
+  <const name="Cbrt2" type="Extended" visibility="public" file="JclMath.pas" line="66" />
+  <const name="Cbrt3" type="Extended" visibility="public" file="JclMath.pas" line="67" />
+  <const name="Cbrt10" type="Extended" visibility="public" file="JclMath.pas" line="68" />
+  <const name="Cbrt100" type="Extended" visibility="public" file="JclMath.pas" line="69" />
+  <const name="CbrtPi" type="Extended" visibility="public" file="JclMath.pas" line="70" />
+  <const name="Catalan" type="Extended" visibility="public" file="JclMath.pas" line="71" />
+  <const name="Pi" type="Extended" visibility="public" file="JclMath.pas" line="72" />
+  <const name="PiOn2" type="Extended" visibility="public" file="JclMath.pas" line="73" />
+  <const name="PiOn3" type="Extended" visibility="public" file="JclMath.pas" line="74" />
+  <const name="PiOn4" type="Extended" visibility="public" file="JclMath.pas" line="75" />
+  <const name="Sqrt2" type="Extended" visibility="public" file="JclMath.pas" line="76" />
+  <const name="Sqrt3" type="Extended" visibility="public" file="JclMath.pas" line="77" />
+  <const name="Sqrt5" type="Extended" visibility="public" file="JclMath.pas" line="78" />
+  <const name="Sqrt10" type="Extended" visibility="public" file="JclMath.pas" line="79" />
+  <const name="SqrtPi" type="Extended" visibility="public" file="JclMath.pas" line="80" />
+  <const name="Sqrt2Pi" type="Extended" visibility="public" file="JclMath.pas" line="81" />
+  <const name="TwoPi" type="Extended" visibility="public" file="JclMath.pas" line="82" />
+  <const name="ThreePi" type="Extended" visibility="public" file="JclMath.pas" line="83" />
+  <const name="Ln2" type="Extended" visibility="public" file="JclMath.pas" line="84" />
+  <const name="Ln10" type="Extended" visibility="public" file="JclMath.pas" line="85" />
+  <const name="LnPi" type="Extended" visibility="public" file="JclMath.pas" line="86" />
+  <const name="Log2" type="Extended" visibility="public" file="JclMath.pas" line="87" />
+  <const name="Log3" type="Extended" visibility="public" file="JclMath.pas" line="88" />
+  <const name="LogPi" type="Extended" visibility="public" file="JclMath.pas" line="89" />
+  <const name="LogE" type="Extended" visibility="public" file="JclMath.pas" line="90" />
+  <const name="E" type="Extended" visibility="public" file="JclMath.pas" line="91" />
+  <const name="hLn2Pi" type="Extended" visibility="public" file="JclMath.pas" line="92" />
+  <const name="inv2Pi" type="Extended" visibility="public" file="JclMath.pas" line="93" />
+  <const name="TwoToPower63" type="Extended" visibility="public" file="JclMath.pas" line="94" />
+  <const name="GoldenMean" type="Extended" visibility="public" file="JclMath.pas" line="95" />
+  <const name="EulerMascheroni" type="Extended" visibility="public" file="JclMath.pas" line="96" />
+  <const name="MaxAngle" type="Extended" visibility="public" file="JclMath.pas" line="99" />
+  <const name="MaxTanH" type="Extended" visibility="public" file="JclMath.pas" line="102" />
+  <const name="MaxFactorial" type="Integer" file="JclMath.pas" line="103">
+    <value>
+      $6DA
+    </value>
+  </const>
+  <const name="MaxFloatingPoint" type="Extended" visibility="public" file="JclMath.pas" line="104" />
+  <const name="MinFloatingPoint" type="Extended" visibility="public" file="JclMath.pas" line="105" />
+  <const name="PiExt" type="Extended" file="JclMath.pas" line="121">
+    <value>
+      3.142
+    </value>
+  </const>
+  <const name="RatioDegToRad" type="Extended" visibility="public" file="JclMath.pas" line="122" />
+  <const name="RatioRadToDeg" type="Extended" visibility="public" file="JclMath.pas" line="123" />
+  <const name="RatioGradToRad" type="Extended" visibility="public" file="JclMath.pas" line="124" />
+  <const name="RatioRadToGrad" type="Extended" visibility="public" file="JclMath.pas" line="125" />
+  <const name="RatioDegToGrad" type="Extended" visibility="public" file="JclMath.pas" line="126" />
+  <const name="RatioGradToDeg" type="Extended" visibility="public" file="JclMath.pas" line="127" />
+  <variable name="PrecisionTolerance" type="Extended" visibility="public" file="JclMath.pas" line="130" />
+  <variable name="EpsSingle" type="Single" file="JclMath.pas" line="131" />
+  <variable name="EpsDouble" type="Double" file="JclMath.pas" line="132" />
+  <variable name="EpsExtended" type="Extended" file="JclMath.pas" line="134" />
+  <variable name="Epsilon" type="Extended" file="JclMath.pas" line="136" />
+  <variable name="ThreeEpsSingle" type="Single" file="JclMath.pas" line="137" />
+  <variable name="ThreeEpsDouble" type="Double" file="JclMath.pas" line="138" />
+  <variable name="ThreeEpsExtended" type="Extended" file="JclMath.pas" line="140" />
+  <variable name="ThreeEpsilon" type="Extended" file="JclMath.pas" line="142" />
+  <const name="ptTrialDivision" type="TPrimalityTestMethod" file="JclMath.pas" line="145">
+    <value>
+      ptTrialDivision
+    </value>
+  </const>
+  <const name="ptRabinMiller" type="TPrimalityTestMethod" file="JclMath.pas" line="145">
+    <value>
+      ptRabinMiller
+    </value>
+  </const>
+  <enum name="TPrimalityTestMethod" file="JclMath.pas" line="145">
+    <element value="0" name="ptTrialDivision" file="JclMath.pas" line="145" />
+    <element value="1" name="ptRabinMiller" file="JclMath.pas" line="145" />
+  </enum>
+  <variable name="IsPrime" type="function(N: Cardinal): Boolean;" visibility="public" file="JclMath.pas" line="355" />
+  <const name="fpZero" type="TFloatingPointClass" file="JclMath.pas" line="364">
+    <value>
+      fpZero
+    </value>
+  </const>
+  <const name="fpNormal" type="TFloatingPointClass" file="JclMath.pas" line="365">
+    <value>
+      fpNormal
+    </value>
+  </const>
+  <const name="fpDenormal" type="TFloatingPointClass" file="JclMath.pas" line="366">
+    <value>
+      fpDenormal
+    </value>
+  </const>
+  <const name="fpInfinite" type="TFloatingPointClass" file="JclMath.pas" line="367">
+    <value>
+      fpInfinite
+    </value>
+  </const>
+  <const name="fpNaN" type="TFloatingPointClass" file="JclMath.pas" line="368">
+    <value>
+      fpNaN
+    </value>
+  </const>
+  <const name="fpInvalid" type="TFloatingPointClass" file="JclMath.pas" line="369">
+    <value>
+      fpInvalid
+    </value>
+  </const>
+  <const name="fpEmpty" type="TFloatingPointClass" file="JclMath.pas" line="370">
+    <value>
+      fpEmpty
+    </value>
+  </const>
+  <enum name="TFloatingPointClass" file="JclMath.pas" line="362">
+    <element value="0" name="fpZero" file="JclMath.pas" line="364" />
+    <element value="1" name="fpNormal" file="JclMath.pas" line="365" />
+    <element value="2" name="fpDenormal" file="JclMath.pas" line="366" />
+    <element value="3" name="fpInfinite" file="JclMath.pas" line="367" />
+    <element value="4" name="fpNaN" file="JclMath.pas" line="368" />
+    <element value="5" name="fpInvalid" file="JclMath.pas" line="369" />
+    <element value="6" name="fpEmpty" file="JclMath.pas" line="370" />
+  </enum>
+  <const name="Infinity" type="Extended" file="JclMath.pas" line="374">
+    <value>
+      +INF
+    </value>
+  </const>
+  <const name="NaN" type="Extended" file="JclMath.pas" line="376">
+    <value>
+      -NAN
+    </value>
+  </const>
+  <const name="NegInfinity" type="Extended" file="JclMath.pas" line="378">
+    <value>
+      -INF
+    </value>
+  </const>
+  <type name="TNaNTag" type="integer" loBound="-2147483648" hiBound="2147483647" file="JclMath.pas" line="402" />
+  <const name="LowValidNaNTag" type="Integer" file="JclMath.pas" line="405">
+    <value>
+      $FFC00001
+    </value>
+  </const>
+  <const name="HighValidNaNTag" type="Integer" file="JclMath.pas" line="406">
+    <value>
+      $3FFFFE
+    </value>
+  </const>
+  <class name="TJclASet" file="JclMath.pas" line="460">
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public" procflags="inline">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="QualifiedClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitScope" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+      <methodref name="GetDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <propertyref name="Disposed" visibility="protected">
+      </propertyref>
+    </ancestor>
+    <members>
+      <function name="GetBit" visibility="public" procflags="abstract virtual" file="JclMath.pas" line="462">
+        <parameters>
+          <parameter name="Idx" type="Integer" paramflags="const" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <procedure name="SetBit" visibility="public" procflags="abstract virtual" file="JclMath.pas" line="463">
+        <parameters>
+          <parameter name="Idx" type="Integer" paramflags="const" />
+          <parameter name="Value" type="Boolean" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Clear" visibility="public" procflags="abstract virtual" file="JclMath.pas" line="464">
+      </procedure>
+      <procedure name="Invert" visibility="public" procflags="abstract virtual" file="JclMath.pas" line="465">
+      </procedure>
+      <function name="GetRange" visibility="public" procflags="abstract virtual" file="JclMath.pas" line="466">
+        <parameters>
+          <parameter name="Low" type="Integer" paramflags="const" />
+          <parameter name="High" type="Integer" paramflags="const" />
+          <parameter name="Value" type="Boolean" paramflags="const" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <procedure name="SetRange" visibility="public" procflags="abstract virtual" file="JclMath.pas" line="467">
+        <parameters>
+          <parameter name="Low" type="Integer" paramflags="const" />
+          <parameter name="High" type="Integer" paramflags="const" />
+          <parameter name="Value" type="Boolean" paramflags="const" />
+        </parameters>
+      </procedure>
+    </members>
+  </class>
+  <class name="TJclFlatSet" file="JclMath.pas" line="471">
+    <ancestor name="TJclASet" namespace="JclMath">
+      <methodref name="GetBit" visibility="public" procflags="abstract virtual" />
+      <methodref name="SetBit" visibility="public" procflags="abstract virtual" />
+      <methodref name="Clear" visibility="public" procflags="abstract virtual" />
+      <methodref name="Invert" visibility="public" procflags="abstract virtual" />
+      <methodref name="GetRange" visibility="public" procflags="abstract virtual" />
+      <methodref name="SetRange" visibility="public" procflags="abstract virtual" />
+      <ancestor name="TObject" namespace="System">
+        <methodref name="Create" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="Free" visibility="public">
+        </methodref>
+        <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+        </methodref>
+        <methodref name="InitInstance" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="CleanupInstance" visibility="public">
+        </methodref>
+        <methodref name="ClassType" visibility="public" procflags="inline">
+        </methodref>
+        <methodref name="ClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassNameIs" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassParent" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="ClassInfo" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InstanceSize" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InheritsFrom" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="QualifiedClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="GetInterface" visibility="public">
+        </methodref>
+        <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="UnitName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="UnitScope" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="Equals" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetHashCode" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ToString" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="SafeCallException" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Dispatch" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="NewInstance" visibility="public" procflags="class virtual">
+        </methodref>
+        <methodref name="FreeInstance" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+        </methodref>
+        <methodref name="GetDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <propertyref name="Disposed" visibility="protected">
+        </propertyref>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="FBits" type="TBits" visibility="private" size="4" offset="4" file="JclMath.pas" line="473" />
+      <constructor name="Create" visibility="public" file="JclMath.pas" line="475">
+        <parameters>
+        </parameters>
+      </constructor>
+      <destructor name="Destroy" visibility="public" file="JclMath.pas" line="476">
+        <parameters>
+        </parameters>
+      </destructor>
+      <procedure name="Clear" visibility="public" procflags="override" file="JclMath.pas" line="477">
+      </procedure>
+      <procedure name="Invert" visibility="public" procflags="override" file="JclMath.pas" line="478">
+      </procedure>
+      <procedure name="SetRange" visibility="public" procflags="override" file="JclMath.pas" line="479">
+        <parameters>
+          <parameter name="Low" type="Integer" paramflags="const" />
+          <parameter name="High" type="Integer" paramflags="const" />
+          <parameter name="Value" type="Boolean" paramflags="const" />
+        </parameters>
+      </procedure>
+      <function name="GetBit" visibility="public" procflags="override" file="JclMath.pas" line="480">
+        <parameters>
+          <parameter name="Idx" type="Integer" paramflags="const" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="GetRange" visibility="public" procflags="override" file="JclMath.pas" line="481">
+        <parameters>
+          <parameter name="Low" type="Integer" paramflags="const" />
+          <parameter name="High" type="Integer" paramflags="const" />
+          <parameter name="Value" type="Boolean" paramflags="const" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <procedure name="SetBit" visibility="public" procflags="override" file="JclMath.pas" line="482">
+        <parameters>
+          <parameter name="Idx" type="Integer" paramflags="const" />
+          <parameter name="Value" type="Boolean" paramflags="const" />
+        </parameters>
+      </procedure>
+    </members>
+  </class>
+  <array name="TPointerArray" low="0" high="8388607" file="JclMath.pas" line="487">
+    <element type="Pointer" />
+  </array>
+  <pointer name="PPointerArray" type="TPointerArray" indircnt="1" file="JclMath.pas" line="488" />
+  <set name="TDelphiSet" type="Byte" file="JclMath.pas" line="490" />
+  <pointer name="PDelphiSet" type="TDelphiSet" indircnt="1" file="JclMath.pas" line="491" />
+  <const name="EmptyDelphiSet" type="TDelphiSet" visibility="public" file="JclMath.pas" line="494" />
+  <const name="CompleteDelphiSet" type="TDelphiSet" visibility="public" file="JclMath.pas" line="495" />
+  <class name="TJclSparseFlatSet" file="JclMath.pas" line="498">
+    <ancestor name="TJclASet" namespace="JclMath">
+      <methodref name="GetBit" visibility="public" procflags="abstract virtual" />
+      <methodref name="SetBit" visibility="public" procflags="abstract virtual" />
+      <methodref name="Clear" visibility="public" procflags="abstract virtual" />
+      <methodref name="Invert" visibility="public" procflags="abstract virtual" />
+      <methodref name="GetRange" visibility="public" procflags="abstract virtual" />
+      <methodref name="SetRange" visibility="public" procflags="abstract virtual" />
+      <ancestor name="TObject" namespace="System">
+        <methodref name="Create" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="Free" visibility="public">
+        </methodref>
+        <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+        </methodref>
+        <methodref name="InitInstance" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="CleanupInstance" visibility="public">
+        </methodref>
+        <methodref name="ClassType" visibility="public" procflags="inline">
+        </methodref>
+        <methodref name="ClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassNameIs" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="ClassParent" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="ClassInfo" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InstanceSize" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="InheritsFrom" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodAddress" visibility="public" procflags="class overload">
+        </methodref>
+        <methodref name="MethodName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="QualifiedClassName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="FieldAddress" visibility="public" procflags="overload">
+        </methodref>
+        <methodref name="GetInterface" visibility="public">
+        </methodref>
+        <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+        </methodref>
+        <methodref name="UnitName" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="UnitScope" visibility="public" procflags="class">
+        </methodref>
+        <methodref name="Equals" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="GetHashCode" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ToString" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="SafeCallException" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Dispatch" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="NewInstance" visibility="public" procflags="class virtual">
+        </methodref>
+        <methodref name="FreeInstance" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+        </methodref>
+        <methodref name="GetDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+        </methodref>
+        <propertyref name="Disposed" visibility="protected">
+        </propertyref>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="FSetList" type="PPointerArray" visibility="private" size="4" offset="4" file="JclMath.pas" line="500" />
+      <field name="FSetListEntries" type="Integer" visibility="private" size="4" offset="8" file="JclMath.pas" line="501" />
+      <destructor name="Destroy" visibility="public" file="JclMath.pas" line="503">
+        <parameters>
+        </parameters>
+      </destructor>
+      <procedure name="Clear" visibility="public" procflags="override" file="JclMath.pas" line="504">
+      </procedure>
+      <procedure name="Invert" visibility="public" procflags="override" file="JclMath.pas" line="505">
+      </procedure>
+      <function name="GetBit" visibility="public" procflags="override" file="JclMath.pas" line="506">
+        <parameters>
+          <parameter name="Idx" type="Integer" paramflags="const" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <procedure name="SetBit" visibility="public" procflags="override" file="JclMath.pas" line="507">
+        <parameters>
+          <parameter name="Idx" type="Integer" paramflags="const" />
+          <parameter name="Value" type="Boolean" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="SetRange" visibility="public" procflags="override" file="JclMath.pas" line="508">
+        <parameters>
+          <parameter name="Low" type="Integer" paramflags="const" />
+          <parameter name="High" type="Integer" paramflags="const" />
+          <parameter name="Value" type="Boolean" paramflags="const" />
+        </parameters>
+      </procedure>
+      <function name="GetRange" visibility="public" procflags="override" file="JclMath.pas" line="509">
+        <parameters>
+          <parameter name="Low" type="Integer" paramflags="const" />
+          <parameter name="High" type="Integer" paramflags="const" />
+          <parameter name="Value" type="Boolean" paramflags="const" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+    </members>
+  </class>
+  <class name="TJclRational" file="JclMath.pas" line="515">
+    <ancestor name="TObject" namespace="System">
+      <methodref name="Create" visibility="public" procflags="constructor">
+      </methodref>
+      <methodref name="Free" visibility="public">
+      </methodref>
+      <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+      </methodref>
+      <methodref name="InitInstance" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="CleanupInstance" visibility="public">
+      </methodref>
+      <methodref name="ClassType" visibility="public" procflags="inline">
+      </methodref>
+      <methodref name="ClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassNameIs" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="ClassParent" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="ClassInfo" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InstanceSize" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="InheritsFrom" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodAddress" visibility="public" procflags="class overload">
+      </methodref>
+      <methodref name="MethodName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="QualifiedClassName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="FieldAddress" visibility="public" procflags="overload">
+      </methodref>
+      <methodref name="GetInterface" visibility="public">
+      </methodref>
+      <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+      </methodref>
+      <methodref name="UnitName" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="UnitScope" visibility="public" procflags="class">
+      </methodref>
+      <methodref name="Equals" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="GetHashCode" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="ToString" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="SafeCallException" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Dispatch" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="NewInstance" visibility="public" procflags="class virtual">
+      </methodref>
+      <methodref name="FreeInstance" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+      </methodref>
+      <methodref name="GetDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+      </methodref>
+      <propertyref name="Disposed" visibility="protected">
+      </propertyref>
+    </ancestor>
+    <members>
+      <field name="FT" type="Integer" visibility="private" size="4" offset="4" file="JclMath.pas" line="517" />
+      <field name="FN" type="Integer" visibility="private" size="4" offset="8" file="JclMath.pas" line="518" />
+      <function name="GetAsString" visibility="private" file="JclMath.pas" line="519">
+        <parameters>
+          <retval type="string" />
+        </parameters>
+      </function>
+      <procedure name="SetAsString" visibility="private" file="JclMath.pas" line="520">
+        <parameters>
+          <parameter name="S" type="string" paramflags="const" />
+        </parameters>
+      </procedure>
+      <function name="GetAsFloat" visibility="private" file="JclMath.pas" line="521">
+        <parameters>
+          <retval type="Extended" />
+        </parameters>
+      </function>
+      <procedure name="SetAsFloat" visibility="private" file="JclMath.pas" line="522">
+        <parameters>
+          <parameter name="R" type="Extended" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Simplify" visibility="protected" file="JclMath.pas" line="524">
+      </procedure>
+      <constructor name="Create" visibility="public" file="JclMath.pas" line="526">
+        <parameters>
+        </parameters>
+      </constructor>
+      <constructor name="Create" visibility="public" file="JclMath.pas" line="527">
+        <parameters>
+          <parameter name="R" type="Extended" paramflags="const" />
+        </parameters>
+      </constructor>
+      <constructor name="Create" visibility="public" file="JclMath.pas" line="528">
+        <parameters>
+          <parameter name="Numerator" type="Integer" paramflags="const" />
+          <parameter name="Denominator" type="Integer" paramflags="const">
+            <value>
+              $1
+            </value>
+          </parameter>
+        </parameters>
+      </constructor>
+      <property name="Numerator" visibility="public" read="FT" type="Integer" file="JclMath.pas" line="530" />
+      <property name="Denominator" visibility="public" read="FN" type="Integer" file="JclMath.pas" line="531" />
+      <property name="AsString" visibility="public" read="GetAsString" write="SetAsString" type="string" default="0" file="JclMath.pas" line="532" />
+      <property name="AsFloat" visibility="public" read="GetAsFloat" write="SetAsFloat" type="Extended" default="0" file="JclMath.pas" line="533" />
+      <procedure name="Assign" visibility="public" procflags="overload inline" file="JclMath.pas" line="535">
+        <parameters>
+          <parameter name="R" type="TJclRational" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Assign" visibility="public" procflags="overload" file="JclMath.pas" line="536">
+        <parameters>
+          <parameter name="R" type="Extended" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Assign" visibility="public" procflags="overload" file="JclMath.pas" line="537">
+        <parameters>
+          <parameter name="Numerator" type="Integer" paramflags="const" />
+          <parameter name="Denominator" type="Integer" paramflags="const">
+            <value>
+              $1
+            </value>
+          </parameter>
+        </parameters>
+      </procedure>
+      <procedure name="AssignZero" visibility="public" procflags="inline" file="JclMath.pas" line="539">
+      </procedure>
+      <procedure name="AssignOne" visibility="public" procflags="inline" file="JclMath.pas" line="540">
+      </procedure>
+      <function name="Duplicate" visibility="public" procflags="inline" file="JclMath.pas" line="541">
+        <parameters>
+          <retval type="TJclRational" />
+        </parameters>
+      </function>
+      <function name="IsEqual" visibility="public" procflags="overload inline" file="JclMath.pas" line="543">
+        <parameters>
+          <parameter name="R" type="TJclRational" paramflags="const" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="IsEqual" visibility="public" procflags="overload inline" file="JclMath.pas" line="544">
+        <parameters>
+          <parameter name="Numerator" type="Integer" paramflags="const" />
+          <parameter name="Denominator" type="Integer" paramflags="const">
+            <value>
+              $1
+            </value>
+          </parameter>
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="IsEqual" visibility="public" procflags="overload inline" file="JclMath.pas" line="545">
+        <parameters>
+          <parameter name="R" type="Extended" paramflags="const" />
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="IsZero" visibility="public" procflags="inline" file="JclMath.pas" line="547">
+        <parameters>
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <function name="IsOne" visibility="public" procflags="inline" file="JclMath.pas" line="548">
+        <parameters>
+          <retval type="Boolean" />
+        </parameters>
+      </function>
+      <procedure name="Add" visibility="public" procflags="overload" file="JclMath.pas" line="550">
+        <parameters>
+          <parameter name="R" type="TJclRational" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Add" visibility="public" procflags="overload inline" file="JclMath.pas" line="551">
+        <parameters>
+          <parameter name="V" type="Extended" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Add" visibility="public" procflags="overload inline" file="JclMath.pas" line="552">
+        <parameters>
+          <parameter name="V" type="Integer" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Subtract" visibility="public" procflags="overload" file="JclMath.pas" line="554">
+        <parameters>
+          <parameter name="R" type="TJclRational" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Subtract" visibility="public" procflags="overload inline" file="JclMath.pas" line="555">
+        <parameters>
+          <parameter name="V" type="Extended" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Subtract" visibility="public" procflags="overload inline" file="JclMath.pas" line="556">
+        <parameters>
+          <parameter name="V" type="Integer" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Negate" visibility="public" procflags="inline" file="JclMath.pas" line="558">
+      </procedure>
+      <procedure name="Abs" visibility="public" file="JclMath.pas" line="559">
+      </procedure>
+      <function name="Sgn" visibility="public" file="JclMath.pas" line="560">
+        <parameters>
+          <retval type="Integer" />
+        </parameters>
+      </function>
+      <procedure name="Multiply" visibility="public" procflags="overload" file="JclMath.pas" line="562">
+        <parameters>
+          <parameter name="R" type="TJclRational" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Multiply" visibility="public" procflags="overload inline" file="JclMath.pas" line="563">
+        <parameters>
+          <parameter name="V" type="Extended" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Multiply" visibility="public" procflags="overload inline" file="JclMath.pas" line="564">
+        <parameters>
+          <parameter name="V" type="Integer" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Reciprocal" visibility="public" file="JclMath.pas" line="566">
+      </procedure>
+      <procedure name="Divide" visibility="public" procflags="overload" file="JclMath.pas" line="568">
+        <parameters>
+          <parameter name="R" type="TJclRational" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Divide" visibility="public" procflags="overload inline" file="JclMath.pas" line="569">
+        <parameters>
+          <parameter name="V" type="Extended" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Divide" visibility="public" procflags="overload" file="JclMath.pas" line="570">
+        <parameters>
+          <parameter name="V" type="Integer" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Sqrt" visibility="public" procflags="inline" file="JclMath.pas" line="572">
+      </procedure>
+      <procedure name="Sqr" visibility="public" procflags="inline" file="JclMath.pas" line="573">
+      </procedure>
+      <procedure name="Power" visibility="public" procflags="overload" file="JclMath.pas" line="575">
+        <parameters>
+          <parameter name="R" type="TJclRational" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Power" visibility="public" procflags="overload" file="JclMath.pas" line="576">
+        <parameters>
+          <parameter name="V" type="Integer" paramflags="const" />
+        </parameters>
+      </procedure>
+      <procedure name="Power" visibility="public" procflags="overload" file="JclMath.pas" line="577">
+        <parameters>
+          <parameter name="V" type="Extended" paramflags="const" />
+        </parameters>
+      </procedure>
+    </members>
+  </class>
+  <class name="EJclMathError" file="JclMath.pas" line="581">
+    <ancestor name="EJclError" namespace="JclBase">
+      <ancestor name="Exception" namespace="System.SysUtils">
+        <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+        </methodref>
+        <methodref name="Destroy@" visibility="class private" procflags="class destructor noself">
+        </methodref>
+        <methodref name="SetInnerException" visibility="protected">
+        </methodref>
+        <methodref name="SetStackInfo" visibility="protected">
+        </methodref>
+        <methodref name="GetStackTrace" visibility="protected">
+        </methodref>
+        <methodref name="RaisingException" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="Create" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="CreateFmt" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateHelp" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="CreateFmtHelp" visibility="public" procflags="constructor">
+        </methodref>
+        <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+        </methodref>
+        <methodref name="Destroy" visibility="public" procflags="destructor override">
+        </methodref>
+        <methodref name="GetBaseException" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ToString" visibility="public" procflags="override">
+        </methodref>
+        <propertyref name="BaseException" visibility="public">
+        </propertyref>
+        <propertyref name="HelpContext" visibility="public">
+        </propertyref>
+        <propertyref name="InnerException" visibility="public">
+        </propertyref>
+        <propertyref name="Message" visibility="public">
+        </propertyref>
+        <propertyref name="StackTrace" visibility="public">
+        </propertyref>
+        <propertyref name="StackInfo" visibility="public">
+        </propertyref>
+        <methodref name="RaiseOuterException" visibility="public" procflags="static">
+        </methodref>
+        <methodref name="ThrowOuterException" visibility="public" procflags="static">
+        </methodref>
+        <ancestor name="TObject" namespace="System">
+          <methodref name="Create" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="Free" visibility="public">
+          </methodref>
+          <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+          </methodref>
+          <methodref name="InitInstance" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="CleanupInstance" visibility="public">
+          </methodref>
+          <methodref name="ClassType" visibility="public" procflags="inline">
+          </methodref>
+          <methodref name="ClassName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="ClassNameIs" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="ClassParent" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="ClassInfo" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="InstanceSize" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="InheritsFrom" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="MethodAddress" visibility="public" procflags="class overload">
+          </methodref>
+          <methodref name="MethodAddress" visibility="public" procflags="class overload">
+          </methodref>
+          <methodref name="MethodName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="QualifiedClassName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="FieldAddress" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="FieldAddress" visibility="public" procflags="overload">
+          </methodref>
+          <methodref name="GetInterface" visibility="public">
+          </methodref>
+          <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+          </methodref>
+          <methodref name="UnitName" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="UnitScope" visibility="public" procflags="class">
+          </methodref>
+          <methodref name="Equals" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="GetHashCode" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ToString" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="SafeCallException" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Dispatch" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="NewInstance" visibility="public" procflags="class virtual">
+          </methodref>
+          <methodref name="FreeInstance" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+          </methodref>
+          <methodref name="GetDisposed" visibility="protected" procflags="inline">
+          </methodref>
+          <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+          </methodref>
+          <propertyref name="Disposed" visibility="protected">
+          </propertyref>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+  </class>
+  <class name="EJclNaNSignal" file="JclMath.pas" line="584">
+    <ancestor name="EJclMathError" namespace="JclMath">
+      <ancestor name="EJclError" namespace="JclBase">
+        <ancestor name="Exception" namespace="System.SysUtils">
+          <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+          </methodref>
+          <methodref name="Destroy@" visibility="class private" procflags="class destructor noself">
+          </methodref>
+          <methodref name="SetInnerException" visibility="protected">
+          </methodref>
+          <methodref name="SetStackInfo" visibility="protected">
+          </methodref>
+          <methodref name="GetStackTrace" visibility="protected">
+          </methodref>
+          <methodref name="RaisingException" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Create" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmt" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateRes" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmt" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateFmtHelp" visibility="public" procflags="constructor">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="CreateResFmtHelp" visibility="public" procflags="constructor overload">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <methodref name="GetBaseException" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="ToString" visibility="public" procflags="override">
+          </methodref>
+          <propertyref name="BaseException" visibility="public">
+          </propertyref>
+          <propertyref name="HelpContext" visibility="public">
+          </propertyref>
+          <propertyref name="InnerException" visibility="public">
+          </propertyref>
+          <propertyref name="Message" visibility="public">
+          </propertyref>
+          <propertyref name="StackTrace" visibility="public">
+          </propertyref>
+          <propertyref name="StackInfo" visibility="public">
+          </propertyref>
+          <methodref name="RaiseOuterException" visibility="public" procflags="static">
+          </methodref>
+          <methodref name="ThrowOuterException" visibility="public" procflags="static">
+          </methodref>
+          <ancestor name="TObject" namespace="System">
+            <methodref name="Create" visibility="public" procflags="constructor">
+            </methodref>
+            <methodref name="Free" visibility="public">
+            </methodref>
+            <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+            </methodref>
+            <methodref name="InitInstance" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="CleanupInstance" visibility="public">
+            </methodref>
+            <methodref name="ClassType" visibility="public" procflags="inline">
+            </methodref>
+            <methodref name="ClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassNameIs" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="ClassParent" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="ClassInfo" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InstanceSize" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="InheritsFrom" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodAddress" visibility="public" procflags="class overload">
+            </methodref>
+            <methodref name="MethodName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="QualifiedClassName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="FieldAddress" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="GetInterface" visibility="public">
+            </methodref>
+            <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+            </methodref>
+            <methodref name="UnitName" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="UnitScope" visibility="public" procflags="class">
+            </methodref>
+            <methodref name="Equals" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetHashCode" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ToString" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SafeCallException" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Dispatch" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="NewInstance" visibility="public" procflags="class virtual">
+            </methodref>
+            <methodref name="FreeInstance" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+            </methodref>
+            <methodref name="GetDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+            </methodref>
+            <propertyref name="Disposed" visibility="protected">
+            </propertyref>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="FTag" type="TNaNTag" visibility="private" size="4" offset="24" file="JclMath.pas" line="586" />
+      <constructor name="Create" visibility="public" file="JclMath.pas" line="588">
+        <parameters>
+          <parameter name="ATag" type="TNaNTag" />
+          <parameter name="Dummy" type="Boolean">
+            <value>
+              False
+            </value>
+          </parameter>
+        </parameters>
+      </constructor>
+      <property name="Tag" visibility="public" read="FTag" type="TNaNTag" file="JclMath.pas" line="589" />
+    </members>
+  </class>
+  <array name="TCrc16Table" low="0" high="255" file="JclMath.pas" line="603">
+    <element type="Word" />
+  </array>
+  <variable name="Crc16DefaultTable" type="TCrc16Table" visibility="public" file="JclMath.pas" line="607" />
+  <variable name="Crc16DefaultStart" type="Cardinal" visibility="public" file="JclMath.pas" line="641" />
+  <const name="Crc16PolynomCCITT" type="Integer" file="JclMath.pas" line="644">
+    <value>
+      $1021
+    </value>
+  </const>
+  <const name="Crc16PolynomIBM" type="Integer" file="JclMath.pas" line="645">
+    <value>
+      $8005
+    </value>
+  </const>
+  <const name="Crc16Bits" type="Integer" file="JclMath.pas" line="646">
+    <value>
+      $10
+    </value>
+  </const>
+  <const name="Crc16Bytes" type="Integer" file="JclMath.pas" line="647">
+    <value>
+      $2
+    </value>
+  </const>
+  <const name="Crc16HighBit" type="Integer" file="JclMath.pas" line="648">
+    <value>
+      $8000
+    </value>
+  </const>
+  <const name="NotCrc16HighBit" type="Integer" file="JclMath.pas" line="649">
+    <value>
+      $7FFF
+    </value>
+  </const>
+  <array name="TCrc32Table" low="0" high="255" file="JclMath.pas" line="678">
+    <element type="Cardinal" />
+  </array>
+  <variable name="Crc32DefaultTable" type="TCrc32Table" visibility="public" file="JclMath.pas" line="682" />
+  <variable name="Crc32DefaultStart" type="Cardinal" visibility="public" file="JclMath.pas" line="716" />
+  <const name="Crc32PolynomIEEE" type="Integer" file="JclMath.pas" line="719">
+    <value>
+      $4C11DB7
+    </value>
+  </const>
+  <const name="Crc32PolynomCastagnoli" type="Integer" file="JclMath.pas" line="720">
+    <value>
+      $1EDC6F41
+    </value>
+  </const>
+  <const name="Crc32Koopman" type="Integer" file="JclMath.pas" line="721">
+    <value>
+      $741B8CD7
+    </value>
+  </const>
+  <const name="Crc32Bits" type="Integer" file="JclMath.pas" line="722">
+    <value>
+      $20
+    </value>
+  </const>
+  <const name="Crc32Bytes" type="Integer" file="JclMath.pas" line="723">
+    <value>
+      $4
+    </value>
+  </const>
+  <const name="Crc32HighBit" type="Integer" file="JclMath.pas" line="724">
+    <value>
+      $80000000
+    </value>
+  </const>
+  <const name="NotCrc32HighBit" type="Integer" file="JclMath.pas" line="725">
+    <value>
+      $7FFFFFFF
+    </value>
+  </const>
+  <struct name="TRectComplex" size="32" file="JclMath.pas" line="754">
+    <field name="Re" type="Extended" visibility="public" size="10" offset="0" file="JclMath.pas" line="755" />
+    <field name="Im" type="Extended" visibility="public" size="10" offset="16" file="JclMath.pas" line="756" />
+    <function name="operator Implicit" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="758" generated="true">
+      <parameters>
+        <parameter name="Value" type="Extended" paramflags="const" />
+        <retval type="TRectComplex" />
+      </parameters>
+    </function>
+    <function name="operator Equality" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="759" generated="true">
+      <parameters>
+        <parameter name="Z1" type="TRectComplex" paramflags="const" />
+        <parameter name="Z2" type="TRectComplex" paramflags="const" />
+        <retval type="Boolean" />
+      </parameters>
+    </function>
+    <function name="operator Inequality" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="760" generated="true">
+      <parameters>
+        <parameter name="Z1" type="TRectComplex" paramflags="const" />
+        <parameter name="Z2" type="TRectComplex" paramflags="const" />
+        <retval type="Boolean" />
+      </parameters>
+    </function>
+    <function name="operator Addition" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="761" generated="true">
+      <parameters>
+        <parameter name="Z1" type="TRectComplex" paramflags="const" />
+        <parameter name="Z2" type="TRectComplex" paramflags="const" />
+        <retval type="TRectComplex" />
+      </parameters>
+    </function>
+    <function name="operator Subtraction" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="762" generated="true">
+      <parameters>
+        <parameter name="Z1" type="TRectComplex" paramflags="const" />
+        <parameter name="Z2" type="TRectComplex" paramflags="const" />
+        <retval type="TRectComplex" />
+      </parameters>
+    </function>
+    <function name="operator Multiply" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="763" generated="true">
+      <parameters>
+        <parameter name="Z1" type="TRectComplex" paramflags="const" />
+        <parameter name="Z2" type="TRectComplex" paramflags="const" />
+        <retval type="TRectComplex" />
+      </parameters>
+    </function>
+    <function name="operator Division" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="764" generated="true">
+      <parameters>
+        <parameter name="Z1" type="TRectComplex" paramflags="const" />
+        <parameter name="Z2" type="TRectComplex" paramflags="const" />
+        <retval type="TRectComplex" />
+      </parameters>
+    </function>
+    <function name="operator UnaryNegation" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="765" generated="true">
+      <parameters>
+        <parameter name="Z" type="TRectComplex" paramflags="const" />
+        <retval type="TRectComplex" />
+      </parameters>
+    </function>
+    <function name="operator UnaryPlus" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="766" generated="true">
+      <parameters>
+        <parameter name="Z" type="TRectComplex" paramflags="const" />
+        <retval type="TRectComplex" />
+      </parameters>
+    </function>
+    <function name="AsString" visibility="public" file="JclMath.pas" line="767">
+      <parameters>
+        <retval type="string" />
+      </parameters>
+    </function>
+    <function name="Conjugate" visibility="public" file="JclMath.pas" line="768">
+      <parameters>
+        <retval type="TRectComplex" />
+      </parameters>
+    </function>
+    <function name="IsZero" visibility="public" file="JclMath.pas" line="769">
+      <parameters>
+        <retval type="Boolean" />
+      </parameters>
+    </function>
+    <function name="IsInfinite" visibility="public" file="JclMath.pas" line="770">
+      <parameters>
+        <retval type="Boolean" />
+      </parameters>
+    </function>
+  </struct>
+  <struct name="TPolarComplex" size="32" file="JclMath.pas" line="774">
+    <field name="Radius" type="Extended" visibility="public" size="10" offset="0" file="JclMath.pas" line="775" />
+    <field name="Angle" type="Extended" visibility="public" size="10" offset="16" file="JclMath.pas" line="776" />
+    <function name="operator Implicit" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="778" generated="true">
+      <parameters>
+        <parameter name="Value" type="Extended" paramflags="const" />
+        <retval type="TPolarComplex" />
+      </parameters>
+    </function>
+    <function name="operator Implicit" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="779" generated="true">
+      <parameters>
+        <parameter name="Z" type="TPolarComplex" paramflags="const" />
+        <retval type="TRectComplex" />
+      </parameters>
+    </function>
+    <function name="operator Implicit" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="780" generated="true">
+      <parameters>
+        <parameter name="Z" type="TRectComplex" paramflags="const" />
+        <retval type="TPolarComplex" />
+      </parameters>
+    </function>
+    <function name="operator Explicit" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="783" generated="true">
+      <parameters>
+        <parameter name="Z" type="TPolarComplex" paramflags="const" />
+        <retval type="TRectComplex" />
+      </parameters>
+    </function>
+    <function name="operator Explicit" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="784" generated="true">
+      <parameters>
+        <parameter name="Z" type="TRectComplex" paramflags="const" />
+        <retval type="TPolarComplex" />
+      </parameters>
+    </function>
+    <function name="operator Equality" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="786" generated="true">
+      <parameters>
+        <parameter name="Z1" type="TPolarComplex" paramflags="const" />
+        <parameter name="Z2" type="TPolarComplex" paramflags="const" />
+        <retval type="Boolean" />
+      </parameters>
+    </function>
+    <function name="operator Inequality" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="787" generated="true">
+      <parameters>
+        <parameter name="Z1" type="TPolarComplex" paramflags="const" />
+        <parameter name="Z2" type="TPolarComplex" paramflags="const" />
+        <retval type="Boolean" />
+      </parameters>
+    </function>
+    <function name="operator Addition" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="788" generated="true">
+      <parameters>
+        <parameter name="Z1" type="TPolarComplex" paramflags="const" />
+        <parameter name="Z2" type="TPolarComplex" paramflags="const" />
+        <retval type="TRectComplex" />
+      </parameters>
+    </function>
+    <function name="operator Subtraction" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="789" generated="true">
+      <parameters>
+        <parameter name="Z1" type="TPolarComplex" paramflags="const" />
+        <parameter name="Z2" type="TPolarComplex" paramflags="const" />
+        <retval type="TRectComplex" />
+      </parameters>
+    </function>
+    <function name="operator Multiply" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="790" generated="true">
+      <parameters>
+        <parameter name="Z1" type="TPolarComplex" paramflags="const" />
+        <parameter name="Z2" type="TPolarComplex" paramflags="const" />
+        <retval type="TPolarComplex" />
+      </parameters>
+    </function>
+    <function name="operator Division" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="791" generated="true">
+      <parameters>
+        <parameter name="Z1" type="TPolarComplex" paramflags="const" />
+        <parameter name="Z2" type="TPolarComplex" paramflags="const" />
+        <retval type="TPolarComplex" />
+      </parameters>
+    </function>
+    <function name="operator UnaryNegation" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="792" generated="true">
+      <parameters>
+        <parameter name="Z" type="TPolarComplex" paramflags="const" />
+        <retval type="TPolarComplex" />
+      </parameters>
+    </function>
+    <function name="operator UnaryPlus" visibility="public" procflags="class noself operator overload" file="JclMath.pas" line="793" generated="true">
+      <parameters>
+        <parameter name="Z" type="TPolarComplex" paramflags="const" />
+        <retval type="TPolarComplex" />
+      </parameters>
+    </function>
+    <function name="AsString" visibility="public" file="JclMath.pas" line="794">
+      <parameters>
+        <retval type="string" />
+      </parameters>
+    </function>
+    <function name="Conjugate" visibility="public" file="JclMath.pas" line="795">
+      <parameters>
+        <retval type="TPolarComplex" />
+      </parameters>
+    </function>
+    <function name="IsZero" visibility="public" file="JclMath.pas" line="796">
+      <parameters>
+        <retval type="Boolean" />
+      </parameters>
+    </function>
+    <function name="IsInfinite" visibility="public" file="JclMath.pas" line="797">
+      <parameters>
+        <retval type="Boolean" />
+      </parameters>
+    </function>
+    <function name="Power" visibility="public" procflags="overload" file="JclMath.pas" line="798">
+      <parameters>
+        <parameter name="Exponent" type="TRectComplex" paramflags="const" />
+        <retval type="TPolarComplex" />
+      </parameters>
+    </function>
+    <function name="Power" visibility="public" procflags="overload" file="JclMath.pas" line="799">
+      <parameters>
+        <parameter name="Exponent" type="Extended" paramflags="const" />
+        <retval type="TPolarComplex" />
+      </parameters>
+    </function>
+    <function name="Power" visibility="public" procflags="overload" file="JclMath.pas" line="800">
+      <parameters>
+        <parameter name="Exponent" type="Integer" paramflags="const" />
+        <retval type="TPolarComplex" />
+      </parameters>
+    </function>
+    <function name="Root" visibility="public" file="JclMath.pas" line="802">
+      <parameters>
+        <parameter name="K" type="Cardinal" paramflags="const" />
+        <parameter name="N" type="Cardinal" paramflags="const" />
+        <retval type="TPolarComplex" />
+      </parameters>
+    </function>
+  </struct>
+  <variable name="ComplexTypeConversions" type="Cardinal" file="JclMath.pas" line="809" />
+  <procedure name="SwapOrd" visibility="public" procflags="inline" file="JclMath.pas" line="955">
+    <parameters>
+      <parameter name="X" type="Integer" paramflags="var" />
+      <parameter name="Y" type="Integer" paramflags="var" />
+    </parameters>
+  </procedure>
+  <function name="DoubleToHex" visibility="public" procflags="inline" file="JclMath.pas" line="964">
+    <parameters>
+      <parameter name="D" type="Double" paramflags="const" />
+      <retval type="string" />
+    </parameters>
+  </function>
+  <function name="HexToDouble" visibility="public" file="JclMath.pas" line="972">
+    <parameters>
+      <parameter name="Hex" type="string" paramflags="const" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="DegToRad" visibility="public" procflags="overload inline" file="JclMath.pas" line="987">
+    <parameters>
+      <parameter name="Value" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="DegToRad" visibility="public" procflags="overload inline" file="JclMath.pas" line="993">
+    <parameters>
+      <parameter name="Value" type="Double" paramflags="const" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="DegToRad" visibility="public" procflags="overload inline" file="JclMath.pas" line="998">
+    <parameters>
+      <parameter name="Value" type="Single" paramflags="const" />
+      <retval type="Single" />
+    </parameters>
+  </function>
+  <procedure name="FastDegToRad" visibility="public" file="JclMath.pas" line="1005">
+  </procedure>
+  <function name="RadToDeg" visibility="public" procflags="overload inline" file="JclMath.pas" line="1025">
+    <parameters>
+      <parameter name="Value" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="RadToDeg" visibility="public" procflags="overload inline" file="JclMath.pas" line="1031">
+    <parameters>
+      <parameter name="Value" type="Double" paramflags="const" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="RadToDeg" visibility="public" procflags="overload inline" file="JclMath.pas" line="1036">
+    <parameters>
+      <parameter name="Value" type="Single" paramflags="const" />
+      <retval type="Single" />
+    </parameters>
+  </function>
+  <procedure name="FastRadToDeg" visibility="public" file="JclMath.pas" line="1043">
+  </procedure>
+  <function name="GradToRad" visibility="public" procflags="overload inline" file="JclMath.pas" line="1063">
+    <parameters>
+      <parameter name="Value" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="GradToRad" visibility="public" procflags="overload inline" file="JclMath.pas" line="1069">
+    <parameters>
+      <parameter name="Value" type="Double" paramflags="const" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="GradToRad" visibility="public" procflags="overload inline" file="JclMath.pas" line="1074">
+    <parameters>
+      <parameter name="Value" type="Single" paramflags="const" />
+      <retval type="Single" />
+    </parameters>
+  </function>
+  <procedure name="FastGradToRad" visibility="public" file="JclMath.pas" line="1081">
+  </procedure>
+  <function name="RadToGrad" visibility="public" procflags="overload inline" file="JclMath.pas" line="1101">
+    <parameters>
+      <parameter name="Value" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="RadToGrad" visibility="public" procflags="overload inline" file="JclMath.pas" line="1107">
+    <parameters>
+      <parameter name="Value" type="Double" paramflags="const" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="RadToGrad" visibility="public" procflags="overload inline" file="JclMath.pas" line="1112">
+    <parameters>
+      <parameter name="Value" type="Single" paramflags="const" />
+      <retval type="Single" />
+    </parameters>
+  </function>
+  <procedure name="FastRadToGrad" visibility="public" file="JclMath.pas" line="1119">
+  </procedure>
+  <function name="DegToGrad" visibility="public" procflags="overload inline" file="JclMath.pas" line="1139">
+    <parameters>
+      <parameter name="Value" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="DegToGrad" visibility="public" procflags="overload inline" file="JclMath.pas" line="1145">
+    <parameters>
+      <parameter name="Value" type="Double" paramflags="const" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="DegToGrad" visibility="public" procflags="overload inline" file="JclMath.pas" line="1150">
+    <parameters>
+      <parameter name="Value" type="Single" paramflags="const" />
+      <retval type="Single" />
+    </parameters>
+  </function>
+  <procedure name="FastDegToGrad" visibility="public" file="JclMath.pas" line="1157">
+  </procedure>
+  <function name="GradToDeg" visibility="public" procflags="overload inline" file="JclMath.pas" line="1177">
+    <parameters>
+      <parameter name="Value" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="GradToDeg" visibility="public" procflags="overload inline" file="JclMath.pas" line="1183">
+    <parameters>
+      <parameter name="Value" type="Double" paramflags="const" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="GradToDeg" visibility="public" procflags="overload inline" file="JclMath.pas" line="1188">
+    <parameters>
+      <parameter name="Value" type="Single" paramflags="const" />
+      <retval type="Single" />
+    </parameters>
+  </function>
+  <procedure name="FastGradToDeg" visibility="public" file="JclMath.pas" line="1195">
+  </procedure>
+  <procedure name="DomainCheck" visibility="public" file="JclMath.pas" line="1212">
+    <parameters>
+      <parameter name="Err" type="Boolean" />
+    </parameters>
+  </procedure>
+  <function name="LogBase10" visibility="public" file="JclMath.pas" line="1220">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="LogBase2" visibility="public" file="JclMath.pas" line="1236">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="LogBaseN" visibility="public" file="JclMath.pas" line="1252">
+    <parameters>
+      <parameter name="Base" type="Extended" />
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ArcCos" visibility="public" file="JclMath.pas" line="1274">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ArcCot" visibility="public" procflags="inline" file="JclMath.pas" line="1295">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ArcCsc" visibility="public" procflags="inline" file="JclMath.pas" line="1301">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ArcSec" visibility="public" file="JclMath.pas" line="1306">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ArcSin" visibility="public" file="JclMath.pas" line="1328">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ArcTan" visibility="public" file="JclMath.pas" line="1349">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ArcTan2" visibility="public" file="JclMath.pas" line="1377">
+    <parameters>
+      <parameter name="Y" type="Extended" />
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Cos" visibility="public" procflags="overload" file="JclMath.pas" line="1403">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Cot" visibility="public" procflags="overload" file="JclMath.pas" line="1419">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Coversine" visibility="public" procflags="inline" file="JclMath.pas" line="1436">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Csc" visibility="public" procflags="overload" file="JclMath.pas" line="1441">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Exsecans" visibility="public" procflags="inline" file="JclMath.pas" line="1452">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Haversine" visibility="public" procflags="inline" file="JclMath.pas" line="1457">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Sec" visibility="public" procflags="overload" file="JclMath.pas" line="1462">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Sin" visibility="public" procflags="overload" file="JclMath.pas" line="1480">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <procedure name="SinCos" visibility="public" procflags="overload" file="JclMath.pas" line="1499">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <parameter name="Sin" type="Extended" paramflags="out" />
+      <parameter name="Cos" type="Extended" paramflags="out" />
+    </parameters>
+  </procedure>
+  <procedure name="SinCos" visibility="public" procflags="overload" file="JclMath.pas" line="1527">
+    <parameters>
+      <parameter name="X" type="Double" />
+      <parameter name="Sin" type="Double" paramflags="out" />
+      <parameter name="Cos" type="Double" paramflags="out" />
+    </parameters>
+  </procedure>
+  <procedure name="SinCos" visibility="public" procflags="overload" file="JclMath.pas" line="1554">
+    <parameters>
+      <parameter name="X" type="Single" />
+      <parameter name="Sin" type="Single" paramflags="out" />
+      <parameter name="Cos" type="Single" paramflags="out" />
+    </parameters>
+  </procedure>
+  <function name="Tan" visibility="public" procflags="overload" file="JclMath.pas" line="1581">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Versine" visibility="public" procflags="inline" file="JclMath.pas" line="1597">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ArcCosH" visibility="public" file="JclMath.pas" line="1604">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ArcCotH" visibility="public" file="JclMath.pas" line="1625">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ArcCscH" visibility="public" file="JclMath.pas" line="1631">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ArcSecH" visibility="public" file="JclMath.pas" line="1637">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ArcSinH" visibility="public" file="JclMath.pas" line="1644">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ArcTanH" visibility="public" file="JclMath.pas" line="1680">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="CosH" visibility="public" procflags="overload" file="JclMath.pas" line="1704">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="CotH" visibility="public" procflags="overload inline" file="JclMath.pas" line="1770">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="CscH" visibility="public" procflags="overload" file="JclMath.pas" line="1775">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="SecH" visibility="public" procflags="overload" file="JclMath.pas" line="1782">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="SinH" visibility="public" procflags="overload" file="JclMath.pas" line="1789">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="TanH" visibility="public" procflags="overload" file="JclMath.pas" line="1855">
+    <parameters>
+      <parameter name="X" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="DegMinSecToFloat" visibility="public" file="JclMath.pas" line="1874">
+    <parameters>
+      <parameter name="Degs" type="Extended" paramflags="const" />
+      <parameter name="Mins" type="Extended" paramflags="const" />
+      <parameter name="Secs" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <procedure name="FloatToDegMinSec" visibility="public" file="JclMath.pas" line="1879">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <parameter name="Degs" type="Extended" paramflags="var" />
+      <parameter name="Mins" type="Extended" paramflags="var" />
+      <parameter name="Secs" type="Extended" paramflags="var" />
+    </parameters>
+  </procedure>
+  <function name="Exp" visibility="public" procflags="overload" file="JclMath.pas" line="1891">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Power" visibility="public" procflags="overload" file="JclMath.pas" line="1909">
+    <parameters>
+      <parameter name="Base" type="Extended" paramflags="const" />
+      <parameter name="Exponent" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="PowerInt" visibility="public" procflags="overload" file="JclMath.pas" line="1945">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <parameter name="N" type="Integer" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="TenToY" visibility="public" procflags="inline" file="JclMath.pas" line="1992">
+    <parameters>
+      <parameter name="Y" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="TruncPower" visibility="public" procflags="inline" file="JclMath.pas" line="2000">
+    <parameters>
+      <parameter name="Base" type="Extended" paramflags="const" />
+      <parameter name="Exponent" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="TwoToY" visibility="public" procflags="inline" file="JclMath.pas" line="2008">
+    <parameters>
+      <parameter name="Y" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="IsFloatZero" visibility="public" procflags="inline" file="JclMath.pas" line="2018">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="FloatsEqual" visibility="public" file="JclMath.pas" line="2023">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <parameter name="Y" type="Extended" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="MaxFloat" visibility="public" procflags="inline" file="JclMath.pas" line="2037">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <parameter name="Y" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="MinFloat" visibility="public" procflags="inline" file="JclMath.pas" line="2045">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <parameter name="Y" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="ModFloat" visibility="public" file="JclMath.pas" line="2053">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <parameter name="Y" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="RemainderFloat" visibility="public" procflags="inline" file="JclMath.pas" line="2064">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <parameter name="Y" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <procedure name="SwapFloats" visibility="public" procflags="inline" file="JclMath.pas" line="2069">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="var" />
+      <parameter name="Y" type="Extended" paramflags="var" />
+    </parameters>
+  </procedure>
+  <procedure name="CalcMachineEpsSingle" visibility="public" file="JclMath.pas" line="2078">
+  </procedure>
+  <procedure name="CalcMachineEpsDouble" visibility="public" file="JclMath.pas" line="2093">
+  </procedure>
+  <procedure name="CalcMachineEpsExtended" visibility="public" file="JclMath.pas" line="2109">
+  </procedure>
+  <procedure name="CalcMachineEps" visibility="public" file="JclMath.pas" line="2125">
+  </procedure>
+  <procedure name="SetPrecisionToleranceToEpsilon" visibility="public" procflags="inline" file="JclMath.pas" line="2144">
+  </procedure>
+  <function name="SetPrecisionTolerance" visibility="public" procflags="inline" file="JclMath.pas" line="2150">
+    <parameters>
+      <parameter name="NewTolerance" type="Extended" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Ceiling" visibility="public" file="JclMath.pas" line="2158">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="CommercialRound" visibility="public" file="JclMath.pas" line="2165">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <retval type="Int64" />
+    </parameters>
+  </function>
+  <function name="Factorial" visibility="public" file="JclMath.pas" line="2293">
+    <parameters>
+      <parameter name="N" type="Integer" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Floor" visibility="public" file="JclMath.pas" line="2312">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="GCD" visibility="public" file="JclMath.pas" line="2319">
+    <parameters>
+      <parameter name="X" type="Cardinal" />
+      <parameter name="Y" type="Cardinal" />
+      <retval type="Cardinal" />
+    </parameters>
+  </function>
+  <function name="ISqrt" visibility="public" file="JclMath.pas" line="2355">
+    <parameters>
+      <parameter name="I" type="SmallInt" paramflags="const" />
+      <retval type="SmallInt" />
+    </parameters>
+  </function>
+  <function name="LCM" visibility="public" file="JclMath.pas" line="2404">
+    <parameters>
+      <parameter name="X" type="Cardinal" paramflags="const" />
+      <parameter name="Y" type="Cardinal" paramflags="const" />
+      <retval type="Cardinal" />
+    </parameters>
+  </function>
+  <function name="NearestHigherMultiple" visibility="public" procflags="overload" file="JclMath.pas" line="2415">
+    <devnotes>
+       <summary>
+         Get the next multiple of a given multiplicator which is higher than
+         the number given. Example: Num = 21, Multiplicator = 5, Result is 25
+       </summary>
+    </devnotes>
+    <parameters>
+      <parameter name="Num" type="Integer" />
+      <parameter name="Multiplicator" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="NearestHigherMultiple" visibility="public" procflags="overload" file="JclMath.pas" line="2420">
+    <devnotes>
+       <summary>
+         Get the next multiple of a given multiplicator which is higher than
+         the number given. Example: Num = 21, Multiplicator = 5, Result is 25
+       </summary>
+    </devnotes>
+    <parameters>
+      <parameter name="Num" type="Int64" />
+      <parameter name="Multiplicator" type="Int64" />
+      <retval type="Int64" />
+    </parameters>
+  </function>
+  <function name="NearestHigherMultiple" visibility="public" procflags="overload" file="JclMath.pas" line="2425">
+    <devnotes>
+       <summary>
+         Get the next multiple of a given multiplicator which is higher than
+         the number given. Example: Num = 21, Multiplicator = 5, Result is 25
+       </summary>
+    </devnotes>
+    <parameters>
+      <parameter name="Num" type="Extended" />
+      <parameter name="Multiplicator" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="NearestHigherMultiple" visibility="public" procflags="overload" file="JclMath.pas" line="2430">
+    <devnotes>
+       <summary>
+         Get the next multiple of a given multiplicator which is higher than
+         the number given. Example: Num = 21, Multiplicator = 5, Result is 25
+       </summary>
+    </devnotes>
+    <parameters>
+      <parameter name="Num" type="Extended" />
+      <parameter name="Multiplicator" type="Int64" />
+      <retval type="Int64" />
+    </parameters>
+  </function>
+  <function name="NearestLowerMultiple" visibility="public" procflags="overload" file="JclMath.pas" line="2435">
+    <devnotes>
+       <summary>
+         Get the next multiple of a given multiplicator which is lower than
+         the number given. Example: Num = 24, Multiplicator = 5, Result is 20
+       </summary>
+    </devnotes>
+    <parameters>
+      <parameter name="Num" type="Integer" />
+      <parameter name="Multiplicator" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="NearestLowerMultiple" visibility="public" procflags="overload" file="JclMath.pas" line="2440">
+    <devnotes>
+       <summary>
+         Get the next multiple of a given multiplicator which is lower than
+         the number given. Example: Num = 24, Multiplicator = 5, Result is 20
+       </summary>
+    </devnotes>
+    <parameters>
+      <parameter name="Num" type="Int64" />
+      <parameter name="Multiplicator" type="Int64" />
+      <retval type="Int64" />
+    </parameters>
+  </function>
+  <function name="NearestLowerMultiple" visibility="public" procflags="overload" file="JclMath.pas" line="2445">
+    <devnotes>
+       <summary>
+         Get the next multiple of a given multiplicator which is lower than
+         the number given. Example: Num = 24, Multiplicator = 5, Result is 20
+       </summary>
+    </devnotes>
+    <parameters>
+      <parameter name="Num" type="Extended" />
+      <parameter name="Multiplicator" type="Integer" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="NearestLowerMultiple" visibility="public" procflags="overload" file="JclMath.pas" line="2450">
+    <devnotes>
+       <summary>
+         Get the next multiple of a given multiplicator which is lower than
+         the number given. Example: Num = 24, Multiplicator = 5, Result is 20
+       </summary>
+    </devnotes>
+    <parameters>
+      <parameter name="Num" type="Extended" />
+      <parameter name="Multiplicator" type="Int64" />
+      <retval type="Int64" />
+    </parameters>
+  </function>
+  <function name="NormalizeAngle" visibility="public" file="JclMath.pas" line="2455">
+    <parameters>
+      <parameter name="Angle" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Pythagoras" visibility="public" file="JclMath.pas" line="2486">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <parameter name="Y" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Sgn" visibility="public" file="JclMath.pas" line="2502">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="Signe" visibility="public" file="JclMath.pas" line="2513">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <parameter name="Y" type="Extended" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Ackermann" visibility="public" file="JclMath.pas" line="2531">
+    <parameters>
+      <parameter name="A" type="Integer" paramflags="const" />
+      <parameter name="B" type="Integer" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="Fibonacci" visibility="public" file="JclMath.pas" line="2545">
+    <parameters>
+      <parameter name="N" type="Integer" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="EnsureRange" visibility="public" procflags="overload" file="JclMath.pas" line="2766">
+    <parameters>
+      <parameter name="AValue" type="Integer" paramflags="const" />
+      <parameter name="AMin" type="Integer" paramflags="const" />
+      <parameter name="AMax" type="Integer" paramflags="const" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="EnsureRange" visibility="public" procflags="overload" file="JclMath.pas" line="2776">
+    <parameters>
+      <parameter name="AValue" type="Int64" paramflags="const" />
+      <parameter name="AMin" type="Int64" paramflags="const" />
+      <parameter name="AMax" type="Int64" paramflags="const" />
+      <retval type="Int64" />
+    </parameters>
+  </function>
+  <function name="EnsureRange" visibility="public" procflags="overload" file="JclMath.pas" line="2786">
+    <parameters>
+      <parameter name="AValue" type="Double" paramflags="const" />
+      <parameter name="AMin" type="Double" paramflags="const" />
+      <parameter name="AMax" type="Double" paramflags="const" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="IsPrimeTD" visibility="public" file="JclMath.pas" line="2827">
+    <parameters>
+      <parameter name="N" type="Cardinal" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsPrimeRM" visibility="public" file="JclMath.pas" line="2876">
+    <parameters>
+      <parameter name="N" type="Cardinal" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="PrimeFactors" visibility="public" file="JclMath.pas" line="2967">
+    <parameters>
+      <parameter name="N" type="Cardinal" />
+      <retval type="TDynCardinalArray" />
+    </parameters>
+  </function>
+  <function name="IsPrimeFactor" visibility="public" procflags="inline" file="JclMath.pas" line="3015">
+    <parameters>
+      <parameter name="F" type="Cardinal" paramflags="const" />
+      <parameter name="N" type="Cardinal" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsRelativePrime" visibility="public" procflags="inline" file="JclMath.pas" line="3020">
+    <parameters>
+      <parameter name="X" type="Cardinal" paramflags="const" />
+      <parameter name="Y" type="Cardinal" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <procedure name="SetPrimalityTest" visibility="public" file="JclMath.pas" line="3025">
+    <parameters>
+      <parameter name="Method" type="TPrimalityTestMethod" paramflags="const" />
+    </parameters>
+  </procedure>
+  <function name="FloatingPointClass" visibility="public" procflags="overload" file="JclMath.pas" line="3099">
+    <parameters>
+      <parameter name="Value" type="Single" paramflags="const" />
+      <retval type="TFloatingPointClass" />
+    </parameters>
+  </function>
+  <function name="FloatingPointClass" visibility="public" procflags="overload" file="JclMath.pas" line="3104">
+    <parameters>
+      <parameter name="Value" type="Double" paramflags="const" />
+      <retval type="TFloatingPointClass" />
+    </parameters>
+  </function>
+  <function name="FloatingPointClass" visibility="public" procflags="overload" file="JclMath.pas" line="3110">
+    <parameters>
+      <parameter name="Value" type="Extended" paramflags="const" />
+      <retval type="TFloatingPointClass" />
+    </parameters>
+  </function>
+  <function name="IsInfinite" visibility="public" procflags="overload inline" file="JclMath.pas" line="3118">
+    <parameters>
+      <parameter name="Value" type="Single" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsInfinite" visibility="public" procflags="overload inline" file="JclMath.pas" line="3123">
+    <parameters>
+      <parameter name="Value" type="Double" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsInfinite" visibility="public" procflags="overload inline" file="JclMath.pas" line="3129">
+    <parameters>
+      <parameter name="Value" type="Extended" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsNaN" visibility="public" procflags="overload inline" file="JclMath.pas" line="3181">
+    <parameters>
+      <parameter name="Value" type="Single" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsNaN" visibility="public" procflags="overload inline" file="JclMath.pas" line="3186">
+    <parameters>
+      <parameter name="Value" type="Double" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsNaN" visibility="public" procflags="overload inline" file="JclMath.pas" line="3192">
+    <parameters>
+      <parameter name="Value" type="Extended" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="GetNaNTag" visibility="public" procflags="overload" file="JclMath.pas" line="3239">
+    <parameters>
+      <parameter name="NaN" type="Single" paramflags="const" />
+      <retval type="TNaNTag" />
+    </parameters>
+  </function>
+  <function name="GetNaNTag" visibility="public" procflags="overload" file="JclMath.pas" line="3254">
+    <parameters>
+      <parameter name="NaN" type="Double" paramflags="const" />
+      <retval type="TNaNTag" />
+    </parameters>
+  </function>
+  <function name="GetNaNTag" visibility="public" procflags="overload" file="JclMath.pas" line="3274">
+    <parameters>
+      <parameter name="NaN" type="Extended" paramflags="const" />
+      <retval type="TNaNTag" />
+    </parameters>
+  </function>
+  <procedure name="MakeQuietNaN" visibility="public" procflags="overload" file="JclMath.pas" line="3401">
+    <parameters>
+      <parameter name="X" type="Single" paramflags="var" />
+      <parameter name="Tag" type="TNaNTag">
+        <value>
+          $0
+        </value>
+      </parameter>
+    </parameters>
+  </procedure>
+  <procedure name="MakeQuietNaN" visibility="public" procflags="overload" file="JclMath.pas" line="3415">
+    <parameters>
+      <parameter name="X" type="Double" paramflags="var" />
+      <parameter name="Tag" type="TNaNTag">
+        <value>
+          $0
+        </value>
+      </parameter>
+    </parameters>
+  </procedure>
+  <procedure name="MakeQuietNaN" visibility="public" procflags="overload" file="JclMath.pas" line="3434">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="var" />
+      <parameter name="Tag" type="TNaNTag">
+        <value>
+          $0
+        </value>
+      </parameter>
+    </parameters>
+  </procedure>
+  <procedure name="MakeSignalingNaN" visibility="public" procflags="overload" file="JclMath.pas" line="3457">
+    <parameters>
+      <parameter name="X" type="Single" paramflags="var" />
+      <parameter name="Tag" type="TNaNTag">
+        <value>
+          $0
+        </value>
+      </parameter>
+    </parameters>
+  </procedure>
+  <procedure name="MakeSignalingNaN" visibility="public" procflags="overload" file="JclMath.pas" line="3468">
+    <parameters>
+      <parameter name="X" type="Double" paramflags="var" />
+      <parameter name="Tag" type="TNaNTag">
+        <value>
+          $0
+        </value>
+      </parameter>
+    </parameters>
+  </procedure>
+  <procedure name="MakeSignalingNaN" visibility="public" procflags="overload" file="JclMath.pas" line="3485">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="var" />
+      <parameter name="Tag" type="TNaNTag">
+        <value>
+          $0
+        </value>
+      </parameter>
+    </parameters>
+  </procedure>
+  <procedure name="MineSingleBuffer" visibility="public" file="JclMath.pas" line="3500">
+    <parameters>
+      <parameter name="Buffer" paramflags="var" />
+      <parameter name="Count" type="Integer" />
+      <parameter name="StartTag" type="TNaNTag">
+        <value>
+          $0
+        </value>
+      </parameter>
+    </parameters>
+  </procedure>
+  <procedure name="MineDoubleBuffer" visibility="public" file="JclMath.pas" line="3527">
+    <parameters>
+      <parameter name="Buffer" paramflags="var" />
+      <parameter name="Count" type="Integer" />
+      <parameter name="StartTag" type="TNaNTag">
+        <value>
+          $0
+        </value>
+      </parameter>
+    </parameters>
+  </procedure>
+  <function name="MinedSingleArray" visibility="public" file="JclMath.pas" line="3554">
+    <parameters>
+      <parameter name="Length" type="Integer" />
+      <retval type="TDynSingleArray" />
+    </parameters>
+  </function>
+  <function name="MinedDoubleArray" visibility="public" file="JclMath.pas" line="3560">
+    <parameters>
+      <parameter name="Length" type="Integer" />
+      <retval type="TDynDoubleArray" />
+    </parameters>
+  </function>
+  <function name="IsSpecialValue" visibility="public" procflags="inline" file="JclMath.pas" line="3566">
+    <parameters>
+      <parameter name="X" type="Extended" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="GetParity" visibility="public" procflags="overload" file="JclMath.pas" line="3892">
+    <parameters>
+      <parameter name="Buffer" type="TDynByteArray" />
+      <parameter name="Len" type="Integer" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="GetParity" visibility="public" procflags="overload" file="JclMath.pas" line="3920">
+    <parameters>
+      <parameter name="Buffer" type="PByte" />
+      <parameter name="Len" type="Integer" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="Crc16_P" visibility="public" procflags="overload" file="JclMath.pas" line="3976">
+    <parameters>
+      <parameter name="Crc16Table" type="TCrc16Table" paramflags="const" />
+      <parameter name="X" type="PJclByteArray" />
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Word">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Word" />
+    </parameters>
+  </function>
+  <function name="Crc16_P" visibility="public" procflags="overload" file="JclMath.pas" line="3992">
+    <parameters>
+      <parameter name="X" type="PJclByteArray" />
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Word">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Word" />
+    </parameters>
+  </function>
+  <function name="CheckCrc16_P" visibility="public" procflags="overload" file="JclMath.pas" line="3997">
+    <parameters>
+      <parameter name="Crc16Table" type="TCrc16Table" paramflags="const" />
+      <parameter name="X" type="PJclByteArray" />
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Word" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="CheckCrc16_P" visibility="public" procflags="overload" file="JclMath.pas" line="4027">
+    <parameters>
+      <parameter name="X" type="PJclByteArray" />
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Word" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="Crc16" visibility="public" procflags="overload" file="JclMath.pas" line="4032">
+    <parameters>
+      <parameter name="Crc16Table" type="TCrc16Table" paramflags="const" />
+      <parameter name="X" paramflags="const">
+        <array name="X" file="JclMath.pas" line="4032">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Word">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Word" />
+    </parameters>
+  </function>
+  <function name="Crc16" visibility="public" procflags="overload" file="JclMath.pas" line="4037">
+    <parameters>
+      <parameter name="X" paramflags="const">
+        <array name="X" file="JclMath.pas" line="4037">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Word">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Word" />
+    </parameters>
+  </function>
+  <function name="CheckCrc16" visibility="public" procflags="overload" file="JclMath.pas" line="4042">
+    <parameters>
+      <parameter name="Crc16Table" type="TCrc16Table" paramflags="const" />
+      <parameter name="X" paramflags="var">
+        <array name="X" file="JclMath.pas" line="4042">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Word" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="CheckCrc16" visibility="public" procflags="overload" file="JclMath.pas" line="4047">
+    <parameters>
+      <parameter name="X" paramflags="var">
+        <array name="X" file="JclMath.pas" line="4047">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Word" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="Crc16_A" visibility="public" procflags="overload" file="JclMath.pas" line="4052">
+    <parameters>
+      <parameter name="Crc16Table" type="TCrc16Table" paramflags="const" />
+      <parameter name="X" paramflags="const">
+        <array name="X" file="JclMath.pas" line="4052">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="Crc" type="Word">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Word" />
+    </parameters>
+  </function>
+  <function name="Crc16_A" visibility="public" procflags="overload" file="JclMath.pas" line="4057">
+    <parameters>
+      <parameter name="X" paramflags="const">
+        <array name="X" file="JclMath.pas" line="4057">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="Crc" type="Word">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Word" />
+    </parameters>
+  </function>
+  <function name="CheckCrc16_A" visibility="public" procflags="overload" file="JclMath.pas" line="4062">
+    <parameters>
+      <parameter name="Crc16Table" type="TCrc16Table" paramflags="const" />
+      <parameter name="X" paramflags="var">
+        <array name="X" file="JclMath.pas" line="4062">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="Crc" type="Word" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="CheckCrc16_A" visibility="public" procflags="overload" file="JclMath.pas" line="4067">
+    <parameters>
+      <parameter name="X" paramflags="var">
+        <array name="X" file="JclMath.pas" line="4067">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="Crc" type="Word" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <procedure name="InitCrc16" visibility="public" procflags="overload" file="JclMath.pas" line="4108">
+    <parameters>
+      <parameter name="Polynom" type="Word" />
+      <parameter name="Start" type="Word" />
+      <parameter name="Crc16Table" type="TCrc16Table" paramflags="out" />
+    </parameters>
+  </procedure>
+  <procedure name="InitCrc16" visibility="public" procflags="overload" file="JclMath.pas" line="4121">
+    <parameters>
+      <parameter name="Polynom" type="Word" />
+      <parameter name="Start" type="Word" />
+    </parameters>
+  </procedure>
+  <function name="Crc32_P" visibility="public" procflags="overload" file="JclMath.pas" line="4155">
+    <parameters>
+      <parameter name="Crc32Table" type="TCrc32Table" paramflags="const" />
+      <parameter name="X" type="PJclByteArray" />
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Cardinal">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Cardinal" />
+    </parameters>
+  </function>
+  <function name="Crc32_P" visibility="public" procflags="overload" file="JclMath.pas" line="4171">
+    <parameters>
+      <parameter name="X" type="PJclByteArray" />
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Cardinal">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Cardinal" />
+    </parameters>
+  </function>
+  <function name="CheckCrc32_P" visibility="public" procflags="overload" file="JclMath.pas" line="4176">
+    <parameters>
+      <parameter name="Crc32Table" type="TCrc32Table" paramflags="const" />
+      <parameter name="X" type="PJclByteArray" />
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Cardinal" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="CheckCrc32_P" visibility="public" procflags="overload" file="JclMath.pas" line="4206">
+    <parameters>
+      <parameter name="X" type="PJclByteArray" />
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Cardinal" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="Crc32" visibility="public" procflags="overload" file="JclMath.pas" line="4211">
+    <parameters>
+      <parameter name="Crc32Table" type="TCrc32Table" paramflags="const" />
+      <parameter name="X" paramflags="const">
+        <array name="X" file="JclMath.pas" line="4211">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Cardinal">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Cardinal" />
+    </parameters>
+  </function>
+  <function name="Crc32" visibility="public" procflags="overload" file="JclMath.pas" line="4216">
+    <parameters>
+      <parameter name="X" paramflags="const">
+        <array name="X" file="JclMath.pas" line="4216">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Cardinal">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Cardinal" />
+    </parameters>
+  </function>
+  <function name="CheckCrc32" visibility="public" procflags="overload" file="JclMath.pas" line="4221">
+    <parameters>
+      <parameter name="Crc32Table" type="TCrc32Table" paramflags="const" />
+      <parameter name="X" paramflags="var">
+        <array name="X" file="JclMath.pas" line="4221">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Cardinal" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="CheckCrc32" visibility="public" procflags="overload" file="JclMath.pas" line="4226">
+    <parameters>
+      <parameter name="X" paramflags="var">
+        <array name="X" file="JclMath.pas" line="4226">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="N" type="Integer" />
+      <parameter name="Crc" type="Cardinal" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="Crc32_A" visibility="public" procflags="overload" file="JclMath.pas" line="4231">
+    <parameters>
+      <parameter name="Crc32Table" type="TCrc32Table" paramflags="const" />
+      <parameter name="X" paramflags="const">
+        <array name="X" file="JclMath.pas" line="4231">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="Crc" type="Cardinal">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Cardinal" />
+    </parameters>
+  </function>
+  <function name="Crc32_A" visibility="public" procflags="overload" file="JclMath.pas" line="4236">
+    <parameters>
+      <parameter name="X" paramflags="const">
+        <array name="X" file="JclMath.pas" line="4236">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="Crc" type="Cardinal">
+        <value>
+          $0
+        </value>
+      </parameter>
+      <retval type="Cardinal" />
+    </parameters>
+  </function>
+  <function name="CheckCrc32_A" visibility="public" procflags="overload" file="JclMath.pas" line="4241">
+    <parameters>
+      <parameter name="Crc32Table" type="TCrc32Table" paramflags="const" />
+      <parameter name="X" paramflags="var">
+        <array name="X" file="JclMath.pas" line="4241">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="Crc" type="Cardinal" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <function name="CheckCrc32_A" visibility="public" procflags="overload" file="JclMath.pas" line="4246">
+    <parameters>
+      <parameter name="X" paramflags="var">
+        <array name="X" file="JclMath.pas" line="4246">
+          <element type="Byte" />
+        </array>
+      </parameter>
+      <parameter name="Crc" type="Cardinal" />
+      <retval type="Integer" />
+    </parameters>
+  </function>
+  <procedure name="InitCrc32" visibility="public" procflags="overload" file="JclMath.pas" line="4288">
+    <parameters>
+      <parameter name="Polynom" type="Cardinal" />
+      <parameter name="Start" type="Cardinal" />
+      <parameter name="Crc32Table" type="TCrc32Table" paramflags="out" />
+    </parameters>
+  </procedure>
+  <procedure name="InitCrc32" visibility="public" procflags="overload" file="JclMath.pas" line="4301">
+    <parameters>
+      <parameter name="Polynom" type="Cardinal" />
+      <parameter name="Start" type="Cardinal" />
+    </parameters>
+  </procedure>
+  <procedure name="SetRectComplexFormatStr" visibility="public" file="JclMath.pas" line="4316">
+    <parameters>
+      <parameter name="S" type="string" paramflags="const" />
+    </parameters>
+  </procedure>
+  <procedure name="SetPolarComplexFormatStr" visibility="public" file="JclMath.pas" line="4321">
+    <parameters>
+      <parameter name="S" type="string" paramflags="const" />
+    </parameters>
+  </procedure>
+  <function name="ComplexToStr" visibility="public" procflags="overload" file="JclMath.pas" line="4326">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="string" />
+    </parameters>
+  </function>
+  <function name="ComplexToStr" visibility="public" procflags="overload" file="JclMath.pas" line="4331">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <retval type="string" />
+    </parameters>
+  </function>
+  <function name="RectComplex" visibility="public" procflags="overload" file="JclMath.pas" line="4336">
+    <parameters>
+      <parameter name="Re" type="Extended" paramflags="const" />
+      <parameter name="Im" type="Extended" paramflags="const">
+        <value>
+          0
+        </value>
+      </parameter>
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="RectComplex" visibility="public" procflags="overload" file="JclMath.pas" line="4342">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="PolarComplex" visibility="public" procflags="overload" file="JclMath.pas" line="4354">
+    <parameters>
+      <parameter name="Radius" type="Extended" paramflags="const" />
+      <parameter name="Angle" type="Extended" paramflags="const">
+        <value>
+          0
+        </value>
+      </parameter>
+      <retval type="TPolarComplex" />
+    </parameters>
+  </function>
+  <function name="PolarComplex" visibility="public" procflags="overload" file="JclMath.pas" line="4368">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TPolarComplex" />
+    </parameters>
+  </function>
+  <function name="Equal" visibility="public" procflags="overload" file="JclMath.pas" line="4377">
+    <parameters>
+      <parameter name="Z1" type="TRectComplex" paramflags="const" />
+      <parameter name="Z2" type="TRectComplex" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="Equal" visibility="public" procflags="overload" file="JclMath.pas" line="4382">
+    <parameters>
+      <parameter name="Z1" type="TPolarComplex" paramflags="const" />
+      <parameter name="Z2" type="TPolarComplex" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsZero" visibility="public" procflags="overload" file="JclMath.pas" line="4388">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsZero" visibility="public" procflags="overload" file="JclMath.pas" line="4393">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsInfinite" visibility="public" procflags="overload" file="JclMath.pas" line="4400">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="IsInfinite" visibility="public" procflags="overload" file="JclMath.pas" line="4405">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <retval type="Boolean" />
+    </parameters>
+  </function>
+  <function name="Norm" visibility="public" procflags="overload" file="JclMath.pas" line="4412">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Norm" visibility="public" procflags="overload" file="JclMath.pas" line="4417">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="AbsSqr" visibility="public" procflags="overload" file="JclMath.pas" line="4422">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="AbsSqr" visibility="public" procflags="overload" file="JclMath.pas" line="4427">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <retval type="Extended" />
+    </parameters>
+  </function>
+  <function name="Conjugate" visibility="public" procflags="overload" file="JclMath.pas" line="4432">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Conjugate" visibility="public" procflags="overload" file="JclMath.pas" line="4438">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <retval type="TPolarComplex" />
+    </parameters>
+  </function>
+  <function name="Inv" visibility="public" procflags="overload" file="JclMath.pas" line="4444">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Inv" visibility="public" procflags="overload" file="JclMath.pas" line="4453">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <retval type="TPolarComplex" />
+    </parameters>
+  </function>
+  <function name="Neg" visibility="public" procflags="overload" file="JclMath.pas" line="4459">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Neg" visibility="public" procflags="overload" file="JclMath.pas" line="4465">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <retval type="TPolarComplex" />
+    </parameters>
+  </function>
+  <function name="Sum" visibility="public" procflags="overload" file="JclMath.pas" line="4471">
+    <parameters>
+      <parameter name="Z1" type="TRectComplex" paramflags="const" />
+      <parameter name="Z2" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Sum" visibility="public" procflags="overload" file="JclMath.pas" line="4477">
+    <parameters>
+      <parameter name="Z" paramflags="const">
+        <array name="Z" file="JclMath.pas" line="4477">
+          <element type="TRectComplex" />
+        </array>
+      </parameter>
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Diff" visibility="public" file="JclMath.pas" line="4489">
+    <parameters>
+      <parameter name="Z1" type="TRectComplex" paramflags="const" />
+      <parameter name="Z2" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Product" visibility="public" procflags="overload" file="JclMath.pas" line="4495">
+    <parameters>
+      <parameter name="Z1" type="TRectComplex" paramflags="const" />
+      <parameter name="Z2" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Product" visibility="public" procflags="overload" file="JclMath.pas" line="4501">
+    <parameters>
+      <parameter name="Z1" type="TPolarComplex" paramflags="const" />
+      <parameter name="Z2" type="TPolarComplex" paramflags="const" />
+      <retval type="TPolarComplex" />
+    </parameters>
+  </function>
+  <function name="Product" visibility="public" procflags="overload" file="JclMath.pas" line="4507">
+    <parameters>
+      <parameter name="Z" paramflags="const">
+        <array name="Z" file="JclMath.pas" line="4507">
+          <element type="TPolarComplex" />
+        </array>
+      </parameter>
+      <retval type="TPolarComplex" />
+    </parameters>
+  </function>
+  <function name="Quotient" visibility="public" procflags="overload" file="JclMath.pas" line="4522">
+    <parameters>
+      <parameter name="Z1" type="TRectComplex" paramflags="const" />
+      <parameter name="Z2" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Quotient" visibility="public" procflags="overload" file="JclMath.pas" line="4531">
+    <parameters>
+      <parameter name="Z1" type="TPolarComplex" paramflags="const" />
+      <parameter name="Z2" type="TPolarComplex" paramflags="const" />
+      <retval type="TPolarComplex" />
+    </parameters>
+  </function>
+  <function name="Ln" visibility="public" file="JclMath.pas" line="4537">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Exp" visibility="public" procflags="overload" file="JclMath.pas" line="4543">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TPolarComplex" />
+    </parameters>
+  </function>
+  <function name="Power" visibility="public" procflags="overload" file="JclMath.pas" line="4549">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <parameter name="Exponent" type="Extended" paramflags="const" />
+      <retval type="TPolarComplex" />
+    </parameters>
+  </function>
+  <function name="Power" visibility="public" procflags="overload" file="JclMath.pas" line="4555">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <parameter name="Exponent" type="TRectComplex" paramflags="const" />
+      <retval type="TPolarComplex" />
+    </parameters>
+  </function>
+  <function name="PowerInt" visibility="public" procflags="overload" file="JclMath.pas" line="4560">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <parameter name="Exponent" type="Integer" paramflags="const" />
+      <retval type="TPolarComplex" />
+    </parameters>
+  </function>
+  <function name="Root" visibility="public" file="JclMath.pas" line="4566">
+    <parameters>
+      <parameter name="Z" type="TPolarComplex" paramflags="const" />
+      <parameter name="K" type="Cardinal" paramflags="const" />
+      <parameter name="N" type="Cardinal" paramflags="const" />
+      <retval type="TPolarComplex" />
+    </parameters>
+  </function>
+  <function name="Cos" visibility="public" procflags="overload" file="JclMath.pas" line="4574">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Sin" visibility="public" procflags="overload" file="JclMath.pas" line="4583">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Tan" visibility="public" procflags="overload" file="JclMath.pas" line="4592">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Cot" visibility="public" procflags="overload" file="JclMath.pas" line="4603">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Sec" visibility="public" procflags="overload" file="JclMath.pas" line="4614">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="Csc" visibility="public" procflags="overload" file="JclMath.pas" line="4619">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="CosH" visibility="public" procflags="overload" file="JclMath.pas" line="4626">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="SinH" visibility="public" procflags="overload" file="JclMath.pas" line="4635">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="TanH" visibility="public" procflags="overload" file="JclMath.pas" line="4644">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="CotH" visibility="public" procflags="overload" file="JclMath.pas" line="4655">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="SecH" visibility="public" procflags="overload" file="JclMath.pas" line="4666">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+  <function name="CscH" visibility="public" procflags="overload" file="JclMath.pas" line="4671">
+    <parameters>
+      <parameter name="Z" type="TRectComplex" paramflags="const" />
+      <retval type="TRectComplex" />
+    </parameters>
+  </function>
+</namespace>

@@ -1,60 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="UlayeredSoil" platform="Win32">
-  <const name="RR" type="TTexture_version" file="UlayeredSoil.pas" line="18">
+  <const name="RR" type="TTexture_version" file="UlayeredSoil.pas" line="19">
     <value>
       RR
     </value>
   </const>
-  <const name="KA" type="TTexture_version" file="UlayeredSoil.pas" line="18">
+  <const name="KA" type="TTexture_version" file="UlayeredSoil.pas" line="19">
     <value>
       KA
     </value>
   </const>
   <type name="real" type="Double" file="System.pas" line="12" />
-  <array name="TSoilStateArray" low="0" high="51" file="UlayeredSoil.pas" line="10">
-    <element type="TState" />
-  </array>
-  <array name="TSoilVarArray" low="0" high="52" file="UlayeredSoil.pas" line="12">
+  <array name="TSoilStateArray" low="0" high="51" file="UlayeredSoil.pas" line="11">
     <devnotes>
-       basic array type for soil layer state variables
+       basic array type for soil layer states
     </devnotes>
-    <element type="TVar">
+    <element type="TState">
       <devnotes>
-         basic array type for soil layer state variables
+         basic array type for soil layer states
       </devnotes>
     </element>
   </array>
-  <array name="TSoilExtArray" low="0" high="51" file="UlayeredSoil.pas" line="14">
+  <array name="TSoilVarArray" low="0" high="52" file="UlayeredSoil.pas" line="13">
     <devnotes>
        basic array type for soil layer variables
     </devnotes>
-    <element type="TExternV">
+    <element type="TVar">
       <devnotes>
          basic array type for soil layer variables
       </devnotes>
     </element>
   </array>
-  <array name="TSoilArray" low="0" high="51" file="UlayeredSoil.pas" line="16">
+  <array name="TSoilExtArray" low="0" high="51" file="UlayeredSoil.pas" line="15">
     <devnotes>
        basic array type for soil layer external variables
     </devnotes>
-    <element type="Double">
+    <element type="TExternV">
       <devnotes>
          basic array type for soil layer external variables
       </devnotes>
     </element>
   </array>
-  <enum name="TTexture_version" file="UlayeredSoil.pas" line="18">
+  <array name="TSoilArray" low="0" high="51" file="UlayeredSoil.pas" line="17">
     <devnotes>
-       basic array type for soil layer floating point fields
+       basic array type for soil layer variables
     </devnotes>
-    <element value="0" name="RR" file="UlayeredSoil.pas" line="18" />
-    <element value="1" name="KA" file="UlayeredSoil.pas" line="18" />
+    <element type="Double">
+      <devnotes>
+         basic array type for soil layer variables
+      </devnotes>
+    </element>
+  </array>
+  <enum name="TTexture_version" file="UlayeredSoil.pas" line="19">
+    <devnotes>
+       type for pedotransfer function version, RR= Rote Reihe, KA= addendum to KA5
+    </devnotes>
+    <element value="0" name="RR" file="UlayeredSoil.pas" line="19" />
+    <element value="1" name="KA" file="UlayeredSoil.pas" line="19" />
   </enum>
-  <class name="TLayeredSoil" file="UlayeredSoil.pas" line="21">
-    <devnotes>
-       type for pedotransfer function RR= Rote Reihe
-    </devnotes>
+  <class name="TLayeredSoil" file="UlayeredSoil.pas" line="22">
     <ancestor name="TPlantRelatedSubMod" namespace="UAbstractPlant">
       <methodref name="GetIsPlantModelset" visibility="protected">
       </methodref>
@@ -1243,76 +1247,76 @@
       </ancestor>
     </ancestor>
     <members>
-      <procedure name="LayerInit" visibility="protected" procflags="virtual" file="UlayeredSoil.pas" line="27">
+      <procedure name="LayerInit" visibility="protected" procflags="virtual" file="UlayeredSoil.pas" line="28">
         <parameters>
           <parameter name="max_Tiefe" type="Double" />
           <parameter name="potenz_f" type="Double" />
           <parameter name="n_comp" type="Byte" />
         </parameters>
       </procedure>
-      <field name="n_comp" type="Integer" visibility="public" size="4" offset="656" file="UlayeredSoil.pas" line="30" />
-      <field name="MaxProfileDepth" type="TPar" visibility="public" size="4" offset="660" file="UlayeredSoil.pas" line="32">
+      <field name="n_comp" type="Integer" visibility="public" size="4" offset="656" file="UlayeredSoil.pas" line="31" />
+      <field name="MaxProfileDepth" type="TPar" visibility="public" size="4" offset="660" file="UlayeredSoil.pas" line="33">
         <devnotes>
            Zahl der berechneten Schichten [n]}
         </devnotes>
       </field>
-      <field name="Power_f" type="TPar" visibility="public" size="4" offset="664" file="UlayeredSoil.pas" line="34">
+      <field name="Power_f" type="TPar" visibility="public" size="4" offset="664" file="UlayeredSoil.pas" line="35">
         <devnotes>
            Tiefe bis zu der berechnet wird [cm]}
         </devnotes>
       </field>
-      <field name="dz" type="Double" visibility="public" size="8" offset="672" file="UlayeredSoil.pas" line="36">
+      <field name="dz" type="Double" visibility="public" size="8" offset="672" file="UlayeredSoil.pas" line="37">
         <devnotes>
            power factor for uneven layer thickness
         </devnotes>
       </field>
-      <field name="Dist" type="TSoilArray" visibility="public" size="416" offset="680" file="UlayeredSoil.pas" line="38">
+      <field name="Dist" type="TSoilArray" visibility="public" size="416" offset="680" file="UlayeredSoil.pas" line="39">
         <devnotes>
            thickness of layer}
         </devnotes>
       </field>
-      <field name="Thick" type="TSoilArray" visibility="public" size="416" offset="1096" file="UlayeredSoil.pas" line="40">
+      <field name="Thick" type="TSoilArray" visibility="public" size="416" offset="1096" file="UlayeredSoil.pas" line="41">
         <devnotes>
            Vektor der Abstaende der Kompartimentmittelpunkte [cm] }
         </devnotes>
       </field>
-      <field name="Depth" type="TSoilVarArray" visibility="public" size="212" offset="1512" file="UlayeredSoil.pas" line="42">
+      <field name="Depth" type="TSoilVarArray" visibility="public" size="212" offset="1512" file="UlayeredSoil.pas" line="43">
         <devnotes>
            Vektor der Kompartimentdicken [cm] }
         </devnotes>
       </field>
-      <field name="upper_w_f" type="TSoilArray" visibility="public" size="416" offset="1728" file="UlayeredSoil.pas" line="44">
+      <field name="upper_w_f" type="TSoilArray" visibility="public" size="416" offset="1728" file="UlayeredSoil.pas" line="45">
         <devnotes>
            Abstand der unteren Kompartimentgrenze von der Bodenoberfläche in [cm] }
         </devnotes>
       </field>
-      <field name="lower_w_f" type="TSoilArray" visibility="public" size="416" offset="2144" file="UlayeredSoil.pas" line="46">
+      <field name="lower_w_f" type="TSoilArray" visibility="public" size="416" offset="2144" file="UlayeredSoil.pas" line="47">
         <devnotes>
            Wichtungsfaktoren zur Errechnung der mittleren Leitfähigkeit zwischen 2 Kompartimenten }
         </devnotes>
       </field>
-      <field name="Texture_versionOption" type="TOption" visibility="public" size="4" offset="2560" file="UlayeredSoil.pas" line="48">
+      <field name="Texture_versionOption" type="TOption" visibility="public" size="4" offset="2560" file="UlayeredSoil.pas" line="49">
         <devnotes>
            dito
         </devnotes>
       </field>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="UlayeredSoil.pas" line="51">
+      <procedure name="CreateAll" visibility="public" procflags="override" file="UlayeredSoil.pas" line="52">
         <devnotes>
            Version of pedotransfer function to be used
         </devnotes>
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="UlayeredSoil.pas" line="53">
+      <procedure name="Init" visibility="public" procflags="override" file="UlayeredSoil.pas" line="54">
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="UlayeredSoil.pas" line="55">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="UlayeredSoil.pas" line="56">
       </procedure>
-      <property name="parMaxTiefe" visibility="published" read="MaxProfileDepth" write="MaxProfileDepth" type="TPar" file="UlayeredSoil.pas" line="58" />
-      <property name="p_NComp" visibility="published" read="n_comp" write="n_comp" type="Integer" file="UlayeredSoil.pas" line="59" />
+      <property name="parMaxTiefe" visibility="published" read="MaxProfileDepth" write="MaxProfileDepth" type="TPar" file="UlayeredSoil.pas" line="59" />
+      <property name="p_NComp" visibility="published" read="n_comp" write="n_comp" type="Integer" file="UlayeredSoil.pas" line="60" />
     </members>
   </class>
-  <function name="trdiag" visibility="public" file="UlayeredSoil.pas" line="194">
+  <function name="trdiag" visibility="public" file="UlayeredSoil.pas" line="195">
     <parameters>
       <parameter name="rep" type="Boolean" />
       <parameter name="max_n" type="Integer" />
@@ -1324,12 +1328,12 @@
       <retval type="Byte" />
     </parameters>
   </function>
-  <function name="ndx_str" visibility="public" file="UlayeredSoil.pas" line="282">
+  <function name="ndx_str" visibility="public" file="UlayeredSoil.pas" line="283">
     <parameters>
       <parameter name="i" type="Integer" />
       <retval type="string" />
     </parameters>
   </function>
-  <procedure name="Register" visibility="public" file="UlayeredSoil.pas" line="290">
+  <procedure name="Register" visibility="public" file="UlayeredSoil.pas" line="291">
   </procedure>
 </namespace>

@@ -259,9 +259,9 @@ procedure Tsublightint_growth_Maize.CalcRates;
 
 begin
   If {(SoilWaterModel <> nil) and} (fDroughtImpact = DroughtImpact)
-  then SWDF.v := min(1,TransRatio.v)
+ // then SWDF.v := min(1,TransRatio.v)
      //then SWDF.v :=  min(1,TransRatio.v/TRcrit.v)
-    // then SWDF.v :=  min(1,1-power((1-TransRatio.v),SWDF_fact.v)) //if SWDF_fact = 1, then it equals the linear relationship SWDF.v :=  min(1,TransRatio.v/TRcrit.v) ; Reference: Ferreyra et al. 2003
+     then SWDF.v :=  min(1,1-power((1-TransRatio.v),SWDF_fact.v)) //if SWDF_fact = 1, then it equals the linear relationship SWDF.v :=  min(1,TransRatio.v/TRcrit.v) ; Reference: Ferreyra et al. 2003
      //then SWDF.v :=  min(1,1-sqr(power(TransRatio.v,SWDF_fact.v)-1))
      else SWDF.v :=  1;
      {If (SoilWaterModel <> nil) and (fDroughtImpact = DroughtImpact)

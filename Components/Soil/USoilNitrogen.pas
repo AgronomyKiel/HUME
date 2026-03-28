@@ -23,10 +23,23 @@ type
     procedure InitSoilNVectors;
 
   public
-    NitrateAmount: TSoilStateArray;
+    /// <summary>
     /// Nitrat menge im Kompartiment [Kg N/ha]
-    NConc: TSoilVarArray;
+    /// </summary>
+    NitrateAmount: TSoilStateArray;
+
+    /// <summary>
     /// Nitrate Concentration [Kg NO3-N/cm H2O]
+    /// this unusual unit is the consequence of
+    /// giving the amount of water in cm troughout the
+    ///  classes of this class library
+    ///  in order to convert to g N /l
+    ///  multiply by 1000 -> from kg to g
+    ///  multiply by 10000 x 10 from cm to l
+    ///  -> multiply by 1e8
+    /// </summary>
+    NConc: TSoilVarArray;
+
     Nsink: TSoilVarArray;
     /// Sink term [Kg N/ha*d }
     NetMin: TSoilVarArray;

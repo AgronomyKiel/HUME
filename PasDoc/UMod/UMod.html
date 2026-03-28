@@ -15,7 +15,7 @@
 <div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section">Variables</div></div>
 <span id="PasDoc-Description"></span><h2 class="description">Description</h2>
 <p>
- UMod is a unit that defines the base classes TMod and TSubmodel. TMod can be instantiated directly and is the central control object of a simulation model.No license found It summarizes the submodels of the simulation model and provides methods for data output, parameter estimation, and sensitivity analysis. TSubModel is an abstract base class for problem specific submodels. Furthermore some other classes are defined. </p>
+ UMod is a unit that defines the base classes TMod and TSubmodel. TMod can be instantiated directly and is the central control object of a simulation model. It summarizes the submodels of the simulation model and provides methods for data output, parameter estimation, and sensitivity analysis. TSubModel is an abstract base class for problem specific submodels. Furthermore some other classes are defined. </p>
 <span id="PasDoc-Uses"></span><h2 class="overview">Overview</h2>
 <span id="PasDoc-Classes"></span><h3 class="cio">Classes, Interfaces, Objects and Records</h3>
 <table class="classestable wide_list">
@@ -43,9 +43,12 @@
 <span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
 <table class="summary wide_list">
 <tr class="list">
-<td class="itemcode"><code>function <strong><a href="UMod.html#IsDesignTime">IsDesignTime</a></strong>: Boolean;</code></td>
+<td class="itemcode"><code>function <strong><a href="UMod.html#CompareByModelCompIndex-TStringList-Integer-Integer-">CompareByModelCompIndex</a></strong>(List: TStringList; Index1, Index2: Integer): Integer;</code></td>
 </tr>
 <tr class="list2">
+<td class="itemcode"><code>function <strong><a href="UMod.html#IsDesignTime">IsDesignTime</a></strong>: boolean;</code></td>
+</tr>
+<tr class="list">
 <td class="itemcode"><code>procedure <strong><a href="UMod.html#Register">Register</a></strong>;</code></td>
 </tr>
 </table>
@@ -67,7 +70,7 @@
 <td class="itemcode"><code><strong><a href="UMod.html#TModelElements">TModelElements</a></strong> = (...);</code></td>
 </tr>
 <tr class="list2">
-<td class="itemcode"><code><strong><a href="UMod.html#TMyIniFile">TMyIniFile</a></strong>   = TMemIniFile;</code></td>
+<td class="itemcode"><code><strong><a href="UMod.html#TMyIniFile">TMyIniFile</a></strong> = TMemIniFile;</code></td>
 </tr>
 <tr class="list">
 <td class="itemcode"><code><strong><a href="UMod.html#TNumbersOf">TNumbersOf</a></strong> = array [<a href="UMod.html#TModelElements">TModelElements</a>] of Integer;</code></td>
@@ -85,10 +88,25 @@
 <span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
 <table class="summary wide_list">
 <tr class="list">
+<td class="itemcode"><code><strong><a href="UMod.html#FNModProperties">FNModProperties</a></strong> = 'properties.ini';</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a href="UMod.html#FNOptionsIni">FNOptionsIni</a></strong> = 'Options.ini';</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a href="UMod.html#FNParametersXIni">FNParametersXIni</a></strong> = 'Parameters_x.ini';</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code><strong><a href="UMod.html#FNStateIni">FNStateIni</a></strong> = 'State.ini';</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code><strong><a href="UMod.html#FNSuffixResIni">FNSuffixResIni</a></strong> = '_res.ini';</code></td>
+</tr>
+<tr class="list2">
 <td class="itemcode"><code><strong><a href="UMod.html#ModelElementNames">ModelElementNames</a></strong>: <a href="UMod.html#TModelElementNames">TModelElementNames</a> = ('State Variables', 'Variables',
     'Parameters', 'Exernal Values', 'Constants');</code></td>
 </tr>
-<tr class="list2">
+<tr class="list">
 <td class="itemcode"><code><strong><a href="UMod.html#Path_sep">Path_sep</a></strong> =  '\';</code></td>
 </tr>
 </table>
@@ -96,7 +114,16 @@
 <h3 class="detail">Functions and Procedures</h3>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="IsDesignTime"></span><code>function <strong>IsDesignTime</strong>: Boolean;</code></td>
+<td class="itemcode"><span id="CompareByModelCompIndex-TStringList-Integer-Integer-"></span><code>function <strong>CompareByModelCompIndex</strong>(List: TStringList; Index1, Index2: Integer): Integer;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Comparison function</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="IsDesignTime"></span><code>function <strong>IsDesignTime</strong>: boolean;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -166,7 +193,7 @@ procedure TSubModel.DblClick; begin inherited DblClick; ShowMessage('Click on'+N
 </tr>
 <tr><td colspan="1">
 <p>
-AdvGrid, DesignEditors, instance properties IniFilesNew, // Delphi VCL: Implements TIniFile class, handling INI file text format HUME: TVar, TPar, TState and TExternV classes HUME: TTextFileH class, handling tabular ASCII files HUME: MeasValue and TMeasList, handling measurement data HUME: string routines and numerical routines HUME: TF_SubModelEdit, Designtime formular for editing TSubModel instance properties HUME: TModelEdit, Designtime formular for editing TMod &lt;summary&gt; enumeration type for model Elements &lt;/summary&gt;</p>
+AdvGrid, DesignEditors, instance properties IniFilesNew, // Delphi VCL: Implements TIniFile class, handling INI file text format HUME: TVar, TPar, TState and TExternV classes HUME: TTextFileH class, handling tabular ASCII files HUME: MeasValue and TMeasList, handling measurement data HUME: string routines and numerical routines HUME: TF_SubModelEdit, Designtime formular for editing TSubModel instance properties HUME: TModelEdit, Designtime formular for editing TMod class to represent a names Matrix with rows and cols &lt;summary&gt; enumeration type for model Elements &lt;/summary&gt;</p>
 <h6 class="description_section">Values</h6>
 <ul>
 <li>
@@ -184,7 +211,7 @@ AdvGrid, DesignEditors, instance properties IniFilesNew, // Delphi VCL: Implemen
 </table>
 <table class="detail wide_list">
 <tr class="list">
-<td class="itemcode"><span id="TMyIniFile"></span><code><strong>TMyIniFile</strong>   = TMemIniFile;</code></td>
+<td class="itemcode"><span id="TMyIniFile"></span><code><strong>TMyIniFile</strong> = TMemIniFile;</code></td>
 </tr>
 <tr><td colspan="1">
 <p>
@@ -261,6 +288,43 @@ AdvGrid, DesignEditors, instance properties IniFilesNew, // Delphi VCL: Implemen
 </td></tr>
 </table>
 <h3 class="detail">Constants</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="FNModProperties"></span><code><strong>FNModProperties</strong> = 'properties.ini';</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+file names used by TMod</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="FNOptionsIni"></span><code><strong>FNOptionsIni</strong> = 'Options.ini';</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="FNParametersXIni"></span><code><strong>FNParametersXIni</strong> = 'Parameters_x.ini';</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="FNStateIni"></span><code><strong>FNStateIni</strong> = 'State.ini';</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><span id="FNSuffixResIni"></span><code><strong>FNSuffixResIni</strong> = '_res.ini';</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
 <table class="detail wide_list">
 <tr class="list">
 <td class="itemcode"><span id="ModelElementNames"></span><code><strong>ModelElementNames</strong>: <a href="UMod.html#TModelElementNames">TModelElementNames</a> = ('State Variables', 'Variables',
