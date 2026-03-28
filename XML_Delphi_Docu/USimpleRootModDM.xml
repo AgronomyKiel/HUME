@@ -1231,8 +1231,12 @@
            <summary>Option controlling rooting depth increase.</summary>
         </devnotes>
       </field>
-      <field name="OldDMFineRoot" type="Double" visibility="protected" size="8" offset="672" file="USimpleRootModDM.pas" line="51" />
-      <function name="WLD_z_t_f" visibility="protected" procflags="virtual" file="USimpleRootModDM.pas" line="54">
+      <field name="OldDMFineRoot" type="Double" visibility="protected" size="8" offset="672" file="USimpleRootModDM.pas" line="52">
+        <devnotes>
+           <summary>Dry matter of fine roots from previous time step from which root length density is calculated.</summary>
+        </devnotes>
+      </field>
+      <function name="WLD_z_t_f" visibility="protected" procflags="virtual" file="USimpleRootModDM.pas" line="55">
         <devnotes>
            <summary>Calculates average root length density between two depths.</summary>
            <param name="z1">Lower depth boundary [cm].</param>
@@ -1245,7 +1249,7 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <procedure name="SetPlantModel" visibility="protected" procflags="override" file="USimpleRootModDM.pas" line="56">
+      <procedure name="SetPlantModel" visibility="protected" procflags="override" file="USimpleRootModDM.pas" line="58">
         <devnotes>
            <summary> Set the plant model for this module </summary>
            <param name="NewPlantmodel">The new plant model to be set</param>
@@ -1255,176 +1259,179 @@
           <parameter name="NewPlantmodel" type="TAbstractPlant" />
         </parameters>
       </procedure>
-      <field name="depthgrowthOptStr" type="TOption" visibility="public" size="4" offset="680" file="USimpleRootModDM.pas" line="60">
+      <field name="depthgrowthOptStr" type="TOption" visibility="public" size="4" offset="680" file="USimpleRootModDM.pas" line="62">
         <devnotes>
            <summary>Option defining the depth growth model.</summary>
         </devnotes>
       </field>
-      <field name="Wld_arr" type="TSoilVarArray" visibility="public" size="212" offset="684" file="USimpleRootModDM.pas" line="63">
+      <field name="Wld_arr" type="TSoilVarArray" visibility="public" size="212" offset="684" file="USimpleRootModDM.pas" line="65">
         <devnotes>
            <summary>Root length densities [cm.cm-3].</summary>
         </devnotes>
       </field>
-      <field name="EffWld_arr" type="TSoilVarArray" visibility="public" size="212" offset="896" file="USimpleRootModDM.pas" line="65">
+      <field name="EffWld_arr" type="TSoilVarArray" visibility="public" size="212" offset="896" file="USimpleRootModDM.pas" line="68">
         <devnotes>
            <summary>Effective root length density [].</summary>
         </devnotes>
       </field>
-      <field name="WL_arr" type="TSoilVarArray" visibility="public" size="212" offset="1108" file="USimpleRootModDM.pas" line="67">
+      <field name="WL_arr" type="TSoilVarArray" visibility="public" size="212" offset="1108" file="USimpleRootModDM.pas" line="71">
         <devnotes>
            <summary>Root length per layer [cm.cm-2].</summary>
         </devnotes>
       </field>
-      <field name="effWL_arr" type="TSoilVarArray" visibility="public" size="212" offset="1320" file="USimpleRootModDM.pas" line="69">
+      <field name="effWL_arr" type="TSoilVarArray" visibility="public" size="212" offset="1320" file="USimpleRootModDM.pas" line="74">
         <devnotes>
            <summary>Active root length [cm.cm-2].</summary>
         </devnotes>
       </field>
-      <field name="N_Rootcomp" type="TVar" visibility="public" size="4" offset="1532" file="USimpleRootModDM.pas" line="72">
+      <field name="N_Rootcomp" type="TVar" visibility="public" size="4" offset="1532" file="USimpleRootModDM.pas" line="77">
         <devnotes>
            <summary>Maximum number of rooted compartments.</summary>
         </devnotes>
       </field>
-      <field name="WLD_0_15" type="TVar" visibility="public" size="4" offset="1536" file="USimpleRootModDM.pas" line="75">
+      <field name="WLD_0_15" type="TVar" visibility="public" size="4" offset="1536" file="USimpleRootModDM.pas" line="80">
         <devnotes>
-           <summary>Root length density in the first 15 cm.</summary>
+           <summary>severeal grouped root length densities.</summary>
         </devnotes>
       </field>
-      <field name="WLD_15_30" type="TVar" visibility="public" size="4" offset="1540" file="USimpleRootModDM.pas" line="75" />
-      <field name="WLD_30_45" type="TVar" visibility="public" size="4" offset="1544" file="USimpleRootModDM.pas" line="75" />
-      <field name="WLD_45_60" type="TVar" visibility="public" size="4" offset="1548" file="USimpleRootModDM.pas" line="75" />
-      <field name="WLD_60_75" type="TVar" visibility="public" size="4" offset="1552" file="USimpleRootModDM.pas" line="75" />
-      <field name="WLD_75_90" type="TVar" visibility="public" size="4" offset="1556" file="USimpleRootModDM.pas" line="75" />
-      <field name="WLD_90_105" type="TVar" visibility="public" size="4" offset="1560" file="USimpleRootModDM.pas" line="75" />
-      <field name="WLD_105_120" type="TVar" visibility="public" size="4" offset="1564" file="USimpleRootModDM.pas" line="76" />
-      <field name="WLD_0_30" type="TVar" visibility="public" size="4" offset="1568" file="USimpleRootModDM.pas" line="78" />
-      <field name="WLD_30_60" type="TVar" visibility="public" size="4" offset="1572" file="USimpleRootModDM.pas" line="78" />
-      <field name="WLD_60_90" type="TVar" visibility="public" size="4" offset="1576" file="USimpleRootModDM.pas" line="78" />
-      <field name="WLD_90_120" type="TVar" visibility="public" size="4" offset="1580" file="USimpleRootModDM.pas" line="78" />
-      <field name="WLD_120_150" type="TVar" visibility="public" size="4" offset="1584" file="USimpleRootModDM.pas" line="78" />
-      <field name="WLD_0_150" type="TVar" visibility="public" size="4" offset="1588" file="USimpleRootModDM.pas" line="78" />
-      <field name="effWLD_0_30" type="TVar" visibility="public" size="4" offset="1592" file="USimpleRootModDM.pas" line="81">
+      <field name="WLD_15_30" type="TVar" visibility="public" size="4" offset="1540" file="USimpleRootModDM.pas" line="80" />
+      <field name="WLD_30_45" type="TVar" visibility="public" size="4" offset="1544" file="USimpleRootModDM.pas" line="80" />
+      <field name="WLD_45_60" type="TVar" visibility="public" size="4" offset="1548" file="USimpleRootModDM.pas" line="80" />
+      <field name="WLD_60_75" type="TVar" visibility="public" size="4" offset="1552" file="USimpleRootModDM.pas" line="80" />
+      <field name="WLD_75_90" type="TVar" visibility="public" size="4" offset="1556" file="USimpleRootModDM.pas" line="80" />
+      <field name="WLD_90_105" type="TVar" visibility="public" size="4" offset="1560" file="USimpleRootModDM.pas" line="80" />
+      <field name="WLD_105_120" type="TVar" visibility="public" size="4" offset="1564" file="USimpleRootModDM.pas" line="81" />
+      <field name="WLD_0_30" type="TVar" visibility="public" size="4" offset="1568" file="USimpleRootModDM.pas" line="83" />
+      <field name="WLD_30_60" type="TVar" visibility="public" size="4" offset="1572" file="USimpleRootModDM.pas" line="83" />
+      <field name="WLD_60_90" type="TVar" visibility="public" size="4" offset="1576" file="USimpleRootModDM.pas" line="83" />
+      <field name="WLD_90_120" type="TVar" visibility="public" size="4" offset="1580" file="USimpleRootModDM.pas" line="83" />
+      <field name="WLD_120_150" type="TVar" visibility="public" size="4" offset="1584" file="USimpleRootModDM.pas" line="83" />
+      <field name="WLD_0_150" type="TVar" visibility="public" size="4" offset="1588" file="USimpleRootModDM.pas" line="83" />
+      <field name="effWLD_0_30" type="TVar" visibility="public" size="4" offset="1592" file="USimpleRootModDM.pas" line="86">
         <devnotes>
-           <summary>Effective root length density in the first 30 cm, i.e., after subtracting dead or inactive roots.</summary>
+           <summary>several grouped effective root length densities.</summary>
         </devnotes>
       </field>
-      <field name="effWLD_30_60" type="TVar" visibility="public" size="4" offset="1596" file="USimpleRootModDM.pas" line="81" />
-      <field name="effWLD_60_90" type="TVar" visibility="public" size="4" offset="1600" file="USimpleRootModDM.pas" line="81" />
-      <field name="effWLD_90_120" type="TVar" visibility="public" size="4" offset="1604" file="USimpleRootModDM.pas" line="81" />
-      <field name="effWLD_120_150" type="TVar" visibility="public" size="4" offset="1608" file="USimpleRootModDM.pas" line="81" />
-      <field name="WLD_0_10" type="TVar" visibility="public" size="4" offset="1612" file="USimpleRootModDM.pas" line="83" />
-      <field name="WLD_10_20" type="TVar" visibility="public" size="4" offset="1616" file="USimpleRootModDM.pas" line="83" />
-      <field name="WLD_20_30" type="TVar" visibility="public" size="4" offset="1620" file="USimpleRootModDM.pas" line="83" />
-      <field name="WLD_30_40" type="TVar" visibility="public" size="4" offset="1624" file="USimpleRootModDM.pas" line="83" />
-      <field name="WLD_40_50" type="TVar" visibility="public" size="4" offset="1628" file="USimpleRootModDM.pas" line="83" />
-      <field name="WLD_50_60" type="TVar" visibility="public" size="4" offset="1632" file="USimpleRootModDM.pas" line="83" />
-      <field name="WLD_60_70" type="TVar" visibility="public" size="4" offset="1636" file="USimpleRootModDM.pas" line="84" />
-      <field name="WLD_70_80" type="TVar" visibility="public" size="4" offset="1640" file="USimpleRootModDM.pas" line="84" />
-      <field name="WLD_80_90" type="TVar" visibility="public" size="4" offset="1644" file="USimpleRootModDM.pas" line="84" />
-      <field name="WLD_90_100" type="TVar" visibility="public" size="4" offset="1648" file="USimpleRootModDM.pas" line="84" />
-      <field name="Root_Matrix" visibility="public" size="200000" offset="1656" file="USimpleRootModDM.pas" line="87">
+      <field name="effWLD_30_60" type="TVar" visibility="public" size="4" offset="1596" file="USimpleRootModDM.pas" line="86" />
+      <field name="effWLD_60_90" type="TVar" visibility="public" size="4" offset="1600" file="USimpleRootModDM.pas" line="86" />
+      <field name="effWLD_90_120" type="TVar" visibility="public" size="4" offset="1604" file="USimpleRootModDM.pas" line="86" />
+      <field name="effWLD_120_150" type="TVar" visibility="public" size="4" offset="1608" file="USimpleRootModDM.pas" line="86" />
+      <field name="WLD_0_10" type="TVar" visibility="public" size="4" offset="1612" file="USimpleRootModDM.pas" line="88" />
+      <field name="WLD_10_20" type="TVar" visibility="public" size="4" offset="1616" file="USimpleRootModDM.pas" line="88" />
+      <field name="WLD_20_30" type="TVar" visibility="public" size="4" offset="1620" file="USimpleRootModDM.pas" line="88" />
+      <field name="WLD_30_40" type="TVar" visibility="public" size="4" offset="1624" file="USimpleRootModDM.pas" line="88" />
+      <field name="WLD_40_50" type="TVar" visibility="public" size="4" offset="1628" file="USimpleRootModDM.pas" line="88" />
+      <field name="WLD_50_60" type="TVar" visibility="public" size="4" offset="1632" file="USimpleRootModDM.pas" line="88" />
+      <field name="WLD_60_70" type="TVar" visibility="public" size="4" offset="1636" file="USimpleRootModDM.pas" line="89" />
+      <field name="WLD_70_80" type="TVar" visibility="public" size="4" offset="1640" file="USimpleRootModDM.pas" line="89" />
+      <field name="WLD_80_90" type="TVar" visibility="public" size="4" offset="1644" file="USimpleRootModDM.pas" line="89" />
+      <field name="WLD_90_100" type="TVar" visibility="public" size="4" offset="1648" file="USimpleRootModDM.pas" line="89" />
+      <field name="Root_Matrix" visibility="public" size="200000" offset="1656" file="USimpleRootModDM.pas" line="92">
         <devnotes>
            <summary>Root matrix storing age-classed root length per soil compartment.</summary>
         </devnotes>
-        <array name="Root_Matrix" visibility="public" low="1" high="50" file="USimpleRootModDM.pas" line="87">
-          <array name="Root_Matrix" visibility="public" low="1" high="500" file="USimpleRootModDM.pas" line="87">
+        <array name="Root_Matrix" visibility="public" low="1" high="50" file="USimpleRootModDM.pas" line="92">
+          <array name="Root_Matrix" visibility="public" low="1" high="500" file="USimpleRootModDM.pas" line="92">
             <element type="Double" />
           </array>
         </array>
       </field>
-      <field name="n_age_cl" type="Integer" visibility="public" size="4" offset="201656" file="USimpleRootModDM.pas" line="88" />
-      <field name="Tiefe" type="TSoilExtArray" visibility="public" size="208" offset="201660" file="USimpleRootModDM.pas" line="90" />
-      <field name="zr0" type="TPar" visibility="public" size="4" offset="201868" file="USimpleRootModDM.pas" line="93">
+      <field name="n_age_cl" type="Integer" visibility="public" size="4" offset="201656" file="USimpleRootModDM.pas" line="93" />
+      <field name="Tiefe" type="TSoilExtArray" visibility="public" size="208" offset="201660" file="USimpleRootModDM.pas" line="95" />
+      <field name="zr0" type="TPar" visibility="public" size="4" offset="201868" file="USimpleRootModDM.pas" line="98">
         <devnotes>
            <summary>Rooting depth at planting/sowing [cm].</summary>
         </devnotes>
       </field>
-      <field name="k_za" type="TPar" visibility="public" size="4" offset="201872" file="USimpleRootModDM.pas" line="96">
+      <field name="k_za" type="TPar" visibility="public" size="4" offset="201872" file="USimpleRootModDM.pas" line="101">
         <devnotes>
            <summary>Relative rooting depth increase in optional exponential phase [cm.cm-1.Cd-1].</summary>
         </devnotes>
       </field>
-      <field name="k_zb" type="TPar" visibility="public" size="4" offset="201876" file="USimpleRootModDM.pas" line="98">
+      <field name="k_zb" type="TPar" visibility="public" size="4" offset="201876" file="USimpleRootModDM.pas" line="103">
         <devnotes>
            <summary>Root growth per degree-day in the linear phase.</summary>
         </devnotes>
       </field>
-      <field name="Zrmax" type="TPar" visibility="public" size="4" offset="201880" file="USimpleRootModDM.pas" line="100">
+      <field name="Zrmax" type="TPar" visibility="public" size="4" offset="201880" file="USimpleRootModDM.pas" line="105">
         <devnotes>
            <summary>Maximum rooting depth [cm].</summary>
         </devnotes>
       </field>
-      <field name="TempSumRootBaseTemp" type="TPar" visibility="public" size="4" offset="201884" file="USimpleRootModDM.pas" line="102">
+      <field name="TempSumRootBaseTemp" type="TPar" visibility="public" size="4" offset="201884" file="USimpleRootModDM.pas" line="107">
         <devnotes>
            <summary>Base temperature for root growth.</summary>
         </devnotes>
       </field>
-      <field name="sp_RL" type="TPar" visibility="public" size="4" offset="201888" file="USimpleRootModDM.pas" line="104">
+      <field name="sp_RL" type="TPar" visibility="public" size="4" offset="201888" file="USimpleRootModDM.pas" line="109">
         <devnotes>
            <summary>Specific root length [cm g⁻¹ DM].</summary>
         </devnotes>
       </field>
-      <field name="ratio" type="TPar" visibility="public" size="4" offset="201892" file="USimpleRootModDM.pas" line="106">
+      <field name="ratio" type="TPar" visibility="public" size="4" offset="201892" file="USimpleRootModDM.pas" line="111">
         <devnotes>
            <summary>Ratio WLD0 / WLDzr.</summary>
         </devnotes>
       </field>
-      <field name="ActiveDuration" type="TPar" visibility="public" size="4" offset="201896" file="USimpleRootModDM.pas" line="108">
+      <field name="ActiveDuration" type="TPar" visibility="public" size="4" offset="201896" file="USimpleRootModDM.pas" line="113">
         <devnotes>
            <summary>Duration of root activity.</summary>
         </devnotes>
       </field>
-      <field name="TempSumR" type="TState" visibility="public" size="4" offset="201900" file="USimpleRootModDM.pas" line="111">
+      <field name="TempSumR" type="TState" visibility="public" size="4" offset="201900" file="USimpleRootModDM.pas" line="116">
         <devnotes>
            <summary>Temperature sum for root growth.</summary>
         </devnotes>
       </field>
-      <field name="zr" type="TState" visibility="public" size="4" offset="201904" file="USimpleRootModDM.pas" line="113">
+      <field name="zr" type="TState" visibility="public" size="4" offset="201904" file="USimpleRootModDM.pas" line="118">
         <devnotes>
            <summary>Rooting depth (cm).</summary>
         </devnotes>
       </field>
-      <field name="SRL" type="TVar" visibility="public" size="4" offset="201908" file="USimpleRootModDM.pas" line="114" />
-      <field name="SRL_eff" type="TVar" visibility="public" size="4" offset="201912" file="USimpleRootModDM.pas" line="116">
+      <field name="SRL" type="TVar" visibility="public" size="4" offset="201908" file="USimpleRootModDM.pas" line="119" />
+      <field name="SRL_eff" type="TVar" visibility="public" size="4" offset="201912" file="USimpleRootModDM.pas" line="121">
         <devnotes>
            <summary>Total effective root length (cm cm-2).</summary>
         </devnotes>
       </field>
-      <field name="Temp" type="TExternV" visibility="public" size="4" offset="201916" file="USimpleRootModDM.pas" line="119">
+      <field name="Temp" type="TExternV" visibility="public" size="4" offset="201916" file="USimpleRootModDM.pas" line="124">
         <devnotes>
            <summary>Air temperature at 2 m.</summary>
         </devnotes>
       </field>
-      <field name="DMFineRoot" type="TExternV" visibility="public" size="4" offset="201920" file="USimpleRootModDM.pas" line="121">
+      <field name="DMFineRoot" type="TExternV" visibility="public" size="4" offset="201920" file="USimpleRootModDM.pas" line="126">
         <devnotes>
            <summary>Dry matter of fine roots (g/m2).</summary>
         </devnotes>
       </field>
-      <field name="DMroot_inc" type="TExternV" visibility="public" size="4" offset="201924" file="USimpleRootModDM.pas" line="124">
+      <field name="DMroot_inc" type="TExternV" visibility="public" size="4" offset="201924" file="USimpleRootModDM.pas" line="129">
         <devnotes>
            <summary>Daily DM growth rate of fine roots [g/m2/d].</summary>
         </devnotes>
       </field>
-      <field name="EmergenceDay" type="TExternV" visibility="public" size="4" offset="201928" file="USimpleRootModDM.pas" line="126">
+      <field name="EmergenceDay" type="TExternV" visibility="public" size="4" offset="201928" file="USimpleRootModDM.pas" line="131">
         <devnotes>
            <summary>Day of emergence.</summary>
         </devnotes>
       </field>
-      <field name="SowingDate" type="TPar" visibility="public" size="4" offset="201932" file="USimpleRootModDM.pas" line="128" />
-      <field name="HarvestDate" type="TPar" visibility="public" size="4" offset="201936" file="USimpleRootModDM.pas" line="128" />
-      <field name="TextureEffect" type="TOption" visibility="public" size="4" offset="201940" file="USimpleRootModDM.pas" line="131">
+      <field name="SowingDate" type="TPar" visibility="public" size="4" offset="201932" file="USimpleRootModDM.pas" line="133" />
+      <field name="HarvestDate" type="TPar" visibility="public" size="4" offset="201936" file="USimpleRootModDM.pas" line="133" />
+      <field name="TextureEffect" type="TOption" visibility="public" size="4" offset="201940" file="USimpleRootModDM.pas" line="136">
         <devnotes>
            <summary>Option for texture effects on root growth.</summary>
         </devnotes>
       </field>
-      <field name="RootGrowthAfterEmergence" type="TOption" visibility="public" size="4" offset="201944" file="USimpleRootModDM.pas" line="133">
+      <field name="RootGrowthAfterEmergence" type="TOption" visibility="public" size="4" offset="201944" file="USimpleRootModDM.pas" line="138">
         <devnotes>
            <summary>If true, root growth does not start before emergence.</summary>
         </devnotes>
       </field>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="USimpleRootModDM.pas" line="135">
+      <procedure name="CreateAll" visibility="public" procflags="override" file="USimpleRootModDM.pas" line="141">
+        <devnotes>
+           <summary>Instantiates the objects of the class </summary>
+        </devnotes>
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="USimpleRootModDM.pas" line="137">
+      <procedure name="Init" visibility="public" procflags="override" file="USimpleRootModDM.pas" line="144">
         <devnotes>
            <summary>
            Initializes the root growth module, sets options, links plant model dates, and prepares arrays and variables for simulation.
@@ -1435,7 +1442,7 @@
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="USimpleRootModDM.pas" line="139">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="USimpleRootModDM.pas" line="147">
         <devnotes>
            <summary>
            Calculates the rates for root growth and updates root length densities, effective root lengths, and related variables based on current environmental and plant state.
@@ -1443,51 +1450,58 @@
            </summary>
         </devnotes>
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="override" file="USimpleRootModDM.pas" line="141">
+      <procedure name="Integrate" visibility="public" procflags="override" file="USimpleRootModDM.pas" line="150">
+        <devnotes>
+           <summary>Integrates the states, i.e. rooting depth and temperature sum for root growth.</summary>
+        </devnotes>
       </procedure>
-      <property name="RootedSoilWaterModel" visibility="published" read="fRootedSoilWatermodel" write="fRootedSoilWatermodel" type="TSoilWaterModelR" file="USimpleRootModDM.pas" line="145" />
-      <procedure name="InitArraysAndVars" visibility="published" file="USimpleRootModDM.pas" line="151">
+      <property name="RootedSoilWaterModel" visibility="published" read="fRootedSoilWatermodel" write="fRootedSoilWatermodel" type="TSoilWaterModelR" file="USimpleRootModDM.pas" line="155">
+        <devnotes>
+           <summary>Coupled soil water model of class TSoilWaterModelR.</summary>
+        </devnotes>
+      </property>
+      <procedure name="InitArraysAndVars" visibility="published" file="USimpleRootModDM.pas" line="161">
         <devnotes>
            <summary>
            Initializes arrays and variables for root compartments and age classes.
            </summary>
         </devnotes>
       </procedure>
-      <property name="Var_SRL" visibility="published" read="SRL" write="SRL" type="TVar" file="USimpleRootModDM.pas" line="153" />
-      <property name="State_zr" visibility="published" read="zr" write="zr" type="TState" file="USimpleRootModDM.pas" line="154" />
-      <property name="Par_BaseTemp" visibility="published" read="TempSumRootBaseTemp" write="TempSumRootBaseTemp" type="TPar" file="USimpleRootModDM.pas" line="156" />
-      <property name="Par_zr0" visibility="published" read="zr0" write="zr0" type="TPar" file="USimpleRootModDM.pas" line="158" />
-      <property name="Par_kza" visibility="published" read="k_za" write="k_za" type="TPar" file="USimpleRootModDM.pas" line="159" />
-      <property name="Par_kzb" visibility="published" read="k_zb" write="k_zb" type="TPar" file="USimpleRootModDM.pas" line="160" />
-      <property name="Par_Ratio" visibility="published" read="ratio" write="ratio" type="TPar" file="USimpleRootModDM.pas" line="161" />
-      <property name="Par_zrmax" visibility="published" read="Zrmax" write="Zrmax" type="TPar" file="USimpleRootModDM.pas" line="162" />
-      <property name="Par_sp_WL" visibility="published" read="sp_RL" write="sp_RL" type="TPar" file="USimpleRootModDM.pas" line="164" />
-      <property name="Par_ActiveDuration" visibility="published" read="ActiveDuration" write="ActiveDuration" type="TPar" file="USimpleRootModDM.pas" line="166" />
-      <property name="Ex_Temp" visibility="published" read="Temp" write="Temp" type="TExternV" file="USimpleRootModDM.pas" line="168" />
-      <property name="Ex_EmergenceDay" visibility="published" read="EmergenceDay" write="EmergenceDay" type="TExternV" file="USimpleRootModDM.pas" line="169" />
-      <property name="Ex_DMFineRoot" visibility="published" read="DMFineRoot" write="DMFineRoot" type="TExternV" file="USimpleRootModDM.pas" line="170" />
-      <property name="Ex_DMRoot_inc" visibility="published" read="DMroot_inc" write="DMroot_inc" type="TExternV" file="USimpleRootModDM.pas" line="171" />
-      <property name="Opt_RootDepthInc" visibility="published" read="RootDepthInc" write="RootDepthInc" type="TRootingdepthIncrease" file="USimpleRootModDM.pas" line="172" />
-      <property name="Name_WL" visibility="published" read="fName_WL" write="Set_Name_WL" type="string" default="0" file="USimpleRootModDM.pas" line="174" />
-      <property name="var_WLD_0_15" visibility="published" read="WLD_0_15" write="WLD_0_15" type="TVar" file="USimpleRootModDM.pas" line="175" />
-      <property name="var_WLD_15_30" visibility="published" read="WLD_15_30" write="WLD_15_30" type="TVar" file="USimpleRootModDM.pas" line="176" />
-      <property name="var_WLD_30_45" visibility="published" read="WLD_30_45" write="WLD_30_45" type="TVar" file="USimpleRootModDM.pas" line="177" />
-      <property name="var_WLD_45_60" visibility="published" read="WLD_45_60" write="WLD_45_60" type="TVar" file="USimpleRootModDM.pas" line="178" />
-      <property name="var_WLD_60_75" visibility="published" read="WLD_60_75" write="WLD_60_75" type="TVar" file="USimpleRootModDM.pas" line="179" />
-      <property name="var_WLD_75_90" visibility="published" read="WLD_75_90" write="WLD_75_90" type="TVar" file="USimpleRootModDM.pas" line="180" />
-      <property name="var_WLD_90_105" visibility="published" read="WLD_90_105" write="WLD_90_105" type="TVar" file="USimpleRootModDM.pas" line="181" />
-      <property name="var_WLD_105_120" visibility="published" read="WLD_105_120" write="WLD_105_120" type="TVar" file="USimpleRootModDM.pas" line="182" />
-      <property name="var_WLD_0_30" visibility="published" read="WLD_0_30" write="WLD_0_30" type="TVar" file="USimpleRootModDM.pas" line="184" />
-      <property name="var_WLD_30_60" visibility="published" read="WLD_30_60" write="WLD_30_60" type="TVar" file="USimpleRootModDM.pas" line="185" />
-      <property name="var_WLD_60_90" visibility="published" read="WLD_60_90" write="WLD_60_90" type="TVar" file="USimpleRootModDM.pas" line="186" />
-      <property name="var_WLD_90_120" visibility="published" read="WLD_90_120" write="WLD_90_120" type="TVar" file="USimpleRootModDM.pas" line="187" />
-      <property name="var_WLD_120_150" visibility="published" read="WLD_120_150" write="WLD_120_150" type="TVar" file="USimpleRootModDM.pas" line="188" />
-      <property name="var_WLD_0_150" visibility="published" read="WLD_0_150" write="WLD_0_150" type="TVar" file="USimpleRootModDM.pas" line="189" />
-      <property name="var_effWLD_0_30" visibility="published" read="effWLD_0_30" write="effWLD_0_30" type="TVar" file="USimpleRootModDM.pas" line="191" />
-      <property name="var_effWLD_30_60" visibility="published" read="effWLD_30_60" write="effWLD_30_60" type="TVar" file="USimpleRootModDM.pas" line="192" />
-      <property name="var_effWLD_60_90" visibility="published" read="effWLD_60_90" write="effWLD_60_90" type="TVar" file="USimpleRootModDM.pas" line="193" />
-      <property name="var_effWLD_90_120" visibility="published" read="effWLD_90_120" write="effWLD_90_120" type="TVar" file="USimpleRootModDM.pas" line="194" />
-      <property name="var_effWLD_120_150" visibility="published" read="effWLD_120_150" write="effWLD_120_150" type="TVar" file="USimpleRootModDM.pas" line="195" />
+      <property name="Var_SRL" visibility="published" read="SRL" write="SRL" type="TVar" file="USimpleRootModDM.pas" line="163" />
+      <property name="State_zr" visibility="published" read="zr" write="zr" type="TState" file="USimpleRootModDM.pas" line="164" />
+      <property name="Par_BaseTemp" visibility="published" read="TempSumRootBaseTemp" write="TempSumRootBaseTemp" type="TPar" file="USimpleRootModDM.pas" line="166" />
+      <property name="Par_zr0" visibility="published" read="zr0" write="zr0" type="TPar" file="USimpleRootModDM.pas" line="168" />
+      <property name="Par_kza" visibility="published" read="k_za" write="k_za" type="TPar" file="USimpleRootModDM.pas" line="169" />
+      <property name="Par_kzb" visibility="published" read="k_zb" write="k_zb" type="TPar" file="USimpleRootModDM.pas" line="170" />
+      <property name="Par_Ratio" visibility="published" read="ratio" write="ratio" type="TPar" file="USimpleRootModDM.pas" line="171" />
+      <property name="Par_zrmax" visibility="published" read="Zrmax" write="Zrmax" type="TPar" file="USimpleRootModDM.pas" line="172" />
+      <property name="Par_sp_WL" visibility="published" read="sp_RL" write="sp_RL" type="TPar" file="USimpleRootModDM.pas" line="174" />
+      <property name="Par_ActiveDuration" visibility="published" read="ActiveDuration" write="ActiveDuration" type="TPar" file="USimpleRootModDM.pas" line="176" />
+      <property name="Ex_Temp" visibility="published" read="Temp" write="Temp" type="TExternV" file="USimpleRootModDM.pas" line="178" />
+      <property name="Ex_EmergenceDay" visibility="published" read="EmergenceDay" write="EmergenceDay" type="TExternV" file="USimpleRootModDM.pas" line="179" />
+      <property name="Ex_DMFineRoot" visibility="published" read="DMFineRoot" write="DMFineRoot" type="TExternV" file="USimpleRootModDM.pas" line="180" />
+      <property name="Ex_DMRoot_inc" visibility="published" read="DMroot_inc" write="DMroot_inc" type="TExternV" file="USimpleRootModDM.pas" line="181" />
+      <property name="Opt_RootDepthInc" visibility="published" read="RootDepthInc" write="RootDepthInc" type="TRootingdepthIncrease" file="USimpleRootModDM.pas" line="182" />
+      <property name="Name_WL" visibility="published" read="fName_WL" write="Set_Name_WL" type="string" default="0" file="USimpleRootModDM.pas" line="184" />
+      <property name="var_WLD_0_15" visibility="published" read="WLD_0_15" write="WLD_0_15" type="TVar" file="USimpleRootModDM.pas" line="185" />
+      <property name="var_WLD_15_30" visibility="published" read="WLD_15_30" write="WLD_15_30" type="TVar" file="USimpleRootModDM.pas" line="186" />
+      <property name="var_WLD_30_45" visibility="published" read="WLD_30_45" write="WLD_30_45" type="TVar" file="USimpleRootModDM.pas" line="187" />
+      <property name="var_WLD_45_60" visibility="published" read="WLD_45_60" write="WLD_45_60" type="TVar" file="USimpleRootModDM.pas" line="188" />
+      <property name="var_WLD_60_75" visibility="published" read="WLD_60_75" write="WLD_60_75" type="TVar" file="USimpleRootModDM.pas" line="189" />
+      <property name="var_WLD_75_90" visibility="published" read="WLD_75_90" write="WLD_75_90" type="TVar" file="USimpleRootModDM.pas" line="190" />
+      <property name="var_WLD_90_105" visibility="published" read="WLD_90_105" write="WLD_90_105" type="TVar" file="USimpleRootModDM.pas" line="191" />
+      <property name="var_WLD_105_120" visibility="published" read="WLD_105_120" write="WLD_105_120" type="TVar" file="USimpleRootModDM.pas" line="192" />
+      <property name="var_WLD_0_30" visibility="published" read="WLD_0_30" write="WLD_0_30" type="TVar" file="USimpleRootModDM.pas" line="194" />
+      <property name="var_WLD_30_60" visibility="published" read="WLD_30_60" write="WLD_30_60" type="TVar" file="USimpleRootModDM.pas" line="195" />
+      <property name="var_WLD_60_90" visibility="published" read="WLD_60_90" write="WLD_60_90" type="TVar" file="USimpleRootModDM.pas" line="196" />
+      <property name="var_WLD_90_120" visibility="published" read="WLD_90_120" write="WLD_90_120" type="TVar" file="USimpleRootModDM.pas" line="197" />
+      <property name="var_WLD_120_150" visibility="published" read="WLD_120_150" write="WLD_120_150" type="TVar" file="USimpleRootModDM.pas" line="198" />
+      <property name="var_WLD_0_150" visibility="published" read="WLD_0_150" write="WLD_0_150" type="TVar" file="USimpleRootModDM.pas" line="199" />
+      <property name="var_effWLD_0_30" visibility="published" read="effWLD_0_30" write="effWLD_0_30" type="TVar" file="USimpleRootModDM.pas" line="201" />
+      <property name="var_effWLD_30_60" visibility="published" read="effWLD_30_60" write="effWLD_30_60" type="TVar" file="USimpleRootModDM.pas" line="202" />
+      <property name="var_effWLD_60_90" visibility="published" read="effWLD_60_90" write="effWLD_60_90" type="TVar" file="USimpleRootModDM.pas" line="203" />
+      <property name="var_effWLD_90_120" visibility="published" read="effWLD_90_120" write="effWLD_90_120" type="TVar" file="USimpleRootModDM.pas" line="204" />
+      <property name="var_effWLD_120_150" visibility="published" read="effWLD_120_150" write="effWLD_120_150" type="TVar" file="USimpleRootModDM.pas" line="205" />
     </members>
   </class>
   <procedure name="Register" visibility="public" file="USimpleRootModDM.pas" line="1339">

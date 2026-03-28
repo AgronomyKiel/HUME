@@ -26,6 +26,7 @@ library(ggpmisc)
 library(tools)
 library(here)
 source("ExtractInformationFromXML.R")
+source("Rlib/DokuUtilFunctions.R")
 
 options("citation_format" = "pandoc")
 
@@ -43,186 +44,41 @@ NameSource <- file_path_sans_ext(basename(fn_source))
 
 doc <- read_xml(fn_xml_docu)
 
-```
-
-```{r}
-#| include: false
 output <- ExtractXMLDocuInformation(fn_xml_docu, ClassName = "THumeWheatLeafArea")
 
 ```
 
+
+
 # Summary
 
-`r output$md_text`
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| results: asis
+ 
+ GetFirstDevNotes(fn_xml_docu)
+```
 
-## Classes
 
-The unit `r NameSource` defines the following classes:
 
-`r output$classes_df$name`
 
 ## Descendence
 
-The class THumeWheatLeafArea is derived from: `r paste(output$ancestor_names, collapse = " <- ")`
-
-# Submodel objects
-
-Dynamic system model consists according to the Forrester approach of state variable, parameters, variables and external driving forces. This is implemented in Hume by dynamic lists, which contents is given in the following sections.
-
-## State variables
+The class THumeWheatLeafArea has the following ancestor classes shown in @tbl-AncestorClasses.
 
 ```{r}
-#| label: ReadCSVInformation
+#| label: tbl-AncestorClasses
 #| echo: false
-#| message: false
-#| warning: false
-#| include: false
+#| tbl-cap: "Ancestor classes of THumeWheatLeafArea"
 
-Entities <- ExtractInformationFromCSV(fn_csv)
+df <- GetAncestorClasses(fn_xml_docu,"THumeWheatLeafArea")
 
-```
-
-The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.state))` following state variable(s).
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-kable(Entities$df.state)
-```
-
-## Parameters
-
-The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.par))` following parameter(s).
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-kable(Entities$df.par,  escape = FALSE)
-```
-
-## Variables
-
-The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.var))` following variable(s).
-
-```{r}
-#| echo: false
-kable(Entities$df.var,  escape = FALSE)
-```
-
-## External variables
-
-The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.ext))` following external variable(s).
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-kable(Entities$df.ext,  escape = FALSE)
-```
-
-## Options
-
-The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.opt))` following option(s).
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-kable(Entities$df.opt,  escape = FALSE)
-```
-
-# Further source code documentation
-
-The following section includes information extracted from the XML documentation of the class THumeWheatLeafArea. It includes constants, enumerations and functions.
-
-## Enumerations
-
-Within the unit (`r trunc(nrow(output$enum_df))`) enumeration types are defined :
-
-```{r}
-#| label: tbl-THumeWheatLeafAreaEnumerationsTable
-#| echo: false
-#| message: false
-#| warning: false
-#| tbl-cap: Enumerations of unit UHumeWheatLeafArea
-
-
-kable(output$enum_df, escape = FALSE, col.names = c("Name", "Summary", "Elements")) %>%
-  kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) %>%
-  column_spec(1, bold = TRUE) %>%
-  column_spec(2, width = "30em") %>%
-  column_spec(3, width = "30em")
+kable(df)
 
 ```
 
-The enumeration types are used to internally define options for different process formulation. By setting an TOption object
-
-## Constants
-
-The following internal constants are defined within the Unit
-
-```{r}
-#| label: tbl-THumeWheatLeafAreaConstantsTable
-#| echo: false
-#| message: false
-#| warning: false
-#| tbl-cap: Constants of unit UHumeWheatLeafArea
-
-
-kable(output$const_df, escape = FALSE, col.names = c("Name", "Type", "Summary", "Value")) %>%
-  kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) %>%
-  column_spec(1, bold = TRUE) %>%
-  column_spec(2, width = "10em") %>%
-  column_spec(3, width = "30em") %>%
-  column_spec(4, width = "20em")
-```
-
-## Functions
-
-```{r}
-#| label: tbl-THumeWheatLeafAreaFunctionsTableSimple
-#| echo: false
-#| message: false
-#| warning: false
-#| tbl-cap: Functions of class THumeWheatLeafArea
-
-paged_table(output$fun_df)
-```
-
-```{r}
-#| label: tbl-THumeWheatLeafAreaFunctionsTable
-#| eval: false
-#| message: false
-#| warning: false
-#| include: false
-#| tbl-cap: Functions of class THumeWheatLeafArea
-
-fun_df[] <- lapply(fun_df, function(x) gsub(":::", "::: ", x, fixed = TRUE))
-
-kable(fun_df, escape = FALSE, col.names = c("Name", "Visibility", "Parameters", "Summary", "Parameter Summary")) %>%
-  kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) %>%
-  column_spec(1, bold = TRUE) %>%
-  column_spec(2, width = "10em") %>%
-  column_spec(3, width = "20em") %>%
-  column_spec(4, width = "30em") %>%
-  column_spec(5, width = "30em")
-
-
-```
-
-The procedures defined in the class THumeWheatLeafArea are:
-
-```{r}
-#| label: tbl-THumeWheatLeafAreaProceduresTableSimple
-#| echo: false
-#| message: false
-#| warning: false
-#| tbl-cap: Functions of class THumeWheatLeafArea
-
-paged_table(output$proc_df)
-```
 
 # Scientific Background
 
@@ -344,8 +200,6 @@ The leaf area is calculated on a leaf age class level, thereby the leaf number o
 The growth rate of the leaf area of the youngest leaf class (PLSCGR~i~) is calculated from the sum of the existing leaf dry matter of the leaf (LFWT~pl~) plus the daily dry matter growth rate of the leaf fraction of a single plant (GROLF, **GRO**wth Of **L**ea**F**) times the potential specific leaf area (SLA~pot~) minus the existing leaf area for that leaf age class (sumPSLC):
 
 $$\frac{dPLSC_i}{dt} = PLSCGR_i= (LFWT_{pl} + GROLF) \cdot SLA_{pot} - sumPLSC$$ {#eq-PLSCGR}
-
-
 
 ## Senescence
 
@@ -484,7 +338,6 @@ p
 
 ```
 
-
 #### Leaf senescence in later stages (BBCH 31-71)
 
 In later stages the leaf senescence is calculated as a fraction of the existing leaf area per plant, the effective day temperature and a stage specific parameter. (see https://nowlin.css.msu.edu/wheat_book/CHAPTER2.html)
@@ -499,8 +352,7 @@ $$PLALR_a = PSENLeaf_2 \cdot T_{eff} \cdot GPLA$$ {#eq-PLALRa2}
 
 where $PSENLeaf_1$ is a parameter of the regression equation.
 
-The parameters values $PSENLeaf_1$ and $PSENLeaf_2$ have defaults of 0.0003 and 0.0006 $cm^2 \cdot °Cd^{-1}$ in the model. From @fig-PSEN1 it becomes obvious that the parameter PSENLeaf_1 is a  sensitive parameter for the leaf area index simulation. It remains to be discussed if values > 0 improve the predictive quality of the model.
-
+The parameters values *PSENLeaf_1* and *PSENLeaf_2* have defaults of 0.0003 and 0.0006 $cm^2 \cdot °Cd^{-1}$ in the model. From @fig-LAISens_PSEN1 it becomes obvious that the parameter PSENLeaf_1 is a sensitive parameter for the leaf area index simulation. It remains to be discussed if values \> 0 improve the predictive quality of the model.
 
 ```{r}
 #| label: fig-LAISens_PSEN1
@@ -551,9 +403,6 @@ p
 
 ```
 
-
-
-
 ```{r}
 #| label: fig-LAISens_PSEN2
 #| echo: false
@@ -603,7 +452,6 @@ p
 
 ```
 
-
 ### Drought stress
 
 The sub model includes an option to calculate drought stress induced leaf senescence. This option is set to true by default, but can be switched off in the options of the model. The option is named `optUseDroughtStressLeafSenescence` and can be set to false if the drought stress induced leaf senescence should not be calculated.
@@ -624,7 +472,6 @@ where $LAI$ is the leaf area index, $LAIs$ is the sustainable leaf area index, $
 
 The sustainable leaf area index is derived from an iterative, numerical solution using the Newton method for solving non-linear equations.
 
-
 ### Nitrogen stress / nitrogen induced leaf senescence
 
 Within the class THumeWheatLeafArea two different options for late leaf area senescence are implemented, which can be selected by the option *OptNSenescenceType*. The option *concentration* calculates the leaf sencescence rate according to the ratio of the actual to the opitmal specific leaf area based N concentration, where as the option *cwt3* uses the classic, N concentration independent algorithm from CERES Wheat.
@@ -637,7 +484,6 @@ $$PLALR_n = min\left( LAI_{max} \cdot \frac{PLALR_{max}} {100}, LAI \cdot \left(
 
 where $LAI_{max}$ is the maximum leaf area index, $PLALR_{max}$ is the maximum leaf area index loss rate \[%\], standard value is 5%, $SLN$ is the specific leaf nitrogen concentration \[g/m^2^ leaf\], $SLNtot_{crit}$ is the critical specific leaf nitrogen concentration (default 0.8) , and $plants$ is the number of plants per square meter. The factor 1e4 converts m^2^ to cm^2^. This algorithm also induces the leaf senescence during ripening.
 
-
 #### CERES-Wheat based late leaf area senescence
 
 Alternatively, the classical leaf senecescence calculation from the CERES-Wheat model can be used. With this algorithm, the leaf area decline during ripening is controlled by the accumulated temperaturs sum during ISTAGE 5:
@@ -646,8 +492,7 @@ $$PLALR_n = GPLA \cdot 2 \cdot SUMDTT_5 \cdot \frac { T_{eff}}{TSum_{GF}^2} $$ {
 
 where $GPLA$ is the leaf area per plant, $SUMDTT5$ is the accumulated temperature sum during ISTAGE 5, $T_{eff}$ is the temperature sum increment, and $TSum_{GF}^2$ is the value of unscaled parameter P5, giving the length of the grain filling period in degree days. The default value of $P5$ is set to 11.67 in the model. According to the equation #eq-TSumGF the equivalent value of $TSum_{GF}$ is `r 430+11.67*20` \[°Cd\].
 
-The leaf area dynamics of the two algorithms are compared in @fig-LateSenescenceComparison. The CERES-Wheat based algorithm leads to a more smooth leaf area decline during ripeningbut remains at LAI values > 0 at full ripening stage. The N concentration based algorithm, starts obviously later.
-
+The leaf area dynamics of the two algorithms are compared in @fig-LateSenescenceComparison. The CERES-Wheat based algorithm leads to a more smooth leaf area decline during ripeningbut remains at LAI values \> 0 at full ripening stage. The N concentration based algorithm, starts obviously later.
 
 ```{r}
 #| label: fig-LateSenescenceComparison
@@ -689,8 +534,6 @@ p
 
 
 ```
-
-
 
 ### Light limitation
 
@@ -820,9 +663,9 @@ the change rate of phNs therefore is
 
 $$\frac{\text{d}{}{{N}^{ph}_{s}}}{dt}= min\left(0,N^{ph}_{s}(t) \cdot r(t) -{{N}^{mob}_{s}}(t) \right)$$ {#eq-LA51}
 
-In contrast to the original model, the transfer of mobile N to the grain N pool starts with stem fraction (mobN~s~). The change rate of mobN~s~ is calculated as the difference between stem N release and grain N uptake (@eq-LA44) as follows:
+In contrast to the original model, the transfer of mobile N to the grain N pool starts with stem fraction (mobN~s~). The change rate of mobN~s~ is calculated as the difference between stem N release and grain N uptake (@eq-LA52) as follows:
 
-$$\frac{d{}{{N}^{mob}_{s}}}{dt} = max\left(-{{N}^{mob}_{s}}(t),- \frac{d{N^{ph}_s}}{dt}-\frac{dN_g}{dt}\right)$$ {#eq-52}
+$$\frac{d{}{{N}^{mob}_{s}}}{dt} = max\left(-{{N}^{mob}_{s}}(t),- \frac{d{N^{ph}_s}}{dt}-\frac{dN_g}{dt}\right)$$ {#eq-LA52}
 
 Therefore, a larger amount of N remains at the mobN~l~ pool (@eq-LA38), compared to mobNs whenever the amount of mobile N exceeds the N demand of the grains:
 
@@ -832,3 +675,172 @@ $$\frac{d{}{{N}^{mob}_{\text{l}}}}{\text{dt}}= \left\{ \begin{align}
  & {{|}}{{N}^{mob}_{s}}(t)<(\frac{d{}^{ph}{{N}_{s}}}{dt}+\frac{d{{N}_{grain}}}{dt})\\ 
  & \mathop{{}}^{{}}\mathop{{}}^{{}}+{}{{N}^{mob}_{s}}(t)+\sum{{N^{trans}_{i}}(t)}). \\ 
 \end{align} \right.$$ {#eq-LA53}
+
+
+# Submodel objects
+
+Dynamic system model consists according to the Forrester approach of state variable, parameters, variables and external driving forces. This is implemented in Hume by dynamic lists, which contents is given in the following sections.
+
+## State variables
+
+```{r}
+#| label: ReadCSVInformation
+#| echo: false
+#| message: false
+#| warning: false
+#| include: false
+
+Entities <- ExtractInformationFromCSV(fn_csv)
+
+```
+
+The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.state))` following state variable(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(Entities$df.state)
+```
+
+## Parameters
+
+The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.par))` following parameter(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(Entities$df.par,  escape = FALSE)
+```
+
+## Variables
+
+The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.var))` following variable(s).
+
+```{r}
+#| echo: false
+kable(Entities$df.var,  escape = FALSE)
+```
+
+## External variables
+
+The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.ext))` following external variable(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(Entities$df.ext,  escape = FALSE)
+```
+
+## Options
+
+The class THumeWheatLeafArea has `r trunc(nrow(Entities$df.opt))` following option(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(Entities$df.opt,  escape = FALSE)
+```
+
+# Further source code documentation
+
+The following section includes information extracted from the XML documentation of the class THumeWheatLeafArea. It includes constants, enumerations and functions.
+
+## Enumerations
+
+```{r}
+
+```
+
+
+
+Within the unit (`r trunc(nrow(output$enum_df))`) enumeration types are defined :
+
+```{r}
+#| label: tbl-THumeWheatLeafAreaEnumerationsTable
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: Enumerations of unit UHumeWheatLeafArea
+
+
+kable(output$enum_df, escape = FALSE, col.names = c("Name", "Summary", "Elements")) %>%
+  kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "30em") %>%
+  column_spec(3, width = "30em")
+
+```
+
+The enumeration types are used to internally define options for different process formulation. By setting an TOption object
+
+## Constants
+
+The following internal constants are defined within the Unit
+
+```{r}
+#| label: tbl-THumeWheatLeafAreaConstantsTable
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: Constants of unit UHumeWheatLeafArea
+
+
+kable(output$const_df, escape = FALSE, col.names = c("Name", "Type", "Summary", "Value")) %>%
+  kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "10em") %>%
+  column_spec(3, width = "30em") %>%
+  column_spec(4, width = "20em")
+```
+
+## Functions
+
+```{r}
+#| label: tbl-THumeWheatLeafAreaFunctionsTableSimple
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: Functions of class THumeWheatLeafArea
+
+paged_table(output$fun_df)
+```
+
+```{r}
+#| label: tbl-THumeWheatLeafAreaFunctionsTable
+#| eval: false
+#| message: false
+#| warning: false
+#| include: false
+#| tbl-cap: Functions of class THumeWheatLeafArea
+
+fun_df[] <- lapply(fun_df, function(x) gsub(":::", "::: ", x, fixed = TRUE))
+
+kable(fun_df, escape = FALSE, col.names = c("Name", "Visibility", "Parameters", "Summary", "Parameter Summary")) %>%
+  kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "10em") %>%
+  column_spec(3, width = "20em") %>%
+  column_spec(4, width = "30em") %>%
+  column_spec(5, width = "30em")
+
+
+```
+
+The procedures defined in the class THumeWheatLeafArea are:
+
+```{r}
+#| label: tbl-THumeWheatLeafAreaProceduresTableSimple
+#| echo: false
+#| message: false
+#| warning: false
+#| tbl-cap: Functions of class THumeWheatLeafArea
+
+paged_table(output$proc_df)
+```
+
+
+## References
