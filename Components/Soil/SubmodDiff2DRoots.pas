@@ -5,8 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, math,
-  UMod, UState, Diffko,  MathImge,
-  U2DSoilBaseClasses;
+  UMod, UState, Diffko, SubmodRootStructureNew, MathImge,
+  SubmodRootDiff;
 
 const
   dim_max = 10000; { largest index, used for the vectors
@@ -176,7 +176,7 @@ implementation
 
 procedure Register;
 (* -----------------------------------------------------------------------------
-  Procedure required for components: registers the components on a palette.
+  Procedure needed for components: registers components on a palette.
   ------------------------------------------------------------------------------ *)
 begin
   RegisterComponents('MichasMod', [TSubmodDiff2DRoots]);
