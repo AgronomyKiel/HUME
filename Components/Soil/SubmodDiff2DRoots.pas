@@ -8,113 +8,147 @@ uses
   UMod, UState, Diffko,  MathImge,
   U2DSoilBaseClasses;
 
+const
+  dim_max = 10000; { largest index, used for the vectors
+    in the calculation of fluxes }
+  colorarray: array [0 .. 11] of TColor = ($00CB9F74, $00D8AD49, $00E6C986,
+    $00F2E3C1, $00DAF0C4, $00A6E089, $0086D560, $0065CFB5, $008DC5FC, $0075D5FD,
+    $0078E1ED, $00ACEDF4);
+  levelsarray: array [0 .. 11] of MathFloat = (-4, -2.5, -2, -1.5, -1, -0.5, 0,
+    0.5, 1, 1.5, 2, 2.5);
 
 type
   (* -----------------------------------------------------------------------------
     Type declarations
     ------------------------------------------------------------------------------ *)
-/// <summary>Arrays</summary>
+  { Arrays }
+  { Problem: dynamic implementation was removed again due to difficulties with
+    array bounds }
+  array_type = array [0 .. dim_max + 1] of real;
 
-/// <summary>Klassen</summary>
-  TSubmodDiff2DRoots = class(TBaseSubmodRootDiff)
-    /// <summary>Declaration of class TSubmodRootDiff2D. This class performs the calculations for the root function model.</summary>
+  { Classes }
+  TSubmodDiff2DRoots = class(TSubModRootDiff)
+    { Declaration of class TSubmodDiff2DRoots. The class performs the calculations
+      for the root function model. }
   private
+    { Private declarations }
+    ContPosx, // Hard-coded position of the container center
+    ContPosy,
+    { Flag remembers whether the output file for sink influx was created. This
+      should happen anew before each model run -> FileWasCreated is set to false
+      in init; in CalcRates the file is created once and the flag is set to true }
 
-
+    SumOfInternalTimeSteps: double;
+    FileWasCreated: boolean;
+    SinkCellFileWasCreated: boolean;
+    fMyMathImage: TMathImage;
+    ColorSurface: TColorSurface;
+    TSRPLightList: TList; // List with TSRPLight instances
+    (* -----------------------------------------------------------------------------
+      In the following, various fields are declared that refer to the computational
+      elements and need to be accessed in multiple methods (hence no local variables).
+      However, if these should be displayed in HUME, a declaration as TVar would be
+      advisable.
+      Problem: units
+      ------------------------------------------------------------------------------ *)
+    vol_Element, { Volume of a computation element [cm3] }
+    wm, { Water amount of a computation element [cm3] }
+    min_c, { Minimum concentration in the grid [mol/cm3] }
+    max_c { Maximum concentration in the grid }
+      : double;
+    (* -----------------------------------------------------------------------------
+      C_xy: array for concentrations in the computation elements.
+      { x_arr and y_arr are arrays containing the 'center coordinates of the grid
+      cells' }
+      c_xy is declared as a dynamic array (cf. NG, p.65ff) because the size of the
+      array is declared with values of dim_x or dim_y (number of computation
+      elements in the x or y direction), which are assigned later.
+      ------------------------------------------------------------------------------ *)
+    C_xy: array of array of double;
+    x_arr, y_arr: array of double;
+    Diffuptake: double;
     procedure clearLists;
     procedure calcRootPosAsIndex;
     procedure updateFromStructModell;
     // Methods for flux calculation
+    procedure zweid_solut(dt_globmod: real);
+    // Helper methods
+    procedure InitConc;
+    procedure createSteadyState(DiffSteadyState: double);
+    function avg_conz: double;
+    function influx_fVar(Imax, Km, ClAv, x, Db: double): double;
+
+    function calcAmountUptakeRoots: double;
+    function calcActArdt: double;
+    function convertConcToAmount(i: integer): double;
+    procedure writeUptakeSinkToFile;
     function FileExists(FileName: string): boolean;
-    // Methods for container growth:
+    // Methods of container growth:
     procedure testForContBorder(var start_, ende_: integer;
       x_ndx, y_ndx: integer; zeile: boolean);
     function calcAbsValue2D(vect: r2): double;
     function vectorSubtrakt2D(vect2, vect1: r2): r2;
   protected
-/// <summary>Protected declarations, also accessible from derived classes</summary>
+    { Protected declarations, accessible also from derived classes }
 
     { * -----------------------------------------------------------------------------
-      Member of HUME base class TPar (parameters)
+      Members of HUME base class TPar (parameters)
       ------------------------------------------------------------------------------* }
-    /// <summary>uptake rate [Kg N/ha*d]</summary>
-    Ar,
-    /// <summary>Michaelis-Menten constant [mol/cm3]</summary>
-    Km,
-    /// <summary>number of elements in X-direction</summary>
-    dim_x,
-    /// <summary>number of elements in Y-direction</summary>
-    dim_y,
-    /// <summary>initial internal time step [s]</summary>
-    ini_dt,
-    /// <summary>radius of the container in container mode</summary>
-    ContRad
+    Ar, { Uptake rate [kg N/ha*d] }
+    Km, { Michaelis-Menten constant [mol/cm3] }
+    dim_x, { Number of elements in X direction }
+    dim_y, { Number of elements in Y direction }
+    ini_dt, { Initial internal time step [s] }
+    ContRad { Radius of the container in container mode }
       : TPar;
     { * -----------------------------------------------------------------------------
-      Member of HUME base class TVar
+      Members of HUME base class TVar
       ------------------------------------------------------------------------------* }
-    /// <summary>number of central elements in X-direction</summary>
-    dim_xMiddle,
-    /// <summary>number of central elements in Y-direction</summary>
-    dim_yMiddle,
-    /// <summary>half mean distance between roots [cm]</summary>
-    Distance,
-    /// <summary>grid width in X-direction [cm]</summary>
-    dx,
-    /// <summary>grid width in Y-direction [cm]</summary>
-    dy,
-    /// <summary>variable for the internal time step [s]</summary>
-    int_dt,
-    /// <summary>area of middle and margins [cm2]</summary>
-    Flaeche,
-    /// <summary>mean concentration [mol/cm3]</summary>
-    c_av,
-    /// <summary>maximum influx [mol/cm*s]</summary>
-    Imax,
-    wl, { root lengths per square meter [cm/(area*depth)]
-      problem: maybe TState? }
-    /// <summary>root lengths per hectare [cm/ha] problem: check unit</summary>
-    wl_ha,
-    /// <summary>current uptake rate [kg N/ha/d]</summary>
-    ActAr,
-    /// <summary>current uptake rate [kg N/ha/d] due to concentration change</summary>
-    ActArFromConc
+    dim_xMiddle, { Number of central elements in X direction }
+    dim_yMiddle, { Number of central elements in Y direction }
+    Distance, { half mean distance between roots [cm] }
+    dx, { Grid spacing X direction [cm] }
+    dy, { Grid spacing Y direction [cm] }
+    int_dt, { Variable for the internal time step [s] }
+    Flaeche, { Area center and margins [cm2] }
+    c_av, { Average concentration [mol/cm3] }
+    Imax, { Maximum influx [mol/cm*s] }
+    wl, { Root length per square meter [cm/(area*depth)]
+      Problem: maybe TState???? }
+    wl_ha, { Root length per hectare [cm/ha] Problem: check unit }
+    ActAr, { Current uptake rate [kg N/ha/d] }
+    ActArFromConc { Current uptake rate [kg N/ha/d] due to concentration change }
       : TVar;
     { * -----------------------------------------------------------------------------
-      Member of HUME base class TState (state variables)
+      Members of HUME base class TState (state variables)
       ------------------------------------------------------------------------------* }
-    /// <summary>balance error</summary>
-    Bilanz_f
+    Bilanz_f { Balance error }
       : TState;
     (* -----------------------------------------------------------------------------
-      Member of HUME base class TOption (options)
+      Members of HUME base class TOption (options).
       ------------------------------------------------------------------------------ *)
-    OutputSink, { specify whether nutrient uptake of individual sinks
-      should be written to a file }
-    RootDistribution, { define the distribution of WAP, differs from
-      the 1D model }
-    CalcModeSteadyState, { specify the mode in which steady state
-      should be calculated (with or without margins) }
-    ShowConc, { specify whether concentrations should be displayed
-      or not }
-    SteadyState, { flag whether a steady state should be generated
-      in the 2D model or not }
-    RootSinkOutpDataFile, { path and name of the output file for nutrient
-      uptake of individual sinks }
-    // Switches to control whether the following files are written.
+    OutputSink, { Specifies whether nutrient uptake of individual sinks should
+      be written to a file }
+    RootDistribution, { Defines the distribution of the WAP, differs from the
+      1D model }
+    CalcModeSteadyState, { Specifies in which mode the steady state should be
+      calculated (with the margins or without) }
+    ShowConc, { Specifies whether concentrations should be displayed or not }
+    SteadyState, { Switch whether a steady state should be generated in the 2D
+      model or not }
+    RootSinkOutpDataFile, { Path and name of the output file for nutrient uptake
+      of individual sinks }
+    // Switches for whether the following files should be written
     writeConcField, writeSinkCellFile, ConcFieldDataFile,
-    { path and name of the output file for nutrient uptake of
+    { Path and name of the output file for nutrient uptake of individual sinks }
+    SinkCellFileFile, { Path and name of the output file for nutrient uptake of
       individual sinks }
-    SinkCellFileFile, { path and name of the output file for nutrient
-      uptake of individual sinks }
-    /// <summary>deletes boundary roots from PosArr</summary>
-    DelMarginRoots,
-    /// <summary>switch for growth in pots</summary>
-    ContGrowth
+    DelMarginRoots, { Deletes the edge roots from the PosArr }
+    ContGrowth { Switch for growth in containers }
       : TOption;
 
   public
-/// <summary>Public declarations</summary>
+    { Public declarations }
     procedure createAll; override;
     procedure AddDataValueToDataSeries; override;
     procedure CalcRates; override;
@@ -122,19 +156,16 @@ type
     procedure Get_Sink(x_loc, y_loc: word; var s: real);
     procedure get_minGrid(x_loc, y_loc: word; var s: real);
     // Helper method
-    /// <summary>current concentrations can be output via a form</summary>
-    procedure showActConc;
+    procedure showActConc; { the form allows triggering an output of the current
+      concentrations }
   published
-/// <summary>Published declarations</summary>
+    { Published declarations }
     // Published properties
     property par_ini_dt: TPar read ini_dt write ini_dt;
-    /// <summary>grid width in X-direction [cm]</summary>
-    property var_dx: TVar read dx write dx;
-    /// <summary>grid width in Y-direction [cm]</summary>
-    property var_dy: TVar read dy write dy;
+    property var_dx: TVar read dx write dx; { Grid spacing X direction [cm] }
+    property var_dy: TVar read dy write dy; { Grid spacing Y direction [cm] }
     property MyMathImage: TMathImage read fMyMathImage write fMyMathImage;
-  /// <summary>end declaration TSubmodRootDiff2D</summary>
-  end;
+  end; { End of declaration TSubmodDiff2DRoots }
 
 procedure Register;
 
@@ -158,7 +189,7 @@ var
   influx: real;
 begin
   influx := Imax * C / (Km + C);
-  If (influx <= 0.0) or (C <= 0.0) // no negative fluxes
+  If (influx <= 0.0) or (C <= 0.0) // No negative fluxes
   then
     influx := 0.0;
   Result := influx;
@@ -166,15 +197,16 @@ end;
 
 function TSubmodDiff2DRoots.influx_fVar(Imax, Km, ClAv, x, Db: double): double;
 (* ------------------------------------------------------------------------------
-  DESCRIPTION: alternative calculation of influx with Michaelis-Menten boundary
-  condition assuming the quasi-stationary approach in the single root cylinder.
-  Corresponds to the 2D-S approach (extended by Michaelis-Menten kinetics). The
-  calculation, especially the formula for cla, needs to be checked again.
+  BESCHREIBUNG: alternative Berechnung des Influx mit Michaelis-Menten-Randbedingung
+  unter der Voraussetzung, dass im Einzelwurzelzylinder mit dem quasistationären
+  Ansatz gearbeitet wird.
+  entspricht dem 2D-S Ansatz (erweitert um Michaelis-Menten-Kinetik). Berechnung
+  vor allem der Formel für cla muss noch einmal kontrolliert werden.
   ------------------------------------------------------------------------------ *)
 var
-  cla, // concentration at the root surface
-  influx, // nutrient influx rate [mol cm^-1 s^-1]
-  numerator // numerator in equation 3.6.33, Kage's dissertation
+  cla, // Konzentration an der Wurzeloberfläche
+  influx, // Nährstoffinfluxrate [mol cm^-1 s^-1]
+  numerator // Zähler in Gleichung 3.6.33, Diss. Kage
     : double;
 begin
   numerator := Km + (sqr(x) * Imax / ((sqr(x) - sqr(RootRadius.v)) * 2 * pi *
@@ -182,7 +214,7 @@ begin
   cla := clmin.v + (-ClAv + numerator) / 2;
   cla := cla + sqrt(sqr(ClAv + numerator) / 4 + ClAv * Km);
   influx := Imax * (cla - clmin.v) / (Km + (cla - clmin.v));
-  If (influx <= 0.0) or (ClAv <= 0.0) // no negative fluxes
+  If (influx <= 0.0) or (ClAv <= 0.0) // Keine negativen Flüsse
   then
     influx := 0.0;
   Result := influx;
@@ -193,14 +225,14 @@ end;
   ------------------------------------------------------------------------------ *)
 procedure TSubmodDiff2DRoots.createAll;
 (* ------------------------------------------------------------------------------
-  DESCRIPTION:
-  Creation and initialization of state variables, variables, and parameters.
-  The first parameter of the function call provides a string identical to the
-  identifier used for lookup.
-  The second parameter contains a string specifying the unit used
-  ([n] for dimensionless parameters, etc.).
-  The third parameter is the actual floating-point value.
-  See declaration for an explanation of the identifiers.
+  BESCHREIBUNG:
+  Erzeugen und Initialisieren von Zustandsvariablen, Variablen und Parametern.
+  Der erste Parameter des Funktionsaufrufs übergibt einen String, der mit dem Be-
+  zeichner identisch ist und nachdem gesucht werden kann.
+  Der zweite Parameter enthält einen String zur Kennzeichnung der verwendeten
+  Einheit ([n] für dimensionslose Parameter etc.)
+  Der dritte Parameter ist der eigentliche (Fließkomma)-Wert
+  Erläuterung der Bezeichner s. Deklaration.
   ------------------------------------------------------------------------------ *)
 begin
   inherited createAll;
@@ -299,8 +331,8 @@ procedure TSubmodDiff2DRoots.AddDataValueToDataSeries;
 var
   fn: TFilename;
   i: integer;
-  DimXMiddle, // dimension of the central area in the x-direction [cm]
-  DimYMiddle // dimension of the central area in the y-direction [cm]
+  DimXMiddle, // Dimension der mittigen Fläche in x-Richtung [cm]
+  DimYMiddle // Dimension der mittigen Fläche in y-Richtung [cm]
     : double;
 begin
 
