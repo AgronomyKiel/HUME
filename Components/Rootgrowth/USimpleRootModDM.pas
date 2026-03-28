@@ -3,13 +3,11 @@
 /// <summary>
 /// Models root growth using daily fine-root dry matter increments and assumes a negative exponential root distribution with depth.
 /// Root aging is simulated with a simple box-car approach.
-/// </summary>
 /// <remarks>
 /// Reference: Kage, H., Kochler, M. & Stützel, H. Root growth of cauliflower (Brassica oleracea L. botrytis) under unstressed conditions: Measurement and modelling. Plant and Soil 223, 133–147 (2000). https://doi.org/10.1023/A:1004866823128
-/// </remarks>
-/// <remarks>
 /// Effects of soil texture and bulk density on root growth follow the KA5 classification.
 /// </remarks>
+/// </summary>
 interface
 
 uses
@@ -21,10 +19,12 @@ uses
 
 type
 
-  /// <summary>
-  /// Main class for the root growth model. Represents the root growth model in the HUME system and subclasses TPlantRelatedSubMod.
-  /// Provides properties and methods for root growth and root length density calculations and includes a coupled soil water model and a list of texture effects.
-  /// </summary>
+/// <summary>
+/// A class for root growth modelling.
+/// Provides properties and methods for root growth and root length density calculations and includes a coupled soil water model and a list of texture effects.
+/// Reference: Kage, H., Kochler, M. & Stützel, H. Root growth of cauliflower (Brassica oleracea L. botrytis) under unstressed conditions: Measurement and modelling. Plant and Soil 223, 133–147 (2000). https://doi.org/10.1023/A:1004866823128
+/// Effects of soil texture and bulk density on root growth follow the KA5 classification.
+/// </summary>
   TSimpleRootModDM = class(TPlantRelatedSubMod)
 
   private
@@ -48,11 +48,13 @@ type
     /// <summary>Option controlling rooting depth increase.</summary>
     RootDepthInc: TRootingdepthIncrease;
 
+/// <summary>Dry matter of fine roots from previous time step from which root length density is calculated.</summary>
     OldDMFineRoot: real;
 
     /// <summary>Calculates root length density between two depths.</summary>
     function WLD_z_t_f(z1, z2: real): real; virtual;
-    /// <summary>Assigns the plant model.</summary>
+ 
+ /// <summary>Assigns the plant model.</summary>
     procedure SetPlantModel(NewPlantmodel: TAbstractPlant); override;
 
   public
@@ -61,23 +63,26 @@ type
 
     /// <summary>Root length densities [cm.cm-3].</summary>
     Wld_arr: TSoilVarArray;
+ 
     /// <summary>Effective root length density [].</summary>
     EffWld_arr: TSoilVarArray;
+ 
     /// <summary>Root length per layer [cm.cm-2].</summary>
     WL_arr: TSoilVarArray;
+ 
     /// <summary>Active root length [cm.cm-2].</summary>
     effWL_arr: TSoilVarArray;
 
     /// <summary>Maximum number of rooted compartments.</summary>
     N_Rootcomp,
 
-    /// <summary>Root length density in the first 15 cm.</summary>
+    /// <summary>severeal grouped root length densities.</summary>
     WLD_0_15, WLD_15_30, WLD_30_45, WLD_45_60, WLD_60_75, WLD_75_90, WLD_90_105,
       WLD_105_120,
 
       WLD_0_30, WLD_30_60, WLD_60_90, WLD_90_120, WLD_120_150, WLD_0_150,
 
-    /// <summary>Effective root length density in the first 30 cm, i.e., after subtracting dead or inactive roots.</summary>
+    /// <summary>several grouped effective root length densities.</summary>
     effWLD_0_30, effWLD_30_60, effWLD_60_90, effWLD_90_120, effWLD_120_150,
 
       WLD_0_10, WLD_10_20, WLD_20_30, WLD_30_40, WLD_40_50, WLD_50_60,
@@ -132,16 +137,21 @@ type
     /// <summary>If true, root growth does not start before emergence.</summary>
     RootGrowthAfterEmergence: Toption;
 
+/// <summary>Instantiates the objects of the class </summary>
     procedure CreateAll; override;
 
+/// <summary>Initializes the class, assigns the plant model and initializes arrays and variables.</summary>
     procedure Init(var GlobMod: Tmod); override;
 
+/// <summary>Calculates all rates, i.e. root length densities and rooting depth increase.</summary>
     procedure CalcRates; override;
 
+/// <summary>Integrates the states, i.e. rooting depth and temperature sum for root growth.</summary>
     procedure Integrate; override;
 
   published
 
+/// <summary>Coupled soil water model of class TSoilWaterModelR.</summary>
     property RootedSoilWaterModel: TSoilWaterModelR read fRootedSoilWatermodel
       write fRootedSoilWatermodel;
 
@@ -254,18 +264,7 @@ uses
 
   {************************************************************************* }
 
-function monomo_f(Pmax, P0, k, t: real): real;
 
-begin
-  monomo_f := Pmax - (Pmax - P0) * exp(-k * t);
-end;
-
-function Logis_f(Wmax, W0, k, Tsum: real): real;
-
-begin
-  result := Wmax / (1 + (Wmax / W0 - 1) * exp(-Tsum * k))
-
-end;
 
 /// <summary>Calculates root length density.</summary>
 /// <param name="wld0">Initial value of WLD.</param>
@@ -287,7 +286,6 @@ var
   wld0, a: real;
 
 begin
-
   If z1 > zr.v then
   begin
     WLD_z_t_f := 0.0;
@@ -322,9 +320,11 @@ var
 begin
   inherited CreateAll;
 
-  ParCreate('BaseTempRoots', '[°C]', 0, TempSumRootBaseTemp);
+  ParCreate('BaseTempRoots', '[°C]', 0, TempSumRootBaseTemp,'Base temperature for root growth');
 
   ParCreate('zr_0', '[cm]', 2, zr0, 'rooting depth at simulation start');
+  
+
   ParCreate('K_za', '[cm.cm-1.°C*d-1]', 0.00394, k_za,
     'relative rooting depth increase during exponential phase (if applies)');
   ParCreate('K_zb', '[cm.°C*d-1]', 0.107, k_zb,

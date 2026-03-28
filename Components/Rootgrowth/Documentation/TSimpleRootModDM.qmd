@@ -406,3 +406,76 @@ m <- m + theme_bw(base_size = 14)
 m
 
 ```
+
+## Boxcar representation of active root length
+
+In `USimpleRootModDM.pas`, active root length is represented with a **boxcar ageing scheme**. For each soil compartment, root length is stored in a matrix of discrete age classes (`Root_Matrix[i,j]`). Each column corresponds to one age class, so the matrix keeps track of how much root length in a compartment belongs to young, recently formed roots and how much belongs to older roots.
+
+At the beginning of a simulation run, the age-class counter `n_age_cl` is set to zero. During the simulation it increases by one per day until the maximum number of age classes (`MaxAgeCl`) is reached. On each day, the content of the age classes is shifted by one position toward older classes:
+
+$$
+RootMatrix_{i,j}(t) = RootMatrix_{i,j-1}(t-1)
+\qquad \text{for } j = n\_age\_cl, \dots, 2
+$$ {#eq-boxcarShift}
+
+This means that root length formed on previous days ages stepwise from one class to the next.
+
+### Daily root increment
+
+For each root compartment \(i\), total root length is obtained from root length density and compartment thickness:
+
+$$
+WL_i(t) = WLD_i(t) \cdot \Delta z_i
+$$ {#eq-rootLength}
+
+where
+
+$$
+\Delta z_i = z_i - z_{i-1}
+$$ {#eq-compartmentThickness}
+
+is the thickness of compartment \(i\). The newly formed root length for the current day is then computed as the positive increment:
+
+$$
+\Delta WL_i(t) = \max \left(0,\; WL_i(t) - WL_i(t-1)\right)
+$$ {#eq-rootIncrement}
+
+This increment is assigned to the youngest age class:
+
+$$
+RootMatrix_{i,1}(t) = \Delta WL_i(t)
+$$ {#eq-newRootLength}
+
+Thus, the first boxcar always contains the new roots formed during the current time step.
+
+### Effective root length
+
+Only the younger age classes are considered physiologically active. The effective root length in compartment \(i\) is therefore calculated as the sum over all age classes up to the active root duration:
+
+$$
+EffWL_i(t) =
+\sum_{j=1}^{\min(\mathrm{ActiveDuration},\,\mathrm{MaxAgeCl})}
+RootMatrix_{i,j}(t)
+$$ {#eq-effectiveRootLength}}
+
+This means that roots older than `ActiveDuration` are still tracked in the boxcar matrix, but they no longer contribute to effective root activity.
+
+The total effective root length in the whole rooted soil profile is then:
+
+$$
+SRL_{eff}(t) = \sum_i EffWL_i(t)
+$$ {#eq-totalEffectiveRootLength}}
+
+### Effective root length density
+
+For each compartment, the effective root length density is derived by dividing effective root length by compartment thickness:
+
+$$
+EffWLD_i(t) = \frac{EffWL_i(t)}{\Delta z_i}
+$$ {#eq-effectiveRootLengthDensity}}
+
+This quantity represents the density of roots that are still considered active in water and nutrient uptake.
+
+### Interpretation
+
+The boxcar approach is a simple discrete ageing model. New roots enter the first age class, then move day by day into older classes. Root activity is restricted to the youngest fraction of the root system, as defined by `ActiveDuration`. In this way, the algorithm distinguishes between total root length and the smaller fraction of roots that are still effective for uptake processes.
