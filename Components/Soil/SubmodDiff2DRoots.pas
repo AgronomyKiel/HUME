@@ -28,13 +28,13 @@ type
 
   { Classes }
   TSubmodDiff2DRoots = class(TSubModRootDiff)
-    { Declaration of class TSubmodRootDiff2D. The class performs the calculations
+    { Declaration of class TSubmodDiff2DRoots. The class performs the calculations
       for the root function model. }
   private
     { Private declarations }
     ContPosx, // Hard-coded position of the container center
     ContPosy,
-    { Array remembers whether the output file for sink influx was created. This
+    { Flag remembers whether the output file for sink influx was created. This
       should happen anew before each model run -> FileWasCreated is set to false
       in init; in CalcRates the file is created once and the flag is set to true }
 
@@ -165,7 +165,7 @@ type
     property var_dx: TVar read dx write dx; { Grid spacing X direction [cm] }
     property var_dy: TVar read dy write dy; { Grid spacing Y direction [cm] }
     property MyMathImage: TMathImage read fMyMathImage write fMyMathImage;
-  end; { End of declaration TSubmodRootDiff2D }
+  end; { End of declaration TSubmodDiff2DRoots }
 
 procedure Register;
 
@@ -229,8 +229,8 @@ procedure TSubmodDiff2DRoots.createAll;
   Erzeugen und Initialisieren von Zustandsvariablen, Variablen und Parametern.
   Der erste Parameter des Funktionsaufrufs übergibt einen String, der mit dem Be-
   zeichner identisch ist und nachdem gesucht werden kann.
-  Der zweite Paramter enthält einen String zur Kennzeichnung der verwendeten
-  Einheit ([n] für dimensionslose Paramter etc.)
+  Der zweite Parameter enthält einen String zur Kennzeichnung der verwendeten
+  Einheit ([n] für dimensionslose Parameter etc.)
   Der dritte Parameter ist der eigentliche (Fließkomma)-Wert
   Erläuterung der Bezeichner s. Deklaration.
   ------------------------------------------------------------------------------ *)
@@ -623,8 +623,7 @@ var
   u_vektor, { unterhalb gelegener Konzentrationsvektor }
   z_vektor, { z_vektor : zu berechnender, zentral gelegener vektor }
   o_vektor: array_type; { oberhalb gelegener Konzentrationsvektor }
-  { Hinweis: Da array_type auch im Original bei 0 beginnt, muss hier nichts ver-
-    öndert werden. }
+  { Hinweis: Da array_type auch im Original bei 0 beginnt, muss hier nichts verändert werden. }
   Result, i: word;
   Df: real;
   x_ndx, y_ndx: integer; { Schleifenvariablen für Gitterelemente }
