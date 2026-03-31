@@ -3523,7 +3523,6 @@ var
   act_IniFn: string;
   NewInifile: TMyIniFile;
   ControlFile: textFile;
-  ndx: Integer;
   gFile: TStreamReader;
   gLine: string;
 
@@ -3548,9 +3547,13 @@ begin
         continue;
       if fileexists(act_IniFn) then
       begin
-        if not FIniFiles.Find(act_IniFn, ndx) then
+        // Use IndexOf (linear search) because FIniFiles is not sorted;
+        // only create and register a new instance when not already present.
+        if FIniFiles.IndexOf(act_IniFn) < 0 then
+        begin
           NewInifile := CreateIniFileWithRetry(act_IniFn);
-        FIniFiles.AddObject(act_IniFn, NewInifile);
+          FIniFiles.AddObject(act_IniFn, NewInifile);
+        end;
       end
       else
       begin
