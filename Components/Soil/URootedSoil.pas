@@ -666,6 +666,7 @@ begin
     for i := 1 to act_n_comp do
     begin
       if Sqr_Wl_arr[i] > 1E-6 then
+        //
         Sink_arr[i].v := 0.1 * PotTrans.v * Sqr_Wl_arr[i] / Sum_Sqr_wl
       else
         Sink_arr[i].v := 0.0;

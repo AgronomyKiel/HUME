@@ -232,17 +232,21 @@ df1$sinkredf <- pmax(0,pmin(1, (df1$psis-psi3)/(psi2-psi3)))
 
 
 # potential sink term distributed without reduction factor (NoReductionFactor option)
+df1$SinkTerm <- df1$pSink
+=======
 df1$SinkTerm <- df1$pSink*df1$sinkredf
+>>>>>>> 0358c07 (Verbesserte Version der Dateizugriffe auf Inifiles in UMod.pas, UGenucht mit englischen Kommentaren, verbesserte Dokumentationsdatei für TSoilwaterModelR)
+
 
 # Jarvis correction factor omega
 omega <-  sum(df1$sinkredf*df1$NRLD)
 
-
+<<<<<<< HEAD
 # actual sink term: potential sink reduced once by sinkredf
+=======
+>>>>>>> 0358c07 (Verbesserte Version der Dateizugriffe auf Inifiles in UMod.pas, UGenucht mit englischen Kommentaren, verbesserte Dokumentationsdatei für TSoilwaterModelR)
 df1$Sact <- df1$SinkTerm*df1$sinkredf
 Tact <- sum(df1$Sact)
-
-
 
 Tact_Tpot <- Tact/(PotTrans*0.1)
 

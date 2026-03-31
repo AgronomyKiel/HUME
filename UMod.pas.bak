@@ -1745,8 +1745,12 @@ begin
   for subMod := 0 to SubModStrList.count - 1 do
   begin
     // SubModel[SubMod].destroy;
+<<<<<<< HEAD
   end;
   FreeAndNil(SubModStrList);
+=======
+    SubModStrList.free;
+>>>>>>> 0358c07 (Verbesserte Version der Dateizugriffe auf Inifiles in UMod.pas, UGenucht mit englischen Kommentaren, verbesserte Dokumentationsdatei für TSoilwaterModelR)
   FreeAndNil(OptionIniFile);
   FreeAndNil(ParamInifile);
   FreeAndNil(StateIniFile);
@@ -2951,12 +2955,18 @@ begin
     // ActParamInifile.FileName := ActParamfileName;
     ActparamInifile := CreateIniFileWithRetry(ActParamFileName);
     ActparamInifile.CaseSensitive := false;
+<<<<<<< HEAD
     try
       OldParameterValues[i] := ActparamInifile.ReadFloat(submodname,
         SensOpt.SelSenspar.Name, OldParameterValues[i]); // , success);
     finally
       ActparamInifile.Free;
     end;
+=======
+    OldParameterValues[i] := ActparamInifile.ReadFloat(submodname,
+      SensOpt.SelSenspar.Name, OldParameterValues[i]); // , success);
+    ActparamInifile.free;
+>>>>>>> 0358c07 (Verbesserte Version der Dateizugriffe auf Inifiles in UMod.pas, UGenucht mit englischen Kommentaren, verbesserte Dokumentationsdatei für TSoilwaterModelR)
   end;
 
 
@@ -3549,6 +3559,7 @@ begin
         continue;
       if fileexists(act_IniFn) then
       begin
+<<<<<<< HEAD
         // Use IndexOf (linear search) because FIniFiles is not sorted;
         // only create and register a new instance when not already present.
         if FIniFiles.IndexOf(act_IniFn) < 0 then
@@ -3556,9 +3567,11 @@ begin
           NewInifile := CreateIniFileWithRetry(act_IniFn);
           FIniFiles.AddObject(act_IniFn, NewInifile);
         end;
+=======
         if not FIniFiles.Find(act_IniFn, ndx) then
           NewInifile := CreateIniFileWithRetry(act_IniFn);
         FIniFiles.AddObject(act_IniFn, NewInifile);
+>>>>>>> 0358c07 (Verbesserte Version der Dateizugriffe auf Inifiles in UMod.pas, UGenucht mit englischen Kommentaren, verbesserte Dokumentationsdatei für TSoilwaterModelR)
       end
       else
       begin
