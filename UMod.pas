@@ -1741,8 +1741,10 @@ begin
     end;
   end;
   for subMod := 0 to SubModStrList.count - 1 do
+  begin
     // SubModel[SubMod].destroy;
-    SubModStrList.free;
+  end;
+  FreeAndNil(SubModStrList);
   FreeAndNil(OptionIniFile);
   FreeAndNil(ParamInifile);
   FreeAndNil(StateIniFile);
