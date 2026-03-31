@@ -3626,7 +3626,7 @@ end;
 procedure TMod.InitOptionsIniFile(var OptionInifilefn: string);
 
 var
-  f: textFile;
+  IniFile: TMyIniFile;
 begin
   // read Option Ini file name and create if not existing
   OptionInifilefn := ActIniFile.ReadString(Str_SectionName_FileNames,
@@ -3640,18 +3640,21 @@ begin
         FStr_SectionTopic_OptionIniFN, OptionInifilefn);
       ActIniFile.UpdateFile;
     end;
-    assignfile(f, OptionInifilefn);
-    rewrite(f);
-    // showmessage(OptionInifilefn);
-    writeln(f);
-    Close(f);
+    if ExtractFilePath(OptionInifilefn) <> '' then
+      ForceDirectories(ExtractFilePath(OptionInifilefn));
+    IniFile := TMyIniFile.Create(OptionInifilefn, TEncoding.UTF8);
+    try
+      IniFile.UpdateFile;
+    finally
+      IniFile.Free;
+    end;
   end;
 end;
 
 procedure TMod.InitParmIniFile(var ParamIniFilefn: string);
 
 var
-  f: textFile;
+  IniFile: TMyIniFile;
 begin
   // read parameter Ini file name and create if not existing
   ParamIniFilefn := ActIniFile.ReadString(Str_SectionName_FileNames,
@@ -3660,21 +3663,26 @@ begin
   begin
     if ParamIniFilefn = '' then
     begin
+      ParamIniFilefn := EXE_DIR + Path_sep + FNParametersXIni;
       ActIniFile.WriteString(Str_SectionName_FileNames,
         Str_SectionTopic_ParamIniFN, ParamIniFilefn);
       ActIniFile.UpdateFile;
     end;
-    assignfile(f, ParamIniFilefn);
-    rewrite(f);
-    writeln(f);
-    Close(f);
+    if ExtractFilePath(ParamIniFilefn) <> '' then
+      ForceDirectories(ExtractFilePath(ParamIniFilefn));
+    IniFile := TMyIniFile.Create(ParamIniFilefn, TEncoding.UTF8);
+    try
+      IniFile.UpdateFile;
+    finally
+      IniFile.Free;
+    end;
   end;
 end;
 
 procedure TMod.InitStateIniFile(var StateInifilefn: string);
 
 var
-  f: textFile;
+  IniFile: TMyIniFile;
 begin
   // read state Ini file name and create if not existing
   StateInifilefn := ActIniFile.ReadString(Str_SectionName_FileNames,
@@ -3688,10 +3696,14 @@ begin
         Str_SectionTopic_StateIniFN, StateInifilefn);
       ActIniFile.UpdateFile;
     end;
-    assignfile(f, StateInifilefn);
-    rewrite(f);
-    writeln(f);
-    Close(f);
+    if ExtractFilePath(StateInifilefn) <> '' then
+      ForceDirectories(ExtractFilePath(StateInifilefn));
+    IniFile := TMyIniFile.Create(StateInifilefn, TEncoding.UTF8);
+    try
+      IniFile.UpdateFile;
+    finally
+      IniFile.Free;
+    end;
   end;
 end;
 
