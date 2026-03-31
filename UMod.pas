@@ -2949,9 +2949,12 @@ begin
     // ActParamInifile.FileName := ActParamfileName;
     ActparamInifile := CreateIniFileWithRetry(ActParamFileName);
     ActparamInifile.CaseSensitive := false;
-    OldParameterValues[i] := ActparamInifile.ReadFloat(submodname,
-      SensOpt.SelSenspar.Name, OldParameterValues[i]); // , success);
-    ActparamInifile.free;
+    try
+      OldParameterValues[i] := ActparamInifile.ReadFloat(submodname,
+        SensOpt.SelSenspar.Name, OldParameterValues[i]); // , success);
+    finally
+      ActparamInifile.Free;
+    end;
   end;
 
 
