@@ -84,62 +84,125 @@
       </propertyref>
     </ancestor>
     <members>
-      <field name="b_sat" type="Double" visibility="public" size="8" offset="8" file="UGenucht.pas" line="28" />
-      <field name="b_rest" type="Double" visibility="public" size="8" offset="16" file="UGenucht.pas" line="29" />
-      <field name="Ks" type="Double" visibility="public" size="8" offset="24" file="UGenucht.pas" line="30" />
-      <field name="alpha" type="Double" visibility="public" size="8" offset="32" file="UGenucht.pas" line="31" />
-      <field name="n_par" type="Double" visibility="public" size="8" offset="40" file="UGenucht.pas" line="32" />
-      <field name="m_par" type="Double" visibility="public" size="8" offset="48" file="UGenucht.pas" line="33" />
-      <field name="l_par" type="Double" visibility="public" size="8" offset="56" file="UGenucht.pas" line="35" />
-      <function name="b_rel_f" visibility="public" file="UGenucht.pas" line="37">
+      <field name="b_sat" type="Double" visibility="public" size="8" offset="8" file="UGenucht.pas" line="29">
+        <devnotes>
+           <summary>Water content at saturation [cm3/cm3].</summary>
+        </devnotes>
+      </field>
+      <field name="b_rest" type="Double" visibility="public" size="8" offset="16" file="UGenucht.pas" line="32">
+        <devnotes>
+           <summary>Residual water content [cm3/cm3].</summary>
+        </devnotes>
+      </field>
+      <field name="Ks" type="Double" visibility="public" size="8" offset="24" file="UGenucht.pas" line="35">
+        <devnotes>
+           <summary>Saturated hydraulic conductivity [cm/d].</summary>
+        </devnotes>
+      </field>
+      <field name="alpha" type="Double" visibility="public" size="8" offset="32" file="UGenucht.pas" line="38">
+        <devnotes>
+           <summary>Fitting parameter &quot;alpha&quot; [1/cm].</summary>
+        </devnotes>
+      </field>
+      <field name="n_par" type="Double" visibility="public" size="8" offset="40" file="UGenucht.pas" line="41">
+        <devnotes>
+           <summary>Dimensionless fitting parameter &quot;n&quot;.</summary>
+        </devnotes>
+      </field>
+      <field name="m_par" type="Double" visibility="public" size="8" offset="48" file="UGenucht.pas" line="46">
+        <devnotes>
+           <summary>
+           Fitting parameter &quot;m&quot; = 1-1/n (Mualem), 1-2/n (Burdine), or 1 (Vereecken).
+           </summary>
+        </devnotes>
+      </field>
+      <field name="l_par" type="Double" visibility="public" size="8" offset="56" file="UGenucht.pas" line="49">
+        <devnotes>
+           <summary>Fitting parameter &quot;l&quot;.</summary>
+        </devnotes>
+      </field>
+      <function name="b_rel_f" visibility="public" file="UGenucht.pas" line="55">
+        <devnotes>
+           <summary>
+           Calculates the relative water content from volumetric water content (b),
+           residual water content (b_rest), and water content at saturation (b_sat).
+           </summary>
+        </devnotes>
         <parameters>
           <parameter name="b" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="b_psi_f" visibility="public" file="UGenucht.pas" line="43">
+      <function name="b_psi_f" visibility="public" file="UGenucht.pas" line="58">
+        <devnotes>
+           <summary>Calculates volumetric water content (b) from water tension (psi).</summary>
+        </devnotes>
         <parameters>
           <parameter name="psi" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="psi_b_f" visibility="public" file="UGenucht.pas" line="48">
+      <function name="psi_b_f" visibility="public" file="UGenucht.pas" line="64">
+        <devnotes>
+           <summary>
+           Calculates the absolute value of water tension (positive)
+           from volumetric water content.
+           </summary>
+        </devnotes>
         <parameters>
           <parameter name="b" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="Ku_b_f" visibility="public" file="UGenucht.pas" line="53">
+      <function name="Ku_b_f" visibility="public" file="UGenucht.pas" line="67">
+        <devnotes>
+           <summary>Calculates unsaturated hydraulic conductivity.</summary>
+        </devnotes>
         <parameters>
           <parameter name="b" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="Ku_psi_f" visibility="public" file="UGenucht.pas" line="57">
+      <function name="Ku_psi_f" visibility="public" file="UGenucht.pas" line="70">
+        <devnotes>
+           <summary>Calculates unsaturated hydraulic conductivity.</summary>
+        </devnotes>
         <parameters>
           <parameter name="psi" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="C_b_f" visibility="public" file="UGenucht.pas" line="61">
+      <function name="C_b_f" visibility="public" file="UGenucht.pas" line="73">
+        <devnotes>
+           <summary>Calculates specific water storage capacity.</summary>
+        </devnotes>
         <parameters>
           <parameter name="b" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="C_psi_f" visibility="public" file="UGenucht.pas" line="65">
+      <function name="C_psi_f" visibility="public" file="UGenucht.pas" line="76">
+        <devnotes>
+           <summary>Calculates specific water storage capacity.</summary>
+        </devnotes>
         <parameters>
           <parameter name="psi" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="Dw_f" visibility="public" file="UGenucht.pas" line="67">
+      <function name="Dw_f" visibility="public" file="UGenucht.pas" line="79">
+        <devnotes>
+           <summary>Calculates water diffusivity.</summary>
+        </devnotes>
         <parameters>
           <parameter name="b" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="b_rel_psi_f" visibility="public" file="UGenucht.pas" line="71">
+      <function name="b_rel_psi_f" visibility="public" file="UGenucht.pas" line="82">
+        <devnotes>
+           <summary>Calculates relative water content from water tension &quot;psi&quot;.</summary>
+        </devnotes>
         <parameters>
           <parameter name="psi" type="Double" />
           <retval type="Double" />

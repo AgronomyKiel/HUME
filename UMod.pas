@@ -1286,6 +1286,62 @@ begin
 end;
 
 {$ENDIF}
+const
+  IniFileRetryCount = 10;
+  IniFileRetryDelayMs = 50;
+
+function CreateIniFileWithRetry(const FileName: string): TMyIniFile;
+var
+  Attempt: Integer;
+begin
+  for Attempt := 1 to IniFileRetryCount do
+    try
+      Result := TMyIniFile.Create(FileName, TEncoding.UTF8);
+      Exit;
+    except
+      on EFCreateError do
+      begin
+        if Attempt = IniFileRetryCount then
+          raise;
+        TThread.Sleep(IniFileRetryDelayMs);
+      end;
+      on EInOutError do
+      begin
+        if Attempt = IniFileRetryCount then
+          raise;
+        TThread.Sleep(IniFileRetryDelayMs);
+      end;
+    end;
+  Result := nil;
+end;
+
+procedure UpdateIniFileWithRetry(IniFile: TCustomIniFile);
+var
+  Attempt: Integer;
+begin
+  if IniFile = nil then
+    Exit;
+
+  for Attempt := 1 to IniFileRetryCount do
+    try
+      IniFile.UpdateFile;
+      Exit;
+    except
+      on EFCreateError do
+      begin
+        if Attempt = IniFileRetryCount then
+          raise;
+        TThread.Sleep(IniFileRetryDelayMs);
+      end;
+      on EInOutError do
+      begin
+        if Attempt = IniFileRetryCount then
+          raise;
+        TThread.Sleep(IniFileRetryDelayMs);
+      end;
+    end;
+end;
+
 /// <summary> Gets name of Control file (published for use in object inspector) </summary>
 /// <returns> TMyFileName </returns>
 
@@ -1311,7 +1367,7 @@ var
     // if yes, read control file name from properties.ini
     begin
       if FPropIniFile = nil then
-        FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
+        FPropIniFile := CreateIniFileWithRetry(fn);
       // if FPropIniFile.FileName = '' then
       // FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
       NewCtrlFileFN := FPropIniFile.ReadString('Files', 'ControlFile', '');
@@ -1337,9 +1393,9 @@ var
       prop_path := ExtractFilePath(ParamStr(0));
       fn := prop_path + FNModProperties;
       if FPropIniFile = nil then
-        FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
+        FPropIniFile := CreateIniFileWithRetry(fn);
       FPropIniFile.WriteString('Files', 'ControlFile', NewCtrlFileFN);
-      FPropIniFile.UpdateFile;
+      UpdateIniFileWithRetry(FPropIniFile);
     end;
     if fileexists(NewCtrlFileFN) then
       ControlFileFN := NewCtrlFileFN
@@ -1409,7 +1465,7 @@ begin
    //fn := FNModProperties;
    fn := self.FPropIniFile.FileName;
    if (FPropIniFile = nil) then
-     FPropIniFile := TMyIniFile.create(fn,  TEncoding.UTF8);
+     FPropIniFile := CreateIniFileWithRetry(fn);
 //  FPropIniFile.UpdateFile;
   for i := 0 to strList.count - 1 do
   begin
@@ -1687,6 +1743,10 @@ begin
   for subMod := 0 to SubModStrList.count - 1 do
     // SubModel[SubMod].destroy;
     SubModStrList.free;
+  FreeAndNil(OptionIniFile);
+  FreeAndNil(ParamInifile);
+  FreeAndNil(StateIniFile);
+  FreeAndNil(FPropIniFile);
   inherited;
 end;
 
@@ -2047,7 +2107,7 @@ var
 begin
   Get_ControlFileFn();
   if FPropIniFile = nil then
-    FPropIniFile := TMemInifile.Create(FNModProperties);
+    FPropIniFile := CreateIniFileWithRetry(FNModProperties);
   SelectionStr := FPropIniFile.ReadString('ModelSettings', 'ContOutput', 'ContOutput');
   fContOutput :=  TContOutput(GetEnumValue(System.TypeInfo(TContOutput), SelectionStr));
 
@@ -2094,7 +2154,7 @@ begin
     end;
   end;
 {$ENDIF}
-  FPropIniFile.UpdateFile;
+  UpdateIniFileWithRetry(FPropIniFile);
 
   InitGlobalOutputList;
   WriteGlobalOutputNames(fFNGlobalOutput);
@@ -2258,10 +2318,10 @@ begin
     // DeleteFile(FReg_FN);    // f�r einzelberechnungen entfernen!
     // ClearAllDataSeries;     // f�r einzelberechnungen entfernen!
     // AllMeasVal.Clear;       // f�r einzelberechnungen entfernen!
-    ParamInifile.UpdateFile;
-    StateIniFile.UpdateFile;
-    OptionIniFile.UpdateFile;
-    FPropIniFile.UpdateFile
+    UpdateIniFileWithRetry(ParamInifile);
+    UpdateIniFileWithRetry(StateIniFile);
+    UpdateIniFileWithRetry(OptionIniFile);
+    UpdateIniFileWithRetry(FPropIniFile)
 
   end; // End of simulation run
   // globRes.Flush;
@@ -2487,7 +2547,7 @@ begin
     // write the actual parameter value in the Ini-file
     ParamInifile.WriteFloat(submodname, SensOpt.SelSenspar.Name,
       ActParameterValue);
-    ParamInifile.UpdateFile;
+    UpdateIniFileWithRetry(ParamInifile);
 
     // prepare for simulation run, regarding the actual "step" of the
     // chosen sensitivity parameter
@@ -2548,7 +2608,7 @@ begin
   CloseFile(SensOpt.fSens_final);
   ParamInifile.WriteFloat(submodname, SensOpt.SelSenspar.Name,
     OldParameterValue);
-  ParamInifile.UpdateFile;
+  UpdateIniFileWithRetry(ParamInifile);
 
   for i := 0 to SensOpt.FOutList.count - 1 do
   begin
@@ -2683,10 +2743,10 @@ begin
       ActIniFile := TMyIniFile(FIniFiles.Objects[j]);
       ParamIniFilefn := ActIniFile.ReadString('FileNames', 'ParamIniFN', '');
       ParamInifile.free;
-      ParamInifile := TMyIniFile.create(ParamIniFilefn, TEncoding.UTF8);
+      ParamInifile := CreateIniFileWithRetry(ParamIniFilefn);
       ParamInifile.WriteFloat(submodname, SensOpt.SelSenspar.Name, //
         ActParameterValue); //
-      ParamInifile.UpdateFile; //
+      UpdateIniFileWithRetry(ParamInifile); //
     end;
 
     // prepare for simulation run, regarding the actual "step" of the
@@ -2755,10 +2815,10 @@ begin
     ActIniFile := TMyIniFile(FIniFiles.Objects[j]);
     ParamIniFilefn := ActIniFile.ReadString('FileNames', 'ParamIniFN', '');
     ParamInifile.free;
-    ParamInifile := TMyIniFile.create(ParamIniFilefn, TEncoding.UTF8);
+    ParamInifile := CreateIniFileWithRetry(ParamIniFilefn);
     ParamInifile.WriteFloat(submodname, SensOpt.SelSenspar.Name, //
       OldParameterValue);
-    ParamInifile.UpdateFile; //
+    UpdateIniFileWithRetry(ParamInifile); //
   end;
 
 end;
@@ -2885,10 +2945,11 @@ begin
     ActParamFileName := ActIniFile.ReadString('FileNames', 'ParamIniFN',
       ActParamFileName);
     // ActParamInifile.FileName := ActParamfileName;
-    ActparamInifile := TMyIniFile.create(ActParamFileName, TEncoding.UTF8);
+    ActparamInifile := CreateIniFileWithRetry(ActParamFileName);
     ActparamInifile.CaseSensitive := false;
     OldParameterValues[i] := ActparamInifile.ReadFloat(submodname,
       SensOpt.SelSenspar.Name, OldParameterValues[i]); // , success);
+    ActparamInifile.free;
   end;
 
 
@@ -2942,10 +3003,10 @@ begin
     ActParamFileName := ActIniFile.ReadString('FileNames', 'ParamIniFN',
       ActParamFileName);
     // TODO ActParamInifile.FileName := ActParamfileName;
-    ActparamInifile := TMyIniFile.create(ActParamFileName, TEncoding.UTF8);
+    ActparamInifile := CreateIniFileWithRetry(ActParamFileName);
     ActparamInifile.WriteFloat(submodname, SensOpt.SelSenspar.Name,
       OldParameterValues[i]);
-    ActparamInifile.UpdateFile;
+    UpdateIniFileWithRetry(ActparamInifile);
     ActparamInifile.free;
   end;
 
@@ -3483,13 +3544,13 @@ begin
       if fileexists(act_IniFn) then
       begin
         if not FIniFiles.Find(act_IniFn, ndx) then
-          NewInifile := TMyIniFile.create(act_IniFn, TEncoding.UTF8);
+          NewInifile := CreateIniFileWithRetry(act_IniFn);
         FIniFiles.AddObject(act_IniFn, NewInifile);
       end
       else
       begin
         NewFile := true;
-        NewInifile := TMyIniFile.create(act_IniFn, TEncoding.UTF8);
+        NewInifile := CreateIniFileWithRetry(act_IniFn);
         with NewInifile do
         begin
           CaseSensitive := false;
@@ -3504,7 +3565,7 @@ begin
               GetCurrentDir + Path_sep + FNStateIni);
             WriteString(Str_SectionName_FileNames, Str_SectionTopic_ParamIniFN,
               GetCurrentDir + Path_sep + FNParametersXIni);
-            NewInifile.UpDateFile;
+            UpdateIniFileWithRetry(NewInifile);
           end;
         end;
       end;
@@ -3638,13 +3699,13 @@ begin
       OptionInifilefn := GetCurrentDir + Path_sep + FNOptionsIni;
       ActIniFile.Writestring(Str_SectionName_FileNames,
         FStr_SectionTopic_OptionIniFN, OptionInifilefn);
-      ActIniFile.UpdateFile;
+      UpdateIniFileWithRetry(ActIniFile);
     end;
     if ExtractFilePath(OptionInifilefn) <> '' then
       ForceDirectories(ExtractFilePath(OptionInifilefn));
-    IniFile := TMyIniFile.Create(OptionInifilefn, TEncoding.UTF8);
+    IniFile := CreateIniFileWithRetry(OptionInifilefn);
     try
-      IniFile.UpdateFile;
+      UpdateIniFileWithRetry(IniFile);
     finally
       IniFile.Free;
     end;
@@ -3666,13 +3727,13 @@ begin
       ParamIniFilefn := EXE_DIR + Path_sep + FNParametersXIni;
       ActIniFile.WriteString(Str_SectionName_FileNames,
         Str_SectionTopic_ParamIniFN, ParamIniFilefn);
-      ActIniFile.UpdateFile;
+      UpdateIniFileWithRetry(ActIniFile);
     end;
     if ExtractFilePath(ParamIniFilefn) <> '' then
       ForceDirectories(ExtractFilePath(ParamIniFilefn));
-    IniFile := TMyIniFile.Create(ParamIniFilefn, TEncoding.UTF8);
+    IniFile := CreateIniFileWithRetry(ParamIniFilefn);
     try
-      IniFile.UpdateFile;
+      UpdateIniFileWithRetry(IniFile);
     finally
       IniFile.Free;
     end;
@@ -3694,13 +3755,13 @@ begin
       StateInifilefn := EXE_DIR + Path_sep + FNStateIni;
       ActIniFile.Writestring(Str_SectionName_FileNames,
         Str_SectionTopic_StateIniFN, StateInifilefn);
-      ActIniFile.UpdateFile;
+      UpdateIniFileWithRetry(ActIniFile);
     end;
     if ExtractFilePath(StateInifilefn) <> '' then
       ForceDirectories(ExtractFilePath(StateInifilefn));
-    IniFile := TMyIniFile.Create(StateInifilefn, TEncoding.UTF8);
+    IniFile := CreateIniFileWithRetry(StateInifilefn);
     try
-      IniFile.UpdateFile;
+      UpdateIniFileWithRetry(IniFile);
     finally
       IniFile.Free;
     end;
@@ -3752,14 +3813,14 @@ begin
   // init weather data file
   // if fileExists(WeatherFilefn) then
   // WeatherFile.Init(WeatherFileFN);
-  StateIniFile.free;
-  StateIniFile := TMyIniFile.create(StateInifilefn, TEncoding.UTF8);
+  FreeAndNil(StateIniFile);
+  StateIniFile := CreateIniFileWithRetry(StateInifilefn);
   StateIniFile.CaseSensitive := false;
-  ParamInifile.free;
-  ParamInifile := TMyIniFile.create(ParamIniFilefn, TEncoding.UTF8);
+  FreeAndNil(ParamInifile);
+  ParamInifile := CreateIniFileWithRetry(ParamIniFilefn);
   ParamInifile.CaseSensitive := false;
-  OptionIniFile.free;
-  OptionIniFile := TMyIniFile.create(OptionInifilefn, TEncoding.UTF8);
+  FreeAndNil(OptionIniFile);
+  OptionIniFile := CreateIniFileWithRetry(OptionInifilefn);
   OptionIniFile.CaseSensitive := false;
 end;
 
@@ -4201,7 +4262,7 @@ begin
       else
       begin
         WriteFloat(submodname, ParName, DefaultValue);
-        ParIniF.UpdateFile;
+        UpdateIniFileWithRetry(ParIniF);
       end
     end;
   end;
@@ -4228,7 +4289,7 @@ begin
     if OptString = '' then
     begin
       OptionIniF.WriteString(submodname, OptName, Option.Option);
-      OptionIniF.UpdateFile;
+      UpdateIniFileWithRetry(OptionIniF);
       OptString := Option.Option;
     end;
   end;
@@ -5841,7 +5902,7 @@ begin
           Option.Option);
       end;
     end;
-    GlobMod.OptionIniFile.UpdateFile;
+    UpdateIniFileWithRetry(GlobMod.OptionIniFile);
   end;
 end;
 

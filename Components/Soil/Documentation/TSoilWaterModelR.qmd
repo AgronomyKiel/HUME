@@ -182,6 +182,7 @@ Params_RR <- read.table(fn_RR, header = TRUE, comment.char = "[", sep = ";", dec
 Params_RR$Source <- "RR"
 Params_RR$m <- 1-1/Params_RR$n
 
+PotTrans <- 5
 
 psis <- 1/depths^1.2*5e4
 df_psis <- data.frame(depths, psis)
@@ -202,13 +203,53 @@ PWP <- swc (psi=-10^4.2, alpha=Params$alpha,
                   n=Params$n,m=Params$m,theta_sat=Params$theta_s,
                   theta_res=Params$theta_r, lambda = Params$m * Params$n, type_swc = "VanGenuchten")
 
-CompF <- 1
+nFK <- FK-PWP
+
+# root competition factor
+CompF <- 0.5
+# thickness of layer
+dz <- 10
+
 df1 <- df_psis
 df1$rlds <- RLD0*exp(-RLDdec*df1$depths)
-df1 <- df1 %>% mutate(SumRLDComp = sum(rlds^CompF)) %>% ungroup()
-df1 <- df1 %>% mutate(SinkTerm = 0.1*5*df1$rlds^CompF/SumRLDComp) 
+df1$RL <- df1$rlds*dz
+
+
+# sum of root length in all layers considering the competition factor CompF
+SumRLComp <- sum(df1$rlds^CompF)
+
+# normalized root length  i.e. the fraction of root length in the layer i to the total root length in all layers considering the competition factor CompF
+df1 <- df1 %>% mutate(NRLD = (df1$rlds^CompF)/SumRLComp) %>% ungroup()
+
+# potential sink term for layer i without considering the reduction factor for root water uptake (f~sinkred~)
+df1 <- df1 %>% mutate(pSink = 0.1*PotTrans*NRLD) 
+
+#sum(df1$pSink)
+
+# reduction factor for root water uptake (f~sinkred~) 
 df1$sinkredf <- pmax(0,pmin(1, (df1$psis-psi3)/(psi2-psi3)))
+#summary(df1$sinkredf)
+
+
+df1$SinkTerm <- df1$pSink*df1$sinkredf
+
+
+# Jarvis correction factor omega
+omega <-  sum(df1$sinkredf*df1$NRLD)
+
 df1$Sact <- df1$SinkTerm*df1$sinkredf
+Tact <- sum(df1$Sact)
+
+Tact_Tpot <- Tact/(PotTrans*0.1)
+
+omega_c <- 0.6
+
+df1 <- df1 %>% mutate(Sact_Jarvis = sinkredf*NRLD*0.1*PotTrans*1/max(omega, omega_c)) %>% ungroup()
+Tact_jarvis <- sum(df1$Sact_Jarvis)
+
+Tact_jarvis/(PotTrans*0.1)
+
+
 df1$option <- "No reduction"
 
 
@@ -224,7 +265,7 @@ df2$Sact <- df2$SinkTerm*df2$sinkredf
 df2$option <- "Reduction by soil water potential"
 
 
-df <- rbind(df1, df2)
+df <- rbind(df1[,names(df2)], df2)
 
 
 p3 <- ggplot(df_psis, aes(x = depths, y = psis)) +
@@ -271,6 +312,44 @@ p <- (p3 + p4 )/ (p5 + p6) + plot_layout( guides = "collect") & theme(legend.pos
 
 p
 ```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+
+p <- ggplot(df1, aes(x = depths)) +
+  geom_line(aes (y=Sact), color="blue", size=1.5) +
+  geom_line(aes (y=Sact_Jarvis), color="red", size=1.5) +
+  coord_flip() +
+  scale_x_reverse() +
+  scale_y_log10() +
+  labs(title = "", x = "Depth (cm)", y = "Sink term [cm/d]") +
+  theme_minimal(base_size = 12)
+p
+#p3
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+
+p <- ggplot(df1, aes(x = depths)) +
+  geom_line(aes (y=Sact_Jarvis/Sact), color="blue", size=1.5) +
+  coord_flip() +
+  scale_x_reverse() +
+#  scale_y_log10() +
+  labs(title = "", x = "Depth (cm)", y = "Relative sink term [cm/d]") +
+  theme_minimal(base_size = 12)
+p
+```
+
+
+
 
 The potential sink term is reduced by the reduction factor for root water uptake (f~sinkred~) which is calculated based on the soil water potential in each soil layer (psi~i~), the soil water potential from which on water uptake is 0 (psi0) and a parameter for the soil water potential from which on water uptake decrease (psi~crit~). The reduction factor for root water uptake (f~sinkred~) is calculated as shown in Eq. @eq-fsinkred and illustrated in @fig-FeddesReduction.
 
