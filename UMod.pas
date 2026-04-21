@@ -151,7 +151,6 @@ type
 
   /// <summary> Simple class to save options for Sensitivity analysis </summary>
 {$IFDEF NONVISUAL}
-
   TSensitivityOptions = class(TObject)
 {$ELSE}
   TSensitivityOptions = class(TPersistent)
@@ -163,8 +162,7 @@ type
     /// <summary> file variables and names for output of sensitivity analysis </summary>
     fsens_read: array [0 .. 30] of TStreamReader;
     fsens_write: array [0 .. 30] of TStreamwriter;
-    // f_c  : array[0..30] of TStreamReader;
-
+ 
     /// <summary> file names for output of sensitivity analysis </summary>
     fn_SensRead, fn_SensWrite: array [0 .. 30] of string;
 
@@ -249,12 +247,9 @@ type
 {$ENDIF}
     /// <PrivateField> directory where program file is located </PrivateField>
     EXE_DIR: string;
-    /// directory where program file is located
-    /// directory where program file is located
+
     /// <PrivateField> directory where program file is located </PrivateField>
     FApplicationPath: TPath;
-    /// directory where program file is located
-    /// field for adress of status bar on main model formula
 
     /// <PrivateField> Model name </PrivateField>
     FTitle: string;
@@ -282,15 +277,13 @@ type
 
     /// <PrivateField> Name of global output file </PrivateField>
     fFNGlobalOutput: string;
-    /// file name for global Output
-    ///
+
     /// <PrivateField> Default directory for output </PrivateField>
     FOutputPath: TPath;
     /// default directory for output
 
     /// <PrivateField> flag for reading output path from Ini-file </PrivateField>
     fReadIniOutputPath: boolean;
-    /// flag for
 
     /// <PrivateField> Default directory for input </PrivateField>
     FInputPath: TPath;
@@ -308,33 +301,29 @@ type
 
     /// <PrivateField> End of simulation </PrivateField>
     FEndTime: TDateTime;
-    /// End of simulation
 
     /// <PrivateField> Options for optimization </PrivateField>
     FSensOptions: TSensitivityOptions;
-    /// Options for sensitivity analysis
 
     /// <PrivateField> smallest measured value accepted in Optimization </PrivateField>
     FMinLegalValue: real;
-    /// smallest measured value accepted in Optimization
 
     /// <PrivateField> flag if model should be reinitalised after run: defaul: true </PrivateField>
     fReInitAfterRun: boolean;
-    /// flag if model should be reinitalised after run: defaul: true
 
     /// <PrivateField> flag for showing time in date format </PrivateField>
     fShowDateFormat: boolean;
-    /// flag for showing time in date format
 
     /// <PrivateField> flag for writing res.ini files for documentation </PrivateField>
     fWriteResIni: boolean;
-    /// flag for writing res.ini files for documentation.
 
     /// <PrivateField> flag for writing res.ini files for documentation </PrivateField>
     fChiSqr: real;
+
     /// <PrivateField> option for continous output, type is TContOutput which defines the options
     /// NoContOutput, SubmodelSpecific and  AllContoutput </PrivateField>
     fContOutput: TContOutput;
+
     /// option for
     fOptContOutput: TOption;
     /// Toggle choice for file output every time step
@@ -437,10 +426,10 @@ type
     /// Pointer for GUI-properties saving file
     // {$ENDIF}
 
-    /// List of Inifiles
+    /// <summary> List of Inifiles </summary>
     FIniFiles: TStringList;
 
-    /// File variable of results of regression analysis
+    /// <summary> File variable of results of regression analysis </summary>
     FRegFile: textFile;
 
     /// <summary> The time state variable </summary>
@@ -453,48 +442,39 @@ type
 
     /// <summary> flag for end of simulation </summary>
     ModelEnd: boolean;
-    /// End of simulation ?
-
+ 
     /// <summary> the actual ini-file </summary>
     ActIniFile: TMyIniFile;
-    /// TMyIniFile; // actual Ini-File
-
+ 
     /// <summary> Ini-file with parameter values </summary>
     ParamInifile: TMyIniFile;
-    /// Ini-file with parameter values
-
+ 
     /// <summary> Ini-file with state variable initial values </summary>
     StateIniFile: TMyIniFile;
-    /// Ini-file with state variable initial values
-
+ 
     /// <summary> Ini-file with options for submodels </summary>
     OptionIniFile: TMyIniFile;
-    /// Ini-file with options for submodels
-
+ 
     /// <summary> TXT-file with weather data </summary>
     WeatherFile: TTextFileH;
     /// Weather data
 
     /// <summary> Output file stream for global output </summary>
     f_GlobalOutput: TStreamwriter;
-    /// output stream/file for output of selected vars
-
+ 
     /// <summary> Output file stream for global output </summary>
     AllMeasVal: TMeasList;
     /// list of all measurement values
 
     /// <summary> List of measured values </summary>
     SelMeasVal: TMeasList;
-    /// list of measurement values selected for optimization
-
+ 
     /// <summary> List of all parameters to be optimized </summary>
     SelParList: TStringList;
-    /// address list of all parameters to be optimized
-
+ 
     /// <summary> List of output variables selected for global output </summary>
     GlobalOutputList: TStringList;
-    /// address list of all values for global output
-
+ 
     /// <summary> Time of first weather data in Excel-Time integers </summary>
     FirstWeatherData: Integer;
 
@@ -502,11 +482,7 @@ type
     LastWeatherData: Integer;
     procedure free;
 
-    // {$IFDEF NONVISUAL}
-
-    // {$ENDIF}
-
-{$IFNDEF NONVISUAL}
+ {$IFNDEF NONVISUAL}
     /// constructor create
     constructor create(AOwner: TComponent); override;
 {$ELSE}
@@ -534,32 +510,29 @@ type
     /// <summary> Method for running the simulation model
     /// over all inifiles specified in the control file </summary>
     procedure run; virtual;
-    /// run method
-
+ 
     /// <summary> Method for running the simulation model for the actual inifile </summary>
     procedure runActIni; virtual;
-    /// run method for actual INI-file
-
+ 
     /// <summary> Method intialisation of the model </summary>
     procedure Init(IniFile: TMyIniFile); virtual;
-    /// Initialisation method
-
-    /// call inititalisation methods of sub-models
+ 
+    /// <summary> call inititalisation methods of sub-models </summary>
     procedure InitAllSubMods;
-    /// call data inititalisation methods of sub-models
+    /// <summary> call data inititalisation methods of sub-models </summary>
     procedure InitAllDataSeries;
-    /// call data inititalisation methods of sub-models
+    /// <summary> call data inititalisation methods of sub-models </summary>
     procedure InitGlobalOutputList;
-    ///
-    /// call integration methods of all sub-models
+    /// <summary> call integration methods of all sub-models </summary>
     procedure integrateAllSubModels; virtual;
-    /// call rate calculations of all sum-models
+    /// <summary> call rate calculations of all sum-models </summary>
     procedure CalcAllRates;
-    /// call variable calculations of all sub-models
+    /// <summary> call variable calculations of all sub-models </summary>
     procedure CalcAllVars;
-    /// call update procedure for all sub-models if applicable
+    /// <summary> call update procedure for all sub-models if applicable </summary>
     procedure UpdateAll;
 
+    /// <summary> perform calculations for each time step </summary>
     procedure EachTimeStepCalculations;
 
 
@@ -607,22 +580,22 @@ type
     /// calculation of sum of squared differences
     procedure ClearAllDataSeries;
 
-    /// Optimization routine
+    /// <summary> Optimization routine using Marquardt method </summary>
     procedure MarquardOptimization(fn: string);
-    /// Sensitivity analysis for single simulation run
+    /// <summary> Sensitivity analysis for single simulation run </summary>
     procedure CalcSensitivity;
-    /// Sensitivity analysis for single simulation run
+    /// <summary> Sensitivity analysis for single simulation run </summary>
     procedure CalcSensitivityMultRun;
-    /// Sensititvity of ChiSquare Values over 1 to several simulation runs
+    /// <summary> Sensititvity of ChiSquare Values over 1 to several simulation runs </summary>
     procedure CalcChiSquareSensitivity;
-    /// write some text file for documentation
+    /// <summary> write some text file for documentation </summary>
     procedure write_documentation;
 
-    /// Array property for convenient Access of Submodels, allows to access submodels by their index
+    /// <summary> Array property for convenient Access of Submodels, allows to access submodels by their index
     /// index is the index of the submodel in the list of submodels, starting with 0
     /// e.g. SubModel[0] returns the first submodel in the list of submodels
     /// SubModel[1] returns the second submodel in the list of submodels, etc.
-    /// useful for accessing submodels in a loop
+    /// useful for accessing submodels in a loop </summary>
     property SubModel[Index: Integer]: TSubmodel read getSubModel
       write setSubModel;
 
@@ -631,10 +604,10 @@ type
       write fReadIniOutputPath;
 
 {$IFNDEF NONVISUAL}
-    /// method for showing and changing model during design time
+    /// <summary> method for showing and changing model during design time </summary>
     procedure DblClick; override;
-    procedure Loaded; override;
 
+    /// <summary> method for setting the title of the model, which is shown in the design formular </summary> 
     procedure SetTitle(const Value: string);
 {$ENDIF}
   published
@@ -733,34 +706,35 @@ type
     /// Name of instance
     fName: string;
 {$ENDIF}
-    /// Index of computation order
+    ///<summary> Index of computation order </summary>
     FCompIndex: Integer;
-    /// List of assimilated submodels
+
+    ///<summary> List of assimilated submodels </summary>
     fAssimilatedSubmodList: TStringList;
-    /// List of update values
+    ///<summary> List of update values </summary>
     fUpdateValueList: TStringList;
-    /// List of Model Elements, i.e. State, Vars, Params, Externals, Consts
+    ///<summary> List of Model Elements, i.e. State, Vars, Params, Externals, Consts </summary>
     fModelElementLists: TListsOf;
-    /// flag for enabling debugging mode
+    ///<summary> flag for enabling debugging mode </summary>
     fDebugmodus: boolean;
-    /// Option for writing output each time step
+    ///<summary> Option for writing output each time step </summary>
     fOptContOutput: TOption;
-    /// Should output be written to file continously
+    ///<summary> Should output be written to file continously </summary>
     fWritecontinuouslyToFile: boolean;
-    /// Option for writing final values output at end of simulation
+    ///<summary> Option for writing final values output at end of simulation </summary>
     fOptFinalOutput: TOption;
-    /// Should output be written to file finally
+    ///<summary> Should output be written to file finally </summary>
     fWriteFinallyToFile: boolean;
 
 {$IFNDEF NONVISUAL}
     /// Pointer to abstract Form for debugging
     fDebugForm: TFormDebugAbstract;
 {$ENDIF}
-    /// Registrate a parameter
+    ///<summary> Registrate a parameter </summary>
     procedure RegistrateParameter(Par: TPar); virtual;
-    /// Registrate an option
+    ///<summary> Registrate an option </summary>
     procedure RegistrateOption(Option: TOption); virtual;
-    /// Registrate a variable
+    ///<summary> Registrate a variable </summary>
     procedure RegistrateVariable(Variable: TVar); virtual;
     /// Registrate a state variable
     procedure RegistrateStateVar(State: TState); virtual;
@@ -1009,8 +983,7 @@ type
 
     /// <summary> Method for adding measured values to data serie </summary>
     procedure AddDataValueToDataSeries; virtual;
-    /// adding data Values to Data series
-
+  
     /// <summary> Method for adding corresponding simulated values to data serie </summary>
     procedure AddSimValueToDataSeries; virtual;
     /// adding sim values to corresponding measured data
@@ -1051,24 +1024,19 @@ type
     property SM_GlobMod: TMod read Get_GlobMod write Set_GlobMod;
 
     /// <summary> property to access the stringlist with external variables of the submodel </summary>
-    property SM_ExternVStrList: TStringList read ExternVStrList
-    { write Set_ExternVStrList };
-
+    property SM_ExternVStrList: TStringList read ExternVStrList;
+  
     /// <summary> property to access the stringlist with variables of the submodel </summary>
-    property SM_VarStrList: TStringList read VarStrList
-    { write  Set_VarStrList };
-
+    property SM_VarStrList: TStringList read VarStrList;
+  
     /// <summary> property to access the stringlist with constants of the submodel </summary>
-    property SM_ConstStrList: TStringList read ConstStrList
-    { write  Set_VarStrList };
+    property SM_ConstStrList: TStringList read ConstStrList;
 
     /// <summary> property to access the stringlist with parameters of the submodel </summary>
-    property SM_ParStrList: TStringList read ParStrList
-    { write Set_ParStrList };
+    property SM_ParStrList: TStringList read ParStrList ;
 
     /// <summary> property to access the stringlist with state variables of the submodel </summary>
-    property SM_StateStrList: TStringList read StateStrList
-    { write Set_ParStrList };
+    property SM_StateStrList: TStringList read StateStrList;
     // property OnClick;//:TNotifyEvent read fOnClick write fOnClick;
 
     /// <summary> property to access the compindex field of the submodel. This field
@@ -1275,14 +1243,6 @@ begin
     text_left := (R.Right - R.Left - TextWidth(Titel)) div 2 + R.Left;
     TextOut(text_left, (R.Bottom + R.Top - TextHeight(Titel)) div 2, Titel);
   end;
-end;
-
-procedure TMod.Loaded;
-begin
-  inherited;
-  // Invalidate; // triggers Paint after everything is set
-  if FTitle = '' then
-    FTitle := Name; // fallback
 end;
 
 {$ENDIF}
@@ -1897,7 +1857,7 @@ begin
     if (SubModel[i].IsActive) and (SubModel[i].fWriteFinallyToFile) then
     begin
       inif_fn := extractfilename(SubModel[i].GlobMod.ActIniFile.FileName);
-      // inif_fn := GM_OutPutPath + '\' + inif_fn;
+      // inif_fn := GM_OutPutPath + Path_sep + inif_fn;
       SubModel[i].SaveFinalState(SubModel[i].ffin_state, inif_fn);
     end;
   end;
@@ -2099,10 +2059,8 @@ procedure TMod.run;
 var
   i, j: Integer;
   fn, dir: string;
-  statFile: textFile; // temporary lists for weather data handling
   path, globResFN, iniResFN, SelectionStr: string; // Name for "result file"
   globRes: TStreamwriter;
-  // globRes: textfile;
   ActSubMod: TSubmodel;
   Selndx: Integer;
 
@@ -2120,20 +2078,20 @@ begin
   Check_GM_OutputPath;
 {$ENDIF}
 {$IFDEF LINUX}
-  dir := GM_OutPutPath + '/' + 'statistics/';
+  dir := GM_OutPutPath + '/' + 'statistics'+Path_sep;
 {$ELSE}
-  dir := GM_OutPutPath + '\' + 'statistics\';
+  dir := GM_OutPutPath + Path_sep + 'statistics'+Path_sep;
 {$ENDIF}
   if SysUtils.ForceDirectories(dir) then
     Reg_fn := dir + 'regression.dat'
   else
-    Reg_fn := GM_OutPutPath + '\' + 'regression.dat';
+    Reg_fn := GM_OutPutPath + Path_sep + 'regression.dat';
 
 {$IFDEF LINUX}
-  GM_OutputFileName := GM_OutPutPath + '/' +
+  GM_OutputFileName := GM_OutPutPath + Path_sep +
     stripextension(extractfilename(fControlFileFn)) + '_' + 'GlobalOutput.csv';
 {$ELSE}
-  GM_OutputFileName := GM_OutPutPath + '\' +
+  GM_OutputFileName := GM_OutPutPath + Path_sep +
     stripextension(extractfilename(fControlFileFn)) + '_' + 'GlobalOutput.csv';
 {$ENDIF}
 {$IFDEF NONVISUAL}
@@ -2187,10 +2145,6 @@ begin
     if SysUtils.ForceDirectories(dir) then
       fn := dir + fn;
   end;
-
-  assignfile(statFile, fn);
-  rewrite(statFile);
-  CloseFile(statFile);
 
   if DirectoryExists(GM_OutPutPath) then
 {$IFDEF LINUX}
@@ -2437,7 +2391,6 @@ end;
 /// the procedure produces two types of output, a endpoint value for the choosen mode
 /// entities and a time series output
 /// </summary>
-
 procedure TMod.CalcSensitivity;
 
 const
@@ -2484,7 +2437,7 @@ begin
 
   // create and rewrite output file for sensitivity analysis endpoint data (sens.dat)
   if ExtractFilePath(SensOpt.Sens_fn) = '' then
-    SensOpt.Sens_fn := GM_OutPutPath + '\' + SensOpt.Sens_fn;
+    SensOpt.Sens_fn := GM_OutPutPath + Path_sep + SensOpt.Sens_fn;
   assignfile(SensOpt.fSens_final, SensOpt.Sens_fn);
   rewrite(SensOpt.fSens_final);
   // first row of output file: write name of selected sensitivity parameter
@@ -2514,7 +2467,7 @@ begin
 
   for i := 0 to SensOpt.FOutList.count - 1 do
   begin
-    dir := GM_OutPutPath + '\sens\';
+    dir := GM_OutPutPath + Path_sep+'sens'+Path_sep;
     // create directory if it does not exist
     if SysUtils.ForceDirectories(dir) then
     begin
@@ -2682,13 +2635,13 @@ begin
   // WriteAllFinalNames;
 
   // open output file for sensitivity analysis data (sens.dat)
-  ContSensFileName := GM_OutPutPath + '\' + ContFileNameStr + '_' +
+  ContSensFileName := GM_OutPutPath + Path_sep + ContFileNameStr + '_' +
     stripextension(extractfilename(fControlFileFn)) + '_' +
     SensOpt.SelSenspar.Name + '_' + '.csv';
 
   SensOpt.MultSens_fn_cont := ContSensFileName;
 
-  FinalSensFileName := self.GM_OutPutPath + '\' + FinalFileNameStr + '_' +
+  FinalSensFileName := self.GM_OutPutPath + Path_sep + FinalFileNameStr + '_' +
     stripextension(extractfilename(fControlFileFn)) + '_' +
     SensOpt.SelSenspar.Name + '_' + '.csv';
   SensOpt.MultSens_fn_final := FinalSensFileName;
@@ -4848,7 +4801,7 @@ begin
   line := 'IniFile';
   path := self.GM_OutPutPath;
   if path <> '' then
-    FileName := path + '\' + fn
+    FileName := path + Path_sep + fn
   else
     FileName := fn;
   // if f_GlobalOutput = NIL then
@@ -5853,10 +5806,10 @@ begin
     // SubModname, defaultname) + '_rat.csv';
 
     // if GlobMod.GM_OutPutPath <> '' then
-    // fn_finalstate := GlobMod.GM_OutPutPath + '\' + 'Final_' + fn_finalstate +
+    // fn_finalstate := GlobMod.GM_OutPutPath + Path_sep + 'Final_' + fn_finalstate +
     // '_' + Name + '.csv'
     // else
-    // fn_finalstate := GlobMod.EXE_DIR + '\' + 'Final_' + fn_finalstate + '_' +
+    // fn_finalstate := GlobMod.EXE_DIR + Path_sep + 'Final_' + fn_finalstate + '_' +
     // Name + '.csv';
     // reads filenames of measurement and output files from main Ini-file
     // KLUSS FMeasValues.FileName :=
