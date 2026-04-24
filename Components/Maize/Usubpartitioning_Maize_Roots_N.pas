@@ -67,6 +67,7 @@ Type
     Ncroot_max, Ncroot_a, Ncroot_b: TPar;
     // Parameter für Verdünnungsfunktion NRootOpt
     DMStubble_par: TPar; // Stoppel-TM als Parameter
+    NNI_fact: TPar;
 
     // External Variables
     ActNUptake: TExternV; // Aktuelle N-Aufnahmerate aus dem Boden-Modul
@@ -230,6 +231,7 @@ begin
   ParCreate('Ncroot_b', '', -0.225, Ncroot_b);
   ParCreate('DMStubble_par', 'g.m-2', 200, DMStubble_par,
     'Stubble DM [g.m-2] after harvest, default 2t.ha-1');
+  ParCreate('NNI_fact','',2.43, NNI_fact, 'NNI Potenzfaktor');
 
   // External Variable
   ExternVCreate('ActNUptake', 'kg N/ha*d', statefield, ActNUptake);
@@ -697,7 +699,8 @@ begin
   if (fNcShoot_Calc = organ_specific) then
   begin
     if (DMShoot.v + ShootGR.v > 100) then
-      NNI.v := max(0, min(1.0, (NcLeaf.v) / (NcOptLeaf.v)))
+      //NNI.v := max(0, min(1.0, (NcLeaf.v) / (NcOptLeaf.v)))
+      NNI.v := min(1,1-power((1-max(0, min(1.0, (NcLeaf.v) / (NcOptLeaf.v)))),NNI_fact.v))
     else
       NNI.v := 1;
   end;
