@@ -43,12 +43,20 @@ type
   public
     NOrgLayers: TPar; // Zahl der organischen Schcihten a 10 [cm]
     OrgDepth: TPar; // Gesamttiefe des Humushorizontes in [cm]
-    iLagerungsdichte: TPar; // anfängliche Lagerungsdichte
+    iLagerungsdichte: TPar; // anfï¿½ngliche Lagerungsdichte
     Lagerungsdichte: TVar; // aktuelle Lagerungsdichte
     Humusgehalt: TPar; // Humusgehalt
 
     MinNmin: TPar; // minimaler Nmin-Gehalt
     kBBf: TPar; // "Abbaurate" des Bodenbearbeitungseffektes
+
+    /// <summary> intercept parameter for reducing k_som_biom by Nmin availability </summary>
+    k_som_biom_intercept: TPar;
+
+    /// <summary> slope parameter for reducing k_som_biom by Nmin availability </summary>
+    k_som_biom_slope: TPar;
+
+
 
     Temp: TExternV; //
     Theta_Array: array [1 .. MaxNOrgLayers] of TExternV;
@@ -59,8 +67,8 @@ type
     CFlowArr: array [processes, 0 .. MaxNOrgLayers] of TVar;
 
     C_ges, // Gesamtkohlenstoffgehalt des Bodens [kg/ha]
-    C_ER, // Kohlenstoff in Ernterückständen    [kg/ha]
-    N_ER // Stickstoff  in Ernterückständen      [kg/ha]
+    C_ER, // Kohlenstoff in Ernterï¿½ckstï¿½nden    [kg/ha]
+    N_ER // Stickstoff  in Ernterï¿½ckstï¿½nden      [kg/ha]
       : TState;
 
     N_ges, // Gesamtstickstoffgehalt des Bodens  [kg/ha]
@@ -82,7 +90,14 @@ type
 
     Net_min: array [0 .. MaxNOrgLayers] of TVar;
     F_abiot: array [0 .. MaxNOrgLayers] of TVar;
+    
+    /// <summary>
+    /// Relative factor for reducing decomposition rate under nitrogen shortage [0..1]
+     /// </summary>
     f_Nmin: array [0 .. MaxNOrgLayers] of TVar;
+
+     /// <summary> factor for affecting k_som_biom by soil mineral N availability </summary>
+     f_som_biom: array [0 .. MaxNOrgLayers] of TVar;
     // relative factor [0..1] for reducing decomposition rate under nitrogen shortage
     BBf: array [0 .. MaxNOrgLayers] of TState;
     Layerfactor: array [0 .. MaxNOrgLayers] of TPar;
@@ -140,9 +155,9 @@ function min_red_f(wasser, Temp, TRD: real): real;
 
 { ********************************************************************** }
 { Zweck :  Berechnung eines Reduktionsfaktors der Mineralisation
-  in Abh„ngigkeit von Bodenfeuchte und Bodentemperatur.
-  Es wird davon ausgegeangen, daá die Mineralisation bei
-  35 øC und 35 Vol% Wassergehalt ihren maximalen Wert
+  in Abhï¿½ngigkeit von Bodenfeuchte und Bodentemperatur.
+  Es wird davon ausgegeangen, daï¿½ die Mineralisation bei
+  35 ï¿½C und 35 Vol% Wassergehalt ihren maximalen Wert
   erreicht.
 
   Quelle: Verbruggen (1985) zit. in Groot (1987)
@@ -153,14 +168,14 @@ function min_red_f(wasser, Temp, TRD: real): real;
   Name             Inhalt                          Einheit      Typ
 
   Wasser           volumetrischer Wassergehalt     [cm3/cm3]    I
-  Temp             Bodentemperatur                 [øC]         I
+  Temp             Bodentemperatur                 [ï¿½C]         I
   TRD              Trockenraumdichte               [g/cm3]      I
 
   Min_red_f        Reduktionsfaktor                [-]          O
   { ********************************************************************** }
 
 const
-  RefTemp = 20.0; // Referenztemperatur [°C]
+  RefTemp = 20.0; // Referenztemperatur [ï¿½C]
   RefWass = 0.35; // Referenzwassergehalt
   RefTRD = 1.5; // Referenzbodendichte
 
@@ -257,12 +272,18 @@ begin
   VarCreate('act.Lagerungsdichte', '[g/cm3]', 1.3, false, Lagerungsdichte);
   ParCreate('Humusgehalt', '[-]', 0.018, Humusgehalt);
   ParCreate('MinNmin', '[-]', 2., MinNmin);
+  
+  ParCreate('k_som_biom_intercept', '[-]', 1.2, k_som_biom_intercept);
+  ParCreate('k_som_biom_slope', '[1/kg N/ha]', 0.005, k_som_biom_slope);
   value := 0.0;
+
+
+
   StateCreate('C_ges', '[kg C/ha]', 0, false, C_ges);
   VarCreate('N_ges', '[kg N/ha]', value, false, N_ges);
   VarCreate('NBilanz', '[kg N/ha]', value, false, NBilanz);
 
-  ExternVCreate('Temp', '[°C]', StateField, Temp);
+  ExternVCreate('Temp', '[ï¿½C]', StateField, Temp);
   for schicht := 1 to trunc(NOrgLayers.V) do
     if schicht < 10 then
       ExternVCreate('WG_' + IntToStr(schicht), '[cm3.cm3]', StateField,
@@ -276,6 +297,11 @@ begin
 
   for schicht := 0 to trunc(NOrgLayers.V) do
     VarCreate('f_Nmin' + IntToStr(schicht), '[-]', 1.0, false, f_Nmin[schicht]);
+
+  for schicht := 1 to trunc(NOrgLayers.V) do
+    VarCreate('f_som_biom' + IntToStr(schicht), '[-]', 1.0, false,
+      f_som_biom[schicht]);
+
 
   for schicht := 1 to trunc(NOrgLayers.V) do
   begin
@@ -633,7 +659,7 @@ begin
   // f_abiot[0].v := 0.1; // 10% in der auflageschicht
   F_abiot[0].V := 0.5 * min_red_f(Theta_Array[1].V, Temp.V, 1.5);
   // provisionally set factor for litter layer to 50% of value in first soil layer
-  // Net_min[1].v := 0.0;    // Auflageschichtmineralisation wird in erste Schicht gesteckt, daher hier rücksetzen
+  // Net_min[1].v := 0.0;    // Auflageschichtmineralisation wird in erste Schicht gesteckt, daher hier rï¿½cksetzen
   for Procs := low(processes) to high(processes) do
   begin
     MinProcesses[0, Procs].Calculate(F_abiot[0].V, f_Nmin[0].V, CN, CPool_i[0],
@@ -651,6 +677,10 @@ begin
       min(1, max(0, (Nmin_Array[schicht].V - MinNmin.V) /
       ((Nmin_Array[schicht].V - MinNmin.V) + km_Nmin.V)));
     // michalis-menten like factor to decrease mineralisation under nitrate shortage
+
+    // factor for effect of soil nitrate on som_biom mineralisation
+    f_som_biom[schicht].V := k_som_biom_intercept.v - k_som_biom_slope.V * Nmin_Array[schicht].V;
+
     if fSoilHeatmodel = nil then
       F_abiot[schicht].V := min_red_f(Theta_Array[schicht].V, Temp.V, 1.5) *
         BBf[schicht].V * Layerfactor[schicht].V
@@ -661,9 +691,13 @@ begin
 
     If schicht > 1 then
       Net_min[schicht].V := 0.0;
-    // In Schicht 1 ist schon die Auflageschicht berücksichtigt, daher kein rücksetzen auf 0
+    // In Schicht 1 ist schon die Auflageschicht berï¿½cksichtigt, daher kein rï¿½cksetzen auf 0
     for Procs := dpm_biom to biom_som do
     begin
+    // in case som to biom conversion is calculated, the mineralisation rate affected 
+    // by the factor for nitrate availability 
+      if Procs = som_biom then
+        F_abiot[schicht].V := F_abiot[schicht].V * f_som_biom[schicht].V;
       MinProcesses[schicht, Procs].Calculate(F_abiot[schicht].V,
         f_Nmin[schicht].V, CN, CPool_i[schicht], NPool_i[schicht], false);
       NetMinArr[Procs, schicht].V := MinProcesses[schicht, Procs].Nr;
@@ -673,16 +707,16 @@ begin
     end;
     Net_ming.V := Net_ming.V + Net_min[schicht].V;
 
-    // Wenn die Festlegung größer als der Nmin-Vorrate sein sollte muß die Mineralisationsrate verringert werden !!!
+    // Wenn die Festlegung grï¿½ï¿½er als der Nmin-Vorrate sein sollte muï¿½ die Mineralisationsrate verringert werden !!!
 
     If ((Net_min[schicht].V * GlobTime.c + Nmin_Array[schicht].V) < MinNmin.V)
       and (Net_min[schicht].V < 0) then
     begin
 
-      // zurücksetzen der Mineralisationsrate
+      // zurï¿½cksetzen der Mineralisationsrate
       Net_ming.V := Net_ming.V - Net_min[schicht].V;
 
-      // zurücksetzen der C-Mengen Änderungen
+      // zurï¿½cksetzen der C-Mengen ï¿½nderungen
       for Pool := dpm to som do
         CPool_i[schicht, Pool].c := 0.0;
       Net_min[schicht].V := 0.0;
