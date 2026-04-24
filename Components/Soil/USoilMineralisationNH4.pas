@@ -91,6 +91,12 @@ type
     /// <summary>"Decay rate" of tillage factor</summary>
     kBBf: TPar;
 
+    /// <summary> intercept parameter for reducing k_som_biom by Nmin availability </summary>
+    k_som_biom_intercept: TPar;
+
+    /// <summary> slope parameter for reducing k_som_biom by Nmin availability </summary>
+    k_som_biom_slope: TPar;
+
     /// <summary>sum of ammonia N in each layer</summary>
     NH4_Arr: array [1 .. MaxSoilLayers] of TState;
     /// <summary>sum of nitrate (external) and ammonia</summary>
@@ -206,6 +212,10 @@ type
     f_abiot_den: array [0 .. MaxNOrgLayers] of TVar;
     /// <summary>relative factor [0..1] for reducing decomposition rate under nitrogen shortage</summary>
     f_Nmin: array [0 .. MaxNOrgLayers] of TVar;
+
+     /// <summary> factor for affecting k_som_biom by soil mineral N availability </summary>
+     f_som_biom: array [0 .. MaxNOrgLayers] of TVar;
+
     /// <summary>factor to correct decomposition rates in individual soil layers</summary>
     Layerfactor: array [0 .. MaxNOrgLayers] of TPar;
     /// <summary>fraction of carbon initially within a certain soil layer</summary>
@@ -381,6 +391,19 @@ begin
   ParCreate('MinNmin', '[kg N/ha/layer]', 2., MinNmin, 'Minimum Nmin value ');
   ParCreate('Soil_pH', '[-]', 6.4, Soil_pH,
     'Soil pH for calculation of f_abiot_nit according to Zhou');
+// These parameters adjust the som_biom process by soil mineral N availability,
+// which is assumed to affect the activity of the microbial biomass responsible
+// in order not to affect the other processes the values are set to 0 and 1
+// a first guess of the parameter values is 1.2 for intercept and 0.005 for slope
+  ParCreate('k_som_biom_intercept', '[-]', 1, k_som_biom_intercept,
+   'intercept parameter for Nmin effect on som_biom process, if 0 and 1 for intercept and slope'+
+   ' the factor for Nmin effect on som_biom is not active');
+  ParCreate('k_som_biom_slope', '[1/kg N/ha]', 0, k_som_biom_slope,
+   'slope parameter for Nmin effect on for som_biom process'+
+   ' if 0 and 1 for intercept and slope the factor for Nmin effect on som_biom is not active');
+
+
+
   value := 0.0;
   StateCreate('C_ges', '[kg C/ha]', 0, false, C_ges,
     'Total soil organic carbon');
@@ -417,6 +440,9 @@ begin
   begin
     VarCreate('f_abiot_min' + ndx_str(layer), '[-]', 1.0, false,
       f_abiot_min[layer]);
+    VarCreate('f_som_biom' + IntToStr(layer), '[-]', 1.0, false,
+      f_som_biom[layer],  'factor for affecting k_som_biom by soil mineral N availability in layer ' + IntToStr(layer));
+
     VarCreate('f_abiot_nit' + ndx_str(layer), '[-]', 1.0, false,
       f_abiot_nit[layer]);
     VarCreate('f_abiot_den' + ndx_str(layer), '[-]', 1.0, false,
@@ -1224,6 +1250,8 @@ begin
   for Pool := low(Pools) to high(Pools) do // set all change rates to zero
     CPool[Pool].c := 0.0;
 
+
+
   Net_ming.v := 0.0; // set net mineralisation to zero
 
   f_abiot_min[0].v := 0.5 * Calc_f_abiot(minp, 1);
@@ -1257,8 +1285,16 @@ begin
     If layer > 1 then
       Net_min[layer].v := 0.0;
     // In layer 1 the surface layer is included, therefore no reset to 0
+
+    f_som_biom[layer].V := k_som_biom_intercept.v - k_som_biom_slope.V * Nmin_Arr[layer].V;
+
+
     for Procs := dpm_biom to biom_som do
     begin
+     // in case som to biom conversion is calculated, the mineralisation rate affected
+    // by the factor for nitrate availability
+      if Procs = som_biom then
+        f_abiot_min[layer].V := f_abiot_min[layer].V * f_som_biom[layer].V;
       if (Procs = biom_som) then
       // No effect of tillage on the decomposition of biom...
         MinProcesses[layer, Procs].Calculate(f_abiot_min[layer].v,
