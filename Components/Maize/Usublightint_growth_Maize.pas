@@ -291,7 +291,7 @@ begin
                      else Tempfact.v := 0;
    LUETempfact.v := LUE.v*Tempfact.v;
    LUETempf_SWDF.v := LUE.v*Tempfact.v*SWDF.v;
-   TotTMgRate.v := IntPar.v* LUE.v*Tempfact.v*SWDF.v*NNI.v;
+   TotTMgRate.v := IntPar.v* LUE.v*Tempfact.v* SWDF.v*NNI.v;
    TotTMgRate_TUE.v := TUE_vpd.v*ActTrans.v*NNI.v;
    //If LAI.v>1 then
    //TotTMgRate.v := min(TotTMgRate.v, TotTMgRate_TUE.v);

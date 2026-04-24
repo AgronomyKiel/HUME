@@ -1,45 +1,57 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="UState" platform="Win32">
   <devnotes>
+    <unit>
+      <name>UState</name>
       <summary>
-        Defines core data types and classes for representing state variables,
-        parameters, and external variables in a crop simulation model.
-        Provides a standardized way to handle variables that change over time
-        (states), fixed model parameters, and variables imported from other
-        modules or the environment.
+        Defines core data types and classes for representing state variables, parameters, and external variables in a crop simulation model.
+        Provides a standardized way to handle variables that change over time (states), fixed model parameters, and variables imported from other modules or the environment.
       </summary>
+      <remarks>
+        <item>
+          <desc>TState</desc>
+          <info>Type or class for state variables (e.g., leaf area, biomass) updated during simulation.</info>
+        </item>
+        <item>
+          <desc>TPar / TPAR</desc>
+          <info>Types or classes for model parameters (constants or tunable values).</info>
+        </item>
+        <item>
+          <desc>TExternV</desc>
+          <info>Types or classes for external variables (inputs from other modules, weather, soil, etc.).</info>
+        </item>
+        <item>
+          <desc>TOption</desc>
+          <info>Type for model options or switches (e.g., to enable/disable certain processes).</info>
+        </item>
+        <item>
+          <desc>TVAR</desc>
+          <info>General-purpose variable type, often for intermediate or calculated values.</info>
+        </item>
+      </remarks>
   </devnotes>
-  <const name="RateField" type="TExValue" file="Ustate.pas" line="35">
+  <const name="RateField" type="TExValue" file="Ustate.pas" line="51">
     <value>
       RateField
     </value>
   </const>
-  <const name="StateField" type="TExValue" file="Ustate.pas" line="35">
+  <const name="StateField" type="TExValue" file="Ustate.pas" line="51">
     <value>
       StateField
     </value>
   </const>
   <type name="real" type="Double" file="System.pas" line="12" />
-  <enum name="TExValue" file="Ustate.pas" line="35">
+  <enum name="TExValue" file="Ustate.pas" line="51">
     <devnotes>
-       <summary>
-       Enumeration type for pointer indirection, important for external state
-       variables and external values, where the name of a state variable can mean
-       either the state itself or its rate of change.
-       </summary>
+       <summary>Enumeration type for pointers, important for external state variables and external values where the name of a state variable can refer to the state or its rate of change.</summary>
     </devnotes>
-    <element value="0" name="RateField" file="Ustate.pas" line="35" />
-    <element value="1" name="StateField" file="Ustate.pas" line="35" />
+    <element value="0" name="RateField" file="Ustate.pas" line="51" />
+    <element value="1" name="StateField" file="Ustate.pas" line="51" />
   </enum>
-  <class name="THumeEntity" file="Ustate.pas" line="47">
+  <class name="THumeEntity" file="Ustate.pas" line="59">
     <devnotes>
-       <summary>
-       THumeEntity is the base class for all objects representing either numerical
-       values (states, variables, parameters, constants) or Options. It provides
-       basic functionality for variables and external &quot;driving forces&quot;.
-       If the destination is a console app it is derived from TObject.
-       For use within the IDE/GUI applications it is derived from TPersistent.
-       </summary>
+       <summary>THumeEntity is the base class for all objects representing either numerical values (states, variables, parameters, constants) or options.</summary>
+       <remarks>Provides basic functionality for variables (parameters, state variables) and external &quot;driving forces&quot;. If the destination is a console app it derives from TObject; otherwise it derives from TPersistent for IDE/GUI use.</remarks>
     </devnotes>
     <ancestor name="TPersistent" namespace="System.Classes">
       <methodref name="AssignError" visibility="private">
@@ -134,118 +146,116 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="N" type="string" visibility="private" size="4" offset="4" file="Ustate.pas" line="51">
+      <field name="N" type="string" visibility="private" size="4" offset="4" file="Ustate.pas" line="64">
         <devnotes>
-           <summary>Internal field for the name of the entity.</summary>
+           <summary>Name field.</summary>
         </devnotes>
       </field>
-      <field name="FComment" type="string" visibility="private" size="4" offset="8" file="Ustate.pas" line="53">
+      <field name="FComment" type="string" visibility="private" size="4" offset="8" file="Ustate.pas" line="66">
         <devnotes>
-           <summary>Internal field for comments/explanation.</summary>
+           <summary>Field for comments/explanation.</summary>
         </devnotes>
       </field>
-      <field name="fName" type="string" visibility="private" size="4" offset="12" file="Ustate.pas" line="55">
+      <field name="fName" type="string" visibility="private" size="4" offset="12" file="Ustate.pas" line="68">
         <devnotes>
-           <summary>Internal field for the name of the Entity.</summary>
+           <summary>Private field for the name of the Entity.</summary>
         </devnotes>
       </field>
-      <field name="fSubmod" type="string" visibility="private" size="4" offset="16" file="Ustate.pas" line="57">
+      <field name="fSubmod" type="string" visibility="private" size="4" offset="16" file="Ustate.pas" line="70">
         <devnotes>
-           <summary>Internal field for the submodel to which the Entity belongs.</summary>
+           <summary>Field submodel to which the Entity belongs.</summary>
         </devnotes>
       </field>
-      <field name="fDocuWebLink" type="string" visibility="private" size="4" offset="20" file="Ustate.pas" line="59">
+      <field name="fDocuWebLink" type="string" visibility="private" size="4" offset="20" file="Ustate.pas" line="72">
         <devnotes>
-           <summary>Internal field for the documentation link.</summary>
+           <summary>Field documentation link.</summary>
         </devnotes>
       </field>
-      <field name="U" type="string" visibility="public" size="4" offset="24" file="Ustate.pas" line="62">
+      <field name="U" type="string" visibility="public" size="4" offset="24" file="Ustate.pas" line="75">
         <devnotes>
-           <summary>Units of the entity (e.g., 'kg/ha', 'm').</summary>
+           <summary>Units of the entity.</summary>
         </devnotes>
       </field>
-      <field name="Indexed" type="Boolean" visibility="public" size="1" offset="28" file="Ustate.pas" line="64">
+      <field name="Indexed" type="Boolean" visibility="public" size="1" offset="28" file="Ustate.pas" line="77">
         <devnotes>
-           <summary>Indicates if the entity is an array.</summary>
+           <summary>Indicates if the entity is indexed (array).</summary>
         </devnotes>
       </field>
-      <field name="lowerbound" type="Integer" visibility="public" size="4" offset="32" file="Ustate.pas" line="66">
+      <field name="lowerbound" type="Integer" visibility="public" size="4" offset="32" file="Ustate.pas" line="79">
         <devnotes>
-           <summary>Lower bound for indexed entities (arrays).</summary>
+           <summary>Lower bound for indexed entities.</summary>
         </devnotes>
       </field>
-      <field name="upperbound" type="Integer" visibility="public" size="4" offset="36" file="Ustate.pas" line="68">
+      <field name="upperbound" type="Integer" visibility="public" size="4" offset="36" file="Ustate.pas" line="81">
         <devnotes>
-           <summary>Upper bound for indexed entities (arrays).</summary>
+           <summary>Upper bound for indexed entities.</summary>
         </devnotes>
       </field>
-      <field name="ReadFromIniFile" type="Boolean" visibility="public" size="1" offset="40" file="Ustate.pas" line="70">
+      <field name="ReadFromIniFile" type="Boolean" visibility="public" size="1" offset="40" file="Ustate.pas" line="83">
         <devnotes>
-           <summary>Flag to indicate if the value should be initialized from a file.</summary>
+           <summary>Flag for initialisation from file.</summary>
         </devnotes>
       </field>
-      <field name="WriteToFile" type="Boolean" visibility="public" size="1" offset="41" file="Ustate.pas" line="72">
+      <field name="WriteToFile" type="Boolean" visibility="public" size="1" offset="41" file="Ustate.pas" line="85">
         <devnotes>
-           <summary>Flag to control output to a text file.</summary>
+           <summary>Flag for output to text file.</summary>
         </devnotes>
       </field>
-      <field name="WriteToIniFile" type="Boolean" visibility="public" size="1" offset="42" file="Ustate.pas" line="74">
+      <field name="WriteToIniFile" type="Boolean" visibility="public" size="1" offset="42" file="Ustate.pas" line="87">
         <devnotes>
-           <summary>Flag to control output to an INI file.</summary>
+           <summary>Flag for output to Ini file.</summary>
         </devnotes>
       </field>
-      <field name="SelForSensOut" type="Boolean" visibility="public" size="1" offset="43" file="Ustate.pas" line="76">
+      <field name="SelForSensOut" type="Boolean" visibility="public" size="1" offset="43" file="Ustate.pas" line="89">
         <devnotes>
-           <summary>Flag for selection for sensitivity analysis output.</summary>
+           <summary>Flag for selection for output.</summary>
         </devnotes>
       </field>
-      <field name="WasReadFromFile" type="Boolean" visibility="public" size="1" offset="44" file="Ustate.pas" line="78">
+      <field name="WasReadFromFile" type="Boolean" visibility="public" size="1" offset="44" file="Ustate.pas" line="91">
         <devnotes>
-           <summary>Flag indicating if initialization from file was successful.</summary>
+           <summary>Flag for initialisation from file; false indicates need for alternative initialisation.</summary>
         </devnotes>
       </field>
-      <property name="Name" visibility="published" read="N" write="N" type="string" default="0" file="Ustate.pas" line="81">
+      <property name="Name" visibility="published" read="N" write="N" type="string" default="0" file="Ustate.pas" line="94">
         <devnotes>
-           <summary>The name of the object.</summary>
+           <summary>Name of the object.</summary>
         </devnotes>
       </property>
-      <property name="SubModName" visibility="published" read="fSubmod" write="fSubmod" type="string" default="0" file="Ustate.pas" line="83">
+      <property name="SubModName" visibility="published" read="fSubmod" write="fSubmod" type="string" default="0" file="Ustate.pas" line="96">
         <devnotes>
-           <summary>The name of the submodule this entity belongs to.</summary>
+           <summary>Name of the submodule.</summary>
         </devnotes>
       </property>
-      <property name="Comment" visibility="published" read="FComment" write="FComment" type="string" default="0" file="Ustate.pas" line="85">
+      <property name="Comment" visibility="published" read="FComment" write="FComment" type="string" default="0" file="Ustate.pas" line="98">
         <devnotes>
-           <summary>A descriptive comment or explanation for the entity.</summary>
+           <summary>Comment or description.</summary>
         </devnotes>
       </property>
-      <property name="DocuWebLink" visibility="published" read="fDocuWebLink" write="fDocuWebLink" type="string" default="0" file="Ustate.pas" line="87">
+      <property name="DocuWebLink" visibility="published" read="fDocuWebLink" write="fDocuWebLink" type="string" default="0" file="Ustate.pas" line="100">
         <devnotes>
-           <summary>A web link to documentation for this entity.</summary>
+           <summary>DocuWebLink.</summary>
         </devnotes>
       </property>
-      <property name="Opt_writetoFile" visibility="published" read="WriteToFile" write="WriteToFile" type="Boolean" file="Ustate.pas" line="89">
+      <property name="Opt_writetoFile" visibility="published" read="WriteToFile" write="WriteToFile" type="Boolean" file="Ustate.pas" line="102">
         <devnotes>
            <summary>Flag indicating whether to write output to a text file.</summary>
         </devnotes>
       </property>
-      <property name="Opt_SelForSensOut" visibility="published" read="SelForSensOut" write="SelForSensOut" type="Boolean" file="Ustate.pas" line="91">
+      <property name="Opt_SelForSensOut" visibility="published" read="SelForSensOut" write="SelForSensOut" type="Boolean" file="Ustate.pas" line="104">
         <devnotes>
            <summary>Flag indicating selection for sensitivity analysis output.</summary>
         </devnotes>
       </property>
-      <property name="Units" visibility="published" read="U" write="U" type="string" default="0" file="Ustate.pas" line="93">
+      <property name="Units" visibility="published" read="U" write="U" type="string" default="0" file="Ustate.pas" line="106">
         <devnotes>
-           <summary>The physical units associated with the object's value.</summary>
+           <summary>Units associated with the object.</summary>
         </devnotes>
       </property>
     </members>
   </class>
-  <class name="TOption" file="Ustate.pas" line="99">
+  <class name="TOption" file="Ustate.pas" line="110">
     <devnotes>
-       <summary>
-       Represents a model option with a string value and a list of possible choices.
-       </summary>
+       <summary> TOption is a class representing an option with a string value and a list of possible options. </summary>
     </devnotes>
     <ancestor name="THumeEntity" namespace="UState">
       <propertyref name="Name" visibility="published">
@@ -356,52 +366,62 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fOption" type="string" visibility="private" size="4" offset="48" file="Ustate.pas" line="101" />
-      <function name="getOption" visibility="private" file="Ustate.pas" line="102">
+      <field name="fOption" type="string" visibility="private" size="4" offset="48" file="Ustate.pas" line="113">
+        <devnotes>
+           <summary>The private field for the option string.</summary>
+        </devnotes>
+      </field>
+      <function name="getOption" visibility="private" file="Ustate.pas" line="116">
+        <devnotes>
+           <summary>Getter for the option string.</summary>
+        </devnotes>
         <parameters>
           <retval type="string" />
         </parameters>
       </function>
-      <procedure name="setOption" visibility="private" file="Ustate.pas" line="103">
+      <procedure name="setOption" visibility="private" file="Ustate.pas" line="119">
+        <devnotes>
+           <summary>Setter for the option string.</summary>
+        </devnotes>
         <parameters>
           <parameter name="Option" type="string" paramflags="const" />
         </parameters>
       </procedure>
-      <field name="DefaultString" type="string" visibility="public" size="4" offset="52" file="Ustate.pas" line="106">
+      <field name="DefaultString" type="string" visibility="public" size="4" offset="52" file="Ustate.pas" line="123">
         <devnotes>
-           <summary>The default string value for the option.</summary>
+           <summary>Default string/option for the option.</summary>
         </devnotes>
       </field>
-      <field name="OptionList" type="TStringList" visibility="public" size="4" offset="56" file="Ustate.pas" line="108">
+      <field name="OptionList" type="TStringList" visibility="public" size="4" offset="56" file="Ustate.pas" line="125">
         <devnotes>
-           <summary>A list of permissible string values for the option.</summary>
+           <summary>A list of possible options.</summary>
         </devnotes>
       </field>
-      <constructor name="create" visibility="public" file="Ustate.pas" line="109">
+      <constructor name="create" visibility="public" file="Ustate.pas" line="128">
+        <devnotes>
+           <summary>Initializes the option with a name, default value, and comment.</summary>
+        </devnotes>
         <parameters>
           <parameter name="name" type="string" />
           <parameter name="Default" type="string" />
           <parameter name="c" type="string" />
         </parameters>
       </constructor>
-      <destructor name="Destroy" visibility="public" file="Ustate.pas" line="110">
+      <destructor name="Destroy" visibility="public" file="Ustate.pas" line="129">
         <parameters>
         </parameters>
       </destructor>
-      <property name="Option" visibility="published" read="getOption" write="setOption" type="string" default="0" file="Ustate.pas" line="113">
+      <property name="Option" visibility="published" read="getOption" write="setOption" type="string" default="0" file="Ustate.pas" line="133">
         <devnotes>
-           <summary>The currently selected option string.</summary>
+           <summary>Property to access the option string.</summary>
         </devnotes>
       </property>
     </members>
   </class>
-  <class name="THumeNumEntity" file="Ustate.pas" line="121">
+  <class name="THumeNumEntity" file="Ustate.pas" line="139">
     <devnotes>
-       <summary>
-       THumeNumEntity is an abstract base class for numerical entities in the model,
-       such as variables and external values. It extends THumeEntity with
-       properties for numerical values, units, and flags for plotting and output.
-       </summary>
+       <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+       <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
     </devnotes>
     <ancestor name="THumeEntity" namespace="UState">
       <propertyref name="Name" visibility="published">
@@ -512,119 +532,138 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="FDigits" type="Integer" visibility="private" size="4" offset="48" file="Ustate.pas" line="123" />
-      <field name="FPrecision" type="Integer" visibility="private" size="4" offset="52" file="Ustate.pas" line="124" />
-      <function name="get_value" visibility="private" procflags="virtual" file="Ustate.pas" line="125">
+      <field name="FDigits" type="Integer" visibility="private" size="4" offset="48" file="Ustate.pas" line="143">
+        <devnotes>
+           <summary>Number of digits.</summary>
+        </devnotes>
+      </field>
+      <field name="FPrecision" type="Integer" visibility="private" size="4" offset="52" file="Ustate.pas" line="145">
+        <devnotes>
+           <summary>Number of digits after the decimal separator.</summary>
+        </devnotes>
+      </field>
+      <function name="get_value" visibility="private" procflags="virtual" file="Ustate.pas" line="147">
+        <devnotes>
+           <summary>Getter for the numerical value.</summary>
+        </devnotes>
         <parameters>
           <retval type="Double" />
         </parameters>
       </function>
-      <procedure name="set_value" visibility="private" procflags="virtual" file="Ustate.pas" line="126">
+      <procedure name="set_value" visibility="private" procflags="virtual" file="Ustate.pas" line="149">
+        <devnotes>
+           <summary>Setter for the numerical value.</summary>
+        </devnotes>
         <parameters>
           <parameter name="value" type="Double" />
         </parameters>
       </procedure>
-      <field name="fv" type="Double" visibility="public" size="8" offset="56" file="Ustate.pas" line="129">
+      <field name="fv" type="Double" visibility="public" size="8" offset="56" file="Ustate.pas" line="152">
         <devnotes>
-           <summary>The internal numerical value of the entity.</summary>
+           <summary>Private field with numerical value of the entity.</summary>
         </devnotes>
       </field>
-      <field name="DefaultValue" type="Double" visibility="public" size="8" offset="64" file="Ustate.pas" line="131">
+      <field name="U" type="string" visibility="public" size="4" offset="64" file="Ustate.pas" line="154">
         <devnotes>
-           <summary>The default value, often used for initialization.</summary>
+           <summary>Units of the numerical value.</summary>
         </devnotes>
       </field>
-      <field name="PlotToGraph" type="Boolean" visibility="public" size="1" offset="72" file="Ustate.pas" line="133">
+      <field name="DefaultValue" type="Double" visibility="public" size="8" offset="72" file="Ustate.pas" line="157">
         <devnotes>
-           <summary>Flag to control graphical output (plotting).</summary>
+           <summary>Default value for parameters or states (initial value).</summary>
         </devnotes>
       </field>
-      <field name="fGlobalOutput" type="Boolean" visibility="public" size="1" offset="73" file="Ustate.pas" line="135">
+      <field name="PlotToGraph" type="Boolean" visibility="public" size="1" offset="80" file="Ustate.pas" line="159">
         <devnotes>
-           <summary>Flag for selection to a global output file.</summary>
+           <summary>Flag for graphical output.</summary>
         </devnotes>
       </field>
-      <field name="WriteFinalValue" type="Boolean" visibility="public" size="1" offset="74" file="Ustate.pas" line="137">
+      <field name="fGlobalOutput" type="Boolean" visibility="public" size="1" offset="81" file="Ustate.pas" line="161">
         <devnotes>
-           <summary>Flag for extra output of final values in a file.</summary>
+           <summary>Flag for selection to global output file.</summary>
         </devnotes>
       </field>
-      <field name="IsMeasured" type="Boolean" visibility="public" size="1" offset="75" file="Ustate.pas" line="139">
+      <field name="WriteFinalValue" type="Boolean" visibility="public" size="1" offset="82" file="Ustate.pas" line="163">
         <devnotes>
-           <summary>Flag to indicate if measured data is available for this entity.</summary>
+           <summary>Flag for extra output of final values in file.</summary>
         </devnotes>
       </field>
-      <procedure name="write_declaration" visibility="public" file="Ustate.pas" line="141">
+      <field name="IsMeasured" type="Boolean" visibility="public" size="1" offset="83" file="Ustate.pas" line="165">
         <devnotes>
-           <summary>Writes the declaration code for this entity to a source file.</summary>
+           <summary>Flag indicating if measured data are available.</summary>
+        </devnotes>
+      </field>
+      <procedure name="write_declaration" visibility="public" file="Ustate.pas" line="167">
+        <devnotes>
+           <summary>Writes the declaration code for the entity into a source code file.</summary>
         </devnotes>
         <parameters>
           <parameter name="f" type="Text" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="write_property" visibility="public" file="Ustate.pas" line="143">
+      <procedure name="write_property" visibility="public" file="Ustate.pas" line="169">
         <devnotes>
-           <summary>Writes the property declaration code for this entity to a source file.</summary>
+           <summary>Writes the property code for the entity into a source code file.</summary>
         </devnotes>
         <parameters>
           <parameter name="f" type="Text" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="write_Create" visibility="public" procflags="virtual" file="Ustate.pas" line="145">
+      <procedure name="write_Create" visibility="public" procflags="virtual" file="Ustate.pas" line="171">
         <devnotes>
-           <summary>Writes the creation/instantiation code for this entity to a source file.</summary>
+           <summary>Writes the creation code for the entity into a source code file.</summary>
         </devnotes>
         <parameters>
           <parameter name="f" type="Text" paramflags="var" />
         </parameters>
       </procedure>
-      <constructor name="create" visibility="published" file="Ustate.pas" line="147">
+      <constructor name="create" visibility="published" file="Ustate.pas" line="174">
         <parameters>
         </parameters>
       </constructor>
-      <property name="Opt_PlotToGraph" visibility="published" read="PlotToGraph" write="PlotToGraph" type="Boolean" file="Ustate.pas" line="149">
+      <property name="Opt_PlotToGraph" visibility="published" read="PlotToGraph" write="PlotToGraph" type="Boolean" file="Ustate.pas" line="176">
         <devnotes>
-           <summary>Property for optional plotting to a graph.</summary>
+           <summary>Property for optional plotting to graph.</summary>
         </devnotes>
       </property>
-      <property name="Opt_WriteFinalValue" visibility="published" read="WriteFinalValue" write="WriteFinalValue" type="Boolean" file="Ustate.pas" line="151">
+      <property name="Opt_WriteFinalValue" visibility="published" read="WriteFinalValue" write="WriteFinalValue" type="Boolean" file="Ustate.pas" line="179">
         <devnotes>
            <summary>Property for the optional output of final values.</summary>
         </devnotes>
       </property>
-      <property name="Digits" visibility="published" read="FDigits" write="FDigits" type="Integer" file="Ustate.pas" line="153">
+      <property name="Digits" visibility="published" read="FDigits" write="FDigits" type="Integer" file="Ustate.pas" line="184">
         <devnotes>
-           <summary>Property for the number of digits used in text output.</summary>
+           <summary>Property for the digits used in output.</summary>
+           <remarks>Default is 2 digits.</remarks>
         </devnotes>
       </property>
-      <property name="Precision" visibility="published" read="FPrecision" write="FPrecision" type="Integer" file="Ustate.pas" line="155">
+      <property name="Precision" visibility="published" read="FPrecision" write="FPrecision" type="Integer" file="Ustate.pas" line="187">
         <devnotes>
-           <summary>Property for the precision (digits after decimal point) of the numerical value.</summary>
+           <summary>Property for the precision of the numerical value.</summary>
         </devnotes>
       </property>
-      <property name="GlobalOutput" visibility="published" read="fGlobalOutput" write="fGlobalOutput" type="Boolean" file="Ustate.pas" line="157">
+      <property name="GlobalOutput" visibility="published" read="fGlobalOutput" write="fGlobalOutput" type="Boolean" file="Ustate.pas" line="190">
         <devnotes>
-           <summary>Property indicating if the entity is written to a global output file.</summary>
+           <summary>Property for the flag indicating if the entity is written to a global output file.</summary>
         </devnotes>
       </property>
-      <property name="v" visibility="published" read="get_value" write="set_value" type="Double" default="0" file="Ustate.pas" line="159">
+      <property name="v" visibility="published" read="get_value" write="set_value" type="Double" default="0" file="Ustate.pas" line="193">
         <devnotes>
-           <summary>The main numerical value of the entity.</summary>
+           <summary>Property for the numerical value of the entity.</summary>
         </devnotes>
       </property>
     </members>
   </class>
-  <class name="TVar" file="Ustate.pas" line="167">
+  <class name="TVar" file="Ustate.pas" line="199">
     <devnotes>
-       <summary>
-       TVar is a class representing a variable, i.e., a value that can be
-       calculated for each time step in the model from other variables, state
-       variables, or parameters. It is the base class for TPar and TState.
-       </summary>
+       <summary>TVar is a class representing a variable, i.e. a value that can be calculated for each time step in the model from other variables, state variables or parameters.</summary>
+       <remarks>Extends THumeNumEntity and provides methods for automatic source code generation for initialization and rate calculation.</remarks>
     </devnotes>
     <ancestor name="THumeNumEntity" namespace="UState">
-      <methodref name="get_value" visibility="private" procflags="virtual" />
-      <methodref name="set_value" visibility="private" procflags="virtual" />
+      <methodref name="get_value" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="set_value" visibility="private" procflags="virtual">
+      </methodref>
       <methodref name="write_declaration" visibility="public">
       </methodref>
       <methodref name="write_property" visibility="public">
@@ -754,58 +793,58 @@
       </ancestor>
     </ancestor>
     <members>
-      <function name="get_value" visibility="private" procflags="override" file="Ustate.pas" line="169">
+      <function name="get_value" visibility="private" procflags="override" file="Ustate.pas" line="201">
         <parameters>
           <retval type="Double" />
         </parameters>
       </function>
-      <procedure name="set_value" visibility="private" procflags="override" file="Ustate.pas" line="170">
+      <procedure name="set_value" visibility="private" procflags="override" file="Ustate.pas" line="202">
         <parameters>
           <parameter name="value" type="Double" />
         </parameters>
       </procedure>
-      <field name="RateSTring" type="string" visibility="public" size="4" offset="80" file="Ustate.pas" line="173">
+      <field name="RateSTring" type="string" visibility="public" size="4" offset="88" file="Ustate.pas" line="206">
         <devnotes>
            <summary>String containing source code for rate calculation.</summary>
         </devnotes>
       </field>
-      <field name="IniString" type="string" visibility="public" size="4" offset="84" file="Ustate.pas" line="175">
+      <field name="IniString" type="string" visibility="public" size="4" offset="92" file="Ustate.pas" line="208">
         <devnotes>
            <summary>String containing source code for initialization.</summary>
         </devnotes>
       </field>
-      <procedure name="write_Create" visibility="public" procflags="override" file="Ustate.pas" line="176">
+      <procedure name="write_Create" visibility="public" procflags="override" file="Ustate.pas" line="209">
         <parameters>
           <parameter name="f" type="Text" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="write_Init" visibility="public" file="Ustate.pas" line="177">
+      <procedure name="write_Init" visibility="public" file="Ustate.pas" line="210">
         <parameters>
           <parameter name="f" type="Text" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="write_Rate" visibility="public" file="Ustate.pas" line="178">
+      <procedure name="write_Rate" visibility="public" file="Ustate.pas" line="211">
         <parameters>
           <parameter name="f" type="Text" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="write_RInit" visibility="public" file="Ustate.pas" line="179">
+      <procedure name="write_RInit" visibility="public" file="Ustate.pas" line="212">
         <parameters>
           <parameter name="f" type="Text" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="write_RRate" visibility="public" file="Ustate.pas" line="180">
+      <procedure name="write_RRate" visibility="public" file="Ustate.pas" line="213">
         <parameters>
           <parameter name="f" type="Text" paramflags="var" />
         </parameters>
       </procedure>
-      <constructor name="create" visibility="published" file="Ustate.pas" line="187">
+      <constructor name="create" visibility="published" file="Ustate.pas" line="220">
         <devnotes>
-           <summary>Instantiates a TVar (Variable) object.</summary>
-           <param name="na">Name of the Variable.</param>
-           <param name="un">Units of the Variable.</param>
+           <summary>Instantiates a variable object.</summary>
+           <param name="na">Name of the variable.</param>
+           <param name="un">Units of the variable.</param>
            <param name="va">Floating point value.</param>
-           <param name="c">Comment/Explanation string.</param>
+           <param name="c">Comment or explanation string.</param>
         </devnotes>
         <parameters>
           <parameter name="na" type="string" />
@@ -816,13 +855,10 @@
       </constructor>
     </members>
   </class>
-  <class name="TPar" file="Ustate.pas" line="195">
+  <class name="TPar" file="Ustate.pas" line="226">
     <devnotes>
-       <summary>
-       TPar is a class representing a parameter variable in the model, which can be
-       selected for optimization or sensitivity analysis. It extends TVar and adds
-       properties for min/max values, uncertainty, and selection flags.
-       </summary>
+       <summary>TPar is a class representing a parameter variable in the model, which can be selected for optimization or sensitivity analysis.</summary>
+       <remarks>Extends TVar and adds properties for maximum and minimum expected values, error, and selection flags.</remarks>
     </devnotes>
     <ancestor name="TVar" namespace="UState">
       <methodref name="get_value" visibility="private" procflags="override" />
@@ -835,8 +871,10 @@
       <methodref name="create" visibility="published" procflags="constructor">
       </methodref>
       <ancestor name="THumeNumEntity" namespace="UState">
-        <methodref name="get_value" visibility="private" procflags="virtual" />
-        <methodref name="set_value" visibility="private" procflags="virtual" />
+        <methodref name="get_value" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="set_value" visibility="private" procflags="virtual">
+        </methodref>
         <methodref name="write_declaration" visibility="public">
         </methodref>
         <methodref name="write_property" visibility="public">
@@ -967,31 +1005,39 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fmax" type="Double" visibility="private" size="8" offset="88" file="Ustate.pas" line="197" />
-      <field name="fmin" type="Double" visibility="private" size="8" offset="96" file="Ustate.pas" line="198" />
-      <field name="SelForOpt" type="Boolean" visibility="public" size="1" offset="104" file="Ustate.pas" line="201">
+      <field name="fmax" type="Double" visibility="private" size="8" offset="96" file="Ustate.pas" line="229">
         <devnotes>
-           <summary>Flag to indicate if the parameter is selected for optimization.</summary>
+           <summary>Maximum expected value (added 12.01.05 for GA optimisation).</summary>
         </devnotes>
       </field>
-      <field name="SelForSens" type="Boolean" visibility="public" size="1" offset="105" file="Ustate.pas" line="203">
+      <field name="fmin" type="Double" visibility="private" size="8" offset="104" file="Ustate.pas" line="231">
         <devnotes>
-           <summary>Flag to indicate if the parameter is selected for sensitivity analysis.</summary>
+           <summary>Minimum expected value.</summary>
         </devnotes>
       </field>
-      <field name="error" type="Double" visibility="public" size="8" offset="112" file="Ustate.pas" line="205">
+      <field name="SelForOpt" type="Boolean" visibility="public" size="1" offset="112" file="Ustate.pas" line="236">
         <devnotes>
-           <summary>An uncertainty or error value associated with the parameter.</summary>
+           <summary>Selected for optimization?</summary>
         </devnotes>
       </field>
-      <constructor name="create" visibility="public" file="Ustate.pas" line="213">
+      <field name="SelForSens" type="Boolean" visibility="public" size="1" offset="113" file="Ustate.pas" line="239">
         <devnotes>
-           <summary>Instantiates a TPar (Parameter) object.</summary>
+           <summary>Selected for sensitivity analysis?</summary>
+        </devnotes>
+      </field>
+      <field name="error" type="Double" visibility="public" size="8" offset="120" file="Ustate.pas" line="242">
+        <devnotes>
+           <summary>Uncertainty value.</summary>
+        </devnotes>
+      </field>
+      <constructor name="create" visibility="public" file="Ustate.pas" line="252">
+        <devnotes>
+           <summary>Instantiates a parameter object.</summary>
            <param name="na">Name of the parameter.</param>
            <param name="un">Units of the parameter.</param>
-           <param name="va">Default floating point value.</param>
-           <param name="error">Error or uncertainty value.</param>
-           <param name="c">Comment/Explanation string.</param>
+           <param name="va">Initial value.</param>
+           <param name="error">Error value.</param>
+           <param name="c">Comment or description.</param>
         </devnotes>
         <parameters>
           <parameter name="na" type="string" />
@@ -1001,29 +1047,19 @@
           <parameter name="c" type="string" />
         </parameters>
       </constructor>
-      <property name="opt_SelForSens" visibility="published" read="SelForSens" write="SelForSens" type="Boolean" file="Ustate.pas" line="216">
+      <property name="opt_SelForSens" visibility="published" read="SelForSens" write="SelForSens" type="Boolean" file="Ustate.pas" line="255">
         <devnotes>
-           <summary>Property for selecting the parameter for sensitivity analysis.</summary>
+           <summary>Property for selection for sensitivity analysis.</summary>
         </devnotes>
       </property>
-      <property name="max" visibility="published" read="fmax" write="fmax" type="Double" default="0" file="Ustate.pas" line="218">
-        <devnotes>
-           <summary>The maximum expected value, e.g., for optimization routines.</summary>
-        </devnotes>
-      </property>
-      <property name="min" visibility="published" read="fmin" write="fmax" type="Double" default="0" file="Ustate.pas" line="220">
-        <devnotes>
-           <summary>The minimum expected value, e.g., for optimization routines.</summary>
-        </devnotes>
-      </property>
+      <property name="max" visibility="published" read="fmax" write="fmax" type="Double" default="0" file="Ustate.pas" line="256" />
+      <property name="min" visibility="published" read="fmin" write="fmax" type="Double" default="0" file="Ustate.pas" line="257" />
     </members>
   </class>
-  <class name="TState" file="Ustate.pas" line="227">
+  <class name="TState" file="Ustate.pas" line="263">
     <devnotes>
-       <summary>
-       TState is a class representing a state variable in the model, which has an
-       initial value and a rate of change. It is integrated over time.
-       </summary>
+       <summary>TState is a class representing a state variable in the model, which has an initial value and a rate of change.</summary>
+       <remarks>Extends TVar and provides a constructor for creating state variables with initial value, change rate, and comment.</remarks>
     </devnotes>
     <ancestor name="TVar" namespace="UState">
       <methodref name="get_value" visibility="private" procflags="override" />
@@ -1036,8 +1072,10 @@
       <methodref name="create" visibility="published" procflags="constructor">
       </methodref>
       <ancestor name="THumeNumEntity" namespace="UState">
-        <methodref name="get_value" visibility="private" procflags="virtual" />
-        <methodref name="set_value" visibility="private" procflags="virtual" />
+        <methodref name="get_value" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="set_value" visibility="private" procflags="virtual">
+        </methodref>
         <methodref name="write_declaration" visibility="public">
         </methodref>
         <methodref name="write_property" visibility="public">
@@ -1168,24 +1206,24 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="iv" type="Double" visibility="public" size="8" offset="88" file="Ustate.pas" line="230">
+      <field name="iv" type="Double" visibility="public" size="8" offset="96" file="Ustate.pas" line="267">
         <devnotes>
-           <summary>The initial value of the state variable.</summary>
+           <summary>Initial value.</summary>
         </devnotes>
       </field>
-      <field name="c" type="Double" visibility="public" size="8" offset="96" file="Ustate.pas" line="232">
+      <field name="c" type="Double" visibility="public" size="8" offset="104" file="Ustate.pas" line="269">
         <devnotes>
-           <summary>The current rate of change of the state variable.</summary>
+           <summary>Change rate of state variable.</summary>
         </devnotes>
       </field>
-      <constructor name="create" visibility="public" file="Ustate.pas" line="239">
+      <constructor name="create" visibility="public" file="Ustate.pas" line="278">
         <devnotes>
-           <summary>Instantiates a TState (State Variable) object.</summary>
+           <summary>Instantiates a state variable object.</summary>
            <param name="na">Name of the state variable.</param>
            <param name="un">Units of the state variable.</param>
            <param name="va">Initial value.</param>
-           <param name="cr">Initial rate of change.</param>
-           <param name="comm">Comment/Explanation string.</param>
+           <param name="cr">Rate of change.</param>
+           <param name="comm">Comment or description.</param>
         </devnotes>
         <parameters>
           <parameter name="na" type="string" />
@@ -1197,17 +1235,16 @@
       </constructor>
     </members>
   </class>
-  <class name="TExternV" file="Ustate.pas" line="247">
+  <class name="TExternV" file="Ustate.pas" line="284">
     <devnotes>
-       <summary>
-       TExternV represents an external variable in the model. Values of model
-       elements outside a submodel are &quot;external&quot; and made accessible by linking
-       to the source variable, often via a pointer.
-       </summary>
+       <summary>TExternV is a class representing an external variable in the model. Values of model elements outside a submodel are called &quot;external variables&quot; and can be accessed via pointers.</summary>
+       <remarks>The default method for setting the link to the external variable is to search for it in the model by its name. Extends THumeNumEntity and provides methods for getting and setting the value, as well as creating the external variable with a name, units, and an external value type.</remarks>
     </devnotes>
     <ancestor name="THumeNumEntity" namespace="UState">
-      <methodref name="get_value" visibility="private" procflags="virtual" />
-      <methodref name="set_value" visibility="private" procflags="virtual" />
+      <methodref name="get_value" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="set_value" visibility="private" procflags="virtual">
+      </methodref>
       <methodref name="write_declaration" visibility="public">
       </methodref>
       <methodref name="write_property" visibility="public">
@@ -1337,54 +1374,53 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fSearch" type="Boolean" visibility="private" size="1" offset="80" file="Ustate.pas" line="250">
+      <field name="fSearch" type="Boolean" visibility="private" size="1" offset="88" file="Ustate.pas" line="288">
         <devnotes>
-           <summary>If true, the variable is found by searching the model by name.</summary>
+           <summary>Indicates if the external variable is searched for in the model. If not, it is assumed to be set by connecting two submodels by a direct link.</summary>
         </devnotes>
       </field>
-      <field name="f_Ex" type="TExValue" visibility="private" size="1" offset="81" file="Ustate.pas" line="252">
+      <field name="f_Ex" type="TExValue" visibility="private" size="1" offset="89" file="Ustate.pas" line="291">
         <devnotes>
-           <summary>Specifies whether to link to the state or its rate of change.</summary>
+           <summary>External value type.</summary>
         </devnotes>
       </field>
-      <field name="Conversion_f" type="Double" visibility="private" size="8" offset="88" file="Ustate.pas" line="254">
+      <field name="Conversion_f" type="Double" visibility="private" size="8" offset="96" file="Ustate.pas" line="294">
         <devnotes>
-           <summary>A conversion factor to apply to the external value.</summary>
+           <summary>Conversion factor.</summary>
         </devnotes>
       </field>
-      <field name="fSource" type="string" visibility="private" size="4" offset="96" file="Ustate.pas" line="256">
+      <field name="fSource" type="string" visibility="private" size="4" offset="104" file="Ustate.pas" line="297">
         <devnotes>
-           <summary>The source of the external variable (e.g., a file or submodel name).</summary>
+           <summary>Source of the external variable, e.g. a file or a submodel.</summary>
         </devnotes>
       </field>
-      <function name="get_value" visibility="private" procflags="override" file="Ustate.pas" line="257">
+      <function name="get_value" visibility="private" procflags="override" file="Ustate.pas" line="300">
         <devnotes>
-           <summary>Delivers the external &quot;value&quot; result.</summary>
-           <returns>The value pointed to, adjusted by the conversion factor.</returns>
+           <summary>Getter for the numerical value of the external variable.</summary>
         </devnotes>
         <parameters>
           <retval type="Double" />
         </parameters>
       </function>
-      <procedure name="set_value" visibility="private" procflags="override" file="Ustate.pas" line="258">
+      <procedure name="set_value" visibility="private" procflags="override" file="Ustate.pas" line="302">
+        <devnotes>
+           <summary>Setter for the numerical value of the external variable.</summary>
+        </devnotes>
         <parameters>
           <parameter name="value" type="Double" />
         </parameters>
       </procedure>
-      <field name="F_N" type="string" visibility="public" size="4" offset="100" file="Ustate.pas" line="260" />
-      <field name="f_v" visibility="public" size="4" offset="104" file="Ustate.pas" line="262">
-        <devnotes>
-           <summary>A direct pointer to the external data.</summary>
-        </devnotes>
+      <field name="F_N" type="string" visibility="public" size="4" offset="108" file="Ustate.pas" line="305" />
+      <field name="f_v" visibility="public" size="4" offset="112" file="Ustate.pas" line="306">
         <pointer name="f_v" type="Double" indircnt="1" />
       </field>
-      <constructor name="create" visibility="public" file="Ustate.pas" line="268">
+      <constructor name="create" visibility="public" file="Ustate.pas" line="313">
         <devnotes>
-           <summary>Instantiates a TExternV (External Variable) object.</summary>
+           <summary>Instantiates an external variable object.</summary>
            <param name="Nname">Name of the external variable.</param>
            <param name="NUnits">Units of the external variable.</param>
-           <param name="ExV">Type of external value (state or rate).</param>
-           <param name="c">Comment/Explanation string.</param>
+           <param name="ExV">Type of external value.</param>
+           <param name="c">Comment or description.</param>
         </devnotes>
         <parameters>
           <parameter name="Nname" type="string" />
@@ -1393,33 +1429,33 @@
           <parameter name="c" type="string" />
         </parameters>
       </constructor>
-      <procedure name="setPointer" visibility="public" file="Ustate.pas" line="269">
+      <procedure name="setPointer" visibility="public" file="Ustate.pas" line="316">
         <devnotes>
-           <summary>Sets the internal pointer to the external &quot;value&quot; variable.</summary>
-           <param name="NewPointer">The new pointer to the external data.</param>
+           <summary>Set pointer of the &quot;value&quot; variable.</summary>
+           <param name="NewPointer">Pointer to the external value.</param>
         </devnotes>
         <parameters>
           <parameter name="NewPointer" type="Pointer" />
         </parameters>
       </procedure>
-      <property name="Ex" visibility="published" read="f_Ex" write="f_Ex" type="TExValue" file="Ustate.pas" line="272">
+      <property name="Ex" visibility="published" read="f_Ex" write="f_Ex" type="TExValue" file="Ustate.pas" line="319">
         <devnotes>
-           <summary>Specifies whether to link to the state or rate field.</summary>
+           <summary>Type of external value.</summary>
         </devnotes>
       </property>
-      <property name="Search" visibility="published" read="fSearch" write="fSearch" type="Boolean" file="Ustate.pas" line="274">
+      <property name="Search" visibility="published" read="fSearch" write="fSearch" type="Boolean" file="Ustate.pas" line="321">
         <devnotes>
-           <summary>If true, the variable is located by searching the model by its name.</summary>
+           <summary>Flag indicating if the external variable is searched for in the model.</summary>
         </devnotes>
       </property>
-      <property name="C_f" visibility="published" read="Conversion_f" write="Conversion_f" type="Double" default="0" file="Ustate.pas" line="276">
+      <property name="C_f" visibility="published" read="Conversion_f" write="Conversion_f" type="Double" default="0" file="Ustate.pas" line="323">
         <devnotes>
-           <summary>A conversion factor applied to the value when read.</summary>
+           <summary>Conversion factor.</summary>
         </devnotes>
       </property>
-      <property name="Source" visibility="published" read="fSource" write="fSource" type="string" default="0" file="Ustate.pas" line="278">
+      <property name="Source" visibility="published" read="fSource" write="fSource" type="string" default="0" file="Ustate.pas" line="325">
         <devnotes>
-           <summary>A string identifying the source of the variable.</summary>
+           <summary>Source of the external variable.</summary>
         </devnotes>
       </property>
     </members>
