@@ -708,7 +708,7 @@ procedure TSoilMinNH4.init(Var GlobMod: TMod);
 var
   layer: integer;
   Pool: Pools;
-  c_frac_control: real;
+  c_frac_control, diff: real;
 
 begin
   inherited init(GlobMod);
@@ -743,8 +743,9 @@ begin
     // if not overwritten by previous routine, fractions from inifile are used and a control variable is calculated here
     for layer := 1 to trunc(NOrgLayers.v) do
       c_frac_control := c_frac_control + c_frac[layer].v;
-    if (c_frac_control > (1 + 1E-5)) or (c_frac_control < (1 - 1E-5)) then
+    diff := abs(c_frac_control-1);
 {$IFNDEF NONVISUAL}
+    if (diff > 1E-5) then
       showmessage('Error in fractioning of organic matter between layers!');
 {$ENDIF}
     C_ges.v := 0.5 * OrgDepth.v / 100 * 1E4 * 1000 * iBulkDensity.v *
