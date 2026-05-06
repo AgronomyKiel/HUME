@@ -68,7 +68,7 @@ type
   TWeightOptions = (OptNoWeight, OptDefaultWeight, OptMeasErrorWeight);
 
   /// <summary> Options for parameter Optimization </summary>
-  TOptOption = (optAllInis, optAllInisSeperate, optOnlyActIni);
+  TOptOption = (optAllInis, optAllInisSeparate, optOnlyActIni);
 
   /// <summary> Options for continous output,
   /// NoContOuput: No Outputfile is written, even if Option ContOutput of submodel is true,
