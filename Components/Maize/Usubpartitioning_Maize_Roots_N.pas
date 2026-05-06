@@ -52,9 +52,10 @@ Type
     /// NDemand of the organs [gN.m-2.d-1]
     Ntrans, NNIstem, NNIcob: TVar;
     SupplyDemandRatio: TVar;
-
+    NPlant_Soil: TVar;
     // State Variables
     Nshoot, Nroot, Nstem, Nleaf, Ncob, Ntot: TState; // g N/m2
+
 
     // Parameters
     Ncshoot_min, // niedrigste N Konzentration shoot
@@ -71,7 +72,7 @@ Type
     // External Variables
     ActNUptake: TExternV; // Aktuelle N-Aufnahmerate aus dem Boden-Modul
     MaxNUptake: TExternV; // Maximale N-Aufnahmerate aus dem Boden-Modul
-
+    Nmin0_90: TExternV; //     (holzhauser)
     // Options
     OptNcShoot_Calc: TOption;
 
@@ -192,6 +193,7 @@ begin
   VarCreate('NNIstem', '', 0, true, NNIstem);
   VarCreate('NNIcob', '', 0, true, NNIcob);
   VarCreate('SupplyDemandRatio', '', 0, true, SupplyDemandRatio);
+  VarCreate('NPlant_Soil', '',0, true, NPlant_Soil);
 
   // State Variables
 
@@ -201,6 +203,7 @@ begin
   StateCreate('Ncob', '', 0, true, Ncob);
   StateCreate('Nroot', '', 0, true, Nroot);
   StateCreate('Ntot', '', 0, true, Ntot);
+
 
 
 
@@ -234,6 +237,7 @@ begin
   // External Variable
   ExternVCreate('ActNUptake', 'kg N/ha*d', statefield, ActNUptake);
   ExternVCreate('MaxNUptake', 'kg N/ha*d', statefield, MaxNUptake);
+  ExternVCreate('Nmin0_90',  'kg N/ha', statefield, Nmin0_90);
 
   // Options
   OptCreate('NcShoot_Calc', 'herrmann04', OptNcShoot_Calc);
