@@ -433,7 +433,6 @@ begin
       NDemandLeaf.v := 0;
 
 
-
     { if (DMLeaf.v > 0) and (DMLeaf.v < 2) then
       NDemandLeaf.v := max(0, DMLeaf.c * (NcOptLeaf.v / 100))
       else
@@ -584,6 +583,7 @@ begin
       Ntot.c := Nroot.c + Nleaf.c + Nstem.c + Ncob.c;
       NUptakeRate_act.v := Ntot.c;
 
+
     end;
   end;
   inherited Integrate;
@@ -633,6 +633,8 @@ begin
   NCobDef.v := max(0, NCobOpt.v - Ncob.v);
   NPlantDef.v := max(0, NRootDef.v + NShootDef.v + NLeafDef.v + NStemDef.v +
     NCobDef.v);
+
+  NPlant_Soil.v := Nmin0_90.v + (Ntot.v * 10);  //(holzhauser)  Soil N + Plant N
 
   // calculate actual N concentrations of organs
   if (fNcShoot_Calc = herrmann04) then

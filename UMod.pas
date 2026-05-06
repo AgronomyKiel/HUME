@@ -2354,6 +2354,7 @@ end;
 /// <summary> Run method for actual INI-file only INPUT OUTPUT COMMENT </summary>
 
 procedure TMod.runActIni;
+
 begin
   // change directory to application path
   // chdir(ExtractFiledir(application.ExeName));
