@@ -318,7 +318,7 @@ var
 
 begin
   lbl_actininame.Caption := model.ActIniFile.FileName;
-   fn := StripExtension(model.Get_ControlFileFn) + '_opt.dat';
+    fn := StripExtension(model.ActIniFile.FileName)+ '_opt.dat';
   if model.LMOptions.OptOption = optAllInis then
     fn := StripExtension(model.Get_ControlFileFn) + '_opt.dat';
 
