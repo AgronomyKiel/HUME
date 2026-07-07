@@ -304,6 +304,7 @@ type
     procedure ToggleSwitchStateContOutputClick(Sender: TObject);
     procedure ToggleSwitchExternContOutputClick(Sender: TObject);
     procedure EditOutputDirectoryChange(Sender: TObject);
+    procedure EditControlFileChange(Sender: TObject);
   private
     n_lineSeries, n_PointSeries, nFormGraph: Integer;
     FormGraphArray: array [1 .. 10] of TFormGraph;
@@ -3225,6 +3226,13 @@ begin
     EditStartTime.font.color := clBlack;
 
   DateTimePickerStart.date := StrToINt(EditStartTime.Text);
+end;
+
+procedure TFormMod.EditControlFileChange(Sender: TObject);
+begin
+  if fileexists(self.EditControlFile.Text) then begin
+    LMod.LinkedModel.GM_ControlFile := self.EditControlFile.Text;
+  end;
 end;
 
 procedure TFormMod.EditEndTimeChange(Sender: TObject);

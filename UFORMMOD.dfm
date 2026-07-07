@@ -174,6 +174,7 @@ object FormMod: TFormMod
             BevelWidth = 5
             ReadOnly = True
             TabOrder = 0
+            OnChange = EditControlFileChange
             ExplicitHeight = 25
           end
         end
