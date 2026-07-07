@@ -303,6 +303,7 @@ type
     procedure ToggleSwitchVarContOutputClick(Sender: TObject);
     procedure ToggleSwitchStateContOutputClick(Sender: TObject);
     procedure ToggleSwitchExternContOutputClick(Sender: TObject);
+    procedure EditOutputDirectoryChange(Sender: TObject);
   private
     n_lineSeries, n_PointSeries, nFormGraph: Integer;
     FormGraphArray: array [1 .. 10] of TFormGraph;
@@ -2976,6 +2977,11 @@ end;
 procedure TFormMod.EditOptions1Click(Sender: TObject);
 begin
   PageControl.ActivePage := self.TabSheetOptions;
+end;
+
+procedure TFormMod.EditOutputDirectoryChange(Sender: TObject);
+begin
+  self.LMod.LinkedModel.GM_OutPutPath := self.EditOutputDirectory.Text;
 end;
 
 procedure TFormMod.Statistics1Click(Sender: TObject);

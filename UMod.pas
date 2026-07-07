@@ -1726,8 +1726,15 @@ begin
   self.Time.free;
 
   // SensOptions.Free;
-  FLMOptions.free;
-  WeatherFile.free;
+  // is FLMOptions is closed?
+  if Assigned(FLMOptions) then
+    FLMOptions.free;
+  if Assigned(SensOpt) then
+    SensOpt.free;
+  if Assigned(WeatherFile) then    
+    WeatherFile.free;
+  if Assigned(GlobalOutputList) then
+    GlobalOutputList.free;
   for subMod := SubModStrList.count - 1 downto 0 do
   begin
     for Element := low(TModelElements) to high(TModelElements) do
@@ -1744,11 +1751,17 @@ begin
   begin
     // SubModel[SubMod].destroy;
   end;
-  FreeAndNil(SubModStrList);
-  FreeAndNil(OptionIniFile);
-  FreeAndNil(ParamInifile);
-  FreeAndNil(StateIniFile);
-  FreeAndNil(FPropIniFile);
+
+  if Assigned(SubModStrList) then
+    FreeAndNil(SubModStrList);
+  if Assigned(OptionIniFile) then
+    FreeAndNil(OptionIniFile);
+  if Assigned(ParamInifile) then
+    FreeAndNil(ParamInifile);
+  if Assigned(StateIniFile) then
+    FreeAndNil(StateIniFile);
+  if Assigned(FPropIniFile) then
+    FreeAndNil(FPropIniFile);
   inherited;
 end;
 
@@ -3526,6 +3539,8 @@ var
   ControlFile: textFile;
   gFile: TStreamReader;
   gLine: string;
+  ActDir: string;
+  ProgramDir: string;
 
 begin
   // go through list of all Ini files specified in control file
@@ -3559,6 +3574,12 @@ begin
       else
       begin
         NewFile := true;
+//        ActDir := GetCurrentDir;
+// make sure that program directory is current directory, 
+// otherwise Ini file will be created in wrong directory 
+// and not found on next start of program
+        ProgramDir := ExtractFilePath(ParamStr(0));
+        ChDir(ProgramDir);
         NewInifile := CreateIniFileWithRetry(act_IniFn);
         with NewInifile do
         begin
@@ -3580,6 +3601,7 @@ begin
       end;
     end;
     // CloseFile(ControlFile);
+    gFile.Close;
     gFile.free;
   end
   else
