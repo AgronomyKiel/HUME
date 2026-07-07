@@ -1748,8 +1748,9 @@ begin
     end;
   end;
   for subMod := 0 to SubModStrList.count - 1 do
+  begin
     // SubModel[SubMod].destroy;
-    SubModStrList.free;
+  end;
 
   if Assigned(SubModStrList) then
     FreeAndNil(SubModStrList);
@@ -2366,6 +2367,7 @@ end;
 /// <summary> Run method for actual INI-file only INPUT OUTPUT COMMENT </summary>
 
 procedure TMod.runActIni;
+
 begin
   // change directory to application path
   // chdir(ExtractFiledir(application.ExeName));
@@ -3535,7 +3537,6 @@ var
   act_IniFn: string;
   NewInifile: TMyIniFile;
   ControlFile: textFile;
-  ndx: Integer;
   gFile: TStreamReader;
   gLine: string;
   ActDir: string;
@@ -3729,13 +3730,13 @@ begin
       OptionInifilefn := GetCurrentDir + Path_sep + FNOptionsIni;
       ActIniFile.Writestring(Str_SectionName_FileNames,
         FStr_SectionTopic_OptionIniFN, OptionInifilefn);
-      ActIniFile.UpdateFile;
+      UpdateIniFileWithRetry(ActIniFile);
     end;
     if ExtractFilePath(OptionInifilefn) <> '' then
       ForceDirectories(ExtractFilePath(OptionInifilefn));
-    IniFile := TMyIniFile.Create(OptionInifilefn, TEncoding.UTF8);
+    IniFile := CreateIniFileWithRetry(OptionInifilefn);
     try
-      IniFile.UpdateFile;
+      UpdateIniFileWithRetry(IniFile);
     finally
       IniFile.Free;
     end;
