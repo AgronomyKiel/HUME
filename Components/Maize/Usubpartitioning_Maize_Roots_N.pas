@@ -209,22 +209,22 @@ begin
 
   // Parameter Verdünnungsfunktion Sproß aus Daten geschätzt
   // Biogas-Expert 2007/2008 HS, KD, M1, N3, N4
-  ParCreate('Ncshoot_max', '', 3.4, Ncshoot_max);
+  ParCreate('Ncshoot_max', '', 4.9, Ncshoot_max);
   // 4.944      3.4 nach Plenet /Herrmann
-  ParCreate('Ncshoot_a', '', 3.412, Ncshoot_a);
+  ParCreate('Ncshoot_a', '', 3.85, Ncshoot_a);
   // Koeffizienten a und b nach Herrmann und Taube.
-  ParCreate('Ncshoot_b', '', -0.391, Ncshoot_b);
+  ParCreate('Ncshoot_b', '', -0.37, Ncshoot_b);
   // in der Veröffentlichung a: 34.12   gilt für ein Nkrit in gN/kgDM also eine promille -> 3.4 ergibt NKrit in Prozent (g/100gDM)
   // Parameter für organspezifische Verdünnungsfunktionen (holzhauser)
   // Kalibriert an Biogas-Expert 2007/2008 Datensatz
-  ParCreate('Ncleaf_a', '', 3.2683049, Ncleaf_a); // 3.870
-  ParCreate('Ncleaf_b', '', -0.1207723, Ncleaf_b); // -0.11057
-  ParCreate('Ncleaf_max', '', 4.5, Ncleaf_max); // 5.9
-  ParCreate('Ncstem_max', '', 4.2, Ncstem_max);
-  ParCreate('Ncstem_a', '', 3.7332590, Ncstem_a); // 4.6227
-  ParCreate('Ncstem_b', '', -0.3019954, Ncstem_b); // -0.2164
-  ParCreate('Nccob_a', '', 2.4154529, Nccob_a); // 3.1160
-  ParCreate('Nccob_b', '', -0.2438779, Nccob_b); // -0.2941
+  ParCreate('Ncleaf_a', '', 3.56, Ncleaf_a); // 3.870
+  ParCreate('Ncleaf_b', '', -0.26, Ncleaf_b); // -0.11057
+  ParCreate('Ncleaf_max', '', 5.34, Ncleaf_max); // 5.9
+  ParCreate('Ncstem_max', '', 4.02, Ncstem_max);
+  ParCreate('Ncstem_a', '', 4.30, Ncstem_a); // 4.6227
+  ParCreate('Ncstem_b', '', -0.33, Ncstem_b); // -0.2164
+  ParCreate('Nccob_a', '', 3.20, Nccob_a); // 3.1160
+  ParCreate('Nccob_b', '', -0.34, Nccob_b); // -0.2941
   // Parameter Verdünnungsfunktion Wurzel
   ParCreate('Ncroot_max', '', 1.6, Ncroot_max);
   ParCreate('Ncroot_a', '', 2.0, Ncroot_a);
@@ -269,6 +269,7 @@ begin
   Nstem.v := 0;
   Ncob.v := 0;
   Nshoot.v := 0;
+  Nroot.v :=0;
   Ntot.v := 0;
   SupplyDemandRatio.v := 0;
   Ncleaf.v:= 0;
@@ -304,10 +305,10 @@ begin
   //if (DMShoot > 100) then
     // obere und untere Bedingung(holzhauser): Nach Herrmann und Taube konstantes Nkrit bei DM < 1t/ha
    if (DMShoot > 52) then          // holzhauser 2024    berechnet mit Biogas-Expert Datensatz
-    NcOptShoot_f := min(Ncshoot_a, Ncshoot_a * power((DMShoot / 100),
+    NcOptShoot_f := min(Ncshoot_max, Ncshoot_a * power((DMShoot / 100),
       Ncshoot_b)) // 100 um DM in t/ha umzurechnen;
   else if (XStage > 0) then
-    NcOptShoot_f := Ncshoot_a
+    NcOptShoot_f := Ncshoot_max
   else
     NcOptShoot_f := 0;
 end;
@@ -317,10 +318,10 @@ function NcOptLeaf_f(DMLeaf, XStage, Ncleaf_max, Ncleaf_a,
   Ncleaf_b: real): real;
 begin
   if (DMLeaf > 21) and (XStage > 0) then
-    NcOptLeaf_f := min(Ncleaf_a, Ncleaf_a * power((DMLeaf / 100), Ncleaf_b))
+    NcOptLeaf_f := min(Ncleaf_max, Ncleaf_a * power((DMLeaf / 100), Ncleaf_b))
     // 100 um DM in t/ha umzurechnen
   else
-    NcOptLeaf_f := Ncleaf_a;
+    NcOptLeaf_f := Ncleaf_max;
 end;
 
 // Stems
@@ -328,18 +329,18 @@ function NcOptStem_f(DMStem, XStage, Ncstem_max, Ncstem_a,
   Ncstem_b: real): real;
 begin
   if (DMStem > 1) and (XStage > 0) then
-    NcOptStem_f := min(Ncstem_a, Ncstem_a * exp((DMStem / 100) * Ncstem_b))
+    NcOptStem_f := min(Ncstem_max, Ncstem_a * exp((DMStem / 100) * Ncstem_b))
     // 100 um DM in t/ha umzurechnen
   else
-    NcOptStem_f := Ncstem_a;
+    NcOptStem_f := Ncstem_max;
 end;
 
 // Cobs
 function NcOptCob_f(DMcob, Nccob_a, Nccob_b: real): real;
 begin
-  if (DMcob > 98) then
+  if (DMcob > 100) then
     NcOptCob_f := min(Nccob_a, Nccob_a * power((DMcob / 100), Nccob_b))
-    // 100 um DM in t/ha umzurechnen   /5 noch nurch Ncmax ersetzen!
+    // 100 um DM in t/ha umzurechnen   /NcCob_a = NcCob_max (3.2 t/ha)
   else  if (DMcob > 0) then
      NcOptCob_f := Nccob_a
    else
@@ -409,10 +410,11 @@ begin
     if (DMShoot.v > 0) and (DMShoot.v < 100) then
       NDemandShoot.v := max(0, DMShoot.c * (NcOptShoot.v / 100))
     else
-      NDemandShoot.v :=
-        max(0, DMShoot.c * (NcOptShoot.v + ((DMShoot.v / 100) * Ncshoot_a.v *
-        Ncshoot_b.v * power((DMShoot.v / 100), (Ncshoot_b.v - 1)))) / 100)
-      // Ableitung der Verdünnungsfunktion. Siehe Vorlesungsfolien H.Kage.
+       NDemandShoot.v := ((DMShoot.v + DMShoot.c * Globtime.c) * (NcOptShoot.v / 100) -(NShoot.v)) / Globtime.c
+     { NDemandShoot.v :=
+             max(0, DMShoot.c * (NcOptShoot.v + ((DMShoot.v / 100) * Ncshoot_a.v *
+                     Ncshoot_b.v * power((DMShoot.v / 100), (Ncshoot_b.v - 1)))) / 100)
+                           // Ableitung der Verdünnungsfunktion. Siehe Vorlesungsfolien H.Kage., funktioniert aber nicht, rechnet für alle Nstufen den gleichen Demand aus (kh)}
   end
   else
   begin
@@ -506,7 +508,17 @@ begin
         // SupplyDemandRatio := max(0, min(1, (MaxNUptake.v/10) / NDemand.v))
       else
         SupplyDemandRatio.v := 1;
-      Nshoot.c := (NDemandShoot.v + NShootDef.v) * SupplyDemandRatio.v;
+
+      if NDemandShoot.v > 0 then
+      Nshoot.c := NDemandShoot.v * SupplyDemandRatio.v
+      else
+      Nshoot.c := NDemandShoot.v;
+
+      if NDemandRoot.v > 0 then
+          Nroot.c := NDemandRoot.v * SupplyDemandRatio.v
+        else
+          Nroot.c := NDemandRoot.v;
+
       Ntot.c := Nshoot.c + Nroot.c;
       NUptakeRate_act.v := Ntot.c;
     end;
@@ -656,7 +668,7 @@ begin
       NcLeaf.v := max(0, min(1, (Nleaf.v / DMLeaf.v)) * 100)
     else
       NcLeaf.v := NcOptLeaf.v;
-    If (DMStem.v > 1.4) and (XStage.v > 0) then
+    If (DMStem.v > 1) and (XStage.v > 0) then
       NcStem.v := max(0, min(1, (Nstem.v / DMStem.v)) * 100)
     else
       NcStem.v := NcOptStem.v;
@@ -691,16 +703,18 @@ begin
   // NNI Holzhauser 2024
   if (fNcShoot_Calc = herrmann04) then
   begin
-    if (DMShoot.v + ShootGR.v > 100) then
+    if (DMShoot.v + ShootGR.v > 10) then
       NNI.v := max(0, min(1.0, NcShoot.v / NcOptShoot.v))
     else
       NNI.v := 1;
   end;
   if (fNcShoot_Calc = organ_specific) then
   begin
+
     if (DMShoot.v + ShootGR.v > 100) then
       //NNI.v := max(0, min(1.0, (NcLeaf.v) / (NcOptLeaf.v)))
       NNI.v := min(1,1-power((1-max(0, min(1.0, (NcLeaf.v) / (NcOptLeaf.v)))),NNI_fact.v))
+
     else
       NNI.v := 1;
   end;
