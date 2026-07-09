@@ -316,90 +316,14 @@ var
   DataSeries: TMeasList;
   StartTime, EndTime, Timeelapsed: TDateTime;
 
-/// <summary> Loops over all selected parameters and data series and saves the parameter values for all selected parameters in the list SaveParList. The parameter values are needed to reset the parameters to their original values if the user does not want to save the new optimized parameter values. The parameter values are also needed to update the parameter values in the ini-file if the user wants to save the new optimized parameter values. </
-procedure ProcessSelectedParameters;
-
-var I, index: Integer;
-  ParName, SubModName: string;
-  SubMod: TSubModel;
-  Par: TPar;
-begin  
-// clear the list of selected parameters in the model
-  model.SelParList.Clear;
-
- // loop over all selected parameters and save the parameter values for all selected parameters in the list SaveParList 
- for I := 0 to DstListPar.Items.Count - 1 do begin
-    ParName := DstListPar.Items[I];
-    SubModName := ParName;
-    ParName := copy(ParName, pos('.', ParName) + 1, length(ParName) - pos('.',
-      ParName)); // Delete Submodelname from string
-    SubModName := copy(SubModName, 1, pos('.', SubModName) - 1);
-    // Delete Parname from string
-
-    index := model.submodstrlist.indexof(SubModName);
-    SubMod := TSubModel(model.submodstrlist.Objects[index]);
-    index := SubMod.ParStrList.indexof(ParName);
-    if index <> -1 then begin
-      Par := TPar(SubMod.ParStrList.Objects[index]);
-      SavePar := TPar.create(Par.name, Par.u, Par.v, Par.error, '');
-      SavePar.SubModName := Par.SubModName;
-      SavePar.SelForOpt := Par.SelForOpt;
-      SaveParList.AddObject(SavePar.name, SavePar);
-      Par.SelForOpt := True;
-      model.SelParList.AddObject(ParName, Par);
-    end;
-  end;
-end;  
-
-/// <summary> Loops over all selected data series and sets the property SelForOpt to true for all selected data series. The property SelForOpt is needed to calculate the standard error for all selected data series after the optimization. </summary>
-procedure ProcessSelectedDataSeries;
-
- var i, j, k: integer;
- begin
-
-// clear the list of selected data series in the model 
-  model.AllMeasVal.Clear;
-// loop over all data series in the model and set the property SelForOpt to false for all data series
-  for j := 0 to model.submodstrlist.Count - 1 do begin
-    SubMod := TSubModel(model.submodstrlist.Objects[j]);
-    if SubMod.SomethingMeasured then begin
-      for k := 0 to SubMod.DataList.Count - 1 do begin
-        DataSeries := TMeasList(SubMod.DataList.Objects[k]);
-        DataSeries.SelForOpt := false;
-      end;
-    end;
-  end;
-  for I := 0 to DstListData.Items.Count - 1 do begin
-    DataSeriesName := DstListData.Items[I];
-    SubModName := DataSeriesName;
-    DataSeriesName := copy(DataSeriesName, pos('.', DataSeriesName) + 1,
-      length(DataSeriesName) - pos('.', DataSeriesName));
-    // Delete Submodelname from string
-    SubModName := copy(SubModName, 1, pos('.', SubModName) - 1);
-    // Delete Parname from string
-
-    index := model.submodstrlist.indexof(SubModName);
-    SubMod := TSubModel(model.submodstrlist.Objects[index]);
-    if SubMod.SomethingMeasured then begin
-      index := SubMod.DataList.indexof(DataSeriesName);
-      if index <> -1 then begin
-        DataSeries := TMeasList(SubMod.DataList.Objects[index]);
-        DataSeries.SelForOpt := True;
-      end;
-    end;
-  end;
-end;
-
-
-
 begin
-  // take the name of the active ini-file and create the name of the optimization result file
   lbl_actininame.Caption := model.ActIniFile.FileName;
-   fn := StripExtension(model.ActIniFile.FileName)+ '_opt.dat';
+   fn := StripExtension(model.Get_ControlFileFn) + '_opt.dat';
   if model.LMOptions.OptOption = optAllInis then
     fn := StripExtension(model.Get_ControlFileFn) + '_opt.dat';
 
-  if model.LMOptions.OptOption = optAllInisSeparate then begin
+
+  if model.LMOptions.OptOption = optAllInisSeperate then begin
 
     model.LMOptions.OptOption := optOnlyActIni;
     actini := model.ActIniFile;
@@ -407,23 +331,23 @@ begin
     for i := 0 to model.FIniFiles.count - 1 do begin
       model.ActIniFile := TMyIniFile(model.FIniFiles.objects[i]);
       fn := StripExtension(model.ActIniFile.FileName)+ '_opt.dat';
-      //model.Init(model.ActIniFile);
-      //model.InitAllSubMods;
-      //model.InitAllDataSeries;
-      //model.InitAllExternV;
-      //model.runActIni();
+      model.Init(model.ActIniFile);
+      model.InitAllSubMods;
+      model.InitAllDataSeries;
+      model.InitAllExternV;
+      model.runActIni();
       StartBtnClick(nil);
       UebernehmenBtnClick(nil);
     end;
 
-    model.LMOptions.OptOption := optAllInisSeparate;
+    model.LMOptions.OptOption := optAllInisSeperate;
 
-    //model.ActIniFile := actini;
-   // model.Init(model.ActIniFile);
-   // model.InitAllSubMods;
-    //model.InitAllDataSeries;
-    //model.InitAllExternV;
-   // model.runActIni();
+    model.ActIniFile := actini;
+    model.Init(model.ActIniFile);
+    model.InitAllSubMods;
+    model.InitAllDataSeries;
+    model.InitAllExternV;
+    model.runActIni();
     //updateForm();
     Exit;
   end;
@@ -444,11 +368,63 @@ begin
   LstBxStderror.Clear;
   LstBxStderror.Update;
 
- 
-  // loop over all selected parameters
-  ProcessSelectedParameters;
-  ProcessSelectedDataSeries;
- 
+  model.SelParList.Clear;
+
+  for I := 0 to DstListPar.Items.Count - 1 do begin
+    ParName := DstListPar.Items[I];
+    SubModName := ParName;
+    ParName := copy(ParName, pos('.', ParName) + 1, length(ParName) - pos('.',
+      ParName)); // Delete Submodelname from string
+    SubModName := copy(SubModName, 1, pos('.', SubModName) - 1);
+    // Delete Parname from string
+
+    index := model.submodstrlist.indexof(SubModName);
+    SubMod := TSubModel(model.submodstrlist.Objects[index]);
+    index := SubMod.ParStrList.indexof(ParName);
+    if index <> -1 then begin
+      Par := TPar(SubMod.ParStrList.Objects[index]);
+      SavePar := TPar.create(Par.name, Par.u, Par.v, Par.error, '');
+      SavePar.SubModName := Par.SubModName;
+      SavePar.SelForOpt := Par.SelForOpt;
+      SaveParList.AddObject(SavePar.name, SavePar);
+      Par.SelForOpt := True;
+      model.SelParList.AddObject(ParName, Par);
+    end;
+  end;
+
+  model.AllMeasVal.Clear;
+
+  // model.InitAllDataSeries;
+
+  for j := 0 to model.submodstrlist.Count - 1 do begin
+    SubMod := TSubModel(model.submodstrlist.Objects[j]);
+    if SubMod.SomethingMeasured then begin
+      for k := 0 to SubMod.DataList.Count - 1 do begin
+        DataSeries := TMeasList(SubMod.DataList.Objects[k]);
+        DataSeries.SelForOpt := false;
+      end;
+    end;
+  end;
+
+  for I := 0 to DstListData.Items.Count - 1 do begin
+    DataSeriesName := DstListData.Items[I];
+    SubModName := DataSeriesName;
+    DataSeriesName := copy(DataSeriesName, pos('.', DataSeriesName) + 1,
+      length(DataSeriesName) - pos('.', DataSeriesName));
+    // Delete Submodelname from string
+    SubModName := copy(SubModName, 1, pos('.', SubModName) - 1);
+    // Delete Parname from string
+
+    index := model.submodstrlist.indexof(SubModName);
+    SubMod := TSubModel(model.submodstrlist.Objects[index]);
+    if SubMod.SomethingMeasured then begin
+      index := SubMod.DataList.indexof(DataSeriesName);
+      if index <> -1 then begin
+        DataSeries := TMeasList(SubMod.DataList.Objects[index]);
+        DataSeries.SelForOpt := True;
+      end;
+    end;
+  end;
 
   if (DstListPar.Items.Count > 0) and (DstListData.Items.Count > 0) then begin
     StartTime := Time;
@@ -460,12 +436,10 @@ begin
     {$ENDIF}
 
 
-
-   if model.LMOptions.OptOption = optAllInis then
-         model.run
-         else if model.LMOptions.OptOption = optOnlyActIni then
-          model.runActINI;
-
+    if model.LMOptions.OptOption = optAllInis then
+      model.run
+    else if model.LMOptions.OptOption = optOnlyActIni then
+      model.runActINI;
 
     model.MarquardOptimization(fn);
     // update_StringGrid('reg.dat');
@@ -481,7 +455,6 @@ begin
           6, 2));
       end;
     end;
-    
     ListBoxOptimizedValues.Visible := True;
     ListBoxOptimizedValues.Update;
     LstBxStderror.Visible := True;
@@ -500,13 +473,13 @@ end;
 
 procedure TFormOpt.RadioGroupINIFilesClick(Sender: TObject);
 begin
-  // TOptOption = (optAllInis, optAllInisSeparate, optOnlyActIni);
+  // TOptOption = (optAllInis, optAllInisSeperate, optOnlyActIni);
   if RadioGroupINIFiles.ItemIndex = 0 then
     model.LMOptions.OptOption := optAllInis
   else if RadioGroupINIFiles.ItemIndex = 1 then
     model.LMOptions.OptOption := optOnlyActIni
   else if RadioGroupINIFiles.ItemIndex = 2 then
-    model.LMOptions.OptOption := optAllInisSeparate
+    model.LMOptions.OptOption := optAllInisSeperate
 end;
 
 procedure TFormOpt.ResetBtnClick(Sender: TObject);
