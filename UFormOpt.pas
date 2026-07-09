@@ -407,23 +407,23 @@ begin
     for i := 0 to model.FIniFiles.count - 1 do begin
       model.ActIniFile := TMyIniFile(model.FIniFiles.objects[i]);
       fn := StripExtension(model.ActIniFile.FileName)+ '_opt.dat';
-      model.Init(model.ActIniFile);
-      model.InitAllSubMods;
-      model.InitAllDataSeries;
-      model.InitAllExternV;
-      model.runActIni();
+      //model.Init(model.ActIniFile);
+      //model.InitAllSubMods;
+      //model.InitAllDataSeries;
+      //model.InitAllExternV;
+      //model.runActIni();
       StartBtnClick(nil);
       UebernehmenBtnClick(nil);
     end;
 
     model.LMOptions.OptOption := optAllInisSeparate;
 
-    model.ActIniFile := actini;
-    model.Init(model.ActIniFile);
-    model.InitAllSubMods;
-    model.InitAllDataSeries;
-    model.InitAllExternV;
-    model.runActIni();
+    //model.ActIniFile := actini;
+   // model.Init(model.ActIniFile);
+   // model.InitAllSubMods;
+    //model.InitAllDataSeries;
+    //model.InitAllExternV;
+   // model.runActIni();
     //updateForm();
     Exit;
   end;
@@ -459,11 +459,13 @@ begin
     model.StatusbarOpt := StatusBarOpt;
     {$ENDIF}
 
-// init the model with the active ini-file and run the optimization for the active ini-file or for all ini-files depending on the selected optimization option
-    if (model.LMOptions.OptOption = optAllInis) or (model.LMOptions.OptOption = optAllInisSeparate) then
-      model.run
-    else if model.LMOptions.OptOption = optOnlyActIni then
-      model.runActINI;
+
+
+   if model.LMOptions.OptOption = optAllInis then
+         model.run
+         else if model.LMOptions.OptOption = optOnlyActIni then
+          model.runActINI;
+
 
     model.MarquardOptimization(fn);
     // update_StringGrid('reg.dat');
