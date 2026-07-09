@@ -316,61 +316,19 @@ var
   DataSeries: TMeasList;
   StartTime, EndTime, Timeelapsed: TDateTime;
 
-begin
-  lbl_actininame.Caption := model.ActIniFile.FileName;
-   fn := StripExtension(model.Get_ControlFileFn) + '_opt.dat';
-  if model.LMOptions.OptOption = optAllInis then
-    fn := StripExtension(model.Get_ControlFileFn) + '_opt.dat';
+/// <summary> Loops over all selected parameters and data series and saves the parameter values for all selected parameters in the list SaveParList. The parameter values are needed to reset the parameters to their original values if the user does not want to save the new optimized parameter values. The parameter values are also needed to update the parameter values in the ini-file if the user wants to save the new optimized parameter values. </
+procedure ProcessSelectedParameters;
 
-
-  if model.LMOptions.OptOption = optAllInisSeperate then begin
-
-    model.LMOptions.OptOption := optOnlyActIni;
-    actini := model.ActIniFile;
-
-    for i := 0 to model.FIniFiles.count - 1 do begin
-      model.ActIniFile := TMyIniFile(model.FIniFiles.objects[i]);
-      fn := StripExtension(model.ActIniFile.FileName)+ '_opt.dat';
-      model.Init(model.ActIniFile);
-      model.InitAllSubMods;
-      model.InitAllDataSeries;
-      model.InitAllExternV;
-      model.runActIni();
-      StartBtnClick(nil);
-      UebernehmenBtnClick(nil);
-    end;
-
-    model.LMOptions.OptOption := optAllInisSeperate;
-
-    model.ActIniFile := actini;
-    model.Init(model.ActIniFile);
-    model.InitAllSubMods;
-    model.InitAllDataSeries;
-    model.InitAllExternV;
-    model.runActIni();
-    //updateForm();
-    Exit;
-  end;
-
-  //
-  Screen.Cursor := CrHourGlass;
-  StatusBarOpt.Panels[2].text := '';
-  StatusBarOpt.Panels[3].text := '';
-  case ComboBoxWeightOption.ItemIndex of
-    0: model.lmoptions.WeightOptions := OptNoWeight;
-    1: model.lmoptions.WeightOptions := OptDefaultWeight;
-    2: model.lmoptions.WeightOptions := OptMeasErrorWeight;
-  end;
-
-  LstBxStderror.Clear;
-  ListBoxOptimizedValues.Clear;
-  ListBoxOptimizedValues.Update;
-  LstBxStderror.Clear;
-  LstBxStderror.Update;
-
+var I, index: Integer;
+  ParName, SubModName: string;
+  SubMod: TSubModel;
+  Par: TPar;
+begin  
+// clear the list of selected parameters in the model
   model.SelParList.Clear;
 
-  for I := 0 to DstListPar.Items.Count - 1 do begin
+ // loop over all selected parameters and save the parameter values for all selected parameters in the list SaveParList 
+ for I := 0 to DstListPar.Items.Count - 1 do begin
     ParName := DstListPar.Items[I];
     SubModName := ParName;
     ParName := copy(ParName, pos('.', ParName) + 1, length(ParName) - pos('.',
@@ -391,11 +349,17 @@ begin
       model.SelParList.AddObject(ParName, Par);
     end;
   end;
+end;  
 
+/// <summary> Loops over all selected data series and sets the property SelForOpt to true for all selected data series. The property SelForOpt is needed to calculate the standard error for all selected data series after the optimization. </summary>
+procedure ProcessSelectedDataSeries;
+
+ var i, j, k: integer;
+ begin
+
+// clear the list of selected data series in the model 
   model.AllMeasVal.Clear;
-
-  // model.InitAllDataSeries;
-
+// loop over all data series in the model and set the property SelForOpt to false for all data series
   for j := 0 to model.submodstrlist.Count - 1 do begin
     SubMod := TSubModel(model.submodstrlist.Objects[j]);
     if SubMod.SomethingMeasured then begin
@@ -405,7 +369,6 @@ begin
       end;
     end;
   end;
-
   for I := 0 to DstListData.Items.Count - 1 do begin
     DataSeriesName := DstListData.Items[I];
     SubModName := DataSeriesName;
@@ -425,6 +388,67 @@ begin
       end;
     end;
   end;
+end;
+
+
+
+begin
+  // take the name of the active ini-file and create the name of the optimization result file
+  lbl_actininame.Caption := model.ActIniFile.FileName;
+   fn := StripExtension(model.ActIniFile.FileName)+ '_opt.dat';
+  if model.LMOptions.OptOption = optAllInis then
+    fn := StripExtension(model.Get_ControlFileFn) + '_opt.dat';
+
+  if model.LMOptions.OptOption = optAllInisSeparate then begin
+
+    model.LMOptions.OptOption := optOnlyActIni;
+    actini := model.ActIniFile;
+
+    for i := 0 to model.FIniFiles.count - 1 do begin
+      model.ActIniFile := TMyIniFile(model.FIniFiles.objects[i]);
+      fn := StripExtension(model.ActIniFile.FileName)+ '_opt.dat';
+      //model.Init(model.ActIniFile);
+      //model.InitAllSubMods;
+      //model.InitAllDataSeries;
+      //model.InitAllExternV;
+      //model.runActIni();
+      StartBtnClick(nil);
+      UebernehmenBtnClick(nil);
+    end;
+
+    model.LMOptions.OptOption := optAllInisSeparate;
+
+    //model.ActIniFile := actini;
+   // model.Init(model.ActIniFile);
+   // model.InitAllSubMods;
+    //model.InitAllDataSeries;
+    //model.InitAllExternV;
+   // model.runActIni();
+    //updateForm();
+    Exit;
+  end;
+
+  //
+  Screen.Cursor := CrHourGlass;
+  StatusBarOpt.Panels[2].text := '';
+  StatusBarOpt.Panels[3].text := '';
+  case ComboBoxWeightOption.ItemIndex of
+    0: model.lmoptions.WeightOptions := OptNoWeight;
+    1: model.lmoptions.WeightOptions := OptDefaultWeight;
+    2: model.lmoptions.WeightOptions := OptMeasErrorWeight;
+  end;
+
+  LstBxStderror.Clear;
+  ListBoxOptimizedValues.Clear;
+  ListBoxOptimizedValues.Update;
+  LstBxStderror.Clear;
+  LstBxStderror.Update;
+
+ 
+  // loop over all selected parameters
+  ProcessSelectedParameters;
+  ProcessSelectedDataSeries;
+ 
 
   if (DstListPar.Items.Count > 0) and (DstListData.Items.Count > 0) then begin
     StartTime := Time;
@@ -436,10 +460,12 @@ begin
     {$ENDIF}
 
 
-    if model.LMOptions.OptOption = optAllInis then
-      model.run
-    else if model.LMOptions.OptOption = optOnlyActIni then
-      model.runActINI;
+
+   if model.LMOptions.OptOption = optAllInis then
+         model.run
+         else if model.LMOptions.OptOption = optOnlyActIni then
+          model.runActINI;
+
 
     model.MarquardOptimization(fn);
     // update_StringGrid('reg.dat');
@@ -455,6 +481,7 @@ begin
           6, 2));
       end;
     end;
+    
     ListBoxOptimizedValues.Visible := True;
     ListBoxOptimizedValues.Update;
     LstBxStderror.Visible := True;
@@ -473,13 +500,13 @@ end;
 
 procedure TFormOpt.RadioGroupINIFilesClick(Sender: TObject);
 begin
-  // TOptOption = (optAllInis, optAllInisSeperate, optOnlyActIni);
+  // TOptOption = (optAllInis, optAllInisSeparate, optOnlyActIni);
   if RadioGroupINIFiles.ItemIndex = 0 then
     model.LMOptions.OptOption := optAllInis
   else if RadioGroupINIFiles.ItemIndex = 1 then
     model.LMOptions.OptOption := optOnlyActIni
   else if RadioGroupINIFiles.ItemIndex = 2 then
-    model.LMOptions.OptOption := optAllInisSeperate
+    model.LMOptions.OptOption := optAllInisSeparate
 end;
 
 procedure TFormOpt.ResetBtnClick(Sender: TObject);
