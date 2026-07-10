@@ -1,14 +1,14 @@
 Unit UGenucht;
 
-{ Collection of functions from:
+{ Sammlung der Funktionen aus:
   Van Genuchten, M. T. (1980)
   A closed-form equation for predicting the hydraulic conductivity
   of unsaturated soils
   Soil Sci. Soc. Am. J. (1980), 44, 892-898 }
 
-{ Extended on 25.8.89 by the parameter "l"
-  see:
-  Wosten, J.H.M., M.Th. Van Genuchten (1988)
+{ Am 25.8.89 erweitert um den Parameter "l"
+  siehe :
+  W”sten, J.H.M., M.Th. Van Genuchten (1988)
   Using Texture and Other Soil Properties to predict
   the Unsaturated Soil Hydraulic Functions
   Soil Sci.Soc.Am.J. (1988) 52, 1762-1770 }
@@ -25,60 +25,49 @@ type
 
   public
 
-    /// <summary>Water content at saturation [cm3/cm3].</summary>
-    b_sat: real;
-
-    /// <summary>Residual water content [cm3/cm3].</summary>
-    b_rest: real;
-
-    /// <summary>Saturated hydraulic conductivity [cm/d].</summary>
-    Ks: real;
-
-    /// <summary>Fitting parameter "alpha" [1/cm].</summary>
-    alpha: real;
-
-    /// <summary>Dimensionless fitting parameter "n".</summary>
-    n_par: real;
-
-    /// <summary>
-    /// Fitting parameter "m" = 1-1/n (Mualem), 1-2/n (Burdine), or 1 (Vereecken).
-    /// </summary>
+    b_sat: real; // Wassergehalt bei S„ttigung [cm3/cm3]
+    b_rest: real; // "Restwassergehalt" [cm3/cm3]
+    Ks: real; // ges„ttigte hydraulische Leitf„higkeit [cm/d]
+    alpha: real; // Fitparameter "à" [1/cm]
+    n_par: real; // Fitparameter "n" dimensionslos
     m_par: real;
+    // Fitparameter "m" = 1-1/n (Mualem) bzw. 1-2/n (Burdine) bzw. 1 (Vereecken)
+    l_par: real; //
 
-    /// <summary>Fitting parameter "l".</summary>
-    l_par: real;
-
-    /// <summary>
-    /// Calculates the relative water content from volumetric water content (b),
-    /// residual water content (b_rest), and water content at saturation (b_sat).
-    /// </summary>
     function b_rel_f(b: real): real;
 
-    /// <summary>Calculates volumetric water content (b) from water tension (psi).</summary>
+    { Funktion zur Berechnung des relativen Wassergehaltes aus
+      volumetrischem Wassergehalt (b), "Restwassergehalt (b_rest) und
+      Wassergehalt bei S„ttigung (b_sat) }
+
     function b_psi_f(psi: real): real;
 
-    /// <summary>
-    /// Calculates the absolute value of water tension (positive)
-    /// from volumetric water content.
-    /// </summary>
+    { Funktion zur Berechnung des volumetrischen Wassergehaltes (b)
+      aus der Wasserspannung (psi) }
+
     function psi_b_f(b: real): real;
 
-    /// <summary>Calculates unsaturated hydraulic conductivity.</summary>
+    { Funktion zur Berechnung des Absolutwertes der Wasserspannung (positiv)
+      aus dem volumetrischen Wassergehalt }
+
     function Ku_b_f(b: real): real;
 
-    /// <summary>Calculates unsaturated hydraulic conductivity.</summary>
+    { Funktion zur Berechnung der unges„ttigten hydraulischen Leitf„higkeit }
+
     function Ku_psi_f(psi: real): real;
 
-    /// <summary>Calculates specific water storage capacity.</summary>
+    { Funktion zur Berechnung der unges„ttigten hydraulischen Leitf„higkeit }
+
     function C_b_f(b: real): real;
 
-    /// <summary>Calculates specific water storage capacity.</summary>
+    { Funktion zur Berechnung der spezifischen Wasserspeicherkapazit„t }
+
     function C_psi_f(psi: real): real;
 
-    /// <summary>Calculates water diffusivity.</summary>
     function Dw_f(b: real): real;
 
-    /// <summary>Calculates relative water content from water tension "psi".</summary>
+    { Funktion zur Berechnung der Wasserdiffusivit„t }
+
     function b_rel_psi_f(psi: real): real;
 
   end;
@@ -89,11 +78,20 @@ uses
   Math;
 
 function TGenucht.b_rel_f(b: real): real;
+
+{ Funktion zur Berechnung des relativen Wassergehaltes aus
+  volumetrischem Wassergehalt (b), "Restwassergehalt (b_rest) und
+  Wassergehalt bei S„ttigung (b_sat) }
+
 begin
   b_rel_f := min(1, max(0, (b - b_rest) / (b_sat - b_rest)));
 end;
 
 function TGenucht.b_rel_psi_f(psi: real): real;
+
+{ Funktion zur Berechnung des relativen Wassergehaltes aus der
+  Wasserspannung "Psi" }
+
 var
   z1: real;
 
@@ -104,6 +102,10 @@ begin
 end;
 
 function TGenucht.b_psi_f(psi: real): real;
+
+{ Funktion zur Berechnung des volumetrischen Wassergehaltes (b)
+  aus der Wasserspannung (psi) }
+
 var
   z1, z2: real;
 
@@ -118,6 +120,10 @@ begin
 end;
 
 function TGenucht.psi_b_f(b: real): real;
+
+{ Funktion zur Berechnung des Absolutwertes der Wasserspannung (positiv)
+  aus dem volumetrischen Wassergehalt }
+
 var
   z1, z2: real;
 
@@ -148,6 +154,9 @@ begin
 end;
 
 function TGenucht.Ku_b_f(b: real): real;
+
+{ Funktion zur Berechnung der ungesättigten hydraulischen Leitf„higkeit }
+
 var
   b_rel, K_rel, Ku, z1, z2, z3: real;
 
@@ -157,7 +166,8 @@ begin
   else if b <= b_rest then
     Ku := 0.0
   else
-  { Safeguard against exceeding the function's domain. }
+  { Sicherung gegen šberschreiten des Definitionsbereichs
+    der Funktion }
   begin
 
     b_rel := b_rel_f(b);
@@ -174,6 +184,9 @@ begin
 end;
 
 function TGenucht.Ku_psi_f(psi: real): real;
+
+{ Funktion zur Berechnung der unges„ttigten hydraulischen Leitf„higkeit }
+
 var
   K_rel, Ku, z1, z2, z3, z4, z5: real;
 
@@ -196,6 +209,9 @@ begin
 end;
 
 function TGenucht.C_b_f(b: real): real;
+
+{ Funktion zur Berechnung der spezifischen Wasserspeicherkapazität }
+
 var
   b_rel, z1, z2: real;
   help: real;
@@ -216,6 +232,7 @@ begin
 end;
 
 function TGenucht.C_psi_f(psi: real): real;
+
 var
   b_rel, z1, z2: real;
   help: real;
@@ -234,6 +251,9 @@ begin
 end;
 
 function TGenucht.Dw_f(b: real): real;
+
+{ Funktion zur Berechnung der Wasserdiffusivität }
+
 var
   z1, z2, z3, z4, z5, z6, z7, b_rel: real;
 
