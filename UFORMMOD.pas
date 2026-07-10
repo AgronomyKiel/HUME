@@ -2980,11 +2980,6 @@ begin
   PageControl.ActivePage := self.TabSheetOptions;
 end;
 
-procedure TFormMod.EditOutputDirectoryChange(Sender: TObject);
-begin
-  self.LMod.LinkedModel.GM_OutPutPath := self.EditOutputDirectory.Text;
-end;
-
 procedure TFormMod.Statistics1Click(Sender: TObject);
 begin
   PageControl.ActivePage := self.TabSheetStat;
@@ -3226,13 +3221,6 @@ begin
     EditStartTime.font.color := clBlack;
 
   DateTimePickerStart.date := StrToINt(EditStartTime.Text);
-end;
-
-procedure TFormMod.EditControlFileChange(Sender: TObject);
-begin
-  if fileexists(self.EditControlFile.Text) then begin
-    LMod.LinkedModel.GM_ControlFile := self.EditControlFile.Text;
-  end;
 end;
 
 procedure TFormMod.EditEndTimeChange(Sender: TObject);
