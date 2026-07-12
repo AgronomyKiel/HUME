@@ -1719,15 +1719,17 @@ begin
   for IniFile := 0 to FIniFiles.count - 1 do
     FIniFiles.Objects[IniFile].free;
 
-  FIniFiles.free;
-  AllMeasVal.free;
-  SelMeasVal.free;
-  SelParList.free;
-  self.Time.free;
+  FreeAndNil(FIniFiles);
+  FreeAndNil(AllMeasVal);
+  FreeAndNil(SelMeasVal);
+  FreeAndNil(SelParList);
+  FreeAndNil(self.Time);
 
   // SensOptions.Free;
-  FLMOptions.free;
-  WeatherFile.free;
+  FreeAndNil(FLMOptions);
+  FreeAndNil(WeatherFile);
+  FreeAndNil(SensOpt);
+  FreeAndNil(self.GlobalOutputList);
   for subMod := SubModStrList.count - 1 downto 0 do
   begin
     for Element := low(TModelElements) to high(TModelElements) do
