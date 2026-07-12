@@ -303,6 +303,8 @@ type
     procedure ToggleSwitchVarContOutputClick(Sender: TObject);
     procedure ToggleSwitchStateContOutputClick(Sender: TObject);
     procedure ToggleSwitchExternContOutputClick(Sender: TObject);
+    procedure EditOutputDirectoryChange(Sender: TObject);
+    procedure EditControlFileChange(Sender: TObject);
   private
     n_lineSeries, n_PointSeries, nFormGraph: Integer;
     FormGraphArray: array [1 .. 10] of TFormGraph;
@@ -2978,6 +2980,11 @@ begin
   PageControl.ActivePage := self.TabSheetOptions;
 end;
 
+procedure TFormMod.EditOutputDirectoryChange(Sender: TObject);
+begin
+    LMod.LinkedModel.GM_OutPutPath := self.EditOutputDirectory.Text;
+end;
+
 procedure TFormMod.Statistics1Click(Sender: TObject);
 begin
   PageControl.ActivePage := self.TabSheetStat;
@@ -3219,6 +3226,12 @@ begin
     EditStartTime.font.color := clBlack;
 
   DateTimePickerStart.date := StrToINt(EditStartTime.Text);
+end;
+
+procedure TFormMod.EditControlFileChange(Sender: TObject);
+begin
+  if FileExists(EditControlFile.Text) then
+    self.LMod.LinkedModel.GM_ControlFile := self.EditControlFile.Text;
 end;
 
 procedure TFormMod.EditEndTimeChange(Sender: TObject);
