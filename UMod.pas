@@ -3527,6 +3527,7 @@ var
   ControlFile: textFile;
   gFile: TStreamReader;
   gLine: string;
+  ndx: integer;
 
 begin
   // go through list of all Ini files specified in control file
