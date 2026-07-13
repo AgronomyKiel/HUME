@@ -395,7 +395,7 @@ end;
 begin
   // take the name of the active ini-file and create the name of the optimization result file
   lbl_actininame.Caption := model.ActIniFile.FileName;
-   fn := StripExtension(model.Get_ControlFileFn) + '_opt.dat';
+   fn := StripExtension(model.ActIniFile.FileName) + '_opt.dat';
   if model.LMOptions.OptOption = optAllInis then
     fn := StripExtension(model.Get_ControlFileFn) + '_opt.dat';
 
@@ -407,11 +407,6 @@ begin
     for i := 0 to model.FIniFiles.count - 1 do begin
       model.ActIniFile := TMyIniFile(model.FIniFiles.objects[i]);
       fn := StripExtension(model.ActIniFile.FileName)+ '_opt.dat';
-      model.Init(model.ActIniFile);
-      model.InitAllSubMods;
-      model.InitAllDataSeries;
-      model.InitAllExternV;
-      model.runActIni();
       StartBtnClick(nil);
       UebernehmenBtnClick(nil);
     end;
