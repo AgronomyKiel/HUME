@@ -1239,6 +1239,8 @@ var
   phi, // total porosity
   k1, // parameter for N2/N2O ratio according to del Grosso et al. 2000
   value: real;
+  fabiot_som_biom: real;
+
 begin
   for layer := 0 to trunc(NOrgLayers.v) do
   begin // set all change rates to zero
@@ -1286,6 +1288,7 @@ begin
       Net_min[layer].v := 0.0;
     // In layer 1 the surface layer is included, therefore no reset to 0
 
+    // Calculation of the factor for mineralisation from SOM to BIOM dependent on nitrate availability
     f_som_biom[layer].V := k_som_biom_intercept.v - k_som_biom_slope.V * Nmin_Arr[layer].V;
 
 
@@ -1295,14 +1298,15 @@ begin
     // by the factor for nitrate availability
       if Procs = som_biom then
         f_abiot_min[layer].V := f_abiot_min[layer].V * f_som_biom[layer].V;
-      if (Procs = biom_som) then
-      // No effect of tillage on the decomposition of biom...
-        MinProcesses[layer, Procs].Calculate(f_abiot_min[layer].v,
-          f_Nmin[layer].v, CN, CPool_i[layer], NPool_i[layer], false)
-      else // ...for all other processes include the tillage factor BBf
-        MinProcesses[layer, Procs].Calculate(f_abiot_min[layer].v *
-          BBf[layer].v, f_Nmin[layer].v, CN, CPool_i[layer],
-          NPool_i[layer], false);
+        if Procs = som_biom then begin
+        // fix for som_biom mineralisation calculation, former version altered fabiot for all processes, now only for som_biom hk
+        fabiot_som_biom := f_abiot_min[layer].V * f_som_biom[layer].V;
+        MinProcesses[layer, Procs].Calculate(fabiot_som_biom,
+          f_Nmin[layer].V, CN, CPool_i[layer], NPool_i[layer], false);
+      end else begin
+        MinProcesses[layer, Procs].Calculate(F_abiot_min[layer].V,
+          f_Nmin[layer].V, CN, CPool_i[layer], NPool_i[layer], false);
+      end;
       NetMinArr[Procs, layer].v := MinProcesses[layer, Procs].Nr;
       CFlowArr[Procs, layer].v := MinProcesses[layer, Procs].C_flow;
       CO2FlowArr[Procs, layer].v := MinProcesses[layer, Procs].CO2_Flow;
