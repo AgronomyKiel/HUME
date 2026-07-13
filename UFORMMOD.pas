@@ -2982,6 +2982,7 @@ end;
 
 procedure TFormMod.EditOutputDirectoryChange(Sender: TObject);
 begin
+  if self.Lmod.LinkedModel <> nil then
     LMod.LinkedModel.GM_OutPutPath := self.EditOutputDirectory.Text;
 end;
 
@@ -3231,6 +3232,7 @@ end;
 procedure TFormMod.EditControlFileChange(Sender: TObject);
 begin
   if FileExists(EditControlFile.Text) then
+    if self.Lmod.LinkedModel <> nil then
     self.LMod.LinkedModel.GM_ControlFile := self.EditControlFile.Text;
 end;
 

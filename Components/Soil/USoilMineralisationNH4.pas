@@ -1296,9 +1296,7 @@ begin
     begin
      // in case som to biom conversion is calculated, the mineralisation rate affected
     // by the factor for nitrate availability
-      if Procs = som_biom then
-        f_abiot_min[layer].V := f_abiot_min[layer].V * f_som_biom[layer].V;
-        if Procs = som_biom then begin
+      if Procs = som_biom then begin
         // fix for som_biom mineralisation calculation, former version altered fabiot for all processes, now only for som_biom hk
         fabiot_som_biom := f_abiot_min[layer].V * f_som_biom[layer].V;
         MinProcesses[layer, Procs].Calculate(fabiot_som_biom,

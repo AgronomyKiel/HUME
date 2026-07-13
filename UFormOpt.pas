@@ -316,7 +316,11 @@ var
   DataSeries: TMeasList;
   StartTime, EndTime, Timeelapsed: TDateTime;
 
-/// <summary> Loops over all selected parameters and data series and saves the parameter values for all selected parameters in the list SaveParList. The parameter values are needed to reset the parameters to their original values if the user does not want to save the new optimized parameter values. The parameter values are also needed to update the parameter values in the ini-file if the user wants to save the new optimized parameter values. </
+/// <summary> Loops over all selected parameters and data series and saves the parameter values for all selected 
+/// parameters in the list SaveParList. The parameter values are needed to reset the parameters to their original values 
+/// if the user does not want to save the new optimized parameter values. 
+/// The parameter values are also needed to update the parameter values in the ini-file if the user 
+/// wants to save the new optimized parameter values. </summary>
 procedure ProcessSelectedParameters;
 
 var I, index: Integer;
@@ -420,6 +424,7 @@ begin
     //model.InitAllExternV;
     //model.runActIni();
     //updateForm();
+    model.ActIniFile := actini;
     Exit;
   end;
 
