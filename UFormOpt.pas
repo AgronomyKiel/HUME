@@ -75,7 +75,8 @@ type
     // procedure update_StringGrid(fn : string);
   private
     { Private declarations }
-    SaveNewResults: Boolean; //
+    SaveNewResults: Boolean;
+    procedure RunOptimizationForActIni;
 
   public
     { Public declarations }
@@ -305,34 +306,30 @@ begin
   // update_StringGrid(model.reg_fn );
 end;
 
-procedure TFormOpt.StartBtnClick(Sender: TObject);
-
+procedure TFormOpt.RunOptimizationForActIni;
 var
   I, j, k, index: Integer;
   ParName, SubModName, DataSeriesName: string;
   SubMod: TSubModel;
-  actini: TMyIniFile;
   Par, SavePar: TPar;
   DataSeries: TMeasList;
   StartTime, EndTime, Timeelapsed: TDateTime;
 
-/// <summary> Loops over all selected parameters and data series and saves the parameter values for all selected 
-/// parameters in the list SaveParList. The parameter values are needed to reset the parameters to their original values 
-/// if the user does not want to save the new optimized parameter values. 
-/// The parameter values are also needed to update the parameter values in the ini-file if the user 
+/// <summary> Loops over all selected parameters and data series and saves the parameter values for all selected
+/// parameters in the list SaveParList. The parameter values are needed to reset the parameters to their original values
+/// if the user does not want to save the new optimized parameter values.
+/// The parameter values are also needed to update the parameter values in the ini-file if the user
 /// wants to save the new optimized parameter values. </summary>
 procedure ProcessSelectedParameters;
-
 var I, index: Integer;
   ParName, SubModName: string;
   SubMod: TSubModel;
   Par: TPar;
-begin  
-// clear the list of selected parameters in the model
+begin
+  // clear the list of selected parameters in the model
   model.SelParList.Clear;
-
- // loop over all selected parameters and save the parameter values for all selected parameters in the list SaveParList 
- for I := 0 to DstListPar.Items.Count - 1 do begin
+  // loop over all selected parameters and save the parameter values for all selected parameters in the list SaveParList
+  for I := 0 to DstListPar.Items.Count - 1 do begin
     ParName := DstListPar.Items[I];
     SubModName := ParName;
     ParName := copy(ParName, pos('.', ParName) + 1, length(ParName) - pos('.',
@@ -353,17 +350,15 @@ begin
       model.SelParList.AddObject(ParName, Par);
     end;
   end;
-end;  
+end;
 
 /// <summary> Loops over all selected data series and sets the property SelForOpt to true for all selected data series. The property SelForOpt is needed to calculate the standard error for all selected data series after the optimization. </summary>
 procedure ProcessSelectedDataSeries;
-
- var i, j, k: integer;
- begin
-
-// clear the list of selected data series in the model 
+var i, j, k: integer;
+begin
+  // clear the list of selected data series in the model
   model.AllMeasVal.Clear;
-// loop over all data series in the model and set the property SelForOpt to false for all data series
+  // loop over all data series in the model and set the property SelForOpt to false for all data series
   for j := 0 to model.submodstrlist.Count - 1 do begin
     SubMod := TSubModel(model.submodstrlist.Objects[j]);
     if SubMod.SomethingMeasured then begin
@@ -394,41 +389,7 @@ procedure ProcessSelectedDataSeries;
   end;
 end;
 
-
-
 begin
-  // take the name of the active ini-file and create the name of the optimization result file
-  lbl_actininame.Caption := model.ActIniFile.FileName;
-   fn := StripExtension(model.ActIniFile.FileName) + '_opt.dat';
-  if model.LMOptions.OptOption = optAllInis then
-    fn := StripExtension(model.Get_ControlFileFn) + '_opt.dat';
-
-  if model.LMOptions.OptOption = optAllInisSeparate then begin
-
-    model.LMOptions.OptOption := optOnlyActIni;
-    actini := model.ActIniFile;
-
-    for i := 0 to model.FIniFiles.count - 1 do begin
-      model.ActIniFile := TMyIniFile(model.FIniFiles.objects[i]);
-      fn := StripExtension(model.ActIniFile.FileName)+ '_opt.dat';
-      StartBtnClick(nil);
-      UebernehmenBtnClick(nil);
-    end;
-
-    model.LMOptions.OptOption := optAllInisSeparate;
-
-    //model.ActIniFile := actini;
-    //model.Init(model.ActIniFile);
-    //model.InitAllSubMods;
-    //model.InitAllDataSeries;
-    //model.InitAllExternV;
-    //model.runActIni();
-    //updateForm();
-    model.ActIniFile := actini;
-    Exit;
-  end;
-
-  //
   Screen.Cursor := CrHourGlass;
   StatusBarOpt.Panels[2].text := '';
   StatusBarOpt.Panels[3].text := '';
@@ -444,11 +405,9 @@ begin
   LstBxStderror.Clear;
   LstBxStderror.Update;
 
- 
   // loop over all selected parameters
   ProcessSelectedParameters;
   ProcessSelectedDataSeries;
- 
 
   if (DstListPar.Items.Count > 0) and (DstListData.Items.Count > 0) then begin
     StartTime := Time;
@@ -459,7 +418,7 @@ begin
     model.StatusbarOpt := StatusBarOpt;
     {$ENDIF}
 
-// init the model with the active ini-file and run the optimization for the active ini-file or for all ini-files depending on the selected optimization option
+    // init the model with the active ini-file and run the optimization for the active ini-file or for all ini-files depending on the selected optimization option
     if (model.LMOptions.OptOption = optAllInis) or (model.LMOptions.OptOption = optAllInisSeparate) then
       model.run
     else if model.LMOptions.OptOption = optOnlyActIni then
@@ -479,7 +438,7 @@ begin
           6, 2));
       end;
     end;
-    
+
     ListBoxOptimizedValues.Visible := True;
     ListBoxOptimizedValues.Update;
     LstBxStderror.Visible := True;
@@ -493,7 +452,45 @@ begin
       ShowMessage('No Data selected!');
   end;
   Screen.Cursor := CrDefault;
+end;
 
+procedure TFormOpt.StartBtnClick(Sender: TObject);
+var
+  I: Integer;
+  actini: TMyIniFile;
+begin
+  // take the name of the active ini-file and create the name of the optimization result file
+  lbl_actininame.Caption := model.ActIniFile.FileName;
+  fn := StripExtension(model.ActIniFile.FileName) + '_opt.dat';
+  if model.LMOptions.OptOption = optAllInis then
+    fn := StripExtension(model.Get_ControlFileFn) + '_opt.dat';
+
+  if model.LMOptions.OptOption = optAllInisSeparate then begin
+    model.LMOptions.OptOption := optOnlyActIni;
+    actini := model.ActIniFile;
+
+    for i := 0 to model.FIniFiles.count - 1 do begin
+      model.ActIniFile := TMyIniFile(model.FIniFiles.objects[i]);
+      lbl_actininame.Caption := model.ActIniFile.FileName;
+      fn := StripExtension(model.ActIniFile.FileName) + '_opt.dat';
+      RunOptimizationForActIni;
+      UebernehmenBtnClick(nil);
+    end;
+
+    model.LMOptions.OptOption := optAllInisSeparate;
+
+    //model.ActIniFile := actini;
+    //model.Init(model.ActIniFile);
+    //model.InitAllSubMods;
+    //model.InitAllDataSeries;
+    //model.InitAllExternV;
+    //model.runActIni();
+    //updateForm();
+    model.ActIniFile := actini;
+    Exit;
+  end;
+
+  RunOptimizationForActIni;
 end;
 
 procedure TFormOpt.RadioGroupINIFilesClick(Sender: TObject);
