@@ -273,6 +273,7 @@ begin
   Nstem.v := 0;
   Ncob.v := 0;
   Nshoot.v := 0;
+  Nroot.v := 0;
   Ntot.v := 0;
   SupplyDemandRatio.v := 0;
   Ncleaf.v:= 0;
@@ -509,7 +510,16 @@ begin
         // SupplyDemandRatio := max(0, min(1, (MaxNUptake.v/10) / NDemand.v))
       else
         SupplyDemandRatio.v := 1;
-      Nshoot.c := (NDemandShoot.v + NShootDef.v) * SupplyDemandRatio.v;
+      if NDemandShoot.v > 0 then
+        Nshoot.c := NDemandShoot.v * SupplyDemandRatio.v
+      else
+        Nshoot.c := NDemandShoot.v;
+
+      if NDemandRoot.v > 0 then
+        Nroot.c := NDemandRoot.v * SupplyDemandRatio.v
+      else
+        Nroot.c := NDemandRoot.v;
+
       Ntot.c := Nshoot.c + Nroot.c;
       NUptakeRate_act.v := Ntot.c;
     end;
