@@ -3527,7 +3527,6 @@ var
   ControlFile: textFile;
   gFile: TStreamReader;
   gLine: string;
-  ndx: integer;
 
 begin
   // go through list of all Ini files specified in control file
@@ -3557,9 +3556,6 @@ begin
           NewInifile := CreateIniFileWithRetry(act_IniFn);
           FIniFiles.AddObject(act_IniFn, NewInifile);
         end;
-        if not FIniFiles.Find(act_IniFn, ndx) then
-          NewInifile := CreateIniFileWithRetry(act_IniFn);
-        FIniFiles.AddObject(act_IniFn, NewInifile);
       end
       else
       begin
