@@ -413,12 +413,12 @@ begin
 
     model.LMOptions.OptOption := optAllInisSeparate;
 
-    model.ActIniFile := actini;
-    model.Init(model.ActIniFile);
-    model.InitAllSubMods;
-    model.InitAllDataSeries;
-    model.InitAllExternV;
-    model.runActIni();
+    //model.ActIniFile := actini;
+    //model.Init(model.ActIniFile);
+    //model.InitAllSubMods;
+    //model.InitAllDataSeries;
+    //model.InitAllExternV;
+    //model.runActIni();
     //updateForm();
     Exit;
   end;
