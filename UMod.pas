@@ -1325,6 +1325,14 @@ begin
   if IniFile = nil then
     Exit;
 
+  // TMemIniFile.UpdateFile recreates the physical file even when no values
+  // have changed. During parameter optimization this caused repeated writes
+  // to shared files such as properties.ini. Preserve creation of a missing
+  // file, but do not rewrite an existing unchanged file.
+  if (IniFile is TMemIniFile) and FileExists(IniFile.FileName) and
+    (not TMemIniFile(IniFile).Modified) then
+    Exit;
+
   for Attempt := 1 to IniFileRetryCount do
     try
       IniFile.UpdateFile;
@@ -1334,13 +1342,13 @@ begin
       begin
         if Attempt = IniFileRetryCount then
           raise;
-        TThread.Sleep(IniFileRetryDelayMs);
+        TThread.Sleep(IniFileRetryDelayMs * Attempt);
       end;
       on EInOutError do
       begin
         if Attempt = IniFileRetryCount then
           raise;
-        TThread.Sleep(IniFileRetryDelayMs);
+        TThread.Sleep(IniFileRetryDelayMs * Attempt);
       end;
     end;
 end;
@@ -2166,7 +2174,8 @@ begin
     end;
   end;
 {$ENDIF}
-  UpdateIniFileWithRetry(FPropIniFile);
+  if Assigned(FPropIniFile) and FPropIniFile.Modified then
+    UpdateIniFileWithRetry(FPropIniFile);
 
   InitGlobalOutputList;
   WriteGlobalOutputNames(fFNGlobalOutput);
@@ -2334,7 +2343,8 @@ begin
     UpdateIniFileWithRetry(StateIniFile);
     if Assigned(OptionIniFile) and OptionIniFile.Modified then
       UpdateIniFileWithRetry(OptionIniFile);
-    UpdateIniFileWithRetry(FPropIniFile)
+    if Assigned(FPropIniFile) and FPropIniFile.Modified then
+      UpdateIniFileWithRetry(FPropIniFile);
 
   end; // End of simulation run
   // globRes.Flush;
