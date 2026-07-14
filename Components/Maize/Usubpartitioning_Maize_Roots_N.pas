@@ -312,7 +312,7 @@ begin
     NcOptShoot_f := min(Ncshoot_max, Ncshoot_a * power((DMShoot / 100),
       Ncshoot_b)) // 100 um DM in t/ha umzurechnen;
   else if (XStage > 0) then
-    NcOptShoot_f := Ncshoot_a
+    NcOptShoot_f := Ncshoot_max
   else
     NcOptShoot_f := 0;
 end;
@@ -325,7 +325,7 @@ begin
     NcOptLeaf_f := min(Ncleaf_max, Ncleaf_a * power((DMLeaf / 100), Ncleaf_b))
     // 100 um DM in t/ha umzurechnen
   else
-    NcOptLeaf_f := Ncleaf_a;
+    NcOptLeaf_f := Ncleaf_max;
 end;
 
 // Stems
@@ -336,7 +336,7 @@ begin
     NcOptStem_f := min(Ncstem_max, Ncstem_a * exp((DMStem / 100) * Ncstem_b))
     // 100 um DM in t/ha umzurechnen
   else
-    NcOptStem_f := Ncstem_a;
+    NcOptStem_f := Ncstem_max;
 end;
 
 // Cobs
@@ -652,7 +652,7 @@ begin
   // calculate actual N concentrations of organs
   if (fNcShoot_Calc = herrmann04) then
   begin
-    If (DMShoot.v > 100) then
+    If (DMShoot.v > 52) then
       NcShoot.v := max(0, min(1, (Nshoot.v / DMShoot.v)) * 100)
     else
       NcShoot.v := Ncshoot_max.v;
@@ -673,11 +673,11 @@ begin
       NcLeaf.v := max(0, min(1, (Nleaf.v / DMLeaf.v)) * 100)
     else
       NcLeaf.v := NcOptLeaf.v;
-    If (DMStem.v > 1.4) and (XStage.v > 0) then
+    If (DMStem.v > 2) and (XStage.v > 0) then
       NcStem.v := max(0, min(1, (Nstem.v / DMStem.v)) * 100)
     else
       NcStem.v := NcOptStem.v;
-    If (DMcob.v > 0) then
+    If (DMcob.v > 1) then
       NcCob.v := max(0, min(1, (Ncob.v / DMcob.v)) * 100)
     else
       NcCob.v := 0;
