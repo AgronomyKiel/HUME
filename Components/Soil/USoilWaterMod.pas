@@ -2391,10 +2391,7 @@ begin
   begin
     for i := 1 to n_comp + 1 do
     begin
-      // for each layer, the initial matric potential is calculated 
-      // from the initial matric potential of the first layer and the depth of the layer. 
-      // The matric potential decreases with depth by 10 cm per layer, but it is not allowed to be less than 60 cm.
-      psi_arr[i].v := max(60, PsiStart1.v - (i - 1) * 10);
+      psi_arr[i].v := PsiStart1.v - (i - 1) * 10;
       theta_arr[i].v := WPar[i].b_psi_f(psi_arr[i].v);
       GlobMod.StateIniFile.WriteFloat(self.Name, theta_arr[i].Name,
         theta_arr[i].v);
