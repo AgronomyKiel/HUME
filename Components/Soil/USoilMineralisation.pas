@@ -634,6 +634,7 @@ var
   Pool: Pools;
   Procs: processes;
   schicht: integer;
+  fabiot_som_biom: real;
 
 begin
   if fplantmodel <> nil then
@@ -696,10 +697,15 @@ begin
     begin
     // in case som to biom conversion is calculated, the mineralisation rate affected 
     // by the factor for nitrate availability 
-      if Procs = som_biom then
-        F_abiot[schicht].V := F_abiot[schicht].V * f_som_biom[schicht].V;
-      MinProcesses[schicht, Procs].Calculate(F_abiot[schicht].V,
+      if Procs = som_biom then begin
+        // fix for som_biom mineralisation calculation, former version altered fabiot for all processes, now only for som_biom hk
+        fabiot_som_biom := F_abiot[schicht].V * f_som_biom[schicht].V;
+      MinProcesses[schicht, Procs].Calculate(fabiot_som_biom,
         f_Nmin[schicht].V, CN, CPool_i[schicht], NPool_i[schicht], false);
+      end else begin
+        MinProcesses[schicht, Procs].Calculate(F_abiot[schicht].V,
+          f_Nmin[schicht].V, CN, CPool_i[schicht], NPool_i[schicht], false);
+      end;  
       NetMinArr[Procs, schicht].V := MinProcesses[schicht, Procs].Nr;
       CFlowArr[Procs, schicht].V := MinProcesses[schicht, Procs].C_flow;
       Net_min[schicht].V := Net_min[schicht].V + MinProcesses

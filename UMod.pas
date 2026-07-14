@@ -1122,6 +1122,9 @@ type
 
 function IsDesignTime: boolean;
 
+/// <summary>Writes an INI file and retries transient Windows file-sharing failures.</summary>
+procedure UpdateIniFileWithRetry(IniFile: TCustomIniFile);
+
 // Comparison function
 function CompareByModelCompIndex(List: TStringList;
   Index1, Index2: Integer): Integer;
@@ -1591,6 +1594,11 @@ begin
     if Assigned(SubModel[SubModIndex]) then
       SubModel[SubModIndex].Init(self);
   end;
+
+  // InitOptions may add missing defaults to the shared in-memory options
+  // file. Persist all such additions once, rather than once per submodel.
+  if Assigned(OptionIniFile) and OptionIniFile.Modified then
+    UpdateIniFileWithRetry(OptionIniFile);
 end;
 /// <summary> Calls inherited create and  initializes properties, lists and files </summary>
 {$IFNDEF NONVISUAL}
@@ -2324,7 +2332,8 @@ begin
     // AllMeasVal.Clear;       // f�r einzelberechnungen entfernen!
     UpdateIniFileWithRetry(ParamInifile);
     UpdateIniFileWithRetry(StateIniFile);
-    UpdateIniFileWithRetry(OptionIniFile);
+    if Assigned(OptionIniFile) and OptionIniFile.Modified then
+      UpdateIniFileWithRetry(OptionIniFile);
     UpdateIniFileWithRetry(FPropIniFile)
 
   end; // End of simulation run
@@ -5908,11 +5917,17 @@ begin
       Option := TOption(OptionStrList.Objects[i]);
       if Option.Option <> '' then
       begin
-        GlobMod.OptionIniFile.WriteString(Option.submodname, Option.Name,
-          Option.Option);
+        // Do not mark the INI file as modified when initialization merely
+        // read an already existing value. This is especially important for
+        // parameter optimization, which initializes the model many times.
+        if (not GlobMod.OptionIniFile.ValueExists(Option.submodname,
+          Option.Name)) or
+          (GlobMod.OptionIniFile.ReadString(Option.submodname, Option.Name,
+          '') <> Option.Option) then
+          GlobMod.OptionIniFile.WriteString(Option.submodname, Option.Name,
+            Option.Option);
       end;
     end;
-    UpdateIniFileWithRetry(GlobMod.OptionIniFile);
   end;
 end;
 
