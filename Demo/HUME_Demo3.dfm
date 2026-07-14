@@ -71,6 +71,8 @@ inherited FormMod_Demo: TFormMod_Demo
       inherited BitBtnMergeWeatherFN: TBitBtn
         Left = 897
         Top = 672
+        ExplicitLeft = 897
+        ExplicitTop = 672
       end
     end
     inherited TabSheetModelDiagram: TTabSheet
@@ -104,6 +106,7 @@ inherited FormMod_Demo: TFormMod_Demo
         SensOpt.Steps = 5
         SensOpt.DPar = 1.000000000000000000
         SensOpt.Sens_fn = 'sens.dat'
+        Title = 'Mod1'
         OptContOutput = NoContOutput
         Str_SectionName_TimeInit = 'TimeInit'
         Str_SectionName_FileNames = 'FileNames'
@@ -196,7 +199,6 @@ inherited FormMod_Demo: TFormMod_Demo
     inherited TabSheetParameter: TTabSheet
       inherited ToolBarParSheet: TToolBar
         inherited LabelparamFileName: TLabel
-          Height = 15
           StyleElements = [seFont, seClient, seBorder]
         end
         inherited EditParamFileName: TEdit
@@ -207,7 +209,6 @@ inherited FormMod_Demo: TFormMod_Demo
     inherited TabSheetState: TTabSheet
       inherited ToolBarStateSheet: TToolBar
         inherited LabelStateFileName: TLabel
-          Height = 15
           StyleElements = [seFont, seClient, seBorder]
         end
         inherited EditStateFileName: TEdit
@@ -215,10 +216,14 @@ inherited FormMod_Demo: TFormMod_Demo
         end
       end
     end
+    inherited Constants: TTabSheet
+      inherited ToolBarConstPage: TToolBar
+        ExplicitTop = 0
+      end
+    end
     inherited TabSheetOptions: TTabSheet
       inherited ToolBarOptions: TToolBar
         inherited LabelOptionsFilename: TLabel
-          Height = 15
           StyleElements = [seFont, seClient, seBorder]
         end
         inherited EditOptionsFileName: TEdit
@@ -229,7 +234,6 @@ inherited FormMod_Demo: TFormMod_Demo
     inherited TabSheetData: TTabSheet
       inherited ToolBarDataPage: TToolBar
         inherited LabelDataFileNameDesc: TLabel
-          Height = 15
           StyleElements = [seFont, seClient, seBorder]
         end
         inherited EditDataFileName: TEdit
@@ -240,7 +244,6 @@ inherited FormMod_Demo: TFormMod_Demo
     inherited TabSheetResultTab: TTabSheet
       inherited ToolBarPageTable: TToolBar
         inherited LabelOutputdatafile: TLabel
-          Height = 13
           StyleElements = [seFont, seClient, seBorder]
         end
         inherited EditOutputdatafilename: TEdit
@@ -284,7 +287,7 @@ inherited FormMod_Demo: TFormMod_Demo
       StyleElements = [seFont, seClient, seBorder]
     end
   end
-  inherited Lmod: TModLink
+  inherited LMod: TModLink
     LinkedModel = Mod1
   end
 end

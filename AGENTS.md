@@ -40,6 +40,8 @@ When changing Delphi code:
 - build the narrowest affected project/package first
 - prefer `Win32 Debug` unless the task specifically requires another target
 - mention clearly if you could not run a Delphi build in the current environment
+- On this machine, initialize command-line builds with `C:\Program Files (x86)\Embarcadero\Studio\23.0\bin\rsvars.bat`. The default `Hume1` BPL output under `C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl` may reject automated writes with error `F2039`; do not change project output settings to work around this without explicit approval.
+- The repository is exposed as `Q:\HUME\HUME` and also maps to `C:\Users\h_kage\Documents\Modell\HUME\HUME`. Sandboxed process launches against `Q:` may fail with Windows error 267; retry read-only checks through the local path or request the required shell approval rather than altering repository paths.
 
 When changing documentation:
 

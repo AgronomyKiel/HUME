@@ -5,8 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, math,
-  UMod, UState, Diffko, SubmodRootStructureNew, MathImge,
-  SubmodRootDiff;
+  UMod, UState, Diffko,  MathImge,
+  U2DSoilBaseClasses;
 
 const
   dim_max = 10000; { largest index, used for the vectors
@@ -176,7 +176,7 @@ implementation
 
 procedure Register;
 (* -----------------------------------------------------------------------------
-  Procedure needed for components: registers components on a palette.
+  Procedure required for components: registers the components on a palette.
   ------------------------------------------------------------------------------ *)
 begin
   RegisterComponents('MichasMod', [TSubmodDiff2DRoots]);
@@ -613,6 +613,7 @@ procedure TSubmodDiff2DRoots.zweid_solut(dt_globmod: real);
   (linear algebra). Note: nested structure
   ------------------------------------------------------------------------------ *)
 var
+<<<<<<< HEAD
   { The following arrays are declared with a size of dim_max (largest index).
     From the fluxes, a tridiagonal matrix with main and secondary diagonals is
     formed (see Scholl/Drews: linear algebra) }
@@ -634,6 +635,20 @@ var
   o_vektor: array_type;
   { Note: since array_type also starts at 0 in the original, nothing needs to be
     changed here }
+=======
+  { Im folgenden werden Arrays deklariert, die eine Größe von dim_max (größter
+    Index haben). Vektoren: Aus den Flüssen entsteht eine tridiagonale Matrix mit
+    Haupt- und Nebendiagonalen (s. Scholl/Drews: lineare Algebra) }
+  B_vektor, { Lösungsvektor }
+  lower, { untere Diagonale }
+  diag, { mittlere Diagonale }
+  upper, { obere Diagonale }
+  Sink, { Senkenterme }
+  u_vektor, { unterhalb gelegener Konzentrationsvektor }
+  z_vektor, { z_vektor : zu berechnender, zentral gelegener vektor }
+  o_vektor: array_type; { oberhalb gelegener Konzentrationsvektor }
+  { Hinweis: Da array_type auch im Original bei 0 beginnt, muss hier nichts verändert werden. }
+>>>>>>> 1c4f51f (Apply review feedback: fix class names, Array→Flag, typos, broken word)
   Result, i: word;
   Df: real;
   /// <summary>loop variables for grid elements</summary>

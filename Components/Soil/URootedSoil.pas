@@ -666,6 +666,8 @@ begin
     for i := 1 to act_n_comp do
     begin
       if Sqr_Wl_arr[i] > 1E-6 then
+        // sink term calculation with proportional distribution of potential transpiration based on root length density distribution and sink reduction factor
+        // note the change of the units from [mm/d] to [cm/d] by multiplying with 0.1
         Sink_arr[i].v := 0.1 * PotTrans.v * Sqr_Wl_arr[i] / Sum_Sqr_wl
       else
         Sink_arr[i].v := 0.0;

@@ -34,7 +34,7 @@ object FormMod: TFormMod
     Top = 44
     Width = 1090
     Height = 589
-    ActivePage = TabSheetDocumentation
+    ActivePage = TabSheetGlobal
     Align = alClient
     HotTrack = True
     TabOrder = 1
@@ -174,6 +174,7 @@ object FormMod: TFormMod
             BevelWidth = 5
             ReadOnly = True
             TabOrder = 0
+            OnChange = EditControlFileChange
             ExplicitHeight = 25
           end
         end
@@ -738,6 +739,7 @@ object FormMod: TFormMod
             ReadOnly = True
             ShowHint = True
             TabOrder = 0
+            OnChange = EditOutputDirectoryChange
             OnMouseMove = EditWeatherfileMouseMove
           end
         end
@@ -1622,7 +1624,6 @@ object FormMod: TFormMod
         ButtonHeight = 20
         EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
         TabOrder = 0
-        ExplicitTop = 8
         object ToggleSwitch1: TToggleSwitch
           Left = 0
           Top = 0
