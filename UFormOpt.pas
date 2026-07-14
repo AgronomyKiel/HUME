@@ -513,10 +513,33 @@ procedure TFormOpt.ResetParams();
 var
   I, j, index: Integer;
   ActPar, SavePar: TPar;
-  FNIniFile, ParIniFile: TMyInifile;
+  FNIniFile: TMyInifile;
   ParIniFN, SubModName: string;
   ActSubmod: TSubModel;
   success: Boolean;
+
+  procedure WriteParameterValue(const FileName, SubModelName,
+    ParameterName: string; const Value: Double);
+  var
+    IniFile: TMyIniFile;
+    OwnsIniFile: Boolean;
+  begin
+    OwnsIniFile := not Assigned(model.ParamIniFile) or
+      not SameText(ExpandFileName(FileName),
+      ExpandFileName(model.ParamIniFile.FileName));
+
+    if OwnsIniFile then
+      IniFile := TMyIniFile.Create(FileName)
+    else
+      IniFile := model.ParamIniFile;
+    try
+      IniFile.WriteFloat(SubModelName, ParameterName, Value);
+      UpdateIniFileWithRetry(IniFile);
+    finally
+      if OwnsIniFile then
+        IniFile.Free;
+    end;
+  end;
 begin
    // loop over all optimized Parameters
   for I := 0 to SaveParList.Count - 1 do begin
@@ -525,22 +548,15 @@ begin
       FNIniFile := TMyInifile(model.fIniFiles.Objects[j]);
       ParIniFN := FNIniFile.readString('FileNames', 'ParamIniFN', '');
       SavePar := TPar(SaveParList.Objects[I]);
-      if ParIniFN <> model.ActIniFile.Filename then begin
-        ParIniFile := TMyInifile.create(ParIniFN);
-        SubModName := SavePar.SubModName;
-        model.GetParameter(SavePar.name, ActPar, SubModName, success);
-        Index := model.submodstrlist.indexof(SavePar.SubModName);
-        ActSubmod := TSubModel(model.submodstrlist.Objects[index]);
-        Index := ActSubmod.ParStrList.indexof(SavePar.name);
-        ActPar := TPar(ActSubmod.ParStrList.Objects[index]);
-        ActPar.v := SavePar.v;
-        ParIniFile.WriteFloat(SavePar.SubModName, SavePar.name, SavePar.v);
-        ParIniFile.UpdateFile;
-      end else begin
-        model.ActIniFile.WriteFloat(SavePar.SubModName, SavePar.name,
-          SavePar.v);
-        model.ActIniFile.UpdateFile;
-      end;
+      SubModName := SavePar.SubModName;
+      model.GetParameter(SavePar.name, ActPar, SubModName, success);
+      Index := model.submodstrlist.indexof(SavePar.SubModName);
+      ActSubmod := TSubModel(model.submodstrlist.Objects[index]);
+      Index := ActSubmod.ParStrList.indexof(SavePar.name);
+      ActPar := TPar(ActSubmod.ParStrList.Objects[index]);
+      ActPar.v := SavePar.v;
+      WriteParameterValue(ParIniFN, SavePar.SubModName, SavePar.name,
+        SavePar.v);
     end
   end;
 
@@ -589,14 +605,37 @@ var
   Par: TPar;
   FNIniFile: TMyInifile;
   SubModName, ParName: string;
-  ParIniFile: TMyInifile;
   SubMod: TSubModel;
   ParIniFN: string;
   strings: TStringList;
+  procedure WriteParameterValue(const FileName, SubModelName,
+    ParameterName: string; const Value: Double);
+  var
+    IniFile: TMyIniFile;
+    OwnsIniFile: Boolean;
+  begin
+    OwnsIniFile := not Assigned(model.ParamIniFile) or
+      not SameText(ExpandFileName(FileName),
+      ExpandFileName(model.ParamIniFile.FileName));
+
+    if OwnsIniFile then
+      IniFile := TMyIniFile.Create(FileName)
+    else
+      IniFile := model.ParamIniFile;
+    try
+      IniFile.WriteFloat(SubModelName, ParameterName, Value);
+      UpdateIniFileWithRetry(IniFile);
+    finally
+      if OwnsIniFile then
+        IniFile.Free;
+    end;
+  end;
+
 begin
   //lbl_actininame.Caption := model.ActIniFile.FileName;
   SaveNewResults := True;
   strings := TStringList.Create;
+  try
 
   for i := 0 to DstListPar.Items.Count - 1 do begin
     strings.Delimiter := '.';
@@ -615,30 +654,18 @@ begin
         for j := 0 to model.fIniFiles.Count - 1 do begin
           FNIniFile := TMyInifile(model.fIniFiles.Objects[j]);
           ParIniFN := FNIniFile.readString('FileNames', 'ParamIniFN', '');
-          if ParIniFN <> model.ActIniFile.Filename then begin
-            ParIniFile := TMyInifile.create(ParIniFN);
-            ParIniFile.WriteFloat(SubModName, Par.name, Par.v);
-            ParIniFile.UpdateFile;
-          end else begin
-            model.ActIniFile.WriteFloat(SubModName, Par.name, Par.v);
-            model.ActIniFile.UpdateFile;
-          end;
+          WriteParameterValue(ParIniFN, SubModName, Par.name, Par.v);
         end;
       end else  begin
         //if RadioGroupINIFiles.ItemIndex = 1 then begin
         FNIniFile := model.ActIniFile;
         ParIniFN := FNIniFile.readString('FileNames', 'ParamIniFN', '');
-        if ParIniFN <> model.ActIniFile.Filename then begin
-          ParIniFile := TMyInifile.create(ParIniFN);
-          ParIniFile.WriteFloat(SubModName, Par.name, Par.v);
-          ParIniFile.UpdateFile;
-          ParIniFile.Free;
-        end else begin
-          model.ActIniFile.WriteFloat(SubModName, Par.name, Par.v);
-          model.ActIniFile.UpdateFile;
-        end;
+        WriteParameterValue(ParIniFN, SubModName, Par.name, Par.v);
       end;
     end;
+  end;
+  finally
+    strings.Free;
   end;
 end;
 
