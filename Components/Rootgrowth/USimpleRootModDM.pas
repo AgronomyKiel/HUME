@@ -41,8 +41,14 @@ type
     /// <summary>True if root growth starts only after emergence.</summary>
     fRootGrowthAfterEmergence: boolean;
 
+    /// <summary>True after root states and outputs have been reset at harvest.</summary>
+    fHarvestResetDone: boolean;
+
     /// <summary>Sets the variable name prefix.</summary>
     procedure Set_Name_WL(const Name_WL: string);
+
+    /// <summary>Clears root states, cohorts, and outputs once at harvest.</summary>
+    procedure ResetAfterHarvest;
 
   protected
     /// <summary>Option controlling rooting depth increase.</summary>
@@ -1110,6 +1116,7 @@ end;
 procedure TSimpleRootModDM.Init(var GlobMod: Tmod);
 begin
   inherited Init(GlobMod);
+  fHarvestResetDone := false;
   if uppercase(depthgrowthOptStr.Option) = uppercase('linear') then
     RootDepthInc := linear
   else if uppercase(depthgrowthOptStr.Option) = uppercase('expolinear') then
@@ -1138,6 +1145,50 @@ If PlantModel <> nil then
   end;
 end;
 
+procedure TSimpleRootModDM.ResetAfterHarvest;
+begin
+  zr.v := 0.0;
+  zr.c := 0.0;
+  TempSumR.c := 0.0;
+  SRL.v := 0.0;
+  SRL_eff.v := 0.0;
+  OldDMFineRoot := 0.0;
+  InitArraysAndVars;
+
+  WLD_0_15.v := 0.0;
+  WLD_15_30.v := 0.0;
+  WLD_30_45.v := 0.0;
+  WLD_45_60.v := 0.0;
+  WLD_60_75.v := 0.0;
+  WLD_75_90.v := 0.0;
+  WLD_90_105.v := 0.0;
+  WLD_105_120.v := 0.0;
+
+  WLD_0_30.v := 0.0;
+  WLD_30_60.v := 0.0;
+  WLD_60_90.v := 0.0;
+  WLD_90_120.v := 0.0;
+  WLD_120_150.v := 0.0;
+  WLD_0_150.v := 0.0;
+
+  effWLD_0_30.v := 0.0;
+  effWLD_30_60.v := 0.0;
+  effWLD_60_90.v := 0.0;
+  effWLD_90_120.v := 0.0;
+  effWLD_120_150.v := 0.0;
+
+  WLD_0_10.v := 0.0;
+  WLD_10_20.v := 0.0;
+  WLD_20_30.v := 0.0;
+  WLD_30_40.v := 0.0;
+  WLD_40_50.v := 0.0;
+  WLD_50_60.v := 0.0;
+  WLD_60_70.v := 0.0;
+  WLD_70_80.v := 0.0;
+  WLD_80_90.v := 0.0;
+  WLD_90_100.v := 0.0;
+end;
+
 
 /// <summary>
 /// Calculates the rates for root growth and updates root length densities, effective root lengths, and related variables based on current environmental and plant state.
@@ -1162,6 +1213,22 @@ var
   Texturefactor: real;
 
 begin
+  if (HarvestDate <> nil) and (Globtime.v >= HarvestDate.v) then
+  begin
+    if not fHarvestResetDone then
+    begin
+      ResetAfterHarvest;
+      fHarvestResetDone := true;
+    end
+    else
+    begin
+      zr.c := 0.0;
+      TempSumR.c := 0.0;
+    end;
+    exit;
+  end;
+  fHarvestResetDone := false;
+
   If (SowingDate = nil) or (Globtime.v >= SowingDate.v) then
   begin
     InitializeSRL := RootAgeHead = 0;
@@ -1371,19 +1438,6 @@ begin
   WLD_80_90.v := Wld_arr[9].v;
   WLD_90_100.v := Wld_arr[10].v;
 
-  If ((HarvestDate <> nil) and (Globtime.v >= HarvestDate.v))
-  { or (PlantModel.DoHarvest = true) } then
-  begin
-    zr.v := 0.0;
-    for i := 1 to trunc(N_Rootcomp.v) do
-    begin
-      WLd_arr[i].v := 0.0;
-      WL_arr[i].v := 0.0;
-      EffWld_arr[i].v := 0.0;
-      effWL_arr[i].v := 0.0;
-    end;
-    // IsActive := false;
-  end;
 end;
 
 
