@@ -17,6 +17,7 @@ uses
   SysUtils, Classes,
   System.IniFiles,
   System.UITypes,
+  System.Diagnostics,
   // DesignEditors,
   // instance properties
   // IniFilesNew, // Delphi VCL: Implements TIniFile class, handling INI file text format
@@ -591,6 +592,9 @@ type
     /// <summary>  close all final files opened during simulation run </summary>
     procedure CloseAllFinalFiles;
 
+    /// <summary> Write calculation times of all submodels </summary>
+    procedure WriteCalcTimes;
+
     /// <summary> write all 1/1 regression value pairs to file </summary>
     procedure WriteAll_1_1_Files;
 
@@ -751,6 +755,9 @@ type
     fOptFinalOutput: TOption;
     /// Should output be written to file finally
     fWriteFinallyToFile: boolean;
+
+    FCalcTimeTicks: Int64;
+
 
 {$IFNDEF NONVISUAL}
     /// Pointer to abstract Form for debugging
@@ -1045,6 +1052,9 @@ type
     procedure DblClick; override;
     // procedure Click; override;
 {$ENDIF}
+
+    property CalcTimeTicks: Int64 read FCalcTimeTicks write FCalcTimeTicks;
+
   published
 
     /// <summary> property to linkt the submodel to the main model component </summary>
@@ -1317,6 +1327,33 @@ begin
     end;
   Result := nil;
 end;
+
+
+procedure TMod.WriteCalcTimes;
+var
+  i: Integer;
+  F: TextFile;
+  FN: string;
+begin
+  FN := GM_OutPutPath + '\CalcTimes.txt';
+
+  AssignFile(F, FN);
+  Rewrite(F);
+  try
+    for i := 0 to SubModStrList.Count - 1 do
+    begin
+      Writeln(F,
+        SubModel[i].ClassName,
+        ': ',
+        FormatFloat('0.000',
+          SubModel[i].CalcTimeTicks * 1000.0 / TStopwatch.Frequency),
+        ' ms');
+    end;
+  finally
+    CloseFile(F);
+  end;
+end;
+
 
 procedure UpdateIniFileWithRetry(IniFile: TCustomIniFile);
 var
@@ -2008,20 +2045,25 @@ end;
 /// <summary> For each submodel calculate rates </summary>
 
 procedure TMod.CalcAllRates;
-
 var
   i: Integer;
-  // subMod: TSubmodel;
+  SW: TStopwatch;
 begin
-  // for all submodels do...
-  for i := 0 to SubModStrList.count - 1 do
+  for i := 0 to SubModStrList.Count - 1 do
   begin
-    // subMod := TSubmodel(SubModStrList.objects[i]);
-    // if submodel is active calculate rates
     if SubModel[i].IsActive then
+    begin
+      SW := TStopwatch.StartNew;
+
       SubModel[i].CalcRates;
+
+      SW.Stop;
+
+      SubModel[i].CalcTimeTicks := SubModel[i].CalcTimeTicks + SW.ElapsedTicks;
+    end;
   end;
 end;
+
 
 procedure TMod.CalcAllVars;
 var
@@ -2238,6 +2280,10 @@ begin
   // For all submodels write state names to final output file
   // if FinalOutput then   begin
   WriteAllFinalNames;
+  // set the run time counter to zero for each submodel
+  for i  := 0 to SubModStrList.Count-1 do
+      SubModel[i].CalcTimeTicks := 0;
+
 
   for i := 0 to FIniFiles.count - 1 do
   begin
@@ -2315,6 +2361,8 @@ begin
       end;
       // exit central loop if TMod.ModelEnd was flagged by IsFinished (see above)
     until ModelEnd;
+    // write a file with runtime estimates for each submodel
+    WriteCalcTimes;
 {$IFDEF LINUX}
     writeln(' ' + IntToStr(trunc(Time.v)) + ' -  finished');
 {$ENDIF}

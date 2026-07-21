@@ -92,6 +92,15 @@ type
     Root_Matrix: array [1 .. Max_Comp, 1 .. MaxAgeCl] of real;
     n_age_cl: integer;
 
+    /// <summary>Physical position of the youngest cohort in the circular root-age buffer.</summary>
+    RootAgeHead: integer;
+
+    /// <summary>Running active root length for each soil compartment.</summary>
+    ActiveRootLength: array [1 .. Max_Comp] of real;
+
+    /// <summary>Number of cohorts currently included in the active-root totals.</summary>
+    ActiveAgeClassCount: integer;
+
     Tiefe: TSoilExtArray;
 
     /// <summary>Rooting depth at planting/sowing [cm].</summary>
@@ -1084,9 +1093,14 @@ begin
     effWL_arr[i].v := 0.0;
   end;
   for i := 1 to Max_Comp do
+  begin
     for j := 1 to MaxAgeCl do
       Root_Matrix[i, j] := 0.0;
+    ActiveRootLength[i] := 0.0;
+  end;
   n_age_cl := 0;
+  RootAgeHead := 0;
+  ActiveAgeClassCount := min(max(trunc(ActiveDuration.v), 0), MaxAgeCl);
 end;
 
 /// <summary>
@@ -1134,6 +1148,10 @@ procedure TSimpleRootModDM.CalcRates;
 var
   i, j: integer;
   WL_alt, WL_neu, ActiveRL, TsumKrit, zrkrit: real;
+  NewRootLength, ExpiredRootLength: real;
+  PreviousRootAgeHead, ExpiredAgeIndex, MatrixIndex: integer;
+  CurrentActiveAgeClassCount: integer;
+  ActiveDurationChanged, InitializeSRL: boolean;
   act_rooted_comps: integer;
   act_Texture: TTextureClass;
   act_LD: TLDClass;
@@ -1146,7 +1164,10 @@ var
 begin
   If (SowingDate = nil) or (Globtime.v >= SowingDate.v) then
   begin
-    if Root_Matrix[1, 1] <= 0.0 then
+    InitializeSRL := RootAgeHead = 0;
+    if not InitializeSRL then
+      InitializeSRL := Root_Matrix[1, RootAgeHead] <= 0.0;
+    if InitializeSRL then
     begin
       SRL.v := DMFineRoot.v * sp_RL.v / 1E4; // sum of root length in cm/cm2
       { for i := 1 to trunc(n_Rootcomp.v) do
@@ -1241,25 +1262,62 @@ begin
     // else TempSumr.c := 0.0;
     if n_age_cl < MaxAgeCl then
       inc(n_age_cl);
+
+    CurrentActiveAgeClassCount :=
+      min(max(trunc(ActiveDuration.v), 0), MaxAgeCl);
+    ActiveDurationChanged :=
+      CurrentActiveAgeClassCount <> ActiveAgeClassCount;
+    PreviousRootAgeHead := RootAgeHead;
+    if RootAgeHead < MaxAgeCl then
+      inc(RootAgeHead)
+    else
+      RootAgeHead := 1;
+
     SRL_eff.v := 0.0;
     for i := 1 to trunc(N_Rootcomp.v) do
     begin
-      for j := n_age_cl downto 2 do
-        Root_Matrix[i, j] := Root_Matrix[i, j - 1];
       WL_alt := Wld_arr[i].v * (Tiefe[i].v - Tiefe[i - 1].v);
       Wld_arr[i].v := WLD_z_t_f(Tiefe[i - 1].v, Tiefe[i].v);
       WL_arr[i].v := Wld_arr[i].v * (Tiefe[i].v - Tiefe[i - 1].v);
-      Root_Matrix[i,1] := max(0, Wl_arr[i].v-wl_alt);
-      ActiveRL := 0.0;
-      for j := 1 to min(trunc(ActiveDuration.v), MaxAgeCl) do
-        ActiveRL := ActiveRL + Root_Matrix[i, j];
-      // ActiveRL := ActiveRL+            Root_matrix[i,Trunc(ActiveDuration.v)+1]*(ActiveDuration.v -Trunc(ActiveDuration.v));
+      NewRootLength := max(0, WL_arr[i].v - WL_alt);
+
+      if ActiveDurationChanged then
+      begin
+        Root_Matrix[i, RootAgeHead] := NewRootLength;
+        ActiveRL := 0.0;
+        for j := 1 to CurrentActiveAgeClassCount do
+        begin
+          MatrixIndex := RootAgeHead - j + 1;
+          if MatrixIndex <= 0 then
+            inc(MatrixIndex, MaxAgeCl);
+          ActiveRL := ActiveRL + Root_Matrix[i, MatrixIndex];
+        end;
+      end
+      else if CurrentActiveAgeClassCount > 0 then
+      begin
+        ExpiredAgeIndex := PreviousRootAgeHead -
+          CurrentActiveAgeClassCount + 1;
+        if ExpiredAgeIndex <= 0 then
+          inc(ExpiredAgeIndex, MaxAgeCl);
+        ExpiredRootLength := Root_Matrix[i, ExpiredAgeIndex];
+        Root_Matrix[i, RootAgeHead] := NewRootLength;
+        ActiveRL := ActiveRootLength[i] - ExpiredRootLength + NewRootLength;
+        if ActiveRL < 0.0 then
+          ActiveRL := 0.0;
+      end
+      else
+      begin
+        Root_Matrix[i, RootAgeHead] := NewRootLength;
+        ActiveRL := 0.0;
+      end;
+
+      ActiveRootLength[i] := ActiveRL;
       effWL_arr[i].v := ActiveRL;
       SRL_eff.v := SRL_eff.v + ActiveRL;
       EffWld_arr[i].v := ActiveRL / (Tiefe[i].v - Tiefe[i - 1].v);
-      EffWld_arr[i].v := ActiveRL / (Tiefe[i].v - Tiefe[i - 1].v);
 
     end;
+    ActiveAgeClassCount := CurrentActiveAgeClassCount;
     WLD_0_15.v := WLD_z_t_f(0, 15);
     WLD_15_30.v := WLD_z_t_f(15, 30);
     WLD_30_45.v := WLD_z_t_f(30, 45);
