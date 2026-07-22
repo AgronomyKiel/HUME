@@ -2176,7 +2176,8 @@ var
 begin
   Get_ControlFileFn();
   if FPropIniFile = nil then
-    FPropIniFile := CreateIniFileWithRetry(FNModProperties);
+    FPropIniFile := CreateIniFileWithRetry(
+      ExtractFilePath(ParamStr(0)) + FNModProperties);
   SelectionStr := FPropIniFile.ReadString('ModelSettings', 'ContOutput', 'ContOutput');
   fContOutput :=  TContOutput(GetEnumValue(System.TypeInfo(TContOutput), SelectionStr));
 
