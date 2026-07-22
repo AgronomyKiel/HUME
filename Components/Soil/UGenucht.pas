@@ -21,32 +21,66 @@ const
 type
   real = double;
 
-  TGenucht = class(Tobject)
+  TGenucht = class(TObject)
+  private
+    FbSat: real;
+    FbRest: real;
+    FKs: real;
+    FAlpha: real;
+    FnPar: real;
+    FmPar: real;
+    FlPar: real;
+
+    FCoefficientsCalculated: Boolean;
+    FInvMParValid: Boolean;
+    FInvNParValid: Boolean;
+    FInvWaterContentRangeValid: Boolean;
+    FCapacityCoefficientValid: Boolean;
+    FDiffusivityCoefficientValid: Boolean;
+    FInvMPar: real;
+    FInvNPar: real;
+    FWaterContentRange: real;
+    FInvWaterContentRange: real;
+    FLMinusInvMPar: real;
+    FCapacityCoefficient: real;
+    FDiffusivityCoefficient: real;
+
+    procedure InvalidateCoefficients; inline;
+    procedure EnsureCoefficients; inline;
+    procedure SetBSat(Value: real);
+    procedure SetBRest(Value: real);
+    procedure SetKs(Value: real);
+    procedure SetAlpha(Value: real);
+    procedure SetNPar(Value: real);
+    procedure SetMPar(Value: real);
+    procedure SetLPar(Value: real);
 
   public
-
     /// <summary>Water content at saturation [cm3/cm3].</summary>
-    b_sat: real;
+    property b_sat: real read FbSat write SetBSat;
 
     /// <summary>Residual water content [cm3/cm3].</summary>
-    b_rest: real;
+    property b_rest: real read FbRest write SetBRest;
 
     /// <summary>Saturated hydraulic conductivity [cm/d].</summary>
-    Ks: real;
+    property Ks: real read FKs write SetKs;
 
     /// <summary>Fitting parameter "alpha" [1/cm].</summary>
-    alpha: real;
+    property alpha: real read FAlpha write SetAlpha;
 
     /// <summary>Dimensionless fitting parameter "n".</summary>
-    n_par: real;
+    property n_par: real read FnPar write SetNPar;
 
     /// <summary>
     /// Fitting parameter "m" = 1-1/n (Mualem), 1-2/n (Burdine), or 1 (Vereecken).
     /// </summary>
-    m_par: real;
+    property m_par: real read FmPar write SetMPar;
 
     /// <summary>Fitting parameter "l".</summary>
-    l_par: real;
+    property l_par: real read FlPar write SetLPar;
+
+    /// <summary>Precalculates coefficients that depend only on soil parameters.</summary>
+    procedure PrecalculateCoefficients;
 
     /// <summary>
     /// Calculates the relative water content from volumetric water content (b),
@@ -88,9 +122,101 @@ implementation
 uses
   Math;
 
+procedure TGenucht.InvalidateCoefficients;
+begin
+  FCoefficientsCalculated := False;
+end;
+
+procedure TGenucht.EnsureCoefficients;
+begin
+  if not FCoefficientsCalculated then
+    PrecalculateCoefficients;
+end;
+
+procedure TGenucht.SetBSat(Value: real);
+begin
+  FbSat := Value;
+  InvalidateCoefficients;
+end;
+
+procedure TGenucht.SetBRest(Value: real);
+begin
+  FbRest := Value;
+  InvalidateCoefficients;
+end;
+
+procedure TGenucht.SetKs(Value: real);
+begin
+  FKs := Value;
+  InvalidateCoefficients;
+end;
+
+procedure TGenucht.SetAlpha(Value: real);
+begin
+  FAlpha := Value;
+  InvalidateCoefficients;
+end;
+
+procedure TGenucht.SetNPar(Value: real);
+begin
+  FnPar := Value;
+  InvalidateCoefficients;
+end;
+
+procedure TGenucht.SetMPar(Value: real);
+begin
+  FmPar := Value;
+  InvalidateCoefficients;
+end;
+
+procedure TGenucht.SetLPar(Value: real);
+begin
+  FlPar := Value;
+  InvalidateCoefficients;
+end;
+
+procedure TGenucht.PrecalculateCoefficients;
+var
+  Denominator: real;
+begin
+  FWaterContentRange := FbSat - FbRest;
+
+  FInvMParValid := FmPar <> 0.0;
+  if FInvMParValid then
+    FInvMPar := 1.0 / FmPar;
+
+  FInvNParValid := FnPar <> 0.0;
+  if FInvNParValid then
+    FInvNPar := 1.0 / FnPar;
+
+  FInvWaterContentRangeValid := FWaterContentRange <> 0.0;
+  if FInvWaterContentRangeValid then
+    FInvWaterContentRange := 1.0 / FWaterContentRange;
+
+  if FInvMParValid then
+    FLMinusInvMPar := FlPar - FInvMPar;
+
+  Denominator := 1.0 - FmPar;
+  FCapacityCoefficientValid := Denominator <> 0.0;
+  if FCapacityCoefficientValid then
+    FCapacityCoefficient :=
+      -(FAlpha * FmPar * FWaterContentRange) / Denominator;
+
+  Denominator := FAlpha * FmPar * FWaterContentRange;
+  FDiffusivityCoefficientValid := Denominator <> 0.0;
+  if FDiffusivityCoefficientValid then
+    FDiffusivityCoefficient := ((1.0 - FmPar) * FKs) / Denominator;
+
+  FCoefficientsCalculated := True;
+end;
+
 function TGenucht.b_rel_f(b: real): real;
 begin
-  b_rel_f := min(1, max(0, (b - b_rest) / (b_sat - b_rest)));
+  EnsureCoefficients;
+  if FInvWaterContentRangeValid then
+    b_rel_f := min(1, max(0, (b - FbRest) * FInvWaterContentRange))
+  else
+    b_rel_f := min(1, max(0, (b - FbRest) / (FbSat - FbRest)));
 end;
 
 function TGenucht.b_rel_psi_f(psi: real): real;
@@ -108,39 +234,50 @@ var
   z1, z2: real;
 
 begin
+  EnsureCoefficients;
   // psi := max(psi, psimin);
 
   // If psi <= 0.0 then b_psi_f := b_sat else begin
-  z1 := power(alpha * abs(psi), n_par);
-  z2 := power(1 + z1, m_par);
-  b_psi_f := b_rest + (b_sat - b_rest) / z2;
+  z1 := power(FAlpha * abs(psi), FnPar);
+  z2 := power(1 + z1, FmPar);
+  b_psi_f := FbRest + FWaterContentRange / z2;
   // end;
 end;
 
 function TGenucht.psi_b_f(b: real): real;
 var
-  z1, z2: real;
+  InvM, InvN, z1, z2: real;
 
 begin
-  If b >= b_sat then
+  EnsureCoefficients;
+  If b >= FbSat then
   begin
     psi_b_f := 0.0;
     exit;
   end;
   // psi := max(psi, psimin);
 
-  if b < b_rest then
+  if b < FbRest then
   begin
     psi_b_f := 1E5;
     exit;
   end;
   // if (b-b_rest)>0.0 then begin
   // if (b-b_rest)>1e-06 then begin // ar: 26.05.17
-  if (b - b_rest) > 1E-03 then
+  if (b - FbRest) > 1E-03 then
   begin
-    z1 := (b_sat - b_rest) / (b - b_rest);
-    z2 := power(z1, 1 / m_par) - 1;
-    psi_b_f := power(z2, 1 / n_par) * 1 / alpha;
+    if FInvMParValid then
+      InvM := FInvMPar
+    else
+      InvM := 1.0 / FmPar;
+    if FInvNParValid then
+      InvN := FInvNPar
+    else
+      InvN := 1.0 / FnPar;
+
+    z1 := FWaterContentRange / (b - FbRest);
+    z2 := power(z1, InvM) - 1;
+    psi_b_f := power(z2, InvN) / FAlpha;
   end
   // else psi_b_f := 1e10;
   else
@@ -149,24 +286,29 @@ end;
 
 function TGenucht.Ku_b_f(b: real): real;
 var
-  b_rel, K_rel, Ku, z1, z2, z3: real;
+  b_rel, InvM, K_rel, Ku, z1, z2, z3: real;
 
 begin
-  If b >= b_sat then
-    Ku := Ks
-  else if b <= b_rest then
+  EnsureCoefficients;
+  If b >= FbSat then
+    Ku := FKs
+  else if b <= FbRest then
     Ku := 0.0
   else
   { Safeguard against exceeding the function's domain. }
   begin
+    if FInvMParValid then
+      InvM := FInvMPar
+    else
+      InvM := 1.0 / FmPar;
 
     b_rel := b_rel_f(b);
-    z1 := power(1 - power(b_rel, 1 / m_par), m_par);
-    z2 := power(b_rel, l_par);
+    z1 := power(1 - power(b_rel, InvM), FmPar);
+    z2 := power(b_rel, FlPar);
     // Z3     := intpower(1-z1, 2);
     z3 := sqr(1 - z1);
     K_rel := z2 * z3;
-    Ku := K_rel * Ks;
+    Ku := K_rel * FKs;
     If (Ku < 0.0) then
       Ku := 0.0;
   end;
@@ -197,61 +339,96 @@ end;
 
 function TGenucht.C_b_f(b: real): real;
 var
-  b_rel, z1, z2: real;
+  b_rel, InvM, z1, z2: real;
   help: real;
 begin
-  If b <= b_rest then
-    b := b_rest + 1E-5;
-  If b >= b_sat then
-    b := b_sat - 1E-5;
+  EnsureCoefficients;
+  If b <= FbRest then
+    b := FbRest + 1E-5;
+  If b >= FbSat then
+    b := FbSat - 1E-5;
   b_rel := b_rel_f(b);
 
-  help := power(b_rel, 1 / m_par);
+  if FInvMParValid then
+    InvM := FInvMPar
+  else
+    InvM := 1.0 / FmPar;
+  help := power(b_rel, InvM);
 
   // z1       := power(1-power(b_rel,1/m_par),m_par);
-  z1 := power(1 - help, m_par);
-  z2 := -(alpha * m_par * (b_sat - b_rest)) / (1 - m_par);
+  z1 := power(1 - help, FmPar);
+  if FCapacityCoefficientValid then
+    z2 := FCapacityCoefficient
+  else
+    z2 := -(FAlpha * FmPar * FWaterContentRange) / (1.0 - FmPar);
   // C_b_f    := z2*power(b_rel,1/m_par)*z1;
   C_b_f := z2 * help * z1;
 end;
 
 function TGenucht.C_psi_f(psi: real): real;
 var
-  b_rel, z1, z2: real;
+  b_rel, InvM, z1, z2: real;
   help: real;
 
 begin
+  EnsureCoefficients;
   // psi := max(psi, psimin);
 
   b_rel := b_rel_psi_f(psi);
-  help := power(b_rel, 1 / m_par);
+  if FInvMParValid then
+    InvM := FInvMPar
+  else
+    InvM := 1.0 / FmPar;
+  help := power(b_rel, InvM);
 
   // z1       := power(1-power(b_rel,1/m_par),m_par);
-  z1 := power(1 - help, m_par);
-  z2 := -(alpha * m_par * (b_sat - b_rest)) / (1 - m_par);
+  z1 := power(1 - help, FmPar);
+  if FCapacityCoefficientValid then
+    z2 := FCapacityCoefficient
+  else
+    z2 := -(FAlpha * FmPar * FWaterContentRange) / (1.0 - FmPar);
   // C_psi_f    := z2*power(b_rel,1/m_par)*z1;
   C_psi_f := z2 * help * z1;
 end;
 
 function TGenucht.Dw_f(b: real): real;
 var
-  z1, z2, z3, z4, z5, z6, z7, b_rel: real;
+  InvM, LMinusInvM, z1, z2, z3, z4, z5, z6, z7, b_rel: real;
 
 begin
-  If b <= b_rest then
-    b := b_rest + 1E-5;
-  If b >= b_sat then
-    b := b_sat - 1E-5;
+  EnsureCoefficients;
+  If b <= FbRest then
+    b := FbRest + 1E-5;
+  If b >= FbSat then
+    b := FbSat - 1E-5;
 
-  b_rel := (b - b_rest) / (b_sat - b_rest);
-  z1 := 1 - power(b_rel, 1 / m_par);
+  if FInvWaterContentRangeValid then
+    b_rel := (b - FbRest) * FInvWaterContentRange
+  else
+    b_rel := (b - FbRest) / FWaterContentRange;
 
-  z2 := power(z1, m_par);
+  if FInvMParValid then
+  begin
+    InvM := FInvMPar;
+    LMinusInvM := FLMinusInvMPar;
+  end
+  else
+  begin
+    InvM := 1.0 / FmPar;
+    LMinusInvM := FlPar - InvM;
+  end;
+  z1 := 1 - power(b_rel, InvM);
+
+  z2 := power(z1, FmPar);
   // z3:= power(z1, -m_par);
   z3 := 1 / z2;
   z4 := z3 + z2 - 2;
-  z5 := ((1 - m_par) * Ks) / (alpha * m_par * (b_sat - b_rest));
-  z6 := power(b_rel, l_par - (1 / m_par));
+  if FDiffusivityCoefficientValid then
+    z5 := FDiffusivityCoefficient
+  else
+    z5 := ((1.0 - FmPar) * FKs) /
+      (FAlpha * FmPar * FWaterContentRange);
+  z6 := power(b_rel, LMinusInvM);
   z7 := z5 * z6;
   Dw_f := z7 * z4;
 end;

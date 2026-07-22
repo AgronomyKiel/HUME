@@ -2113,6 +2113,8 @@ begin
   if uppercase(FKsFromTextOption.Option) = 'FROMTEXTURE' then
     FKsFromTexture := FromTexture;
   SetGenuchtenPars; // Init Genuchten Pars
+  for i := 1 to n_comp + 1 do
+    WPar[i].PrecalculateCoefficients;
   SetLDPars; // Init LDs
   SetLDnumbers; // Init numerical LD classes
 
@@ -2342,13 +2344,14 @@ begin
   case context of
     ccDiffusion:
       begin
-        TParallel.For(1, n_comp + 1,
-          procedure(i: Int64)
+//        TParallel.For(1, n_comp + 1,
+//          procedure(i: Int64)
+      for I := 1 to n_comp + 1 do
           begin
             Dw_arr[i] := max(0, WPar[i].Dw_f(max(WPar[i].b_rest, theta_new[i])));
             Ku_arr[i] := max(0, WPar[i].Ku_b_f(max(WPar[i].b_rest, theta_new[i])));
-          end);
-
+//          end);
+          end;
         for i := 2 to n_comp + 1 do
         begin
           avg_Dw[i] := sqrt(Dw_arr[i - 1] * Dw_arr[i]); // cm2/d
@@ -2418,13 +2421,14 @@ begin
 
     ccMixedHydrus:
       begin
-        TParallel.For(1, n_comp + 1,
-          procedure(i: Int64)
+ //       TParallel.For(1, n_comp + 1,
+ //         procedure(i: Int64)
+          for i := 1 to n_comp + 1 do
           begin
             c_arr[i] := WPar[i].C_psi_f(psi_neu[i]);
             Ku_arr[i] := WPar[i].Ku_psi_f(psi_neu[i]);
-          end);
-
+//          end);
+          end;
         avg_Ku[0] := (WPar[1].Ks + Ku_arr[1]) / 2; // aritmethic mean
 
         TParallel.For(1, n_comp,

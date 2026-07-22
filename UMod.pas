@@ -16,6 +16,7 @@ uses
   // AdvGrid,
   SysUtils, Classes,
   System.IniFiles,
+  System.IOUtils,
   System.UITypes,
   System.Diagnostics,
   // DesignEditors,
@@ -399,6 +400,10 @@ type
 
     /// <summary> Method for checking if the submodel is set for continuous output </summary>
     procedure IsSubModelContOutput;
+
+    /// <summary>Resolves a referenced file against its owning INI and the application directory.</summary>
+    function ResolveReferencedFileName(const FileName,
+      PrimaryDirectory: string): string;
 
     /// <summary> Method for reading or creating the ini files </summary>
     procedure ReadOrCreateInifiles;
@@ -1608,6 +1613,8 @@ begin
     // read weather file name and create if not existing
     WeatherFilefn := ActIniFile.ReadString(Str_SectionName_FileNames,
       Str_SectionTopic_WeatherFileFN, '');
+    WeatherFilefn := ResolveReferencedFileName(WeatherFilefn,
+      System.IOUtils.TPath.GetDirectoryName(Inifn));
 
     if not fileexists(WeatherFilefn) then
     begin
@@ -3586,69 +3593,103 @@ begin
   TempString.free;
 end;
 
+function TMod.ResolveReferencedFileName(const FileName,
+  PrimaryDirectory: string): string;
+var
+  NormalizedFileName, PrimaryCandidate, ApplicationCandidate,
+    ApplicationDirectory: string;
+begin
+  NormalizedFileName := Trim(FileName);
+  if NormalizedFileName = '' then
+    exit('');
+
+  if System.IOUtils.TPath.IsPathRooted(NormalizedFileName) then
+    exit(System.IOUtils.TPath.GetFullPath(NormalizedFileName));
+
+  PrimaryCandidate := System.IOUtils.TPath.GetFullPath(
+    System.IOUtils.TPath.Combine(PrimaryDirectory, NormalizedFileName));
+  ApplicationDirectory := System.IOUtils.TPath.GetDirectoryName(
+    System.IOUtils.TPath.GetFullPath(ParamStr(0)));
+  ApplicationCandidate := System.IOUtils.TPath.GetFullPath(
+    System.IOUtils.TPath.Combine(ApplicationDirectory, NormalizedFileName));
+
+  if FileExists(PrimaryCandidate) then
+    result := PrimaryCandidate
+  else if FileExists(ApplicationCandidate) then
+    result := ApplicationCandidate
+  else if DirectoryExists(
+    System.IOUtils.TPath.GetDirectoryName(PrimaryCandidate)) then
+    result := PrimaryCandidate
+  else if DirectoryExists(
+    System.IOUtils.TPath.GetDirectoryName(ApplicationCandidate)) then
+    result := ApplicationCandidate
+  else
+    result := PrimaryCandidate;
+end;
+
 procedure TMod.ReadOrCreateInifiles;
 var
   NewFile: boolean;
   act_IniFn: string;
   NewInifile: TMyIniFile;
-  ControlFile: textFile;
   gFile: TStreamReader;
-  gLine: string;
+  ControlFileName, ApplicationDirectory, IniFileDirectory: string;
 
 begin
-  // go through list of all Ini files specified in control file
-  if fileexists(fControlFileFn) then
+  // Control-file entries are relative to the application directory. This is
+  // important when the control file itself is stored in a subdirectory and an
+  // entry starts with e.g. '.\SimIni\'.
+  ApplicationDirectory := System.IOUtils.TPath.GetDirectoryName(
+    System.IOUtils.TPath.GetFullPath(ParamStr(0)));
+  ControlFileName := Trim(fControlFileFn);
+  if ControlFileName <> '' then
+    ControlFileName := System.IOUtils.TPath.GetFullPath(ControlFileName);
+
+  if FileExists(ControlFileName) then
   begin
-    gFile := TStreamReader.create(fControlFileFn, TEncoding.UTF8, true);
-    FIniFiles.Clear;
-    // assignfile(ControlFile, fControlFileFn);
-    // reset(ControlFile);
-    // while not eof(ControlFile) do
-    while not gFile.EndOfStream do
-    begin
-      // open or create next Ini file and add to Ini file list of TMod
-      NewFile := false;
-      // readln(ControlFile, act_IniFn);
-      act_IniFn := gFile.ReadLine;
-      if trim(act_IniFn) = '' then
-        continue;
-      if trim(act_IniFn)[1] = '#' then
-        continue;
-      if fileexists(act_IniFn) then
+    gFile := TStreamReader.Create(ControlFileName, TEncoding.UTF8, true);
+    try
+      FIniFiles.Clear;
+      while not gFile.EndOfStream do
       begin
-        // Use IndexOf (linear search) because FIniFiles is not sorted;
-        // only create and register a new instance when not already present.
+        act_IniFn := Trim(gFile.ReadLine);
+        if act_IniFn = '' then
+          continue;
+        if act_IniFn[1] = '#' then
+          continue;
+
+        act_IniFn := ResolveReferencedFileName(act_IniFn, ApplicationDirectory);
+
+        // Use the normalized absolute path for lookup, creation and storage.
         if FIniFiles.IndexOf(act_IniFn) < 0 then
         begin
+          NewFile := not FileExists(act_IniFn);
           NewInifile := CreateIniFileWithRetry(act_IniFn);
+          NewInifile.CaseSensitive := false;
           FIniFiles.AddObject(act_IniFn, NewInifile);
-        end;
-      end
-      else
-      begin
-        NewFile := true;
-        NewInifile := CreateIniFileWithRetry(act_IniFn);
-        with NewInifile do
-        begin
-          CaseSensitive := false;
-          FIniFiles.AddObject(FileName, NewInifile);
-          // if Ini file is newly created put some default values in it
+
           if NewFile then
           begin
-            WriteFloat(Str_SectionName_TimeInit, Str_SectionTopic_SimStart, 0);
-            WriteFloat(Str_SectionName_TimeInit, Str_SectionTopic_SimEnd, 100);
-            WriteFloat(Str_SectionName_TimeInit, Str_SectionTopic_TimeStep, 1);
-            WriteString(Str_SectionName_FileNames, Str_SectionTopic_StateIniFN,
-              GetCurrentDir + Path_sep + FNStateIni);
-            WriteString(Str_SectionName_FileNames, Str_SectionTopic_ParamIniFN,
-              GetCurrentDir + Path_sep + FNParametersXIni);
+            IniFileDirectory := System.IOUtils.TPath.GetDirectoryName(act_IniFn);
+            NewInifile.WriteFloat(Str_SectionName_TimeInit,
+              Str_SectionTopic_SimStart, 0);
+            NewInifile.WriteFloat(Str_SectionName_TimeInit,
+              Str_SectionTopic_SimEnd, 100);
+            NewInifile.WriteFloat(Str_SectionName_TimeInit,
+              Str_SectionTopic_TimeStep, 1);
+            NewInifile.WriteString(Str_SectionName_FileNames,
+              Str_SectionTopic_StateIniFN,
+              System.IOUtils.TPath.Combine(IniFileDirectory, FNStateIni));
+            NewInifile.WriteString(Str_SectionName_FileNames,
+              Str_SectionTopic_ParamIniFN,
+              System.IOUtils.TPath.Combine(IniFileDirectory, FNParametersXIni));
             UpdateIniFileWithRetry(NewInifile);
           end;
         end;
       end;
+    finally
+      gFile.Free;
     end;
-    // CloseFile(ControlFile);
-    gFile.free;
   end
   else
   begin

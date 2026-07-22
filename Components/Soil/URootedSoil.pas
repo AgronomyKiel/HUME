@@ -1,4 +1,13 @@
-﻿unit URootedSoil; // Neue Komponente
+﻿/// <summary>
+/// Implements different methods for soil water uptake from a one dimensional soil layer
+/// </summary>
+/// <remarks>
+/// <author>
+/// Henning Kage, Dorothee Neukam, Ulf Böttcher & Agronomy Group, University of Kiel
+/// </author>
+/// </remarks>
+
+unit URootedSoil;
 
 interface
 
