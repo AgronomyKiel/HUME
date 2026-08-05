@@ -1,4 +1,30 @@
-﻿unit UHumeWheatPartitioning;
+﻿
+/// <summary>
+/// Module for carbon and nitrogen partitioning at the organ level (root, stem, leaves, grains) in wheat.
+/// Implements C translocation to grains based on experimental results (see Appendix, Ratjen Diss. 2012).
+/// N concentrations in organs during vegetative growth are from U. Böttcher and Meyer-Schatz (unpublished),
+/// with modifications for drought stress according to 2010 experimental results (see Ratjen Diss. Appendix).
+/// Leaf N distribution is calculated for specific leaf layers at anthesis, based on 2010 experimental results (see Ratjen Diss. Appendix).
+/// N dynamics are modeled similarly to Bertheloot 2008 (see Ratjen Diss. Appendix).
+/// Implements sigmoid grain filling (October 2015).
+/// Partitioning of N deficit follows Ratjen & Kage 2016 (JACS).
+///
+/// <item> Main authors: A.M. Ratjen, U. Böttcher, D. Neukam, H. Kage et al.
+/// Restructured and commented by H. Kage, 2024.</item>
+///
+/// First edited: x.x.2003
+/// Last edited: 02.08.25
+/// <References>
+/// <item>Ratjen, A.M. (2012). Refined N-Fertilization of Winter Wheat: A model supported approach combining statistical and mechanistic components.
+/// PhD. thesis, Univ. Kiel.  https://www.pflanzenbau.uni-kiel.de/de/publikationen/dissertationen/dissertationen-als-pdf/dissertation-ratjen-2013.pdf</item>
+/// <item>Ratjen, A. M., Neukam, D., & Kage, H. (2016). A Simple Drought-Sensitive Model for Leaf :  Stem Partitioning of Wheat.
+/// Journal of Agronomy and Crop Science, 202(4), 300-308. https://doi.org/10.1111/jac.12165</item>
+/// <item>Ratjen, A.M., Lemaire, G., Kage, H., Plénet, D., Justes, E., 2018. Key variables for simulating leaf area and N status: Biomass based relations versus phenology driven approaches.
+/// Eur. J. Agron. 100, 110–117. https://doi.org/10.1016/j.eja.2018.04.008.</item>
+/// <item> Ritchie et al. : https://nowlin.css.msu.edu/wheat_book/CHAPTER2.html</item>
+/// </References>
+/// </summary>
+unit UHumeWheatPartitioning;
 
 interface
 
@@ -131,7 +157,7 @@ type
     /// <summary> intercept parameter for empirical HI approach according to Rose </summary>
     pintercept : TPar;
     /// <summary> slope parameter for biomass post anthesis effect on empirical HI approach according to Rose </summary> 
-    pBioPostAnth: TPar; 
+    pBioPostAnth: TPar;
     /// <summary> slope parameter for biomass pre anthesis effect on empirical HI approach according to Rose </summary>
     pBioPreAnth: TPar;
     /// <summary> quadratic parameter for biomass pre anthesis effect on empirical HI approach according to Rose </summary>

@@ -103,7 +103,7 @@ var
 begin
   i := pos('.', FileName);
   if i <> 0 then delete(FileName, i, Length(FileName) - i + 1);
-  result := AnsiUpperCase(FileName);
+  result := FileName;
 end;
 
 end.

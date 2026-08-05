@@ -432,10 +432,10 @@ procedure THumeWheatDryMatter.CalcDroughtImpact;
 begin
   if (SoilWaterModel <> nil) and (fDroughtImpact = DroughtImpact) then
   begin
+    //  (Ferreyra 2003)
     SWDF.v := 1 - power((1 - TransIntRatio.v), pSWDF.v);
   end
   else
-    //  (Ferreyra 2003)
     SWDF.v := 1;
 end;
 

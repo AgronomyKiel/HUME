@@ -5,8 +5,6 @@ date: "`r Sys.Date()`"
 chunk_output_type: console
 html-math-method: katex
 number-sections: true
-bibliography: bibliography.bibtex.bib
-csl: european-journal-of-agronomy.csl
 toc: true
 toc-expand: 4
 toc-depth: 4
@@ -268,8 +266,8 @@ df2 <- df2 %>% mutate(SinkTerm = 0.1*5*sinkredf*df2$rlds^CompF/SumRLDComp)
 df2$Sact <- df2$SinkTerm*df2$sinkredf
 df2$option <- "Reduction by soil water potential"
 
-
-df <- rbind(df1[,names(df2)], df2)
+selcols <-  c("depths", "psis", "swc", "rlds", "sinkredf","SinkTerm",   "Sact", "option")
+df <- rbind(df1[,selcols], df2[,selcols])
 
 
 p3 <- ggplot(df_psis, aes(x = depths, y = psis)) +
@@ -311,7 +309,7 @@ p6 <- ggplot(df, aes(x = depths, y = Sact, color = option)) +
   scale_color_manual(values = c("blue", "red"), labels = c("No reduction", "Reduction by soil water potential")) +
   labs(title = "", x = "Depth (cm)", y = "Actual sink Term (cm/d)", color = "Option") +
   theme_minimal(base_size = 12)
-
+#p6
 p <- (p3 + p4 )/ (p5 + p6) + plot_layout( guides = "collect") & theme(legend.position = "bottom", axis_titles="collect")
 
 p
@@ -352,9 +350,6 @@ p <- ggplot(df1, aes(x = depths)) +
 p
 ```
 
-
-
-
 The potential sink term is reduced by the reduction factor for root water uptake (f~sinkred~) which is calculated based on the soil water potential in each soil layer (psi~i~), the soil water potential from which on water uptake is 0 (psi0) and a parameter for the soil water potential from which on water uptake decrease (psi~crit~). The reduction factor for root water uptake (f~sinkred~) is calculated as shown in Eq. @eq-fsinkred and illustrated in @fig-FeddesReduction.
 
 $$f_{sinkred}=max \left( 0, min \left(1, \frac{\psi-\psi_3}{\psi_2-\psi_3}\right) \right)$$ {#eq-fsinkred}
@@ -365,15 +360,14 @@ $$f_{sinkred}=max \left( 0, min \left(1, \frac{\log(\psi)-\log(\psi_3)}{\log(\ps
 
 The value of $\psi_2$ is usually set to a value of around 200 hPa but with the option *Feddes* it can be made variable depending on the actual transpiration rate.
 
-$$
-\psi_2^{*}=
+$$\psi_2^{*}=
 \begin{cases}
 \psi_{2,\mathrm{low}} & \text{if } T_{\mathrm{act}} \le T_{\mathrm{ref,low}},\\
 \psi_{2,\mathrm{high}} & \text{if } T_{\mathrm{act}} > T_{\mathrm{ref,high}},\\
 \psi_{2,\mathrm{high}} - (\psi_{2,\mathrm{high}}-\psi_2)\,\cdot f
 & \text{if } T_{\mathrm{ref,low}} < T_{\mathrm{act}} \le T_{\mathrm{ref,high}}.
-\end{cases}
-$$ {#eq-psi2Feddes}
+\end{cases}$$
+ {#eq-psi2Feddes}
 
 with:
 

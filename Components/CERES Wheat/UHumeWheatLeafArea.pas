@@ -460,8 +460,9 @@ begin
   ParCreate('PSENLeaf2', '[-]', 0.0006, PSENLeaf2,
     'Parameter for leaf senescence');
   PSENLeaf2.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#leaf-senescence-in-later-stages-bbch-31-71';
-  ParCreate('Icrit', '[MJ/(m2*d)]', 0.2, Icrit,
+  ParCreate('Icrit', '[MJ/(m2*d)]', 0.8, Icrit,
     'critical radiation value for leaf area index');
+  Icrit.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#light-limitation';
   ParCreate('f1_SLA', '[-]', -1.1237, f1_SLA,
     'parameter for SLA calculation, change of ');
   f1_SLA.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatLeafArea.html#calculation-of-slapot';

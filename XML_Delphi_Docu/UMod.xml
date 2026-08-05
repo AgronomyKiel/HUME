@@ -983,11 +983,11 @@
     <element value="1" name="AllContoutput" file="UMod.pas" line="79" />
     <element value="2" name="SubmodelSpecific" file="UMod.pas" line="79" />
   </enum>
-  <const name="ModelElementNames" type="TModelElementNames" visibility="public" file="UMod.pas" line="84">
+  <variable name="ModelElementNames" type="TModelElementNames" visibility="public" file="UMod.pas" line="84">
     <devnotes>
        <summary> string constants for Model element names </summary>
     </devnotes>
-  </const>
+  </variable>
   <const name="Path_sep" type="Char" file="UMod.pas" line="92">
     <devnotes>
        <summary> Path separator for Windows </summary>
@@ -2671,7 +2671,7 @@
           <parameter name="Varndx" type="Integer" />
           <parameter name="ParamName" type="string" />
           <parameter name="SensParValues">
-            <array name="SensParValues" file="UMod.pas" line="4851">
+            <array name="SensParValues" file="UMod.pas" line="4855">
               <element type="Double" />
             </array>
           </parameter>
@@ -4426,10 +4426,8 @@
           <parameter name="index" type="Integer" />
           <retval type="TState">
             <devnotes>
-               <summary>
-               TState is a class representing a state variable in the model, which has an
-               initial value and a rate of change. It is integrated over time.
-               </summary>
+               <summary>TState is a class representing a state variable in the model, which has an initial value and a rate of change.</summary>
+               <remarks>Extends TVar and provides a constructor for creating state variables with initial value, change rate, and comment.</remarks>
             </devnotes>
           </retval>
         </parameters>
@@ -4445,11 +4443,8 @@
           <parameter name="index" type="Integer" />
           <retval type="TPar">
             <devnotes>
-               <summary>
-               TPar is a class representing a parameter variable in the model, which can be
-               selected for optimization or sensitivity analysis. It extends TVar and adds
-               properties for min/max values, uncertainty, and selection flags.
-               </summary>
+               <summary>TPar is a class representing a parameter variable in the model, which can be selected for optimization or sensitivity analysis.</summary>
+               <remarks>Extends TVar and adds properties for maximum and minimum expected values, error, and selection flags.</remarks>
             </devnotes>
           </retval>
         </parameters>
@@ -4465,11 +4460,8 @@
           <parameter name="index" type="Integer" />
           <retval type="TVar">
             <devnotes>
-               <summary>
-               TVar is a class representing a variable, i.e., a value that can be
-               calculated for each time step in the model from other variables, state
-               variables, or parameters. It is the base class for TPar and TState.
-               </summary>
+               <summary>TVar is a class representing a variable, i.e. a value that can be calculated for each time step in the model from other variables, state variables or parameters.</summary>
+               <remarks>Extends THumeNumEntity and provides methods for automatic source code generation for initialization and rate calculation.</remarks>
             </devnotes>
           </retval>
         </parameters>
@@ -4485,11 +4477,8 @@
           <parameter name="index" type="Integer" />
           <retval type="TVar">
             <devnotes>
-               <summary>
-               TVar is a class representing a variable, i.e., a value that can be
-               calculated for each time step in the model from other variables, state
-               variables, or parameters. It is the base class for TPar and TState.
-               </summary>
+               <summary>TVar is a class representing a variable, i.e. a value that can be calculated for each time step in the model from other variables, state variables or parameters.</summary>
+               <remarks>Extends THumeNumEntity and provides methods for automatic source code generation for initialization and rate calculation.</remarks>
             </devnotes>
           </retval>
         </parameters>
@@ -4505,9 +4494,7 @@
           <parameter name="index" type="Integer" />
           <retval type="TOption">
             <devnotes>
-               <summary>
-               Represents a model option with a string value and a list of possible choices.
-               </summary>
+               <summary> TOption is a class representing an option with a string value and a list of possible options. </summary>
             </devnotes>
           </retval>
         </parameters>
@@ -4523,11 +4510,8 @@
           <parameter name="index" type="Integer" />
           <retval type="TExternV">
             <devnotes>
-               <summary>
-               TExternV represents an external variable in the model. Values of model
-               elements outside a submodel are &quot;external&quot; and made accessible by linking
-               to the source variable, often via a pointer.
-               </summary>
+               <summary>TExternV is a class representing an external variable in the model. Values of model elements outside a submodel are called &quot;external variables&quot; and can be accessed via pointers.</summary>
+               <remarks>The default method for setting the link to the external variable is to search for it in the model by its name. Extends THumeNumEntity and provides methods for getting and setting the value, as well as creating the external variable with a name, units, and an external value type.</remarks>
             </devnotes>
           </retval>
         </parameters>
@@ -5220,7 +5204,7 @@
       <parameter name="IniFile" type="TCustomIniFile" />
     </parameters>
   </procedure>
-  <procedure name="Register" visibility="public" file="UMod.pas" line="6300">
+  <procedure name="Register" visibility="public" file="UMod.pas" line="6304">
     <devnotes>
        <summary> Registering the TMod and TSubModel components for designtime editing </summary>
     </devnotes>

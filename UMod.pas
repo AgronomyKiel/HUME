@@ -3244,7 +3244,10 @@ begin
   // Activate file output
   fContOutput := SaveContOutput;
   // Generate new output
-  run; // wieso hier run? Das verstellt die actini Datei!
+  if LMOptions.OptOption = optOnlyActIni then
+    runActIni
+  else
+    run; // wieso hier run? Das verstellt die actini Datei!
   // Das erneute Aufrufen ist notwendig, damit die Inhalte der der Ausgabedateien mit den
   // Parameterwerten im Array NewPar korrespondieren ...
 
