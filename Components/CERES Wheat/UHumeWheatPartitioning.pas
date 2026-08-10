@@ -348,6 +348,7 @@ type
         RGFILL: TVar;
     /// <summary> thousand kernel weight [g] </summary>
         TKM: TVar;
+
     NLStruc_pl: TVar;
     /// <summary> Spross N amount (g/m2) </summary>
         NShoot_m2: TVar;
@@ -1320,7 +1321,7 @@ begin
   if GPSM.v > 0 then
   begin
     TKM.v := (GRNWT_pl.v * Plants.v) / GPSM.v * 1000;
-    GRYD.v := ((GRNWT_pl.v * Plants.v) / 10) * 1.1627907; // 14% residual moisture
+    GRYD.v := ((GRNWT_pl.v * Plants.v) / 10) / 0.86; // 14% residual moisture
     NSEN_m2.v := NSen_pl.v * Plants.v;
   end;
 

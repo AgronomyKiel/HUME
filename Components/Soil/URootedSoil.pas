@@ -26,6 +26,7 @@ uses
   WFlowFunctions;
 
 const
+  /// <summary> Maximum number of soil layers for root water uptake calculation </summary>
   Max_Root_Index = 20;
 
 type
@@ -60,13 +61,20 @@ type
     /// <summary> field for automatic irrigation  (yes/no) </summary>
     fAutoirri: boolean;
 
-    /// field for automatic irrigation method (amTransRatio, amProznFKWe, amProznFKActRootedComps)
+    /// <summary> field for automatic irrigation method (amTransRatio, amProznFKWe, amProznFKActRootedComps) </summary>
     fAutoirriMethod: TAutoirriMethod;
+    
+    /// <summary> source of Psi2 value, could be supplied from plant model </summary>
     fPsi2Opt: TSource;
-    /// Source of Psi2 value
+
+
+    /// <summary> field for sink term calculation method (Feddes, Psicrit, Psicrit_corr, nFKcrit, MFP) </summary>
     FSinkTermMethod: TSinkTermMethod;
+
+    /// <summary> field for option to write the matrix flux table </summary>
     fWriteMFPTable: boolean;
 
+    /// <summary> procedure for setting the with roots option </summary>
     procedure setWithRoots(settrue: boolean);
     procedure CreateOptionsRootedSoil;
     // function GetWLD(Index:Integer):real; virtual;
@@ -102,63 +110,86 @@ type
     WLges: TVar;
     
     // w_influx : TSoilVarArray; /// Wasserinfluxraten [cm3.cm-1.d-1]
+    
+    /// <summary> Array for sink reduction factors for each soil layer </summary>
     SinkRedF: TSoilArray;
-    /// Reduktionsfaktoren bei Wasseraufnahme
+    
+    /// <summary>average, weighted soil water potential within the rooting zone [pF] </summary>
     psiRoot: TVar;
-    /// average, weighted soil water potential within the rooting zone [pF]
-    psi_2,
-    /// Wasserspannung ab der Wasseraufnahme beginnt abzunehmen
-    psi_3,
-    /// Wasserspannung ab der Wasseraufnahme = 0
-    CompFactor,
-    /// Konkurrenzfaktor f�r Wasseraufnahme der Wurzeln (i.d.R. < 1.0)
-    IrriAmount
-    /// Auto BEw. Menge [mm]
-      : Tpar;
+    
+    /// <summary> water potential at which water uptake by the plant starts to decrease [hPa] </summary>
+    psi_2: Tpar;
+    
+    /// <summary> water potential at which water uptake by the plant stops [hPa] </summary>
+    psi_3: Tpar;
+    
+    /// <summary> root competition factor, 1 leads to proportional potential water uptake by relative root length, 0.5 accounts for root competition </summary>
+    CompFactor : Tpar;
+    
+    /// <summary> amount of irrigation [mm] if automatic irrigation </summary>
+    IrriAmount: TPar;
+    
+    /// <summary> critical nFK value for triggering irrigation if automatic irrigation </summary>
     Autoirri_nFKcrit: Tpar;
-    /// critical nFK value for triggering irrigation
+    /// <summary> critical nFK value for triggering irrigation </summary>
     nfk_threshold: Tpar;
+    /// <summary> Feddes parameter a </summary>
     feddes_a: Tpar;
+    /// <summary> Feddes parameter b </summary>
     feddes_b: Tpar;
+    /// <summary> Feddes parameter c </summary>
     feddes_c: Tpar;
+    /// <summary> actual proportional nFK values for rooted compartments </summary>
     ProznFK_act_rooted_comps: TVar;
-
+    /// <summary> critical nFK value for sink reduction </summary>
     nFKcrit: Tpar;
-
+    
+    /// <summary> potential transpiration (external variable) </summary>
     PotTrans: TexternV;
-    /// External value for potential transpiration
+    
+    /// <summary> interception (external variable) </summary>
     Interzeption: TexternV;
-    /// External value for Interception
+    
+    /// <summary> actual transpiration rate [mm/d] </summary>
     ActTrans: TVar;
-    /// aktuelle Transpirationsrate [mm/d]
+    
+    /// <summary> ratio of actual to potential transpiration </summary>
     TransRatio: TVar;
-    /// Verh�ltnis aktuelle zu potentielle Transpiration
+    
+    /// <summary> ratio of actual to potential sum of transpiration and interception </summary>
     TransIntRatio: TVar;
-    /// Verh�ltnis aktuelle zu potentielle Transpiration
+    
+    /// <summary> ratio of actual to potential evapotranspiration </summary>
     Eact_ETP: TVar;
-    /// Ratio of act. evaporation to pot. evapotranspiration
+    
+    /// <summary> Ratio of act. evaporation to pot. evapotranspiration </summary>
     Psi2: TVar;
-    /// water potential at which water uptake by the plant starts to decrease [hPa]
+    
+    /// <summary> water potential at which water uptake by the plant starts to decrease [hPa] </summary>
     act_rooted_comps: TVar;
-    /// actual number of rooted compartiments
+    /// <summary> actual number of rooted compartiments </summary>
     EmergenceDay: TexternV;
-    /// used for Autoirrigation
-
+    
+    /// <summary> sum of Autoirrigation </summary>
     CumAutoIrrigation: TState;
-    /// cum. Amount of  Irrigation
+    
+    /// <summary> cum. Transpiration </summary>
     CumTrans: TState;
-    /// kumulative Transpiration [mm]
+    /// <summary> cum. actual Evapotranspiration </summary>
     CumET: TState;
-    /// cumulative actual Evapotranspiration
+    /// <summary> cumulative actual Evapotranspiration </summary>
     CumETpot: TState;
-    /// cumulative potential Evapotranspiration
+    /// <summary> cumulative potential Evapotranspiration </summary>
     CumTranspot: TState;
-    /// cumulative potential Transpiration
+    /// <summary> cumulative potential Transpiration </summary>
+    
+    /// <summary> Option for sink reduction (Sqr_wl_arr calculation) </summary>
     f_SqrWl_Option: Toption;
-    /// Option for sink reduction (Sqr_wl_arr calculation)
-    r_root: Tpar;
-    /// root radius
-
+    
+    /// <summary> root radius </summary>
+   r_root: Tpar;
+ 
+    /// <summary> array for matrix flux potential calculation </summary>
     MFP_arr: array [0 .. 20] of TMFP_table;
 
     procedure SetPlantModel(NewPlantModel: TAbstractplant); override;
@@ -202,8 +233,6 @@ type
 
   end;
 
-Function Water_flow_func(avg_transpi_rate, L, hour: real;
-  sinus_func: boolean): real;
 procedure Register;
 
 implementation
@@ -211,72 +240,6 @@ implementation
 uses
   SysUtils, math; // , dialogs;
 
-function baf(b, Iw, Dw, xl, a: real): real;
-// calculation of soil water content at root surface
-// b: average soil water content [cm3/cm3]
-// Iw: water influx rate [cm3.cm-2.d-1]
-// Dw: soil water diffusivity [cm2.s-1]
-// xl: average half distance between roots [cm]
-// a: root radius [cm]
-
-begin
-  if Dw > 0 then
-    baf := b - (Iw / (2 * pi * Dw) * ln(xl / (1.65 * a)))
-  else
-    baf := 0;
-end;
-
-function Iwmax(b, bmin, Dw, xl, a: real): real;
-
-// calculation of maximum water influx rate [cm3.cm-1.d-1]
-// b: average soil water content [cm3/cm3]
-// bmin: minimum soil water content [cm3/cm3]
-// Dw: soil water diffusivity [cm2.s-1]
-// xl: average half distance between roots [cm]
-
-begin
-  If (b - bmin < 0.0) then
-    Iwmax := 0.0
-  else
-    Iwmax := ((b - bmin) * 2 * pi * Dw) / (ln(xl / (1.65 * a)));
-end;
-
-function sinusf(hour: real): real;
-var
-  output: real;
-begin
-  output := max(0, 1.64221194 * (0.5 + sin(pi * ((hour + 18) / 12))));
-  sinusf := output;
-end;
-
-Function Water_flow_func(avg_transpi_rate, L, hour: real;
-  sinus_func: boolean): real;
-
-// Water_flow_func: water uptake rate per unit root length
-// avg_transp_rate: average transpiration rate [mm.d-1]
-// L : total root length [cm/ha]
-// hour: hour of the day
-// sinus_func: switch for even or sinusoidal course of water uptake
-
-var
-  Es, // transpiration rate per cm3.s-1
-  Transpi_rate: real;
-
-begin
-  If sinus_func = true then
-  begin
-    Transpi_rate := avg_transpi_rate * sinusf(hour);
-    If Transpi_rate <= 1E-12 then
-      Transpi_rate := 0.0;
-  end
-  else
-    Transpi_rate := avg_transpi_rate;
-  Es := Transpi_rate * 1E7 / 86400.0;
-  if L > 0 then
-    Water_flow_func := Es / L
-  else
-    Water_flow_func := 0.0;
-end;
 
 procedure TSoilWaterModelR.CreateAll;
 

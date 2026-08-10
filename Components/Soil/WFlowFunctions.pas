@@ -1,7 +1,8 @@
-unit WFlowFunctions;
-// Functions to implement the Matrix Flow Potential approach into URootedSoil
-// U.B�ttcher 31.08.2023
+﻿/// <summary> This unit contains functions to implement the Matrix Flow Potential approach into URootedSoil </summary>
+/// <author> U. Böttcher </author>
+/// <date> 31.08.2023 </date>
 
+unit WFlowFunctions;
 
 interface
 uses UGenucht;
@@ -16,24 +17,123 @@ type
 
   TMFP_table = class
   private
+    /// <summary> array to store the MFP values for a given soil, 
+    /// TMFP beeing a record containing the MFP parameters, logpsi, psi, ku and sumku </summary>
     vals: array[0..100] of TMFP;
   public
+    /// <summary> function to get the summed ku value for a given soil water tension </summary> 
     function get_sumku(aPsi: extended): extended;
-    constructor create(aSoil: TGenucht);
-    function getline: string;
-  end;
 
+    /// <summary> constructor to create the MFP table for a given soil </summary>
+    constructor create(aSoil: TGenucht);
+    /// <summary> function to get the summed ku values as a string </summary>
+    function getline: string;
+
+  end;
+  /// <summary> function to calculate the average distance between roots based on root length density </summary>
   function abstand_func (Wurzellaengendichte:real):real;
+
+  /// <summary> function to calculate the maximum possible water influx into the roots based on MFP approach </summary>
   function MFP_IWmax(MFP_, xl, r_root: extended): extended;
+
+  /// <summary> function to calculate the MFP at the root surface based on MFP0, water influx, root radius, distance from root and average distance between roots </summary>
   function MFP_r_f(MFP0, Iw, r_root, r, xl: extended): extended;
+
+  /// <summary> function to calculate the MFP at the root surface based on MFP, average distance between roots, root radius and water influx </summary>
   function MFP0_f(MFP_, xl, r_root, Iw: extended): extended;
+
+  /// <summary> function to calculate the sink term based on MFP, MFP0, average distance between roots and root radius </summary>
   function MFP_Sz_f(MFP_,MFP0, xl, r_root: extended): extended;
+
+  /// <summary> function to calculate the sink term based on water content, soil layer thickness, MFP, root radius and sink term at the root surface </summary>
   function MFP_Inflow(WLD,thick,MFP_,r_root,sink0: extended): extended;
 
+  /// <summary> function to calculate the soil water content at the root surface </summary>
+  function baf(b, Iw, Dw, xl, a: real): real;
+
+
+  /// <summary> function to calculate the maximum water influx rate into the roots </summary>
+  function Iwmax(b, bmin, Dw, xl, a: real): real;
+
+  /// <summary> function to calculate the sinusoidal course of water uptake over the day </summary>
+  function sinusf(hour: real): real;  
+
+  /// <summary> function for calculation of the water uptake for a specific hour of the day </summary>
+Function Water_flow_func(avg_transpi_rate, L, hour: real;
+  sinus_func: boolean): real;
 
 
 implementation
 uses SysUtils, math, URootedSoil;
+
+
+function baf(b, Iw, Dw, xl, a: real): real;
+// calculation of soil water content at root surface
+// b: average soil water content [cm3/cm3]
+// Iw: water influx rate [cm3.cm-2.d-1]
+// Dw: soil water diffusivity [cm2.s-1]
+// xl: average half distance between roots [cm]
+// a: root radius [cm]
+
+begin
+  if Dw > 0 then
+    baf := b - (Iw / (2 * pi * Dw) * ln(xl / (1.65 * a)))
+  else
+    baf := 0;
+end;
+
+function Iwmax(b, bmin, Dw, xl, a: real): real;
+
+// calculation of maximum water influx rate [cm3.cm-1.d-1]
+// b: average soil water content [cm3/cm3]
+// bmin: minimum soil water content [cm3/cm3]
+// Dw: soil water diffusivity [cm2.s-1]
+// xl: average half distance between roots [cm]
+
+begin
+  If (b - bmin < 0.0) then
+    Iwmax := 0.0
+  else
+    Iwmax := ((b - bmin) * 2 * pi * Dw) / (ln(xl / (1.65 * a)));
+end;
+
+function sinusf(hour: real): real;
+var
+  output: real;
+begin
+  output := max(0, 1.64221194 * (0.5 + sin(pi * ((hour + 18) / 12))));
+  sinusf := output;
+end;
+
+Function Water_flow_func(avg_transpi_rate, L, hour: real;
+  sinus_func: boolean): real;
+
+// Water_flow_func: water uptake rate per unit root length
+// avg_transp_rate: average transpiration rate [mm.d-1]
+// L : total root length [cm/ha]
+// hour: hour of the day
+// sinus_func: switch for even or sinusoidal course of water uptake
+
+var
+  Es, // transpiration rate per cm3.s-1
+  Transpi_rate: real;
+
+begin
+  If sinus_func = true then
+  begin
+    Transpi_rate := avg_transpi_rate * sinusf(hour);
+    If Transpi_rate <= 1E-12 then
+      Transpi_rate := 0.0;
+  end
+  else
+    Transpi_rate := avg_transpi_rate;
+  Es := Transpi_rate * 1E7 / 86400.0;
+  if L > 0 then
+    Water_flow_func := Es / L
+  else
+    Water_flow_func := 0.0;
+end;
+
 
 function TMFP_table.get_sumku(aPsi: extended): extended;
 var

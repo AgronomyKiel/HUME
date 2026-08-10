@@ -169,8 +169,10 @@ type
     ToolBarConstPage: TToolBar;
     ToggleSwitch1: TToggleSwitch;
     AdvStringGridConstants: TAdvStringGrid;
+    SpeedButtonRunActIni: TSpeedButton;
 
     procedure RunModel; virtual;
+    procedure RunActIni; virtual;
     procedure Menu_RunClick(Sender: TObject); virtual;
     procedure Menu_ExitClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -305,6 +307,7 @@ type
     procedure ToggleSwitchExternContOutputClick(Sender: TObject);
     procedure EditOutputDirectoryChange(Sender: TObject);
     procedure EditControlFileChange(Sender: TObject);
+    procedure SpeedButtonRunActIniClick(Sender: TObject);
   private
     n_lineSeries, n_PointSeries, nFormGraph: Integer;
     FormGraphArray: array [1 .. 10] of TFormGraph;
@@ -358,6 +361,11 @@ end;
 procedure TFormMod.Menu_RunClick(Sender: TObject);
 begin
   RunModel;
+end;
+
+procedure TFormMod.SpeedButtonRunActIniClick(Sender: TObject);
+begin
+   RunActIni;
 end;
 
 procedure TFormMod.SpeedButtonRunClick(Sender: TObject);
@@ -562,6 +570,45 @@ begin
   ComboBoxSubModChange(nil);
 
 end;
+
+
+
+procedure TFormMod.RunActIni;
+var
+  starttime, endtime, timelapsed: real;
+begin
+  // setSoilWaterMod;
+  Screen.cursor := CrHourGlass;
+  StatusBarMain.Panels.Items[0].Text := 'Running';
+  StatusBarMain.show;
+  MenuView.Enabled := True;
+  starttime := time;
+
+  if Lmod.fModel <> nil then
+    Lmod.fModel.runActIni
+
+  else
+  begin
+    showmessage('No Model linked!');
+    exit;
+  end;
+  endtime := time;
+  timelapsed := endtime - starttime;
+  update_StringGrid(Lmod.fModel.reg_fn); // TODO
+  Screen.cursor := CrDefault;
+  StatusBarMain.Panels.Items[0].Text := ' Runtime: ' + TimeToStr(timelapsed);
+  // if LMod.fModel.ReInitAfterRun then // TODO
+  // LMod.fModel.init(LMod.fModel.actIniFile);
+
+  // SaveState;
+  // SaveOptions;
+  // SaveParams;
+
+  ComboBoxInifileChange(nil);
+  ComboBoxSubModChange(nil);
+
+end;
+
 
 // ==============================================================================
 // UpdateStringGrid f�r alle States

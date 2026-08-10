@@ -1,12 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="WFlowFunctions" platform="Win32">
-  <struct name="TMFP" size="64" file="WFlowFunctions.pas" line="10">
-    <field name="logpsi" type="Extended" visibility="public" size="10" offset="0" file="WFlowFunctions.pas" line="11" />
-    <field name="psi" type="Extended" visibility="public" size="10" offset="16" file="WFlowFunctions.pas" line="12" />
-    <field name="ku" type="Extended" visibility="public" size="10" offset="32" file="WFlowFunctions.pas" line="13" />
-    <field name="sumku" type="Extended" visibility="public" size="10" offset="48" file="WFlowFunctions.pas" line="14" />
+  <devnotes>
+     <summary> This unit contains functions to implement the Matrix Flow Potential approach into URootedSoil </summary>
+     <author> U. Böttcher </author>
+     <date> 31.08.2023 </date>
+  </devnotes>
+  <struct name="TMFP" size="64" file="WFlowFunctions.pas" line="11">
+    <field name="logpsi" type="Extended" visibility="public" size="10" offset="0" file="WFlowFunctions.pas" line="12" />
+    <field name="psi" type="Extended" visibility="public" size="10" offset="16" file="WFlowFunctions.pas" line="13" />
+    <field name="ku" type="Extended" visibility="public" size="10" offset="32" file="WFlowFunctions.pas" line="14" />
+    <field name="sumku" type="Extended" visibility="public" size="10" offset="48" file="WFlowFunctions.pas" line="15" />
   </struct>
-  <class name="TMFP_table" file="WFlowFunctions.pas" line="17">
+  <class name="TMFP_table" file="WFlowFunctions.pas" line="18">
     <ancestor name="TObject" namespace="System">
       <methodref name="Create" visibility="public" procflags="constructor">
       </methodref>
@@ -84,36 +89,102 @@
       </propertyref>
     </ancestor>
     <members>
-      <field name="vals" visibility="private" size="6464" offset="8" file="WFlowFunctions.pas" line="19">
-        <array name="vals" visibility="private" low="0" high="100" file="WFlowFunctions.pas" line="19">
+      <field name="vals" visibility="private" size="6464" offset="8" file="WFlowFunctions.pas" line="22">
+        <devnotes>
+           <summary> array to store the MFP values for a given soil, 
+           TMFP beeing a record containing the MFP parameters, logpsi, psi, ku and sumku </summary>
+        </devnotes>
+        <array name="vals" visibility="private" low="0" high="100" file="WFlowFunctions.pas" line="22">
           <element type="TMFP" />
         </array>
       </field>
-      <function name="get_sumku" visibility="public" file="WFlowFunctions.pas" line="21">
+      <function name="get_sumku" visibility="public" file="WFlowFunctions.pas" line="25">
+        <devnotes>
+           <summary> function to get the summed ku value for a given soil water tension </summary> 
+        </devnotes>
         <parameters>
           <parameter name="aPsi" type="Extended" />
           <retval type="Extended" />
         </parameters>
       </function>
-      <constructor name="create" visibility="public" file="WFlowFunctions.pas" line="22">
+      <constructor name="create" visibility="public" file="WFlowFunctions.pas" line="28">
+        <devnotes>
+           <summary> constructor to create the MFP table for a given soil </summary>
+        </devnotes>
         <parameters>
           <parameter name="aSoil" type="TGenucht" />
         </parameters>
       </constructor>
-      <function name="getline" visibility="public" file="WFlowFunctions.pas" line="23">
+      <function name="getline" visibility="public" file="WFlowFunctions.pas" line="30">
+        <devnotes>
+           <summary> function to get the summed ku values as a string </summary>
+        </devnotes>
         <parameters>
           <retval type="string" />
         </parameters>
       </function>
     </members>
   </class>
-  <function name="abstand_func" visibility="public" file="WFlowFunctions.pas" line="72">
+  <function name="baf" visibility="public" file="WFlowFunctions.pas" line="70">
+    <devnotes>
+       <summary> function to calculate the soil water content at the root surface </summary>
+    </devnotes>
+    <parameters>
+      <parameter name="b" type="Double" />
+      <parameter name="Iw" type="Double" />
+      <parameter name="Dw" type="Double" />
+      <parameter name="xl" type="Double" />
+      <parameter name="a" type="Double" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="Iwmax" visibility="public" file="WFlowFunctions.pas" line="85">
+    <devnotes>
+       <summary> function to calculate the maximum water influx rate into the roots </summary>
+    </devnotes>
+    <parameters>
+      <parameter name="b" type="Double" />
+      <parameter name="bmin" type="Double" />
+      <parameter name="Dw" type="Double" />
+      <parameter name="xl" type="Double" />
+      <parameter name="a" type="Double" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="sinusf" visibility="public" file="WFlowFunctions.pas" line="100">
+    <devnotes>
+       <summary> function to calculate the sinusoidal course of water uptake over the day </summary>
+    </devnotes>
+    <parameters>
+      <parameter name="hour" type="Double" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="Water_flow_func" visibility="public" file="WFlowFunctions.pas" line="109">
+    <devnotes>
+       <summary> function for calculation of the water uptake for a specific hour of the day </summary>
+    </devnotes>
+    <parameters>
+      <parameter name="avg_transpi_rate" type="Double" />
+      <parameter name="L" type="Double" />
+      <parameter name="hour" type="Double" />
+      <parameter name="sinus_func" type="Boolean" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <function name="abstand_func" visibility="public" file="WFlowFunctions.pas" line="172">
+    <devnotes>
+       <summary> function to calculate the average distance between roots based on root length density </summary>
+    </devnotes>
     <parameters>
       <parameter name="Wurzellaengendichte" type="Double" />
       <retval type="Double" />
     </parameters>
   </function>
-  <function name="MFP_IWmax" visibility="public" file="WFlowFunctions.pas" line="81">
+  <function name="MFP_IWmax" visibility="public" file="WFlowFunctions.pas" line="181">
+    <devnotes>
+       <summary> function to calculate the maximum possible water influx into the roots based on MFP approach </summary>
+    </devnotes>
     <parameters>
       <parameter name="MFP_" type="Extended" />
       <parameter name="xl" type="Extended" />
@@ -121,7 +192,10 @@
       <retval type="Extended" />
     </parameters>
   </function>
-  <function name="MFP0_f" visibility="public" file="WFlowFunctions.pas" line="86">
+  <function name="MFP0_f" visibility="public" file="WFlowFunctions.pas" line="186">
+    <devnotes>
+       <summary> function to calculate the MFP at the root surface based on MFP, average distance between roots, root radius and water influx </summary>
+    </devnotes>
     <parameters>
       <parameter name="MFP_" type="Extended" />
       <parameter name="xl" type="Extended" />
@@ -130,7 +204,10 @@
       <retval type="Extended" />
     </parameters>
   </function>
-  <function name="MFP_r_f" visibility="public" file="WFlowFunctions.pas" line="91">
+  <function name="MFP_r_f" visibility="public" file="WFlowFunctions.pas" line="191">
+    <devnotes>
+       <summary> function to calculate the MFP at the root surface based on MFP0, water influx, root radius, distance from root and average distance between roots </summary>
+    </devnotes>
     <parameters>
       <parameter name="MFP0" type="Extended" />
       <parameter name="Iw" type="Extended" />
@@ -140,7 +217,10 @@
       <retval type="Extended" />
     </parameters>
   </function>
-  <function name="MFP_Sz_f" visibility="public" file="WFlowFunctions.pas" line="96">
+  <function name="MFP_Sz_f" visibility="public" file="WFlowFunctions.pas" line="196">
+    <devnotes>
+       <summary> function to calculate the sink term based on MFP, MFP0, average distance between roots and root radius </summary>
+    </devnotes>
     <parameters>
       <parameter name="MFP_" type="Extended" />
       <parameter name="MFP0" type="Extended" />
@@ -149,7 +229,10 @@
       <retval type="Extended" />
     </parameters>
   </function>
-  <function name="MFP_Inflow" visibility="public" file="WFlowFunctions.pas" line="101">
+  <function name="MFP_Inflow" visibility="public" file="WFlowFunctions.pas" line="201">
+    <devnotes>
+       <summary> function to calculate the sink term based on water content, soil layer thickness, MFP, root radius and sink term at the root surface </summary>
+    </devnotes>
     <parameters>
       <parameter name="WLD" type="Extended" />
       <parameter name="thick" type="Extended" />
