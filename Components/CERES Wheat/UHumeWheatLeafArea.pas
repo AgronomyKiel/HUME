@@ -558,7 +558,8 @@ type
     
     
     /// <summary>
-    /// "sustainable" leaf area index
+    /// sustainable leaf area index
+    ///  </summary>
     LAIs: real;
     
     /// <summary>

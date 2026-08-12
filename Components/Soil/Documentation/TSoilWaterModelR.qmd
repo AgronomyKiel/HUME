@@ -102,23 +102,79 @@ The TSoilWaterModelR module simulates add root water uptake to its ancestor comp
 
 Root water uptake is induced by the process of canopy transpiration in order to compensate plant water loss. But there exist physical limitations of the rate of total water uptake which can be seen by the sum of the maximum transport rates to the segments of the whole root system. These transport rates are governed by the maximum soil water potential difference between the root surface, the unsaturated hydraulic conductivity in the vicinity of the roots and the water uptake rate per unit of root length which can be approximated in a first step by the ratio of transpiration rate to total root length. However, root water uptake and transpiration are usually regulated down before this situation is reached due to stomata opening control in which physical signals like the leaf water potential, environmental signals like the saturation vapor deficit and the irradiation but also hormonal signalling mechanisms by absissic acid (ABA) are involved.
 
-The component TSoilWaterModelR implements some rather simple approaches for describing these complex processes but efforts have been started to include a more mechanistical approach for simulation of root water uptake. The development started with the implementation of a simple reduction factor for root water uptake based on the soil water potential in the different soil layers and the potential transpiration rate. This approach is similar to [@feddes1978] but with a more simple calculation of the reduction factor for root water uptake.
+The component TSoilWaterModelR implements some rather simple approaches for describing these complex processes but efforts have been started to include a more mechanistically approach for simulation of root water uptake. The development started with the implementation of a simple reduction factor for root water uptake based on the soil water potential in the different soil layers and the potential transpiration rate. This approach is similar to [@feddes1978] but with a more simple calculation of the reduction factor for root water uptake.
 
 ## Implementation
 
-The root water uptake is considered in the water balance equation as a sink term. The potential transpiration (T~pot~) is by default calculated based on the Penman-Monteith equation in the component [TPenMonteith](https://agronomykiel.github.io/HUME/Components/Evapotranspiration/Documentation/TPenMonteith.html) , which considers the atmospheric demand for water and the resistance to water flow from the soil to the atmosphere through the plant.
+The root water uptake is considered in the water balance equation as a sink term (S). The potential transpiration (T~pot~) is by default calculated based on the Penman-Monteith equation in the component [TPenMonteith](https://agronomykiel.github.io/HUME/Components/Evapotranspiration/Documentation/TPenMonteith.html), which considers the atmospheric demand for water and the resistance to water flow from the soil to the atmosphere through the plant.
 
-The actual transpiration (T~act~) is then calculated by considering the reduction of water uptake due to low soil water content and root competition.
+The actual transpiration (T~act~) is then calculated by considering the reduction of water uptake due to low soil water content / high water (absolute) tension and/or an estimation of soil water transport restrictions towards the roots.
 
-The sink term for the layer i (S\[i\]), describes the water uptake by the plant roots in a certain layer, depends on T~pot~, a reduction factor \[-\] (f~sinkred~) and a term, which describes the reduction of water uptake by roots due to competition.
+The component implements a number of different options to calculate the actual transpiration (T~act~) and the sink term for the different soil layers.
 
-There are several options available to distribute the potential transpiration to the different soil layers. The default option is to distribute the potential transpiration according to the fraction of root length in a soil layer. The root length in the different soil layers is calculated by the component [TRootGrowth](https://agronomykiel.github.io/HUME/Components/RootGrowth/Documentation/TRootGrowth.html) and is provided as an external value to the component TSoilWaterModelR.
+Basically there are empirical heuristic approaches and more mechanistic approaches implemented. The latter should allow to more specifically simulate the effects of different root architectures and root distributions on the water uptake by the plant roots. The mechanistic approaches try to estimate the limitation of water uptake due to the transport of water to the root surface, which is a function of root length in the different soil layers, the unsaturated hydraulic conductivity in the vicinity of the roots and the water uptake rate per unit of root length. The mechanistic approaches are still under development.
 
-A potential sink term is calculated by the root length in the layer cm cm^-2^ (RL~\[i\]~), an exponential factor for root competition \[-\] (CompF) divided by the sum of root length in all layers \[cm cm^-2^\] (RL~\[j\]~) and CompF (@fig-CompF). The factor 0.1 is the conversion from cm to mm which is used to convert with the units of mm for the evapotranspiration variables and the default unit of the Soil processes which is cm.
+The empirical heuristic approaches define reduction functions for root water uptake based on the soil water potential in the different soil layers and optional the potential transpiration rate. The reduction functions are based on the work of [@feddes1978] and [@ehlers1991].
 
-$$S[i]_{pot}=0.1\cdot {{T}_{pot}}\cdot \frac{RL{{[i]}^{CompF}}}{\sum\limits_{j}{RL{{[j]}^{CompF}}}}\cdot {{f}_{sinkred}}$$ {#eq-SinkTerm}
+## Options and parameters to calculate the potential and actual transpiration (T~act~) and the sink term for the different soil layers
+
+### Options
+
+There are currently the following *options* available to calculate the actual transpiration (T~act~) and the sink term for the different soil layers:
+
+- psicrit: The reduction factor for root water uptake (f~sinkred~) is calculated based on the soil water potential in each soil layer (psi~i~) but independently on the actual transpiration rate.
+
+- nFK~crit~: The reduction factor for root water uptake (f~sinkred~) is calculated based on the soil water content in each soil layer (theta~i~) but independently on the actual transpiration rate.
+
+- psicrit~corr~: The reduction factor for root water uptake (f~sinkred~) is calculated based on an rough estimate of the soil water potential at the root surface derived from a crude estimate of the soil water potential at the root surface. This is a function of the estimated water influx rate and the unsaturated hydraulic conductivity in the vicinity of the roots. This estimate is based on the simple steady state solution of the water transport in radial coordinates [@Gardner1960].
+
+- Feddes: The reduction factor for root water uptake (f~sinkred~) is calculated based on the soil water potential in each soil layer (psi~i~) and the actual transpiration rate (T~act~). The reduction factor for root water uptake (f~sinkred~) is calculated based on a Feddes-like approach [@feddes1978].
+
+- MFP: The reduction factor for root water uptake (f~sinkred~) is calculated based on the soil water potential in each soil layer (psi~i~) and the actual transpiration rate (T~act~). The reduction factor for root water uptake (f~sinkred~) is calculated based on a mechanistic approach which considers the unsaturated hydraulic conductivity in the vicinity of the roots and the estimated water influx rate to the roots according to the matrix flux potential [@vanLier2013][@Metselaar2011].
+
+- MFPvar: Similar to MFP but each layer of the 1D soil profile is divided into 10 different sections with differing root length densities. These are calculated in the Component [TSimpleRootModDM](https://github.com/AgronomyKiel/HUME/blob/mainbranch/Components/Rootgrowth/Documentation/TSimpleRootModDM.html).
+
+The option *Sqrwl_funct* is an option to consider the soil water availability in the calculation of the distribution of potential soil water uptake (see @eq-SinkTerm and @eq-SinkTerm2)
+
+### Parameters
+
+
+- CompFactor: The distribution of the potential water uptake rates can be modified by the parameter *CompFaktor* (CompF) which is a factor for root competition. The lower the value of the competition factor is, the more the potential sink term is distributed to the deeper soil layers with lower root length densities. Analysis of experimental data has, however, indicated that a value of compF lower than 1 may be more realistic for simulating root water uptake [@ehlers1991].
+
+- psi_2: The parameters psi_2  soil water potential and soil water content from which on water uptake decrease.
+
+- nFKcrit: As psi_2 but for the option nFK~crit~. The parameter nFKcrit is the soil water content from which on water uptake decrease.
+
+
+## Distribution of potential water uptake between soil layers
+
+The potential transpiration (T~pot~) is distributed to the different soil layers according to the root length in the different soil layers.
+
+There are two options available to distribute the potential transpiration (T~pot~) to the different soil layers:
+
+- 
+
+### Without considering the reduction factor for root water uptake (f~sinkred~)
+
+The default option is to distribute the potential transpiration according to the fraction of root length in a soil layer. The root length in the different soil layers is calculated by the component [TRootGrowth](https://agronomykiel.github.io/HUME/Components/RootGrowth/Documentation/TRootGrowth.html) and is provided as an external value to the component TSoilWaterModelR.
+
+The potential water uptake / potential sink term is calculated from the root length in the layer cm cm^-2^ (RL~i~), an exponential factor for root competition \[-\] (CompF) divided by the sum of root length in all layers \[cm cm^-2^\] (RL~\[j\]~) and CompF (@fig-CompF). The factor 0.1 is the conversion from cm to mm which is used to convert with the units of mm for the evapotranspiration variables and the default unit of the soil processes which is cm.
+
+$$S[i]_{pot}=0.1\cdot {{T}_{pot}}\cdot \frac{RL{{[i]}^{CompF}}}{\sum\limits_{j}{RL{{[i]}^{CompF}}}}\cdot {{f}_{sinkred}}$$ {#eq-SinkTerm}
 
 The lower the value of the competition factor is, the more the potential sink term is distributed to the deeper soil layers with lower root length densities (@fig-CompF). Analysis of experimental data has, however, indicated that a value of compF lower than 1 may be more realistic for simulating root water uptake [@ehlers1991].
+
+It has been argued that this type of distribution of potential water uptake may not be realistic because it does not consider the soil water availability in the different soil layers and drought stress may occur if there is a water shortage in the upper soil layers even if there is still water available in the deeper soil layers.
+
+On the other hand, it is well known from split root experiments that if parts of a root system are exposed to dry soil, absicic acid (ABA) is produced in the roots and transported to the leaves where it induces stomata closure. This reduces the transpiration rate and thus the water uptake from the soil. In this case, it is not possible to compensate for a water shortage in one part of the root system by increasing water uptake from another part of the root system [@holbrook2002].
+
+### Considering the reduction factor for root water uptake (f~sinkred~)
+
+[@jarvis1989] suggested that also the soil water availability would affect distribution of potential soil water uptake. In analogy to his approach we implemented the option to weight potential soil water uptake distribution by the sink reduction factor as well:
+
+$$S[i]_{pot}=0.1\cdot {{T}_{pot}}\cdot \frac{f_{sinkred} \cdot RL{{[i]}^{CompF}}}{\sum\limits_{j}{f_{sinkred} \cdot RL{{[i]}^{CompF}}}}\cdot {{f}_{sinkred}}$$ {#eq-SinkTerm2}
+
+This function is used if the option *Sqrwl_funct* is set to *ReductionFactor*. In practice this distributes the potential soil water uptake more towards soil layers with higher water contents and in total drought stress is reduced for the moment.
 
 ```{r}
 #| echo: false
@@ -166,14 +222,42 @@ p <- p1 + p2
 p
 ```
 
-f~sinkred~ is calculated by the soil water potential in each soil layer psi~i~ \[hPa\], the soil water potential \[hPa\] psi0 from which on water uptake is 0 and psi~crit~ \[hPa\], a parameter for the soil water potential from which on water uptake decrease.
+## Reduction of potential water uptake by soil water potential / soil water content
+
+The potential sink term is reduced by the reduction factor for root water uptake (f~sinkred~). The reduction of potential water uptake by soil water potential / soil water content, f~sinkred~, is calculated by the soil water potential in each soil layer psi~i~ \[hPa\], the soil water potential \[hPa\] psi~0~ from which on water uptake is 0 and psi~crit~ \[hPa\], a parameter for the soil water potential from which on water uptake decrease. For historical reasons this parameter psi~crit~ is named psi2 in the code of the component TSoilWaterModelR.
+
+The reduction factor for root water uptake (f~sinkred~) is calculated for the model option "psi~crit~" as shown in Eq. @eq-fsinkred and illustrated in @fig-FeddesReduction.
+
+$$f_{sinkred}=max \left( 0, min \left(1, \frac{log10(psi)-log10(psi_3)}{log10(psi_2)-log10(psi_3)}\right) \right)$$ {#eq-fsinkred}
+
+The option "nFK~crit~" calculates the reduction factor for root water uptake (f~sinkred~) based on the soil water content in each soil layer (theta~i~), the soil water content from which on water uptake is 0 (theta0) and a parameter for the soil water content from which on water uptake decrease (theta~crit~) as shown in Eq. @eq-fsinkrednFK.
+
+$$f_{sinkred}=max \left( 0, min \left(1, \frac{nFK-PWP}{nFK_{crit}-PWP}\right) \right)$$ {#eq-fsinkrednFK}
+
+With the option "Feddes" the reduction factor for root water uptake (f~sinkred~) based on the untransformed soil water potential in each soil layer (psi~i~), the soil water potential from which on water uptake is 0 (psi0) and a parameter for the soil water potential from which on water uptake decrease (psi~crit~) as shown in Eq. @eq-fsinkred2.
+
+$$f_{sinkred}=max \left( 0, min \left(1, \frac{psi-psi_3}{psi_2-psi_3}\right) \right)$$ {#eq-fsinkredfeddes}
+
+The value of $\psi_2$ is usually set to a value of around 200 hPa but with the option *Feddes* it can be made variable depending on the actual transpiration rate.
+
+$$\psi_2^{*}=
+\begin{cases}
+\psi_{2,\mathrm{low}} & \text{if } T_{\mathrm{act}} \le T_{\mathrm{ref,low}},\\
+\psi_{2,\mathrm{high}} & \text{if } T_{\mathrm{act}} > T_{\mathrm{ref,high}},\\
+\psi_{2,\mathrm{high}} - (\psi_{2,\mathrm{high}}-\psi_2)\,\cdot f
+& \text{if } T_{\mathrm{ref,low}} < T_{\mathrm{act}} \le T_{\mathrm{ref,high}}.
+\end{cases}$$ {#eq-psi2Feddes}
+
+with:
+
+$$f= \frac{T_{pact} - T_{p,low}} {T_{ref,high} - T_{ref,low}}$$ {#eq-psi2Feddesf}
 
 ```{r}
 #| label: fig-SinkTerm
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-cap: Example for the calculation potential sink term together with  soil water potential and soil water content with depth with or without the inclusion of the reduction factor for distribution of potential sink term.
+#| fig-cap: Example for the calculation potential sink term together with soil water potential and soil water content with depth with or without the inclusion of the reduction factor for distribution of potential sink term.
 
 fn_RR <- "./Components/Soil/Documentation/GenuchtenPars_roteReihe.csv"
 Params_RR <- read.table(fn_RR, header = TRUE, comment.char = "[", sep = ";", dec = ".")
@@ -262,8 +346,11 @@ df2$rlds <- RLD0*exp(-RLDdec*df2$depths)
 df2$sinkredf <- pmax(0,pmin(1, (df2$psis-psi3)/(psi2-psi3)))
 
 df2 <- df2 %>% mutate(SumRLDComp = sum(sinkredf*rlds^CompF)) %>% ungroup()
-df2 <- df2 %>% mutate(SinkTerm = 0.1*5*sinkredf*df2$rlds^CompF/SumRLDComp) 
+df2 <- df2 %>% mutate(SinkTerm = 0.1*PotTrans*sinkredf*df2$rlds^CompF/SumRLDComp) 
 df2$Sact <- df2$SinkTerm*df2$sinkredf
+Tact_Tpot2 <- sum(df2$Sact)/(PotTrans*0.1)
+
+
 df2$option <- "Reduction by soil water potential"
 
 selcols <-  c("depths", "psis", "swc", "rlds", "sinkredf","SinkTerm",   "Sact", "option")
@@ -316,6 +403,7 @@ p
 ```
 
 ```{r}
+#| label: fig-SinkTerm2
 #| echo: false
 #| message: false
 #| warning: false
@@ -350,30 +438,9 @@ p <- ggplot(df1, aes(x = depths)) +
 p
 ```
 
-The potential sink term is reduced by the reduction factor for root water uptake (f~sinkred~) which is calculated based on the soil water potential in each soil layer (psi~i~), the soil water potential from which on water uptake is 0 (psi0) and a parameter for the soil water potential from which on water uptake decrease (psi~crit~). The reduction factor for root water uptake (f~sinkred~) is calculated as shown in Eq. @eq-fsinkred and illustrated in @fig-FeddesReduction.
-
-$$f_{sinkred}=max \left( 0, min \left(1, \frac{\psi-\psi_3}{\psi_2-\psi_3}\right) \right)$$ {#eq-fsinkred}
-
-There is also an option available to calculate the reduction factor for root water uptake (f~sinkred~) based on the logarithm of the soil water potential in each soil layer (psi~i~), the logarithm of the soil water potential from which on water uptake is 0 (psi0) and a parameter for the logarithm of the soil water potential from which on water uptake decrease (psi~crit~) as shown in Eq. @eq-fsinkred2.
-
-$$f_{sinkred}=max \left( 0, min \left(1, \frac{\log(\psi)-\log(\psi_3)}{\log(\psi_2)-\log(\psi_3)}\right) \right)$$ {#eq-fsinkred2} {#eq-fsinkred2}
-
-The value of $\psi_2$ is usually set to a value of around 200 hPa but with the option *Feddes* it can be made variable depending on the actual transpiration rate.
-
-$$\psi_2^{*}=
-\begin{cases}
-\psi_{2,\mathrm{low}} & \text{if } T_{\mathrm{act}} \le T_{\mathrm{ref,low}},\\
-\psi_{2,\mathrm{high}} & \text{if } T_{\mathrm{act}} > T_{\mathrm{ref,high}},\\
-\psi_{2,\mathrm{high}} - (\psi_{2,\mathrm{high}}-\psi_2)\,\cdot f
-& \text{if } T_{\mathrm{ref,low}} < T_{\mathrm{act}} \le T_{\mathrm{ref,high}}.
-\end{cases}$$
- {#eq-psi2Feddes}
-
-with:
-
-$$f= \frac{T_{pact} - T_{p,low}} {T_{ref,high} - T_{ref,low}}$$ {#eq-psi2Feddesf}
-
 ```{r}
+#| label: fig-FeddesReduction
+#| echo: false
 
 source("Components/Soil/Documentation/Redfuncs.R")
 
@@ -389,8 +456,8 @@ Treflow <- 1
 
 df.redf <- expand.grid(PotTrans = PotTrans, psi = psi_)
 
-test <- Feddes_redf(psi= 800, PotTrans=5, psi2_lowtrans, psi2_hightrans, Trefhigh, Treflow, logscale=TRUE)
-test
+#test <- Feddes_redf(psi= 800, PotTrans=5, psi2_lowtrans, psi2_hightrans, Trefhigh, Treflow, logscale=TRUE)
+#test
 
 df.redf$fred <- Vectorize(Feddes_redf)(df.redf$psi, df.redf$PotTrans, psi2_lowtrans=2000, psi2_hightrans=200,
                                        Trefhigh=6, Treflow=1, logscale=TRUE)
@@ -415,15 +482,9 @@ $$f_{sinkred}[i]=\left\{ \begin{align}
 $${{f}_{\sin kred}}[i]=\left\{ \begin{align}
   & 1\quad \quad \quad \quad \quad \quad \quad \quad \quad |ps{{i}_{i}}\ge ps{{i}_{crit}} \\ 
  & \frac{\log (ps{{i}_{i}})-\log (ps{{i}_{0}})}{\log (ps{{i}_{crit}})-\log (ps{{i}_{0}})}\quad |ps{{i}_{i}}\ge ps{{i}_{crit}} \\ 
-\end{align} \right.$$
+\end{align} \right.$$ {#eq-fsinkred2}
 
-```{r}
 
-```
-
-Another option considers the actual soil water status already during the initial distribution of the potential transpiration to the different soil layers. In this case, the potential transpiration is distributed according to the root length in the different soil layers and the reduction factor for root water uptake (f~sinkred~) in each layer. The sink term is then calculated by the root length in the layer cm cm^-2^ (RL~\[i\]~), an exponential factor for root competition \[-\] (CompF) divided by the sum of root length in all layers \[cm cm^-2^\] (RL~\[j\]~) and CompF.
-
-$$S[i]_{pot}=0.1\cdot {{T}_{pot}}\cdot \frac{f_{sinkred} \cdot RL{{[i]}^{CompF}}}{\sum  \limits_{} \left( {f_{sinkred} \cdot RL{{[j]}^{CompF}}}\right)} \cdot f_{sinkred}$$ {#eq-SinkTerm2}
 
 The sum of the sink terms of the different soil layers is the actual transpiration \[mm d^-1^\] (T~act~).
 

@@ -58,7 +58,7 @@ type
   TSoilWaterParams = array [1 .. max_comp] of TGenucht;
 
 /// <summary>
-/// Implemtents different methods for vertical soil water transport either with differen variants
+/// Implemtents different methods for vertical soil water transport either with different variants
 /// of the potential based water transport or as a simple tipping bucket approach.
 /// </summary>
 /// <remarks>
@@ -297,15 +297,23 @@ type
     function getLD(i: integer): TLDClass;
     function GetHorizonIndexForLayer(i: integer): integer;
 
+    /// <summary>Limits each layer sink to the water available above the permanent wilting point during the current time step.</summary>
+    procedure LimitSinkRatesToAvailableWater; virtual;
+
   public
     /// <summary>actual number of layers to be calculated, variable in case of groundwater influence</summary>
     act_n_comp: integer;
+
     /// <summary>number of iterations during internal time step</summary>
     iter: integer;
     ActBalanceError: real;
+
+
     SumBalanceError: real;
+
     /// <summary>sum of soil and ponded water [mm]</summary>
     SWCStart, global_WaterBalance, old_global_WaterBalance: real;
+
     /// <summary>water content vector [cm3/cm3]</summary>
     theta_arr: TSoilvarArray;
     /// <summary>new soil water contents</summary>
@@ -2659,8 +2667,27 @@ procedure TSoilWaterMod.BeginIterativeTransport;
 begin
   get_water_contents;
   get_new_dt;
+  LimitSinkRatesToAvailableWater;
   success := false;
   iter := 0;
+end;
+
+procedure TSoilWaterMod.LimitSinkRatesToAvailableWater;
+var
+  LayerIndex: integer;
+  AvailableWater, MaximumSinkRate: real;
+begin
+  if dt.v <= 0.0 then
+    exit;
+
+  for LayerIndex := 1 to n_comp do
+  begin
+    AvailableWater := max(0.0, (theta_arr[LayerIndex].v -
+      PWP_Arr[LayerIndex]) * Thick[LayerIndex]);
+    MaximumSinkRate := AvailableWater / dt.v;
+    Sink_arr[LayerIndex].v := max(0.0,
+      min(Sink_arr[LayerIndex].v, MaximumSinkRate));
+  end;
 end;
 
 procedure TSoilWaterMod.UpdateDebugForm;
@@ -2845,6 +2872,7 @@ begin
     WflowInt_arr[i].v := 0.0;
   end;
 
+  LimitSinkRatesToAvailableWater;
   WflowInt_arr[1].v := 0.1 * NetRain.v - 0.1 * Act_Evap.v; // upper boundary
 
   for i := 1 to n_comp do

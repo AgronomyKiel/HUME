@@ -47,8 +47,25 @@ type
     /// <summary>Sets the variable name prefix.</summary>
     procedure Set_Name_WL(const Name_WL: string);
 
+    /// <summary>Links this root model's moment matrices to a rooted soil-water model.</summary>
+    procedure SetRootedSoilWaterModel(
+      const NewRootedSoilWaterModel: TSoilWaterModelR);
+
+    function GetWldMomentsAddress: PRootLengthDensityMomentMatrix;
+    function GetEffWldMomentsAddress: PRootLengthDensityMomentMatrix;
+
     /// <summary>Clears root states, cohorts, and outputs once at harvest.</summary>
     procedure ResetAfterHarvest;
+
+    /// <summary>Calculates and normalizes ten lognormal quantiles.</summary>
+    procedure CalculateLognormalMoments(const MeanRootLengthDensity,
+      CoefficientOfVariation: real; var Moments: TRootLengthDensityMoments);
+
+    function CalculateMomentStandardDeviation(
+      const Moments: TRootLengthDensityMoments): real;
+
+    /// <summary>Updates the RLD moment matrices for all soil layers.</summary>
+    procedure CalculateRootLengthDensityMoments;
 
   protected
     /// <summary>Option controlling rooting depth increase.</summary>
@@ -72,6 +89,21 @@ type
  
     /// <summary>Effective root length density [].</summary>
     EffWld_arr: TSoilVarArray;
+
+    /// <summary>Ten lognormal quantiles of root length density for each soil layer.</summary>
+    Wld_moments: TRootLengthDensityMomentMatrix;
+
+    /// <summary>Ten lognormal quantiles of effective root length density for each soil layer.</summary>
+    EffWld_moments: TRootLengthDensityMomentMatrix;
+
+    /// <summary>Actual standard deviation of root length density in each soil layer [cm.cm-3].</summary>
+    WldStdDev_arr: TSoilVarArray;
+
+    /// <summary>Actual standard deviation of effective root length density in each soil layer [cm.cm-3].</summary>
+    EffWldStdDev_arr: TSoilVarArray;
+
+    /// <summary>Layer-specific coefficient of variation of root length density [%].</summary>
+    VK_lrv: array [1 .. RootLengthDensityLayerCount] of TVar;
  
     /// <summary>Root length per layer [cm.cm-2].</summary>
     WL_arr: TSoilVarArray;
@@ -127,6 +159,12 @@ type
     /// <summary>Duration of root activity.</summary>
     ActiveDuration: TPar;
 
+    /// <summary>Intercept of the regression of RLD coefficient of variation on ln(mean RLD).</summary>
+    VK_lrv_int: TPar;
+
+    /// <summary>Slope of the regression of RLD coefficient of variation on ln(mean RLD).</summary>
+    VK_lrv_slope: TPar;
+
     /// <summary>Temperature sum for root growth.</summary>
     TempSumR: TState;
     /// <summary>Rooting depth (cm).</summary>
@@ -149,6 +187,8 @@ type
 
     /// <summary>Option for texture effects on root growth.</summary>
     TextureEffect: Toption;
+    /// <summary>Option controlling calculation of root length density moments.</summary>
+    CalcMoments: Toption;
     /// <summary>If true, root growth does not start before emergence.</summary>
     RootGrowthAfterEmergence: Toption;
 
@@ -164,11 +204,17 @@ type
 /// <summary>Integrates the states, i.e. rooting depth and temperature sum for root growth.</summary>
     procedure Integrate; override;
 
+    /// <summary>Address of the total root length density moment matrix.</summary>
+    property WldMomentsAddress: PRootLengthDensityMomentMatrix read GetWldMomentsAddress;
+
+    /// <summary>Address of the effective root length density moment matrix.</summary>
+    property EffWldMomentsAddress: PRootLengthDensityMomentMatrix read GetEffWldMomentsAddress;
+
   published
 
 /// <summary>Coupled soil water model of class TSoilWaterModelR.</summary>
     property RootedSoilWaterModel: TSoilWaterModelR read fRootedSoilWatermodel
-      write fRootedSoilWatermodel;
+      write SetRootedSoilWaterModel;
 
     /// <summary>
     /// Initializes arrays and variables for root compartments and age classes.
@@ -189,6 +235,8 @@ type
     property Par_sp_WL: TPar read sp_RL write sp_RL;
 
     property Par_ActiveDuration: TPar read ActiveDuration write ActiveDuration;
+    property Par_VK_lrv_int: TPar read VK_lrv_int write VK_lrv_int;
+    property Par_VK_lrv_slope: TPar read VK_lrv_slope write VK_lrv_slope;
 
     property Ex_Temp: TExternV read Temp write Temp;
     property Ex_EmergenceDay: TExternV read EmergenceDay write EmergenceDay;
@@ -325,6 +373,119 @@ begin
     WLD_z_t_f := 0.0;
   end;
 end;
+function TSimpleRootModDM.GetWldMomentsAddress:
+  PRootLengthDensityMomentMatrix;
+begin
+  Result := @Wld_moments;
+end;
+
+function TSimpleRootModDM.GetEffWldMomentsAddress:
+  PRootLengthDensityMomentMatrix;
+begin
+  Result := @EffWld_moments;
+end;
+
+procedure TSimpleRootModDM.SetRootedSoilWaterModel(
+  const NewRootedSoilWaterModel: TSoilWaterModelR);
+begin
+  if fRootedSoilWatermodel <> nil then
+    fRootedSoilWatermodel.SetRootLengthDensityMomentMatrices(nil, nil);
+
+  fRootedSoilWatermodel := NewRootedSoilWaterModel;
+
+  if fRootedSoilWatermodel <> nil then
+    fRootedSoilWatermodel.SetRootLengthDensityMomentMatrices(
+      WldMomentsAddress, EffWldMomentsAddress);
+end;
+
+
+procedure TSimpleRootModDM.CalculateLognormalMoments(
+  const MeanRootLengthDensity, CoefficientOfVariation: real;
+  var Moments: TRootLengthDensityMoments);
+const
+  StandardNormalQuantiles: TRootLengthDensityMoments =
+    (-1.64485347566998, -1.03643338949379, -0.674489750196082,
+     -0.385320466407568, -0.125661346855074, 0.125661346855074,
+      0.385320466407568, 0.674489750196082, 1.03643338949379,
+      1.64485347566998);
+var
+  MomentIndex: integer;
+  CoefficientOfVariationFraction: real;
+  StandardDeviationLog, MeanLog, SumOfMoments, ScaleFactor: real;
+begin
+  if MeanRootLengthDensity <= 0.0 then
+  begin
+    for MomentIndex := 1 to RootLengthDensityMomentCount do
+      Moments[MomentIndex] := 0.0;
+    exit;
+  end;
+
+  CoefficientOfVariationFraction :=
+    max(0.0, CoefficientOfVariation) / 100.0;
+  StandardDeviationLog :=
+    sqrt(ln(sqr(CoefficientOfVariationFraction) + 1.0));
+  MeanLog := ln(MeanRootLengthDensity) -
+    0.5 * sqr(StandardDeviationLog);
+
+  SumOfMoments := 0.0;
+  for MomentIndex := 1 to RootLengthDensityMomentCount do
+  begin
+    Moments[MomentIndex] := exp(MeanLog + StandardDeviationLog *
+      StandardNormalQuantiles[MomentIndex]);
+    SumOfMoments := SumOfMoments + Moments[MomentIndex];
+  end;
+
+  if SumOfMoments > 0.0 then
+  begin
+    ScaleFactor := MeanRootLengthDensity * RootLengthDensityMomentCount /
+      SumOfMoments;
+    for MomentIndex := 1 to RootLengthDensityMomentCount do
+      Moments[MomentIndex] := Moments[MomentIndex] * ScaleFactor;
+  end;
+end;
+
+function TSimpleRootModDM.CalculateMomentStandardDeviation(
+  const Moments: TRootLengthDensityMoments): real;
+var
+  MomentIndex: integer;
+  MomentMean, SumSquaredDeviations: real;
+begin
+  MomentMean := 0.0;
+  for MomentIndex := 1 to RootLengthDensityMomentCount do
+    MomentMean := MomentMean + Moments[MomentIndex];
+  MomentMean := MomentMean / RootLengthDensityMomentCount;
+
+  SumSquaredDeviations := 0.0;
+  for MomentIndex := 1 to RootLengthDensityMomentCount do
+    SumSquaredDeviations := SumSquaredDeviations +
+      sqr(Moments[MomentIndex] - MomentMean);
+
+  Result := sqrt(SumSquaredDeviations /
+    RootLengthDensityMomentCount);
+end;
+
+procedure TSimpleRootModDM.CalculateRootLengthDensityMoments;
+var
+  LayerIndex: integer;
+begin
+  for LayerIndex := 1 to RootLengthDensityLayerCount do
+  begin
+    if Wld_arr[LayerIndex].v > 0.0 then
+      VK_lrv[LayerIndex].v := max(0.0, VK_lrv_int.v +
+        VK_lrv_slope.v * ln(Wld_arr[LayerIndex].v))
+    else
+      VK_lrv[LayerIndex].v := 0.0;
+
+    CalculateLognormalMoments(Wld_arr[LayerIndex].v,
+      VK_lrv[LayerIndex].v, Wld_moments[LayerIndex]);
+    CalculateLognormalMoments(EffWld_arr[LayerIndex].v,
+      VK_lrv[LayerIndex].v, EffWld_moments[LayerIndex]);
+    WldStdDev_arr[LayerIndex].v := CalculateMomentStandardDeviation(
+      Wld_moments[LayerIndex]);
+    EffWldStdDev_arr[LayerIndex].v := CalculateMomentStandardDeviation(
+      EffWld_moments[LayerIndex]);
+  end;
+end;
 
 procedure TSimpleRootModDM.CreateAll;
 var
@@ -351,6 +512,10 @@ begin
   ParCreate('sp_WL', '[cm.g DM-1]', 7000, sp_RL, 'specific root length');
   ParCreate('ActiveDuration', '[d]', 200, ActiveDuration,
     'active uptake period of roots, determines effective root length and density');
+  ParCreate('VK_lrv_int', '[%]', 0.0, VK_lrv_int,
+    'intercept of the regression of RLD coefficient of variation on ln(mean RLD)');
+  ParCreate('VK_lrv_slope', '[%]', 0.0, VK_lrv_slope,
+    'slope of the regression of RLD coefficient of variation on ln(mean RLD)');
 
   VarCreate('N_Rootcomp', '[n]', 20, true, N_Rootcomp,
     'number of layers which can in maximum contain roots');
@@ -444,10 +609,27 @@ begin
       effWL_arr[i]);
   end;
 
+  for i := 1 to RootLengthDensityLayerCount do
+  begin
+    VarCreate('VK_lrv_' + ndx_Str(i), '[%]', 0.0, false, VK_lrv[i],
+      'coefficient of variation of root length density in this soil layer');
+    VarCreate(fName_WL + 'WLD_stdev_' + ndx_Str(i), '[cm.cm-3]', 0.0,
+      false, WldStdDev_arr[i],
+      'actual standard deviation of root length density in this soil layer');
+    VarCreate(fName_WL + 'effWLD_stdev_' + ndx_Str(i), '[cm.cm-3]', 0.0,
+      false, EffWldStdDev_arr[i],
+      'actual standard deviation of effective root length density in this soil layer');
+  end;
+
   OptCreate('TextureEffect', 'none', TextureEffect,
     'Effect of texture on velocity of rooting depth growth relative to Weff of KA5 texture class at LD3');
   TextureEffect.OptionList.Add('none');
   TextureEffect.OptionList.Add('true');
+
+  OptCreate('CalcMoments', 'false', CalcMoments,
+    'If true, calculate lognormal root length density moments in every time step');
+  CalcMoments.OptionList.Add('false');
+  CalcMoments.OptionList.Add('true');
 
   OptCreate('RootGrowthAfterEmergence', 'false', RootGrowthAfterEmergence,
     'If yes root growth starts not ealier than after emergence');
@@ -1054,6 +1236,8 @@ begin
     WL_arr[i].name := fName_WL + WL_arr[i].name;
     EffWld_arr[i].name := fName_WL + EffWld_arr[i].name;
     effWL_arr[i].name := fName_WL + effWL_arr[i].name;
+    WldStdDev_arr[i].name := fName_WL + WldStdDev_arr[i].name;
+    EffWldStdDev_arr[i].name := fName_WL + EffWldStdDev_arr[i].name;
 
   end;
 end;
@@ -1097,6 +1281,17 @@ begin
     WL_arr[i].v := 0.0;
     EffWld_arr[i].v := 0.0;
     effWL_arr[i].v := 0.0;
+  end;
+  for i := 1 to RootLengthDensityLayerCount do
+  begin
+    VK_lrv[i].v := 0.0;
+    WldStdDev_arr[i].v := 0.0;
+    EffWldStdDev_arr[i].v := 0.0;
+    for j := 1 to RootLengthDensityMomentCount do
+    begin
+      Wld_moments[i, j] := 0.0;
+      EffWld_moments[i, j] := 0.0;
+    end;
   end;
   for i := 1 to Max_Comp do
   begin
@@ -1437,6 +1632,8 @@ begin
   WLD_70_80.v := Wld_arr[8].v;
   WLD_80_90.v := Wld_arr[9].v;
   WLD_90_100.v := Wld_arr[10].v;
+  if SameText(CalcMoments.Option, 'true') then
+    CalculateRootLengthDensityMoments;
 
 end;
 

@@ -23,17 +23,26 @@ uses
   ULayeredSoil,
   classes,
   UAbstractPlant,
-  WFlowFunctions;
+  WFlowFunctions,
+  URootGrowthUtils;
 
 const
   /// <summary> Maximum number of soil layers for root water uptake calculation </summary>
-  Max_Root_Index = 20;
+  Max_Root_Index = RootLengthDensityLayerCount;
 
 type
   real = double;
 
+  /// <summary>Water amount contributions assigned to the ten RLD classes in each soil layer [cm].</summary>
+  TSoilWaterAmountMatrix = array [1 .. Max_Root_Index,
+    1 .. RootLengthDensityMomentCount] of real;
+
+  /// <summary>Water uptake rate contributions assigned to the ten RLD classes in each soil layer [cm.d-1].</summary>
+  TSoilWaterSinkMatrix = array [1 .. Max_Root_Index,
+    1 .. RootLengthDensityMomentCount] of real;
+
   /// <summary> Options for calculation of sink reduction factor for root water uptake </summary>
-  TSinkTermMethod = (nFK_crit, Psicrit, Psicrit_corr, Feddes, MFP);
+  TSinkTermMethod = (nFK_crit, Psicrit, Psicrit_corr, Feddes, MFP, MFPvar);
   
   /// <summary> Options for calculation of automatic irrigation </summary>
   TAutoirriMethod = (amTransRatio, amProznFKWe, amProznFKActRootedComps);
@@ -50,6 +59,11 @@ type
 
   private
     f_Sqrwl_funct: T_Sqrwl_Funct;
+    /// <summary>Link to the total root length density moment matrix.</summary>
+    fWldMoments: PRootLengthDensityMomentMatrix;
+
+    /// <summary>Link to the effective root length density moment matrix.</summary>
+    fEffWldMoments: PRootLengthDensityMomentMatrix;
 
     /// <summary> internal variable for summing up all sink terms </summary>
     Sum_Sink: real;
@@ -68,7 +82,7 @@ type
     fPsi2Opt: TSource;
 
 
-    /// <summary> field for sink term calculation method (Feddes, Psicrit, Psicrit_corr, nFKcrit, MFP) </summary>
+    /// <summary> field for sink term calculation method (Feddes, Psicrit, Psicrit_corr, nFKcrit, MFP, MFPvar) </summary>
     FSinkTermMethod: TSinkTermMethod;
 
     /// <summary> field for option to write the matrix flux table </summary>
@@ -77,9 +91,17 @@ type
     /// <summary> procedure for setting the with roots option </summary>
     procedure setWithRoots(settrue: boolean);
     procedure CreateOptionsRootedSoil;
+    procedure InitializeSoilWaterMatrices;
+    /// <summary>Updates the actual standard deviation of volumetric soil water content in every layer.</summary>
+    procedure CalculateSoilWaterContentStandardDeviations;
+    /// <summary>Calculates MFP-limited water uptake for every RLD moment and soil layer.</summary>
+    procedure CalculateSinkMatrix;
+    procedure UpdateSoilWaterAmountMatrix(const SurfaceWaterAddition: real);
     // function GetWLD(Index:Integer):real; virtual;
 
   protected
+    /// <summary>Applies the available-water limit and keeps MFPvar moment sinks synchronized with the layer sinks.</summary>
+    procedure LimitSinkRatesToAvailableWater; override;
 
   public
     
@@ -89,7 +111,7 @@ type
     /// <summary> Option for method of automatic irrigation (amTransRatio, amProznFKWe, amProznFKActRootedComps) </summary>
     AutoIrriMethodOptStr: Toption;
 
-    /// <summary> Option for method of sink term calculation (Feddes, Psicrit, Psicrit_corr, nFKcrit, MFP) </summary>
+    /// <summary> Option for method of sink term calculation (Feddes, Psicrit, Psicrit_corr, nFKcrit, MFP, MFPvar) </summary>
     SinkTermMethodOptStr: Toption;
     
     /// <summary> Option to write the matrix flux table </summary>
@@ -105,6 +127,14 @@ type
 
     /// <summary> Array for effective root length density distribution [cm/cm3] </summary>
     ExWld_arr: TSoilExtArray;
+    /// <summary>Water amount contributions whose row sum equals WAmount for the soil layer [cm].</summary>
+    SoilWaterAmountMatrix: TSoilWaterAmountMatrix;
+
+    /// <summary>Water uptake contributions whose row sum equals Sink_arr for the soil layer [cm.d-1].</summary>
+    SinkMatrix: TSoilWaterSinkMatrix;
+
+    /// <summary>Actual standard deviation of volumetric soil water content in each layer [cm3.cm-3].</summary>
+    ThetaStdDev_arr: TSoilVarArray;
     
     /// <summary> Total root length density [cm/m2] </summary>
     WLges: TVar;
@@ -191,6 +221,9 @@ type
  
     /// <summary> array for matrix flux potential calculation </summary>
     MFP_arr: array [0 .. 20] of TMFP_table;
+    /// <summary>Links the total and effective RLD moment matrices supplied by a root model.</summary>
+    procedure SetRootLengthDensityMomentMatrices(
+      AWldMoments, AEffWldMoments: PRootLengthDensityMomentMatrix);
 
     procedure SetPlantModel(NewPlantModel: TAbstractplant); override;
     procedure CreateAll; override;
@@ -202,6 +235,12 @@ type
     procedure CalcRatesAndIntegrate; override;
     procedure CalcRates; override;
     // procedure Integrate; override;
+
+    /// <summary>Linked total root length density moment matrix.</summary>
+    property WldMoments: PRootLengthDensityMomentMatrix read fWldMoments;
+
+    /// <summary>Linked effective root length density moment matrix.</summary>
+    property EffWldMoments: PRootLengthDensityMomentMatrix read fEffWldMoments;
 
     // property Wld_arr[Index : Integer]: real read getWLD;  /// Wurzell�ngendichten [cm.cm-3]
 
@@ -239,6 +278,237 @@ implementation
 
 uses
   SysUtils, math; // , dialogs;
+
+procedure TSoilWaterModelR.InitializeSoilWaterMatrices;
+var
+  LayerIndex, MomentIndex: integer;
+  WaterAmountPerClass: real;
+begin
+  for LayerIndex := 1 to Max_Root_Index do
+  begin
+    if LayerIndex <= n_comp then
+      WaterAmountPerClass := WAmount[LayerIndex].v /
+        RootLengthDensityMomentCount
+    else
+      WaterAmountPerClass := 0.0;
+
+    for MomentIndex := 1 to RootLengthDensityMomentCount do
+    begin
+      SoilWaterAmountMatrix[LayerIndex, MomentIndex] :=
+        WaterAmountPerClass;
+      SinkMatrix[LayerIndex, MomentIndex] := 0.0;
+    end;
+  end;
+  CalculateSoilWaterContentStandardDeviations;
+end;
+
+procedure TSoilWaterModelR.CalculateSoilWaterContentStandardDeviations;
+var
+  LayerIndex, MomentIndex: integer;
+  LocalTheta, MeanTheta, SumSquaredDeviations: real;
+begin
+  for LayerIndex := 1 to Max_Root_Index do
+  begin
+    if (LayerIndex <= n_comp) and (Thick[LayerIndex] > 0.0) then
+    begin
+      MeanTheta := 0.0;
+      for MomentIndex := 1 to RootLengthDensityMomentCount do
+      begin
+        LocalTheta := SoilWaterAmountMatrix[LayerIndex, MomentIndex] *
+          RootLengthDensityMomentCount / Thick[LayerIndex];
+        MeanTheta := MeanTheta + LocalTheta;
+      end;
+      MeanTheta := MeanTheta / RootLengthDensityMomentCount;
+
+      SumSquaredDeviations := 0.0;
+      for MomentIndex := 1 to RootLengthDensityMomentCount do
+      begin
+        LocalTheta := SoilWaterAmountMatrix[LayerIndex, MomentIndex] *
+          RootLengthDensityMomentCount / Thick[LayerIndex];
+        SumSquaredDeviations := SumSquaredDeviations +
+          sqr(LocalTheta - MeanTheta);
+      end;
+      ThetaStdDev_arr[LayerIndex].v := sqrt(SumSquaredDeviations /
+        RootLengthDensityMomentCount);
+    end
+    else
+      ThetaStdDev_arr[LayerIndex].v := 0.0;
+  end;
+end;
+
+
+procedure TSoilWaterModelR.CalculateSinkMatrix;
+var
+  LayerIndex, MomentIndex: integer;
+  MaximumSinkMatrix: TSoilWaterSinkMatrix;
+  EffectiveRootLengthDensity, LocalTheta, LocalPsi: real;
+  MatrixFluxPotential, MaximumInflux, RootCylinderRadius: extended;
+  PotentialProfileSink, RowMomentSum, TotalMaximumSink: real;
+begin
+  TotalMaximumSink := 0.0;
+  Sum_Sink := 0.0;
+  act_rooted_comps.v := 0.0;
+  psiRoot.v := 0.0;
+
+  for LayerIndex := 1 to Max_Root_Index do
+  begin
+    if LayerIndex <= n_comp then
+      Sink_arr[LayerIndex].v := 0.0;
+
+    RowMomentSum := 0.0;
+    if (fEffWldMoments <> nil) and (LayerIndex <= act_n_comp) then
+      for MomentIndex := 1 to RootLengthDensityMomentCount do
+        RowMomentSum := RowMomentSum +
+          max(0.0, fEffWldMoments^[LayerIndex, MomentIndex]);
+
+    if (LayerIndex <= act_n_comp) and (ExWld_arr[LayerIndex].v > 0.0) then
+      act_rooted_comps.v := LayerIndex;
+
+    for MomentIndex := 1 to RootLengthDensityMomentCount do
+    begin
+      SinkMatrix[LayerIndex, MomentIndex] := 0.0;
+      MaximumSinkMatrix[LayerIndex, MomentIndex] := 0.0;
+
+      if FWithRoots and (LayerIndex <= act_n_comp) and
+        (MFP_arr[LayerIndex] <> nil) then
+      begin
+        if RowMomentSum > 0.0 then
+          EffectiveRootLengthDensity := max(0.0,
+            fEffWldMoments^[LayerIndex, MomentIndex])
+        else
+          EffectiveRootLengthDensity := max(0.0,
+            ExWld_arr[LayerIndex].v);
+
+        if EffectiveRootLengthDensity > 0.0 then
+        begin
+          // Each matrix cell stores one tenth of the layer water amount.
+          LocalTheta := SoilWaterAmountMatrix[LayerIndex, MomentIndex] *
+            RootLengthDensityMomentCount / Thick[LayerIndex];
+          LocalTheta := max(WPar[LayerIndex].b_rest,
+            min(WPar[LayerIndex].b_sat, LocalTheta));
+          LocalPsi := WPar[LayerIndex].psi_b_f(LocalTheta);
+          MatrixFluxPotential := max(0.0,
+            MFP_arr[LayerIndex].get_sumku(LocalPsi));
+          RootCylinderRadius :=
+            abstand_func(EffectiveRootLengthDensity);
+
+          if (MatrixFluxPotential > 0.0) and
+            (0.56 * RootCylinderRadius > r_root.v) then
+          begin
+            MaximumInflux := max(0.0, MFP_IWmax(MatrixFluxPotential,
+              RootCylinderRadius, r_root.v));
+            MaximumSinkMatrix[LayerIndex, MomentIndex] := MaximumInflux *
+              EffectiveRootLengthDensity * Thick[LayerIndex] /
+              RootLengthDensityMomentCount;
+            TotalMaximumSink := TotalMaximumSink +
+              MaximumSinkMatrix[LayerIndex, MomentIndex];
+          end;
+        end;
+      end;
+    end;
+  end;
+
+  PotentialProfileSink := max(0.0, 0.1 * PotTrans.v);
+  if TotalMaximumSink > 0.0 then
+    for LayerIndex := 1 to act_n_comp do
+      for MomentIndex := 1 to RootLengthDensityMomentCount do
+      begin
+        SinkMatrix[LayerIndex, MomentIndex] := min(
+          MaximumSinkMatrix[LayerIndex, MomentIndex],
+          PotentialProfileSink *
+          MaximumSinkMatrix[LayerIndex, MomentIndex] / TotalMaximumSink);
+        Sink_arr[LayerIndex].v := Sink_arr[LayerIndex].v +
+          SinkMatrix[LayerIndex, MomentIndex];
+      end;
+
+  for LayerIndex := 1 to act_n_comp do
+    Sum_Sink := Sum_Sink + Sink_arr[LayerIndex].v;
+end;
+
+procedure TSoilWaterModelR.LimitSinkRatesToAvailableWater;
+var
+  LayerIndex, MomentIndex: integer;
+  OriginalSink, SinkScale, AvailableMomentWater, MaximumMomentSinkRate: real;
+  OriginalSinks: TSoilArray;
+begin
+  for LayerIndex := 1 to n_comp do
+    OriginalSinks[LayerIndex] := Sink_arr[LayerIndex].v;
+
+  inherited LimitSinkRatesToAvailableWater;
+
+  if OptSinkTermMethod = MFPvar then
+    for LayerIndex := 1 to min(act_n_comp, Max_Root_Index) do
+    begin
+      OriginalSink := OriginalSinks[LayerIndex];
+      if OriginalSink > 0.0 then
+        SinkScale := Sink_arr[LayerIndex].v / OriginalSink
+      else
+        SinkScale := 0.0;
+
+      Sink_arr[LayerIndex].v := 0.0;
+      for MomentIndex := 1 to RootLengthDensityMomentCount do
+      begin
+        SinkMatrix[LayerIndex, MomentIndex] := max(0.0,
+          SinkMatrix[LayerIndex, MomentIndex] * SinkScale);
+        AvailableMomentWater := max(0.0,
+          SoilWaterAmountMatrix[LayerIndex, MomentIndex] -
+          PWP_Arr[LayerIndex] * Thick[LayerIndex] /
+          RootLengthDensityMomentCount);
+        MaximumMomentSinkRate := AvailableMomentWater / dt.v;
+        SinkMatrix[LayerIndex, MomentIndex] := min(
+          SinkMatrix[LayerIndex, MomentIndex], MaximumMomentSinkRate);
+        Sink_arr[LayerIndex].v := Sink_arr[LayerIndex].v +
+          SinkMatrix[LayerIndex, MomentIndex];
+      end;
+    end;
+
+  Sum_Sink := 0.0;
+  for LayerIndex := 1 to act_n_comp do
+    Sum_Sink := Sum_Sink + Sink_arr[LayerIndex].v;
+end;
+
+
+procedure TSoilWaterModelR.UpdateSoilWaterAmountMatrix(
+  const SurfaceWaterAddition: real);
+var
+  LayerIndex, MomentIndex: integer;
+  MeanNetLayerFlow: real;
+begin
+  for LayerIndex := 1 to Max_Root_Index do
+  begin
+    if LayerIndex <= n_comp then
+    begin
+      // WflowInt_arr contains the rates of the accepted adaptive time step.
+      // Its first element includes NetRain and Act_Evap in cm.d-1.
+      MeanNetLayerFlow := (WflowInt_arr[LayerIndex].v -
+        WflowInt_arr[LayerIndex + 1].v) /
+        RootLengthDensityMomentCount;
+      for MomentIndex := 1 to RootLengthDensityMomentCount do
+        SoilWaterAmountMatrix[LayerIndex, MomentIndex] :=
+          SoilWaterAmountMatrix[LayerIndex, MomentIndex] +
+          (MeanNetLayerFlow - SinkMatrix[LayerIndex, MomentIndex]) * dt.v;
+    end
+    else
+      for MomentIndex := 1 to RootLengthDensityMomentCount do
+        SoilWaterAmountMatrix[LayerIndex, MomentIndex] := 0.0;
+  end;
+
+  if SurfaceWaterAddition <> 0.0 then
+    for MomentIndex := 1 to RootLengthDensityMomentCount do
+      SoilWaterAmountMatrix[1, MomentIndex] :=
+        SoilWaterAmountMatrix[1, MomentIndex] + SurfaceWaterAddition /
+        RootLengthDensityMomentCount;
+  CalculateSoilWaterContentStandardDeviations;
+end;
+
+
+
+procedure TSoilWaterModelR.SetRootLengthDensityMomentMatrices(
+  AWldMoments, AEffWldMoments: PRootLengthDensityMomentMatrix);
+begin
+  fWldMoments := AWldMoments;
+  fEffWldMoments := AEffWldMoments;
+end;
 
 
 procedure TSoilWaterModelR.CreateAll;
@@ -309,6 +579,9 @@ begin
   for i := 1 to Max_Root_Index do
   begin
     VarCreate('ProzNFK_arr' + ndx_str(i), '[%]', 0.0, false, ProzNFK_arr[i], 'percentage of available water (nFK) in the soil compartment');
+    VarCreate('theta_stdev_' + ndx_str(i), '[cm3.cm-3]', 0.0, false,
+      ThetaStdDev_arr[i],
+      'actual standard deviation of volumetric soil water content in this soil layer');
   end;
 
   for i := 1 to n_comp do
@@ -372,7 +645,10 @@ begin
     OptSinkTermMethod := nFK_crit;
   if uppercase(SinkTermMethodOptStr.Option) = uppercase('MFP') then
     OptSinkTermMethod := MFP;
-
+  if uppercase(SinkTermMethodOptStr.Option) = uppercase('MFPvar') then
+    OptSinkTermMethod := MFPvar;
+  if OptSinkTermMethod = MFPvar then
+    InitializeSoilWaterMatrices;
   if uppercase(AutoIrriMethodOptStr.Option) = uppercase('amTransRatio') then
     AutoirriMethod := amTransRatio;
   if uppercase(AutoIrriMethodOptStr.Option) = uppercase('amProznFKWe') then
@@ -414,7 +690,7 @@ begin
   if DebugForm <> NIL then
     DebugForm.Init;
 {$ENDIF}
-  if (OptSinkTermMethod = MFP) then
+  if (OptSinkTermMethod = MFP) or (OptSinkTermMethod = MFPvar) then
     for i := 1 to n_comp do
       MFP_arr[i] := TMFP_table.create(WPar[i]);
 
@@ -442,13 +718,14 @@ end;
 
 
 
-/// <summary> Sink reduction calculation with 5 options
+/// <summary> Sink reduction calculation with 6 options
 /// 1) Feddes: reduction factor based on soil water tension thresholds and potential transpiration rate following Feddes et al. (1978)
 /// 2) Psicrit: reduction factor based on soil water tension threshold (Psi2) following Van Genuchten (1987)
 /// 3) nFKcrit: reduction factor based on relative soil water content (nFK) threshold following Van Genuchten (1987)
 /// 4) Psicrit_corr: reduction factor based on soil water tension at the root surface, which is calculated based on potential water uptake and root length distribution, and soil water retention curve
 /// 5) MFP: reduction factor based on soil water tension at the root surface, which is calculated based on potential water uptake and root length distribution, and soil water retention curve, with a maximum flow principle (MFP) approach for calculating the potential water uptake
 /// </summary>
+/// 6) MFPvar: MFP-limited uptake calculated separately for each RLD moment and soil layer
 procedure TSoilWaterModelR.Calcsink_red_f;
 
 var
@@ -569,6 +846,8 @@ begin
           Psi2.v := Plantmodel.Psi2 // Psi2 from plant model
         else
           Psi2.v := psi_2.v; // Psi2 from parameter
+
+        // relative plant water content of soil layer
         rPAW := ((theta_arr[i].v - pwp_arr[i])) / nFK_arr[i];
         If Psi_Root[i] < Psi2.v then
           red_f := 1.0
@@ -600,6 +879,11 @@ var
 
 begin
   inherited CalcSinks;
+  if OptSinkTermMethod = MFPvar then
+  begin
+    CalculateSinkMatrix;
+    exit;
+  end;
   if FWithRoots = true then
   begin
     Sum_Sqr_wl := 0.0;
@@ -653,9 +937,9 @@ begin
           MFP_ := MFP_arr[i].get_sumku(psi_arr[i].v);
           // from RLD [cm.cm-3] to rl in cm.ha-1
           rl[i] := ExWld_arr[i].v * Thick[i] * 1E8;
-          iw_max[i] := Iwmax(theta_arr[i].v, pwp_arr[i], Dw_arr[i] / 86400,
-            abstand_func(ExWld_arr[i].v), 0.02);
-          Wupmax[i] := iw_max[i] * rl[i] * 1E-4 * 1E-3 * 1E-1;
+//          iw_max[i] := Iwmax(theta_arr[i].v, pwp_arr[i], Dw_arr[i] / 86400,
+//            abstand_func(ExWld_arr[i].v), 0.02);
+//          Wupmax[i] := iw_max[i] * rl[i] * 1E-4 * 1E-3 * 1E-1;
           // maximum water uptake per layer [cm/d]
           MFPsink := max(0, min(Sink_arr[i].v, MFP_Inflow(ExWld_arr[i].v,
             Thick[i], MFP_, r_root.v, Sink_arr[i].v)));
@@ -670,11 +954,6 @@ begin
       end
       else
         Sink_arr[i].v := max(0, Sink_arr[i].v * SinkRedF[i]);
-      // nfk_threshold = buffer in order to avoid incoherent water flows
-      if Sink_arr[i].v > (((theta_arr[i].v - WPar[i].b_rest) * Thick[i]) -
-        nfk_threshold.v) then
-        Sink_arr[i].v := ((theta_arr[i].v - WPar[i].b_rest) * Thick[i]) -
-          nfk_threshold.v;
       Sum_Sink := Sum_Sink + Sink_arr[i].v;
     end;
   end; // withRoots
@@ -685,14 +964,16 @@ procedure TSoilWaterModelR.CalcRatesAndIntegrate;
 var
   Sum_ProzNFK: real;
   i: byte;
+  IntegratedTopWaterAmount: real;
 
 begin
-  if FWithRoots = true then
+  if FWithRoots and (OptSinkTermMethod <> MFPvar) then
     Calcsink_red_f;
   // CalcSinks;
   Sum_ProzNFK := 0.0;
 
   inherited CalcRatesAndIntegrate;
+  IntegratedTopWaterAmount := WAmount[1].v;
   if ExWld_arr[1].v > 0.0 then
   begin // Sind Wurzeln da ?
     for i := 1 to Max_Root_Index do
@@ -741,6 +1022,9 @@ begin
     end;
   end;
 
+  if OptSinkTermMethod = MFPvar then
+    UpdateSoilWaterAmountMatrix(WAmount[1].v -
+      IntegratedTopWaterAmount);
   ActTrans.v := ActTrans.v + Sum_Sink * 10.0 * dt.v; // [mm]
   CumTrans.c := ActTrans.v; // cumTrans.c+sum_sink*10.0*dt.v;
 end;
@@ -814,7 +1098,7 @@ begin
   SinkTermMethodOptStr.OptionList.Add('nFkcrit');
   SinkTermMethodOptStr.OptionList.Add('Feddes');
   SinkTermMethodOptStr.OptionList.Add('MFP');
-
+  SinkTermMethodOptStr.OptionList.Add('MFPvar');
   OptCreate('WriteMFPTable', 'false', WriteMFPTable,
     'Option for MFP tables for each layer as txt-file');
   WriteMFPTable.OptionList.Add('true');
