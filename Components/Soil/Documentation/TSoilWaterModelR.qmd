@@ -134,7 +134,9 @@ There are currently the following *options* available to calculate the actual tr
 
 - MFPvar: Similar to MFP but each layer of the 1D soil profile is divided into 10 different sections with differing root length densities. These are calculated in the Component [TSimpleRootModDM](https://github.com/AgronomyKiel/HUME/blob/mainbranch/Components/Rootgrowth/Documentation/TSimpleRootModDM.html).
 
-The option *Sqrwl_funct* is an option to consider the soil water availability in the calculation of the distribution of potential soil water uptake (see @eq-SinkTerm and @eq-SinkTerm2)
+- Sqrwl_funct: The option *Sqrwl_funct* is an option to consider the soil water availability in the calculation of the distribution of potential soil water uptake (see @eq-SinkTerm and @eq-SinkTerm2)
+
+- psi_logscale: The option *psi_logscale* is an option to consider the soil water potential in log scale for the calculation of the reduction factor for root water uptake (f~sinkred~) (see @eq-fsinkred and @eq-fsinkredfeddes). 
 
 ### Parameters
 
@@ -181,7 +183,7 @@ This function is used if the option *Sqrwl_funct* is set to *ReductionFactor*. I
 #| message: false
 #| warning: false
 #| label: fig-CompF
-#| fig-cap: Example for the distribution of root length density and potential sink term for different values of the competition factor (CompF)
+#| fig-cap: Example for an distribution of root length density within the soil profile and the distribution of the potential sink term calculated for different values of the competition factor (CompF).
 
 # library for adding plots
 library(patchwork)
@@ -226,19 +228,21 @@ p
 
 The potential sink term is reduced by the reduction factor for root water uptake (f~sinkred~). The reduction of potential water uptake by soil water potential / soil water content, f~sinkred~, is calculated by the soil water potential in each soil layer psi~i~ \[hPa\], the soil water potential \[hPa\] psi~0~ from which on water uptake is 0 and psi~crit~ \[hPa\], a parameter for the soil water potential from which on water uptake decrease. For historical reasons this parameter psi~crit~ is named psi2 in the code of the component TSoilWaterModelR.
 
-The reduction factor for root water uptake (f~sinkred~) is calculated for the model option "psi~crit~" as shown in Eq. @eq-fsinkred and illustrated in @fig-FeddesReduction.
+With the option "psi_logscale" = false, the reduction factor for root water uptake (f~sinkred~) based on the untransformed soil water potential in each soil layer (psi~i~), the soil water potential from which on water uptake is 0 (psi0) and a parameter for the soil water potential from which on water uptake decrease (psi~crit~) as shown in Eq. @eq-fsinkred2.
 
-$$f_{sinkred}=max \left( 0, min \left(1, \frac{log10(psi)-log10(psi_3)}{log10(psi_2)-log10(psi_3)}\right) \right)$$ {#eq-fsinkred}
+$$f_{sinkred}=max \left( 0, min \left(1, \frac{psi-psi_3}{psi_2-psi_3}\right) \right)$$ {#eq-fsinkred
+
+With the option "psi_logscale" = true the reduction factor is from log-scaled psi values:
+
+$$f_{sinkred}=max \left( 0, min \left(1, \frac{log10(psi)-log10(psi_3)}{log10(psi_2)-log10(psi_3)}\right) \right)$$ {#eq-fsinkred_logscale}
 
 The option "nFK~crit~" calculates the reduction factor for root water uptake (f~sinkred~) based on the soil water content in each soil layer (theta~i~), the soil water content from which on water uptake is 0 (theta0) and a parameter for the soil water content from which on water uptake decrease (theta~crit~) as shown in Eq. @eq-fsinkrednFK.
 
 $$f_{sinkred}=max \left( 0, min \left(1, \frac{nFK-PWP}{nFK_{crit}-PWP}\right) \right)$$ {#eq-fsinkrednFK}
 
-With the option "Feddes" the reduction factor for root water uptake (f~sinkred~) based on the untransformed soil water potential in each soil layer (psi~i~), the soil water potential from which on water uptake is 0 (psi0) and a parameter for the soil water potential from which on water uptake decrease (psi~crit~) as shown in Eq. @eq-fsinkred2.
+For the option psicrit, the values of psi_2 is a fixed value during a similation period. Its value is usually set to a value of around 200 hPa.
 
-$$f_{sinkred}=max \left( 0, min \left(1, \frac{psi-psi_3}{psi_2-psi_3}\right) \right)$$ {#eq-fsinkredfeddes}
-
-The value of $\psi_2$ is usually set to a value of around 200 hPa but with the option *Feddes* it can be made variable depending on the actual transpiration rate.
+With the option *Feddes* it is variable, depending on the actual transpiration rate.
 
 $$\psi_2^{*}=
 \begin{cases}
@@ -441,6 +445,16 @@ p
 ```{r}
 #| label: fig-FeddesReduction
 #| echo: false
+#| message: false
+#| warning: false
+#| fig-cap: Example for the calculation of the reduction factor for root water uptake (f~sinkred~) based on the soil water potential in each soil layer (psi~i~) and the actual transpiration rate (T~act~) based on a Feddes-like approach [@feddes1978]. The parameters psi2_hightrans <- 200
+psi2_lowtrans <- 2000
+Trefhigh <- 6
+Treflow <- 1
+
+
+
+
 
 source("Components/Soil/Documentation/Redfuncs.R")
 

@@ -80,6 +80,9 @@ type
     
     /// <summary> source of Psi2 value, could be supplied from plant model </summary>
     fPsi2Opt: TSource;
+    
+    /// <summary> field for option to use log scale for sink reduction </summary>
+    fpsi_logscale: boolean;
 
 
     /// <summary> field for sink term calculation method (Feddes, Psicrit, Psicrit_corr, nFKcrit, MFP, MFPvar) </summary>
@@ -215,6 +218,9 @@ type
     
     /// <summary> Option for sink reduction (Sqr_wl_arr calculation) </summary>
     f_SqrWl_Option: Toption;
+
+    /// <summary> Option for sink reduction (SinkRedF calculation), log scale true/false </summary>
+    psi_logscale: Toption;
     
     /// <summary> root radius </summary>
    r_root: Tpar;
@@ -714,6 +720,14 @@ begin
         CloseFile(f);
       end;
     end;
+    
+
+    if lowercase(psi_logscale.Option) = 'false' then
+      fpsi_logscale := false
+    else
+      fpsi_logscale := true;
+
+
 end;
 
 
@@ -740,6 +754,34 @@ var
   Wupmax: TSoilArray;
   i: integer;
 
+
+function f_psi_reduction(psi_root, psi_2, psi_3: real; logscale: boolean): real;
+
+begin
+  
+  if logscale then
+  begin
+    if psi_root < psi_2 then
+      result := 1.0
+    else if psi_root > psi_3 then
+      result := 0.0
+    else
+      result := (log10(psi_root) - log10(psi_3)) /
+        (log10(psi_2) - log10(psi_3));
+  end
+  else
+  begin
+    if psi_root < psi_2 then
+      result := 1.0
+    else if psi_root > psi_3 then
+      result := 0.0
+    else
+      result := (psi_root - psi_3) / (psi_2 - psi_3);
+  end;
+
+end;
+
+
 begin
 
   if OptSinkTermMethod = Feddes then
@@ -762,8 +804,9 @@ begin
       If psi_arr[i].v < psi2_ then
         red_f := 1.0
       else
-        red_f := (psi_arr[i].v - psi_3.v) / (psi2_ - psi_3.v);
-      // Staun�sse nach Feddes
+ //       red_f := (psi_arr[i].v - psi_3.v) / (psi2_ - psi_3.v);
+          red_f := f_psi_reduction(psi_arr[i].v, psi2_, psi_3.v, fpsi_logscale);
+      // Staunsse nach Feddes
       // If psi_arr[i].v < 1 then  red_f :=max(0.1,psi_arr[i].v);
       // rPAW:= ((theta_arr[i].v-pwp_arr[i]))/nFK_arr[i];
       If ((red_f < 0.0) or (rPAW < nfk_threshold.v)) then
@@ -784,8 +827,7 @@ begin
       If psi_arr[i].v < Psi2.v then
         red_f := 1.0
       else
-        red_f := (log10(psi_arr[i].v) - log10(psi_3.v)) /
-          (log10(Psi2.v) - log10(psi_3.v));
+        red_f := f_psi_reduction(psi_arr[i].v, Psi2.v, psi_3.v, fpsi_logscale);
       If ((red_f < 0.0) or (rPAW < nfk_threshold.v)) then
         red_f := 0.0;
       SinkRedF[i] := red_f;
@@ -852,8 +894,7 @@ begin
         If Psi_Root[i] < Psi2.v then
           red_f := 1.0
         else
-          red_f := (log10(Psi_Root[i]) - log10(psi_3.v)) /
-            (log10(Psi2.v) - log10(psi_3.v));
+          red_f := f_psi_reduction(Psi_Root[i], Psi2.v, psi_3.v, fpsi_logscale);
         If ((red_f < 0.0) or (rPAW < nfk_threshold.v)) then
           red_f := 0.0;
         SinkRedF[i] := red_f;
@@ -1104,6 +1145,10 @@ begin
   WriteMFPTable.OptionList.Add('true');
   WriteMFPTable.OptionList.Add('false');
 
+  OptCreate('psi_logscale', 'true', psi_logscale,
+    'Option for log scale or linear scale for sink reduction factor calculation');
+  psi_logscale.OptionList.Add('true');    
+  psi_logscale.OptionList.Add('false');
 end;
 
 procedure TSoilWaterModelR.SetPlantModel(NewPlantModel: TAbstractplant);

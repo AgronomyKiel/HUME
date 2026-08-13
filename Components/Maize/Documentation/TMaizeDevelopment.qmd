@@ -60,11 +60,11 @@ options("citation_format" = "pandoc")
 
 # Introduction
 
-Maize development is regulated by the effective temperature (\$T\_{eff}\$), which is calculated as the positive difference between the daily mean temperature and a defined base temperature (@tab-Parameter) of 6 °C, following @Pages.1994 and @Bonhomme.1994.
+Maize development is regulated by the effective temperature (\$T\_{eff}\$), which is calculated as the positive difference between the daily mean temperature and a defined base temperature (@tbl-Parameter) of 6 °C, following @Pages.1994 and @Bonhomme.1994.
 
 The development process is divided into five stages, hereafter referred to as **XStages**, following the HYBRID-Maize framework and the approach of @Yang.2016. These XStages represent the key phenological stages of maize development: emergence, tassel initiation, silking, effective grain filling, and maturity (Figure @fig-DevScheme).
 
-Development rates between the individual stages are calculated as the ratio between effective temperature (\$T\_{eff}\$) and the corresponding temperature sums (growing degree days, GDD). Specifically, development rates are defined for the phases between sowing and emergence (@eq-DevRateS0), emergence and tassel initiation (@eq-DevRateS1), tassel initiation and silking (@eq-DevRateS2), and silking and grain filling (@eq-DevRateS3). The corresponding temperature sums are defined by the parameters @par-GDDemer, @par-GDDtasini, @par-GDDS2, and @par-GDDS3 (Table @tbl-parameters).
+Development rates between the individual stages are calculated as the ratio between effective temperature (\$T\_{eff}\$) and the corresponding temperature sums (growing degree days, GDD). Specifically, development rates are defined for the phases between sowing and emergence (@eq-DevRateS0), emergence and tassel initiation (@eq-DevRateS1), tassel initiation and silking (@eq-DevRateS2), and silking and grain filling (@eq-DevRateS3). The corresponding temperature sums are defined by the parameters GDDemer, GDDtasini, GDDS2, and GDDS3 (seet Table @tbl-parameter).
 
 Compared to the approach of @Yang.2016, an additional temperature sum from emergence to silking (@par-GDDsilk) is introduced. This parameter is used to calculate the development rate from grain filling until maturity (@eq-DevRateS4). The development rate is derived from the remaining temperature requirement between the total temperature sum to maturity (@par-GDDtotal) and the temperature sums of the preceding stages.
 
@@ -137,7 +137,7 @@ names(df.state) <- c("State variable", "Units", "InitialValue", "Description")
 The class TSubDevelopent has `r trunc(nrow(df.state))` following state variable(s).
 
 ```{r}
-#| label : tab-state
+#| label : tbl-state
 #| table.cap : "State variables of TSubDevelopmentMaize"
 #| echo: false
 #| message: false
@@ -148,18 +148,20 @@ kable(df.state)
 ## Parameters
 
 ```{r}
-#| label: tab-Parameter
+#| label: tbl-parameter
 #| echo: false
 #| message: false
 #| warning: false
-#| table-cap: Model Parameter
+#| tbl-cap: Parameters of the TSubDevelopmentMaize submodel 
+
+
 kable(df %>% filter( EntityType == "Parameter") %>% dplyr::select(EntityName, Units, Value, Comment) %>% rename(Parameter = EntityName, Description = Comment))
 ```
 
 | Parameter | Value | Unit | Description | Source |
 |---------------|---------------|---------------|---------------|---------------|
 | $T_{1}$ | 6 | °C | Base temperature for calculating $T_{eff}$ | @Pages.1994; @Bonhomme.1994 |
-| $GDD_{emer}$ | 100 | °C d | Temperature sum from sowing until emergence | @Bignon.1990 |
+| $GDD_{emer}$ {#parm-GDDemer} | 100 | °C d | Temperature sum from sowing until emergence | @Bignon.1990 |
 | $GDD_{tasini}$ | 320 | °C d | Temperature sum from emergence until tassel initiation | @Bignon.1990 |
 | $GDD_{S2}$ | 510 | °C d | Temperature sum from tassel initiation until silking | @Bignon.1990 |
 | $GDD_{S3}$ | 200 | °C d | Temperature sum from silking until grain filling | @Bignon.1990 |
@@ -170,7 +172,7 @@ kable(df %>% filter( EntityType == "Parameter") %>% dplyr::select(EntityName, Un
 ## Variables
 
 ```{r}
-#| label: tab-Variable
+#| label: tbl-variable
 #| echo: false
 #| message: false
 #| warning: false
