@@ -36,7 +36,7 @@ for (cache_file in cache_files) {
   }
 
   supporting_text <- regmatches(cache_text, supporting_match)
-  if (grepl('[A-Za-z]:\\\\\\\\', supporting_text, perl = TRUE)) {
+  if (grepl('[A-Za-z]:[/\\\\]', supporting_text, perl = TRUE)) {
     affected_cache_dirs <- c(
       affected_cache_dirs,
       dirname(dirname(cache_file))
