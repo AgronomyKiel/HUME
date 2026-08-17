@@ -1,12 +1,15 @@
+///<summary>
+/// Module for dry matter and nitrogen partitioning of silage maize.
+/// Authors: Katja Holzhauser, Josephine Bukowiecki, Babette Wienforth, Henning Kage & Crop Science and Agronomy Group, Kiel University
+/// Last edited: 14.08.2026
+/// Parts of the module are published in:
+/// References
+/// Holzhauser, K., Wienforth, B.M., Komainda, M., Herrmann, A., Zimmermann, I. & Dippold, M.A. et al. (2026) HUME-Maize: modelling silage maize yield formation across genotypes and scales. The Journal of Agricultural Science, 164, e34. Available from: https://doi.org/10.1017/S0021859626100719.
+/// Holzhauser, K. (2025) Cover Crops for Sustainable Silage-Maize Production: Enhancing Resource Use Efficiency through Modelling and Remote Sensing (Doctoral dissertation). Christian-Albrechts-Universität zu Kiel: Kiel Available from: https://macau.uni-kiel.de/receive/macau_mods_00006346.
+/// Wienforth, B. (2011) Cropping systems for biomethane production: a simulation based analysis of yield, yield potential and resource use efficiency (Doctoral dissertation). Christian-Albrechts-Universität zu Kiel
+///</summary>
+
 unit Usubpartitioning_Maize_Roots_N;
-// Module for dry matter and nitrogen partitioning of silage maize.
-// Authors: Katja Holzhauser, Josephine Bukowiecki, Babette Wienforth, Henning Kage & Crop Science and Agronomy Group, Kiel University
-// Last edited: 14.08.2026
-// Parts of the module are published in:
-// References
-// Holzhauser, K., Wienforth, B.M., Komainda, M., Herrmann, A., Zimmermann, I. & Dippold, M.A. et al. (2026) HUME-Maize: modelling silage maize yield formation across genotypes and scales. The Journal of Agricultural Science, 164, e34. Available from: https://doi.org/10.1017/S0021859626100719.
-// Holzhauser, K. (2025) Cover Crops for Sustainable Silage-Maize Production: Enhancing Resource Use Efficiency through Modelling and Remote Sensing (Doctoral dissertation). Christian-Albrechts-Universität zu Kiel: Kiel Available from: https://macau.uni-kiel.de/receive/macau_mods_00006346.
-// Wienforth, B. (2011) Cropping systems for biomethane production: a simulation based analysis of yield, yield potential and resource use efficiency (Doctoral dissertation). Christian-Albrechts-Universität zu Kiel
 
 interface
 

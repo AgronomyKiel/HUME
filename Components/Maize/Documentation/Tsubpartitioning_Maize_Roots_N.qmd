@@ -1,0 +1,370 @@
+---
+title: "Tsubpartitioning_Maize_Roots_N"
+author: "Katja Holzhauser, Agronomy and Crop Science Group, Kiel University"
+date: "`r Sys.Date()`"
+format: html
+bibliography: references.bib
+csl: european-journal-of-agronomy.csl
+citation_package: citations
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r}
+#| label: SetupLibraries
+#| include: FALSE
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center", fig.width = 12, fig.height = 6, fig.pos = "h", fig.cap = TRUE)
+rm(list = ls(all.names = TRUE))
+
+
+library(rmarkdown)
+library(bookdown)
+library(soilwater)
+library(tidyverse)
+library(reticulate)
+library(tinytex)
+library(bibtex)
+library(ggsci)
+library(knitcitations)
+library(kableExtra)
+library(xml2)
+library(ggpmisc)
+library(tools)
+library(here)
+source("ExtractInformationFromXML.R")
+source("Rlib/DokuUtilFunctions.R")
+
+options("citation_format" = "pandoc")
+
+ExtractInformationFromCSV <- function(fn) {
+
+  df <- read.delim(fn, header = TRUE, sep = ";")|>filter(Submodel==!!Submodel) 
+  df.state <- df |> filter( EntityType == "State")  |> dplyr::select(EntityName, Units, Value, Comment)|>distinct()|>
+        mutate(Value=as.numeric(Value))
+  names(df.state) <- c("State variable", "Units", "Initial Value", "Description")
+  
+  df.par <- df |> filter( EntityType == "Parameter") |> dplyr::select(EntityName, Units, Value, Comment)|>distinct()|>
+    mutate(Value=as.numeric(Value))
+  names(df.par) <- c("Parameter", "Units", "Value", "Description")
+
+  df.var <- df |> filter( EntityType == "Variable") |> dplyr::select(EntityName, Units, Comment)|>distinct()
+  names(df.var) <- c("Variable", "Units", "Description")
+
+  df.ext <- df |> filter( EntityType == "ExternalValue") |> dplyr::select(EntityName, Units, Comment, Option)|>distinct()
+  names(df.ext) <- c("External Variable", "Units", "Description", "Source")
+
+  df.opt <- df |> filter(EntityType == "Option" ) |>  dplyr::select(EntityName, Option, Comment)|>distinct()
+  names(df.opt) <- c("Option", "Selection", "Description")
+
+  result <- list(
+    df.state = df.state,
+    df.par = df.par,
+    df.var = df.var,
+    df.ext = df.ext,
+    df.opt = df.opt
+  )
+
+}
+
+```
+
+```{r}
+#| include: false
+
+fn_source <- here("Components/Maize/Usubpartitioning_Maize_Roots_N.pas")
+fn_xml_docu <- here("XML_Delphi_Docu/Usubpartitioning_Maize_Roots_N.xml")
+fn <- here("csv_Hume_Docu/Docu_Docu_MAIZE.csv")
+
+Submodel <- "subpartitioning_Maize_Roots_N1"
+NameSource <- file_path_sans_ext(basename(fn_source))
+
+doc <- read_xml(fn_xml_docu)
+
+output <- ExtractXMLDocuInformation(fn_xml_docu, ClassName = "Tsubpartitioning_Maize_Roots_N")
+
+Entities <- ExtractInformationFromCSV(fn)
+
+```
+
+# Summary
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| results: asis
+ 
+ GetFirstDevNotes(fn_xml_docu)
+```
+
+## Descendence
+
+The class Tsubpartitioning_Maize_Roots_N has the following ancestor classes shown in @tbl-AncestorClasses.
+
+```{r}
+#| label: tbl-AncestorClasses
+#| echo: false
+#| tbl-cap: "Ancestor classes of Tsubpartitioning_Maize_Roots_N"
+
+df <- GetAncestorClasses(fn_xml_docu,"Tsubpartitioning_Maize_Roots_N")
+
+kable(df)|>
+   kable_styling(full_width = FALSE, position = "center")
+
+```
+
+# Scientific Background
+
+## Modelling DM partitioning
+
+## Modelling N partitioning
+
+# Nitrogen Dynamics and Critical N Concentration in Maize
+
+During crop growth, plant nitrogen concentration ($N_c$) typically declines as biomass accumulation increases and canopy structure changes. In particular, the expansion of structural tissues such as stems and reproductive organs contributes to a dilution of nitrogen (@.Caloin1984). Additionally, increasing canopy density leads to progressive self-shading, which results in an uneven distribution of nitrogen within the plant (@Sinclair.1989; @Bertheloot.2008). Leaves located in the upper canopy and best exposed to incoming radiation are the most photosynthetically active and therefore maintain the highest $N_c$ (@Bertheloot.2008), whereas structural organs with limited photosynthetic function exhibit comparatively lower $N_c$ levels (@Lemaire.1997). 
+
+Critical nitrogen ($N_{\text{crit}}$) dilution curves are used to analyze the nitrogen status of crops, assuming a relationship between $N_c$ and dry matter (DM) growth that determines the optimal nitrogen supply for the crop. These curves are based on the concept of $N_{\text{crit}}$ (@Salette.1981). $N_{\text{crit}}$ is defined as the minimum $N_c$ required to achieve maximum possible DM growth; beyond this point, additional nitrogen fertilization does not significantly increase DM growth (@Ulrich.1952; @Greenwood.1991). $N_{\text{crit}}$ dilution curves have been established for a range of crops, including wheat (@Justes.1994), oilseed rape (@Colnenne.1998), barley (@Zhao.2014), rice (Ata-Ul-Karim et al., 2017), and sunflower (Debaeke et al., 2012). For maize, the first dilution curve was proposed by (@Plénet.1999) and later extended to silage maturity by (@Herrmann.2004). However, a common feature across these studies is their focus on whole-plant nitrogen concentration, without explicitly accounting for organ-specific differences. Representing nitrogen uptake at the whole-plant level alone neglects the fact that nitrogen supply influences not only the total amount of nitrogen accumulated but also its allocation patterns among plant organs and their demands during the vegetation period (\@Bao2025). Capturing such dynamics requires a more detailed, organ-resolved perspective.
+
+It has been established that the nitrogen nutrition index (NNI) is a reliable metric for quantifying nitrogen stress. It can be derived from $N_{\text{crit}}$ dilution curves as the ratio between $N_c$ and $N_{\text{crit}}$. Modelling of the nitrogen status via whole-plant or leaf DM has been discussed in the literature (\@Ata-Ul-Karim2017; \@Zhao2017; \@Zhao2018; \@Sieling.2021), as $N_c$ is highest in the photosynthetically active plant organ. In particular for the C4 plant maize, the assumption of a leaf-based NNI could serve as a more sensitive proxy of nitrogen stress (\@Sieling.2021).
+
+### Critical N concentration
+
+## 
+
+# Submodel objects
+
+Dynamic system model consists according to the Forrester approach of state variable, parameters, variables and external driving forces. This is implemented in Hume by dynamic lists, which contents is given in the following sections.
+
+## State variables
+
+The class Tsubpartitioning_Maize_Roots_N has `r trunc(nrow(Entities$df.state))` following state variable(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+kable(
+  Entities$df.state,
+  format = "html",
+  caption = "Initial Values of State Variables",
+  booktabs = TRUE
+ ) %>%
+   kable_styling(full_width = FALSE, position = "center")
+
+```
+
+## Parameters
+
+The class Tsubpartitioning_Maize_Roots_N has `r trunc(nrow(Entities$df.par))` following parameter(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+Entities$df.par$Value <- format(
+  round(Entities$df.par$Value,4),
+ nsmall = 2,
+ trim = T, 
+ scientific = FALSE
+)
+
+kable(Entities$df.par, escape = FALSE,
+      format = "html",
+      caption = "Parameter",
+      booktabs = TRUE
+ )|>
+   kable_styling(full_width = FALSE, position = "center")
+
+```
+
+## Variables
+
+The class Tsubpartitioning_Maize_Roots_N has `r trunc(nrow(Entities$df.var))` following variable(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+kable(Entities$df.var, escape = FALSE,
+      format = "html",
+      caption = "Parameter",
+      booktabs = TRUE
+ )|>
+   kable_styling(full_width = FALSE, position = "center")
+```
+
+## External variables
+
+The class Tsubpartitioning_Maize_Roots_N has `r trunc(nrow(Entities$df.ext))` following external variable(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+
+kable(Entities$df.ext, escape = FALSE,
+      format = "html",
+      caption = "External Variables",
+      booktabs = TRUE
+ )|>
+   kable_styling(full_width = FALSE, position = "center")
+```
+
+## Options
+
+The class Tsubpartitioning_Maize_Roots_N has `r trunc(nrow(Entities$df.opt))` following option(s).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+kable(Entities$df.opt, escape = FALSE,
+      format = "html",
+      caption = "Parameter",
+      booktabs = TRUE
+ )|>
+   kable_styling(full_width = FALSE, position = "center")
+```
+
+<!-- # Further source code documentation -->
+
+<!-- The following section includes information extracted from the XML documentation of the class Tsubpartitioning_Maize_Roots_N. It includes constants, enumerations and functions. -->
+
+<!-- ## Enumerations -->
+
+<!-- ```{r} -->
+
+<!-- ``` -->
+
+<!-- Within the unit (`r trunc(nrow(output$enum_df))`) enumeration types are defined : -->
+
+<!-- ```{r} -->
+
+<!-- #| label: tbl-Tsubpartitioning_Maize_Roots_NEnumerationsTable -->
+
+<!-- #| echo: false -->
+
+<!-- #| message: false -->
+
+<!-- #| warning: false -->
+
+<!-- #| tbl-cap: Enumerations of unit UHumeWheatLeafArea -->
+
+<!-- kable(output$enum_df, escape = FALSE, col.names = c("Name", "Summary", "Elements")) |> -->
+
+<!--   kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) |> -->
+
+<!--   column_spec(1, bold = TRUE) |> -->
+
+<!--   column_spec(2, width = "30em") |> -->
+
+<!--   column_spec(3, width = "30em") -->
+
+<!-- ``` -->
+
+<!-- The enumeration types are used to internally define options for different process formulation. By setting an TOption object -->
+
+<!-- ## Constants -->
+
+<!-- The following internal constants are defined within the Unit -->
+
+<!-- ```{r} -->
+
+<!-- #| label: tbl-Tsubpartitioning_Maize_Roots_NConstantsTable -->
+
+<!-- #| echo: false -->
+
+<!-- #| message: false -->
+
+<!-- #| warning: false -->
+
+<!-- #| tbl-cap: Constants of unit UHumeWheatLeafArea -->
+
+<!-- kable(output$const_df, escape = FALSE, col.names = c("Name", "Type", "Summary", "Value")) |> -->
+
+<!--   kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) |> -->
+
+<!--   column_spec(1, bold = TRUE) |> -->
+
+<!--   column_spec(2, width = "10em") |> -->
+
+<!--   column_spec(3, width = "30em") |> -->
+
+<!--   column_spec(4, width = "20em") -->
+
+<!-- ``` -->
+
+<!-- ## Functions -->
+
+<!-- ```{r} -->
+
+<!-- #| label: tbl-Tsubpartitioning_Maize_Roots_NFunctionsTableSimple -->
+
+<!-- #| echo: false -->
+
+<!-- #| message: false -->
+
+<!-- #| warning: false -->
+
+<!-- #| tbl-cap: Functions of class Tsubpartitioning_Maize_Roots_N -->
+
+<!-- paged_table(output$fun_df) -->
+
+<!-- ``` -->
+
+<!-- ```{r} -->
+
+<!-- #| label: tbl-Tsubpartitioning_Maize_Roots_NFunctionsTable -->
+
+<!-- #| eval: false -->
+
+<!-- #| message: false -->
+
+<!-- #| warning: false -->
+
+<!-- #| include: false -->
+
+<!-- #| tbl-cap: Functions of class Tsubpartitioning_Maize_Roots_N -->
+
+<!-- fun_df[] <- lapply(fun_df, function(x) gsub(":::", "::: ", x, fixed = TRUE)) -->
+
+<!-- kable(fun_df, escape = FALSE, col.names = c("Name", "Visibility", "Parameters", "Summary", "Parameter Summary")) |> -->
+
+<!--   kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) |> -->
+
+<!--   column_spec(1, bold = TRUE) |> -->
+
+<!--   column_spec(2, width = "10em") |> -->
+
+<!--   column_spec(3, width = "20em") |> -->
+
+<!--   column_spec(4, width = "30em") |> -->
+
+<!--   column_spec(5, width = "30em") -->
+
+<!-- ``` -->
+
+<!-- The procedures defined in the class Tsubpartitioning_Maize_Roots_N are: -->
+
+<!-- ```{r} -->
+
+<!-- #| label: tbl-Tsubpartitioning_Maize_Roots_NProceduresTableSimple -->
+
+<!-- #| echo: false -->
+
+<!-- #| message: false -->
+
+<!-- #| warning: false -->
+
+<!-- #| tbl-cap: Functions of class Tsubpartitioning_Maize_Roots_N -->
+
+<!-- paged_table(output$proc_df) -->
+
+<!-- ``` -->
+
+<!-- ## References -->
