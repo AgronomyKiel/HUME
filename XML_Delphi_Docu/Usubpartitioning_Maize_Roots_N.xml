@@ -1,138 +1,259 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="Usubpartitioning_Maize_Roots_N" platform="Win32">
-  <const name="f_ln" type="TNcShoot_Calc" file="Usubpartitioning_Maize_Roots_N.pas" line="14">
+  <devnotes>
+    <summary>
+     Module for dry matter and nitrogen partitioning of silage maize.
+     Authors: Katja Holzhauser, Josephine Bukowiecki, Babette Wienforth, Henning Kage &amp; Crop Science and Agronomy Group, Kiel University
+     Last edited: 14.08.2026
+    
+     Parts of the module are published in:
+    
+     <item> Holzhauser, K., Wienforth, B.M., Komainda, M., Herrmann, A., Zimmermann, I. &amp; Dippold, M.A. et al. (2026) HUME-Maize: modelling silage maize yield formation across genotypes and scales. The Journal of Agricultural Science, 164, e34. Available from: https://doi.org/10.1017/S0021859626100719.  </item>
+     <item> Holzhauser, K. (2025) Cover Crops for Sustainable Silage-Maize Production: Enhancing Resource Use Efficiency through Modelling and Remote Sensing (Doctoral dissertation). Christian-Albrechts-Universität zu Kiel: Kiel Available from: https://macau.uni-kiel.de/receive/macau_mods_00006346.     </item>
+     <item> Wienforth, B. (2011) Cropping systems for biomethane production: a simulation based analysis of yield, yield potential and resource use efficiency (Doctoral dissertation). Christian-Albrechts-Universität zu Kiel                                               </item>
+    </summary>
+  </devnotes>
+  <const name="f_ln" type="TNcShoot_Calc" file="Usubpartitioning_Maize_Roots_N.pas" line="26">
     <value>
       f_ln
     </value>
   </const>
-  <const name="herrmann04" type="TNcShoot_Calc" file="Usubpartitioning_Maize_Roots_N.pas" line="14">
+  <const name="herrmann04" type="TNcShoot_Calc" file="Usubpartitioning_Maize_Roots_N.pas" line="26">
     <value>
       herrmann04
     </value>
   </const>
-  <const name="organ_specific" type="TNcShoot_Calc" file="Usubpartitioning_Maize_Roots_N.pas" line="14">
+  <const name="organ_specific" type="TNcShoot_Calc" file="Usubpartitioning_Maize_Roots_N.pas" line="26">
     <value>
       organ_specific
     </value>
   </const>
-  <enum name="TNcShoot_Calc" file="Usubpartitioning_Maize_Roots_N.pas" line="14">
-    <element value="0" name="f_ln" file="Usubpartitioning_Maize_Roots_N.pas" line="14" />
-    <element value="1" name="herrmann04" file="Usubpartitioning_Maize_Roots_N.pas" line="14" />
-    <element value="2" name="organ_specific" file="Usubpartitioning_Maize_Roots_N.pas" line="14" />
+  <enum name="TNcShoot_Calc" file="Usubpartitioning_Maize_Roots_N.pas" line="26">
+    <element value="0" name="f_ln" file="Usubpartitioning_Maize_Roots_N.pas" line="26" />
+    <element value="1" name="herrmann04" file="Usubpartitioning_Maize_Roots_N.pas" line="26" />
+    <element value="2" name="organ_specific" file="Usubpartitioning_Maize_Roots_N.pas" line="26" />
   </enum>
-  <class name="Tsubpartitioning_Maize_Roots_N" file="Usubpartitioning_Maize_Roots_N.pas" line="16">
+  <class name="Tsubpartitioning_Maize_Roots_N" file="Usubpartitioning_Maize_Roots_N.pas" line="28">
     <ancestor name="Tsubpartitioning_Maize" namespace="Usubpartitioning_Maize">
-      <methodref name="setDevelopmentModel" visibility="protected" procflags="virtual" />
-      <methodref name="setDrymatterModel" visibility="protected" />
-      <methodref name="GetLAI" visibility="protected" procflags="override" />
-      <methodref name="GetCropHeight" visibility="protected" procflags="override" />
-      <methodref name="GetWLD" visibility="protected" procflags="override" />
-      <methodref name="getExtCoeffPAR" visibility="protected" procflags="override" />
-      <methodref name="CreateAll" visibility="public" procflags="override" />
-      <methodref name="Init" visibility="public" procflags="override" />
-      <methodref name="CalcRates" visibility="public" procflags="override" />
-      <methodref name="Integrate" visibility="public" procflags="override" />
-      <propertyref name="DevelopmentModel" visibility="published" />
-      <propertyref name="DrymatterModel" visibility="published" />
-      <propertyref name="Var_ACroot" visibility="published" />
-      <propertyref name="Var_BodBedeck" visibility="published" />
-      <propertyref name="Var_LAIe" visibility="published" />
-      <propertyref name="Var_CobGr" visibility="published" />
-      <propertyref name="Var_fCob" visibility="published" />
-      <propertyref name="Var_fLEAF" visibility="published" />
-      <propertyref name="Var_LeafGr" visibility="published" />
-      <propertyref name="Var_ShootGR" visibility="published" />
-      <propertyref name="Var_StemGr" visibility="published" />
-      <propertyref name="Var_CropHeight" visibility="published" />
-      <propertyref name="Var_TUEsim" visibility="published" />
-      <propertyref name="Var_LAItotal" visibility="published" />
-      <propertyref name="Var_SLAleaf" visibility="published" />
-      <propertyref name="Var_SLAstem" visibility="published" />
-      <propertyref name="Var_SLAleaf_average" visibility="published" />
-      <propertyref name="Var_SLAstem_average" visibility="published" />
-      <propertyref name="Var_ExtPAR_varLAI" visibility="published" />
-      <propertyref name="Var_LAIgreen" visibility="published" />
-      <propertyref name="Var_LAI" visibility="published" />
-      <propertyref name="St_DMcob" visibility="published" />
-      <propertyref name="St_DMleaf" visibility="published" />
-      <propertyref name="St_DMStem" visibility="published" />
-      <propertyref name="St_DMShoot" visibility="published" />
-      <propertyref name="St_LAIleaf" visibility="published" />
-      <propertyref name="St_LAIstem" visibility="published" />
-      <propertyref name="St_SEEDRV" visibility="published" />
-      <propertyref name="St_TSumLAI" visibility="published" />
-      <propertyref name="Par_ACEroot" visibility="published" />
-      <propertyref name="Par_DSstop" visibility="published" />
-      <propertyref name="Par_LAI0" visibility="published" />
-      <propertyref name="Par_LAIkrit" visibility="published" />
-      <propertyref name="Par_LAImax" visibility="published" />
-      <propertyref name="Par_RGRL" visibility="published" />
-      <propertyref name="Par_RGRdecay" visibility="published" />
-      <propertyref name="Par_fCob_ini" visibility="published" />
-      <propertyref name="Par_fCob_steig" visibility="published" />
-      <propertyref name="Par_fCob_e" visibility="published" />
-      <propertyref name="Par_fla" visibility="published" />
-      <propertyref name="Par_flb" visibility="published" />
-      <propertyref name="Par_SLAleaf_const" visibility="published" />
-      <propertyref name="Par_SLAstem_const" visibility="published" />
-      <propertyref name="Par_SLAl_a" visibility="published" />
-      <propertyref name="Par_SLAl_b" visibility="published" />
-      <propertyref name="Par_SLAs_a" visibility="published" />
-      <propertyref name="Par_SLAs_b" visibility="published" />
-      <propertyref name="Par_SLAleafini" visibility="published" />
-      <propertyref name="Par_SLAstemini" visibility="published" />
-      <propertyref name="Par_fCropHeight" visibility="published" />
-      <propertyref name="Par_latestharvestdate" visibility="published" />
-      <propertyref name="Par_INI_DMleaf" visibility="published" />
-      <propertyref name="Par_k_SEEDRV" visibility="published" />
-      <propertyref name="Par_Ini_SEEDRV" visibility="published" />
-      <propertyref name="Par_ExtPAR_const" visibility="published" />
-      <propertyref name="Par_LAIcritExtPAR" visibility="published" />
-      <propertyref name="Par_ExtPAR_steig" visibility="published" />
-      <propertyref name="Par_g" visibility="published" />
-      <propertyref name="Par_h" visibility="published" />
-      <propertyref name="Par_fstemmin" visibility="published" />
-      <propertyref name="Par_decay_a" visibility="published" />
-      <propertyref name="Par_decay_b" visibility="published" />
-      <propertyref name="Par_SLAleafmin" visibility="published" />
-      <propertyref name="Par_SLAstemmin" visibility="published" />
-      <propertyref name="Ex_TempSumR" visibility="published" />
-      <propertyref name="Ex_DS" visibility="published" />
-      <propertyref name="Ex_CumPH" visibility="published" />
-      <propertyref name="Ex_TotTMgRate" visibility="published" />
-      <propertyref name="Ex_TLNO" visibility="published" />
-      <propertyref name="Ex_XStage" visibility="published" />
-      <propertyref name="Ex_CumTrans" visibility="published" />
-      <propertyref name="Ex_Temp" visibility="published" />
-      <propertyref name="Ex_Tbase6" visibility="published" />
-      <propertyref name="opt_DroughtImpact_SLA" visibility="published" />
-      <propertyref name="opt_SLA_" visibility="published" />
+      <methodref name="setDevelopmentModel" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="setDrymatterModel" visibility="protected">
+      </methodref>
+      <methodref name="GetLAI" visibility="protected" procflags="override">
+      </methodref>
+      <methodref name="GetCropHeight" visibility="protected" procflags="override">
+      </methodref>
+      <methodref name="GetWLD" visibility="protected" procflags="override">
+      </methodref>
+      <methodref name="getExtCoeffPAR" visibility="protected" procflags="override">
+      </methodref>
+      <methodref name="CreateAll" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="Init" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="CalcRates" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="Integrate" visibility="public" procflags="override">
+      </methodref>
+      <propertyref name="DevelopmentModel" visibility="published">
+      </propertyref>
+      <propertyref name="DrymatterModel" visibility="published">
+      </propertyref>
+      <propertyref name="Var_ACroot" visibility="published">
+      </propertyref>
+      <propertyref name="Var_BodBedeck" visibility="published">
+      </propertyref>
+      <propertyref name="Var_LAIe" visibility="published">
+      </propertyref>
+      <propertyref name="Var_CobGr" visibility="published">
+      </propertyref>
+      <propertyref name="Var_fCob" visibility="published">
+      </propertyref>
+      <propertyref name="Var_fLEAF" visibility="published">
+      </propertyref>
+      <propertyref name="Var_LeafGr" visibility="published">
+      </propertyref>
+      <propertyref name="Var_ShootGR" visibility="published">
+      </propertyref>
+      <propertyref name="Var_StemGr" visibility="published">
+      </propertyref>
+      <propertyref name="Var_CropHeight" visibility="published">
+      </propertyref>
+      <propertyref name="Var_TUEsim" visibility="published">
+      </propertyref>
+      <propertyref name="Var_LAItotal" visibility="published">
+      </propertyref>
+      <propertyref name="Var_SLAleaf" visibility="published">
+      </propertyref>
+      <propertyref name="Var_SLAstem" visibility="published">
+      </propertyref>
+      <propertyref name="Var_SLAleaf_average" visibility="published">
+      </propertyref>
+      <propertyref name="Var_SLAstem_average" visibility="published">
+      </propertyref>
+      <propertyref name="Var_ExtPAR_varLAI" visibility="published">
+      </propertyref>
+      <propertyref name="Var_LAIgreen" visibility="published">
+      </propertyref>
+      <propertyref name="Var_LAI" visibility="published">
+      </propertyref>
+      <propertyref name="St_DMcob" visibility="published">
+      </propertyref>
+      <propertyref name="St_DMleaf" visibility="published">
+      </propertyref>
+      <propertyref name="St_DMStem" visibility="published">
+      </propertyref>
+      <propertyref name="St_DMShoot" visibility="published">
+      </propertyref>
+      <propertyref name="St_LAIleaf" visibility="published">
+      </propertyref>
+      <propertyref name="St_LAIstem" visibility="published">
+      </propertyref>
+      <propertyref name="St_SEEDRV" visibility="published">
+      </propertyref>
+      <propertyref name="St_TSumLAI" visibility="published">
+      </propertyref>
+      <propertyref name="Par_ACEroot" visibility="published">
+      </propertyref>
+      <propertyref name="Par_DSstop" visibility="published">
+      </propertyref>
+      <propertyref name="Par_LAI0" visibility="published">
+      </propertyref>
+      <propertyref name="Par_LAIkrit" visibility="published">
+      </propertyref>
+      <propertyref name="Par_LAImax" visibility="published">
+      </propertyref>
+      <propertyref name="Par_RGRL" visibility="published">
+      </propertyref>
+      <propertyref name="Par_RGRdecay" visibility="published">
+      </propertyref>
+      <propertyref name="Par_fCob_ini" visibility="published">
+      </propertyref>
+      <propertyref name="Par_fCob_steig" visibility="published">
+      </propertyref>
+      <propertyref name="Par_fCob_e" visibility="published">
+      </propertyref>
+      <propertyref name="Par_fla" visibility="published">
+      </propertyref>
+      <propertyref name="Par_flb" visibility="published">
+      </propertyref>
+      <propertyref name="Par_SLAleaf_const" visibility="published">
+      </propertyref>
+      <propertyref name="Par_SLAstem_const" visibility="published">
+      </propertyref>
+      <propertyref name="Par_SLAl_a" visibility="published">
+      </propertyref>
+      <propertyref name="Par_SLAl_b" visibility="published">
+      </propertyref>
+      <propertyref name="Par_SLAs_a" visibility="published">
+      </propertyref>
+      <propertyref name="Par_SLAs_b" visibility="published">
+      </propertyref>
+      <propertyref name="Par_SLAleafini" visibility="published">
+      </propertyref>
+      <propertyref name="Par_SLAstemini" visibility="published">
+      </propertyref>
+      <propertyref name="Par_fCropHeight" visibility="published">
+      </propertyref>
+      <propertyref name="Par_latestharvestdate" visibility="published">
+      </propertyref>
+      <propertyref name="Par_INI_DMleaf" visibility="published">
+      </propertyref>
+      <propertyref name="Par_k_SEEDRV" visibility="published">
+      </propertyref>
+      <propertyref name="Par_Ini_SEEDRV" visibility="published">
+      </propertyref>
+      <propertyref name="Par_ExtPAR_const" visibility="published">
+      </propertyref>
+      <propertyref name="Par_LAIcritExtPAR" visibility="published">
+      </propertyref>
+      <propertyref name="Par_ExtPAR_steig" visibility="published">
+      </propertyref>
+      <propertyref name="Par_g" visibility="published">
+      </propertyref>
+      <propertyref name="Par_h" visibility="published">
+      </propertyref>
+      <propertyref name="Par_fstemmin" visibility="published">
+      </propertyref>
+      <propertyref name="Par_decay_a" visibility="published">
+      </propertyref>
+      <propertyref name="Par_decay_b" visibility="published">
+      </propertyref>
+      <propertyref name="Par_SLAleafmin" visibility="published">
+      </propertyref>
+      <propertyref name="Par_SLAstemmin" visibility="published">
+      </propertyref>
+      <propertyref name="Ex_TempSumR" visibility="published">
+      </propertyref>
+      <propertyref name="Ex_DS" visibility="published">
+      </propertyref>
+      <propertyref name="Ex_CumPH" visibility="published">
+      </propertyref>
+      <propertyref name="Ex_TotTMgRate" visibility="published">
+      </propertyref>
+      <propertyref name="Ex_TLNO" visibility="published">
+      </propertyref>
+      <propertyref name="Ex_XStage" visibility="published">
+      </propertyref>
+      <propertyref name="Ex_CumTrans" visibility="published">
+      </propertyref>
+      <propertyref name="Ex_Temp" visibility="published">
+      </propertyref>
+      <propertyref name="Ex_Tbase6" visibility="published">
+      </propertyref>
+      <propertyref name="opt_DroughtImpact_SLA" visibility="published">
+      </propertyref>
+      <propertyref name="opt_SLA_" visibility="published">
+      </propertyref>
       <ancestor name="TAbstractPlant" namespace="UAbstractPlant">
-        <methodref name="setNextCrop" visibility="protected" procflags="virtual" />
-        <methodref name="GetLAI" visibility="protected" procflags="abstract virtual" />
-        <methodref name="SetLai" visibility="protected" procflags="abstract virtual" />
-        <methodref name="GetCropHeight" visibility="protected" procflags="abstract virtual" />
-        <methodref name="SetCropHeight" visibility="protected" procflags="abstract virtual" />
-        <methodref name="GetNUptakeRate" visibility="protected" procflags="abstract virtual" />
-        <methodref name="SetNUptakeRate" visibility="protected" procflags="abstract virtual" />
-        <methodref name="GetWLD" visibility="protected" procflags="abstract virtual" />
-        <methodref name="GetSumRootLength" visibility="protected" procflags="abstract virtual" />
-        <methodref name="GetSumRootLength_eff" visibility="protected" procflags="abstract virtual" />
-        <methodref name="SetWLD" visibility="protected" procflags="abstract virtual" />
-        <methodref name="getExtCoeffPAR" visibility="protected" procflags="virtual" />
-        <methodref name="getExtCoeffGlobRad" visibility="protected" procflags="virtual" />
-        <methodref name="getrc0" visibility="protected" procflags="virtual" />
-        <methodref name="getPsi2" visibility="protected" procflags="virtual" />
-        <methodref name="getWeff" visibility="protected" procflags="virtual" />
-        <methodref name="getDM_c" visibility="protected" procflags="virtual" />
-        <methodref name="setDM_c" visibility="protected" procflags="abstract virtual" />
-        <methodref name="SetDMprodModel" visibility="protected" procflags="virtual" />
-        <methodref name="setSoilNitrogenMod" visibility="protected" procflags="virtual" />
-        <methodref name="SetSowingDate" visibility="public" procflags="virtual" />
+        <methodref name="setNextCrop" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="GetLAI" visibility="protected" procflags="abstract virtual">
+        </methodref>
+        <methodref name="SetLai" visibility="protected" procflags="abstract virtual">
+        </methodref>
+        <methodref name="GetCropHeight" visibility="protected" procflags="abstract virtual">
+        </methodref>
+        <methodref name="SetCropHeight" visibility="protected" procflags="abstract virtual">
+        </methodref>
+        <methodref name="GetNUptakeRate" visibility="protected" procflags="abstract virtual">
+        </methodref>
+        <methodref name="SetNUptakeRate" visibility="protected" procflags="abstract virtual">
+        </methodref>
+        <methodref name="GetWLD" visibility="protected" procflags="abstract virtual">
+        </methodref>
+        <methodref name="GetSumRootLength" visibility="protected" procflags="abstract virtual">
+        </methodref>
+        <methodref name="GetSumRootLength_eff" visibility="protected" procflags="abstract virtual">
+        </methodref>
+        <methodref name="SetWLD" visibility="protected" procflags="abstract virtual">
+        </methodref>
+        <methodref name="getExtCoeffPAR" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="getExtCoeffGlobRad" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="getrc0" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="getPsi2" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="getWeff" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="getDM_c" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="setDM_c" visibility="protected" procflags="abstract virtual">
+        </methodref>
+        <methodref name="SetDMprodModel" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="setSoilNitrogenMod" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="SetSowingDate" visibility="public" procflags="virtual">
+        </methodref>
         <methodref name="Integrate" visibility="public" procflags="override">
         </methodref>
-        <methodref name="CalcRates" visibility="public" procflags="override" />
-        <methodref name="CreateAll" visibility="public" procflags="override" />
+        <methodref name="CalcRates" visibility="public" procflags="override">
+        </methodref>
+        <methodref name="CreateAll" visibility="public" procflags="override">
+        </methodref>
         <methodref name="Init" visibility="public" procflags="override">
         </methodref>
         <propertyref name="ExtCoeffPAR" visibility="public">
@@ -169,16 +290,26 @@
         </propertyref>
         <propertyref name="SoilNitrogenMod" visibility="published">
         </propertyref>
-        <propertyref name="Par_SowingDate" visibility="published" />
-        <propertyref name="Par_HarvestDate" visibility="published" />
-        <propertyref name="NextCrop" visibility="published" />
-        <propertyref name="Rotationlength" visibility="published" />
-        <propertyref name="St_C_Residues" visibility="published" />
-        <propertyref name="St_N_Residues" visibility="published" />
-        <propertyref name="St_DMtotal" visibility="published" />
-        <propertyref name="St_DMFineRoot" visibility="published" />
-        <propertyref name="SetNewDates" visibility="published" />
-        <propertyref name="withRoots" visibility="published" />
+        <propertyref name="Par_SowingDate" visibility="published">
+        </propertyref>
+        <propertyref name="Par_HarvestDate" visibility="published">
+        </propertyref>
+        <propertyref name="NextCrop" visibility="published">
+        </propertyref>
+        <propertyref name="Rotationlength" visibility="published">
+        </propertyref>
+        <propertyref name="St_C_Residues" visibility="published">
+        </propertyref>
+        <propertyref name="St_N_Residues" visibility="published">
+        </propertyref>
+        <propertyref name="St_DMtotal" visibility="published">
+        </propertyref>
+        <propertyref name="St_DMFineRoot" visibility="published">
+        </propertyref>
+        <propertyref name="SetNewDates" visibility="published">
+        </propertyref>
+        <propertyref name="withRoots" visibility="published">
+        </propertyref>
         <ancestor name="TSubmodel" namespace="UMod">
           <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
           </methodref>
@@ -194,18 +325,30 @@
           </methodref>
           <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
           </methodref>
-          <methodref name="set_State" visibility="private" procflags="virtual" />
-          <methodref name="get_State" visibility="private" />
-          <methodref name="set_Par" visibility="private" />
-          <methodref name="Get_Par" visibility="private" />
-          <methodref name="set_Var" visibility="private" />
-          <methodref name="Get_Var" visibility="private" />
-          <methodref name="set_Const" visibility="private" />
-          <methodref name="get_Const" visibility="private" />
-          <methodref name="set_Option" visibility="private" />
-          <methodref name="get_Option" visibility="private" />
-          <methodref name="set_ExternVar" visibility="private" />
-          <methodref name="get_ExternVar" visibility="private" />
+          <methodref name="set_State" visibility="private" procflags="virtual">
+          </methodref>
+          <methodref name="get_State" visibility="private">
+          </methodref>
+          <methodref name="set_Par" visibility="private">
+          </methodref>
+          <methodref name="Get_Par" visibility="private">
+          </methodref>
+          <methodref name="set_Var" visibility="private">
+          </methodref>
+          <methodref name="Get_Var" visibility="private">
+          </methodref>
+          <methodref name="set_Const" visibility="private">
+          </methodref>
+          <methodref name="get_Const" visibility="private">
+          </methodref>
+          <methodref name="set_Option" visibility="private">
+          </methodref>
+          <methodref name="get_Option" visibility="private">
+          </methodref>
+          <methodref name="set_ExternVar" visibility="private">
+          </methodref>
+          <methodref name="get_ExternVar" visibility="private">
+          </methodref>
           <methodref name="InitStates" visibility="private" procflags="virtual">
           </methodref>
           <methodref name="InitParms" visibility="private" procflags="virtual">
@@ -224,10 +367,12 @@
           </methodref>
           <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
           </methodref>
-          <methodref name="UpdateValue" visibility="protected" />
+          <methodref name="UpdateValue" visibility="protected">
+          </methodref>
           <methodref name="Paint" visibility="protected" procflags="override">
           </methodref>
-          <methodref name="Notification" visibility="protected" procflags="virtual" />
+          <methodref name="Notification" visibility="protected" procflags="virtual">
+          </methodref>
           <methodref name="Create" visibility="public" procflags="constructor override">
           </methodref>
           <methodref name="free" visibility="public">
@@ -300,7 +445,8 @@
           </propertyref>
           <methodref name="DblClick" visibility="public" procflags="override">
           </methodref>
-          <propertyref name="CalcTimeTicks" visibility="public" />
+          <propertyref name="CalcTimeTicks" visibility="public">
+          </propertyref>
           <propertyref name="SM_GlobMod" visibility="published">
           </propertyref>
           <propertyref name="SM_ExternVStrList" visibility="published">
@@ -327,12 +473,18 @@
           </propertyref>
           <propertyref name="OptContOutput" visibility="published">
           </propertyref>
-          <propertyref name="Parent" visibility="published" />
-          <propertyref name="Canvas" visibility="published" />
-          <propertyref name="Visible" visibility="published" />
-          <propertyref name="color" visibility="published" />
-          <propertyref name="DebugForm" visibility="published" />
-          <propertyref name="OnDblclick" visibility="published" />
+          <propertyref name="Parent" visibility="published">
+          </propertyref>
+          <propertyref name="Canvas" visibility="published">
+          </propertyref>
+          <propertyref name="Visible" visibility="published">
+          </propertyref>
+          <propertyref name="color" visibility="published">
+          </propertyref>
+          <propertyref name="DebugForm" visibility="published">
+          </propertyref>
+          <propertyref name="OnDblclick" visibility="published">
+          </propertyref>
           <ancestor name="TGraphicControl" namespace="Vcl.Controls">
             <methodref name="WMPaint" visibility="private" procflags="message">
             </methodref>
@@ -1359,9 +1511,9 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fNcShoot_Calc" type="TNcShoot_Calc" visibility="private" size="1" offset="1736" file="Usubpartitioning_Maize_Roots_N.pas" line="19" />
-      <field name="fRootModel" type="TSimpleRootModDM" visibility="protected" size="4" offset="1740" file="Usubpartitioning_Maize_Roots_N.pas" line="21" />
-      <function name="GetWLD" visibility="protected" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="22">
+      <field name="fNcShoot_Calc" type="TNcShoot_Calc" visibility="private" size="1" offset="1736" file="Usubpartitioning_Maize_Roots_N.pas" line="31" />
+      <field name="fRootModel" type="TSimpleRootModDM" visibility="protected" size="4" offset="1740" file="Usubpartitioning_Maize_Roots_N.pas" line="33" />
+      <function name="GetWLD" visibility="protected" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="34">
         <parameters>
           <parameter name="Index" type="Integer" />
           <retval type="THumeNumEntity">
@@ -1372,7 +1524,7 @@
           </retval>
         </parameters>
       </function>
-      <function name="GetSumRootLength" visibility="protected" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="23">
+      <function name="GetSumRootLength" visibility="protected" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="35">
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
@@ -1382,7 +1534,7 @@
           </retval>
         </parameters>
       </function>
-      <function name="GetSumRootLength_eff" visibility="protected" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="24">
+      <function name="GetSumRootLength_eff" visibility="protected" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="36">
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
@@ -1392,7 +1544,7 @@
           </retval>
         </parameters>
       </function>
-      <function name="GetNUptakeRate" visibility="protected" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="25">
+      <function name="GetNUptakeRate" visibility="protected" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="37">
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
@@ -1402,119 +1554,119 @@
           </retval>
         </parameters>
       </function>
-      <procedure name="setSoilNitrogenMod" visibility="protected" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="26">
+      <procedure name="setSoilNitrogenMod" visibility="protected" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="38">
         <parameters>
           <parameter name="AModel" type="TPlantRelatedSubMod" />
         </parameters>
       </procedure>
-      <field name="NcOptShoot" type="TVar" visibility="public" size="4" offset="1744" file="Usubpartitioning_Maize_Roots_N.pas" line="31" />
-      <field name="NcOptRoot" type="TVar" visibility="public" size="4" offset="1748" file="Usubpartitioning_Maize_Roots_N.pas" line="31" />
-      <field name="NcOptLeaf" type="TVar" visibility="public" size="4" offset="1752" file="Usubpartitioning_Maize_Roots_N.pas" line="31" />
-      <field name="NcOptStem" type="TVar" visibility="public" size="4" offset="1756" file="Usubpartitioning_Maize_Roots_N.pas" line="31" />
-      <field name="NcOptCob" type="TVar" visibility="public" size="4" offset="1760" file="Usubpartitioning_Maize_Roots_N.pas" line="31" />
-      <field name="NcMinShoot" type="TVar" visibility="public" size="4" offset="1764" file="Usubpartitioning_Maize_Roots_N.pas" line="33" />
-      <field name="NcStem" type="TVar" visibility="public" size="4" offset="1768" file="Usubpartitioning_Maize_Roots_N.pas" line="33" />
-      <field name="NcCob" type="TVar" visibility="public" size="4" offset="1772" file="Usubpartitioning_Maize_Roots_N.pas" line="35" />
-      <field name="NcLeaf" type="TVar" visibility="public" size="4" offset="1776" file="Usubpartitioning_Maize_Roots_N.pas" line="36" />
-      <field name="NDemand" type="TVar" visibility="public" size="4" offset="1780" file="Usubpartitioning_Maize_Roots_N.pas" line="37" />
-      <field name="NUptakeRate_act" type="TVar" visibility="public" size="4" offset="1784" file="Usubpartitioning_Maize_Roots_N.pas" line="38" />
-      <field name="NPlantDef" type="TVar" visibility="public" size="4" offset="1788" file="Usubpartitioning_Maize_Roots_N.pas" line="39" />
-      <field name="NPlantOpt" type="TVar" visibility="public" size="4" offset="1792" file="Usubpartitioning_Maize_Roots_N.pas" line="40" />
-      <field name="NShootDef" type="TVar" visibility="public" size="4" offset="1796" file="Usubpartitioning_Maize_Roots_N.pas" line="41" />
-      <field name="NShootOpt" type="TVar" visibility="public" size="4" offset="1800" file="Usubpartitioning_Maize_Roots_N.pas" line="42" />
-      <field name="NRootDef" type="TVar" visibility="public" size="4" offset="1804" file="Usubpartitioning_Maize_Roots_N.pas" line="43" />
-      <field name="NRootOpt" type="TVar" visibility="public" size="4" offset="1808" file="Usubpartitioning_Maize_Roots_N.pas" line="44" />
-      <field name="NLeafOpt" type="TVar" visibility="public" size="4" offset="1812" file="Usubpartitioning_Maize_Roots_N.pas" line="45" />
-      <field name="NStemOpt" type="TVar" visibility="public" size="4" offset="1816" file="Usubpartitioning_Maize_Roots_N.pas" line="45" />
-      <field name="NCobOpt" type="TVar" visibility="public" size="4" offset="1820" file="Usubpartitioning_Maize_Roots_N.pas" line="45" />
-      <field name="NLeafDef" type="TVar" visibility="public" size="4" offset="1824" file="Usubpartitioning_Maize_Roots_N.pas" line="45" />
-      <field name="NStemDef" type="TVar" visibility="public" size="4" offset="1828" file="Usubpartitioning_Maize_Roots_N.pas" line="45" />
-      <field name="NCobDef" type="TVar" visibility="public" size="4" offset="1832" file="Usubpartitioning_Maize_Roots_N.pas" line="45" />
-      <field name="DummyVar" type="TVar" visibility="public" size="4" offset="1836" file="Usubpartitioning_Maize_Roots_N.pas" line="46" />
-      <field name="NcShoot" type="TVar" visibility="public" size="4" offset="1840" file="Usubpartitioning_Maize_Roots_N.pas" line="47" />
-      <field name="NcRoot" type="TVar" visibility="public" size="4" offset="1844" file="Usubpartitioning_Maize_Roots_N.pas" line="47" />
-      <field name="NNI" type="TVar" visibility="public" size="4" offset="1848" file="Usubpartitioning_Maize_Roots_N.pas" line="48" />
-      <field name="NNIShoot" type="TVar" visibility="public" size="4" offset="1852" file="Usubpartitioning_Maize_Roots_N.pas" line="48" />
-      <field name="NNILeaf" type="TVar" visibility="public" size="4" offset="1856" file="Usubpartitioning_Maize_Roots_N.pas" line="48" />
-      <field name="NDemandShoot" type="TVar" visibility="public" size="4" offset="1860" file="Usubpartitioning_Maize_Roots_N.pas" line="49" />
-      <field name="NDemandLeaf" type="TVar" visibility="public" size="4" offset="1864" file="Usubpartitioning_Maize_Roots_N.pas" line="51">
+      <field name="NcOptShoot" type="TVar" visibility="public" size="4" offset="1744" file="Usubpartitioning_Maize_Roots_N.pas" line="43" />
+      <field name="NcOptRoot" type="TVar" visibility="public" size="4" offset="1748" file="Usubpartitioning_Maize_Roots_N.pas" line="43" />
+      <field name="NcOptLeaf" type="TVar" visibility="public" size="4" offset="1752" file="Usubpartitioning_Maize_Roots_N.pas" line="43" />
+      <field name="NcOptStem" type="TVar" visibility="public" size="4" offset="1756" file="Usubpartitioning_Maize_Roots_N.pas" line="43" />
+      <field name="NcOptCob" type="TVar" visibility="public" size="4" offset="1760" file="Usubpartitioning_Maize_Roots_N.pas" line="43" />
+      <field name="NcMinShoot" type="TVar" visibility="public" size="4" offset="1764" file="Usubpartitioning_Maize_Roots_N.pas" line="45" />
+      <field name="NcStem" type="TVar" visibility="public" size="4" offset="1768" file="Usubpartitioning_Maize_Roots_N.pas" line="45" />
+      <field name="NcCob" type="TVar" visibility="public" size="4" offset="1772" file="Usubpartitioning_Maize_Roots_N.pas" line="47" />
+      <field name="NcLeaf" type="TVar" visibility="public" size="4" offset="1776" file="Usubpartitioning_Maize_Roots_N.pas" line="48" />
+      <field name="NDemand" type="TVar" visibility="public" size="4" offset="1780" file="Usubpartitioning_Maize_Roots_N.pas" line="49" />
+      <field name="NUptakeRate_act" type="TVar" visibility="public" size="4" offset="1784" file="Usubpartitioning_Maize_Roots_N.pas" line="50" />
+      <field name="NPlantDef" type="TVar" visibility="public" size="4" offset="1788" file="Usubpartitioning_Maize_Roots_N.pas" line="51" />
+      <field name="NPlantOpt" type="TVar" visibility="public" size="4" offset="1792" file="Usubpartitioning_Maize_Roots_N.pas" line="52" />
+      <field name="NShootDef" type="TVar" visibility="public" size="4" offset="1796" file="Usubpartitioning_Maize_Roots_N.pas" line="53" />
+      <field name="NShootOpt" type="TVar" visibility="public" size="4" offset="1800" file="Usubpartitioning_Maize_Roots_N.pas" line="54" />
+      <field name="NRootDef" type="TVar" visibility="public" size="4" offset="1804" file="Usubpartitioning_Maize_Roots_N.pas" line="55" />
+      <field name="NRootOpt" type="TVar" visibility="public" size="4" offset="1808" file="Usubpartitioning_Maize_Roots_N.pas" line="56" />
+      <field name="NLeafOpt" type="TVar" visibility="public" size="4" offset="1812" file="Usubpartitioning_Maize_Roots_N.pas" line="57" />
+      <field name="NStemOpt" type="TVar" visibility="public" size="4" offset="1816" file="Usubpartitioning_Maize_Roots_N.pas" line="57" />
+      <field name="NCobOpt" type="TVar" visibility="public" size="4" offset="1820" file="Usubpartitioning_Maize_Roots_N.pas" line="57" />
+      <field name="NLeafDef" type="TVar" visibility="public" size="4" offset="1824" file="Usubpartitioning_Maize_Roots_N.pas" line="57" />
+      <field name="NStemDef" type="TVar" visibility="public" size="4" offset="1828" file="Usubpartitioning_Maize_Roots_N.pas" line="57" />
+      <field name="NCobDef" type="TVar" visibility="public" size="4" offset="1832" file="Usubpartitioning_Maize_Roots_N.pas" line="57" />
+      <field name="DummyVar" type="TVar" visibility="public" size="4" offset="1836" file="Usubpartitioning_Maize_Roots_N.pas" line="58" />
+      <field name="NcShoot" type="TVar" visibility="public" size="4" offset="1840" file="Usubpartitioning_Maize_Roots_N.pas" line="59" />
+      <field name="NcRoot" type="TVar" visibility="public" size="4" offset="1844" file="Usubpartitioning_Maize_Roots_N.pas" line="59" />
+      <field name="NNI" type="TVar" visibility="public" size="4" offset="1848" file="Usubpartitioning_Maize_Roots_N.pas" line="60" />
+      <field name="NNIShoot" type="TVar" visibility="public" size="4" offset="1852" file="Usubpartitioning_Maize_Roots_N.pas" line="60" />
+      <field name="NNILeaf" type="TVar" visibility="public" size="4" offset="1856" file="Usubpartitioning_Maize_Roots_N.pas" line="60" />
+      <field name="NDemandShoot" type="TVar" visibility="public" size="4" offset="1860" file="Usubpartitioning_Maize_Roots_N.pas" line="61" />
+      <field name="NDemandLeaf" type="TVar" visibility="public" size="4" offset="1864" file="Usubpartitioning_Maize_Roots_N.pas" line="63">
         <devnotes>
            NDemand of the shoot [gN.m-2.d-1]
         </devnotes>
       </field>
-      <field name="NDemandStem" type="TVar" visibility="public" size="4" offset="1868" file="Usubpartitioning_Maize_Roots_N.pas" line="51" />
-      <field name="NDemandCob" type="TVar" visibility="public" size="4" offset="1872" file="Usubpartitioning_Maize_Roots_N.pas" line="51" />
-      <field name="NDemandRoot" type="TVar" visibility="public" size="4" offset="1876" file="Usubpartitioning_Maize_Roots_N.pas" line="51" />
-      <field name="Ntrans" type="TVar" visibility="public" size="4" offset="1880" file="Usubpartitioning_Maize_Roots_N.pas" line="53">
+      <field name="NDemandStem" type="TVar" visibility="public" size="4" offset="1868" file="Usubpartitioning_Maize_Roots_N.pas" line="63" />
+      <field name="NDemandCob" type="TVar" visibility="public" size="4" offset="1872" file="Usubpartitioning_Maize_Roots_N.pas" line="63" />
+      <field name="NDemandRoot" type="TVar" visibility="public" size="4" offset="1876" file="Usubpartitioning_Maize_Roots_N.pas" line="63" />
+      <field name="Ntrans" type="TVar" visibility="public" size="4" offset="1880" file="Usubpartitioning_Maize_Roots_N.pas" line="65">
         <devnotes>
            NDemand of the organs [gN.m-2.d-1]
         </devnotes>
       </field>
-      <field name="NNIstem" type="TVar" visibility="public" size="4" offset="1884" file="Usubpartitioning_Maize_Roots_N.pas" line="53" />
-      <field name="NNIcob" type="TVar" visibility="public" size="4" offset="1888" file="Usubpartitioning_Maize_Roots_N.pas" line="53" />
-      <field name="SupplyDemandRatio" type="TVar" visibility="public" size="4" offset="1892" file="Usubpartitioning_Maize_Roots_N.pas" line="54" />
-      <field name="NPlant_Soil" type="TVar" visibility="public" size="4" offset="1896" file="Usubpartitioning_Maize_Roots_N.pas" line="55" />
-      <field name="Nshoot" type="TState" visibility="public" size="4" offset="1900" file="Usubpartitioning_Maize_Roots_N.pas" line="57" />
-      <field name="Nroot" type="TState" visibility="public" size="4" offset="1904" file="Usubpartitioning_Maize_Roots_N.pas" line="57" />
-      <field name="Nstem" type="TState" visibility="public" size="4" offset="1908" file="Usubpartitioning_Maize_Roots_N.pas" line="57" />
-      <field name="Nleaf" type="TState" visibility="public" size="4" offset="1912" file="Usubpartitioning_Maize_Roots_N.pas" line="57" />
-      <field name="Ncob" type="TState" visibility="public" size="4" offset="1916" file="Usubpartitioning_Maize_Roots_N.pas" line="57" />
-      <field name="Ntot" type="TState" visibility="public" size="4" offset="1920" file="Usubpartitioning_Maize_Roots_N.pas" line="57" />
-      <field name="Ncshoot_min" type="TPar" visibility="public" size="4" offset="1924" file="Usubpartitioning_Maize_Roots_N.pas" line="61" />
-      <field name="Ncshoot_max" type="TPar" visibility="public" size="4" offset="1928" file="Usubpartitioning_Maize_Roots_N.pas" line="62" />
-      <field name="Ncshoot_a" type="TPar" visibility="public" size="4" offset="1932" file="Usubpartitioning_Maize_Roots_N.pas" line="62" />
-      <field name="Ncshoot_b" type="TPar" visibility="public" size="4" offset="1936" file="Usubpartitioning_Maize_Roots_N.pas" line="62" />
-      <field name="Ncleaf_a" type="TPar" visibility="public" size="4" offset="1940" file="Usubpartitioning_Maize_Roots_N.pas" line="64" />
-      <field name="Ncleaf_b" type="TPar" visibility="public" size="4" offset="1944" file="Usubpartitioning_Maize_Roots_N.pas" line="64" />
-      <field name="Ncleaf_max" type="TPar" visibility="public" size="4" offset="1948" file="Usubpartitioning_Maize_Roots_N.pas" line="64" />
-      <field name="Ncleaf_min" type="TPar" visibility="public" size="4" offset="1952" file="Usubpartitioning_Maize_Roots_N.pas" line="64" />
-      <field name="Ncstem_max" type="TPar" visibility="public" size="4" offset="1956" file="Usubpartitioning_Maize_Roots_N.pas" line="64" />
-      <field name="Ncstem_min" type="TPar" visibility="public" size="4" offset="1960" file="Usubpartitioning_Maize_Roots_N.pas" line="64" />
-      <field name="Nccob_max" type="TPar" visibility="public" size="4" offset="1964" file="Usubpartitioning_Maize_Roots_N.pas" line="65" />
-      <field name="Nccob_min" type="TPar" visibility="public" size="4" offset="1968" file="Usubpartitioning_Maize_Roots_N.pas" line="65" />
-      <field name="Ncstem_a" type="TPar" visibility="public" size="4" offset="1972" file="Usubpartitioning_Maize_Roots_N.pas" line="65" />
-      <field name="Ncstem_b" type="TPar" visibility="public" size="4" offset="1976" file="Usubpartitioning_Maize_Roots_N.pas" line="65" />
-      <field name="Nccob_a" type="TPar" visibility="public" size="4" offset="1980" file="Usubpartitioning_Maize_Roots_N.pas" line="65" />
-      <field name="Nccob_b" type="TPar" visibility="public" size="4" offset="1984" file="Usubpartitioning_Maize_Roots_N.pas" line="65" />
-      <field name="Ncroot_min" type="TPar" visibility="public" size="4" offset="1988" file="Usubpartitioning_Maize_Roots_N.pas" line="67" />
-      <field name="Ncroot_max" type="TPar" visibility="public" size="4" offset="1992" file="Usubpartitioning_Maize_Roots_N.pas" line="68" />
-      <field name="Ncroot_a" type="TPar" visibility="public" size="4" offset="1996" file="Usubpartitioning_Maize_Roots_N.pas" line="68" />
-      <field name="Ncroot_b" type="TPar" visibility="public" size="4" offset="2000" file="Usubpartitioning_Maize_Roots_N.pas" line="68" />
-      <field name="DMStubble_par" type="TPar" visibility="public" size="4" offset="2004" file="Usubpartitioning_Maize_Roots_N.pas" line="70" />
-      <field name="NNI_fact" type="TPar" visibility="public" size="4" offset="2008" file="Usubpartitioning_Maize_Roots_N.pas" line="71" />
-      <field name="ActNUptake" type="TExternV" visibility="public" size="4" offset="2012" file="Usubpartitioning_Maize_Roots_N.pas" line="74" />
-      <field name="MaxNUptake" type="TExternV" visibility="public" size="4" offset="2016" file="Usubpartitioning_Maize_Roots_N.pas" line="75" />
-      <field name="Nmin0_90" type="TExternV" visibility="public" size="4" offset="2020" file="Usubpartitioning_Maize_Roots_N.pas" line="76" />
-      <field name="OptNcShoot_Calc" type="TOption" visibility="public" size="4" offset="2024" file="Usubpartitioning_Maize_Roots_N.pas" line="78" />
-      <procedure name="CreateAll" visibility="public" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="80">
+      <field name="NNIstem" type="TVar" visibility="public" size="4" offset="1884" file="Usubpartitioning_Maize_Roots_N.pas" line="65" />
+      <field name="NNIcob" type="TVar" visibility="public" size="4" offset="1888" file="Usubpartitioning_Maize_Roots_N.pas" line="65" />
+      <field name="SupplyDemandRatio" type="TVar" visibility="public" size="4" offset="1892" file="Usubpartitioning_Maize_Roots_N.pas" line="66" />
+      <field name="NPlant_Soil" type="TVar" visibility="public" size="4" offset="1896" file="Usubpartitioning_Maize_Roots_N.pas" line="67" />
+      <field name="Nshoot" type="TState" visibility="public" size="4" offset="1900" file="Usubpartitioning_Maize_Roots_N.pas" line="69" />
+      <field name="Nroot" type="TState" visibility="public" size="4" offset="1904" file="Usubpartitioning_Maize_Roots_N.pas" line="69" />
+      <field name="Nstem" type="TState" visibility="public" size="4" offset="1908" file="Usubpartitioning_Maize_Roots_N.pas" line="69" />
+      <field name="Nleaf" type="TState" visibility="public" size="4" offset="1912" file="Usubpartitioning_Maize_Roots_N.pas" line="69" />
+      <field name="Ncob" type="TState" visibility="public" size="4" offset="1916" file="Usubpartitioning_Maize_Roots_N.pas" line="69" />
+      <field name="Ntot" type="TState" visibility="public" size="4" offset="1920" file="Usubpartitioning_Maize_Roots_N.pas" line="69" />
+      <field name="Ncshoot_min" type="TPar" visibility="public" size="4" offset="1924" file="Usubpartitioning_Maize_Roots_N.pas" line="73" />
+      <field name="Ncshoot_max" type="TPar" visibility="public" size="4" offset="1928" file="Usubpartitioning_Maize_Roots_N.pas" line="74" />
+      <field name="Ncshoot_a" type="TPar" visibility="public" size="4" offset="1932" file="Usubpartitioning_Maize_Roots_N.pas" line="74" />
+      <field name="Ncshoot_b" type="TPar" visibility="public" size="4" offset="1936" file="Usubpartitioning_Maize_Roots_N.pas" line="74" />
+      <field name="Ncleaf_a" type="TPar" visibility="public" size="4" offset="1940" file="Usubpartitioning_Maize_Roots_N.pas" line="76" />
+      <field name="Ncleaf_b" type="TPar" visibility="public" size="4" offset="1944" file="Usubpartitioning_Maize_Roots_N.pas" line="76" />
+      <field name="Ncleaf_max" type="TPar" visibility="public" size="4" offset="1948" file="Usubpartitioning_Maize_Roots_N.pas" line="76" />
+      <field name="Ncleaf_min" type="TPar" visibility="public" size="4" offset="1952" file="Usubpartitioning_Maize_Roots_N.pas" line="76" />
+      <field name="Ncstem_max" type="TPar" visibility="public" size="4" offset="1956" file="Usubpartitioning_Maize_Roots_N.pas" line="76" />
+      <field name="Ncstem_min" type="TPar" visibility="public" size="4" offset="1960" file="Usubpartitioning_Maize_Roots_N.pas" line="76" />
+      <field name="Nccob_max" type="TPar" visibility="public" size="4" offset="1964" file="Usubpartitioning_Maize_Roots_N.pas" line="77" />
+      <field name="Nccob_min" type="TPar" visibility="public" size="4" offset="1968" file="Usubpartitioning_Maize_Roots_N.pas" line="77" />
+      <field name="Ncstem_a" type="TPar" visibility="public" size="4" offset="1972" file="Usubpartitioning_Maize_Roots_N.pas" line="77" />
+      <field name="Ncstem_b" type="TPar" visibility="public" size="4" offset="1976" file="Usubpartitioning_Maize_Roots_N.pas" line="77" />
+      <field name="Nccob_a" type="TPar" visibility="public" size="4" offset="1980" file="Usubpartitioning_Maize_Roots_N.pas" line="77" />
+      <field name="Nccob_b" type="TPar" visibility="public" size="4" offset="1984" file="Usubpartitioning_Maize_Roots_N.pas" line="77" />
+      <field name="Ncroot_min" type="TPar" visibility="public" size="4" offset="1988" file="Usubpartitioning_Maize_Roots_N.pas" line="79" />
+      <field name="Ncroot_max" type="TPar" visibility="public" size="4" offset="1992" file="Usubpartitioning_Maize_Roots_N.pas" line="80" />
+      <field name="Ncroot_a" type="TPar" visibility="public" size="4" offset="1996" file="Usubpartitioning_Maize_Roots_N.pas" line="80" />
+      <field name="Ncroot_b" type="TPar" visibility="public" size="4" offset="2000" file="Usubpartitioning_Maize_Roots_N.pas" line="80" />
+      <field name="DMStubble_par" type="TPar" visibility="public" size="4" offset="2004" file="Usubpartitioning_Maize_Roots_N.pas" line="82" />
+      <field name="NNI_fact" type="TPar" visibility="public" size="4" offset="2008" file="Usubpartitioning_Maize_Roots_N.pas" line="83" />
+      <field name="ActNUptake" type="TExternV" visibility="public" size="4" offset="2012" file="Usubpartitioning_Maize_Roots_N.pas" line="86" />
+      <field name="MaxNUptake" type="TExternV" visibility="public" size="4" offset="2016" file="Usubpartitioning_Maize_Roots_N.pas" line="87" />
+      <field name="Nmin0_90" type="TExternV" visibility="public" size="4" offset="2020" file="Usubpartitioning_Maize_Roots_N.pas" line="88" />
+      <field name="OptNcShoot_Calc" type="TOption" visibility="public" size="4" offset="2024" file="Usubpartitioning_Maize_Roots_N.pas" line="90" />
+      <procedure name="CreateAll" visibility="public" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="92">
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="81">
+      <procedure name="Init" visibility="public" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="93">
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="82">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="94">
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="83">
+      <procedure name="Integrate" visibility="public" procflags="override" file="Usubpartitioning_Maize_Roots_N.pas" line="95">
       </procedure>
-      <property name="Var_ACroot" visibility="published" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="89" />
-      <property name="Var_NNI" visibility="published" read="NNI" write="NNI" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="90" />
-      <property name="Var_NcMinShoot" visibility="published" read="NcMinShoot" write="NcMinShoot" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="91" />
-      <property name="Var_NPlantDef" visibility="published" read="NPlantDef" write="NPlantDef" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="92" />
-      <property name="Var_NPlantOpt" visibility="published" read="NPlantOpt" write="NPlantOpt" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="93" />
-      <property name="Var_NShootDef" visibility="published" read="NShootDef" write="NShootDef" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="94" />
-      <property name="Var_NShootOpt" visibility="published" read="NShootOpt" write="NShootOpt" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="95" />
-      <property name="Var_NRootDef" visibility="published" read="NRootDef" write="NRootDef" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="96" />
-      <property name="Var_NRootOpt" visibility="published" read="NRootOpt" write="NRootOpt" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="97" />
-      <property name="St_Nshoot" visibility="published" read="Nshoot" write="Nshoot" type="TState" file="Usubpartitioning_Maize_Roots_N.pas" line="101" />
-      <property name="St_Nroot" visibility="published" read="Nroot" write="Nroot" type="TState" file="Usubpartitioning_Maize_Roots_N.pas" line="102" />
-      <property name="St_Ntot" visibility="published" read="Ntot" write="Ntot" type="TState" file="Usubpartitioning_Maize_Roots_N.pas" line="103" />
-      <property name="RootModel" visibility="published" read="fRootModel" write="fRootModel" type="TSimpleRootModDM" file="Usubpartitioning_Maize_Roots_N.pas" line="107" />
-      <property name="Ex_ActNUptake" visibility="published" read="ActNUptake" write="ActNUptake" type="TExternV" file="Usubpartitioning_Maize_Roots_N.pas" line="111" />
-      <property name="Ex_MaxNUptake" visibility="published" read="MaxNUptake" write="MaxNUptake" type="TExternV" file="Usubpartitioning_Maize_Roots_N.pas" line="112" />
-      <property name="opt_NcShoot_Calc" visibility="published" read="fNcShoot_Calc" write="fNcShoot_Calc" type="TNcShoot_Calc" file="Usubpartitioning_Maize_Roots_N.pas" line="116" />
+      <property name="Var_ACroot" visibility="published" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="101" />
+      <property name="Var_NNI" visibility="published" read="NNI" write="NNI" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="102" />
+      <property name="Var_NcMinShoot" visibility="published" read="NcMinShoot" write="NcMinShoot" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="103" />
+      <property name="Var_NPlantDef" visibility="published" read="NPlantDef" write="NPlantDef" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="104" />
+      <property name="Var_NPlantOpt" visibility="published" read="NPlantOpt" write="NPlantOpt" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="105" />
+      <property name="Var_NShootDef" visibility="published" read="NShootDef" write="NShootDef" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="106" />
+      <property name="Var_NShootOpt" visibility="published" read="NShootOpt" write="NShootOpt" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="107" />
+      <property name="Var_NRootDef" visibility="published" read="NRootDef" write="NRootDef" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="108" />
+      <property name="Var_NRootOpt" visibility="published" read="NRootOpt" write="NRootOpt" type="TVar" file="Usubpartitioning_Maize_Roots_N.pas" line="109" />
+      <property name="St_Nshoot" visibility="published" read="Nshoot" write="Nshoot" type="TState" file="Usubpartitioning_Maize_Roots_N.pas" line="113" />
+      <property name="St_Nroot" visibility="published" read="Nroot" write="Nroot" type="TState" file="Usubpartitioning_Maize_Roots_N.pas" line="114" />
+      <property name="St_Ntot" visibility="published" read="Ntot" write="Ntot" type="TState" file="Usubpartitioning_Maize_Roots_N.pas" line="115" />
+      <property name="RootModel" visibility="published" read="fRootModel" write="fRootModel" type="TSimpleRootModDM" file="Usubpartitioning_Maize_Roots_N.pas" line="119" />
+      <property name="Ex_ActNUptake" visibility="published" read="ActNUptake" write="ActNUptake" type="TExternV" file="Usubpartitioning_Maize_Roots_N.pas" line="123" />
+      <property name="Ex_MaxNUptake" visibility="published" read="MaxNUptake" write="MaxNUptake" type="TExternV" file="Usubpartitioning_Maize_Roots_N.pas" line="124" />
+      <property name="opt_NcShoot_Calc" visibility="published" read="fNcShoot_Calc" write="fNcShoot_Calc" type="TNcShoot_Calc" file="Usubpartitioning_Maize_Roots_N.pas" line="128" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="Usubpartitioning_Maize_Roots_N.pas" line="771">
+  <procedure name="Register" visibility="public" file="Usubpartitioning_Maize_Roots_N.pas" line="839">
   </procedure>
 </namespace>
