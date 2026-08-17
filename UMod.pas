@@ -1340,8 +1340,12 @@ var
   F: TextFile;
   FN: string;
 begin
+  
+{$IFDEF LINUX}
+  FN := GM_OutPutPath + '/CalcTimes.txt';
+{$ELSE}
   FN := GM_OutPutPath + '\CalcTimes.txt';
-
+{$ENDIF}
   AssignFile(F, FN);
   Rewrite(F);
   try
