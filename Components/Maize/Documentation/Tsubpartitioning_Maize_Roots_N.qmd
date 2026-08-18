@@ -5,7 +5,6 @@ date: "`r Sys.Date()`"
 format: html
 bibliography: references.bib
 csl: european-journal-of-agronomy.csl
-citation_package: citations
 editor_options: 
   chunk_output_type: inline
 ---
@@ -15,18 +14,20 @@ editor_options:
 #| include: FALSE
 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center", fig.width = 12, fig.height = 6, fig.pos = "h", fig.cap = TRUE)
+
+
 rm(list = ls(all.names = TRUE))
 
-
+library(knitr)
 library(rmarkdown)
 library(bookdown)
 library(soilwater)
 library(tidyverse)
 library(reticulate)
 library(tinytex)
-library(bibtex)
+#library(bibtex)
 library(ggsci)
-library(knitcitations)
+#library(knitcitations)
 library(kableExtra)
 library(xml2)
 library(ggpmisc)
@@ -35,7 +36,7 @@ library(here)
 source("ExtractInformationFromXML.R")
 source("Rlib/DokuUtilFunctions.R")
 
-options("citation_format" = "pandoc")
+
 
 ExtractInformationFromCSV <- function(fn) {
 
@@ -85,6 +86,7 @@ output <- ExtractXMLDocuInformation(fn_xml_docu, ClassName = "Tsubpartitioning_M
 
 Entities <- ExtractInformationFromCSV(fn)
 
+
 ```
 
 # Summary
@@ -118,19 +120,52 @@ kable(df)|>
 
 ## Modelling DM partitioning
 
-## Modelling N partitioning
+## Nitrogen Dynamics and Critical N Concentration in Maize
 
-# Nitrogen Dynamics and Critical N Concentration in Maize
+During crop growth, plant nitrogen (N) concentration ($N_c$\$N_c\$\$N_c\$) typically declines as biomass accumulation increases and canopy structure changes. In particular, the expansion of structural tissues such as stems and reproductive organs contributes to a dilution of nitrogen (@Caloin1984). Additionally, increasing canopy density leads to progressive self-shading, which results in an uneven distribution of nitrogen within the plant (@Sinclair1989; @Bertheloot2008). Leaves located in the upper canopy and best exposed to incoming radiation are the most photosynthetically active and therefore maintain the highest $N_c$ (@Bertheloot2008), whereas structural organs with limited photosynthetic function exhibit comparatively lower $N_c$ levels (@Lemaire1997).
 
-During crop growth, plant nitrogen concentration ($N_c$) typically declines as biomass accumulation increases and canopy structure changes. In particular, the expansion of structural tissues such as stems and reproductive organs contributes to a dilution of nitrogen (@.Caloin1984). Additionally, increasing canopy density leads to progressive self-shading, which results in an uneven distribution of nitrogen within the plant (@Sinclair.1989; @Bertheloot.2008). Leaves located in the upper canopy and best exposed to incoming radiation are the most photosynthetically active and therefore maintain the highest $N_c$ (@Bertheloot.2008), whereas structural organs with limited photosynthetic function exhibit comparatively lower $N_c$ levels (@Lemaire.1997). 
+For modelling approaches, it is not appropriate to consider N uptake at the whole plants level only, because N inputs not only affect the absolute amount of N in the crop, but can also cause distinct allocation patterns within the plant. Thus, total N uptake reduces after silking, while $N_c$ within the plant remains constant. However, distinct allocation processes result in a shift of $N_c$ from the leaves to the cob (@fig-Npartitioning), which leads to the senescence of leaf tissue and a reduction in the photosynthetic active green area. The application of N fertiliser can influence these processes: As depicted in @fig-Npartitioning , higher N fertilisation levels lead to a generally higher N content in the leaves, while the lowest fertilisation level (0 kg ha^-1^) results in the lowest N content. Additionally, the decrease in N proportion is more pronounced with N limitations. Similar to the leaves, the N content in the stem decreases with increasing DM. Again, higher fertiliser levels have a positive effect on N partitioning to the stem, but the differences between N-levels are smaller than for the leaves. In contrast to the leaf and stem, the N proportion in the cob tends to increase with increasing DM, resulting from the translocation processes from vegetative organs to the generative organ. At the beginning of cob growth, cob’s N proportion is highest without N fertilization, indicating, a prioritisation of cob growth under N limitation.
 
-Critical nitrogen ($N_{\text{crit}}$) dilution curves are used to analyze the nitrogen status of crops, assuming a relationship between $N_c$ and dry matter (DM) growth that determines the optimal nitrogen supply for the crop. These curves are based on the concept of $N_{\text{crit}}$ (@Salette.1981). $N_{\text{crit}}$ is defined as the minimum $N_c$ required to achieve maximum possible DM growth; beyond this point, additional nitrogen fertilization does not significantly increase DM growth (@Ulrich.1952; @Greenwood.1991). $N_{\text{crit}}$ dilution curves have been established for a range of crops, including wheat (@Justes.1994), oilseed rape (@Colnenne.1998), barley (@Zhao.2014), rice (Ata-Ul-Karim et al., 2017), and sunflower (Debaeke et al., 2012). For maize, the first dilution curve was proposed by (@Plénet.1999) and later extended to silage maturity by (@Herrmann.2004). However, a common feature across these studies is their focus on whole-plant nitrogen concentration, without explicitly accounting for organ-specific differences. Representing nitrogen uptake at the whole-plant level alone neglects the fact that nitrogen supply influences not only the total amount of nitrogen accumulated but also its allocation patterns among plant organs and their demands during the vegetation period (\@Bao2025). Capturing such dynamics requires a more detailed, organ-resolved perspective.
+![Relationship between the dry matter yield of the whole plant (t ha-1) and the proportion of N in different plant organs (leaf, stem, cob) relative to the total plant N](plots/N_partitioning.png){#fig-Npartitioning}
 
-It has been established that the nitrogen nutrition index (NNI) is a reliable metric for quantifying nitrogen stress. It can be derived from $N_{\text{crit}}$ dilution curves as the ratio between $N_c$ and $N_{\text{crit}}$. Modelling of the nitrogen status via whole-plant or leaf DM has been discussed in the literature (\@Ata-Ul-Karim2017; \@Zhao2017; \@Zhao2018; \@Sieling.2021), as $N_c$ is highest in the photosynthetically active plant organ. In particular for the C4 plant maize, the assumption of a leaf-based NNI could serve as a more sensitive proxy of nitrogen stress (\@Sieling.2021).
+Critical nitrogen ($N_{\text{crit}}$) dilution curves are used to analyze the N status of crops, assuming a relationship between $N_c$ and dry matter (DM) growth that determines the optimal N supply for the crop. These curves are based on the concept of $N_{\text{crit}}$ (@Salette1981). $N_{\text{crit}}$ is defined as the minimum $N_c$ required to achieve maximum possible DM growth; beyond this point, additional N fertilization does not significantly increase DM growth (@Ulrich1952; @Greenwood1991). $N_{\text{crit}}$ dilution curves have been established for a range of crops, including wheat (@Justes1994), oilseed rape (@Colnenne1998), barley (@Zhao2014), rice (Ata-Ul-Karim et al., 2017), and sunflower (Debaeke et al., 2012). For maize, the first dilution curve was proposed by (@Plenet1999) and later extended to silage maturity by (@Herrmann2004). However, a common feature across these studies is their focus on whole-plant N concentration, without explicitly accounting for organ-specific differences. Representing N uptake at the whole-plant level alone neglects the fact that N supply influences not only the total amount of N accumulated but also its allocation patterns among plant organs and their demands during the vegetation period (@Bao2025). Capturing such dynamics requires a more detailed, organ-resolved perspective.
+
+It has been established that the N nutrition index (NNI) is a reliable metric for quantifying N stress. It can be derived from $N_{\text{crit}}$ dilution curves as the ratio between $N_c$ and $N_{\text{crit}}$. Modelling of the N status via whole-plant or leaf DM has been discussed in the literature (@Ata-Ul-Karim2017; @Zhao2017; @Zhao2018; @Sieling.2021), as $N_c$ is highest in the photosynthetically active plant organ. In particular for the C4 plant maize, the assumption of a leaf-based NNI could serve as a more sensitive proxy of N stress (@Sieling2021).
 
 ### Critical N concentration
 
-## 
+Determination of $N_crit$ was calculated according to @Justes1994, via linear-plateau function for each available sampling date, further illustrated in @fig-Juste . To conduct that, a self-starting linear-plateau function (SSlinp) was used, describing a initial linear increase in DM with increasing $N_c$ up to a breakpoint (jp), beyond which DM reaches a plateau (and is not significantly increasing anymore). The breakpoints of the linear plateau models are the $N_crit$’s of the specific sampling dates, which equals the $N_c$ on which there is no significant increase in dry matter (@fig-Juste A). For some of the sampling dates, it was not possible to fit a linear-plateau. These sampling dates were not included into the further process of N dilution curve development.
+
+The final N dilution curve (@fig-Juste C) fits the resulting $N_crit$’s and is commonly described by a quadratic function with a plateau for dry matter (DM) values \> 1 t ha^-1^ (@Plenet2000, @Herrmann2004)
+
+$$N_c = 
+\begin{cases}
+a \cdot \mathrm{DM}_{\mathrm{crit}}^b & \text{if } \mathrm{DM} < \mathrm{DM}_{\mathrm{crit}} \\
+a \cdot \mathrm{DM}^b & \text{if } \mathrm{DM} \geq \mathrm{DM}_{\mathrm{crit}}
+\end{cases}$$ {#eq-$N_crit$}
+
+With the first term, representing the $N_c$ for DM smaller than $DM_crit$ , illustrating the initial plateau of the function. Coefficient b represents the decrease of $N_c$ with DM growth. The parameters a, b and $DM_crit$ were fit with a non-linear least square model (nlsLM, @Elzhov2022).
+
+![Example of the calculation of dilution curve for the whole plant. A: calculation of critical $N_c$ (%, red cross) of three example sampling dates (2007) via linear-plateau function. B: Calculation of critical $N_c$ for all available sampling dates (trial years: 2007, 2008, n=19). C: fitting N dilution curve through the calculated critical $N_c$ (N¬crit).](plots/Juste_plot.png){#fig-Juste}
+
+This process was calculated for the plant organs leaves and cobs (whereby panicles and husks were added to the cob fraction) as well as for the whole plant. For the stem fraction an exponential function was more suitable:
+
+$$N_c = 
+\begin{cases}
+a & \text{if } \mathrm{DM} < \mathrm{DM}_{\mathrm{crit}} \\
+a \cdot \exp(\mathrm{DM} \cdot b) & \text{if } \mathrm{DM} \geq \mathrm{DM}_{\mathrm{crit}}
+\end{cases}$$ {#eq-Ncrit_Stem}
+
+![N dilution curves of organs (leaf, stem, cob, solid line) as the relation between N concentration (%) and dry matter (t ha-1) with datapoints coloured for specific N-levels and critical N concentrations (red cross). The latter was calculated via linear-plateau functions (grey lines, Justes et al.  (1994)) for each available and computable sampling date.](Plots/Organ_dilution.png){#fig-Organdelution}
+
+| Plant Part | $DM_crit$ \[t/ha\] | $N_c$ \[%\] | Regression Model | n |
+|----|----|----|----|----|
+| Whole plant | 0.52 | 4.90 | $\mathrm{3.85 \times DM^{-0.37}}$ | 19 |
+| Leaf | 0.21 | 5.34 | $\mathrm{3.56 \times DM^{-0.26}}$ | 21 |
+| Stem | 0.20 | 4.02 | $\mathrm{4.30 \times e^{-0.33 \times DM}}$ | 17 |
+| Cob | 1.00 | 3.20 | $\mathrm{3.20 \times DM^{-0.34}}$ | 9 |
+
+: Formulas of N delution for whole plant assumption, as well as for organs leaf, stem and cob.
 
 # Submodel objects
 
@@ -230,141 +265,3 @@ kable(Entities$df.opt, escape = FALSE,
  )|>
    kable_styling(full_width = FALSE, position = "center")
 ```
-
-<!-- # Further source code documentation -->
-
-<!-- The following section includes information extracted from the XML documentation of the class Tsubpartitioning_Maize_Roots_N. It includes constants, enumerations and functions. -->
-
-<!-- ## Enumerations -->
-
-<!-- ```{r} -->
-
-<!-- ``` -->
-
-<!-- Within the unit (`r trunc(nrow(output$enum_df))`) enumeration types are defined : -->
-
-<!-- ```{r} -->
-
-<!-- #| label: tbl-Tsubpartitioning_Maize_Roots_NEnumerationsTable -->
-
-<!-- #| echo: false -->
-
-<!-- #| message: false -->
-
-<!-- #| warning: false -->
-
-<!-- #| tbl-cap: Enumerations of unit UHumeWheatLeafArea -->
-
-<!-- kable(output$enum_df, escape = FALSE, col.names = c("Name", "Summary", "Elements")) |> -->
-
-<!--   kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) |> -->
-
-<!--   column_spec(1, bold = TRUE) |> -->
-
-<!--   column_spec(2, width = "30em") |> -->
-
-<!--   column_spec(3, width = "30em") -->
-
-<!-- ``` -->
-
-<!-- The enumeration types are used to internally define options for different process formulation. By setting an TOption object -->
-
-<!-- ## Constants -->
-
-<!-- The following internal constants are defined within the Unit -->
-
-<!-- ```{r} -->
-
-<!-- #| label: tbl-Tsubpartitioning_Maize_Roots_NConstantsTable -->
-
-<!-- #| echo: false -->
-
-<!-- #| message: false -->
-
-<!-- #| warning: false -->
-
-<!-- #| tbl-cap: Constants of unit UHumeWheatLeafArea -->
-
-<!-- kable(output$const_df, escape = FALSE, col.names = c("Name", "Type", "Summary", "Value")) |> -->
-
-<!--   kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) |> -->
-
-<!--   column_spec(1, bold = TRUE) |> -->
-
-<!--   column_spec(2, width = "10em") |> -->
-
-<!--   column_spec(3, width = "30em") |> -->
-
-<!--   column_spec(4, width = "20em") -->
-
-<!-- ``` -->
-
-<!-- ## Functions -->
-
-<!-- ```{r} -->
-
-<!-- #| label: tbl-Tsubpartitioning_Maize_Roots_NFunctionsTableSimple -->
-
-<!-- #| echo: false -->
-
-<!-- #| message: false -->
-
-<!-- #| warning: false -->
-
-<!-- #| tbl-cap: Functions of class Tsubpartitioning_Maize_Roots_N -->
-
-<!-- paged_table(output$fun_df) -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-
-<!-- #| label: tbl-Tsubpartitioning_Maize_Roots_NFunctionsTable -->
-
-<!-- #| eval: false -->
-
-<!-- #| message: false -->
-
-<!-- #| warning: false -->
-
-<!-- #| include: false -->
-
-<!-- #| tbl-cap: Functions of class Tsubpartitioning_Maize_Roots_N -->
-
-<!-- fun_df[] <- lapply(fun_df, function(x) gsub(":::", "::: ", x, fixed = TRUE)) -->
-
-<!-- kable(fun_df, escape = FALSE, col.names = c("Name", "Visibility", "Parameters", "Summary", "Parameter Summary")) |> -->
-
-<!--   kable_styling(full_width = F, bootstrap_options = c("striped", "hover")) |> -->
-
-<!--   column_spec(1, bold = TRUE) |> -->
-
-<!--   column_spec(2, width = "10em") |> -->
-
-<!--   column_spec(3, width = "20em") |> -->
-
-<!--   column_spec(4, width = "30em") |> -->
-
-<!--   column_spec(5, width = "30em") -->
-
-<!-- ``` -->
-
-<!-- The procedures defined in the class Tsubpartitioning_Maize_Roots_N are: -->
-
-<!-- ```{r} -->
-
-<!-- #| label: tbl-Tsubpartitioning_Maize_Roots_NProceduresTableSimple -->
-
-<!-- #| echo: false -->
-
-<!-- #| message: false -->
-
-<!-- #| warning: false -->
-
-<!-- #| tbl-cap: Functions of class Tsubpartitioning_Maize_Roots_N -->
-
-<!-- paged_table(output$proc_df) -->
-
-<!-- ``` -->
-
-<!-- ## References -->
