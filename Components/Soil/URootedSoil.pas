@@ -169,9 +169,20 @@ type
     /// <summary> Feddes parameter a </summary>
     feddes_a: Tpar;
     /// <summary> Feddes parameter b </summary>
+
+    /// <summary> increase of psi2 between low and high transpiration rate </summary, same as feddes_a>
+    psi2diff :Tpar;
+
     feddes_b: Tpar;
+    /// <summary> Transpiration rate when psi2 becomes highest, same as Feddes parameter b </>
+    Trefhigh: TPar;
+
     /// <summary> Feddes parameter c </summary>
     feddes_c: Tpar;
+    
+    /// <summary> Transpiration rate when psi2 becomes highest, same as Feddes parameter b </summary> 
+    Treflow: TPar;
+
     /// <summary> actual proportional nFK values for rooted compartments </summary>
     ProznFK_act_rooted_comps: TVar;
     /// <summary> critical nFK value for sink reduction </summary>
@@ -223,7 +234,7 @@ type
     psi_logscale: Toption;
     
     /// <summary> root radius </summary>
-   r_root: Tpar;
+   RootRad: Tpar;
  
     /// <summary> array for matrix flux potential calculation </summary>
     MFP_arr: array [0 .. 20] of TMFP_table;
@@ -259,6 +270,7 @@ type
     property Par_psi_3: Tpar read psi_3 write psi_3;
     property Comp_fact: Tpar read CompFactor write CompFactor;
     property Par_nFKcrit: Tpar read nFKcrit write nFKcrit;
+    property Par_RootRad: TPar read RootRad write RootRad;
     property St_CumTrans: TState read CumTrans write CumTrans;
     property Var_ActTrans: TVar read ActTrans write ActTrans;
     property Var_TransRatio: TVar read TransRatio write TransRatio;
@@ -399,10 +411,10 @@ begin
             abstand_func(EffectiveRootLengthDensity);
 
           if (MatrixFluxPotential > 0.0) and
-            (0.56 * RootCylinderRadius > r_root.v) then
+            (0.56 * RootCylinderRadius > RootRad.v) then
           begin
             MaximumInflux := max(0.0, MFP_IWmax(MatrixFluxPotential,
-              RootCylinderRadius, r_root.v));
+              RootCylinderRadius, RootRad.v));
             MaximumSinkMatrix[LayerIndex, MomentIndex] := MaximumInflux *
               EffectiveRootLengthDensity * Thick[LayerIndex] /
               RootLengthDensityMomentCount;
@@ -533,10 +545,20 @@ begin
   ParCreate('psi_3', '[cm]', 15000, psi_3,
     'lower limit of soil water extraction');
   ParCreate('feddes_a', '[hPa]', 400, feddes_a,
-    'Enhancement of psi_2 at high pot. Transp.');
-  ParCreate('feddes_b', '[mm/d]', 5, feddes_b, 'Transpiration threshold for psi_2 calculation');
+    'decrease of psi_2 at high pot. Transp.');
+  ParCreate('psi2diff', '[hPa]', 400, psi2diff, 'decrease of psi_2 at high pot. Transp.');
+
+  ParCreate('feddes_b', '[mm/d]', 5, feddes_b, 'upper transpiration threshold for psi_2 calculation');
+
+  ParCreate('Trefhigh', '[mm/d]', 6, Trefhigh, 'upper transpiration threshold for psi_2 calculation');
+
   ParCreate('feddes_c', '[mm/d]', 1, feddes_c,
-    'lower transpiration rate threshold for psi_2 calculation, for lower transpiration rates psi_2 not further increased');
+    'lower transpiration rate threshold for psi_2 calculation, for lower transpiration rates psi_2 is not further decreased');
+
+  ParCreate('Treflow', '[mm/d]', 1, Treflow,
+    'lower transpiration rate threshold for psi_2 calculation, for lower transpiration rates psi_2 is not further decreased');
+
+
   ParCreate('nfk_threshold', '[-]', 0.01, nfk_threshold,
     'threshold (water buffer) for sink reduction');
   ParCreate('CompFactor', '[-]', 0.5, CompFactor,
@@ -547,7 +569,7 @@ begin
     'Amount of automated irrigation per irrigation');
   ParCreate('Autoirri_nFKcrit', '[%]', 60, Autoirri_nFKcrit,
     'Prozent nFK ab der bewässert wird, wenn AutoirriMeth auf amProznFKWe steht');
-  ParCreate('r_root', '[cm]', 0.01, r_root, 'root radius [cm]');
+  ParCreate('RootRad', '[cm]', 0.02, RootRad, 'root radius [cm]');
 
   ExternVcreate('PotTrans', '[mm.d-1]', stateField, PotTrans,
     'potential transpiration rate');
@@ -721,13 +743,15 @@ begin
       end;
     end;
     
-
     if lowercase(psi_logscale.Option) = 'false' then
       fpsi_logscale := false
     else
       fpsi_logscale := true;
-
-
+  
+  /// for legacy we have the old names too
+  feddes_a.v := psi2diff.v;
+  feddes_b.v := Trefhigh.v;
+  feddes_c.v := Treflow.v;
 end;
 
 
@@ -755,10 +779,51 @@ var
   i: integer;
 
 
+
+/// <summary> function for calculation of critical soil water tension according to Feddes </summary>
+/// <param> PotTrans: potential transpiration rate </param>
+/// <param> psi2: soil water tension at which root water uptake starts to decrease </param>
+/// <param> psi2diff: difference in psi2 between high and low transpiration rates </param>
+/// <param> Trefhigh: transpiration rate at which psi2 becomes highest </param>
+/// <param> Treflow: transpiration rate at which psi2 becomes lowest </param>
+///
+function feddes_psi2(PotTrans, psi2, psi2diff, Trefhigh, Treflow:real): real;
+
+var
+  psi2_, psi3, psiFK, psi2_hightrans, psi2_lowtrans : real;
+
+ begin
+  psi3 := power(10,4.2);
+  psiFK := power(10,1.8);
+
+  // calculation of an minimum lowered psi2 value under high transpiration conditions
+  psi2_hightrans := max(psi2-psi2diff/2, psiFK);
+  // calculation of maximum 
+  psi2_lowtrans   := min(psi2+psi2diff/2, psi3);
+
+  // high transpiration > low value of psi2, low transpiration > high value of psi2
+  if (PotTrans >= Trefhigh) then
+    feddes_psi2 := psi2_hightrans;
+
+  if (PotTrans < Treflow) then
+     feddes_psi2 := psi2;
+  // linear interpolation of psi2 between low and high transpiration conditions
+
+  if (PotTrans >= Treflow) and (PotTrans < Trefhigh) then
+    feddes_psi2 := psi2_lowtrans - (PotTrans - Treflow) / (Trefhigh - Treflow) * ((psi2 - psi2_hightrans) );
+end;
+
+
+
+/// <summary> function for calculation of reduction factor based on soil water tension thresholds </summary>
+/// <param> psi_root: soil water tension at root surface </param>
+/// <param> psi_2: threshold soil water tension </param>
+/// <param> psi_3: critical soil water tension </param>
+/// <param> logscale: flag for logarithmic scaling </param>
 function f_psi_reduction(psi_root, psi_2, psi_3: real; logscale: boolean): real;
 
 begin
-  
+
   if logscale then
   begin
     if psi_root < psi_2 then
@@ -783,44 +848,32 @@ end;
 
 
 begin
+  if (fPsi2Opt = fromPlantmodel) and IsPlantModelSet then
+    Psi2.v := Plantmodel.Psi2 // Psi2 from plant model
+  else
+    Psi2.v := psi_2.v; // Psi2 from parameter
 
   if OptSinkTermMethod = Feddes then
   begin
-    if (fPsi2Opt = fromPlantmodel) and IsPlantModelSet then
-      Psi2.v := Plantmodel.Psi2 // Psi2 from plant model
-    else
-      Psi2.v := psi_2.v; // Psi2 from parameter
-    psi2_low := Psi2.v + feddes_a.v;
-    if (PotTrans.v < feddes_c.v) then
-      psi2_ := psi2_low
-    else if (PotTrans.v > feddes_b.v) then
-      psi2_ := Psi2.v
-    else
-      psi2_ := psi2_low + (PotTrans.v - feddes_b.v) *
-        ((psi2_low - Psi2.v) / (feddes_c.v - feddes_b.v));
+
+    // calculate psi2_ as a function of potential transpiration rate
+    psi2_ := feddes_psi2(PotTrans.v,  psi2.v, psi2diff.v, Trefhigh.v, Treflow.v);
+
     for i := 1 to (n_comp - 1) do
     begin
-      rPAW := ((theta_arr[i].v - pwp_arr[i])) / nFK_arr[i];
       If psi_arr[i].v < psi2_ then
         red_f := 1.0
       else
- //       red_f := (psi_arr[i].v - psi_3.v) / (psi2_ - psi_3.v);
           red_f := f_psi_reduction(psi_arr[i].v, psi2_, psi_3.v, fpsi_logscale);
-      // Staunsse nach Feddes
+      // oxygen limitation according to Feddes
       // If psi_arr[i].v < 1 then  red_f :=max(0.1,psi_arr[i].v);
       // rPAW:= ((theta_arr[i].v-pwp_arr[i]))/nFK_arr[i];
-      If ((red_f < 0.0) or (rPAW < nfk_threshold.v)) then
-        red_f := 0.0;
       SinkRedF[i] := red_f;
     end;
   end; // Feddes end
 
   if OptSinkTermMethod = Psicrit then
   begin
-    if (fPsi2Opt = fromPlantmodel) and IsPlantModelSet then
-      Psi2.v := Plantmodel.Psi2 // Psi2 from plant model
-    else
-      Psi2.v := psi_2.v; // Psi2 from parameter
     for i := 1 to (n_comp - 1) do
     begin
       rPAW := ((theta_arr[i].v - pwp_arr[i])) / nFK_arr[i];
@@ -855,35 +908,35 @@ begin
       begin
         // root length in that layer in cm/ha from RLD [cm.cm-3] to rl in cm.ha-1
         rl[i] := 0.1 * ExWld_arr[i].v * Thick[i] * 1E8;
-        
+
         // water inflow per unit root length [cm3/cm/s], potential water inflow based on potential transpiration and root length
         potMaxInflow[i] := Water_flow_func(self.Sink_arr[i].v * 10, rl[i],
           12, true);
 
-        // average half distance between roots [cm]  
+        // average half distance between roots [cm]
         HalfDistance[i] := abstand_func(ExWld_arr[i].v);
-        
+
         // soil water content at root surface based on potential water inflow and soil water diffusivity [cm3/cm3] with steady state flow assumption
         theta_root[i] := baf(theta_arr[i].v, potMaxInflow[i], Dw_arr[i] / 86400,
           HalfDistance[i], 0.02);
-        
+
         // maximum soil water influx rate [cm3.cm-1.s-1] based on soil water content at root surface, minimum soil water content at root surface, soil water diffusivity and half distance between roots
         iw_max[i] := Iwmax(theta_arr[i].v, pwp_arr[i], Dw_arr[i] / 86400,
           HalfDistance[i], 0.02);
-        
+
         // maximum water uptake per layer [cm/d] based on maximum soil water influx rate and root length in that layer
         Wupmax[i] := iw_max[i] * rl[i] * 1E-4 * 1E-3 * 1E-1;
-        
+
         // soil water tension at root surface based on soil water content at root surface and soil water retention curve
         Psi_Root[i] := min(power(10, 4.2), WPar[i].psi_b_f(theta_root[i]));
-        
+
         // calculation of a soil water content difference between the root surface and the bulk soil
         WcontDiff_arr[i].v := theta_arr[i].v - theta_root[i];
-        
+
         // calculation of a soil water tension difference between the root surface and the bulk soil
         PsiRootDiff_arr[i].v := Psi_Root[i] - psi_arr[i].v;
 
-        // now using this soil water tension at the root surface for calculating the sink reduction factor 
+        // now using this soil water tension at the root surface for calculating the sink reduction factor
         if (fPsi2Opt = fromPlantmodel) and IsPlantModelSet then
           Psi2.v := Plantmodel.Psi2 // Psi2 from plant model
         else
@@ -983,7 +1036,7 @@ begin
 //          Wupmax[i] := iw_max[i] * rl[i] * 1E-4 * 1E-3 * 1E-1;
           // maximum water uptake per layer [cm/d]
           MFPsink := max(0, min(Sink_arr[i].v, MFP_Inflow(ExWld_arr[i].v,
-            Thick[i], MFP_, r_root.v, Sink_arr[i].v)));
+            Thick[i], MFP_, RootRad.v, Sink_arr[i].v)));
           if Sink_arr[i].v > 0 then
             SinkRedF[i] := MFPsink / Sink_arr[i].v
           else

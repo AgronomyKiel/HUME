@@ -45,8 +45,6 @@ type
     Cmin: TPar;
     /// <summary>Plant unavailable share of nitrate [kg N/10 cm].</summary>
     not_av_N: TPar;
-    /// <summary>Root radius [cm].</summary>
-    RootRad: TPar;
     /// <summary>Maximum value for N uptake per unit root length [kg/cm/d].</summary>
     Max_Wl_Nuptake: TPar;
     // NTotal       : TExternV;
@@ -66,7 +64,6 @@ type
     property Par_Cmin: TPar read Cmin write Cmin;
     property Par_Not_av_N: TPar read not_av_N write not_av_N;
 
-    property Par_RootRad: TPar read RootRad write RootRad;
     property Var_MaxNuptake: TVar read MaxNUptake write MaxNUptake;
     property Var_ActNUptake: TVar read ActNUptake write ActNUptake;
     property Var_Massflow: TVar read MassFlow write MassFlow;
@@ -262,7 +259,6 @@ begin
     'minimum nitrate concentration roots can deplete to');
   ParCreate('Not_av_N', '[kg N/10 cm]', 1.5, not_av_N,
     'non-available part of the soil nitrogen [kg N/10 cm]');
-  ParCreate('RootRad', '[cm]', 0.02, RootRad, 'root radius');
   ParCreate('Max_Wl_Nuptake', '[kg/ha/d/Wl]', 3E-9, Max_Wl_Nuptake);
   // ExternVcreate('TotalPlantNitrogen', '[kg N.ha-1.d-1]',   RateField, NTotal);
   ExternVcreate('PlantNDemand', '[g.m-2.d-1]', stateField, Ex_PlantNDemand,
