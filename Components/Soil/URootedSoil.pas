@@ -170,11 +170,11 @@ type
     feddes_a: Tpar;
     /// <summary> Feddes parameter b </summary>
 
-    /// <summary> increase of psi2 between low and high transpiration rate </summary, same as feddes_a>
+    /// <summary> increase of psi2 between low and high transpiration rate </summary, same as feddes_a </summary>
     psi2diff :Tpar;
 
     feddes_b: Tpar;
-    /// <summary> Transpiration rate when psi2 becomes highest, same as Feddes parameter b </>
+    /// <summary> Transpiration rate when psi2 becomes highest, same as Feddes parameter b </summary>
     Trefhigh: TPar;
 
     /// <summary> Feddes parameter c </summary>
