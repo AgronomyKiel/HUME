@@ -810,7 +810,7 @@ var
   // linear interpolation of psi2 between low and high transpiration conditions
 
   if (PotTrans >= Treflow) and (PotTrans < Trefhigh) then
-    feddes_psi2 := psi2_lowtrans - (PotTrans - Treflow) / (Trefhigh - Treflow) * ((psi2 - psi2_hightrans) );
+    feddes_psi2 := psi2_lowtrans + (PotTrans - Treflow) / (Trefhigh - Treflow) * ((psi2_hightrans - psi2_lowtrans) );
 end;
 
 

@@ -246,27 +246,25 @@ For the option psicrit, the values of psi_2 is a fixed value during a simulation
 
 With the option *Feddes* it is variable, depending on the actual transpiration rate. The value of psi_2 is calculated based on the actual transpiration rate (T~act~) and the potential transpiration rate (T~pot~) as shown in Eq. @eq-psi2Feddes.
 
-$$psi2_{hightrans} = max \left(psi_2-\frac{psi2_{diff}}{2}, psi_{FK} \right)$$ {#eq-psi2Feddes_hightrans}
+The value of psi_2 can vary between two limits $\psi_{2,low}$ at very high potential transpiration rates and $\psi_{2,high}$ at very low potential transpiration rates. These values are calculated from a value of the parameter $psi_2$ also used for the option psi~crit~ and another parameter $psi_{2, diff}$:
 
+$$\psi_{2,high} = max \left(\psi_2-\frac{\psi_{2,diff}}{2}, \psi_{FK} \right)$$ {#eq-psi2Feddes_hightrans}
 
-$$psi2_{lowtrans} = max\left(psi_2+\frac{psi_{2diff}}{2}, psi_{PWP}\right)$$ {#eq-psi2Feddes_hightrans}
+$$\psi_{2,low} = max\left(\psi_2+\frac{\psi_{2,diff}}{2}, \psi_{PWP}\right)$$ {#eq-psi2Feddes_hightrans}
 
-
-
+In between the value of $psi_2^{*}$ is calculated by linear interpolation ({#eq-psi2Feddes}).
 
 $$\psi_2^*=
 \begin{cases}
-\psi_{2,\mathrm{low}} & \text{if } T_{\mathrm{act}} \le T_{\mathrm{ref,low}},\\
-\psi_{2,\mathrm{high}} & \text{if } T_{\mathrm{act}} > T_{\mathrm{ref,high}},\\
-\psi_{2,\mathrm{high}} - (\psi_{2,\mathrm{high}}-\psi_2)\,\cdot f
-& \text{if } T_{\mathrm{ref,low}} < T_{\mathrm{act}} \le T_{\mathrm{ref,high}},\\
-\psi_{2,\mathrm{high}} - (\psi_{2,\mathrm{high}}-\psi_2)\,\cdot f
-& \text{if } T_{\mathrm{ref,low}} < T_{\mathrm{act}} \le T_{\mathrm{ref,high}}
+\psi_{2,low} & \text{if } T_{act} \le T_{ref,low},\\
+\psi_{2,high} & \text{if } T_{act} > T_{ref,high},\\
+\psi_{2,low} + f \cdot (\psi_{2, high}-\psi_{2, low})
+& \text{if } T_{ref,low} < T_{act} \le T_{ref,high}
 \end{cases}$$ {#eq-psi2Feddes}
 
 with:
 
-$$f= \frac{T_{pact} - T_{p,low}} {T_{ref,high} - T_{ref,low}}$$ {#eq-psi2Feddesf}
+$$f= \frac{T_{p} - T_{p,low}} {T_{ref,high} - T_{ref,low}}$$ {#eq-psi2Feddesf}
 
 ```{r}
 #| label: fig-SinkTerm
