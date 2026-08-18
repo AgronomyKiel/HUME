@@ -48,8 +48,6 @@ output <- ExtractXMLDocuInformation(fn_xml_docu, ClassName = "THumeWheatLeafArea
 
 ```
 
-
-
 # Summary
 
 ```{r}
@@ -60,9 +58,6 @@ output <- ExtractXMLDocuInformation(fn_xml_docu, ClassName = "THumeWheatLeafArea
  
  GetFirstDevNotes(fn_xml_docu)
 ```
-
-
-
 
 ## Descendence
 
@@ -78,7 +73,6 @@ df <- GetAncestorClasses(fn_xml_docu,"THumeWheatLeafArea")
 kable(df)
 
 ```
-
 
 # Scientific Background
 
@@ -205,10 +199,10 @@ $$\frac{dPLSC_i}{dt} = PLSCGR_i= (LFWT_{pl} + GROLF) \cdot SLA_{pot} - sumPLSC$$
 
 Leaf senescence is governed by different factors in HumeWheat:
 
--   age
--   drought stress
--   nitrogen stress
--   light availability and also the EC stage of the crop
+- age
+- drought stress
+- nitrogen stress
+- light availability and also the EC stage of the crop
 
 ### Age
 
@@ -560,8 +554,7 @@ where $PLALR_l$ is the leaf area loss rate due to light limitation, $LAI$ is the
 In order to combine the different senescence processes the maximum of either the maximum of age or drought senescence or the maximum of nitrogen or light dependent senescence rate is calculated. In total the senescence rate is not larger than the leaf area per plant:
 
 $$    PLALR = min \left( \frac{LAI*1e4}{plants}, max\left(max\left(PLALR_a,PLALR_d\right),
-                    max\left(PLALR_n, PLALR_l\right) \right)\right)
-$$
+                    max\left(PLALR_n, PLALR_l\right) \right)\right)$$
 
 where $PLALR$ is the leaf area loss rate, $LAI$ is the leaf area index, $plants$ is the number of plants per square meter, $PLALR_a$ is the leaf area loss rate due to age, $PLALR_d$ is the leaf area loss rate due to drought stress, $PLALR_n$ is the leaf area loss rate due to nitrogen stress, and $PLALR_l$ is the leaf area loss rate due to light limitation.
 
@@ -676,7 +669,6 @@ $$\frac{d{}{{N}^{mob}_{\text{l}}}}{\text{dt}}= \left\{ \begin{align}
  & \mathop{{}}^{{}}\mathop{{}}^{{}}+{}{{N}^{mob}_{s}}(t)+\sum{{N^{trans}_{i}}(t)}). \\ 
 \end{align} \right.$$ {#eq-LA53}
 
-
 # Submodel objects
 
 Dynamic system model consists according to the Forrester approach of state variable, parameters, variables and external driving forces. This is implemented in Hume by dynamic lists, which contents is given in the following sections.
@@ -754,8 +746,6 @@ The following section includes information extracted from the XML documentation 
 ```{r}
 
 ```
-
-
 
 Within the unit (`r trunc(nrow(output$enum_df))`) enumeration types are defined :
 
@@ -841,6 +831,5 @@ The procedures defined in the class THumeWheatLeafArea are:
 
 paged_table(output$proc_df)
 ```
-
 
 ## References

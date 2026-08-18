@@ -179,7 +179,18 @@ begin
   end;
 end;
 
-function TTextFileH.getIndexValue(Index: integer): real;
+
+function TTextFileH.getIndexValue(Index: Integer): Real;
+begin
+  Result := NaN;
+
+  if (Index < 0) or (Index >= ActLine.Count) then
+    Exit;
+
+  if ActLine[Index] <> '.' then
+    Result := StrToFloatDef(ActLine[Index], NaN);
+end;
+{function TTextFileH.getIndexValue(Index: integer): real;
 begin
   if (index < actline.Count) then begin
     if (ActLine[index] = '.') then
@@ -188,11 +199,11 @@ begin
       result := StrToFloatDef(ActLine[index], NaN);
   end else begin
     result := NaN;
-{$IFNDEF NONVISUAL}
-    showmessage(self.FName + ' ' + 'Not found in File');
-{$ENDIF}
-  end;
-end;
+// {$IFNDEF NONVISUAL}
+  {  showmessage(self.FName + ' ' + 'Not found in File');          }
+// {$ENDIF}
+{  end;
+end;  }
 
 procedure TTextFileH.LocateFor(Name: string; Value: real);
 var

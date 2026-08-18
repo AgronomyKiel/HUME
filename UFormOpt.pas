@@ -419,9 +419,9 @@ begin
     {$ENDIF}
 
     // init the model with the active ini-file and run the optimization for the active ini-file or for all ini-files depending on the selected optimization option
-    if (model.LMOptions.OptOption = optAllInis) or (model.LMOptions.OptOption = optAllInisSeparate) then
+    if (model.LMOptions.OptOption = optAllInis)  then
       model.run
-    else if model.LMOptions.OptOption = optOnlyActIni then
+    else if (model.LMOptions.OptOption = optOnlyActIni) or (model.LMOptions.OptOption = optAllInisSeparate) then
       model.runActINI;
 
     model.MarquardOptimization(fn);

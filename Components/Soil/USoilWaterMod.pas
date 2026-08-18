@@ -1,5 +1,5 @@
 ﻿/// <summary>
-/// Implemtents different methods for vertical soil water transport either with differen variants
+/// Implements different methods for vertical soil water transport either with different algorithms
 /// of the potential based water transport or as a simple tipping bucket approach.
 /// </summary>
 /// <remarks>
@@ -15,8 +15,6 @@ interface
 uses
   UMod, UState, ULayeredSoil, UGenucht, classes, UAbstractSoilHeat,
   UAbstractPlant, USoilTexture,
-  // Forms, VCLTee.Chart, VCLTee.Series,
-  // InifilesNew;
   System.Inifiles,
   System.Threading,
   System.Diagnostics,
@@ -60,7 +58,7 @@ type
   TSoilWaterParams = array [1 .. max_comp] of TGenucht;
 
 /// <summary>
-/// Implemtents different methods for vertical soil water transport either with differen variants
+/// Implemtents different methods for vertical soil water transport either with different variants
 /// of the potential based water transport or as a simple tipping bucket approach.
 /// </summary>
 /// <remarks>
@@ -198,6 +196,14 @@ type
     procedure set_new_state_vars;
     /// <summary>calculation of runoff</summary>
     procedure CalcOverflow;
+    /// <summary>Initializes one iterative water-transport calculation.</summary>
+    procedure BeginIterativeTransport;
+    /// <summary>Completes one iteration and adjusts the internal time step.</summary>
+    procedure FinishIteration;
+    /// <summary>Finalizes an iterative transport calculation.</summary>
+    procedure FinishIterativeTransport(ApplyOverflow: Boolean);
+    /// <summary>Refreshes the water-transport debug form when enabled.</summary>
+    procedure UpdateDebugForm;
 
     procedure SetRangeAverage(var target: TVAR; startIdx, endIdx: integer);
 
@@ -291,15 +297,23 @@ type
     function getLD(i: integer): TLDClass;
     function GetHorizonIndexForLayer(i: integer): integer;
 
+    /// <summary>Limits each layer sink to the water available above the permanent wilting point during the current time step.</summary>
+    procedure LimitSinkRatesToAvailableWater; virtual;
+
   public
     /// <summary>actual number of layers to be calculated, variable in case of groundwater influence</summary>
     act_n_comp: integer;
+
     /// <summary>number of iterations during internal time step</summary>
     iter: integer;
     ActBalanceError: real;
+
+
     SumBalanceError: real;
+
     /// <summary>sum of soil and ponded water [mm]</summary>
     SWCStart, global_WaterBalance, old_global_WaterBalance: real;
+
     /// <summary>water content vector [cm3/cm3]</summary>
     theta_arr: TSoilvarArray;
     /// <summary>new soil water contents</summary>
@@ -529,7 +543,6 @@ type
     /// <summary>NetRain = precipitation - interception</summary>
     NetRain: TExternV;
     /// <summary>NetRain = precipitation - interception</summary>
-    // THumeNumEntity;
     /// <summary>cumulative precipitation [mm]</summary>
     CumNetRain: TState;
     /// <summary>potential evaporation rate</summary>
@@ -549,8 +562,6 @@ type
     CumDrainage: TState;
     /// <summary></summary>
     CumWaterBalance: TState;
-    /// <summary></summary>
-    // CumAbsWaterBalance: TState;
     /// <summary>Water-balance based on Evapotranspiration, losses and Rain</summary>
     CumGlobalWaterBalance: TState;
 
@@ -651,10 +662,10 @@ type
       write FTextureClass3;
     property Opt_TextureClass4: TTextureClass read FTextureClass4
       write FTextureClass4;
-    property Opt_TextureClass5: TTextureClass read FTextureClass4
-      write FTextureClass4;
-    property Opt_TextureClass6: TTextureClass read FTextureClass4
-      write FTextureClass4;
+    property Opt_TextureClass5: TTextureClass read FTextureClass5
+      write FTextureClass5;
+    property Opt_TextureClass6: TTextureClass read FTextureClass6
+      write FTextureClass6;
     property Opt_TransferWGsToNextINI: boolean read fTransferWGs
       write fTransferWGs;
     /// <summary>Option for Source of parameter Weff</summary>
@@ -870,10 +881,7 @@ end;
 
 /// <summary>returns the texture class for horizon i</summary>
 function TSoilWaterMod.getTexture(i: integer): TTextureClass;
-// var
-// nHorizons : integer;
 begin
-  // nHorizons := round(nHorizons.v);
   case GetHorizonIndexForLayer(i) of
     1:
       result := FTextureClass1;
@@ -892,10 +900,7 @@ end;
 
 /// <summary>returns the layer density class for horizon i</summary>
 function TSoilWaterMod.getLD(i: integer): TLDClass;
-// var
-// nHorizons : integer;
 begin
-  // nHorizons := round(nHorizons.v);
   case GetHorizonIndexForLayer(i) of
     1:
       result := fLDClass1;
@@ -931,7 +936,6 @@ begin
     Groundwaterdepth.Search := true
   else
     Groundwaterdepth.Search := false;
-  // if not (Netrain is TVar) then
   ExternVCreate('NetRain', '[mm/d]', StateField, NetRain,
     'rain minus interception');
   if not(Pot_Evap is TVAR) then
@@ -964,14 +968,11 @@ begin
     IniFileNdx := GlobMod.IniFileNames.IndexOf(GlobMod.ActIniFile.FileName);
     if (IniFileNdx <> GlobMod.IniFileNames.Count - 1) then
     begin
-      // exit;
       NextINI := TMemIniFile.create
         (GlobMod.IniFileNames[GlobMod.IniFileNames.IndexOf
         (GlobMod.ActIniFile.FileName) + 1], TEncoding.UTF8);
-      // NextINI.Init();
       NextStateINI := TMemIniFile.create(NextINI.ReadString('FileNames',
         'StateIniFN', ''), TEncoding.UTF8);
-      // NextStateINI.Init(NextINI.ReadString('FileNames', 'StateIniFN', ''));
       for i := 1 to n_comp + 1 do
       begin
         NextStateINI.WriteString(Name, 'WG' + ndx_str(i),
@@ -1021,8 +1022,6 @@ end;
 /// <summary>initialisation of daily sums and changes</summary>
 procedure TSoilWaterMod.InitDailySums_and_Changes(var OldSumSoilwater: real);
 var
-  OldSumWater: real;
-  OldPondedWater: real;
   i: integer;
 begin
   SumOfInternalTimeSteps.v := 0;
@@ -1032,9 +1031,7 @@ begin
   CumRunoff.c := 0;
   PondedWater.c := 0;
   CumDayFlow1 := 0;
-  OldPondedWater := PondedWater.v;
   OldSumSoilwater := SumSoilWater.v;
-  OldSumWater := OldSumSoilwater + PondedWater.v;
   for i := 1 to n_comp + 1 do
     Wflow_arr[i].v := 0;
   n_int_timesteps.v := 0;
@@ -1066,7 +1063,6 @@ end;
 procedure TSoilWaterMod.CalcTotalWaterAmounts;
 var
   i: integer;
-  SumWater: Extended;
 begin
   SumSoilWater.v := 0;
   SumPAVSoilWater.v := 0;
@@ -1077,7 +1073,6 @@ begin
     SumPAVSoilWater.v := SumPAVSoilWater.v + WAmount[i].v * 10 - PWP_Arr[i] *
       Thick[i] * 10;
   end;
-  SumWater := SumSoilWater.v + PondedWater.v;
 end;
 
 /// <summary>determination of number of computation layers for current time step considering the groundwater table</summary>
@@ -1267,8 +1262,105 @@ end;
 
 /// <summary>set van-Genuchten parameters from texture classes</summary>
 procedure TSoilWaterMod.SetGenuchtenPars;
+type
+  THorizonDescriptor = record
+    Boundary: TPar;
+    TextureClass: TTextureClass;
+    LDValue: TLD;
+    BSat: TPar;
+    BRest: TPar;
+    Alpha: TPar;
+    NPar: TPar;
+    LPar: TPar;
+    Ks: TPar;
+  end;
+
 var
-  i: integer;
+  Horizons: array [1 .. 6] of THorizonDescriptor;
+  HorizonIndex, i: integer;
+  UseRRTextureFunctions: boolean;
+
+  procedure SetHorizonDescriptor(var Descriptor: THorizonDescriptor;
+    Boundary: TPar; TextureClass: TTextureClass; LDValue: TLD;
+    BSat, BRest, Alpha, NPar, LPar, Ks: TPar);
+  begin
+    Descriptor.Boundary := Boundary;
+    Descriptor.TextureClass := TextureClass;
+    Descriptor.LDValue := LDValue;
+    Descriptor.BSat := BSat;
+    Descriptor.BRest := BRest;
+    Descriptor.Alpha := Alpha;
+    Descriptor.NPar := NPar;
+    Descriptor.LPar := LPar;
+    Descriptor.Ks := Ks;
+  end;
+
+  procedure ApplyHorizonParameters(LayerIndex, DescriptorIndex: integer);
+  var
+    Descriptor: THorizonDescriptor;
+  begin
+    Descriptor := Horizons[DescriptorIndex];
+
+    if FVGParsFromTexture = FromTexture then
+    begin
+      if UseRRTextureFunctions then
+        VanGenuchtenFromTextureClass_RR(WPar[LayerIndex],
+          Descriptor.TextureClass)
+      else
+        VanGenuchtenFromTextureClass_KA(WPar[LayerIndex],
+          Descriptor.TextureClass);
+      WPar[LayerIndex].Ks := Descriptor.Ks.v;
+    end
+    else
+    begin
+      WPar[LayerIndex].b_sat := Descriptor.BSat.v * bsat_scaling.v;
+      WPar[LayerIndex].b_rest := Descriptor.BRest.v;
+      WPar[LayerIndex].alpha := Descriptor.Alpha.v * alpha_scaling.v;
+      WPar[LayerIndex].n_par := Descriptor.NPar.v;
+      WPar[LayerIndex].l_par := Descriptor.LPar.v;
+      WPar[LayerIndex].Ks := Descriptor.Ks.v;
+    end;
+
+    case m_model of
+      Mualem:
+        WPar[LayerIndex].m_par := 1 - 1 / WPar[LayerIndex].n_par;
+      Burdine:
+        WPar[LayerIndex].m_par := 1 - 2 / WPar[LayerIndex].n_par;
+      Vereecken:
+        WPar[LayerIndex].m_par := 1;
+    end;
+
+    if FKsFromTexture = FromTexture then
+    begin
+      if UseRRTextureFunctions then
+        WPar[LayerIndex].Ks := KSFromTextureClass_RR(
+          Descriptor.TextureClass, Descriptor.LDValue)
+      else
+        WPar[LayerIndex].Ks := KSFromTextureClass_KA(
+          Descriptor.TextureClass);
+    end;
+  end;
+
+  procedure WriteHorizonParameters(
+    const Descriptor: THorizonDescriptor);
+  var
+    LayerIndex: integer;
+  begin
+    LayerIndex := trunc(Descriptor.Boundary.v);
+    ParIniF.WriteFloat(Name, Descriptor.BSat.Name,
+      WPar[LayerIndex].b_sat);
+    ParIniF.WriteFloat(Name, Descriptor.BRest.Name,
+      WPar[LayerIndex].b_rest);
+    ParIniF.WriteFloat(Name, Descriptor.Alpha.Name,
+      WPar[LayerIndex].alpha);
+    ParIniF.WriteFloat(Name, Descriptor.NPar.Name,
+      WPar[LayerIndex].n_par);
+    ParIniF.WriteFloat(Name, Descriptor.LPar.Name,
+      WPar[LayerIndex].l_par);
+    ParIniF.WriteFloat(Name, Descriptor.Ks.Name,
+      WPar[LayerIndex].Ks);
+  end;
+
 begin
   setTextClassOption(FTextureClass1, FTextClass1Option.Option);
   setTextClassOption(FTextureClass2, FTextClass2Option.Option);
@@ -1277,273 +1369,33 @@ begin
   setTextClassOption(FTextureClass5, FTextClass5Option.Option);
   setTextClassOption(FTextureClass6, FTextClass6Option.Option);
 
-  if FVGParsFromTexture = FromTexture then
-  begin
-    for i := 1 to round(HoriNdx1.v) do
-    begin
-      if uppercase(Texture_versionOption.Option) = 'RR' then
-      begin
-        VanGenuchtenFromTextureClass_RR(WPar[i], FTextureClass1);
-      end
-      else
-        VanGenuchtenFromTextureClass_KA(WPar[i], FTextureClass1);
-      WPar[i].Ks := Ks1.v;
-      case m_model of
-        Mualem:
-          WPar[i].m_par := 1 - 1 / WPar[i].n_par;
-        Burdine:
-          WPar[i].m_par := 1 - 2 / WPar[i].n_par;
-        Vereecken:
-          WPar[i].m_par := 1;
-      end;
-    end;
-    for i := round(HoriNdx1.v) + 1 to round(HoriNdx2.v) do
-    begin
-      if uppercase(Texture_versionOption.Option) = 'RR' then
-        VanGenuchtenFromTextureClass_RR(WPar[i], FTextureClass2)
-      else
-        VanGenuchtenFromTextureClass_KA(WPar[i], FTextureClass2);
-      WPar[i].Ks := Ks2.v;
-      case m_model of
-        Mualem:
-          WPar[i].m_par := 1 - 1 / WPar[i].n_par;
-        Burdine:
-          WPar[i].m_par := 1 - 2 / WPar[i].n_par;
-        Vereecken:
-          WPar[i].m_par := 1;
-      end;
-    end;
-    for i := round(HoriNdx2.v) + 1 to round(HoriNdx3.v) do
-    begin
-      if uppercase(Texture_versionOption.Option) = 'RR' then
-        VanGenuchtenFromTextureClass_RR(WPar[i], FTextureClass3)
-      else
-        VanGenuchtenFromTextureClass_KA(WPar[i], FTextureClass3);
-      WPar[i].Ks := Ks3.v;
-      case m_model of
-        Mualem:
-          WPar[i].m_par := 1 - 1 / WPar[i].n_par;
-        Burdine:
-          WPar[i].m_par := 1 - 2 / WPar[i].n_par;
-        Vereecken:
-          WPar[i].m_par := 1;
-      end;
-    end;
-    for i := round(HoriNdx3.v) + 1 to round(HoriNdx4.v) do
-    begin
-      if uppercase(Texture_versionOption.Option) = 'RR' then
-        VanGenuchtenFromTextureClass_RR(WPar[i], FTextureClass4)
-      else
-        VanGenuchtenFromTextureClass_KA(WPar[i], FTextureClass4);
-      WPar[i].Ks := Ks4.v;
-      case m_model of
-        Mualem:
-          WPar[i].m_par := 1 - 1 / WPar[i].n_par;
-        Burdine:
-          WPar[i].m_par := 1 - 2 / WPar[i].n_par;
-        Vereecken:
-          WPar[i].m_par := 1;
-      end;
-    end;
-    for i := round(HoriNdx4.v) + 1 to round(HoriNdx5.v) do
-    begin
-      if uppercase(Texture_versionOption.Option) = 'RR' then
-        VanGenuchtenFromTextureClass_RR(WPar[i], FTextureClass5)
-      else
-        VanGenuchtenFromTextureClass_KA(WPar[i], FTextureClass5);
-      WPar[i].Ks := Ks5.v;
-      case m_model of
-        Mualem:
-          WPar[i].m_par := 1 - 1 / WPar[i].n_par;
-        Burdine:
-          WPar[i].m_par := 1 - 2 / WPar[i].n_par;
-        Vereecken:
-          WPar[i].m_par := 1;
-      end;
-    end;
-    for i := round(HoriNdx5.v) + 1 to n_comp + 1 do
-    begin
-      if uppercase(Texture_versionOption.Option) = 'RR' then
-        VanGenuchtenFromTextureClass_RR(WPar[i], FTextureClass6)
-      else
-        VanGenuchtenFromTextureClass_KA(WPar[i], FTextureClass6);
-      WPar[i].Ks := Ks6.v;
-      case m_model of
-        Mualem:
-          WPar[i].m_par := 1 - 1 / WPar[i].n_par;
-        Burdine:
-          WPar[i].m_par := 1 - 2 / WPar[i].n_par;
-        Vereecken:
-          WPar[i].m_par := 1;
-      end;
-    end;
-  end
-  else
-  begin
-    { FVGParsFromTexture = FromPar }
-    for i := 1 to round(HoriNdx1.v) do
-    begin
-      WPar[i].b_sat := b_sat1.v * bsat_scaling.v;
-      WPar[i].b_rest := b_rest1.v;
-      WPar[i].alpha := alpha1.v * alpha_scaling.v;
-      WPar[i].n_par := n_par1.v;
-      case m_model of
-        Mualem:
-          WPar[i].m_par := 1 - 1 / n_par1.v;
-        Burdine:
-          WPar[i].m_par := 1 - 2 / n_par1.v;
-        Vereecken:
-          WPar[i].m_par := 1;
-      end;
-      WPar[i].l_par := l_par1.v;
-      WPar[i].Ks := Ks1.v;
-    end;
-    for i := round(HoriNdx1.v) + 1 to round(HoriNdx2.v) do
-    begin
-      WPar[i].b_sat := b_sat2.v * bsat_scaling.v;
-      WPar[i].b_rest := b_rest2.v;
-      WPar[i].alpha := alpha2.v * alpha_scaling.v;
-      WPar[i].n_par := n_par2.v;
-      case m_model of
-        Mualem:
-          WPar[i].m_par := 1 - 1 / n_par2.v;
-        Burdine:
-          WPar[i].m_par := 1 - 2 / n_par2.v;
-        Vereecken:
-          WPar[i].m_par := 1;
-      end;
-      WPar[i].l_par := l_par2.v;
-      WPar[i].Ks := Ks2.v;
-    end;
-    for i := round(HoriNdx2.v) + 1 to round(HoriNdx3.v) do
-    begin
-      WPar[i].b_sat := b_sat3.v * bsat_scaling.v;
-      WPar[i].b_rest := b_rest3.v;
-      WPar[i].alpha := alpha3.v * alpha_scaling.v;
-      WPar[i].n_par := n_par3.v;
-      case m_model of
-        Mualem:
-          WPar[i].m_par := 1 - 1 / n_par3.v;
-        Burdine:
-          WPar[i].m_par := 1 - 2 / n_par3.v;
-        Vereecken:
-          WPar[i].m_par := 1;
-      end;
-      WPar[i].l_par := l_par3.v;
-      WPar[i].Ks := Ks3.v;
-    end;
-    for i := round(HoriNdx3.v) + 1 to round(HoriNdx4.v) do
-    begin
-      WPar[i].b_sat := b_sat5.v * bsat_scaling.v;
-      WPar[i].b_rest := b_rest5.v;
-      WPar[i].alpha := alpha5.v * alpha_scaling.v;
-      WPar[i].n_par := n_par5.v;
-      case m_model of
-        Mualem:
-          WPar[i].m_par := 1 - 1 / n_par5.v;
-        Burdine:
-          WPar[i].m_par := 1 - 2 / n_par5.v;
-        Vereecken:
-          WPar[i].m_par := 1;
-      end;
-      WPar[i].l_par := l_par5.v;
-      WPar[i].Ks := Ks5.v;
-    end;
-    for i := round(HoriNdx5.v) + 1 to n_comp + 1 do
-    begin
-      WPar[i].b_sat := b_sat6.v * bsat_scaling.v;
-      WPar[i].b_rest := b_rest6.v;
-      WPar[i].alpha := alpha6.v * alpha_scaling.v;
-      WPar[i].n_par := n_par6.v;
-      case m_model of
-        Mualem:
-          WPar[i].m_par := 1 - 1 / n_par6.v;
-        Burdine:
-          WPar[i].m_par := 1 - 2 / n_par6.v;
-        Vereecken:
-          WPar[i].m_par := 1;
-      end;
-      WPar[i].l_par := l_par6.v;
-      WPar[i].Ks := Ks6.v;
-    end;
+  SetHorizonDescriptor(Horizons[1], HoriNdx1, FTextureClass1, fLD1,
+    b_sat1, b_rest1, alpha1, n_par1, l_par1, Ks1);
+  SetHorizonDescriptor(Horizons[2], HoriNdx2, FTextureClass2, fLD2,
+    b_sat2, b_rest2, alpha2, n_par2, l_par2, Ks2);
+  SetHorizonDescriptor(Horizons[3], HoriNdx3, FTextureClass3, fLD3,
+    b_sat3, b_rest3, alpha3, n_par3, l_par3, Ks3);
+  SetHorizonDescriptor(Horizons[4], HoriNdx4, FTextureClass4, fLD4,
+    b_sat4, b_rest4, alpha4, n_par4, l_par4, Ks4);
+  SetHorizonDescriptor(Horizons[5], HoriNdx5, FTextureClass5, fLD5,
+    b_sat5, b_rest5, alpha5, n_par5, l_par5, Ks5);
+  SetHorizonDescriptor(Horizons[6], HoriNdx6, FTextureClass6, fLD6,
+    b_sat6, b_rest6, alpha6, n_par6, l_par6, Ks6);
 
-  end;
-  if FKsFromTexture = FromTexture then
+  UseRRTextureFunctions := SameText(Texture_versionOption.Option, 'RR');
+
+  for i := 1 to n_comp + 1 do
   begin
-    for i := 1 to round(HoriNdx1.v) do
-      if uppercase(Texture_versionOption.Option) = 'RR' then
-        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass1, fLD1)
-      else
-        WPar[i].Ks := KSFromTextureClass_KA(FTextureClass1);
-    for i := round(HoriNdx1.v) + 1 to round(HoriNdx2.v) do
-      if uppercase(Texture_versionOption.Option) = 'RR' then
-        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass2, fLD2)
-      else
-        WPar[i].Ks := KSFromTextureClass_KA(FTextureClass2);
-    for i := round(HoriNdx2.v) + 1 to round(HoriNdx3.v) do
-      if uppercase(Texture_versionOption.Option) = 'RR' then
-        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass3, fLD3)
-      else
-        WPar[i].Ks := KSFromTextureClass_KA(FTextureClass3);
-    for i := round(HoriNdx3.v) + 1 to round(HoriNdx4.v) do
-      if uppercase(Texture_versionOption.Option) = 'RR' then
-        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass4, fLD4)
-      else
-        WPar[i].Ks := KSFromTextureClass_KA(FTextureClass4);
-    for i := round(HoriNdx4.v) + 1 to round(HoriNdx5.v) do
-      if uppercase(Texture_versionOption.Option) = 'RR' then
-        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass5, fLD5)
-      else
-        WPar[i].Ks := KSFromTextureClass_KA(FTextureClass5);
-    for i := round(HoriNdx5.v) + 1 to n_comp + 1 do
-      if uppercase(Texture_versionOption.Option) = 'RR' then
-        WPar[i].Ks := KSFromTextureClass_RR(FTextureClass6, fLD6)
-      else
-        WPar[i].Ks := KSFromTextureClass_KA(FTextureClass6);
+    HorizonIndex := GetHorizonIndexForLayer(i);
+    ApplyHorizonParameters(i, HorizonIndex);
   end;
 
   if fWriteParsFromTexture then
-  begin
-    ParIniF.WriteFloat(Name, Par_b_sat1.Name, WPar[trunc(HoriNdx1.v)].b_sat);
-    ParIniF.WriteFloat(Name, Par_b_sat2.Name, WPar[trunc(HoriNdx2.v)].b_sat);
-    ParIniF.WriteFloat(Name, Par_b_sat3.Name, WPar[trunc(HoriNdx3.v)].b_sat);
-    ParIniF.WriteFloat(Name, Par_b_sat4.Name, WPar[trunc(HoriNdx4.v)].b_sat);
-    ParIniF.WriteFloat(Name, Par_b_sat5.Name, WPar[trunc(HoriNdx5.v)].b_sat);
-    ParIniF.WriteFloat(Name, Par_b_sat6.Name, WPar[trunc(HoriNdx6.v)].b_sat);
-    ParIniF.WriteFloat(Name, Par_b_rest1.Name, WPar[trunc(HoriNdx1.v)].b_rest);
-    ParIniF.WriteFloat(Name, Par_b_rest2.Name, WPar[trunc(HoriNdx2.v)].b_rest);
-    ParIniF.WriteFloat(Name, Par_b_rest3.Name, WPar[trunc(HoriNdx3.v)].b_rest);
-    ParIniF.WriteFloat(Name, Par_b_rest4.Name, WPar[trunc(HoriNdx4.v)].b_rest);
-    ParIniF.WriteFloat(Name, Par_b_rest5.Name, WPar[trunc(HoriNdx5.v)].b_rest);
-    ParIniF.WriteFloat(Name, Par_b_rest6.Name, WPar[trunc(HoriNdx6.v)].b_rest);
-    ParIniF.WriteFloat(Name, Par_alpha1.Name, WPar[trunc(HoriNdx1.v)].alpha);
-    ParIniF.WriteFloat(Name, Par_alpha2.Name, WPar[trunc(HoriNdx2.v)].alpha);
-    ParIniF.WriteFloat(Name, Par_alpha3.Name, WPar[trunc(HoriNdx3.v)].alpha);
-    ParIniF.WriteFloat(Name, Par_alpha4.Name, WPar[trunc(HoriNdx4.v)].alpha);
-    ParIniF.WriteFloat(Name, Par_alpha5.Name, WPar[trunc(HoriNdx5.v)].alpha);
-    ParIniF.WriteFloat(Name, Par_alpha6.Name, WPar[trunc(HoriNdx6.v)].alpha);
-    ParIniF.WriteFloat(Name, Par_n1.Name, WPar[trunc(HoriNdx1.v)].n_par);
-    ParIniF.WriteFloat(Name, Par_n2.Name, WPar[trunc(HoriNdx2.v)].n_par);
-    ParIniF.WriteFloat(Name, Par_n3.Name, WPar[trunc(HoriNdx3.v)].n_par);
-    ParIniF.WriteFloat(Name, Par_n4.Name, WPar[trunc(HoriNdx4.v)].n_par);
-    ParIniF.WriteFloat(Name, Par_n5.Name, WPar[trunc(HoriNdx5.v)].n_par);
-    ParIniF.WriteFloat(Name, Par_n6.Name, WPar[trunc(HoriNdx6.v)].n_par);
-    ParIniF.WriteFloat(Name, Par_lpar1.Name, WPar[trunc(HoriNdx1.v)].l_par);
-    ParIniF.WriteFloat(Name, Par_lpar2.Name, WPar[trunc(HoriNdx2.v)].l_par);
-    ParIniF.WriteFloat(Name, Par_lpar3.Name, WPar[trunc(HoriNdx3.v)].l_par);
-    ParIniF.WriteFloat(Name, Par_lpar4.Name, WPar[trunc(HoriNdx4.v)].l_par);
-    ParIniF.WriteFloat(Name, Par_lpar5.Name, WPar[trunc(HoriNdx5.v)].l_par);
-    ParIniF.WriteFloat(Name, Par_lpar6.Name, WPar[trunc(HoriNdx6.v)].l_par);
-    ParIniF.WriteFloat(Name, Par_b_KS1.Name, WPar[trunc(HoriNdx1.v)].Ks);
-    ParIniF.WriteFloat(Name, Par_b_KS2.Name, WPar[trunc(HoriNdx2.v)].Ks);
-    ParIniF.WriteFloat(Name, Par_b_KS3.Name, WPar[trunc(HoriNdx3.v)].Ks);
-    ParIniF.WriteFloat(Name, Par_b_KS4.Name, WPar[trunc(HoriNdx4.v)].Ks);
-    ParIniF.WriteFloat(Name, Par_b_KS5.Name, WPar[trunc(HoriNdx5.v)].Ks);
-    ParIniF.WriteFloat(Name, Par_b_KS6.Name, WPar[trunc(HoriNdx6.v)].Ks);
-  end;
+    for HorizonIndex := 1 to 6 do
+      WriteHorizonParameters(Horizons[HorizonIndex]);
+
   if ParIniF <> nil then
     ParIniF.UpdateFile;
-
 end;
 
 /// <summary>set texture classes for horizons</summary>
@@ -1641,7 +1493,6 @@ begin
     B_vektor[i] := 0;
     wf[i] := 1;
     Wflow_old[i] := 0;
-    // WAmount[i].v := 0.0;
   end;
   for i := 1 to n_comp + 1 do
   begin
@@ -1860,7 +1711,6 @@ begin
     'cumulative water loss at layer xx');
   StateCreate('CumWaterBalance', '[mm]', 0, true, CumWaterBalance,
     'water balance calculated from total soil profile changes [mm]');
-  // StateCreate('CumAbsWaterBalance', '[mm]', 0, true, CumAbsWaterBalance);
   StateCreate('CumRunoff', '[mm]', 0, true, CumRunoff,
     'calculated survace run off');
   StateCreate('CumTrans', '[mm]', 0, true, CumTrans,
@@ -2256,14 +2106,11 @@ end;
 procedure TSoilWaterMod.Init(var GlobMod: Tmod);
 var
   i: integer;
-  error: boolean;
   psiWP, psiFK: real;
   nFK0_Weff, PWP0_Weff, WG0_Weff, defaultvalue: real;
 
 begin
   inherited Init(GlobMod);
-  // InitGenuchtenPars;    // set parameter values to individual layers from horizon parameters
-  // now implemented in SetGenuchtenPars
   InitVectors;
   if uppercase(FVGParsFromTextOption.Option) = 'FROMPAR' then
     FVGParsFromTexture := FromPar;
@@ -2274,6 +2121,8 @@ begin
   if uppercase(FKsFromTextOption.Option) = 'FROMTEXTURE' then
     FKsFromTexture := FromTexture;
   SetGenuchtenPars; // Init Genuchten Pars
+  for i := 1 to n_comp + 1 do
+    WPar[i].PrecalculateCoefficients;
   SetLDPars; // Init LDs
   SetLDnumbers; // Init numerical LD classes
 
@@ -2313,7 +2162,6 @@ begin
   // property.
   // hk 25.1.01: should actually be set via the property ...
   // no idea who wrote this ...
-  // max_aenderWG := 0.01; // maximum change in water content per time step
 
   // set "property Variable" according to option choise in Options.ini
   if OptIniMethod.Option = 'watercontents' then
@@ -2333,7 +2181,6 @@ begin
   else
     fTransferWGs := false;
 
-  // if then
 
   if Opt_IniMethod = Watercontents then
   begin
@@ -2428,9 +2275,6 @@ begin
   DayFlow1 := -0.1 * Act_Evap.v + 0.1 * NetRain.v; // [cm/d]
   WflowInt_arr[1].v := DayFlow1; // [cm/d]
   CumNetRain.c := NetRain.v;
-  // WflowInt_arr[1].v := 0.0;
-  // CumNetRain.c := 0.0;
-  // self.CumEvap.c := 0.0;
 end;
 
 procedure TSoilWaterMod.CalcEvap_red_f;
@@ -2491,7 +2335,6 @@ begin
     n_int_timesteps.v := n_int_timesteps.v + 1;
     for i := 1 to n_comp + 1 do
       Wflow_arr[i].v := Wflow_arr[i].v + WflowInt_arr[i].v * dt.v;
-    // sink_arr[i].v := sink_arr[i].v + SinkInt_arr[i].v*dt.v;
     NewDay := false;
   until SumOfInternalTimeSteps.v >= GlobTime.c;
   NewDay := true;
@@ -2509,13 +2352,14 @@ begin
   case context of
     ccDiffusion:
       begin
-        TParallel.For(1, n_comp + 1,
-          procedure(i: Int64)
+//        TParallel.For(1, n_comp + 1,
+//          procedure(i: Int64)
+      for I := 1 to n_comp + 1 do
           begin
             Dw_arr[i] := max(0, WPar[i].Dw_f(max(WPar[i].b_rest, theta_new[i])));
             Ku_arr[i] := max(0, WPar[i].Ku_b_f(max(WPar[i].b_rest, theta_new[i])));
-          end);
-
+//          end);
+          end;
         for i := 2 to n_comp + 1 do
         begin
           avg_Dw[i] := sqrt(Dw_arr[i - 1] * Dw_arr[i]); // cm2/d
@@ -2585,13 +2429,14 @@ begin
 
     ccMixedHydrus:
       begin
-        TParallel.For(1, n_comp + 1,
-          procedure(i: Int64)
+ //       TParallel.For(1, n_comp + 1,
+ //         procedure(i: Int64)
+          for i := 1 to n_comp + 1 do
           begin
             c_arr[i] := WPar[i].C_psi_f(psi_neu[i]);
             Ku_arr[i] := WPar[i].Ku_psi_f(psi_neu[i]);
-          end);
-
+//          end);
+          end;
         avg_Ku[0] := (WPar[1].Ks + Ku_arr[1]) / 2; // aritmethic mean
 
         TParallel.For(1, n_comp,
@@ -2634,9 +2479,6 @@ begin
 end;
 
 procedure TSoilWaterMod.Integrate;
-var
-  ndx_str: string;
-
 begin
   inherited;
   CalcProfile_and_HorizonSums;
@@ -2728,25 +2570,14 @@ begin
     end;
     last_iter := iter;
     iter := 0;
-    // IterMax.v := min(1000,IterMax.v *2);  // increase allowed number of Iterations up to an allowed maximum
     max_IterError.v := max_IterError.v * 2;
     // double the allowed water content change during one iteration
 
-    // ResetTimeStep := true;                // set flag for change of time step
     dt.v := max(self.Min_dt.v, dt.v / 10);
     // reduce time step length down to a certain minimum
 
-    // dt.v := max(dt.v/10, min_dt.v);         // reduce time step length down to a certain minimum
-    // if SumOfInternalTimeSteps.v + dt.v > GlobTime.c then begin
-    // dt_old := dt.v;
-    // dt.v := (GlobTime.c - SumOfInternalTimeSteps.v);
-    // if(last_iter > 10) then last_iter:=+1;
-    // newday := true;
-    // dt_set := true;
-    // end;
   end; // Reset end
 
-  // iter := 0;
 end;
 
 procedure TSoilWaterMod.get_new_dt;
@@ -2791,9 +2622,8 @@ begin
   dt_neu_flow := 1E5 * max_flow_ratio;
   if dt_neu > dt_neu_flow then
     dt_neu := dt_neu_flow;
-  // dt_neu := min(dt_neu, dt_neu_flow);
 
-  if ((dt_neu > (1.5 * dt.v)) { and (dt_neu > min_dt*100) } ) then
+  if dt_neu > 1.5 * dt.v then
     dt_neu := dt.v * 1.5; { Time step increase too large? }
   dt.v := dt_neu;
   if SumOfInternalTimeSteps.v + dt.v > GlobTime.c then
@@ -2831,6 +2661,56 @@ begin
     end;
   end;
 
+end;
+
+procedure TSoilWaterMod.BeginIterativeTransport;
+begin
+  get_water_contents;
+  get_new_dt;
+  LimitSinkRatesToAvailableWater;
+  success := false;
+  iter := 0;
+end;
+
+procedure TSoilWaterMod.LimitSinkRatesToAvailableWater;
+var
+  LayerIndex: integer;
+  AvailableWater, MaximumSinkRate: real;
+begin
+  if dt.v <= 0.0 then
+    exit;
+
+  for LayerIndex := 1 to n_comp do
+  begin
+    AvailableWater := max(0.0, (theta_arr[LayerIndex].v -
+      PWP_Arr[LayerIndex]) * Thick[LayerIndex]);
+    MaximumSinkRate := AvailableWater / dt.v;
+    Sink_arr[LayerIndex].v := max(0.0,
+      min(Sink_arr[LayerIndex].v, MaximumSinkRate));
+  end;
+end;
+
+procedure TSoilWaterMod.UpdateDebugForm;
+begin
+{$IFNDEF NONVISUAL}
+  if (DebugForm <> nil) and Debugmodus then
+    DebugForm.Update;
+{$ENDIF}
+end;
+
+procedure TSoilWaterMod.FinishIteration;
+begin
+  get_delt_iter_max;
+  UpdateDebugForm;
+  adjust_dt;
+end;
+
+procedure TSoilWaterMod.FinishIterativeTransport(ApplyOverflow: Boolean);
+begin
+  if ApplyOverflow then
+    CalcOverflow;
+  GetWaterBalance;
+  set_new_state_vars;
 end;
 
 procedure TSoilWaterMod.CalcOverflow;
@@ -2879,8 +2759,6 @@ begin
       until (layer = 0) or (Overflow <= 0);
       // all overflow distributed or surface layer reached ...
       if Overflow > 0 then
-        // CumRunoff.c := CumRunoff.c + Overflow * 10 * GlobTime.c;
-        // PondedWater.v:= PondedWater.v + Overflow * 10 * GlobTime.c;
         PondedWater.c := PondedWater.c + Overflow * 10 * dt.v;
     end;
 
@@ -2916,8 +2794,6 @@ begin
   // Calculation of derived water contents for different soil layers
   update_Wcont_Values;
 
-  // CumEvap.c := CumEvap.c +
-  // (-WflowInt_arr[1].v * 10 + CumNetRain.c - CumRunoff.c) * dt.v;
   CumEvap.c := CumEvap.c + Act_Evap.v * dt.v; // [mm]
   // if WFlowInt_arr[1] was reduced because of dry, this is the new ActEvap of InternTimeStep
   CumDrainage.c := CumDrainage.c + WflowInt_arr[trunc(bil_nr.v) + 1].v * 10 *
@@ -2934,6 +2810,8 @@ const
 var
   psiWP, psiFK: real;
   WCap: TSoilArray;
+  FKPars, PWPPars: array [1 .. 6] of TPar;
+  HorizonIndex: integer;
   i: byte;
 
 begin
@@ -2946,51 +2824,28 @@ begin
 
     if nFKCalcMethod = Input then
     begin
+      CheckForHoriIndexInitialisation;
 
-      if HoriNdx1.v = 0 then
+      FKPars[1] := Par_FK1;
+      FKPars[2] := Par_FK2;
+      FKPars[3] := Par_FK3;
+      FKPars[4] := Par_FK4;
+      FKPars[5] := Par_FK5;
+      FKPars[6] := Par_FK6;
+
+      PWPPars[1] := Par_PWP1;
+      PWPPars[2] := Par_PWP2;
+      PWPPars[3] := Par_PWP3;
+      PWPPars[4] := Par_PWP4;
+      PWPPars[5] := Par_PWP5;
+      PWPPars[6] := Par_PWP6;
+
+      for i := 1 to n_comp + 1 do
       begin
-        if ShowWarnings then
-        begin
-
-{$IFNDEF NONVISUAL}
-          showmessage
-            ('Warning ! No specification of Indexes for hydraulic parameters');
-          showmessage('Please check !');
-
-{$ELSE}
-          writeln('Warning ! No specification of Indexes for hydraulic parameters');
-          writeln('Please check !');
-
-{$ENDIF}
-        end;
-      end;
-
-      for i := 1 to round(HoriNdx1.v) do
-      begin
-        FK_Arr[i] := Par_FK1.v;
-        PWP_Arr[i] := Par_PWP1.v;
-        nFK_Arr[i] := Par_FK1.v - Par_PWP1.v;
-      end;
-
-      for i := round(HoriNdx1.v) + 1 to round(HoriNdx2.v) do
-      begin
-        FK_Arr[i] := Par_FK2.v;
-        PWP_Arr[i] := Par_PWP2.v;
-        nFK_Arr[i] := Par_FK2.v - Par_PWP2.v;
-      end;
-
-      for i := round(HoriNdx2.v) + 1 to round(HoriNdx3.v) do
-      begin
-        FK_Arr[i] := Par_FK3.v;
-        PWP_Arr[i] := Par_PWP3.v;
-        nFK_Arr[i] := Par_FK3.v - Par_PWP3.v;
-      end;
-
-      for i := round(HoriNdx3.v) + 1 to n_comp + 1 do
-      begin
-        FK_Arr[i] := Par_FK4.v;
-        PWP_Arr[i] := Par_PWP4.v;
-        nFK_Arr[i] := Par_FK4.v - Par_PWP4.v;
+        HorizonIndex := GetHorizonIndexForLayer(i);
+        FK_Arr[i] := FKPars[HorizonIndex].v;
+        PWP_Arr[i] := PWPPars[HorizonIndex].v;
+        nFK_Arr[i] := FK_Arr[i] - PWP_Arr[i];
       end;
     end
     else
@@ -3017,6 +2872,7 @@ begin
     WflowInt_arr[i].v := 0.0;
   end;
 
+  LimitSinkRatesToAvailableWater;
   WflowInt_arr[1].v := 0.1 * NetRain.v - 0.1 * Act_Evap.v; // upper boundary
 
   for i := 1 to n_comp do
@@ -3065,8 +2921,7 @@ begin
   begin
     theta_arr[i].v := WAmount[i].v / Thick[i];
     theta_new[i] := theta_arr[i].v;
-    // Wflow_old[i] := avg_Dw[i] * (theta_old[i - 1] - theta_old[i])
-    // / Dist[i - 1] + avg_Ku[i];
+
   end;
 end;
 
@@ -3101,10 +2956,8 @@ begin
     end
     else
     begin
-      psi_arr[n_comp + 1].v := psi_arr[n_comp].v; // -Abst[n_comp];
-      // psi_arr[n_comp + 1].v := psi_arr[n_comp].v -Abst[n_comp];
+      psi_arr[n_comp + 1].v := psi_arr[n_comp].v;
       theta_arr[n_comp + 1].v := WPar[n_comp].b_psi_f(psi_arr[n_comp + 1].v);
-      // theta_arr[n_comp + 1].v :=  theta_arr[n_comp].v;
       psi_neu[n_comp + 1] := psi_arr[n_comp + 1].v;
       theta_new[n_comp + 1] := theta_arr[n_comp + 1].v;
     end;
@@ -3146,7 +2999,6 @@ begin
 
   if not(wet or dry) then
   begin
-    // success := true;
     B_vektor[1] := theta_arr[1].v + WflowInt_arr[1].v * dt.v / Thick[1] -
       Ku_fact[2] / Thick[1] - Sink_arr[1].v * dt.v / Thick[1];
     diag[1] := Dw_fact[2] / Thick[1] + 1.0;
@@ -3185,16 +3037,7 @@ var
         upper[i] := -Dw_fact[i + 1] / Thick[i];
       end);
 
-    { for i := start + 1 to n_comp - 1 do
-      begin
-      B_vektor[i] := theta_arr[i].v
-      - Ku_fact[i + 1] / Thick[i]
-      + Ku_fact[i] / Thick[i]
-      - Sink_arr[i].v * dt.v / Thick[i];
-      lower[i] := -Dw_fact[i] / Thick[i];
-      diag[i]  := Dw_fact[i] / Thick[i] + Dw_fact[i + 1] / Thick[i] + 1.0;
-      upper[i] := -Dw_fact[i + 1] / Thick[i];
-      end; }
+
   end;
 
   procedure LowerBoundary;
@@ -3340,27 +3183,17 @@ var
   end;
 
 begin { procedure Diffwater_solut }
-  get_water_contents;
-  get_new_dt;
-  success := false;
-  iter := 0;
+  BeginIterativeTransport;
   repeat
     CalcConductivities(ccDiffusion, true, true, true);
     UpperBoundaryCondition;
     MainLoop;
     LowerBoundary;
     Loesung_Gleichungssystem;
-    get_delt_iter_max;
-{$IFNDEF NONVISUAL}
-    if (DebugForm <> NIL) and Debugmodus then
-      DebugForm.update;
-{$ENDIF}
-    adjust_dt;
+    FinishIteration;
   until (success);
   Find_flows;
-  CalcOverflow;
-  GetWaterBalance;
-  set_new_state_vars;
+  FinishIterativeTransport(true);
 end;
 { -------------------------------------------------------------------------- }
 
@@ -3368,17 +3201,11 @@ procedure TSoilWaterMod.Richardswater_solut;
 
 var
   result: byte;
-  // i: integer;
-  psi_top, MaxFlow1,
-
-    ExcessWater: real;
+  psi_top, MaxFlow1: real;
 
   procedure UpperBoundary;
 
   var
-    est_theta_1: real;
-    // ExcessWater: real;
-    psi_top1: real;
     i: integer;
 
     { To prevent invalid function calls, first check whether a decline of the
@@ -3386,10 +3213,6 @@ var
       saturation water content b_sat is expected. The result of this check is
       stored in the variables "Wet" and "Dry". }
   begin
-    // est_theta_1 := WPar[1].b_psi_f(psi_neu[1]) + (NetRain.v -Sink_arr[1].v) * dt.v / Dicke[1];
-    // est_theta_1 := WPar[1].b_psi_f(psi_arr[1].v) + (NetRain.v*10 -Sink_arr[1].v) * dt.v / Dicke[1]-
-    // WFlowInt_arr[2].v*dt.v/Dicke[1];
-    // if (est_theta_1 < theta_airdryness) then begin
 
     dry := false;
     wet := false;
@@ -3401,7 +3224,6 @@ var
     if MaxFlow1 > 0 then
     begin
       psi_top := -PondedWater.v / 10; // tension including ponded water [cm]
-      // MaxInfil :=  avg_ku[0];     // without tension induced flux
       MaxInfil := 2.0 * avg_Ku[0] * ((psi_neu[1] - psi_top) / Thick[1]) +
         avg_Ku[0];
       if MaxFlow1 > MaxInfil then
@@ -3457,7 +3279,6 @@ var
         lower[i] := kf[i - 1] * P[i];
         diag[i] := -kf[i - 1] * P[i] - kf[i] * P[i] + 1;
         upper[i] := kf[i] * P[i];
-        // wf[i] := 1.0;
       end
       else
       begin
@@ -3538,7 +3359,6 @@ var
     for i := act_n_comp downto start do
     begin
       last_iter_theta[i] := theta_new[i];
-      // psi_neu[i] := max(0, B_vektor[i]);
       psi_neu[i] := max(0, B_vektor[i]);
       c := WPar[i].C_psi_f(psi_neu[i]);
       theta_new[i] := theta_arr[i].v + c * (psi_neu[i] - psi_arr[i].v);
@@ -3607,27 +3427,17 @@ var
   end;
 
 begin { procedure Richardswater_solut }
-  get_water_contents;
-  get_new_dt;
-  success := false;
-  iter := 0;
+  BeginIterativeTransport;
   repeat
     CalcConductivities(ccRichardsMixed, false, true, false);
     UpperBoundary;
     MainLoop;
     LowerBoundary;
     SolvingEquationSystem;
-    get_delt_iter_max;
-{$IFNDEF NONVISUAL}
-    if (DebugForm <> NIL) and Debugmodus then
-      DebugForm.update;
-{$ENDIF}
-    adjust_dt;
+    FinishIteration;
   until (success);
   Find_flows;
-  CalcOverflow;
-  GetWaterBalance;
-  set_new_state_vars;
+  FinishIterativeTransport(true);
 end; // Richards
 
 { -------------------------------------------------------------------------- }
@@ -3640,25 +3450,14 @@ var
 
   procedure UpperBoundary;
 
-  const
-    AirDryness = 20000;
-
-  var
-    est_theta_1: real;
-
     { To prevent invalid function calls, first check whether a decline of the
       water content below the residual water content b_rest or a rise above the
       saturation water content b_sat is expected. The result of this check is
       stored in the variables "Wet" and "Dry". }
   begin
-    // est_theta_1 := WPar[1].b_psi_f(psi_arr[1].v) + NetRain.v * dt.v/dicke[1];
-    // theta_airdryness := WPar[1].b_psi_f(Airdryness);
-    // if (est_theta_1 > theta_airdryness  { AirDryness } ) { and (psi_arr[1].v> 1) } then
-    // begin
     { Wasserspannungen im erlaubten Rahmen ? }
     dry := false;
     start := 1;
-    { flow_arr[1] := soll_inflow; }
     Res[1] := WflowInt_arr[1].v / Thick[1] // Fluxcondition, known
       - avg_Ku[1] / (Thick[1] * Dist[1]) * (psi_arr[2].v - psi_arr[1].v)
     // pressure induced flow to second layer
@@ -3805,27 +3604,17 @@ var
   end;
 
 begin { procedure Mixedwater_solut }
-  get_water_contents;
-  get_new_dt;
-  success := false;
-  iter := 0;
+  BeginIterativeTransport;
   repeat
     CalcConductivities(ccRichardsMixed, true, false, true);
     UpperBoundary;
     MainLoop;
     LowerBoundary;
     Loesung_Gleichungssystem;
-    get_delt_iter_max;
-{$IFNDEF NONVISUAL}
-    if (DebugForm <> NIL) and Debugmodus then
-      DebugForm.update;
-{$ENDIF}
-    adjust_dt;
+    FinishIteration;
   until (success);
   Find_flows;
-  CalcOverflow;
-  GetWaterBalance;
-  set_new_state_vars;
+  FinishIterativeTransport(true);
 end;
 { -------------------------------------------------------------------------- }
 
@@ -3838,13 +3627,7 @@ var
 
   procedure CalcUpperBoundary;
 
-  const
-    AirDryness = 20000;
-
   var
-    est_theta_1: real;
-    ExcessWater: real;
-    psi_top1: real;
     i: integer;
 
     { To prevent invalid function calls, first check whether a decline of the
@@ -3853,10 +3636,6 @@ var
       stored in the variables "Wet" and "Dry". }
 
   begin
-    // est_theta_1 := WPar[1].b_psi_f(psi_arr[1].v) + NetRain.v * dt.v/dicke[1];
-    // theta_airdryness := WPar[1].b_psi_f(Airdryness);
-    // if (est_theta_1 > theta_airdryness  { AirDryness } ) { and (psi_arr[1].v> 1) } then
-    // begin
     { Wasserspannungen im erlaubten Rahmen ? }
     start := 1;
     dry := false;
@@ -3868,7 +3647,6 @@ var
     if MaxFlow1 > 0 then
     begin
       psi_top := -PondedWater.v / 10; // tension including ponded water [cm]
-      // MaxInfil :=  avg_ku[0];     // without tension induced flux
       MaxInfil := 2.0 * avg_Ku[0] * ((psi_neu[1] - psi_top) / Thick[1]) +
         avg_Ku[0];
       if MaxFlow1 > MaxInfil then
@@ -3926,17 +3704,7 @@ var
         gamma[i] := kf[i];
       end);
 
-    { for i := start + 1 to n_comp - 1 do
-      begin
-      Res[i] := psi_neu[i] * P[i]
-      + avg_Ku[i - 1]
-      - avg_Ku[i]  // gravitational flows
-      - (theta_new[i] - theta_arr[i].v) * Thick[i] / dt.v // soil water change
-      - Sink_arr[i].v; // sink term
-      alpha[i] := kf[i - 1];
-      beta[i] := P[i] - kf[i - 1] - kf[i];
-      gamma[i] := kf[i];
-      end; }
+
   end;
 
   procedure CalcLowerBoundary;
@@ -4036,11 +3804,6 @@ var
         end;
       end;
     end;
-    // if self.Untere_Randb = FreeFlow then begin
-    // psi_neu[act_n_comp+1] := max(0, psi_neu[act_n_comp]);//-Abst[n_comp+1];
-    // psi_neu[act_n_comp+1] := max(0,psi_neu[act_n_comp] - Abst[n_comp+1]);
-    // theta_neu[act_n_comp+1] := Wpar[n_comp+1].b_psi_f(psi_neu[n_comp]);
-    // end;
 
   end;
 
@@ -4103,27 +3866,17 @@ var
   end;
 
 begin { procedure MixedHydruswater_solut }
-  get_water_contents;
-  get_new_dt;
-  success := false;
-  iter := 0;
+  BeginIterativeTransport;
   repeat
     CalcConductivities(ccMixedHydrus, true, true, false);
     CalcUpperBoundary;
     CalcMainLayers;
     CalcLowerBoundary;
     SolveEquationSystem;
-    get_delt_iter_max;
-{$IFNDEF NONVISUAL}
-    if (DebugForm <> NIL) and Debugmodus then
-      DebugForm.update;
-{$ENDIF}
-    adjust_dt;
+    FinishIteration;
   until (success);
   Find_flows;
-  // calcoverflow;
-  GetWaterBalance;
-  set_new_state_vars;
+  FinishIterativeTransport(false);
 end;
 { -------------------------------------------------------------------------- }
 

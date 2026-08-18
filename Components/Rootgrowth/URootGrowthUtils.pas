@@ -5,9 +5,22 @@ interface
 /// <summary> maximum number of root age cohorts. Dayly root growth is divided into these age classes </summary>
 const
   MaxAgeCl = 500;
+  RootLengthDensityLayerCount = 20;
+  RootLengthDensityMomentCount = 10;
 
 type
   real = double;
+  /// <summary>Ten representative quantiles of a root length density distribution.</summary>
+  TRootLengthDensityMoments =
+    array [1 .. RootLengthDensityMomentCount] of real;
+
+  /// <summary>Root length density quantiles for each of the 20 soil layers.</summary>
+  TRootLengthDensityMomentMatrix =
+    array [1 .. RootLengthDensityLayerCount] of TRootLengthDensityMoments;
+
+  /// <summary>Typed link to a root length density moment matrix.</summary>
+  PRootLengthDensityMomentMatrix = ^TRootLengthDensityMomentMatrix;
+
 
   /// Enumeration of options for the increase of rooting depth.
   /// The options include linear and expolinear.
