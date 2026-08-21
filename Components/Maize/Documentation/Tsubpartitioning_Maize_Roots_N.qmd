@@ -15,7 +15,6 @@ editor_options:
 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center", fig.width = 12, fig.height = 6, fig.pos = "h", fig.cap = TRUE)
 
-
 rm(list = ls(all.names = TRUE))
 
 library(knitr)
@@ -77,7 +76,7 @@ fn_source <- here("Components/Maize/Usubpartitioning_Maize_Roots_N.pas")
 fn_xml_docu <- here("XML_Delphi_Docu/Usubpartitioning_Maize_Roots_N.xml")
 fn <- here("csv_Hume_Docu/Docu_Docu_MAIZE.csv")
 
-Submodel <- "subpartitioning_Maize_Roots_N1"
+Submodel <- c("subpartitioning_Maize_Roots_N1")
 NameSource <- file_path_sans_ext(basename(fn_source))
 
 doc <- read_xml(fn_xml_docu)
@@ -118,33 +117,197 @@ kable(df)|>
 
 # Scientific Background
 
-## Modelling DM partitioning
+## Dry matter partitioning
+
+### Datasets for Calibration and Evaluation
+
+All model parameters for above-ground plant growth were calibrated by dataset 1-6 (@tbl-datasets). The field trials for this were conducted at two sites (Hohenschulen and Karkendam, experimental farms of Kiel University) in Northern Germany in 2007 and 2008 (@tbl-datasets) as part of a research project focusing on nitrogen use efficiency in biogas production systems. The experimental farm Hohenschulen is located on a sandy loam soil (Luvisol) and the soil at Karkendam is sand (Gleyic Podzol). Both study sites are influenced by the maritime climate of the Baltic Sea. Weather conditions during the observed growing seasons are shown in @tbl-datasets. From the different trial treatments, plots of two different crop rotations and therefore different sowing dates were chosen (@tbl-datasets). From each crop rotation, two treatments of highest nitrogen levels were used for model calibration (240, 300 kg N ha^-1^) in order to exclude N limitation. Within this study, no cultivar-specific differences were considered. The grown cultivar was KWS Ronaldinio from a mid-early maturity group. Calibration of the root growth parameters was done by data of a research project examining the root growth of maize after different winter cover crops (dataset 8 and 12). The trials took place at the above described experimental farm Hohenschulen during summer 2021 and 2022. However, above ground measurements of dataset 8 and 12 were used for model evaluation.
+
+The model was evaluated with data of set 7-14. All field trials were conducted in 2021 and 2022. The trials providing dataset 7, 8, 11 and 12 were conducted at the experimental farm Hohenschulen (site A), but differed in the sowing date and the year of cultivation. The field trials for dataset 9 and 13 were located in the Northwest of Germany at the experimental farm Wehnen of the Agricultural Chamber of Lower Saxony and coordinated by the University of Göttingen (site C). Dataset 10 and 14 were compiled by field trials at Bad Hersfeld in Central Germany, managed by the Hessen department of agriculture (site D). In addition to climatic differences, soil types of location C and D were sand and sandy silt, respectively. The field trials of datasets 7, 9, 10, 11, 13 and 14 were conducted within a research project focussing on the nitrogen use efficiency of maize (@tbl-datasets). The N levels chosen for the present study were 180, 240 and 300 kg N ha^-1^, to ensure sufficient N supply. Mid-early maturity groups were selected for evaluation datasets as well (KWS Gunnario: 7,9,10,11,13,14; KWS Stefano: 8, 12).
+
+::: {#tbl-datasets}
+| Data Use | Dataset | Site | Geographical Position | Soil Type | Trial Year | Sowing Date | Temperature \[°C\] | Precipitation \[mm\] |
+|----|----|----|----|----|----|----|----|----|
+| Calibration | 1 | A | 54.18°N, 9.58°E | Sandy loam | 2007 | 2007/04/19 | 14.8 | 496.5 |
+| Calibration | 2 | A | 54.18°N, 9.58°E | Sandy loam | 2007 | 2007/05/15 | 15.4 | 452.4 |
+| Calibration | 3 | B | 53.55°N, 9.56°E | Sand | 2007 | 2007/04/20 | 15.1 | 520.7 |
+| Calibration | 4 | A | 54.18°N, 9.58°E | Sandy loam | 2008 | 2008/04/24 | 14.5 | 370.6 |
+| Calibration | 5 | A | 54.18°N, 9.58°E | Sandy loam | 2008 | 2008/04/30 | 14.6 | 357.9 |
+| Calibration | 6 | B | 53.55°N, 9.56°E | Sand | 2008 | 2008/04/28 | 15.1 | 371.4 |
+| Evaluation | 7 | A | 54.18°N, 9.58°E | Sandy loam | 2021 | 2021/04/28 | 15.4 | 461.8 |
+| Evaluation | 8 | A | 54.18°N, 9.58°E | Sandy loam | 2021 | 2021/05/20 | 16.0 | 389.7 |
+| Evaluation | 9 | C | 51.49°N, 9.93°E | Sand | 2021 | 2021/05/01 | 15.5 | 524.3 |
+| Evaluation | 10 | D | 51.59°N, 9.85°E | Sandy silt | 2021 | 2021/05/31 | 15.6 | 322.7 |
+| Evaluation | 11 | A | 54.18°N, 9.58°E | Sandy loam | 2022 | 2022/04/28 | 16.2 | 238.7 |
+| Evaluation | 12 | A | 54.18°N, 9.58°E | Sandy loam | 2022 | 2022/04/29 | 15.7 | 273.5 |
+| Evaluation | 13 | C | 51.49°N, 9.93°E | Sand | 2022 | 2022/05/02 | 17.3 | 182.5 |
+| Evaluation | 14 | D | 51.59°N, 9.85°E | Sandy silt | 2022 | 2022/05/09 | 18.4 | 132.5 |
+
+: Datasets used for calibration and evaluation. The datasets differ in their location (Site A: Hohenschulen, Site B: Karkendam, Site C: Wehnen, Site D: Bad Hersfeld), soil type, trial year and sowing dates. Temperature is averaged and precipitation is summed up over the growing season (sowing till harvest date).
+:::
+
+### Modelling DM partitioning and GAI expansion
+
+In the first step, the daily produced $DM_{\text{total}}$ is divided into shoot dry matter ($DM_{\text{shoot}}$) and root dry matter ($DM_{\text{root}}$ or $DM_{\text{fineroot}}$, @eq-DMtotal):
+
+$$\mathrm{DM}_{\mathrm{total}} = \mathrm{DM}_{\mathrm{root}} + \mathrm{DM}_{\mathrm{shoot}}$$ {#eq-DMtotal}
+
+$$\frac{\mathrm{dDM}_{\mathrm{total}}}{\mathrm{dt}} = \frac{\mathrm{dDM}_{\mathrm{root}}}{\mathrm{dt}} + \frac{\mathrm{dDM}_{\mathrm{shoot}}}{\mathrm{dt}}$$ {#eq-DMtot_dt}
+
+The increase of $DM_{\text{root}}$ through the season is determined by the allocation coefficient ($AC_{\text{root}}$), calculated according to @Yang2004 , including a upper limit of root growth shortly after silking (DSstop @eq-ACroot).
+
+$$\mathrm{AC}_{\mathrm{root}} = \mathrm{ACE}_{\mathrm{root}} - \mathrm{DS} \cdot \mathrm{ACE}_{\mathrm{root}} \cdot \mathrm{DS}_{\mathrm{stop}}$$ {#eq-ACroot}
+
+$$\frac{\mathrm{dDM}_{\mathrm{root}}}{\mathrm{dt}} = \frac{\mathrm{dDM}_{\mathrm{total}}}{\mathrm{dt}} \cdot \mathrm{AC}_{\mathrm{root}}$$ {#eq-DMroot_dt}
+
+The resulting proportion of $DM_{/text{root}}$ ($AC_{\text{root}}$) will be substracted, when computing the daily growth of $DM_{\text{shoot}}$:
+
+$$\frac{\mathrm{dDM}_{\mathrm{shoot}}}{\mathrm{dt}} = \frac{\mathrm{dDM}_{\mathrm{total}}}{\mathrm{dt}} \cdot (1 - \mathrm{AC}_{\mathrm{root}})$$ {#eq-DMshoot_dt}
+
+$DM_{\text{shoot}}$ is the sum of the organs leaf, stem and cobs (reproductive parts including tassel and husk)
+
+$$\mathrm{DM}_{\mathrm{shoot}} = \mathrm{DM}_{\mathrm{leaf}} + \mathrm{DM}_{\mathrm{stem}} + \mathrm{DM}_{\mathrm{cob}}$$ {#eq-DMShoot_sum}
+
+$$\frac{\mathrm{dDM}_{\mathrm{shoot}}}{\mathrm{dt}} = \frac{\mathrm{dDM}_{\mathrm{leaf}}}{\mathrm{dt}} + \frac{\mathrm{dDM}_{\mathrm{stem}}}{\mathrm{dt}} + \frac{\mathrm{dDM}_{\mathrm{cob}}}{\mathrm{dt}}$$ {#eq-DMShoot_sum_dt}
+
+$DM_{\text{shoot}}$ is further distributed between the leaf dry matter ($DM_{\text{leaf}}$), stem dry matter ($DM_{\text{stem}}$) and cob dry matter ($DM_{\text{cob}}$) by dry matter allocation factors $f_{\text{leaf}}$ and fcob. These factors describe the growth of the leaf and cob fractions over the numeric development stages, named XStage (translated BBCH stages, for further information see TMaizeDevelopment):
+
+$$\frac{\mathrm{dDM}_{\mathrm{leaf}}}{\mathrm{dt}} = \frac{\mathrm{dDM}_{\mathrm{shoot}}}{\mathrm{dt}} \cdot f_{\mathrm{leaf}}$$ {#eq-DMleaf}
+
+$$f_{\mathrm{leaf}} = 
+\begin{cases}
+X_{\mathrm{Stage}} \cdot g + h & \text{if } X_{\mathrm{Stage}} > 1 \\
+\mathrm{decay}_a \cdot X_{\mathrm{Stage}}^{\mathrm{decay}_b} & \text{if } \mathrm{GAI} > \mathrm{GAI}_{\mathrm{max}}
+\end{cases}$$ {#eq-fleaf}
+
+The $f_{\text{leaf}}$ \[-\] is assumed to decrease across the XStages starting at emergence, described by the regression parameters g \[-\] and h \[-\]. Due to translocation processes from leaf to stem and cob, $DM_{\text{leaf}}$ \[g m^-2^\] is assumed to turn negative after silking (XStage = 3) or if the maximum GAI (GAImax, m^2^ m^-2^) has been reached.
+
+$$\frac{\mathrm{dDM}_{\mathrm{cob}}}{\mathrm{dt}} = \frac{\mathrm{dDM}_{\mathrm{shoot}}}{\mathrm{dt}} \cdot (1 - f_{\mathrm{cob}})$$ {#eq-DM_cob}
+
+$$f_{\mathrm{cob}} = 
+\begin{cases}
+X_{\mathrm{Stage}} \cdot f_{\mathrm{cob,steig}} + f_{\mathrm{cob,ini}} & \text{if } \frac{\mathrm{DM}_{\mathrm{stem}}}{\mathrm{DM}_{\mathrm{shoot}}} > f_{\mathrm{stem,min}} \\
+1 & \text{if } \frac{\mathrm{DM}_{\mathrm{stem}}}{\mathrm{DM}_{\mathrm{shoot}}} \leq f_{\mathrm{stem,min}}
+\end{cases}$$ {#eq-fcob}
+
+The $f_{\text{stemmin}}$ is the calculated average dry matter remaining in the stem at harvest. If $f_{\text{cob}}$ exceeds 1, dry matter is translocated from stem to cobs. As soon as $DM_{\text{stem}}$ accounts for less than 24.8% ($f_{\text{stemmin}}$) of the $DM_{\text{shoot}}$, $f_{\text{cob}}$ is set to 1. Compared to approaches such as in CERES-Maize, where grain filling is commonly represented using a sink-limited formulation, the present model links cob growth more directly to phenological development and biomass availability. The proportion of stem growth results as a residual value from the total shoot growth.
+
+$$\frac{\mathrm{dDM}_{\mathrm{stem}}}{\mathrm{dt}} = \frac{\mathrm{dDM}_{\mathrm{shoot}}}{\mathrm{dt}} \cdot (1 - f_{\mathrm{leaf}}) \cdot (1 - f_{\mathrm{cob}})$$ {#eq-DMstem}
+
+![Calibration of the partitioning variables $f_{\text{leaf}}$ and $f_{\text{cob}}$ describing the dry matter growth rate of leaves and stems, by generating regressions to XStages. Depicted are the different soil types (sandy loam, sand) and trial years (2007, 2008). A: $f_{\text{leaf}}$ is described by the parameters g and h until LAImax is reached ($f_{\text{leaf}}$=h + g \* XStage, h= 1.032, g= -0.293); B: For XStage\>3 leaf decay due to translocation processes is described by a power function regression of $f_{\text{leaf}}$ and XStages ($f_{\text{leaf}}$=decay_a \* XStage^decay_b^; decay_a= -3.232 \* 10-15, decay_b = 22.32); C: $f_{\text{cob}}$ is decribed by a linear regression utilising the parameters $f_{\text{cob,ini}}$ and f\_{\text{cob,slope}} ($f_{\text{cob}}$=$f_{\text{cob,ini}}$+$f_{\text{cob,slope}}$\*XStage; $f_{\text{cob,ini}}$= -1.095, $f_{\text{cob,slope}}$= 0.5687)](plots/Figure_partitioning.png){#fig-DMpartitioning}
+
+The GAI expansion and its growth rate are calculated as the sum of its compartments (LAI, SAI, @eq-GAI) and their growth rates (@eq-GAI_dt), respectively.
+
+$$\mathrm{GAI} = \mathrm{LAI} + \mathrm{SAI}$$ {#eq-GAI}
+
+$$\frac{\mathrm{dGAI}}{\mathrm{dt}} = \frac{\mathrm{dLAI}}{\mathrm{dt}} + \frac{\mathrm{dSAI}}{\mathrm{dt}}$$ {#eq-GAI_dt}
+
+In many crop growth models, canopy development is represented using a constant SLA (option: SLAconst). In contrast, the present approach applies an allometric formulation in which SLA dynamically declines with increasing LAI, thereby accounting for self-shading and structural changes within the canopy (@Ratjen2013). Growth rate of LAI is the product of the specific leaf area (SLA) and DMleaf. Thereby, SLA \[m^2^ g^-1^\] is assumed to be the negative exponential function of LAI \[m^2^ m^-2^\].
+
+$$\frac{\mathrm{dLAI}}{\mathrm{dt}} = \mathrm{SLA} \cdot \frac{\mathrm{dDM}_{\mathrm{leaf}}}{\mathrm{dt}}$$ {#eq-LAI_dt}
+
+$$\mathrm{SLA} = 
+\begin{cases}
+\mathrm{SLA}_{\mathrm{ini}} & \text{if } \mathrm{SLA} \geq \mathrm{SLA}_{\mathrm{ini}} \\
+\mathrm{SLA}_a \cdot (\mathrm{LAI} - \mathrm{SLA}_b) & \text{if } \mathrm{SLA}_{\mathrm{ini}} > \mathrm{SLA} > \mathrm{SLA}_{\mathrm{min}} \\
+\mathrm{SLA}_{\mathrm{min}} & \text{if } \mathrm{SLA} < \mathrm{SLA}_{\mathrm{min}}
+\end{cases}$$ {#eq-SLA}
+
+$$\frac{\mathrm{dLAI}}{\mathrm{dt}} = \mathrm{SLA}_a \cdot (\mathrm{LAI} - \mathrm{SLA}_b) - \mathrm{SLA}_a \cdot \mathrm{SLA}_b \cdot (\mathrm{LAI} - \mathrm{SLA}_b) \cdot \frac{\mathrm{dDM}_{\mathrm{leaf}}}{\mathrm{dt}}$$ {#eq-SLA_Ableitung}
+
+The same applies for SAI \[m\^2^ g^-1^\] and specific stem area:
+
+$$\frac{\mathrm{dSAI}}{\mathrm{dt}} = \mathrm{SSA} \cdot \frac{\mathrm{dDM}_{\mathrm{stem}}}{\mathrm{dt}}$$ {#eq-SAI_dt}
+
+$$\mathrm{SSA} = 
+\begin{cases}
+\mathrm{SSA}_{\mathrm{ini}} & \text{if } \mathrm{SSA} \geq \mathrm{SSA}_{\mathrm{ini}} \\
+\mathrm{SSA}_a \cdot (\mathrm{SAI} - \mathrm{SSA}_b) & \text{if } \mathrm{SSA}_{\mathrm{ini}} > \mathrm{SSA} > \mathrm{SSA}_{\mathrm{min}} \\
+\mathrm{SSA}_{\mathrm{min}} & \text{if } \mathrm{SSA} < \mathrm{SSA}_{\mathrm{min}}
+\end{cases}$$ {#eq-SSA}
+
+$$\frac{\mathrm{dSAI}}{\mathrm{dt}} = \mathrm{SSA}_a \cdot (\mathrm{SAI} - \mathrm{SSA}_b) - \mathrm{SSA}_a \cdot \mathrm{SSA}_b \cdot (\mathrm{SAI} - \mathrm{SSA}_b) \cdot \frac{\mathrm{dDM}_{\mathrm{stem}}}{\mathrm{dt}}$$ {#eq-SSA_Ableitung}
+
+![Calibration of model parameters for A: specific leaf area (SLA) and B: specific stem area (SSA), assuming, that both, SLA and SSA are decreasing with increasing leaf area index (LAI) and stem area index (SAI), respectively. SLA and SSA are restricted by an upper and a lower limit. Depicted are the different soil types (sandy loam, sand) and trial years (2007, 2008).](plots/Figure_expansion.png){#fig-SLA_SSA}
+
+The proportion of senescent leaf area is depicted by the factor $f_{\text{sen}}$, increasing exponentially from the time of silking (XStage3). Parameters for $f_{\text{sen}}$ computation are $sen_a$, $sen_b$. Thereby, it is assumed that the ratio of the measured GAI values towards the highest measured GAI is the proportion of senescent leaf area.
+
+$$\mathrm{GAI} = (1 - f_{\mathrm{sen}}) \cdot \mathrm{GAI}^*$$ {#eq-GAI_sen}
+
+$$f_{\mathrm{sen}} = \mathrm{sen}_a \cdot X_{\mathrm{Stage}}^{\mathrm{sen}_b}$$ {#eq-fsen}
+
+Crop height is calculated in dependency to $DM_{\text{shoot}}$, fitted with data from a multiannual field trial (NeffMaize):
+
+$$\mathrm{CropHeight} = \mathrm{height}_a + \mathrm{DM}_{\mathrm{shoot}} \cdot \mathrm{height}_b - \mathrm{height}_c \cdot \left( \mathrm{DM}_{\mathrm{shoot}} \right)^2$$ {#eq-CropHeight}
+
+### Results of calibration and evaluation
+
+Partitioning into leaves, stems and cobs was well calibrated with R² of 0.82, 0.92 and 0.83, respectively, and regression slopes close to 1 (@tbl-results). However, simulating dry matter partitioning of evaluation datasets led to inaccuracies caused by over- and underestimation for $DM_{\text{leaf}}$ and $DM_{\text{stem}}$ (slopes: 0.83 and 1.65), followed by high RMSE’s of 78.21 g m^-2^ and 217.9 g m^-2^, respectively. Nevertheless, evaluation of $DM_{cob}$ outperformed calibration with a slope of 0.98 and a R² of 0.91. The GAI simulation depicted measurements well within the calibration (@tbl-results; R² = 0.73, slope = 0.92, RMSE = 1.08). Accuracy for its compartments LAI and SAI was even higher with RMSE’s of 0.98 and 0.05, respectively. Since LAI and SAI of evaluation datasets were calculated based on the imprecise simulated dry matter partitioning, the deviation continued for evaluation with R² of 0.50 and 0.56, respectively. However, the slopes for both compartments were high, with a slight overestimation (0.85 and 0.94). GAI, as the sum of LAI and SAI, achieved a reasonable fit with a slope of 0.85, an intercept of 0.87 and a R² of 0.63, indicating a moderate level of explained variability (n=212). Crop height was simulated with a low RMSE of 0.24 m and an overestimation of high values (slope = 0.88). Evaluation datasets were predicted well (R²=0.97) although the base is a small n of 19.
+
+::: {#tbl-results}
+| Variable | Einheit | Steigung (Slope) | Achsenabschnitt (Intercept) | R² | n | RMSE |
+|----|----|----|----|----|----|----|
+| $\mathrm{DM}_{\mathrm{leaf}}$ | \[g m⁻²\] | 0.83 (0.89) | 27.17 (-5.70) | 0.44 (0.82) | 33 (83) | 78.21 (53.94) |
+| $\mathrm{DM}_{\mathrm{stem}}$ | \[g m⁻²\] | 1.65 (1.00) | -105.75 (-31.30) | 0.83 (0.92) | 34 (83) | 217.9 (85.04) |
+| $\mathrm{DM}_{\mathrm{cob}}$ | \[g m⁻²\] | 0.98 (1.04) | -41.47 (61.81) | 0.91 (0.83) | 22 (43) | 173.61 (206.07) |
+| $\mathrm{GAI}$ | \[-\] | 0.85 (0.92) | 0.5 (0.08) | 0.63 (0.73) | 212 (81) | 1.18 (1.08) |
+| $\mathrm{LAI}$ | \[-\] | 0.85 (0.90) | 0.12 (-0.11) | 0.50 (0.80) | 30 (81) | 1.27 (0.98) |
+| $\mathrm{SAI}$ | \[-\] | 0.94 (0.92) | 0.03 (-0.01) | 0.56 (0.92) | 30 (81) | 0.10 (0.05) |
+| $\mathrm{CropHeight}$ | \[m\] | 1.39 (0.88) | -0.51 (-0.20) | 0.97 (0.96) | 19 (111) | 0.43 (0.24) |
+
+: Results of model evaluation and calibration (in brackets) for dry matter partitioning into plant organs and the derived green area indices ($DM_{\text{leaf}}$, $DM_{\text{stem}}$, $DM_{\text{cob}}$, GAI, LAI, SAI) and of crop height. Performance was assessed with slope and intercept of the regression between measured and simulated data, R² and root mean square error (RMSE). n is the number of measurements.
+:::
+
+### Hybrid specific adaptations
+
+The baseline version of HUME-Maize is based on the dataset with the older hybrid KWS Ronaldinio. An analysis with regard to the necessity of hybrid-specific adaption was conducted for the parameters of dry matter partitioning component. Consequently, the parameters necessary for the calculation of the green area expansion ($SLA_a$, $SLA_b$, $SSA_a$, $SSA_b$), as well as those for leaf and cob growth ($f_{\text{leaf}}$, $f_{\text{cob}}$) were tested by linear regression with hybrid as factor. The SLA models were based on a nonlinear power-law relationship between SLA and LAI (@eq-SLA, @eq-SSA), which was linearized through logarithmic transformation to enable parameter estimation via ordinary linear regression:
+
+$$\mathrm{log(SLA)\ ~\ log(LAI)\ *\ Hybrid}$$ {#eq-lm}
+
+Hybrid-specific differences in SLA were assessed by including the hybrid as an interaction term with log-transformed LAI. From the estimated coefficients were used to derive the hybrid-specific parameters $SLA_a$ and $SLA_b$, by back-transforming the intercepts and slopes. This allowed for the estimation of distinct allometric scaling parameters for each hybrid. The same approach was applied analogously to model the relationship between SSA and SAI.
+
+The analysis revealed distinct hybrid-specific shifts within the relationships at dry matter partitioning (@tbl-Adaptations, @fig-Simulation). Significant differences between hybrids were found for SLA, SSA, and $f_{\text{leaf}}$ Thereby, the older hybrid showed a higher but faster decreasing allocation of dry matter into leaves. In the newer hybrid, both SLA and SSA showed a stronger exponential decline over the respective GAI and SAI. For $f_{\text{cob}}$, no statistical difference was observed between the hybrids (@tbl-Adaptations). However, the baseline parameterisation as well as the hybrid-specific parameters of $f_{\text{cob}}$ led to model inaccuracy for simulation of the organs cob and stem of the new hybrid. As a result, this parameter was not adopted in its empirical form, but optimized within the model (@fig-Adaptations, dashed line in Panel B).
+
+::: {#tbl-Adaptations}
+| Variable | Old Hybrid | New Hybrid | *p*-value |
+|----|----|----|----|
+| $\mathrm{SLA}$ | $0.023 \cdot \mathrm{LAI}^{-0.143}$ | $0.020 \cdot \mathrm{LAI}^{-0.132}$ | $<0.0001$ \*\*\* |
+| $\mathrm{SSA}$ | $0.0005 \cdot \mathrm{SAI}^{-0.425}$ | $0.0004 \cdot \mathrm{SAI}^{-0.438}$ | $<0.0001$ \*\*\* |
+| $f_{\mathrm{leaf}}$ | $1.0318 - 0.2934 \cdot X_{\mathrm{Stage}}$ | $0.714 - 0.165 \cdot X_{\mathrm{Stage}}$ | $0.00127$ \*\* |
+| $f_{\mathrm{cob}}$ | $-1.095 + 0.569 \cdot X_{\mathrm{Stage}}$ | $-1.087 + 0.431 \cdot X_{\mathrm{Stage}}$ | $0.95502$ |
+
+: Hybrid-specific parameterisation of dry matter partitioning variables – including specific leaf and stem area (SLA, SSA), leaf and cob growth ($f_{\text{leaf}}$, $f_{\text{cob}}$). The table provides hybrid-specific equations for each variable, along with the p-values indicating the significance of hybrid-specific differences.
+:::
+
+![Panels A and B show the variables $f_{\text{leaf}}$ and $f_{\text{cob}}$, representing the dry matter growth rates of leaves and cobs, respectively, as functions of developmental stage (XStages). Dashed line in Panel B represents the model internal optimation of $f_{\text{cob}}$ development. Panels C and D illustrate specific leaf area (SLA) and specific stem area (SSA), which are modeled to decrease with increasing leaf area index (LAI) and stem area index (SAI), respectively. The data are presented for the old and the new hybrid across the trial years 2007, 2008, 2021, and 2022.](plots/allo_Sorte.png){#fig-Adaptations}
+
+![Simulated (lines) and observed (points) values of biomass growth ($DM_{\text{shoot}}$, $DM_{\text{leaf}}$, $DM_{\text{stem}}$, $DM_{\text{cob}}$; in g m^-2^) and green area expansion (GAI, LAI, SAI; in m\^2\^ m^-2^) across phenological stages (XStages) for the old (blue) and the new hybrid (red) for Site A across the two respective trial years. Depicted are the two model approaches, baseline model (solid line, parameterized by the old hybrid) and the hybrid specific model (dashed line, parameterized for both hybrids individually).](plots/Verläufe_SiteA.png){#fig-Simulation}
 
 ## Nitrogen Dynamics and Critical N Concentration in Maize
 
-During crop growth, plant nitrogen (N) concentration ($N_c$\$N_c\$\$N_c\$\$N_c\$) typically declines as biomass accumulation increases and canopy structure changes. In particular, the expansion of structural tissues such as stems and reproductive organs contributes to a dilution of nitrogen (@Caloin1984). Additionally, increasing canopy density leads to progressive self-shading, which results in an uneven distribution of nitrogen within the plant (@Sinclair1989; @Bertheloot2008). Leaves located in the upper canopy and best exposed to incoming radiation are the most photosynthetically active and therefore maintain the highest $N_c$ (@Bertheloot2008), whereas structural organs with limited photosynthetic function exhibit comparatively lower $N_c$ levels (@Lemaire1997).
+During crop growth, plant nitrogen (N) concentration ($N_c$) typically declines as biomass accumulation increases and canopy structure changes. In particular, the expansion of structural tissues such as stems and reproductive organs contributes to a dilution of nitrogen (@Caloin1984). Additionally, increasing canopy density leads to progressive self-shading, which results in an uneven distribution of nitrogen within the plant (@Sinclair1989; @Bertheloot2008). Leaves located in the upper canopy and best exposed to incoming radiation are the most photosynthetically active and therefore maintain the highest $N_c$ (@Bertheloot2008), whereas structural organs with limited photosynthetic function exhibit comparatively lower $N_c$ levels (@Lemaire1997).
 
 For modelling approaches, it is not appropriate to consider N uptake at the whole plants level only, because N inputs not only affect the absolute amount of N in the crop, but can also cause distinct allocation patterns within the plant. Thus, total N uptake reduces after silking, while $N_c$ within the plant remains constant. However, distinct allocation processes result in a shift of $N_c$ from the leaves to the cob (@fig-Npartitioning), which leads to the senescence of leaf tissue and a reduction in the photosynthetic active green area. The application of N fertiliser can influence these processes: As depicted in @fig-Npartitioning , higher N fertilisation levels lead to a generally higher N content in the leaves, while the lowest fertilisation level (0 kg ha^-1^) results in the lowest N content. Additionally, the decrease in N proportion is more pronounced with N limitations. Similar to the leaves, the N content in the stem decreases with increasing DM. Again, higher fertiliser levels have a positive effect on N partitioning to the stem, but the differences between N-levels are smaller than for the leaves. In contrast to the leaf and stem, the N proportion in the cob tends to increase with increasing DM, resulting from the translocation processes from vegetative organs to the generative organ. At the beginning of cob growth, cob’s N proportion is highest without N fertilization, indicating, a prioritisation of cob growth under N limitation.
 
 ![Relationship between the dry matter yield of the whole plant (t ha-1) and the proportion of N in different plant organs (leaf, stem, cob) relative to the total plant N](plots/N_partitioning.png){#fig-Npartitioning}
 
-Critical nitrogen ($N_{\text{crit}}$) dilution curves are used to analyze the N status of crops, assuming a relationship between $N_c$ and dry matter (DM) growth that determines the optimal N supply for the crop. These curves are based on the concept of $N_{\text{crit}}$ (@Salette1981). $N_{\text{crit}}$ is defined as the minimum $N_c$ required to achieve maximum possible DM growth; beyond this point, additional N fertilization does not significantly increase DM growth (@Ulrich1952; @Greenwood1991). $N_{\text{crit}}$ dilution curves have been established for a range of crops, including wheat (@Justes1994), oilseed rape (@Colnenne1998), barley (@Zhao2014), rice (Ata-Ul-Karim et al., 2017), and sunflower (Debaeke et al., 2012). For maize, the first dilution curve was proposed by (@Plenet1999) and later extended to silage maturity by (@Herrmann2004). However, a common feature across these studies is their focus on whole-plant N concentration, without explicitly accounting for organ-specific differences. Representing N uptake at the whole-plant level alone neglects the fact that N supply influences not only the total amount of N accumulated but also its allocation patterns among plant organs and their demands during the vegetation period (@Bao2025). Capturing such dynamics requires a more detailed, organ-resolved perspective.
+Critical nitrogen ($N_{\text{crit}}$) dilution curves are used to analyze the N status of crops, assuming a relationship between $N_c$ and dry matter (DM) growth that determines the optimal N supply for the crop. These curves are based on the concept of $N_{\text{crit}}$ (@Lemaire1984). $N_{\text{crit}}$ is defined as the minimum $N_c$ required to achieve maximum possible DM growth; beyond this point, additional N fertilization does not significantly increase DM growth (@Ulrich1952; @Greenwood1991). $N_{\text{crit}}$ dilution curves have been established for a range of crops, including wheat (@Justes1994), oilseed rape (@Colnenne1998), barley (@Zhao2014), rice (@Ata-Ul-Karim2017) , and sunflower (@Debaeke2012). For maize, the first dilution curve was proposed by @Plenet2000 and later extended to silage maturity by (@Herrmann2004). However, a common feature across these studies is their focus on whole-plant N concentration, without explicitly accounting for organ-specific differences. Representing N uptake at the whole-plant level alone neglects the fact that N supply influences not only the total amount of N accumulated but also its allocation patterns among plant organs and their demands during the vegetation period (@Bao2025). Capturing such dynamics requires a more detailed, organ-resolved perspective.
 
-It has been established that the N nutrition index (NNI) is a reliable metric for quantifying N stress. It can be derived from $N_{\text{crit}}$ dilution curves as the ratio between $N_c$ and $N_{\text{crit}}$. Modelling of the N status via whole-plant or leaf DM has been discussed in the literature (@Ata-Ul-Karim2017; @Zhao2017; @Zhao2018; @Sieling.2021), as $N_c$ is highest in the photosynthetically active plant organ. In particular for the C4 plant maize, the assumption of a leaf-based NNI could serve as a more sensitive proxy of N stress (@Sieling2021).
+It has been established that the N nutrition index (NNI) is a reliable metric for quantifying N stress. It can be derived from $N_{\text{crit}}$ dilution curves as the ratio between $N_c$ and $N_{\text{crit}}$. Modelling of the N status via whole-plant or leaf DM has been discussed in the literature (@Ata-Ul-Karim2017; @Zhao2017; @Zhao2018; @Sieling2021), as $N_c$ is highest in the photosynthetically active plant organ. In particular for the C4 plant maize, the assumption of a leaf-based NNI could serve as a more sensitive proxy of N stress (@Sieling2021).
 
 ### Critical N concentration
 
-Determination of $N_crit$ was calculated according to @Justes1994, via linear-plateau function for each available sampling date, further illustrated in @fig-Juste . To conduct that, a self-starting linear-plateau function (SSlinp) was used, describing a initial linear increase in DM with increasing $N_c$\$N_c\$ up to a breakpoint (jp), beyond which DM reaches a plateau (and is not significantly increasing anymore). The breakpoints of the linear plateau models are the $N_crit$’s of the specific sampling dates, which equals the $N_c$ on which there is no significant increase in dry matter (@fig-Juste A). For some of the sampling dates, it was not possible to fit a linear-plateau. These sampling dates were not included into the further process of N dilution curve development.
+Determination of $N_{\text{crit}}$ was calculated according to @Justes1994, via linear-plateau function for each available sampling date, further illustrated in @fig-Juste . To conduct that, a self-starting linear-plateau function (SSlinp) was used, describing a initial linear increase in DM with increasing $N_c$ up to a breakpoint (jp), beyond which DM reaches a plateau (and is not significantly increasing anymore). The breakpoints of the linear plateau models are the $N_{\text{crit}}$’s of the specific sampling dates, which equals the $N_c$ on which there is no significant increase in dry matter (@fig-Juste A). For some of the sampling dates, it was not possible to fit a linear-plateau. These sampling dates were not included into the further process of N dilution curve development.
 
-The final N dilution curve (@fig-Juste C) fits the resulting $N_crit$’s and is commonly described by a quadratic function with a plateau for dry matter (DM) values \> 1 t ha^-1^ (@Plenet2000, @Herrmann2004)
+The final N dilution curve (@fig-Juste C) fits the resulting $N_{\text{crit}}$’s and is commonly described by a quadratic function with a plateau for dry matter (DM) values \> 1 t ha^-1^ (@Plenet2000, @Herrmann2004)
 
 $$N_c = 
 \begin{cases}
 a \cdot \mathrm{DM}_{\mathrm{crit}}^b & \text{if } \mathrm{DM} < \mathrm{DM}_{\mathrm{crit}} \\
 a \cdot \mathrm{DM}^b & \text{if } \mathrm{DM} \geq \mathrm{DM}_{\mathrm{crit}}
-\end{cases}$$ {#eq-$N_crit$}
+\end{cases}$$ {#eq-criticalNconcentration}
 
-With the first term, representing the $N_c$ for DM smaller than $DM_crit$ , illustrating the initial plateau of the function. Coefficient b represents the decrease of $N_c$ with DM growth. The parameters a, b and $DM_crit$ were fit with a non-linear least square model (nlsLM, @Elzhov2022).
+With the first term, representing the $N_c$ for DM smaller than $DM_{\text{crit}}$ , illustrating the initial plateau of the function. Coefficient b represents the decrease of $N_c$ with DM growth. The parameters a, b and $DM_{\text{crit}}$ were fit with a non-linear least square model (nlsLM, @Elzhov2022).
 
 ![Example of the calculation of dilution curve for the whole plant. A: calculation of critical $N_c$ (%, red cross) of three example sampling dates (2007) via linear-plateau function. B: Calculation of critical $N_c$ for all available sampling dates (trial years: 2007, 2008, n=19). C: fitting N dilution curve through the calculated critical $N_c$ (N¬crit).](plots/Juste_plot.png){#fig-Juste}
 
@@ -154,11 +317,12 @@ $$N_c =
 \begin{cases}
 a & \text{if } \mathrm{DM} < \mathrm{DM}_{\mathrm{crit}} \\
 a \cdot \exp(\mathrm{DM} \cdot b) & \text{if } \mathrm{DM} \geq \mathrm{DM}_{\mathrm{crit}}
-\end{cases}$$ {#eq-Ncrit_Stem}
+\end{cases}$$ {#eq-Ncrit-Stem}
 
 ![N dilution curves of organs (leaf, stem, cob, solid line) as the relation between N concentration (%) and dry matter (t ha-1) with datapoints coloured for specific N-levels and critical N concentrations (red cross). The latter was calculated via linear-plateau functions (grey lines, Justes et al.  (1994)) for each available and computable sampling date.](Plots/Organ_dilution.png){#fig-Organdelution}
 
-| Plant Part | $DM_crit$ \[t/ha\] | $N_c$ \[%\] | Regression Model | n |
+::: {#tbl-FormulaN}
+| Plant Part | DM_crit \[t ha^-1^\] | Nc \[%\] | Regression Model | n |
 |----|----|----|----|----|
 | Whole plant | 0.52 | 4.90 | $\mathrm{3.85 \times DM^{-0.37}}$ | 19 |
 | Leaf | 0.21 | 5.34 | $\mathrm{3.56 \times DM^{-0.26}}$ | 21 |
@@ -166,6 +330,27 @@ a \cdot \exp(\mathrm{DM} \cdot b) & \text{if } \mathrm{DM} \geq \mathrm{DM}_{\ma
 | Cob | 1.00 | 3.20 | $\mathrm{3.20 \times DM^{-0.34}}$ | 9 |
 
 : Formulas of N delution for whole plant assumption, as well as for organs leaf, stem and cob.
+:::
+
+### Model implementation of N partitioning
+
+The component of plant N uptake was integrated to the HUME-Maize model. The previously described dilution curves have been implemented, allowing simulations either at the whole-plant level or with organ-specific N partitioning. For each daily timestep, the $N_{\text{crit}}$ is calculated based on the current DM increment ($DM_c$) of the regarded organ or the whole plant. $N_{\text{demand}}$ is then calculated as the difference between optimal and actual N content:
+
+$$\mathrm{N\ Demand\ =\ }\left(\left(\ {\mathrm{DM}}_\mathrm{v}\mathrm{\ +\ } {\mathrm{DM}}_\mathrm{c}\ \right)\mathrm{\ *\ } \mathrm{N}_{\mathrm{crit}}\right)\ \mathrm{-\ }N_v     | DM_c > 0$$ {#eq-Ndemand}
+
+Where $DM_v$ is the accumulated biomass, $DM_c$ the daily growth increment, and $N_v$ the current N content. The first term of @eq-Ndemand represents the optimal N content, and the difference to $N_v$ defines the N demand. In the organ-specific approach, demands are calculated for each organ and summed to total plant N demand. Actual N uptake is limited by soil N availability, which includes initial soil N, fertiliser input and mineralised N (@Räbiger2020; @Rothardt2023). A supply-demand ratio constrains uptake, ensuring that plant N acquisition does not exceed the available soil N:
+
+$$\mathrm{Supply-Demand-Ratio\ (S:D)\ =\ }\frac{\mathrm{N\ Supply}}{\mathrm{N\ Demand}}$$ {#eq-Supply-Demand-Ratio}
+
+During later growth stages, when daily biomass change of leaves and stems becomes negative (DM_c \< 0, DM-partitioning described in @Holzhauser2026), these organs act as N sources rather than sinks. Their $N_{\text{demand}}$ of these organs becomes negative and reflects N translocation:
+
+$$\mathrm{N\ Demand\ =\ }{\mathrm{DM}}\mathrm{c}\mathrm{\ *\ }{\mathrm{Nc}}\mathrm{v}\mathrm{\ \ \ \ \ |\ }{\mathrm{DM}}\_\mathrm{c}\mathrm{\ <\ 0}$$
+
+The surplus N is moved to a translocation pool (Ntrans). If the cob’s N demand exceeds the N supplied directly by the soil, the deficit is fulfilled using N from the Ntrans. This ensures that the N allocation to reproductive organs were met efficiently, even under soil N availability. Nitrogen nutrition index N stress is simulated via NNI, directly limiting DM production.
+
+$$\mathrm{NNI\ =\ }\frac{\mathrm{N}_\mathrm{v}}{\left(\left(\mathrm{\ }{\mathrm{DM}}_\mathrm{v}\mathrm{\ +\ } {\mathrm{DM}}_\mathrm{c}\mathrm{\ } \right)\mathrm{\ *\ } \mathrm{N}_{\mathrm{crit}}\right)}\$$ {#eq-NNI}
+
+With the actual N amount Nv and the optimal N amount of the daily timestep, derived by the current DMv and the increment in DM ($DM_c$) multiplied by $N_{\text{crit}}$. In context of organ-specific approach NNI is calculated based on the DM, N and $N_{\text{crit}}$ of leaves. For the whole plant assumption, NNI is regularly calculated based on the whole plant biomass.
 
 # Submodel objects
 
@@ -176,6 +361,7 @@ Dynamic system model consists according to the Forrester approach of state varia
 The class Tsubpartitioning_Maize_Roots_N has `r trunc(nrow(Entities$df.state))` following state variable(s).
 
 ```{r}
+#| label: tbl-States
 #| echo: false
 #| message: false
 #| warning: false
@@ -186,7 +372,10 @@ kable(
   caption = "Initial Values of State Variables",
   booktabs = TRUE
  ) %>%
-   kable_styling(full_width = FALSE, position = "center")
+   kable_styling(full_width = FALSE, position = "center",
+                 htmltable_class = "table"
+  ) |>
+  kableExtra::row_spec(0, bold = TRUE)
 
 ```
 
@@ -195,6 +384,7 @@ kable(
 The class Tsubpartitioning_Maize_Roots_N has `r trunc(nrow(Entities$df.par))` following parameter(s).
 
 ```{r}
+#| label: tbl-Parameter
 #| echo: false
 #| message: false
 #| warning: false
@@ -211,7 +401,10 @@ kable(Entities$df.par, escape = FALSE,
       caption = "Parameter",
       booktabs = TRUE
  )|>
-   kable_styling(full_width = FALSE, position = "center")
+   kable_styling(full_width = FALSE, position = "center",
+                 htmltable_class = "table"
+  ) |>
+  kableExtra::row_spec(0, bold = TRUE)
 
 ```
 
@@ -220,6 +413,7 @@ kable(Entities$df.par, escape = FALSE,
 The class Tsubpartitioning_Maize_Roots_N has `r trunc(nrow(Entities$df.var))` following variable(s).
 
 ```{r}
+#| label: tbl-Variables
 #| echo: false
 #| message: false
 #| warning: false
@@ -229,7 +423,10 @@ kable(Entities$df.var, escape = FALSE,
       caption = "Parameter",
       booktabs = TRUE
  )|>
-   kable_styling(full_width = FALSE, position = "center")
+   kable_styling(full_width = FALSE, position = "center",
+                 htmltable_class = "table"
+  ) |>
+  kableExtra::row_spec(0, bold = TRUE)
 ```
 
 ## External variables
@@ -237,6 +434,7 @@ kable(Entities$df.var, escape = FALSE,
 The class Tsubpartitioning_Maize_Roots_N has `r trunc(nrow(Entities$df.ext))` following external variable(s).
 
 ```{r}
+#| label: tbl-ext.Variables
 #| echo: false
 #| message: false
 #| warning: false
@@ -247,7 +445,10 @@ kable(Entities$df.ext, escape = FALSE,
       caption = "External Variables",
       booktabs = TRUE
  )|>
-   kable_styling(full_width = FALSE, position = "center")
+   kable_styling(full_width = FALSE, position = "center",
+                 htmltable_class = "table"
+  ) |>
+  kableExtra::row_spec(0, bold = TRUE)
 ```
 
 ## Options
@@ -255,6 +456,7 @@ kable(Entities$df.ext, escape = FALSE,
 The class Tsubpartitioning_Maize_Roots_N has `r trunc(nrow(Entities$df.opt))` following option(s).
 
 ```{r}
+#| label: tbl-Options
 #| echo: false
 #| message: false
 #| warning: false
@@ -263,5 +465,8 @@ kable(Entities$df.opt, escape = FALSE,
       caption = "Parameter",
       booktabs = TRUE
  )|>
-   kable_styling(full_width = FALSE, position = "center")
+   kable_styling(full_width = FALSE, position = "center",
+                 htmltable_class = "table"
+  ) |>
+  kableExtra::row_spec(0, bold = TRUE)
 ```
