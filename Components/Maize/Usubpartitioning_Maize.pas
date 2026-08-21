@@ -1,3 +1,4 @@
+
 unit Usubpartitioning_Maize;
 
 interface
@@ -117,6 +118,9 @@ public
   decay_b: TPar;     //Parameter for calculating fleaf after Xstage=3, when leaf dry matter is translocated to stem.   (exponent)     (holzhauser)
   SLAleafmin: TPar;   //Second plateau for SLA   (holzhauser)
   SLAstemmin: TPar;     //Second plateau for SLAstem   (holzhauser)
+  height_a: TPar;
+  height_b: TPar;
+  height_c: TPar;
 
   // External Variables
    DS: TExternV; // DevelopmentSage for root growth
@@ -220,6 +224,9 @@ published
   Property Par_decay_b : TPar read decay_b write decay_b;
   Property Par_SLAleafmin : TPar read SLAleafmin write SLAleafmin;
   Property Par_SLAstemmin : TPar read SLAstemmin write SLAstemmin;
+  Property Par_height_a: TPar read height_a write height_a;
+  Property Par_height_b: TPar read height_b write height_b;
+  Property Par_height_c: TPar read height_c write height_c;
 
   // External Variables
   Property Ex_TempSumR: TExternV read TempSumR write TempSumR;
@@ -315,7 +322,7 @@ ParCreate('SLAs_a', '[-]', 0.0014, SLAs_a, 'Parameter for decreasing SLA with GA
 ParCreate('SLAs_b', '[-]', 0.4329, SLAs_b, 'Parameter for decreasing SLA with GAI (stems)');
 ParCreate('SLAleafini', '[m²/g]', 0.0360954, SLAleafini, 'Upper limit of the negative exponential relation between LAI and SLA');
 ParCreate('SLAstemini', '[m²/g]', 0.004444, SLAstemini, 'Upper limit of the negative exponential relation between SAI and SSA');
-ParCreate('fCropHeight', '[-]', 0.61, fCropHeight, 'Scaling factor for crop height development (linear increse?)');
+ParCreate('fCropHeight', '[-]', 0.61, fCropHeight, 'Scaling factor for crop height development relation to GAI (linear increse), not activated');
 ParCreate('latestharvestdate', '[day]', 293, latestharvestdate, 'Latest harvest date (simulation end date), no impact');
 ParCreate('INI_DMleaf', '[g/m²]', 0.006, INI_DMleaf, 'Initial leaf dry matter at emergence');
 ParCreate('k_SEEDRV', '[-]', 0.15, k_SEEDRV, 'Mobilization constant for seed reserves');
@@ -326,6 +333,9 @@ ParCreate('fSLAmin', '[-]', 0.7, fSLAmin, 'Minimum SLA adjustment factor, (optio
 ParCreate('ExtPAR_const', '[-]', 0.6537485, ExtPAR_const, 'Constant extinction coefficient for PAR (when LAI > LAIcritExtPAR)');
 ParCreate('LAIcritExtPAR', '[m²/m²]', 1.932764, LAIcritExtPAR, 'Critical LAI threshold for switching extinction coefficient (linear vs. constant)');
 ParCreate('ExtPAR_steig', '[-]', -0.05330567, ExtPAR_steig, 'Slope of linear extinction coefficient (when LAI < LAIcritExtPAR)');
+ParCreate('height_a','[-]',0.289441,height_a, 'Intercept of quadratic crop height relation to DMShoot (Bukowiecki and Holzhauser)');
+ParCreate('height_b','[-]',0.0027215773,height_b, 'Coefficient of quadratic crop height relation to DMShoot (Bukowiecki and Holzhauser)');
+ParCreate('height_c','[-]',0.0000007798244,height_c, 'Coefficient of quadratic crop height relation to DMShoot (Bukowiecki and Holzhauser)');
 
 // External Variables
 ExternVCreate('DS', '[-]', statefield, DS, 'Development stage of roots');
@@ -559,7 +569,7 @@ begin
   end;
   DMShoot.v :=  DMleaf.v+DMStem.v+DMCob.v;
   LAItotal.v := LAIleaf.v+LAIstem.v;
-  CropHeight.v :=0.289441+DMShoot.v*0.002721573-0.0000007798244*power(DMShoot.v,2); //LAItotal.v*fCropHeight.v;   (bukowiecki)
+  CropHeight.v :=height_a.v+DMShoot.v*height_b.v - height_c.v*power(DMShoot.v,2); //  (bukowiecki)  LAItotal.v*fCropHeight.v; 
   If DMleaf.v>0 then
      SLAleaf_average.v:= LAIleaf.v/DMleaf.v;
   If DMstem.v>0 then
