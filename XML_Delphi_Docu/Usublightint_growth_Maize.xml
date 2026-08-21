@@ -1,40 +1,52 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="Usublightint_growth_Maize" platform="Win32">
-  <const name="ExpLUE_f_Rad" type="TDMCalcMethod" file="Usublightint_growth_Maize.pas" line="10">
+  <devnotes>
+    <summary>
+     Module for dry matter production of silage maize.
+     Authors: Katja Holzhauser, Josephine Bukowiecki, Babette Wienforth, Henning Kage &amp; Crop Science and Agronomy Group, Kiel University
+     Last edited: 14.08.2026
+     Parts of the module are published in:
+     References:
+     Holzhauser, K., Wienforth, B.M., Komainda, M., Herrmann, A., Zimmermann, I. &amp; Dippold, M.A. et al. (2026) HUME-Maize: modelling silage maize yield formation across genotypes and scales. The Journal of Agricultural Science, 164, e34. Available from: https://doi.org/10.1017/S0021859626100719.
+     Holzhauser, K. (2025) Cover Crops for Sustainable Silage-Maize Production: Enhancing Resource Use Efficiency through Modelling and Remote Sensing (Doctoral dissertation). Christian-Albrechts-Universität zu Kiel: Kiel Available from: https://macau.uni-kiel.de/receive/macau_mods_00006346.
+     Wienforth, B. (2011) Cropping systems for biomethane production: a simulation based analysis of yield, yield potential and resource use efficiency (Doctoral dissertation). Christian-Albrechts-Universität zu Kiel
+    </summary>
+  </devnotes>
+  <const name="ExpLUE_f_Rad" type="TDMCalcMethod" file="Usublightint_growth_Maize.pas" line="21">
     <value>
       ExpLUE_f_Rad
     </value>
   </const>
-  <const name="ConstLue" type="TDMCalcMethod" file="Usublightint_growth_Maize.pas" line="10">
+  <const name="ConstLue" type="TDMCalcMethod" file="Usublightint_growth_Maize.pas" line="21">
     <value>
       ConstLue
     </value>
   </const>
-  <const name="LinLUE_f_Rad" type="TDMCalcMethod" file="Usublightint_growth_Maize.pas" line="10">
+  <const name="LinLUE_f_Rad" type="TDMCalcMethod" file="Usublightint_growth_Maize.pas" line="21">
     <value>
       LinLUE_f_Rad
     </value>
   </const>
-  <const name="DroughtImpact" type="TDroughtImpact" file="Usublightint_growth_Maize.pas" line="12">
+  <const name="DroughtImpact" type="TDroughtImpact" file="Usublightint_growth_Maize.pas" line="23">
     <value>
       DroughtImpact
     </value>
   </const>
-  <const name="NoDroughtImpact" type="TDroughtImpact" file="Usublightint_growth_Maize.pas" line="12">
+  <const name="NoDroughtImpact" type="TDroughtImpact" file="Usublightint_growth_Maize.pas" line="23">
     <value>
       NoDroughtImpact
     </value>
   </const>
-  <enum name="TDMCalcMethod" file="Usublightint_growth_Maize.pas" line="10">
-    <element value="0" name="ExpLUE_f_Rad" file="Usublightint_growth_Maize.pas" line="10" />
-    <element value="1" name="ConstLue" file="Usublightint_growth_Maize.pas" line="10" />
-    <element value="2" name="LinLUE_f_Rad" file="Usublightint_growth_Maize.pas" line="10" />
+  <enum name="TDMCalcMethod" file="Usublightint_growth_Maize.pas" line="21">
+    <element value="0" name="ExpLUE_f_Rad" file="Usublightint_growth_Maize.pas" line="21" />
+    <element value="1" name="ConstLue" file="Usublightint_growth_Maize.pas" line="21" />
+    <element value="2" name="LinLUE_f_Rad" file="Usublightint_growth_Maize.pas" line="21" />
   </enum>
-  <enum name="TDroughtImpact" file="Usublightint_growth_Maize.pas" line="12">
-    <element value="0" name="DroughtImpact" file="Usublightint_growth_Maize.pas" line="12" />
-    <element value="1" name="NoDroughtImpact" file="Usublightint_growth_Maize.pas" line="12" />
+  <enum name="TDroughtImpact" file="Usublightint_growth_Maize.pas" line="23">
+    <element value="0" name="DroughtImpact" file="Usublightint_growth_Maize.pas" line="23" />
+    <element value="1" name="NoDroughtImpact" file="Usublightint_growth_Maize.pas" line="23" />
   </enum>
-  <class name="Tsublightint_growth_Maize" file="Usublightint_growth_Maize.pas" line="14">
+  <class name="Tsublightint_growth_Maize" file="Usublightint_growth_Maize.pas" line="25">
     <ancestor name="TSubmodel" namespace="UMod">
       <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
       </methodref>
@@ -1213,103 +1225,103 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fDMCalcMethod" type="TDMCalcMethod" visibility="protected" size="1" offset="656" file="Usublightint_growth_Maize.pas" line="18" />
-      <field name="fDroughtImpact" type="TDroughtImpact" visibility="protected" size="1" offset="657" file="Usublightint_growth_Maize.pas" line="19" />
-      <field name="fSoilWaterModel" type="TSoilWaterModelR" visibility="protected" size="4" offset="660" file="Usublightint_growth_Maize.pas" line="20" />
-      <procedure name="SetSoilWaterMod" visibility="protected" file="Usublightint_growth_Maize.pas" line="22">
+      <field name="fDMCalcMethod" type="TDMCalcMethod" visibility="protected" size="1" offset="656" file="Usublightint_growth_Maize.pas" line="29" />
+      <field name="fDroughtImpact" type="TDroughtImpact" visibility="protected" size="1" offset="657" file="Usublightint_growth_Maize.pas" line="30" />
+      <field name="fSoilWaterModel" type="TSoilWaterModelR" visibility="protected" size="4" offset="660" file="Usublightint_growth_Maize.pas" line="31" />
+      <procedure name="SetSoilWaterMod" visibility="protected" file="Usublightint_growth_Maize.pas" line="33">
         <parameters>
           <parameter name="SoilWaterMod" type="TSoilWaterModelR" />
         </parameters>
       </procedure>
-      <field name="fInt" type="TVar" visibility="public" size="4" offset="664" file="Usublightint_growth_Maize.pas" line="28" />
-      <field name="IntPar" type="TVar" visibility="public" size="4" offset="668" file="Usublightint_growth_Maize.pas" line="29" />
-      <field name="LUE" type="TVar" visibility="public" size="4" offset="672" file="Usublightint_growth_Maize.pas" line="30" />
-      <field name="LUETempfact" type="TVar" visibility="public" size="4" offset="676" file="Usublightint_growth_Maize.pas" line="31" />
-      <field name="LUETempf_SWDF" type="TVar" visibility="public" size="4" offset="680" file="Usublightint_growth_Maize.pas" line="32" />
-      <field name="TUE_vpd" type="TVar" visibility="public" size="4" offset="684" file="Usublightint_growth_Maize.pas" line="33" />
-      <field name="TotTMgRate" type="TVar" visibility="public" size="4" offset="688" file="Usublightint_growth_Maize.pas" line="36" />
-      <field name="TotTMgRate_TUE" type="TVar" visibility="public" size="4" offset="692" file="Usublightint_growth_Maize.pas" line="37" />
-      <field name="Tempfact" type="TVar" visibility="public" size="4" offset="696" file="Usublightint_growth_Maize.pas" line="38" />
-      <field name="SWDF" type="TVar" visibility="public" size="4" offset="700" file="Usublightint_growth_Maize.pas" line="39" />
-      <field name="Trans_daysGR" type="TVar" visibility="public" size="4" offset="704" file="Usublightint_growth_Maize.pas" line="40" />
-      <field name="avg_pot_Trans_GlobRad" type="TVar" visibility="public" size="4" offset="708" file="Usublightint_growth_Maize.pas" line="41" />
-      <field name="Qsum" type="TState" visibility="public" size="4" offset="712" file="Usublightint_growth_Maize.pas" line="45" />
-      <field name="QsumTempf_SWDF" type="TState" visibility="public" size="4" offset="716" file="Usublightint_growth_Maize.pas" line="46" />
-      <field name="TotDM" type="TState" visibility="public" size="4" offset="720" file="Usublightint_growth_Maize.pas" line="48" />
-      <field name="pot_Trans_GlobRad" type="TState" visibility="public" size="4" offset="724" file="Usublightint_growth_Maize.pas" line="49" />
-      <field name="Trans_days" type="TState" visibility="public" size="4" offset="728" file="Usublightint_growth_Maize.pas" line="50" />
-      <field name="cumPAR_Trans_days" type="TState" visibility="public" size="4" offset="732" file="Usublightint_growth_Maize.pas" line="51" />
-      <field name="LUE0" type="TPar" visibility="public" size="4" offset="736" file="Usublightint_growth_Maize.pas" line="55" />
-      <field name="LUEexp" type="TPar" visibility="public" size="4" offset="740" file="Usublightint_growth_Maize.pas" line="56" />
-      <field name="LUEmax" type="TPar" visibility="public" size="4" offset="744" file="Usublightint_growth_Maize.pas" line="57" />
-      <field name="LUEsteig" type="TPar" visibility="public" size="4" offset="748" file="Usublightint_growth_Maize.pas" line="58" />
-      <field name="consLUE" type="TPar" visibility="public" size="4" offset="752" file="Usublightint_growth_Maize.pas" line="59" />
-      <field name="Ct1" type="TPar" visibility="public" size="4" offset="756" file="Usublightint_growth_Maize.pas" line="60" />
-      <field name="Ct2" type="TPar" visibility="public" size="4" offset="760" file="Usublightint_growth_Maize.pas" line="60" />
-      <field name="Ct3" type="TPar" visibility="public" size="4" offset="764" file="Usublightint_growth_Maize.pas" line="60" />
-      <field name="Ct4" type="TPar" visibility="public" size="4" offset="768" file="Usublightint_growth_Maize.pas" line="60" />
-      <field name="TRcrit" type="TPar" visibility="public" size="4" offset="772" file="Usublightint_growth_Maize.pas" line="61" />
-      <field name="alpha_TUE" type="TPar" visibility="public" size="4" offset="776" file="Usublightint_growth_Maize.pas" line="62" />
-      <field name="beta_TUE" type="TPar" visibility="public" size="4" offset="780" file="Usublightint_growth_Maize.pas" line="63" />
-      <field name="SWDF_fact" type="TPar" visibility="public" size="4" offset="784" file="Usublightint_growth_Maize.pas" line="64" />
-      <field name="Rad_Int" type="TExternV" visibility="public" size="4" offset="788" file="Usublightint_growth_Maize.pas" line="67" />
-      <field name="LAI" type="TExternV" visibility="public" size="4" offset="792" file="Usublightint_growth_Maize.pas" line="68" />
-      <field name="Tbase6" type="TExternV" visibility="public" size="4" offset="796" file="Usublightint_growth_Maize.pas" line="69" />
-      <field name="Temp" type="TExternV" visibility="public" size="4" offset="800" file="Usublightint_growth_Maize.pas" line="70" />
-      <field name="XStage" type="TExternV" visibility="public" size="4" offset="804" file="Usublightint_growth_Maize.pas" line="71" />
-      <field name="IStage" type="TExternV" visibility="public" size="4" offset="808" file="Usublightint_growth_Maize.pas" line="72" />
-      <field name="TransRatio" type="TExternV" visibility="public" size="4" offset="812" file="Usublightint_growth_Maize.pas" line="73" />
-      <field name="Sat_def" type="TExternV" visibility="public" size="4" offset="816" file="Usublightint_growth_Maize.pas" line="74" />
-      <field name="ActTrans" type="TExternV" visibility="public" size="4" offset="820" file="Usublightint_growth_Maize.pas" line="75" />
-      <field name="ExtPAR_varLAI" type="TExternV" visibility="public" size="4" offset="824" file="Usublightint_growth_Maize.pas" line="76" />
-      <field name="pot_Trans" type="TExternV" visibility="public" size="4" offset="828" file="Usublightint_growth_Maize.pas" line="77" />
-      <field name="GlobRad" type="TExternV" visibility="public" size="4" offset="832" file="Usublightint_growth_Maize.pas" line="78" />
-      <field name="NNI" type="TExternV" visibility="public" size="4" offset="836" file="Usublightint_growth_Maize.pas" line="79" />
-      <field name="OptDroughtimpact" type="TOption" visibility="public" size="4" offset="840" file="Usublightint_growth_Maize.pas" line="81" />
-      <field name="OptDMCalcMethod" type="TOption" visibility="public" size="4" offset="844" file="Usublightint_growth_Maize.pas" line="82" />
-      <procedure name="CreateAll" visibility="public" procflags="override" file="Usublightint_growth_Maize.pas" line="84">
+      <field name="fInt" type="TVar" visibility="public" size="4" offset="664" file="Usublightint_growth_Maize.pas" line="39" />
+      <field name="IntPar" type="TVar" visibility="public" size="4" offset="668" file="Usublightint_growth_Maize.pas" line="40" />
+      <field name="LUE" type="TVar" visibility="public" size="4" offset="672" file="Usublightint_growth_Maize.pas" line="41" />
+      <field name="LUETempfact" type="TVar" visibility="public" size="4" offset="676" file="Usublightint_growth_Maize.pas" line="42" />
+      <field name="LUETempf_SWDF" type="TVar" visibility="public" size="4" offset="680" file="Usublightint_growth_Maize.pas" line="43" />
+      <field name="TUE_vpd" type="TVar" visibility="public" size="4" offset="684" file="Usublightint_growth_Maize.pas" line="44" />
+      <field name="TotTMgRate" type="TVar" visibility="public" size="4" offset="688" file="Usublightint_growth_Maize.pas" line="47" />
+      <field name="TotTMgRate_TUE" type="TVar" visibility="public" size="4" offset="692" file="Usublightint_growth_Maize.pas" line="48" />
+      <field name="Tempfact" type="TVar" visibility="public" size="4" offset="696" file="Usublightint_growth_Maize.pas" line="49" />
+      <field name="SWDF" type="TVar" visibility="public" size="4" offset="700" file="Usublightint_growth_Maize.pas" line="50" />
+      <field name="Trans_daysGR" type="TVar" visibility="public" size="4" offset="704" file="Usublightint_growth_Maize.pas" line="51" />
+      <field name="avg_pot_Trans_GlobRad" type="TVar" visibility="public" size="4" offset="708" file="Usublightint_growth_Maize.pas" line="52" />
+      <field name="Qsum" type="TState" visibility="public" size="4" offset="712" file="Usublightint_growth_Maize.pas" line="56" />
+      <field name="QsumTempf_SWDF" type="TState" visibility="public" size="4" offset="716" file="Usublightint_growth_Maize.pas" line="57" />
+      <field name="TotDM" type="TState" visibility="public" size="4" offset="720" file="Usublightint_growth_Maize.pas" line="59" />
+      <field name="pot_Trans_GlobRad" type="TState" visibility="public" size="4" offset="724" file="Usublightint_growth_Maize.pas" line="60" />
+      <field name="Trans_days" type="TState" visibility="public" size="4" offset="728" file="Usublightint_growth_Maize.pas" line="61" />
+      <field name="cumPAR_Trans_days" type="TState" visibility="public" size="4" offset="732" file="Usublightint_growth_Maize.pas" line="62" />
+      <field name="LUE0" type="TPar" visibility="public" size="4" offset="736" file="Usublightint_growth_Maize.pas" line="66" />
+      <field name="LUEexp" type="TPar" visibility="public" size="4" offset="740" file="Usublightint_growth_Maize.pas" line="67" />
+      <field name="LUEmax" type="TPar" visibility="public" size="4" offset="744" file="Usublightint_growth_Maize.pas" line="68" />
+      <field name="LUEsteig" type="TPar" visibility="public" size="4" offset="748" file="Usublightint_growth_Maize.pas" line="69" />
+      <field name="consLUE" type="TPar" visibility="public" size="4" offset="752" file="Usublightint_growth_Maize.pas" line="70" />
+      <field name="Ct1" type="TPar" visibility="public" size="4" offset="756" file="Usublightint_growth_Maize.pas" line="71" />
+      <field name="Ct2" type="TPar" visibility="public" size="4" offset="760" file="Usublightint_growth_Maize.pas" line="71" />
+      <field name="Ct3" type="TPar" visibility="public" size="4" offset="764" file="Usublightint_growth_Maize.pas" line="71" />
+      <field name="Ct4" type="TPar" visibility="public" size="4" offset="768" file="Usublightint_growth_Maize.pas" line="71" />
+      <field name="TRcrit" type="TPar" visibility="public" size="4" offset="772" file="Usublightint_growth_Maize.pas" line="72" />
+      <field name="alpha_TUE" type="TPar" visibility="public" size="4" offset="776" file="Usublightint_growth_Maize.pas" line="73" />
+      <field name="beta_TUE" type="TPar" visibility="public" size="4" offset="780" file="Usublightint_growth_Maize.pas" line="74" />
+      <field name="SWDF_fact" type="TPar" visibility="public" size="4" offset="784" file="Usublightint_growth_Maize.pas" line="75" />
+      <field name="Rad_Int" type="TExternV" visibility="public" size="4" offset="788" file="Usublightint_growth_Maize.pas" line="78" />
+      <field name="LAI" type="TExternV" visibility="public" size="4" offset="792" file="Usublightint_growth_Maize.pas" line="79" />
+      <field name="Tbase6" type="TExternV" visibility="public" size="4" offset="796" file="Usublightint_growth_Maize.pas" line="80" />
+      <field name="Temp" type="TExternV" visibility="public" size="4" offset="800" file="Usublightint_growth_Maize.pas" line="81" />
+      <field name="XStage" type="TExternV" visibility="public" size="4" offset="804" file="Usublightint_growth_Maize.pas" line="82" />
+      <field name="IStage" type="TExternV" visibility="public" size="4" offset="808" file="Usublightint_growth_Maize.pas" line="83" />
+      <field name="TransRatio" type="TExternV" visibility="public" size="4" offset="812" file="Usublightint_growth_Maize.pas" line="84" />
+      <field name="Sat_def" type="TExternV" visibility="public" size="4" offset="816" file="Usublightint_growth_Maize.pas" line="85" />
+      <field name="ActTrans" type="TExternV" visibility="public" size="4" offset="820" file="Usublightint_growth_Maize.pas" line="86" />
+      <field name="ExtPAR_varLAI" type="TExternV" visibility="public" size="4" offset="824" file="Usublightint_growth_Maize.pas" line="87" />
+      <field name="pot_Trans" type="TExternV" visibility="public" size="4" offset="828" file="Usublightint_growth_Maize.pas" line="88" />
+      <field name="GlobRad" type="TExternV" visibility="public" size="4" offset="832" file="Usublightint_growth_Maize.pas" line="89" />
+      <field name="NNI" type="TExternV" visibility="public" size="4" offset="836" file="Usublightint_growth_Maize.pas" line="90" />
+      <field name="OptDroughtimpact" type="TOption" visibility="public" size="4" offset="840" file="Usublightint_growth_Maize.pas" line="92" />
+      <field name="OptDMCalcMethod" type="TOption" visibility="public" size="4" offset="844" file="Usublightint_growth_Maize.pas" line="93" />
+      <procedure name="CreateAll" visibility="public" procflags="override" file="Usublightint_growth_Maize.pas" line="95">
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="Usublightint_growth_Maize.pas" line="85">
+      <procedure name="Init" visibility="public" procflags="override" file="Usublightint_growth_Maize.pas" line="96">
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="Usublightint_growth_Maize.pas" line="86">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="Usublightint_growth_Maize.pas" line="97">
       </procedure>
-      <property name="Var_fInt" visibility="published" read="fInt" write="fInt" type="TVar" file="Usublightint_growth_Maize.pas" line="91" />
-      <property name="Var_IntPar" visibility="published" read="IntPar" write="IntPar" type="TVar" file="Usublightint_growth_Maize.pas" line="92" />
-      <property name="Var_LUE" visibility="published" read="LUE" write="LUE" type="TVar" file="Usublightint_growth_Maize.pas" line="93" />
-      <property name="Var_LUETempfact" visibility="published" read="LUETempfact" write="LUETempfact" type="TVar" file="Usublightint_growth_Maize.pas" line="94" />
-      <property name="Var_LUETempf_SWDF" visibility="published" read="LUETempf_SWDF" write="LUETempf_SWDF" type="TVar" file="Usublightint_growth_Maize.pas" line="95" />
-      <property name="Var_TotTMgRate" visibility="published" read="TotTMgRate" write="TotTMgRate" type="TVar" file="Usublightint_growth_Maize.pas" line="96" />
-      <property name="Var_TUE_vpd" visibility="published" read="TUE_vpd" write="TUE_vpd" type="TVar" file="Usublightint_growth_Maize.pas" line="97" />
-      <property name="St_Qsum" visibility="published" read="Qsum" write="Qsum" type="TState" file="Usublightint_growth_Maize.pas" line="102" />
-      <property name="St_QsumTempf_SWDF" visibility="published" read="QsumTempf_SWDF" write="QsumTempf_SWDF" type="TState" file="Usublightint_growth_Maize.pas" line="103" />
-      <property name="St_TotDM" visibility="published" read="TotDM" write="TotDM" type="TState" file="Usublightint_growth_Maize.pas" line="104" />
-      <property name="Par_LUE0" visibility="published" read="LUE0" write="LUE0" type="TPar" file="Usublightint_growth_Maize.pas" line="110" />
-      <property name="Par_LUEexp" visibility="published" read="LUEexp" write="LUEexp" type="TPar" file="Usublightint_growth_Maize.pas" line="111" />
-      <property name="Par_consLUE" visibility="published" read="consLUE" write="consLUE" type="TPar" file="Usublightint_growth_Maize.pas" line="112" />
-      <property name="Par_LUEmax" visibility="published" read="LUEmax" write="LUEmax" type="TPar" file="Usublightint_growth_Maize.pas" line="113" />
-      <property name="Par_LUEsteig" visibility="published" read="LUEsteig" write="LUEsteig" type="TPar" file="Usublightint_growth_Maize.pas" line="114" />
-      <property name="Par_TRcrit" visibility="published" read="TRcrit" write="TRcrit" type="TPar" file="Usublightint_growth_Maize.pas" line="115" />
-      <property name="Par_alpha_TUE" visibility="published" read="alpha_TUE" write="alpha_TUE" type="TPar" file="Usublightint_growth_Maize.pas" line="116" />
-      <property name="Par_beta_TUE" visibility="published" read="beta_TUE" write="beta_TUE" type="TPar" file="Usublightint_growth_Maize.pas" line="117" />
-      <property name="Par_SWDF_fact" visibility="published" read="SWDF_fact" write="SWDF_fact" type="TPar" file="Usublightint_growth_Maize.pas" line="118" />
-      <property name="Ex_NNI" visibility="published" read="NNI" write="NNI" type="TExternV" file="Usublightint_growth_Maize.pas" line="123" />
-      <property name="Ex_Temp" visibility="published" read="Temp" write="Temp" type="TExternV" file="Usublightint_growth_Maize.pas" line="124" />
-      <property name="Ex_Rad_Int" visibility="published" read="Rad_Int" write="Rad_Int" type="TExternV" file="Usublightint_growth_Maize.pas" line="125" />
-      <property name="Ex_Sat_def" visibility="published" read="Sat_def" write="Sat_def" type="TExternV" file="Usublightint_growth_Maize.pas" line="126" />
-      <property name="Ex_LAI" visibility="published" read="LAI" write="LAI" type="TExternV" file="Usublightint_growth_Maize.pas" line="127" />
-      <property name="Ex_XStage" visibility="published" read="XStage" write="XStage" type="TExternV" file="Usublightint_growth_Maize.pas" line="128" />
-      <property name="Ex_IStage" visibility="published" read="IStage" write="IStage" type="TExternV" file="Usublightint_growth_Maize.pas" line="129" />
-      <property name="Ex_Tbase6" visibility="published" read="Tbase6" write="Tbase6" type="TExternV" file="Usublightint_growth_Maize.pas" line="130" />
-      <property name="Ex_TransRatio" visibility="published" read="TransRatio" write="TransRatio" type="TExternV" file="Usublightint_growth_Maize.pas" line="131" />
-      <property name="Ex_ExtPAR_varLAI" visibility="published" read="ExtPAR_varLAI" write="ExtPAR_varLAI" type="TExternV" file="Usublightint_growth_Maize.pas" line="132" />
-      <property name="opt_DMCalcMethod" visibility="published" read="fDMCalcMethod" write="fDMCalcMethod" type="TDMCalcMethod" file="Usublightint_growth_Maize.pas" line="134" />
-      <property name="opt_DroughtImpact" visibility="published" read="fDroughtImpact" write="fDroughtImpact" type="TDroughtImpact" file="Usublightint_growth_Maize.pas" line="135" />
-      <property name="SoilWaterModel" visibility="published" read="fSoilWaterModel" write="SetSoilWaterMod" type="TSoilWaterModelR" file="Usublightint_growth_Maize.pas" line="136" />
+      <property name="Var_fInt" visibility="published" read="fInt" write="fInt" type="TVar" file="Usublightint_growth_Maize.pas" line="102" />
+      <property name="Var_IntPar" visibility="published" read="IntPar" write="IntPar" type="TVar" file="Usublightint_growth_Maize.pas" line="103" />
+      <property name="Var_LUE" visibility="published" read="LUE" write="LUE" type="TVar" file="Usublightint_growth_Maize.pas" line="104" />
+      <property name="Var_LUETempfact" visibility="published" read="LUETempfact" write="LUETempfact" type="TVar" file="Usublightint_growth_Maize.pas" line="105" />
+      <property name="Var_LUETempf_SWDF" visibility="published" read="LUETempf_SWDF" write="LUETempf_SWDF" type="TVar" file="Usublightint_growth_Maize.pas" line="106" />
+      <property name="Var_TotTMgRate" visibility="published" read="TotTMgRate" write="TotTMgRate" type="TVar" file="Usublightint_growth_Maize.pas" line="107" />
+      <property name="Var_TUE_vpd" visibility="published" read="TUE_vpd" write="TUE_vpd" type="TVar" file="Usublightint_growth_Maize.pas" line="108" />
+      <property name="St_Qsum" visibility="published" read="Qsum" write="Qsum" type="TState" file="Usublightint_growth_Maize.pas" line="113" />
+      <property name="St_QsumTempf_SWDF" visibility="published" read="QsumTempf_SWDF" write="QsumTempf_SWDF" type="TState" file="Usublightint_growth_Maize.pas" line="114" />
+      <property name="St_TotDM" visibility="published" read="TotDM" write="TotDM" type="TState" file="Usublightint_growth_Maize.pas" line="115" />
+      <property name="Par_LUE0" visibility="published" read="LUE0" write="LUE0" type="TPar" file="Usublightint_growth_Maize.pas" line="121" />
+      <property name="Par_LUEexp" visibility="published" read="LUEexp" write="LUEexp" type="TPar" file="Usublightint_growth_Maize.pas" line="122" />
+      <property name="Par_consLUE" visibility="published" read="consLUE" write="consLUE" type="TPar" file="Usublightint_growth_Maize.pas" line="123" />
+      <property name="Par_LUEmax" visibility="published" read="LUEmax" write="LUEmax" type="TPar" file="Usublightint_growth_Maize.pas" line="124" />
+      <property name="Par_LUEsteig" visibility="published" read="LUEsteig" write="LUEsteig" type="TPar" file="Usublightint_growth_Maize.pas" line="125" />
+      <property name="Par_TRcrit" visibility="published" read="TRcrit" write="TRcrit" type="TPar" file="Usublightint_growth_Maize.pas" line="126" />
+      <property name="Par_alpha_TUE" visibility="published" read="alpha_TUE" write="alpha_TUE" type="TPar" file="Usublightint_growth_Maize.pas" line="127" />
+      <property name="Par_beta_TUE" visibility="published" read="beta_TUE" write="beta_TUE" type="TPar" file="Usublightint_growth_Maize.pas" line="128" />
+      <property name="Par_SWDF_fact" visibility="published" read="SWDF_fact" write="SWDF_fact" type="TPar" file="Usublightint_growth_Maize.pas" line="129" />
+      <property name="Ex_NNI" visibility="published" read="NNI" write="NNI" type="TExternV" file="Usublightint_growth_Maize.pas" line="134" />
+      <property name="Ex_Temp" visibility="published" read="Temp" write="Temp" type="TExternV" file="Usublightint_growth_Maize.pas" line="135" />
+      <property name="Ex_Rad_Int" visibility="published" read="Rad_Int" write="Rad_Int" type="TExternV" file="Usublightint_growth_Maize.pas" line="136" />
+      <property name="Ex_Sat_def" visibility="published" read="Sat_def" write="Sat_def" type="TExternV" file="Usublightint_growth_Maize.pas" line="137" />
+      <property name="Ex_LAI" visibility="published" read="LAI" write="LAI" type="TExternV" file="Usublightint_growth_Maize.pas" line="138" />
+      <property name="Ex_XStage" visibility="published" read="XStage" write="XStage" type="TExternV" file="Usublightint_growth_Maize.pas" line="139" />
+      <property name="Ex_IStage" visibility="published" read="IStage" write="IStage" type="TExternV" file="Usublightint_growth_Maize.pas" line="140" />
+      <property name="Ex_Tbase6" visibility="published" read="Tbase6" write="Tbase6" type="TExternV" file="Usublightint_growth_Maize.pas" line="141" />
+      <property name="Ex_TransRatio" visibility="published" read="TransRatio" write="TransRatio" type="TExternV" file="Usublightint_growth_Maize.pas" line="142" />
+      <property name="Ex_ExtPAR_varLAI" visibility="published" read="ExtPAR_varLAI" write="ExtPAR_varLAI" type="TExternV" file="Usublightint_growth_Maize.pas" line="143" />
+      <property name="opt_DMCalcMethod" visibility="published" read="fDMCalcMethod" write="fDMCalcMethod" type="TDMCalcMethod" file="Usublightint_growth_Maize.pas" line="145" />
+      <property name="opt_DroughtImpact" visibility="published" read="fDroughtImpact" write="fDroughtImpact" type="TDroughtImpact" file="Usublightint_growth_Maize.pas" line="146" />
+      <property name="SoilWaterModel" visibility="published" read="fSoilWaterModel" write="SetSoilWaterMod" type="TSoilWaterModelR" file="Usublightint_growth_Maize.pas" line="147" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="Usublightint_growth_Maize.pas" line="322">
+  <procedure name="Register" visibility="public" file="Usublightint_growth_Maize.pas" line="329">
   </procedure>
 </namespace>
