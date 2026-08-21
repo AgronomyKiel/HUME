@@ -114,22 +114,19 @@ kable(df)|>
 
 ## Modelling DM production
 
-Within season, daily dry matter production ($\frac{dDM_{tot}}{dt}$ is driven by absorbed photosynthetic radiation (Q, MJ m^-2^ d^-1^) and potential light use efficiency (LUE, g MJ^-1^ PAR^-1^):
+Within season, daily dry matter production ($\frac{dDM_{tot}}{dt}$\$\\frac{dDM\_{tot}}{dt}\$ is driven by absorbed photosynthetic radiation (Q, MJ m^-2^ d^-1^) and potential light use efficiency (LUE, g MJ^-1^ PAR^-1^):
 
 $$\frac{{\mathrm{dDM}}_{\mathrm{total}}}{\mathrm{dt}}\mathrm{=Q*}LUE * Temp_{fact} * SWDF$$ {#eq-DMproduction}
 
 With $Temp_{\text{fact}}$, a temperature weight factor for photosynthetic activity \[-\], ranging between 0 to 1 and calculated with a trapezoidal function (@Marshall1996; @Porter1999) and the soil water deficit factor (SWDF).
 
-$$
-Temp_{fact} = \begin{cases}
+$$Temp_{fact} = \begin{cases}
 0 & \text{if  } TMPM < C_1 \\
 \frac{TMPM - C_1}{C_2 - C_1} & \text{if  } C_1 \leq TMPM \leq C_2 \\
 1 & \text{if  } C_2 < T_{mean} \leq C_3 \\
 \frac{C_4 - TMPM}{C_4 - C_3} & \text{if } C_3 < TMPM \leq C_4 \\
 0 & \text{if } TMPM > C_4
-\end{cases}
-$$
- {#eq-trapez}
+\end{cases}$$ {#eq-trapez}
 
 The Q is calculated according to the Beer-Lambert law (@Monsi1953), using the photosynthetically active radiation (PAR, MJ m^-2^ d^-1^) and green area index (GAI, m^2^ m^-2^) as input variable. Thereby, utilised PAR is an approximation, as it is commonly referred to as half of global radiation (GR, MJ m^-2^ d^-1^, @Szeicz1974):
 
