@@ -1181,11 +1181,10 @@ begin
     senrate := 0;
   PLALR_l.v := senrate;
 
+  senrate := 0.0;
   if self.fUseDroughtDependentLeafSenescence then
-    CalcDroughtDependentLeafSenescence(senrate)
-  else
-    senrate := 0.0;
-  PLALR_d.v := 0.0;
+    CalcDroughtDependentLeafSenescence(senrate);
+  PLALR_d.v := senrate;
 
   // set plant leaf area loss rate
   //
