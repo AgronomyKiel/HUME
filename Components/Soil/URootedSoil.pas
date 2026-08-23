@@ -970,6 +970,9 @@ begin
       CalculateSinkMatrix;
       exit;
     end;
+    Sum_Sqr_wl := 0.0;
+    sum_wl := 0.0;
+    i := 0;
     CalcPotentialSinks(Sum_Sqr_wl, sum_wl, i);
     Calcsink_red_f;
   end;
