@@ -173,7 +173,7 @@ type
     feddes_a: Tpar;
     /// <summary> Feddes parameter b </summary>
 
-    /// <summary> increase of psi2 between low and high transpiration rate </summary, same as feddes_a </summary>
+    /// <summary> increase of psi2 between low and high transpiration rate </summary>
     psi2diff: Tpar;
 
     feddes_b: Tpar;
@@ -1076,9 +1076,21 @@ procedure TSoilWaterModelR.CalcnFK;
 var
   i: Byte;
   Sum_ProzNFK: real;
+  HasValidRootLayer: Boolean;
 begin
   Sum_ProzNFK := 0.0;
-  if (not FWithRoots) or (ExWld_arr[1] = nil) or (ExWld_arr[1].v <= 0.0) then
+  HasValidRootLayer := false;
+  for i := 1 to Max_Root_Index do
+    if (ExWld_arr[i] <> nil) and (ExWld_arr[i].v > 0.0) then
+    begin
+      HasValidRootLayer := true;
+      break;
+    end;
+
+  if (ProznFK_act_rooted_comps = nil) then
+    Exit;
+
+  if (not FWithRoots) or (act_rooted_comps = nil) or (not HasValidRootLayer) then
   begin
     ProznFK_act_rooted_comps.v := 100;
     Exit;
@@ -1087,12 +1099,14 @@ begin
   // Sind Wurzeln da ?
   for i := 1 to Max_Root_Index do
   begin
-    if (ExWld_arr[i] <> nil) and (ExWld_arr[i].v > 0.0) then
+    if (ExWld_arr[i] <> nil) and (ProzNFK_arr[i] <> nil) and
+      (ExWld_arr[i].v > 0.0) and (nFK_arr[i] > 0.0) then
       ProzNFK_arr[i].v := ((theta_arr[i].v - PWP_Arr[i]) / nFK_arr[i]) * 100;
   end;
   for i := 1 to Max_Root_Index do
   begin
-    if (ExWld_arr[i] <> nil) and (ExWld_arr[i].v > 0.0) then
+    if (ExWld_arr[i] <> nil) and (ProzNFK_arr[i] <> nil) and
+      (ExWld_arr[i].v > 0.0) and (nFK_arr[i] > 0.0) then
       Sum_ProzNFK := Sum_ProzNFK + ProzNFK_arr[i].v;
   end;
   if act_rooted_comps.v <= 0.0 then
