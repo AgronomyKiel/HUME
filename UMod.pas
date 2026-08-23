@@ -3004,6 +3004,9 @@ end;
 procedure TMod.CalcChiSquareSensitivity;
 var
   i, Iter: Integer;
+  SensitivityRMSE: real;
+  OldSensitivityParameterValue: real;
+  OldSensitivitySelection: boolean;
   OldParameterValues: array [0 .. 1000] of real;
   ActIniFile, ActparamInifile: TMyIniFile;
   ActParamFileName: string;
@@ -3042,6 +3045,8 @@ begin
 
   chdir(GM_OutPutPath);
   // start with minimal value as actual value
+  OldSensitivityParameterValue := SensOpt.SelSenspar.v;
+  OldSensitivitySelection := SensOpt.SelSenspar.SelForOpt;
   SensOpt.SelSenspar.SelForOpt := true;
   SensOpt.SelSenspar.v := SensOpt.MinValue;
   // open output file for sensitivity analysis data (sens.dat)
@@ -3068,19 +3073,27 @@ begin
 
     run;
     AllMeasVal.LeastSquares;
+    // CalcChiSq, called by run, calculates ChiSqr for any number of valid
+    // measured/simulated pairs. LeastSquares only calculates regression
+    // statistics when at least three pairs are available.
+    if AllMeasVal.count > 0 then
+      SensitivityRMSE := Sqrt(ChiSqr / AllMeasVal.count)
+    else
+      SensitivityRMSE := 0.0;
     // write parameter and variable values to output
     chdir(GM_OutPutPath);
     write(SensOpt.fSens_final, FloatToStrf(SensOpt.SelSenspar.v, ffgeneral, 8,
       4), Separator);
     writeln(SensOpt.fSens_final, AllMeasVal.count, Separator,
-      AllMeasVal.SumSqrdiff:8:4, Separator, AllMeasVal.slope:8:4, Separator,
+      ChiSqr:8:4, Separator, AllMeasVal.slope:8:4, Separator,
       AllMeasVal.intercept:8:4, Separator, AllMeasVal.r2:8:4, Separator,
-      AllMeasVal.RMSE:8:4, Separator, AllMeasVal.modellingefficiency:6:3);
+      SensitivityRMSE:8:4, Separator, AllMeasVal.modellingefficiency:6:3);
     // increase value of sensitivity parameter by stepwidth
     SensOpt.SelSenspar.v := SensOpt.SelSenspar.v + SensOpt.DPar;
   end;
   fContOutput := SaveContOutput;
-  SensOpt.SelSenspar.SelForOpt := false;
+  SensOpt.SelSenspar.v := OldSensitivityParameterValue;
+  SensOpt.SelSenspar.SelForOpt := OldSensitivitySelection;
   // close output file (sens.dat)
   CloseFile(SensOpt.fSens_final);
   for i := 0 to IniFileNames.count - 1 do
