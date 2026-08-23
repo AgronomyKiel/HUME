@@ -121,21 +121,27 @@ The empirical heuristic approaches define reduction functions for root water upt
 
 ### Options
 
-There are currently the following *options* available to calculate the actual transpiration (T~act~) and the sink term for the different soil layers:
+The `SinkTermMethod` option selects the calculation of actual transpiration (T~act~) and the sink term for the different soil layers:
 
 - psicrit: The reduction factor for root water uptake (f~sinkred~) is calculated based on the soil water potential in each soil layer (psi~i~) but independently on the actual transpiration rate.
 
 - nFK~crit~: The reduction factor for root water uptake (f~sinkred~) is calculated based on the soil water content in each soil layer (theta~i~) but independently on the actual transpiration rate.
 
-- psicrit~corr~: The reduction factor for root water uptake (f~sinkred~) is calculated based on an rough estimate of the soil water potential at the root surface derived from a crude estimate of the soil water potential at the root surface. This is a function of the estimated water influx rate and the unsaturated hydraulic conductivity in the vicinity of the roots. This estimate is based on the simple steady state solution of the water transport in radial coordinates [@Gardner1960].
+- psicrit~corr~: The reduction factor for root water uptake (f~sinkred~) is calculated from an estimate of the soil water potential at the root surface. This estimate depends on the water influx rate and the unsaturated hydraulic conductivity near the roots and is based on the steady-state radial-flow solution of @Gardner1960.
 
-- Feddes: The reduction factor for root water uptake (f~sinkred~) is calculated based on the soil water potential in each soil layer (psi~i~) and the actual transpiration rate (T~act~). The reduction factor for root water uptake (f~sinkred~) is calculated based on a Feddes-like approach [@feddes1978].
+- Feddes: The reduction factor for root water uptake (f~sinkred~) is calculated based on the soil water potential in each soil layer (psi~i~) and the actual transpiration rate (T~act~), following a Feddes-like approach [@feddes1978].
 
-- MFP: The reduction factor for root water uptake (f~sinkred~) is calculated based on the soil water potential in each soil layer (psi~i~) and the actual transpiration rate (T~act~). The reduction factor for root water uptake (f~sinkred~) is calculated based on a mechanistic approach which considers the unsaturated hydraulic conductivity in the vicinity of the roots and the estimated water influx rate to the roots according to the matrix flux potential [@vanLier2013][@Metselaar2011].
+- MFP: Water uptake is limited by the maximum flow towards roots calculated from the matrix flux potential [@vanLier2013; @Metselaar2011]. Two additional options independently select the spatial resolution and the distribution of potential uptake.
 
-- MFPvar: Similar to MFP but each layer of the 1D soil profile is divided into 10 different sections with differing root length densities. These are calculated in the Component [TSimpleRootModDM](https://github.com/AgronomyKiel/HUME/blob/mainbranch/Components/Rootgrowth/Documentation/TSimpleRootModDM.html).
+For `SinkTermMethod = MFP`, the following options apply:
 
-- Sqrwl_funct: The option *Sqrwl_funct* is an option to consider the soil water availability in the calculation of the distribution of potential soil water uptake (see @eq-SinkTerm and @eq-SinkTerm2)
+- `WithClasses`: If `false` (default), one mean root length density and soil water content are used per soil layer. If `true`, each layer is divided into ten root length density classes supplied by [TSimpleRootModDM](https://github.com/AgronomyKiel/HUME/blob/mainbranch/Components/Rootgrowth/Documentation/TSimpleRootModDM.html), and uptake is calculated separately for every class.
+
+- `MFPuptakedistribution`: With `empirical` (default), potential uptake is distributed using the root-length and competition-factor weighting also used by the empirical sink methods. With `MaximumFlow`, potential uptake is distributed according to each layer's or class's relative maximum MFP uptake rate.
+
+The former `MFPvar` sink method is replaced by `SinkTermMethod = MFP`, `WithClasses = true`, and `MFPuptakedistribution = MaximumFlow`.
+
+- Sqrwl_funct: The option *Sqrwl_funct* is an option to consider the soil water availability in the calculation of the distribution of potential soil water uptake (see @eq-SinkTerm and @eq-SinkTerm2).
 
 - psi_logscale: The option *psi_logscale* is an option to consider the soil water potential in log scale for the calculation of the reduction factor for root water uptake (f~sinkred~) (see @eq-fsinkred1, @eq-fsinkred2 and @eq-psi2Feddes).
 
@@ -980,7 +986,6 @@ df.swcr.all$psi <- as.factor(df.swcr.all$psi)
 #|echo: FALSE
 #|message: FALSE
 #|warning: FALSE
-#|echo: FALSE
 #|fig.align: 'center'
 #|fig.cap: "Water content distribution around roots at different soil water potentials and for three different soil textures calculated with the matrix flux potential model. Upper dotted line: field apacity, lower dotted line: permanent wilting point"
 
@@ -1016,16 +1021,26 @@ In @fig-SingleRootSimulation1 the water content distribution around a single roo
 
 ### Implementation of the matric flux potential approach in the TSoilWaterModelR
 
-
-In the implementation, the root length density used by the `MFP` and `MFPvar` sink methods is the hydraulically active fraction of the available root length density:
+The root length density used by the `MFP` sink method is the hydraulically active fraction of the available root length density:
 
 $$L_{rv,act}=f_{act}L_{rv}$$ {#eq-active-rld}
 
-Here, $f_{act}$ is the parameter `FracActRoots` \[-\], with a default value of 0.3. The active root length density is used both to derive the mean distance between active roots and to scale their maximum water uptake. For `MFPvar`, the factor is applied separately to every root length density moment. Other water sink methods are unaffected, and the factor is not yet applied to nitrate uptake.
+Here, $f_{act}$ is the parameter `FracActRoots` \[-\], with a default value of 0.3. The active root length density determines both the mean distance between active roots and the maximum uptake rate. With classes enabled, the factor is applied separately to every root length density class. Other water sink methods are unaffected, and the factor is not yet applied to nitrate uptake.
 
+Potential transpiration is first allocated to the selected hydraulic units (soil layers or root length density classes). Actual uptake is then limited independently in every unit:
 
+$$S_{act,k}=min\left(S_{pot,k},S_{max,k}\right)$$ {#eq-MFP-actual-sink}
 
-## Approach for non-uniformely distributed roots
+The two MFP options give four symmetric combinations:
+
+| `WithClasses` | `MFPuptakedistribution` | Potential-uptake allocation | Hydraulic limitation |
+|---|---|---|---|
+| `false` | `empirical` | Empirical root-length and competition-factor weights between layers | Layer-average MFP capacity |
+| `false` | `MaximumFlow` | Relative maximum MFP capacity of each layer | Layer-average MFP capacity |
+| `true` | `empirical` | Empirical root-length and competition-factor weights between all classes | Class-specific MFP capacity |
+| `true` | `MaximumFlow` | Relative maximum MFP capacity of each class | Class-specific MFP capacity |
+
+## Approach for non-uniformly distributed roots
 
 The log normal distribution has density
 
