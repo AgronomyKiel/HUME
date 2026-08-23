@@ -970,6 +970,9 @@ begin
       CalculateSinkMatrix;
       exit;
     end;
+    Sum_Sqr_wl := 0.0;
+    sum_wl := 0.0;
+    i := 0;
     CalcPotentialSinks(Sum_Sqr_wl, sum_wl, i);
     Calcsink_red_f;
   end;
@@ -1075,20 +1078,24 @@ var
   Sum_ProzNFK: real;
 begin
   Sum_ProzNFK := 0.0;
-  if ExWld_arr[1].v > 0.0 then
+  if (not FWithRoots) or (ExWld_arr[1] = nil) or (ExWld_arr[1].v <= 0.0) then
   begin
-    // Sind Wurzeln da ?
-    for i := 1 to Max_Root_Index do
-    begin
-      if ExWld_arr[i].v > 0.0 then
-        ProzNFK_arr[i].v := ((theta_arr[i].v - PWP_Arr[i]) / nFK_arr[i]) * 100;
-    end;
-    for i := 1 to Max_Root_Index do
-    begin
-      Sum_ProzNFK := Sum_ProzNFK + ProzNFK_arr[i].v;
-    end;
+    ProznFK_act_rooted_comps.v := 100;
+    Exit;
   end;
-  if ExWld_arr[1].v <= 0.0 then
+
+  // Sind Wurzeln da ?
+  for i := 1 to Max_Root_Index do
+  begin
+    if (ExWld_arr[i] <> nil) and (ExWld_arr[i].v > 0.0) then
+      ProzNFK_arr[i].v := ((theta_arr[i].v - PWP_Arr[i]) / nFK_arr[i]) * 100;
+  end;
+  for i := 1 to Max_Root_Index do
+  begin
+    if (ExWld_arr[i] <> nil) and (ExWld_arr[i].v > 0.0) then
+      Sum_ProzNFK := Sum_ProzNFK + ProzNFK_arr[i].v;
+  end;
+  if act_rooted_comps.v <= 0.0 then
     ProznFK_act_rooted_comps.v := 100
   else
     ProznFK_act_rooted_comps.v := Sum_ProzNFK / act_rooted_comps.v;
