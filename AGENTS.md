@@ -40,6 +40,18 @@ When changing Delphi code:
 - build the narrowest affected project/package first
 - prefer `Win32 Debug` unless the task specifically requires another target
 - mention clearly if you could not run a Delphi build in the current environment
+- On this machine, initialize command-line builds with `C:\Program Files (x86)\Embarcadero\Studio\23.0\bin\rsvars.bat`. The default `Hume1` BPL output under `C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl` may reject automated writes with error `F2039`; do not change project output settings to work around this without explicit approval.
+
+### Local Windows Execution Environment
+
+- Treat `Q:\HUME\HUME` and `C:\Users\h_kage\Documents\Modell\HUME\HUME` as two paths to the same worktree. RAD Studio may use `Q:`, but automated shell, Git, build, Quarto, and patch commands should use the local `C:` path as their working directory. Never copy or synchronize files between these paths.
+- A sandboxed child process started with a `Q:` working directory may fail before executing with Windows error 267. After one such failure, switch immediately to the local `C:` path; do not repeat the same `Q:` attempt or alter the drive mapping.
+- Git commands through the local path may report dubious repository ownership. Use a per-command override such as `git -c safe.directory=C:/Users/h_kage/Documents/Modell/HUME/HUME ...`; do not modify the user's global Git configuration for this.
+- Keep RAD Studio/Kai buffers authoritative when the IDE integration is available. If it is unavailable, operate on the same files through the local `C:` path. If the standard patch helper itself fails with error 267 because it inherited `Q:`, try it only once, then use a context-validated patch fallback through the local path and inspect the resulting diff carefully.
+- Preserve the existing encoding and line endings. Delphi sources in this worktree commonly use UTF-8 with a BOM and CRLF; after a patch fallback, verify that the patch engine did not silently convert the whole file to LF.
+- From PowerShell, pass the complete RAD Studio initialization/build sequence to `cmd.exe` as one literal argument, for example `cmd.exe /d /s /c 'call "C:\Program Files (x86)\Embarcadero\Studio\23.0\bin\rsvars.bat" && msbuild ...'`. This avoids PowerShell interpreting `(x86)` or `&&`.
+- `SoilWaterPackage` may stop before compiling changed units when the external `Jcl` package is unavailable, and visual unit compilation may require `AdvGrid`. When the affected numerical unit supports it, use an isolated Win32 `NONVISUAL` unit compile with DCU output under `%TEMP%` rather than changing project search paths, dependencies, or output settings.
+- Treat these as known environment conditions, not new discoveries. Mention a fallback once when it changes the execution strategy; do not repeat the same warning before every command. Include it in the final summary only when it materially limited verification.
 
 When changing documentation:
 

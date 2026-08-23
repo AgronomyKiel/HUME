@@ -801,17 +801,38 @@
   </class>
   <class name="TSoilNitrogen" file="USoilNitrogen.pas" line="12">
     <ancestor name="TSoilWaterModelR" namespace="URootedSoil">
-      <methodref name="setWithRoots" visibility="private" />
-      <methodref name="CreateOptionsRootedSoil" visibility="private" />
+      <methodref name="setWithRoots" visibility="private">
+      </methodref>
+      <methodref name="CreateOptionsRootedSoil" visibility="private">
+      </methodref>
+      <methodref name="FreeMFPTables" visibility="private" />
+      <methodref name="InitializeSoilWaterMatrices" visibility="private" />
+      <methodref name="CalculateSoilWaterContentStandardDeviations" visibility="private">
+      </methodref>
+      <methodref name="CalculateSinkMatrix" visibility="private">
+      </methodref>
+      <methodref name="UpdateSoilWaterAmountMatrix" visibility="private" />
+      <methodref name="CalcPotentialSinks" visibility="private" />
+      <methodref name="AddIrrigation" visibility="private" />
+      <methodref name="CalcnFK" visibility="private" />
+      <methodref name="CalcPsiRoot" visibility="private" />
+      <methodref name="LimitSinkRatesToAvailableWater" visibility="protected" procflags="override">
+      </methodref>
+      <methodref name="SetRootLengthDensityMomentMatrices" visibility="public">
+      </methodref>
       <methodref name="SetPlantModel" visibility="public" procflags="override" />
       <methodref name="CreateAll" visibility="public" procflags="override" />
+      <methodref name="BeforeDestruction" visibility="public" procflags="override" />
       <methodref name="Init" visibility="public" procflags="override" />
       <methodref name="Calcsink_red_f" visibility="public">
       </methodref>
       <methodref name="CalcSinks" visibility="public" procflags="override" />
-      <methodref name="CalcRatesAndIntegrate" visibility="public" procflags="override">
-      </methodref>
+      <methodref name="CalcRatesAndIntegrate" visibility="public" procflags="override" />
       <methodref name="CalcRates" visibility="public" procflags="override" />
+      <propertyref name="WldMoments" visibility="public">
+      </propertyref>
+      <propertyref name="EffWldMoments" visibility="public">
+      </propertyref>
       <propertyref name="Ex_PotTrans" visibility="published" />
       <propertyref name="Ex_Interzeption" visibility="published" />
       <propertyref name="Ex_EmergenceDay" visibility="published" />
@@ -819,6 +840,8 @@
       <propertyref name="Par_psi_3" visibility="published" />
       <propertyref name="Comp_fact" visibility="published" />
       <propertyref name="Par_nFKcrit" visibility="published" />
+      <propertyref name="Par_RootRad" visibility="published" />
+      <propertyref name="Par_FracActRoots" visibility="published" />
       <propertyref name="St_CumTrans" visibility="published" />
       <propertyref name="Var_ActTrans" visibility="published" />
       <propertyref name="Var_TransRatio" visibility="published" />
@@ -837,7 +860,8 @@
         </methodref>
         <methodref name="CapWatSolut" visibility="private">
         </methodref>
-        <methodref name="get_water_contents" visibility="private" />
+        <methodref name="get_water_contents" visibility="private">
+        </methodref>
         <methodref name="Diffwater_solut" visibility="private">
         </methodref>
         <methodref name="Richardswater_solut" visibility="private">
@@ -858,9 +882,20 @@
         </methodref>
         <methodref name="CalcOverflow" visibility="private">
         </methodref>
-        <methodref name="SetRangeAverage" visibility="private" />
-        <methodref name="getNetRain" visibility="private" />
-        <methodref name="getPotEvap" visibility="private" />
+        <methodref name="BeginIterativeTransport" visibility="private">
+        </methodref>
+        <methodref name="FinishIteration" visibility="private">
+        </methodref>
+        <methodref name="FinishIterativeTransport" visibility="private">
+        </methodref>
+        <methodref name="UpdateDebugForm" visibility="private">
+        </methodref>
+        <methodref name="SetRangeAverage" visibility="private">
+        </methodref>
+        <methodref name="getNetRain" visibility="private">
+        </methodref>
+        <methodref name="getPotEvap" visibility="private">
+        </methodref>
         <methodref name="CreateParameters" visibility="private">
         </methodref>
         <methodref name="CreateHorizonParameters" visibility="private">
@@ -881,7 +916,8 @@
         </methodref>
         <methodref name="SetLDPars" visibility="private">
         </methodref>
-        <methodref name="SetLDnumbers" visibility="private" />
+        <methodref name="SetLDnumbers" visibility="private">
+        </methodref>
         <methodref name="SetLowerBoundaryCondition" visibility="private">
         </methodref>
         <methodref name="SetEvaporationReductionOption" visibility="private">
@@ -892,7 +928,8 @@
         </methodref>
         <methodref name="SetNewPsi_and_Theta_Values" visibility="private">
         </methodref>
-        <methodref name="CheckForHoriIndexInitialisation" visibility="private" />
+        <methodref name="CheckForHoriIndexInitialisation" visibility="private">
+        </methodref>
         <methodref name="SaveOldValuesForCrankNicholson_SoluteTransport" visibility="private">
         </methodref>
         <methodref name="Find_Number_of_computation_Layers" visibility="private">
@@ -909,14 +946,18 @@
         </methodref>
         <methodref name="TransferWGsToNextINI" visibility="private">
         </methodref>
-        <methodref name="UpperBoundaryCondition" visibility="private" />
+        <methodref name="UpperBoundaryCondition" visibility="private">
+        </methodref>
         <methodref name="ndx_str" visibility="protected">
         </methodref>
         <methodref name="getTexture" visibility="protected">
         </methodref>
         <methodref name="getLD" visibility="protected">
         </methodref>
-        <methodref name="GetHorizonIndexForLayer" visibility="protected" />
+        <methodref name="GetHorizonIndexForLayer" visibility="protected">
+        </methodref>
+        <methodref name="LimitSinkRatesToAvailableWater" visibility="protected" procflags="virtual">
+        </methodref>
         <methodref name="SetPlantModel" visibility="public" procflags="override">
         </methodref>
         <methodref name="CreateAll" visibility="public" procflags="override">
@@ -937,141 +978,235 @@
         </methodref>
         <methodref name="BeforeDestruction" visibility="public" procflags="override">
         </methodref>
-        <propertyref name="Texture" visibility="public" />
-        <propertyref name="LD" visibility="public" />
-        <propertyref name="ShowWarnings" visibility="published" />
-        <propertyref name="m_model" visibility="published" />
-        <propertyref name="Opt_CompMethod" visibility="published" />
-        <propertyref name="Opt_red_f" visibility="published" />
-        <propertyref name="Opt_maxWGchange" visibility="published" />
-        <propertyref name="Opt_IterError" visibility="published" />
-        <propertyref name="Opt_Randbed" visibility="published" />
-        <propertyref name="Opt_IniMethod" visibility="published" />
-        <propertyref name="Opt_maxdt" visibility="published" />
-        <propertyref name="Opt_mindt" visibility="published" />
-        <propertyref name="Opt_nFKCalcMethod" visibility="published" />
-        <propertyref name="Opt_VanGenPars_from_Texture" visibility="published" />
-        <propertyref name="Opt_Ks_from_Texture" visibility="published" />
-        <propertyref name="Opt_TextureClass1" visibility="published" />
-        <propertyref name="Opt_TextureClass2" visibility="published" />
-        <propertyref name="Opt_TextureClass3" visibility="published" />
-        <propertyref name="Opt_TextureClass4" visibility="published" />
-        <propertyref name="Opt_TextureClass5" visibility="published" />
-        <propertyref name="Opt_TextureClass6" visibility="published" />
-        <propertyref name="Opt_TransferWGsToNextINI" visibility="published" />
+        <propertyref name="Texture" visibility="public">
+        </propertyref>
+        <propertyref name="LD" visibility="public">
+        </propertyref>
+        <propertyref name="ShowWarnings" visibility="published">
+        </propertyref>
+        <propertyref name="m_model" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_CompMethod" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_red_f" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_maxWGchange" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_IterError" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_Randbed" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_IniMethod" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_maxdt" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_mindt" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_nFKCalcMethod" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_VanGenPars_from_Texture" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_Ks_from_Texture" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_TextureClass1" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_TextureClass2" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_TextureClass3" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_TextureClass4" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_TextureClass5" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_TextureClass6" visibility="published">
+        </propertyref>
+        <propertyref name="Opt_TransferWGsToNextINI" visibility="published">
+        </propertyref>
         <propertyref name="Opt_Weff" visibility="published">
         </propertyref>
-        <propertyref name="Ext_NetRain" visibility="published" />
-        <propertyref name="Ex_PotEvap" visibility="published" />
-        <propertyref name="Ex_Groundwaterdepth" visibility="published" />
-        <propertyref name="Par_nHorizons" visibility="published" />
-        <propertyref name="Par_b_sat1" visibility="published" />
-        <propertyref name="Par_b_rest1" visibility="published" />
-        <propertyref name="Par_b_KS1" visibility="published" />
-        <propertyref name="Par_n1" visibility="published" />
-        <propertyref name="Par_lpar1" visibility="published" />
-        <propertyref name="Par_alpha1" visibility="published" />
+        <propertyref name="Ext_NetRain" visibility="published">
+        </propertyref>
+        <propertyref name="Ex_PotEvap" visibility="published">
+        </propertyref>
+        <propertyref name="Ex_Groundwaterdepth" visibility="published">
+        </propertyref>
+        <propertyref name="Par_nHorizons" visibility="published">
+        </propertyref>
+        <propertyref name="Par_b_sat1" visibility="published">
+        </propertyref>
+        <propertyref name="Par_b_rest1" visibility="published">
+        </propertyref>
+        <propertyref name="Par_b_KS1" visibility="published">
+        </propertyref>
+        <propertyref name="Par_n1" visibility="published">
+        </propertyref>
+        <propertyref name="Par_lpar1" visibility="published">
+        </propertyref>
+        <propertyref name="Par_alpha1" visibility="published">
+        </propertyref>
         <propertyref name="Par_FK1" visibility="published">
         </propertyref>
         <propertyref name="Par_PWP1" visibility="published">
         </propertyref>
         <propertyref name="Par_nFK1" visibility="published">
         </propertyref>
-        <propertyref name="Par_b_sat2" visibility="published" />
-        <propertyref name="Par_b_rest2" visibility="published" />
-        <propertyref name="Par_b_KS2" visibility="published" />
-        <propertyref name="Par_n2" visibility="published" />
-        <propertyref name="Par_lpar2" visibility="published" />
-        <propertyref name="Par_alpha2" visibility="published" />
+        <propertyref name="Par_b_sat2" visibility="published">
+        </propertyref>
+        <propertyref name="Par_b_rest2" visibility="published">
+        </propertyref>
+        <propertyref name="Par_b_KS2" visibility="published">
+        </propertyref>
+        <propertyref name="Par_n2" visibility="published">
+        </propertyref>
+        <propertyref name="Par_lpar2" visibility="published">
+        </propertyref>
+        <propertyref name="Par_alpha2" visibility="published">
+        </propertyref>
         <propertyref name="Par_FK2" visibility="published">
         </propertyref>
         <propertyref name="Par_PWP2" visibility="published">
         </propertyref>
         <propertyref name="Par_nFK2" visibility="published">
         </propertyref>
-        <propertyref name="Par_b_sat3" visibility="published" />
-        <propertyref name="Par_b_rest3" visibility="published" />
-        <propertyref name="Par_b_KS3" visibility="published" />
-        <propertyref name="Par_n3" visibility="published" />
-        <propertyref name="Par_lpar3" visibility="published" />
-        <propertyref name="Par_alpha3" visibility="published" />
+        <propertyref name="Par_b_sat3" visibility="published">
+        </propertyref>
+        <propertyref name="Par_b_rest3" visibility="published">
+        </propertyref>
+        <propertyref name="Par_b_KS3" visibility="published">
+        </propertyref>
+        <propertyref name="Par_n3" visibility="published">
+        </propertyref>
+        <propertyref name="Par_lpar3" visibility="published">
+        </propertyref>
+        <propertyref name="Par_alpha3" visibility="published">
+        </propertyref>
         <propertyref name="Par_FK3" visibility="published">
         </propertyref>
         <propertyref name="Par_PWP3" visibility="published">
         </propertyref>
         <propertyref name="Par_nFK3" visibility="published">
         </propertyref>
-        <propertyref name="Par_b_sat4" visibility="published" />
-        <propertyref name="Par_b_rest4" visibility="published" />
-        <propertyref name="Par_b_KS4" visibility="published" />
-        <propertyref name="Par_n4" visibility="published" />
-        <propertyref name="Par_lpar4" visibility="published" />
-        <propertyref name="Par_alpha4" visibility="published" />
+        <propertyref name="Par_b_sat4" visibility="published">
+        </propertyref>
+        <propertyref name="Par_b_rest4" visibility="published">
+        </propertyref>
+        <propertyref name="Par_b_KS4" visibility="published">
+        </propertyref>
+        <propertyref name="Par_n4" visibility="published">
+        </propertyref>
+        <propertyref name="Par_lpar4" visibility="published">
+        </propertyref>
+        <propertyref name="Par_alpha4" visibility="published">
+        </propertyref>
         <propertyref name="Par_FK4" visibility="published">
         </propertyref>
         <propertyref name="Par_PWP4" visibility="published">
         </propertyref>
         <propertyref name="Par_nFK4" visibility="published">
         </propertyref>
-        <propertyref name="Par_b_sat5" visibility="published" />
-        <propertyref name="Par_b_rest5" visibility="published" />
-        <propertyref name="Par_b_KS5" visibility="published" />
-        <propertyref name="Par_n5" visibility="published" />
-        <propertyref name="Par_lpar5" visibility="published" />
-        <propertyref name="Par_alpha5" visibility="published" />
+        <propertyref name="Par_b_sat5" visibility="published">
+        </propertyref>
+        <propertyref name="Par_b_rest5" visibility="published">
+        </propertyref>
+        <propertyref name="Par_b_KS5" visibility="published">
+        </propertyref>
+        <propertyref name="Par_n5" visibility="published">
+        </propertyref>
+        <propertyref name="Par_lpar5" visibility="published">
+        </propertyref>
+        <propertyref name="Par_alpha5" visibility="published">
+        </propertyref>
         <propertyref name="Par_FK5" visibility="published">
         </propertyref>
         <propertyref name="Par_PWP5" visibility="published">
         </propertyref>
         <propertyref name="Par_nFK5" visibility="published">
         </propertyref>
-        <propertyref name="Par_b_sat6" visibility="published" />
-        <propertyref name="Par_b_rest6" visibility="published" />
-        <propertyref name="Par_b_KS6" visibility="published" />
-        <propertyref name="Par_n6" visibility="published" />
-        <propertyref name="Par_lpar6" visibility="published" />
-        <propertyref name="Par_alpha6" visibility="published" />
+        <propertyref name="Par_b_sat6" visibility="published">
+        </propertyref>
+        <propertyref name="Par_b_rest6" visibility="published">
+        </propertyref>
+        <propertyref name="Par_b_KS6" visibility="published">
+        </propertyref>
+        <propertyref name="Par_n6" visibility="published">
+        </propertyref>
+        <propertyref name="Par_lpar6" visibility="published">
+        </propertyref>
+        <propertyref name="Par_alpha6" visibility="published">
+        </propertyref>
         <propertyref name="Par_FK6" visibility="published">
         </propertyref>
         <propertyref name="Par_PWP6" visibility="published">
         </propertyref>
         <propertyref name="Par_nFK6" visibility="published">
         </propertyref>
-        <propertyref name="Par_PsiStart1" visibility="published" />
-        <propertyref name="Par_Weff" visibility="published" />
-        <propertyref name="Par_PondMax" visibility="published" />
-        <propertyref name="Var_WG0_30" visibility="published" />
-        <propertyref name="Var_WG30_60" visibility="published" />
-        <propertyref name="Var_WG30_120" visibility="published" />
-        <propertyref name="Var_WG30_100" visibility="published" />
-        <propertyref name="Var_WG60_90" visibility="published" />
-        <propertyref name="Var_WG90_120" visibility="published" />
-        <propertyref name="Var_WG0_100" visibility="published" />
-        <propertyref name="Var_WG0_120" visibility="published" />
-        <propertyref name="Var_WG0_90" visibility="published" />
-        <propertyref name="Var_WG0_60" visibility="published" />
-        <propertyref name="Var_Psi_dummy" visibility="published" />
-        <propertyref name="Var_ActEvap" visibility="published" />
-        <propertyref name="St_CumEvap" visibility="published" />
-        <propertyref name="St_CumDrainage" visibility="published" />
-        <propertyref name="St_CumNetRain" visibility="published" />
-        <propertyref name="St_PondedWater" visibility="published" />
-        <propertyref name="Par_psi_critEvap" visibility="published" />
-        <propertyref name="Par_Horindx1" visibility="published" />
-        <propertyref name="Par_Horindx2" visibility="published" />
-        <propertyref name="Par_Horindx3" visibility="published" />
-        <propertyref name="Par_Horindx4" visibility="published" />
-        <propertyref name="Par_Horindx5" visibility="published" />
-        <propertyref name="Par_Horindx6" visibility="published" />
-        <propertyref name="SoilHeatModel" visibility="published" />
+        <propertyref name="Par_PsiStart1" visibility="published">
+        </propertyref>
+        <propertyref name="Par_Weff" visibility="published">
+        </propertyref>
+        <propertyref name="Par_PondMax" visibility="published">
+        </propertyref>
+        <propertyref name="Var_WG0_30" visibility="published">
+        </propertyref>
+        <propertyref name="Var_WG30_60" visibility="published">
+        </propertyref>
+        <propertyref name="Var_WG30_120" visibility="published">
+        </propertyref>
+        <propertyref name="Var_WG30_100" visibility="published">
+        </propertyref>
+        <propertyref name="Var_WG60_90" visibility="published">
+        </propertyref>
+        <propertyref name="Var_WG90_120" visibility="published">
+        </propertyref>
+        <propertyref name="Var_WG0_100" visibility="published">
+        </propertyref>
+        <propertyref name="Var_WG0_120" visibility="published">
+        </propertyref>
+        <propertyref name="Var_WG0_90" visibility="published">
+        </propertyref>
+        <propertyref name="Var_WG0_60" visibility="published">
+        </propertyref>
+        <propertyref name="Var_Psi_dummy" visibility="published">
+        </propertyref>
+        <propertyref name="Var_ActEvap" visibility="published">
+        </propertyref>
+        <propertyref name="St_CumEvap" visibility="published">
+        </propertyref>
+        <propertyref name="St_CumDrainage" visibility="published">
+        </propertyref>
+        <propertyref name="St_CumNetRain" visibility="published">
+        </propertyref>
+        <propertyref name="St_PondedWater" visibility="published">
+        </propertyref>
+        <propertyref name="Par_psi_critEvap" visibility="published">
+        </propertyref>
+        <propertyref name="Par_Horindx1" visibility="published">
+        </propertyref>
+        <propertyref name="Par_Horindx2" visibility="published">
+        </propertyref>
+        <propertyref name="Par_Horindx3" visibility="published">
+        </propertyref>
+        <propertyref name="Par_Horindx4" visibility="published">
+        </propertyref>
+        <propertyref name="Par_Horindx5" visibility="published">
+        </propertyref>
+        <propertyref name="Par_Horindx6" visibility="published">
+        </propertyref>
+        <propertyref name="SoilHeatModel" visibility="published">
+        </propertyref>
         <ancestor name="TLayeredSoil" namespace="UlayeredSoil">
-          <methodref name="LayerInit" visibility="protected" procflags="virtual" />
+          <methodref name="LayerInit" visibility="protected" procflags="virtual">
+          </methodref>
           <methodref name="CreateAll" visibility="public" procflags="override">
           </methodref>
-          <methodref name="Init" visibility="public" procflags="override" />
-          <methodref name="CalcRates" visibility="public" procflags="override" />
-          <propertyref name="parMaxTiefe" visibility="published" />
-          <propertyref name="p_NComp" visibility="published" />
+          <methodref name="Init" visibility="public" procflags="override">
+          </methodref>
+          <methodref name="CalcRates" visibility="public" procflags="override">
+          </methodref>
+          <propertyref name="parMaxTiefe" visibility="published">
+          </propertyref>
+          <propertyref name="p_NComp" visibility="published">
+          </propertyref>
           <ancestor name="TPlantRelatedSubMod" namespace="UAbstractPlant">
             <methodref name="GetIsPlantModelset" visibility="protected">
             </methodref>
@@ -1079,7 +1214,8 @@
             </methodref>
             <methodref name="Init" visibility="public" procflags="override">
             </methodref>
-            <propertyref name="IsPlantModelSet" visibility="public" />
+            <propertyref name="IsPlantModelSet" visibility="public">
+            </propertyref>
             <propertyref name="PlantModel" visibility="published">
             </propertyref>
             <ancestor name="TSubmodel" namespace="UMod">
@@ -1097,18 +1233,30 @@
               </methodref>
               <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
               </methodref>
-              <methodref name="set_State" visibility="private" procflags="virtual" />
-              <methodref name="get_State" visibility="private" />
-              <methodref name="set_Par" visibility="private" />
-              <methodref name="Get_Par" visibility="private" />
-              <methodref name="set_Var" visibility="private" />
-              <methodref name="Get_Var" visibility="private" />
-              <methodref name="set_Const" visibility="private" />
-              <methodref name="get_Const" visibility="private" />
-              <methodref name="set_Option" visibility="private" />
-              <methodref name="get_Option" visibility="private" />
-              <methodref name="set_ExternVar" visibility="private" />
-              <methodref name="get_ExternVar" visibility="private" />
+              <methodref name="set_State" visibility="private" procflags="virtual">
+              </methodref>
+              <methodref name="get_State" visibility="private">
+              </methodref>
+              <methodref name="set_Par" visibility="private">
+              </methodref>
+              <methodref name="Get_Par" visibility="private">
+              </methodref>
+              <methodref name="set_Var" visibility="private">
+              </methodref>
+              <methodref name="Get_Var" visibility="private">
+              </methodref>
+              <methodref name="set_Const" visibility="private">
+              </methodref>
+              <methodref name="get_Const" visibility="private">
+              </methodref>
+              <methodref name="set_Option" visibility="private">
+              </methodref>
+              <methodref name="get_Option" visibility="private">
+              </methodref>
+              <methodref name="set_ExternVar" visibility="private">
+              </methodref>
+              <methodref name="get_ExternVar" visibility="private">
+              </methodref>
               <methodref name="InitStates" visibility="private" procflags="virtual">
               </methodref>
               <methodref name="InitParms" visibility="private" procflags="virtual">
@@ -1127,10 +1275,12 @@
               </methodref>
               <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
               </methodref>
-              <methodref name="UpdateValue" visibility="protected" />
+              <methodref name="UpdateValue" visibility="protected">
+              </methodref>
               <methodref name="Paint" visibility="protected" procflags="override">
               </methodref>
-              <methodref name="Notification" visibility="protected" procflags="virtual" />
+              <methodref name="Notification" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Create" visibility="public" procflags="constructor override">
               </methodref>
               <methodref name="free" visibility="public">
@@ -1203,6 +1353,8 @@
               </propertyref>
               <methodref name="DblClick" visibility="public" procflags="override">
               </methodref>
+              <propertyref name="CalcTimeTicks" visibility="public">
+              </propertyref>
               <propertyref name="SM_GlobMod" visibility="published">
               </propertyref>
               <propertyref name="SM_ExternVStrList" visibility="published">
@@ -1229,12 +1381,18 @@
               </propertyref>
               <propertyref name="OptContOutput" visibility="published">
               </propertyref>
-              <propertyref name="Parent" visibility="published" />
-              <propertyref name="Canvas" visibility="published" />
-              <propertyref name="Visible" visibility="published" />
-              <propertyref name="color" visibility="published" />
-              <propertyref name="DebugForm" visibility="published" />
-              <propertyref name="OnDblclick" visibility="published" />
+              <propertyref name="Parent" visibility="published">
+              </propertyref>
+              <propertyref name="Canvas" visibility="published">
+              </propertyref>
+              <propertyref name="Visible" visibility="published">
+              </propertyref>
+              <propertyref name="color" visibility="published">
+              </propertyref>
+              <propertyref name="DebugForm" visibility="published">
+              </propertyref>
+              <propertyref name="OnDblclick" visibility="published">
+              </propertyref>
               <ancestor name="TGraphicControl" namespace="Vcl.Controls">
                 <methodref name="WMPaint" visibility="private" procflags="message">
                 </methodref>
@@ -2263,10 +2421,10 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="ConcOld" type="TSoilArray" visibility="private" size="416" offset="19048" file="USoilNitrogen.pas" line="15" />
-      <field name="fTransferNminss" type="Boolean" visibility="private" size="1" offset="19464" file="USoilNitrogen.pas" line="16" />
-      <field name="NminStart" type="Double" visibility="private" size="8" offset="19472" file="USoilNitrogen.pas" line="17" />
-      <field name="NFlowInt" type="TSoilArray" visibility="private" size="416" offset="19480" file="USoilNitrogen.pas" line="19">
+      <field name="ConcOld" type="TSoilArray" visibility="private" size="416" offset="22496" file="USoilNitrogen.pas" line="15" />
+      <field name="fTransferNminss" type="Boolean" visibility="private" size="1" offset="22912" file="USoilNitrogen.pas" line="16" />
+      <field name="NminStart" type="Double" visibility="private" size="8" offset="22920" file="USoilNitrogen.pas" line="17" />
+      <field name="NFlowInt" type="TSoilArray" visibility="private" size="416" offset="22928" file="USoilNitrogen.pas" line="19">
         <devnotes>
            nitrate amount in soil profile at simulation start [Kg N/ha]
         </devnotes>
@@ -2276,14 +2434,14 @@
            Nitratflüsse during internal time steps [Kg N/ha*d] ///
         </devnotes>
       </procedure>
-      <field name="NitrateAmount" type="TSoilStateArray" visibility="public" size="208" offset="19896" file="USoilNitrogen.pas" line="29">
+      <field name="NitrateAmount" type="TSoilStateArray" visibility="public" size="208" offset="23344" file="USoilNitrogen.pas" line="29">
         <devnotes>
            <summary>
            Nitrat menge im Kompartiment [Kg N/ha]
            </summary>
         </devnotes>
       </field>
-      <field name="NConc" type="TSoilVarArray" visibility="public" size="212" offset="20104" file="USoilNitrogen.pas" line="41">
+      <field name="NConc" type="TSoilVarArray" visibility="public" size="212" offset="23552" file="USoilNitrogen.pas" line="41">
         <devnotes>
            <summary>
            Nitrate Concentration [Kg NO3-N/cm H2O]
@@ -2297,82 +2455,82 @@
            </summary>
         </devnotes>
       </field>
-      <field name="Nsink" type="TSoilVarArray" visibility="public" size="212" offset="20316" file="USoilNitrogen.pas" line="43" />
-      <field name="NetMin" type="TSoilVarArray" visibility="public" size="212" offset="20528" file="USoilNitrogen.pas" line="45">
+      <field name="Nsink" type="TSoilVarArray" visibility="public" size="212" offset="23764" file="USoilNitrogen.pas" line="43" />
+      <field name="NetMin" type="TSoilVarArray" visibility="public" size="212" offset="23976" file="USoilNitrogen.pas" line="45">
         <devnotes>
            Sink term [Kg N/ha*d }
         </devnotes>
       </field>
-      <field name="NFlow" type="TSoilVarArray" visibility="public" size="212" offset="20740" file="USoilNitrogen.pas" line="47">
+      <field name="NFlow" type="TSoilVarArray" visibility="public" size="212" offset="24188" file="USoilNitrogen.pas" line="47">
         <devnotes>
            Source term [Kg N/ha*d }
         </devnotes>
       </field>
-      <field name="CumSumUptake" type="TState" visibility="public" size="4" offset="20952" file="USoilNitrogen.pas" line="49">
+      <field name="CumSumUptake" type="TState" visibility="public" size="4" offset="24400" file="USoilNitrogen.pas" line="49">
         <devnotes>
            Nitrate flows [Kg N/ha*d] }
         </devnotes>
       </field>
-      <field name="CumSumMinera" type="TState" visibility="public" size="4" offset="20956" file="USoilNitrogen.pas" line="51">
+      <field name="CumSumMinera" type="TState" visibility="public" size="4" offset="24404" file="USoilNitrogen.pas" line="51">
         <devnotes>
            cumulative sum of soil N uptake
         </devnotes>
       </field>
-      <field name="CumSumNitrateLeaching" type="TState" visibility="public" size="4" offset="20960" file="USoilNitrogen.pas" line="53">
+      <field name="CumSumNitrateLeaching" type="TState" visibility="public" size="4" offset="24408" file="USoilNitrogen.pas" line="53">
         <devnotes>
            cumulative sum of soil N mineralisation
         </devnotes>
       </field>
-      <field name="Nmin0_10" type="TVar" visibility="public" size="4" offset="20964" file="USoilNitrogen.pas" line="55">
+      <field name="Nmin0_10" type="TVar" visibility="public" size="4" offset="24412" file="USoilNitrogen.pas" line="55">
         <devnotes>
            Sum of nitrate leaching
         </devnotes>
       </field>
-      <field name="Nmin0_30" type="TVar" visibility="public" size="4" offset="20968" file="USoilNitrogen.pas" line="56" />
-      <field name="Nmin30_60" type="TVar" visibility="public" size="4" offset="20972" file="USoilNitrogen.pas" line="57" />
-      <field name="Nmin60_90" type="TVar" visibility="public" size="4" offset="20976" file="USoilNitrogen.pas" line="58" />
-      <field name="Nmin90_120" type="TVar" visibility="public" size="4" offset="20980" file="USoilNitrogen.pas" line="59" />
-      <field name="Nmin0_90" type="TVar" visibility="public" size="4" offset="20984" file="USoilNitrogen.pas" line="60" />
-      <field name="Nmin0_60" type="TVar" visibility="public" size="4" offset="20988" file="USoilNitrogen.pas" line="61" />
-      <field name="LongTermNBalance" type="TVar" visibility="public" size="4" offset="20992" file="USoilNitrogen.pas" line="62" />
-      <field name="DailyNBalance" type="TState" visibility="public" size="4" offset="20996" file="USoilNitrogen.pas" line="64">
+      <field name="Nmin0_30" type="TVar" visibility="public" size="4" offset="24416" file="USoilNitrogen.pas" line="56" />
+      <field name="Nmin30_60" type="TVar" visibility="public" size="4" offset="24420" file="USoilNitrogen.pas" line="57" />
+      <field name="Nmin60_90" type="TVar" visibility="public" size="4" offset="24424" file="USoilNitrogen.pas" line="58" />
+      <field name="Nmin90_120" type="TVar" visibility="public" size="4" offset="24428" file="USoilNitrogen.pas" line="59" />
+      <field name="Nmin0_90" type="TVar" visibility="public" size="4" offset="24432" file="USoilNitrogen.pas" line="60" />
+      <field name="Nmin0_60" type="TVar" visibility="public" size="4" offset="24436" file="USoilNitrogen.pas" line="61" />
+      <field name="LongTermNBalance" type="TVar" visibility="public" size="4" offset="24440" file="USoilNitrogen.pas" line="62" />
+      <field name="DailyNBalance" type="TState" visibility="public" size="4" offset="24444" file="USoilNitrogen.pas" line="64">
         <devnotes>
            long term nitrogen computational balance
         </devnotes>
       </field>
-      <field name="TotalNBalance" type="TState" visibility="public" size="4" offset="21000" file="USoilNitrogen.pas" line="66">
+      <field name="TotalNBalance" type="TState" visibility="public" size="4" offset="24448" file="USoilNitrogen.pas" line="66">
         <devnotes>
            daily nitrogen computational balance
         </devnotes>
       </field>
-      <field name="SumNmin" type="TVar" visibility="public" size="4" offset="21004" file="USoilNitrogen.pas" line="68">
+      <field name="SumNmin" type="TVar" visibility="public" size="4" offset="24452" file="USoilNitrogen.pas" line="68">
         <devnotes>
            cumulative N balance
         </devnotes>
       </field>
-      <field name="NitrateLeachingRate" type="TVar" visibility="public" size="4" offset="21008" file="USoilNitrogen.pas" line="70">
+      <field name="NitrateLeachingRate" type="TVar" visibility="public" size="4" offset="24456" file="USoilNitrogen.pas" line="70">
         <devnotes>
            Sum of Nmin-nitrate
         </devnotes>
       </field>
-      <field name="Dispersion_length" type="TPar" visibility="public" size="4" offset="21012" file="USoilNitrogen.pas" line="72">
+      <field name="Dispersion_length" type="TPar" visibility="public" size="4" offset="24460" file="USoilNitrogen.pas" line="72">
         <devnotes>
            Leachingrate as daily average
         </devnotes>
       </field>
-      <field name="Imp_factor" type="TPar" visibility="public" size="4" offset="21016" file="USoilNitrogen.pas" line="74">
+      <field name="Imp_factor" type="TPar" visibility="public" size="4" offset="24464" file="USoilNitrogen.pas" line="74">
         <devnotes>
            Dispersion length
         </devnotes>
       </field>
-      <field name="LeachingStartDay" type="TPar" visibility="public" size="4" offset="21020" file="USoilNitrogen.pas" line="76">
+      <field name="LeachingStartDay" type="TPar" visibility="public" size="4" offset="24468" file="USoilNitrogen.pas" line="76">
         <devnotes>
            relative &quot;implicitness&quot; of calculation procedure
         </devnotes>
       </field>
-      <field name="LeachingEndDay" type="TPar" visibility="public" size="4" offset="21024" file="USoilNitrogen.pas" line="76" />
-      <field name="SelectedLeachingPeriod" type="TOption" visibility="public" size="4" offset="21028" file="USoilNitrogen.pas" line="78" />
-      <field name="Groundwaterconc" type="TExternV" visibility="public" size="4" offset="21032" file="USoilNitrogen.pas" line="80">
+      <field name="LeachingEndDay" type="TPar" visibility="public" size="4" offset="24472" file="USoilNitrogen.pas" line="76" />
+      <field name="SelectedLeachingPeriod" type="TOption" visibility="public" size="4" offset="24476" file="USoilNitrogen.pas" line="78" />
+      <field name="Groundwaterconc" type="TExternV" visibility="public" size="4" offset="24480" file="USoilNitrogen.pas" line="80">
         <devnotes>
            Option for restricting Leaching accumulation to a certain period
         </devnotes>

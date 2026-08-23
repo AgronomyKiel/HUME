@@ -1,3 +1,14 @@
+///<summary>
+/// Module for dry matter production of silage maize.
+/// Authors: Katja Holzhauser, Josephine Bukowiecki, Babette Wienforth, Henning Kage & Crop Science and Agronomy Group, Kiel University
+/// Last edited: 14.08.2026
+/// Parts of the module are published in:
+/// References:
+/// Holzhauser, K., Wienforth, B.M., Komainda, M., Herrmann, A., Zimmermann, I. & Dippold, M.A. et al. (2026) HUME-Maize: modelling silage maize yield formation across genotypes and scales. The Journal of Agricultural Science, 164, e34. Available from: https://doi.org/10.1017/S0021859626100719.
+/// Holzhauser, K. (2025) Cover Crops for Sustainable Silage-Maize Production: Enhancing Resource Use Efficiency through Modelling and Remote Sensing (Doctoral dissertation). Christian-Albrechts-Universität zu Kiel: Kiel Available from: https://macau.uni-kiel.de/receive/macau_mods_00006346.
+/// Wienforth, B. (2011) Cropping systems for biomethane production: a simulation based analysis of yield, yield potential and resource use efficiency (Doctoral dissertation). Christian-Albrechts-Universität zu Kiel
+///</summary>
+
 unit Usublightint_growth_Maize;
 
 interface
@@ -149,68 +160,64 @@ end;
 procedure Tsublightint_growth_Maize.createAll;
 begin
   inherited createAll;
-  //Variables
-  VarCreate('fInt', '',0, true, fInt);
-  VarCreate('IntPar', '',0, true, IntPar);
-  VarCreate('LUE', '',0, true, LUE);
-  VarCreate('LUETempfact', '',0, true, LUETempfact);
-  VarCreate('LUETempf_SWDF', '',0, true,  LUETempf_SWDF);
-  VarCreate('Tempfact', '',0, true, Tempfact);
-  VarCreate('TotTMgRate', '',0, true, TotTMgRate);
-  VarCreate('TotTMgRate_TUE', '',0, true, TotTMgRate_TUE);
-  VarCreate('SWDF', '',0, true, SWDF);
-  VarCreate('TUE_vpd', '',0, true, TUE_vpd);
-  VarCreate('Trans_daysGR', '',0, true, Trans_daysGR);
-  VarCreate('avg_pot_Trans_GlobRad', '',0, true, avg_pot_Trans_GlobRad);
+// Variables
+VarCreate('fInt', '[unitless]', 0, true, fInt, 'Fraction of intercepted photosynthetically active radiation (PAR) (not used in model)');
+VarCreate('IntPar', '[MJ/m²/d]', 0, true, IntPar, 'Intercepted PAR (daily total)');
+VarCreate('LUE', '[g/MJ]', 0, true, LUE, 'Light use efficiency (actual biomass production per unit intercepted PAR)');
+VarCreate('LUETempfact', '[g/MJ]', 0, true, LUETempfact, 'Light use efficiency corrected for temperature (without drought stress)');
+VarCreate('LUETempf_SWDF', '[g/MJ]', 0, true, LUETempf_SWDF, 'Light use efficiency corrected for temperature and water deficit (effective LUE)');
+VarCreate('TUE_vpd', '[g/kg]', 0, true, TUE_vpd, 'Transpiration use efficiency based on vapor pressure deficit (TUE_vpd = alpha * Sat_def^-beta)');
+VarCreate('TotTMgRate', '[g/m²/d]', 0, true, TotTMgRate, 'Total dry matter growth rate (actual)');
+VarCreate('TotTMgRate_TUE', '[g/m²/d]', 0, true, TotTMgRate_TUE, 'Total dry matter growth rate calculated via TUE');
+VarCreate('SWDF', '[unitless]', 0, true, SWDF, 'Soil water deficit factor (1 = no stress, 0 = severe stress)');
+VarCreate('Tempfact', '[unitless]', 0, true, Tempfact, 'Temperature factor for growth (0–1, Trapezoidal function)');
+VarCreate('Trans_daysGR', '', 0, true, Trans_daysGR, '-');
+VarCreate('avg_pot_Trans_GlobRad', '', 0, true, avg_pot_Trans_GlobRad, '-');
 
-  //State Variables
+// State Variables
+StateCreate('Qsum', '[MJ/m²]', 0, true, Qsum, 'Cumulative intercepted PAR (used for external LUE calculation)');
+StateCreate('QsumTempf_SWDF', '[MJ/m²]', 0, true, QsumTempf_SWDF, 'Cumulative intercepted PAR corrected for temperature and water stress (used for external LUE calculation)');
+StateCreate('TotDM', '[g/m²]', 0, true, TotDM, 'Cumulative total dry matter accumulation');
+StateCreate('pot_Trans_GlobRad', '', 0, true, pot_Trans_GlobRad, '');
+StateCreate('Trans_days', '', 0, true, Trans_days, '');
+StateCreate('cumPAR_Trans_days', '', 0, true, cumPAR_Trans_days, '');
 
-  StateCreate('Qsum', '',0, true,Qsum);
-  StateCreate('QsumTempf_SWDF', '',0, true,QsumTempf_SWDF);
-  StateCreate('TotDM', '',0, true,TotDM);
-  StateCreate('pot_Trans_GlobRad', '',0, true,pot_Trans_GlobRad);
-  StateCreate('Trans_days', '',0, true,Trans_days);
-  StateCreate('cumPAR_Trans_days', '',0, true,cumPAR_Trans_days);
+// Parameters
+ParCreate('LUE0', '[g/MJ]', 7.5, LUE0, 'Baseline light use efficiency at zero radiation (Ritchie approach), option: exponential LUE');
+ParCreate('LUEexp', '[unitless]', 0.6, LUEexp, 'Exponent in light conversion equation (Ritchie approach), option: exponential LUE');
+ParCreate('consLUE', '[g/MJ]', 3.6, consLUE, 'Constant light use efficiency (option: constant)');
+ParCreate('LUEmax', '[g/MJ]', 15, LUEmax, 'Maximum potential light use efficiency (upper limit), (option: linear LUE)');
+ParCreate('LUEsteig', '[unitless]', -0.312, LUEsteig, 'Slope parameter for LUE decline with increasing radiation (option: linear LUE)');
+ParCreate('Ct1', '°C', 6, Ct1, 'Minimum cardinal temperature for growth (Ct1)');
+ParCreate('Ct2', '°C', 18, Ct2, 'Optimum temperature for growth (Ct2)');
+ParCreate('Ct3', '°C', 30, Ct3, 'Maximum temperature for growth (Ct3)');
+ParCreate('Ct4', '°C', 34, Ct4, 'Upper lethal temperature (Ct4)');
+ParCreate('TRcrit', '', 0.75, TRcrit, '');
+ParCreate('alpha_TUE', '', 10.3, alpha_TUE, 'Parameter for TUE_vpd');
+ParCreate('beta_TUE', '', 0.42, beta_TUE, 'Parameter for TUE_vpd');
+ParCreate('SWDF_fact', '[unitless]', 0.42, SWDF_fact, 'Power factor for nonlinear relationship Transratio and SWDF');
 
-  // Parameters
+// External Variables
+ExternVCreate('Temp', '°C', statefield, Temp, 'Daily mean air temperature');
+ExternVCreate('NNI', '[unitless]', statefield, NNI, 'Nitrogen Nutrition Index (NNI = Nactual / Ncritical)');
+ExternVCreate('Rad_Int', 'W/m²', statefield, Rad_Int, 'Intercepted radiation (PAR)');
+ExternVCreate('LAI', '[m²/m²]', statefield, LAI, 'Leaf Area Index (green, used for light interception)');
+ExternVCreate('XStage', '[unitless]', statefield, XStage, 'Development stage (0–5), numeric scale');
+ExternVCreate('IStage', '[unitless]', statefield, IStage, 'Integer scaled development stage');
+ExternVCreate('Tbase6', '°C', statefield, Tbase6, 'Base temperature for development (Tbase6)');
+ExternVCreate('TransRatio', '[unitless]', statefield, TransRatio, 'Ratio of actual to potential transpiration (0–1)');
+ExternVCreate('Sat_def', '[kPa]', statefield, Sat_def, 'Saturation deficit (vapor pressure deficit)');
+ExternVCreate('ActTrans', '[mm/d]', statefield, ActTrans, 'Actual transpiration rate');
+ExternVCreate('ExtPAR_varLAI', '[unitless]', statefield, ExtPAR_varLAI, 'Variable extinction coefficient for PAR (based on LAIgreen)');
+ExternVCreate('potTrans', '[mm/d]', statefield, pot_Trans, 'Potential transpiration rate');
+ExternVCreate('GlobRad', '[W/m²]', statefield, GlobRad, 'Global radiation (incoming solar radiation)');
 
-  //ParCreate('exkPAR', '',0.55, exkPAR, 'Extinktionskoeffiziens bezogen auf PAR');
-  ParCreate('LUE0', '[g/MJ]',7.5, LUE0);
-  ParCreate('LUEexp', '[-]',0.6, LUEexp);
-  ParCreate('consLUE', '[g/MJ]', 3.6,  consLUE);
-  ParCreate('LUEmax', '',15, LUEmax);
-  ParCreate('LUEsteig', '',-0.312, LUEsteig);
-  ParCreate ('Ct1', '°C',6, Ct1);
-  ParCreate ('Ct2', '°C',18, Ct2);
-  ParCreate ('Ct3', '°C',30, Ct3);
-  ParCreate ('Ct4', '°C',34, Ct4);
-  ParCreate ('TRcrit', '', 0.75, TRcrit);
-  ParCreate ('alpha_TUE', '', 10.3, alpha_TUE);
-  ParCreate ('beta_TUE', '', 0.42, beta_TUE);
-  ParCreate ('SWDF_fact', '', 0.42, SWDF_fact,'Potenzfaktor zur nichtlinearen Beschreibung des Zusammenhangs zwischen TransRatio und SWDF');
-
-  // External Variable
-
-  ExternVCreate('Temp', '°C',statefield, Temp);
-  ExternVCreate('NNI', '°C',statefield, NNI);
-  ExternVCreate('Rad_Int', 'W/m²',statefield, Rad_Int);
-  ExternVCreate('LAI', '',statefield, LAI);
-  ExternVCreate('XStage', '',statefield, XStage);
-  ExternVCreate('IStage', '',statefield, IStage);
-  ExternVCreate('Tbase6', '',statefield, Tbase6);
-  ExternVCreate('TransRatio', '[-]', Statefield, TransRatio);
-  ExternVCreate('Sat_def', '[-]', Statefield, Sat_def);
-  ExternVCreate('ActTrans', '[-]', Statefield, ActTrans);
-  ExternVCreate('ExtPAR_varLAI', '[-]', Statefield, ExtPAR_varLAI);
-  ExternVCreate('potTrans', '[-]', Statefield, pot_Trans);
-  ExternVCreate('GlobRad', '[-]', Statefield, GlobRad);
-
-  OptCreate('optDroughtimpact', 'DroughtImpact', optDroughtimpact);
+  OptCreate('optDroughtimpact', 'DroughtImpact', optDroughtimpact, 'Drought impact by activating SWDF');
   optDroughtimpact.OptionList.Clear;
   optDroughtimpact.OptionList.Add('DroughtImpact');
   optDroughtimpact.OptionList.Add('NoDroughtImpact');
 
-  OptCreate('DMCalcMethod', 'ConstLue', optDMCalcMethod);
+  OptCreate('DMCalcMethod', 'ConstLue', optDMCalcMethod, 'ConstLUE: constant potential LUE; ExpLUE_f_Rad: exponential funciton (Ritchie approach) parameters needed: LUE0,LUEexp; LinLUE_f_R: linear decrease of LUE with increasing radiation uptake (light saturation), parameters needed: LUEmax, LUEsteig');
   optDMCalcMethod.OptionList.Clear;
   optDMCalcMethod.OptionList.Add('ConstLue');
   optDMCalcMethod.OptionList.Add('ExpLUE_f_Rad');
@@ -291,7 +298,7 @@ begin
                      else Tempfact.v := 0;
    LUETempfact.v := LUE.v*Tempfact.v;
    LUETempf_SWDF.v := LUE.v*Tempfact.v*SWDF.v;
-   TotTMgRate.v := IntPar.v* LUE.v*Tempfact.v*SWDF.v*NNI.v;
+   TotTMgRate.v := IntPar.v* LUE.v*Tempfact.v* SWDF.v*NNI.v;
    TotTMgRate_TUE.v := TUE_vpd.v*ActTrans.v*NNI.v;
    //If LAI.v>1 then
    //TotTMgRate.v := min(TotTMgRate.v, TotTMgRate_TUE.v);

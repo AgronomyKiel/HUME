@@ -3,13 +3,13 @@
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, vcl.Graphics, vcl.Controls, vcl.Forms, vcl.Dialogs,
+  Windows, Messages, SysUtils, System.IOUtils, vcl.Graphics, vcl.Controls, vcl.Forms, vcl.Dialogs,
   vcl.ExtCtrls, vcl.Menus, vcl.StdCtrls, UFormGraph, vcl.ComCtrls, UMod, vcl.Grids, //vcl.DirOutln,
   vcl.Buttons, vcl.ToolWin, IniFiles, BaseGrid, AdvGrid, VCLTee.TeeProcs, VCLTee.TeEngine,
   VCLTee.Chart, VCLTee.Series,
   UTextFileH, UHumeShow, UFormOpt, UFormSelPar, ModLink, UFormChiSquareAnalysis,
   VCLTee.TECanvas, System.UITypes, VclTee.TeeGDIPlus, System.ImageList,
-  Vcl.ImgList, Vcl.WinXCtrls; // , JvCsvData;
+  Vcl.ImgList, Vcl.WinXCtrls, System.Classes; // , JvCsvData;
 
 const
   MaxSeries = 1000;
@@ -169,8 +169,10 @@ type
     ToolBarConstPage: TToolBar;
     ToggleSwitch1: TToggleSwitch;
     AdvStringGridConstants: TAdvStringGrid;
+    SpeedButtonRunActIni: TSpeedButton;
 
     procedure RunModel; virtual;
+    procedure RunActIni; virtual;
     procedure Menu_RunClick(Sender: TObject); virtual;
     procedure Menu_ExitClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -303,6 +305,9 @@ type
     procedure ToggleSwitchVarContOutputClick(Sender: TObject);
     procedure ToggleSwitchStateContOutputClick(Sender: TObject);
     procedure ToggleSwitchExternContOutputClick(Sender: TObject);
+    procedure EditOutputDirectoryChange(Sender: TObject);
+    procedure EditControlFileChange(Sender: TObject);
+    procedure SpeedButtonRunActIniClick(Sender: TObject);
   private
     n_lineSeries, n_PointSeries, nFormGraph: Integer;
     FormGraphArray: array [1 .. 10] of TFormGraph;
@@ -356,6 +361,11 @@ end;
 procedure TFormMod.Menu_RunClick(Sender: TObject);
 begin
   RunModel;
+end;
+
+procedure TFormMod.SpeedButtonRunActIniClick(Sender: TObject);
+begin
+   RunActIni;
 end;
 
 procedure TFormMod.SpeedButtonRunClick(Sender: TObject);
@@ -560,6 +570,45 @@ begin
   ComboBoxSubModChange(nil);
 
 end;
+
+
+
+procedure TFormMod.RunActIni;
+var
+  starttime, endtime, timelapsed: real;
+begin
+  // setSoilWaterMod;
+  Screen.cursor := CrHourGlass;
+  StatusBarMain.Panels.Items[0].Text := 'Running';
+  StatusBarMain.show;
+  MenuView.Enabled := True;
+  starttime := time;
+
+  if Lmod.fModel <> nil then
+    Lmod.fModel.runActIni
+
+  else
+  begin
+    showmessage('No Model linked!');
+    exit;
+  end;
+  endtime := time;
+  timelapsed := endtime - starttime;
+  update_StringGrid(Lmod.fModel.reg_fn); // TODO
+  Screen.cursor := CrDefault;
+  StatusBarMain.Panels.Items[0].Text := ' Runtime: ' + TimeToStr(timelapsed);
+  // if LMod.fModel.ReInitAfterRun then // TODO
+  // LMod.fModel.init(LMod.fModel.actIniFile);
+
+  // SaveState;
+  // SaveOptions;
+  // SaveParams;
+
+  ComboBoxInifileChange(nil);
+  ComboBoxSubModChange(nil);
+
+end;
+
 
 // ==============================================================================
 // UpdateStringGrid f�r alle States
@@ -2655,10 +2704,8 @@ procedure TFormMod.btnButtonChangeControlFileClick(Sender: TObject);
 var
   act_IniFn, NewCtrlFN: string;
   NewInifile: TMyIniFile;
-  index: Integer;
-//  ControlFile : TextFile;
-  ControlFile : TStreamReader;
-
+  ControlFile: TStreamReader;
+  ApplicationDirectory: string;
 
 begin
   with OpenDialog1 do
@@ -2668,48 +2715,52 @@ begin
     Filter := 'Conrolfiles (*.fn)|*.fn';
     Options := Options + [ofShowHelp, ofPathMustExist, ofFileMustExist];
     if not DirectoryExists(InitialDir) then
-      InitialDir := ExtractFileDir(Lmod.fModel.Get_ControlFileFn);
+      InitialDir := ExtractFileDir(LMod.fModel.Get_ControlFileFn);
 
     if Execute then
     begin
       NewCtrlFN := FileName;
-      Lmod.fModel.Set_ControlFileFN(NewCtrlFN);
+      LMod.fModel.Set_ControlFileFN(NewCtrlFN);
       self.EditControlFile.Text := NewCtrlFN;
-      Lmod.fModel.FPropIniFile.WriteString('Files', 'ControlFile', NewCtrlFN);
-      Lmod.fModel.FPropIniFile.UpdateFile;
-      ControlFile := TStreamReader.Create(NewCtrlFN, TEncoding.UTF8);
-    //  assignFile(ControlFile, NewCtrlFN);
-    //  reset(ControlFile);
-      Lmod.fModel.FIniFiles := TStringList.create;
-      index := 0;
+      LMod.fModel.FPropIniFile.WriteString('Files', 'ControlFile', NewCtrlFN);
+      LMod.fModel.FPropIniFile.UpdateFile;
+      ControlFile := TStreamReader.create(NewCtrlFN, TEncoding.UTF8);
+      LMod.fModel.FIniFiles := TStringList.create;
+
+      ApplicationDirectory := ExtractFileDir(application.EXEName);
+
       while not ControlFile.EndOfStream do
       begin
-        act_IniFn := ControlFile.ReadLine;
-      //        readln(ControlFile, act_IniFn);
-        if trim(act_IniFn) = '' then
-          continue;
-        if trim(act_IniFn)[1] = '#' then
-          continue;
-        if FileExists(act_IniFn) then
+        act_IniFn := trim(ControlFile.Readline);
+
+        if act_IniFn = '' then
+          Continue;
+
+        if act_IniFn[1] = '#' then
+          Continue;
+
+        if not System.IOUtils.TPath.IsPathRooted(act_IniFn) then
+          act_IniFn := System.IOUtils.TPath.Combine(ApplicationDirectory,
+            act_IniFn);
+
+        act_IniFn := System.IOUtils.TPath.GetFullPath(act_IniFn);
+
+        if fileexists(act_IniFn) then
         begin
           NewInifile := TMyIniFile.create(act_IniFn, TEncoding.UTF8);
           NewInifile.UpdateFile;
-          Lmod.fModel.FIniFiles.Add(NewInifile.FileName);
-          Lmod.fModel.FIniFiles.objects[index] := NewInifile;
-          inc(index);
+          LMod.fModel.FIniFiles.AddObject(NewInifile.FileName, NewInifile);
         end
         else
-          MessageDlg('IniFile ' + act_IniFn + ' does not exist !',
+          MessageDlg('IniFile "' + act_IniFn + '" does not exist!',
             mtInformation, [mbOK], 0);
       end;
-      Lmod.fModel.actIniFile := TMyIniFile(Lmod.fModel.FIniFiles.objects[0]);
-      Lmod.fModel.init(Lmod.fModel.actIniFile);
-      //self.ComboBoxIniFile
+      LMod.fModel.actIniFile := TMyIniFile(LMod.fModel.FIniFiles.objects[0]);
+      LMod.fModel.init(LMod.fModel.actIniFile);
       self.updateForm;
       ControlFile.Free;
     end;
   end;
-  // NewIniFile.Free;
 end;
 
 procedure TFormMod.SpeedButtonChangeStateIniFileClick(Sender: TObject);
@@ -2978,6 +3029,12 @@ begin
   PageControl.ActivePage := self.TabSheetOptions;
 end;
 
+procedure TFormMod.EditOutputDirectoryChange(Sender: TObject);
+begin
+  if self.Lmod.LinkedModel <> nil then
+    LMod.LinkedModel.GM_OutPutPath := self.EditOutputDirectory.Text;
+end;
+
 procedure TFormMod.Statistics1Click(Sender: TObject);
 begin
   PageControl.ActivePage := self.TabSheetStat;
@@ -3219,6 +3276,13 @@ begin
     EditStartTime.font.color := clBlack;
 
   DateTimePickerStart.date := StrToINt(EditStartTime.Text);
+end;
+
+procedure TFormMod.EditControlFileChange(Sender: TObject);
+begin
+  if FileExists(EditControlFile.Text) then
+    if self.Lmod.LinkedModel <> nil then
+    self.LMod.LinkedModel.GM_ControlFile := self.EditControlFile.Text;
 end;
 
 procedure TFormMod.EditEndTimeChange(Sender: TObject);

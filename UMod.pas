@@ -16,7 +16,9 @@ uses
   // AdvGrid,
   SysUtils, Classes,
   System.IniFiles,
+  System.IOUtils,
   System.UITypes,
+  System.Diagnostics,
   // DesignEditors,
   // instance properties
   // IniFilesNew, // Delphi VCL: Implements TIniFile class, handling INI file text format
@@ -68,7 +70,7 @@ type
   TWeightOptions = (OptNoWeight, OptDefaultWeight, OptMeasErrorWeight);
 
   /// <summary> Options for parameter Optimization </summary>
-  TOptOption = (optAllInis, optAllInisSeperate, optOnlyActIni);
+  TOptOption = (optAllInis, optAllInisSeparate, optOnlyActIni);
 
   /// <summary> Options for continous output,
   /// NoContOuput: No Outputfile is written, even if Option ContOutput of submodel is true,
@@ -388,6 +390,10 @@ type
     /// <summary> Method for checking if the submodel is set for continuous output </summary>
     procedure IsSubModelContOutput;
 
+    /// <summary>Resolves a referenced file against its owning INI and the application directory.</summary>
+    function ResolveReferencedFileName(const FileName,
+      PrimaryDirectory: string): string;
+
     /// <summary> Method for reading or creating the ini files </summary>
     procedure ReadOrCreateInifiles;
 
@@ -564,6 +570,9 @@ type
     /// <summary>  close all final files opened during simulation run </summary>
     procedure CloseAllFinalFiles;
 
+    /// <summary> Write calculation times of all submodels </summary>
+    procedure WriteCalcTimes;
+
     /// <summary> write all 1/1 regression value pairs to file </summary>
     procedure WriteAll_1_1_Files;
 
@@ -725,6 +734,9 @@ type
     fOptFinalOutput: TOption;
     ///<summary> Should output be written to file finally </summary>
     fWriteFinallyToFile: boolean;
+
+    FCalcTimeTicks: Int64;
+
 
 {$IFNDEF NONVISUAL}
     /// Pointer to abstract Form for debugging
@@ -1018,6 +1030,9 @@ type
     procedure DblClick; override;
     // procedure Click; override;
 {$ENDIF}
+
+    property CalcTimeTicks: Int64 read FCalcTimeTicks write FCalcTimeTicks;
+
   published
 
     /// <summary> property to linkt the submodel to the main model component </summary>
@@ -1089,6 +1104,9 @@ type
     end; }
 
 function IsDesignTime: boolean;
+
+/// <summary>Writes an INI file and retries transient Windows file-sharing failures.</summary>
+procedure UpdateIniFileWithRetry(IniFile: TCustomIniFile);
 
 // Comparison function
 function CompareByModelCompIndex(List: TStringList;
@@ -1275,11 +1293,50 @@ begin
   Result := nil;
 end;
 
+
+procedure TMod.WriteCalcTimes;
+var
+  i: Integer;
+  F: TextFile;
+  FN: string;
+begin
+  
+{$IFDEF LINUX}
+  FN := GM_OutPutPath + '/CalcTimes.txt';
+{$ELSE}
+  FN := GM_OutPutPath + '\CalcTimes.txt';
+{$ENDIF}
+  AssignFile(F, FN);
+  Rewrite(F);
+  try
+    for i := 0 to SubModStrList.Count - 1 do
+    begin
+      Writeln(F,
+        SubModel[i].ClassName,
+        ': ',
+        FormatFloat('0.000',
+          SubModel[i].CalcTimeTicks * 1000.0 / TStopwatch.Frequency),
+        ' ms');
+    end;
+  finally
+    CloseFile(F);
+  end;
+end;
+
+
 procedure UpdateIniFileWithRetry(IniFile: TCustomIniFile);
 var
   Attempt: Integer;
 begin
   if IniFile = nil then
+    Exit;
+
+  // TMemIniFile.UpdateFile recreates the physical file even when no values
+  // have changed. During parameter optimization this caused repeated writes
+  // to shared files such as properties.ini. Preserve creation of a missing
+  // file, but do not rewrite an existing unchanged file.
+  if (IniFile is TMemIniFile) and FileExists(IniFile.FileName) and
+    (not TMemIniFile(IniFile).Modified) then
     Exit;
 
   for Attempt := 1 to IniFileRetryCount do
@@ -1291,13 +1348,13 @@ begin
       begin
         if Attempt = IniFileRetryCount then
           raise;
-        TThread.Sleep(IniFileRetryDelayMs);
+        TThread.Sleep(IniFileRetryDelayMs * Attempt);
       end;
       on EInOutError do
       begin
         if Attempt = IniFileRetryCount then
           raise;
-        TThread.Sleep(IniFileRetryDelayMs);
+        TThread.Sleep(IniFileRetryDelayMs * Attempt);
       end;
     end;
 end;
@@ -1520,6 +1577,8 @@ begin
     // read weather file name and create if not existing
     WeatherFilefn := ActIniFile.ReadString(Str_SectionName_FileNames,
       Str_SectionTopic_WeatherFileFN, '');
+    WeatherFilefn := ResolveReferencedFileName(WeatherFilefn,
+      System.IOUtils.TPath.GetDirectoryName(Inifn));
 
     if not fileexists(WeatherFilefn) then
     begin
@@ -1551,6 +1610,11 @@ begin
     if Assigned(SubModel[SubModIndex]) then
       SubModel[SubModIndex].Init(self);
   end;
+
+  // InitOptions may add missing defaults to the shared in-memory options
+  // file. Persist all such additions once, rather than once per submodel.
+  if Assigned(OptionIniFile) and OptionIniFile.Modified then
+    UpdateIniFileWithRetry(OptionIniFile);
 end;
 /// <summary> Calls inherited create and  initializes properties, lists and files </summary>
 {$IFNDEF NONVISUAL}
@@ -1679,15 +1743,17 @@ begin
   for IniFile := 0 to FIniFiles.count - 1 do
     FIniFiles.Objects[IniFile].free;
 
-  FIniFiles.free;
-  AllMeasVal.free;
-  SelMeasVal.free;
-  SelParList.free;
-  self.Time.free;
+  FreeAndNil(FIniFiles);
+  FreeAndNil(AllMeasVal);
+  FreeAndNil(SelMeasVal);
+  FreeAndNil(SelParList);
+  FreeAndNil(self.Time);
 
   // SensOptions.Free;
-  FLMOptions.free;
-  WeatherFile.free;
+  FreeAndNil(FLMOptions);
+  FreeAndNil(WeatherFile);
+  FreeAndNil(SensOpt);
+  FreeAndNil(self.GlobalOutputList);
   for subMod := SubModStrList.count - 1 downto 0 do
   begin
     for Element := low(TModelElements) to high(TModelElements) do
@@ -1950,20 +2016,25 @@ end;
 /// <summary> For each submodel calculate rates </summary>
 
 procedure TMod.CalcAllRates;
-
 var
   i: Integer;
-  // subMod: TSubmodel;
+  SW: TStopwatch;
 begin
-  // for all submodels do...
-  for i := 0 to SubModStrList.count - 1 do
+  for i := 0 to SubModStrList.Count - 1 do
   begin
-    // subMod := TSubmodel(SubModStrList.objects[i]);
-    // if submodel is active calculate rates
     if SubModel[i].IsActive then
+    begin
+      SW := TStopwatch.StartNew;
+
       SubModel[i].CalcRates;
+
+      SW.Stop;
+
+      SubModel[i].CalcTimeTicks := SubModel[i].CalcTimeTicks + SW.ElapsedTicks;
+    end;
   end;
 end;
+
 
 procedure TMod.CalcAllVars;
 var
@@ -2067,7 +2138,8 @@ var
 begin
   Get_ControlFileFn();
   if FPropIniFile = nil then
-    FPropIniFile := CreateIniFileWithRetry(FNModProperties);
+    FPropIniFile := CreateIniFileWithRetry(
+      ExtractFilePath(ParamStr(0)) + FNModProperties);
   SelectionStr := FPropIniFile.ReadString('ModelSettings', 'ContOutput', 'ContOutput');
   fContOutput :=  TContOutput(GetEnumValue(System.TypeInfo(TContOutput), SelectionStr));
 
@@ -2114,7 +2186,8 @@ begin
     end;
   end;
 {$ENDIF}
-  UpdateIniFileWithRetry(FPropIniFile);
+  if Assigned(FPropIniFile) and FPropIniFile.Modified then
+    UpdateIniFileWithRetry(FPropIniFile);
 
   InitGlobalOutputList;
   WriteGlobalOutputNames(fFNGlobalOutput);
@@ -2173,6 +2246,10 @@ begin
   // For all submodels write state names to final output file
   // if FinalOutput then   begin
   WriteAllFinalNames;
+  // set the run time counter to zero for each submodel
+  for i  := 0 to SubModStrList.Count-1 do
+      SubModel[i].CalcTimeTicks := 0;
+
 
   for i := 0 to FIniFiles.count - 1 do
   begin
@@ -2250,6 +2327,8 @@ begin
       end;
       // exit central loop if TMod.ModelEnd was flagged by IsFinished (see above)
     until ModelEnd;
+    // write a file with runtime estimates for each submodel
+    WriteCalcTimes;
 {$IFDEF LINUX}
     writeln(' ' + IntToStr(trunc(Time.v)) + ' -  finished');
 {$ENDIF}
@@ -2276,8 +2355,10 @@ begin
     // AllMeasVal.Clear;       // f�r einzelberechnungen entfernen!
     UpdateIniFileWithRetry(ParamInifile);
     UpdateIniFileWithRetry(StateIniFile);
-    UpdateIniFileWithRetry(OptionIniFile);
-    UpdateIniFileWithRetry(FPropIniFile)
+    if Assigned(OptionIniFile) and OptionIniFile.Modified then
+      UpdateIniFileWithRetry(OptionIniFile);
+    if Assigned(FPropIniFile) and FPropIniFile.Modified then
+      UpdateIniFileWithRetry(FPropIniFile);
 
   end; // End of simulation run
   // globRes.Flush;
@@ -3120,7 +3201,10 @@ begin
   // Activate file output
   fContOutput := SaveContOutput;
   // Generate new output
-  run; // wieso hier run? Das verstellt die actini Datei!
+  if LMOptions.OptOption = optOnlyActIni then
+    runActIni
+  else
+    run; // wieso hier run? Das verstellt die actini Datei!
   // Das erneute Aufrufen ist notwendig, damit die Inhalte der der Ausgabedateien mit den
   // Parameterwerten im Array NewPar korrespondieren ...
 
@@ -3470,69 +3554,103 @@ begin
   TempString.free;
 end;
 
+function TMod.ResolveReferencedFileName(const FileName,
+  PrimaryDirectory: string): string;
+var
+  NormalizedFileName, PrimaryCandidate, ApplicationCandidate,
+    ApplicationDirectory: string;
+begin
+  NormalizedFileName := Trim(FileName);
+  if NormalizedFileName = '' then
+    exit('');
+
+  if System.IOUtils.TPath.IsPathRooted(NormalizedFileName) then
+    exit(System.IOUtils.TPath.GetFullPath(NormalizedFileName));
+
+  PrimaryCandidate := System.IOUtils.TPath.GetFullPath(
+    System.IOUtils.TPath.Combine(PrimaryDirectory, NormalizedFileName));
+  ApplicationDirectory := System.IOUtils.TPath.GetDirectoryName(
+    System.IOUtils.TPath.GetFullPath(ParamStr(0)));
+  ApplicationCandidate := System.IOUtils.TPath.GetFullPath(
+    System.IOUtils.TPath.Combine(ApplicationDirectory, NormalizedFileName));
+
+  if FileExists(PrimaryCandidate) then
+    result := PrimaryCandidate
+  else if FileExists(ApplicationCandidate) then
+    result := ApplicationCandidate
+  else if DirectoryExists(
+    System.IOUtils.TPath.GetDirectoryName(PrimaryCandidate)) then
+    result := PrimaryCandidate
+  else if DirectoryExists(
+    System.IOUtils.TPath.GetDirectoryName(ApplicationCandidate)) then
+    result := ApplicationCandidate
+  else
+    result := PrimaryCandidate;
+end;
+
 procedure TMod.ReadOrCreateInifiles;
 var
   NewFile: boolean;
   act_IniFn: string;
   NewInifile: TMyIniFile;
-  ControlFile: textFile;
   gFile: TStreamReader;
-  gLine: string;
+  ControlFileName, ApplicationDirectory, IniFileDirectory: string;
 
 begin
-  // go through list of all Ini files specified in control file
-  if fileexists(fControlFileFn) then
+  // Control-file entries are relative to the application directory. This is
+  // important when the control file itself is stored in a subdirectory and an
+  // entry starts with e.g. '.\SimIni\'.
+  ApplicationDirectory := System.IOUtils.TPath.GetDirectoryName(
+    System.IOUtils.TPath.GetFullPath(ParamStr(0)));
+  ControlFileName := Trim(fControlFileFn);
+  if ControlFileName <> '' then
+    ControlFileName := System.IOUtils.TPath.GetFullPath(ControlFileName);
+
+  if FileExists(ControlFileName) then
   begin
-    gFile := TStreamReader.create(fControlFileFn, TEncoding.UTF8, true);
-    FIniFiles.Clear;
-    // assignfile(ControlFile, fControlFileFn);
-    // reset(ControlFile);
-    // while not eof(ControlFile) do
-    while not gFile.EndOfStream do
-    begin
-      // open or create next Ini file and add to Ini file list of TMod
-      NewFile := false;
-      // readln(ControlFile, act_IniFn);
-      act_IniFn := gFile.ReadLine;
-      if trim(act_IniFn) = '' then
-        continue;
-      if trim(act_IniFn)[1] = '#' then
-        continue;
-      if fileexists(act_IniFn) then
+    gFile := TStreamReader.Create(ControlFileName, TEncoding.UTF8, true);
+    try
+      FIniFiles.Clear;
+      while not gFile.EndOfStream do
       begin
-        // Use IndexOf (linear search) because FIniFiles is not sorted;
-        // only create and register a new instance when not already present.
+        act_IniFn := Trim(gFile.ReadLine);
+        if act_IniFn = '' then
+          continue;
+        if act_IniFn[1] = '#' then
+          continue;
+
+        act_IniFn := ResolveReferencedFileName(act_IniFn, ApplicationDirectory);
+
+        // Use the normalized absolute path for lookup, creation and storage.
         if FIniFiles.IndexOf(act_IniFn) < 0 then
         begin
+          NewFile := not FileExists(act_IniFn);
           NewInifile := CreateIniFileWithRetry(act_IniFn);
+          NewInifile.CaseSensitive := false;
           FIniFiles.AddObject(act_IniFn, NewInifile);
-        end;
-      end
-      else
-      begin
-        NewFile := true;
-        NewInifile := CreateIniFileWithRetry(act_IniFn);
-        with NewInifile do
-        begin
-          CaseSensitive := false;
-          FIniFiles.AddObject(FileName, NewInifile);
-          // if Ini file is newly created put some default values in it
+
           if NewFile then
           begin
-            WriteFloat(Str_SectionName_TimeInit, Str_SectionTopic_SimStart, 0);
-            WriteFloat(Str_SectionName_TimeInit, Str_SectionTopic_SimEnd, 100);
-            WriteFloat(Str_SectionName_TimeInit, Str_SectionTopic_TimeStep, 1);
-            WriteString(Str_SectionName_FileNames, Str_SectionTopic_StateIniFN,
-              GetCurrentDir + Path_sep + FNStateIni);
-            WriteString(Str_SectionName_FileNames, Str_SectionTopic_ParamIniFN,
-              GetCurrentDir + Path_sep + FNParametersXIni);
+            IniFileDirectory := System.IOUtils.TPath.GetDirectoryName(act_IniFn);
+            NewInifile.WriteFloat(Str_SectionName_TimeInit,
+              Str_SectionTopic_SimStart, 0);
+            NewInifile.WriteFloat(Str_SectionName_TimeInit,
+              Str_SectionTopic_SimEnd, 100);
+            NewInifile.WriteFloat(Str_SectionName_TimeInit,
+              Str_SectionTopic_TimeStep, 1);
+            NewInifile.WriteString(Str_SectionName_FileNames,
+              Str_SectionTopic_StateIniFN,
+              System.IOUtils.TPath.Combine(IniFileDirectory, FNStateIni));
+            NewInifile.WriteString(Str_SectionName_FileNames,
+              Str_SectionTopic_ParamIniFN,
+              System.IOUtils.TPath.Combine(IniFileDirectory, FNParametersXIni));
             UpdateIniFileWithRetry(NewInifile);
           end;
         end;
       end;
+    finally
+      gFile.Free;
     end;
-    // CloseFile(ControlFile);
-    gFile.free;
   end
   else
   begin
@@ -5859,11 +5977,17 @@ begin
       Option := TOption(OptionStrList.Objects[i]);
       if Option.Option <> '' then
       begin
-        GlobMod.OptionIniFile.WriteString(Option.submodname, Option.Name,
-          Option.Option);
+        // Do not mark the INI file as modified when initialization merely
+        // read an already existing value. This is especially important for
+        // parameter optimization, which initializes the model many times.
+        if (not GlobMod.OptionIniFile.ValueExists(Option.submodname,
+          Option.Name)) or
+          (GlobMod.OptionIniFile.ReadString(Option.submodname, Option.Name,
+          '') <> Option.Option) then
+          GlobMod.OptionIniFile.WriteString(Option.submodname, Option.Name,
+            Option.Option);
       end;
     end;
-    UpdateIniFileWithRetry(GlobMod.OptionIniFile);
   end;
 end;
 

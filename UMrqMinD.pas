@@ -311,7 +311,7 @@ var
 // hk 10.6.16 added because in some cases the init sequence is necessary for parameter
 // changes to take effect
       model.ParamInifile.WriteFloat(ActPar.Submodname, ActPar.name, ActPar.V);
-      model.ParamInifile.UpdateFile;
+      UpdateIniFileWithRetry(model.ParamInifile);
 
       Tpar(Model.SelParList.Objects[j - 1]).v := ActPar.v;
         {Änderung des Modellparameters }

@@ -144,7 +144,7 @@ Also a simpler tipping bucket approach is implemented, which is based on the ass
 
 For the numerical solutions of the water and mass transport equations, the soil profile is divided into a number of layers (See @fig-soil-discretisation). The standard is a resolution in 20 layers S with a layer thickness of 10 cm each. In principle, other resolutions are also possible, provided that the code of all components using this concept correctly. With variable depth resolution, it is important to differentiate between the distance between the center points of the compartments and the thickness. The former determines the transport distances and thus the gradients for the transport of water and nutrients, the latter is part of the buffering, ie the change in water contents / concentrations due to the spatial divergence of the flows.
 
-![Scheme for discretisaion of a vertical soil profile](SoilDiscretisation.png){#fig-soil-discretisation}
+![Scheme for discretisaion of a vertical soil profile](images/SoilDiscretisation.png){#fig-soil-discretisation}
 
 #### Discretisation of transport equations
 
@@ -158,7 +158,7 @@ $${{\theta }^{t+1}}\Delta z={{\theta }^{t+1}}\Delta z+\left( F{{w}_{\,in}}-F{{w}
 
 Where $\theta \cdot \Delta z$ corresponds to the amount of water M in a compartment.
 
-![Schematic representation of the finite difference approach to solving the water balance equation.](SoilDiscretisationFlow.png){#fig-soilcompartimentisation}
+![Schematic representation of the finite difference approach to solving the water balance equation.](images/SoilDiscretisationFlow.png){#fig-soilcompartimentisation}
 
 The change in the amount of water $M_n^{t+1}$ - $M_{n}^t$ in a compartment in the time period $\Delta t$ is equal to the difference in the flow into and out of this compartment and the change in water content due to other sinks S (water uptake, evaporation):
 
@@ -188,7 +188,7 @@ the original function according to Beese1978 however is available as well:
 
 $$red_{evap} = max\left(0, min \left(1,-0.5767 * log_{10}(psi_{arr1}) + 1.78\right)\right)$$ {#eq-fevapBeese}
 
-Thereby psi~arr~[1] is the soil water tension in the top soil compartment and psi~critevap~ is the soil water tension at which evaporation is reduced. The initiation of soil water potential (psi) is simply done by a parameter psi~ini~. The parameter value of psi~critevap~ has a default value of 500 [hPa].
+Thereby psi~arr~\[1\] is the soil water tension in the top soil compartment and psi~critevap~ is the soil water tension at which evaporation is reduced. The initiation of soil water potential (psi) is simply done by a parameter psi~ini~. The parameter value of psi~critevap~ has a default value of 500 \[hPa\].
 
 ```{r}
 #| echo: false
@@ -292,7 +292,7 @@ $$\begin{align}
 $$\begin{align}
   & mit \\ 
  & P_{n}^{t+1}=\frac{\Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}}\,\,und\,\,Kf_{n}^{t+1}=\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}}{z_{n-1}^{{}}} \\ 
-\end{align}$$
+\end{align}$$$$\begin{align}  & mit \\  & P_{n}^{t+1}=\frac{\Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}}\,\,und\,\,Kf_{n}^{t+1}=\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}}{z_{n-1}^{{}}} \\ \end{align}$$
 
 Following simplification:
 
@@ -316,10 +316,10 @@ $$\begin{array}{*{35}{l}}
 
 For the lower boundary condition, in principle, 4 options are implemented:
 
--   A constant water content / a constant water tension ("ConstContent"), i.e. the water content / water tension in compartment n_comp + 1 remains at the initialized value,
--   a free flow ("FreeFlow") at the lower compartment end, i.e. the water a free flow ("FreeFlow") at the lower compartment end, i.e. the water tension in n_comp+1 is set to a lower value corresponding to the distance from the compartment center, as it would be in hydraulic equilibrium,
--   No flow at the lower boundary ("NoFlow")
--   A variable groundwater level specified via the weather input file ("Groundwater")
+- A constant water content / a constant water tension ("ConstContent"), i.e. the water content / water tension in compartment n_comp + 1 remains at the initialized value,
+- a free flow ("FreeFlow") at the lower compartment end, i.e. the water a free flow ("FreeFlow") at the lower compartment end, i.e. the water tension in n_comp+1 is set to a lower value corresponding to the distance from the compartment center, as it would be in hydraulic equilibrium,
+- No flow at the lower boundary ("NoFlow")
+- A variable groundwater level specified via the weather input file ("Groundwater")
 
 For the variants ConstContent, FreeFlow and Groundwater, the water tension / water content for compartment n_comp+1 is known and therefore does not need to be determined by solving the system of equations.
 

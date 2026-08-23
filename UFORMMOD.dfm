@@ -34,7 +34,7 @@ object FormMod: TFormMod
     Top = 44
     Width = 1090
     Height = 589
-    ActivePage = TabSheetDocumentation
+    ActivePage = TabSheetGlobal
     Align = alClient
     HotTrack = True
     TabOrder = 1
@@ -42,7 +42,7 @@ object FormMod: TFormMod
     OnChange = PageControlChange
     object TabSheetGlobal: TTabSheet
       AlignWithMargins = True
-      Caption = 'Global'
+      Caption = 'GlobalSettings'
       ParentShowHint = False
       ShowHint = True
       DesignSize = (
@@ -174,6 +174,7 @@ object FormMod: TFormMod
             BevelWidth = 5
             ReadOnly = True
             TabOrder = 0
+            OnChange = EditControlFileChange
             ExplicitHeight = 25
           end
         end
@@ -738,6 +739,7 @@ object FormMod: TFormMod
             ReadOnly = True
             ShowHint = True
             TabOrder = 0
+            OnChange = EditOutputDirectoryChange
             OnMouseMove = EditWeatherfileMouseMove
           end
         end
@@ -1622,7 +1624,6 @@ object FormMod: TFormMod
         ButtonHeight = 20
         EdgeBorders = [ebLeft, ebTop, ebRight, ebBottom]
         TabOrder = 0
-        ExplicitTop = 8
         object ToggleSwitch1: TToggleSwitch
           Left = 0
           Top = 0
@@ -3265,8 +3266,8 @@ object FormMod: TFormMod
     Alignment = taLeftJustify
     TabOrder = 2
     object LabelActIniFileDesc: TLabel
-      Left = 389
-      Top = 9
+      Left = 492
+      Top = 8
       Width = 68
       Height = 13
       AutoSize = False
@@ -3342,9 +3343,25 @@ object FormMod: TFormMod
       Spacing = 6
       OnClick = SpeedButtonRunClick
     end
+    object SpeedButtonRunActIni: TSpeedButton
+      Left = 392
+      Top = 4
+      Width = 94
+      Height = 22
+      Hint = 'Runs selected ini only'
+      Align = alCustom
+      Caption = 'RunActIni'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+      OnClick = SpeedButtonRunActIniClick
+    end
     object ComboBoxSubMod: TComboBox
       AlignWithMargins = True
-      Left = 160
+      Left = 151
       Top = 4
       Width = 223
       Height = 22

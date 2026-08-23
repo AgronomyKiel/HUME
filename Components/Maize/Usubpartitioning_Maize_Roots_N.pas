@@ -1,3 +1,14 @@
+///<summary>
+/// Module for dry matter and nitrogen partitioning of silage maize.
+/// Authors: Katja Holzhauser, Josephine Bukowiecki, Babette Wienforth, Henning Kage & Crop Science and Agronomy Group, Kiel University
+/// Last edited: 14.08.2026
+/// Parts of the module are published in:
+/// References
+/// Holzhauser, K., Wienforth, B.M., Komainda, M., Herrmann, A., Zimmermann, I. & Dippold, M.A. et al. (2026) HUME-Maize: modelling silage maize yield formation across genotypes and scales. The Journal of Agricultural Science, 164, e34. Available from: https://doi.org/10.1017/S0021859626100719.
+/// Holzhauser, K. (2025) Cover Crops for Sustainable Silage-Maize Production: Enhancing Resource Use Efficiency through Modelling and Remote Sensing (Doctoral dissertation). Christian-Albrechts-Universität zu Kiel: Kiel Available from: https://macau.uni-kiel.de/receive/macau_mods_00006346.
+/// Wienforth, B. (2011) Cropping systems for biomethane production: a simulation based analysis of yield, yield potential and resource use efficiency (Doctoral dissertation). Christian-Albrechts-Universität zu Kiel
+///</summary>
+
 unit Usubpartitioning_Maize_Roots_N;
 
 interface
@@ -52,9 +63,10 @@ Type
     /// NDemand of the organs [gN.m-2.d-1]
     Ntrans, NNIstem, NNIcob: TVar;
     SupplyDemandRatio: TVar;
-
+    NPlant_Soil: TVar;
     // State Variables
     Nshoot, Nroot, Nstem, Nleaf, Ncob, Ntot: TState; // g N/m2
+
 
     // Parameters
     Ncshoot_min, // niedrigste N Konzentration shoot
@@ -67,11 +79,12 @@ Type
     Ncroot_max, Ncroot_a, Ncroot_b: TPar;
     // Parameter für Verdünnungsfunktion NRootOpt
     DMStubble_par: TPar; // Stoppel-TM als Parameter
+    NNI_fact: TPar;
 
     // External Variables
     ActNUptake: TExternV; // Aktuelle N-Aufnahmerate aus dem Boden-Modul
     MaxNUptake: TExternV; // Maximale N-Aufnahmerate aus dem Boden-Modul
-
+    Nmin0_90: TExternV; //     (holzhauser)
     // Options
     OptNcShoot_Calc: TOption;
 
@@ -149,94 +162,154 @@ begin
   inherited CreateAll;
   // Variables
 
-  VarCreate('NDemand', 'g m-2 d-1', 0, true, NDemand,
-    'potenzielle N-Aufnahmerate (g.m-2.d-1)');
-  VarCreate('NDemandShoot', 'g m-2 d-1', 0, true, NDemandShoot,
-    'potential N uptake rate shoot (g.m-2.d-1)');
-  VarCreate('NDemandRoot', 'g m-2 d-1', 0, true, NDemandRoot,
-    'potential N uptake rate root (g.m-2.d-1)');
-  VarCreate('NDemandLeaf', 'g m-2 d-1', 0, true, NDemandLeaf);
-  VarCreate('NDemandStem', 'g m-2 d-1', 0, true, NDemandStem);
-  VarCreate('NDemandCob', 'g m-2 d-1', 0, true, NDemandCob);
-  VarCreate('NUptakeRate_act', 'g m-2 d-1', 0, true, NUptakeRate_act,
-    'maximale N-Aufnahmerate (g.m-2.d-1)');
-  VarCreate('NcOptShoot', '', 0, true, NcOptShoot);
-  VarCreate('NcOptStem', '', 0, true, NcOptStem); // (holzhauser)
-  VarCreate('NcOptLeaf', '', 0, true, NcOptLeaf); // (holzhauser)
-  VarCreate('NcOptCob', '', 0, true, NcOptCob); // (holzhauser)
-  VarCreate('NcStem', '', 0, true, NcStem); // (holzhauser)
-  VarCreate('NcLeaf', '', 0, true, NcLeaf); // (holzhauser)
-  VarCreate('NcCob', '', 0, true, NcCob); // (holzhauser)
-  VarCreate('NcMinShoot', '', 0, true, NcMinShoot);
-  VarCreate('NcOptRoot', '', 0, true, NcOptRoot);
-  VarCreate('NcShoot', '', 0, true, NcShoot);
-  VarCreate('NcRoot', '', 0, true, NcRoot);
-  // VarCreate('NcStem', '', 0, true, NcStem, 'N concentration stem, supposed to be half of N-concentration shoot');
-  VarCreate('DummyVar', '', 0, true, DummyVar);
-  VarCreate('NNI', '', 1, true, NNI);
-  VarCreate('NNIshoot', '', 0, true, NNIShoot);
-  VarCreate('NPlantDef', '', 0, true, NPlantDef);
-  VarCreate('NPlantOpt', '', 0, true, NPlantOpt);
-  VarCreate('NShootDef', '', 0, true, NShootDef);
-  VarCreate('NShootOpt', '', 0, true, NShootOpt);
-  VarCreate('NRootDef', '', 0, true, NRootDef);
-  VarCreate('NRootOpt', '', 0, true, NRootOpt);
-  VarCreate('NLeafDef', '', 0, true, NLeafDef);
-  VarCreate('NLeafOpt', '', 0, true, NLeafOpt);
-  VarCreate('NStemDef', '', 0, true, NStemDef);
-  VarCreate('NStemOpt', '', 0, true, NStemOpt);
-  VarCreate('NCobDef', '', 0, true, NCobDef);
-  VarCreate('NCobOpt', '', 0, true, NCobOpt);
-  VarCreate('Ntrans', '', 0, true, Ntrans);
-  VarCreate('NNIleaf', '', 0, true, NNILeaf);
-  VarCreate('NNIstem', '', 0, true, NNIstem);
-  VarCreate('NNIcob', '', 0, true, NNIcob);
-  VarCreate('SupplyDemandRatio', '', 0, true, SupplyDemandRatio);
+VarCreate('NDemand', 'g/m²·d', 0, true, NDemand,
+  'Potential N uptake rate of the entire plant (g/m²·d), sum of all simulated organ-demands');
+VarCreate('NDemandShoot', 'g/m²·d', 0, true, NDemandShoot,
+  'Potential N uptake rate for the shoot (g/m²·d), only active when option "hermann04" is selected');
+VarCreate('NDemandRoot', 'g/m²·d', 0, true, NDemandRoot,
+  'Potential N uptake rate for the roots (g/m²·d)');
+VarCreate('NDemandLeaf', 'g/m²·d', 0, true, NDemandLeaf,
+  'Potential N uptake rate for leaves (g/m²·d), only active when option "organ-specific" is selected');
+VarCreate('NDemandStem', 'g/m²·d', 0, true, NDemandStem,
+  'Potential N uptake rate for stems (g/m²·d), only active when option "organ-specific" is selected');
+VarCreate('NDemandCob', 'g/m²·d', 0, true, NDemandCob,
+  'Potential N uptake rate for cobs (g/m²·d) ,only active when option "organ-specific" is selected');
+VarCreate('NUptakeRate_act', 'g/m²·d', 0, true, NUptakeRate_act,
+  'Actual N uptake rate from soil (g/m²·d)');
+VarCreate('NcOptShoot', 'g/g', 0, true, NcOptShoot,
+  'Optimal N concentration in the shoot (g/g),Ncrit, only active when option "hermann04" is selected');
+VarCreate('NcOptStem', 'g/g', 0, true, NcOptStem,
+  'Optimal N concentration in stems (g/g) ,Ncrit,only active when option "organ-specific" is selected');
+VarCreate('NcOptLeaf', 'g/g', 0, true, NcOptLeaf,
+  'Optimal N concentration in leaves (g/g), Ncrit, only active when option "organ-specific" is selected');
+VarCreate('NcOptCob', 'g/g', 0, true, NcOptCob,
+  'Optimal N concentration in cobs (g/g), Ncrit,only active when option "organ-specific" is selected');
+VarCreate('NcStem', 'g/g', 0, true, NcStem,
+  'Actual N concentration in stems (g/g), only active when option "organ-specific" is selected');
+VarCreate('NcLeaf', 'g/g', 0, true, NcLeaf,
+  'Actual N concentration in leaves (g/g), only active when option "organ-specific" is selected');
+VarCreate('NcCob', 'g/g', 0, true, NcCob,
+  'Actual N concentration in cobs (g/g), only active when option "organ-specific" is selected');
+VarCreate('NcMinShoot', 'g/g', 0, true, NcMinShoot,
+  'Minimum N concentration in the shoot (g/g)');
+VarCreate('NcOptRoot', 'g/g', 0, true, NcOptRoot,
+  'Optimal N concentration in roots (g/g), Ncrit');
+VarCreate('NcShoot', 'g/g', 0, true, NcShoot,
+  'Actual N concentration in the shoot (g/g), only activated when option "hermann04" is selected');
+VarCreate('NcRoot', 'g/g', 0, true, NcRoot,
+  'Actual N concentration in roots (g/g)');
+VarCreate('DummyVar', '–', 0, true, DummyVar,
+  '');
+VarCreate('NNI', '–', 1, true, NNI,
+  'Nitrogen Nutrition Index (N status of the plant, dimensionless between 0 and 1), if organ-specific option is selected, NNI = NNIleaf, otherwise NNI = NNIshoot)');
+VarCreate('NNIshoot', '–', 0, true, NNIShoot,
+  'Nitrogen Deficiency Index for the shoot (dimensionless between 0 and 1)');
+VarCreate('NPlantDef', 'g/m²', 0, true, NPlantDef,
+  'N deficit in the entire plant (g/m²)');
+VarCreate('NPlantOpt', 'g/m²', 0, true, NPlantOpt,
+  'Optimal N content in the entire plant (g/m²)');
+VarCreate('NShootDef', 'g/m²', 0, true, NShootDef,
+  'N deficit in the shoot (g/m²)');
+VarCreate('NShootOpt', 'g/m²', 0, true, NShootOpt,
+  'Optimal N content in the shoot (g/m²)');
+VarCreate('NRootDef', 'g/m²', 0, true, NRootDef,
+  'N deficit in roots (g/m²)');
+VarCreate('NRootOpt', 'g/m²', 0, true, NRootOpt,
+  'Optimal N content in roots (g/m²)');
+VarCreate('NLeafDef', 'g/m²', 0, true, NLeafDef,
+  'N deficit in leaves (g/m²)');
+VarCreate('NLeafOpt', 'g/m²', 0, true, NLeafOpt,
+  'Optimal N content in leaves (g/m²)');
+VarCreate('NStemDef', 'g/m²', 0, true, NStemDef,
+  'N deficiency in stems (g/m²)');
+VarCreate('NStemOpt', 'g/m²', 0, true, NStemOpt,
+  'Optimal N content in stems (g/m²)');
+VarCreate('NCobDef', 'g/m²', 0, true, NCobDef,
+  'N deficit in cobs (g/m²)');
+VarCreate('NCobOpt', 'g/m²', 0, true, NCobOpt,
+  'Optimal N content in cobs (g/m²)');
+VarCreate('Ntrans', 'g/m²', 0, true, Ntrans,
+  'N translocation pool from leaves and stems to cob (g/m²·d)');
+VarCreate('NNIleaf', '–', 0, true, NNILeaf,
+  'Nitrogen Deficiency Index for leaves (dimensionless)');
+VarCreate('NNIstem', '–', 0, true, NNIstem,
+  'Nitrogen Deficiency Index for stems (dimensionless)');
+VarCreate('NNIcob', '–', 0, true, NNIcob,
+  'Nitrogen Deficiency Index for cobs (dimensionless)');
+VarCreate('SupplyDemandRatio', '–', 0, true, SupplyDemandRatio,
+  'Ratio of N supply from soil to N demand from plant (dimensionless)');
+VarCreate('NPlant_Soil', 'g/m²', 0, true, NPlant_Soil,
+  'N content in the plant derived from soil (g/m²)');
 
-  // State Variables
+// States
+StateCreate('Nshoot', 'g/m²', 0, true, Nshoot,
+  'Nitrogen content in the shoot (g/m²), if organ-specific option is selected, Nshoot = 0, Ntot serves as the sum of all organs');
+StateCreate('Nleaf', 'g/m²', 0, true, Nleaf,
+  'Nitrogen content in leaves (g/m²)');
+StateCreate('Nstem', 'g/m²', 0, true, Nstem,
+  'Nitrogen content in stems (g/m²)');
+StateCreate('Ncob', 'g/m²', 0, true, Ncob,
+  'Nitrogen content in cobs (g/m²)');
+StateCreate('Nroot', 'g/m²', 0, true, Nroot,
+  'Nitrogen content in roots (g/m²)');
+StateCreate('Ntot', 'g/m²', 0, true, Ntot,
+  'Total nitrogen content in the plant (g/m²), sum of all simulated organs (depending on the option)');
 
-  StateCreate('Nshoot', '', 0, true, Nshoot);
-  StateCreate('Nleaf', '', 0, true, Nleaf);
-  StateCreate('Nstem', '', 0, true, Nstem);
-  StateCreate('Ncob', '', 0, true, Ncob);
-  StateCreate('Nroot', '', 0, true, Nroot);
-  StateCreate('Ntot', '', 0, true, Ntot);
+
+// Parameters
+
+// Parameter for shoot dilution function, estimated from data
+// Biogas Expert 2007/2008 HS, KD, M1, N3, N4
+ParCreate('Ncshoot_max', 'g/g', 4.9, Ncshoot_max,
+  'Maximum possible N concentration in shoot, plateau of N delution curve, until DM>, only calculated if option is "hermann04"'); // (holzhauser)
+// 3.4 after Plenet / Herrmann
+ParCreate('Ncshoot_a', '–', 3.85, Ncshoot_a,
+  'Coefficient a for Ncrit shoot dilution function (holzhauser)');
+// Coefficients a and b for Ncrit shoot dilution function // (holzhauser)
+ParCreate('Ncshoot_b', '–', -0.37, Ncshoot_b,
+  'Coefficient b for Ncrit shoot dilution function (holzhauser)');
+// In publication: a = 34.12, valid for Ncrit in gN·kg?¹DM ? per mille ? 3.4 gives Ncrit in percent (g·100g?¹DM)
+// Parameters for organ-specific dilution functions (holzhauser)
+// Calibrated on Biogas Expert 2007/2008 dataset
+ParCreate('Ncleaf_a', '–', 3.56, Ncleaf_a,
+  'Coefficient a for Ncrit leaf dilution function (holzhauser)');
+ParCreate('Ncleaf_b', '–', -0.26, Ncleaf_b,
+  'Coefficient b for Ncrit leaf dilution function (holzhauser)');
+ParCreate('Ncleaf_max', 'g/g', 5.34, Ncleaf_max,
+  'Ncrit plateau for leaves (g/g)'); // (holzhauser)
+ParCreate('Ncstem_max', 'g/g', 4.02, Ncstem_max,
+  'Ncrit plateau for stems (g/g)'); // (holzhauser)
+ParCreate('Ncstem_a', '–', 4.30, Ncstem_a,
+  'Coefficient a for Ncrit stem dilution function (holzhauser)');
+ParCreate('Ncstem_b', '–', -0.33, Ncstem_b,
+  'Coefficient b for Ncrit stem dilution function (holzhauser)'); // (holzhauser)
+ParCreate('Nccob_a', '–', 3.20, Nccob_a,
+  'Coefficient a for Ncrit cob dilution function (holzhauser)');
+ParCreate('Nccob_b', '–', -0.34, Nccob_b,
+  'Coefficient b for Ncrit cob dilution function (holzhauser)'); // (holzhauser)
+// Parameters for root dilution function
+ParCreate('Ncroot_max', 'g/g', 1.6, Ncroot_max,
+  'Ncrit plateau for roots (g/g)');
+ParCreate('Ncroot_a', '–', 2.0, Ncroot_a,
+  'Coefficient a for Ncrit root dilution function');
+ParCreate('Ncroot_b', '–', -0.225, Ncroot_b,
+  'Coefficient b for Ncrit root dilution function');
+ParCreate('DMStubble_par', 'g/m²', 200, DMStubble_par,
+  'Stubble dry matter after harvest (g/m²), default 2 t/ha');
+ParCreate('NNI_fact', '–', 2.43, NNI_fact,
+  'NNI power factor (dimensionless), if NNI_fact = 1, NNI will be multiplied to DM production as usual');
 
 
-
-  // Parameters
-
-  // Parameter Verdünnungsfunktion Sproß aus Daten geschätzt
-  // Biogas-Expert 2007/2008 HS, KD, M1, N3, N4
-  ParCreate('Ncshoot_max', '', 3.4, Ncshoot_max);
-  // 4.944      3.4 nach Plenet /Herrmann
-  ParCreate('Ncshoot_a', '', 3.412, Ncshoot_a);
-  // Koeffizienten a und b nach Herrmann und Taube.
-  ParCreate('Ncshoot_b', '', -0.391, Ncshoot_b);
-  // in der Veröffentlichung a: 34.12   gilt für ein Nkrit in gN/kgDM also eine promille -> 3.4 ergibt NKrit in Prozent (g/100gDM)
-  // Parameter für organspezifische Verdünnungsfunktionen (holzhauser)
-  // Kalibriert an Biogas-Expert 2007/2008 Datensatz
-  ParCreate('Ncleaf_a', '', 3.2683049, Ncleaf_a); // 3.870
-  ParCreate('Ncleaf_b', '', -0.1207723, Ncleaf_b); // -0.11057
-  ParCreate('Ncleaf_max', '', 4.5, Ncleaf_max); // 5.9
-  ParCreate('Ncstem_max', '', 4.2, Ncstem_max);
-  ParCreate('Ncstem_a', '', 3.7332590, Ncstem_a); // 4.6227
-  ParCreate('Ncstem_b', '', -0.3019954, Ncstem_b); // -0.2164
-  ParCreate('Nccob_a', '', 2.4154529, Nccob_a); // 3.1160
-  ParCreate('Nccob_b', '', -0.2438779, Nccob_b); // -0.2941
-  // Parameter Verdünnungsfunktion Wurzel
-  ParCreate('Ncroot_max', '', 1.6, Ncroot_max);
-  ParCreate('Ncroot_a', '', 2.0, Ncroot_a);
-  ParCreate('Ncroot_b', '', -0.225, Ncroot_b);
-  ParCreate('DMStubble_par', 'g.m-2', 200, DMStubble_par,
-    'Stubble DM [g.m-2] after harvest, default 2t.ha-1');
-
-  // External Variable
-  ExternVCreate('ActNUptake', 'kg N/ha*d', statefield, ActNUptake);
-  ExternVCreate('MaxNUptake', 'kg N/ha*d', statefield, MaxNUptake);
+// External Variables
+ExternVCreate('ActNUptake', 'kg·N/ha·d', statefield, ActNUptake,
+  'Actual N uptake rate (kg·N/ha·d)');
+ExternVCreate('MaxNUptake', 'kg·N/ha·d', statefield, MaxNUptake,
+  'Maximum N supply from the soil at that timestep (kg·N/ha·d)');
+ExternVCreate('Nmin0_90', 'kg·N/ha·d', statefield, Nmin0_90,
+  'Mineral N in soil layer 0–90 cm (kg·N/ha·d)');
 
   // Options
-  OptCreate('NcShoot_Calc', 'herrmann04', OptNcShoot_Calc);
+  OptCreate('NcShoot_Calc', 'herrmann04', OptNcShoot_Calc, 'hermann04: simulation of N content via whole plant assumption, organ-specific: simulation of N content via organ-specific delution curves, dynamic simulation of N uptake including Translocation pool. f_ln: is not working');
   OptNcShoot_Calc.OptionList.Clear;
   OptNcShoot_Calc.OptionList.Add('f_ln');
   OptNcShoot_Calc.OptionList.Add('herrmann04');
@@ -267,6 +340,7 @@ begin
   Nstem.v := 0;
   Ncob.v := 0;
   Nshoot.v := 0;
+  Nroot.v := 0;
   Ntot.v := 0;
   SupplyDemandRatio.v := 0;
   Ncleaf.v:= 0;
@@ -302,7 +376,7 @@ begin
   //if (DMShoot > 100) then
     // obere und untere Bedingung(holzhauser): Nach Herrmann und Taube konstantes Nkrit bei DM < 1t/ha
    if (DMShoot > 52) then          // holzhauser 2024    berechnet mit Biogas-Expert Datensatz
-    NcOptShoot_f := min(Ncshoot_a, Ncshoot_a * power((DMShoot / 100),
+    NcOptShoot_f := min(Ncshoot_max, Ncshoot_a * power((DMShoot / 100),
       Ncshoot_b)) // 100 um DM in t/ha umzurechnen;
   else if (XStage > 0) then
     NcOptShoot_f := Ncshoot_a
@@ -315,7 +389,7 @@ function NcOptLeaf_f(DMLeaf, XStage, Ncleaf_max, Ncleaf_a,
   Ncleaf_b: real): real;
 begin
   if (DMLeaf > 21) and (XStage > 0) then
-    NcOptLeaf_f := min(Ncleaf_a, Ncleaf_a * power((DMLeaf / 100), Ncleaf_b))
+    NcOptLeaf_f := min(Ncleaf_max, Ncleaf_a * power((DMLeaf / 100), Ncleaf_b))
     // 100 um DM in t/ha umzurechnen
   else
     NcOptLeaf_f := Ncleaf_a;
@@ -326,7 +400,7 @@ function NcOptStem_f(DMStem, XStage, Ncstem_max, Ncstem_a,
   Ncstem_b: real): real;
 begin
   if (DMStem > 1) and (XStage > 0) then
-    NcOptStem_f := min(Ncstem_a, Ncstem_a * exp((DMStem / 100) * Ncstem_b))
+    NcOptStem_f := min(Ncstem_max, Ncstem_a * exp((DMStem / 100) * Ncstem_b))
     // 100 um DM in t/ha umzurechnen
   else
     NcOptStem_f := Ncstem_a;
@@ -404,12 +478,13 @@ begin
 
   if (fNcShoot_Calc = herrmann04) then
   begin // Shoot
-    if (DMShoot.v > 0) and (DMShoot.v < 100) then
+    if (DMShoot.v > 0) and (DMShoot.v < 52) then
       NDemandShoot.v := max(0, DMShoot.c * (NcOptShoot.v / 100))
     else
-      NDemandShoot.v :=
-        max(0, DMShoot.c * (NcOptShoot.v + ((DMShoot.v / 100) * Ncshoot_a.v *
-        Ncshoot_b.v * power((DMShoot.v / 100), (Ncshoot_b.v - 1)))) / 100)
+      NDemandShoot.v :=((DMShoot.v + DMShoot.c * Globtime.c) * (NcOptShoot.v / 100) -(NShoot.v)) / Globtime.c
+
+        //max(0, DMShoot.c * (NcOptShoot.v + ((DMShoot.v / 100) * Ncshoot_a.v *
+        //Ncshoot_b.v * power((DMShoot.v / 100), (Ncshoot_b.v - 1)))) / 100)
       // Ableitung der Verdünnungsfunktion. Siehe Vorlesungsfolien H.Kage.
   end
   else
@@ -427,7 +502,6 @@ begin
       NDemandLeaf.v := DMLeaf.c * NLeaf.v / DMLeaf.v
       else
       NDemandLeaf.v := 0;
-
 
 
     { if (DMLeaf.v > 0) and (DMLeaf.v < 2) then
@@ -504,7 +578,16 @@ begin
         // SupplyDemandRatio := max(0, min(1, (MaxNUptake.v/10) / NDemand.v))
       else
         SupplyDemandRatio.v := 1;
-      Nshoot.c := (NDemandShoot.v + NShootDef.v) * SupplyDemandRatio.v;
+      if NDemandShoot.v > 0 then
+        Nshoot.c := NDemandShoot.v * SupplyDemandRatio.v
+      else
+        Nshoot.c := NDemandShoot.v;
+
+      if NDemandRoot.v > 0 then
+        Nroot.c := NDemandRoot.v * SupplyDemandRatio.v
+      else
+        Nroot.c := NDemandRoot.v;
+
       Ntot.c := Nshoot.c + Nroot.c;
       NUptakeRate_act.v := Ntot.c;
     end;
@@ -580,6 +663,7 @@ begin
       Ntot.c := Nroot.c + Nleaf.c + Nstem.c + Ncob.c;
       NUptakeRate_act.v := Ntot.c;
 
+
     end;
   end;
   inherited Integrate;
@@ -629,6 +713,8 @@ begin
   NCobDef.v := max(0, NCobOpt.v - Ncob.v);
   NPlantDef.v := max(0, NRootDef.v + NShootDef.v + NLeafDef.v + NStemDef.v +
     NCobDef.v);
+
+  NPlant_Soil.v := Nmin0_90.v + (Ntot.v * 10);  //(holzhauser)  Soil N + Plant N
 
   // calculate actual N concentrations of organs
   if (fNcShoot_Calc = herrmann04) then
@@ -698,6 +784,7 @@ begin
   begin
     if (DMShoot.v + ShootGR.v > 100) then
       NNI.v := max(0, min(1.0, (NcLeaf.v) / (NcOptLeaf.v)))
+      //NNI.v := min(1,1-power((1-max(0, min(1.0, (NcLeaf.v) / (NcOptLeaf.v)))),NNI_fact.v))
     else
       NNI.v := 1;
   end;

@@ -1,3 +1,4 @@
+
 unit Usubpartitioning_Maize;
 
 interface
@@ -56,7 +57,7 @@ public
   SLAstem_average : TVar;
   ExtPAR_varLAI : TVar;
   LAIgreen : TVar;  // LAI exkl. toter Blattanteile
-  LAI : TVar;  //  Entweder LAIe oder LAIgreen, je nach LAIkrit.
+  LAI : TVar;  //Entweder LAIe oder LAIgreen, je nach LAIkrit.
                //In jedem Fall der LAI, der an SublightInt übergeben wird.
 
 
@@ -117,6 +118,9 @@ public
   decay_b: TPar;     //Parameter for calculating fleaf after Xstage=3, when leaf dry matter is translocated to stem.   (exponent)     (holzhauser)
   SLAleafmin: TPar;   //Second plateau for SLA   (holzhauser)
   SLAstemmin: TPar;     //Second plateau for SLAstem   (holzhauser)
+  height_a: TPar;
+  height_b: TPar;
+  height_c: TPar;
 
   // External Variables
    DS: TExternV; // DevelopmentSage for root growth
@@ -220,6 +224,9 @@ published
   Property Par_decay_b : TPar read decay_b write decay_b;
   Property Par_SLAleafmin : TPar read SLAleafmin write SLAleafmin;
   Property Par_SLAstemmin : TPar read SLAstemmin write SLAstemmin;
+  Property Par_height_a: TPar read height_a write height_a;
+  Property Par_height_b: TPar read height_b write height_b;
+  Property Par_height_c: TPar read height_c write height_c;
 
   // External Variables
   Property Ex_TempSumR: TExternV read TempSumR write TempSumR;
@@ -250,103 +257,100 @@ ndx_str:string;
 
 begin
   inherited createAll;
-  //Variables
-  VarCreate('ACroot', '', 0, true, ACroot);
-  VarCreate('BodBedeck', '',0, true, BodBedeck);
-  VarCreate('LAIe', '',0, true, LAIe);
-  VarCreate('CobGr', '',0, true, CobGr);
-  VarCreate('fCob', '',0, true, fCob);
-  VarCreate('fLEAF', '',0, true, fLEAF);
-  VarCreate('LeafGr', '',0, true, LeafGr);
-  VarCreate('ShootGR', '',0, true, ShootGR);
-  VarCreate('StemGr', '',0, true, StemGr);
-  VarCreate('CropHeight', '',0, true, CropHeight);
-  VarCreate('XStage5', '',0, true, XStage5);
-  VarCreate('TUEsim', '',0, true, TUEsim);
-  VarCreate('WUEsim', '',0, true, WUEsim);
-  VarCreate('LAItotal', '',0, true, LAItotal);
-  VarCreate('SLAleaf', '',0, true, SLAleaf);
-  VarCreate('SLAstem', '',0, true, SLAstem);
-  VarCreate('fSLAWR', '',0, true, fSLAWR);
-  VarCreate('SLAleaf_average', '',0, true, SLAleaf_average);
-  VarCreate('SLAstem_average', '',0, true, SLAstem_average);
-  VarCreate('ExtPAR_varLAI', '',0, true, ExtPAR_varLAI);
-  VarCreate('LAIgreen', '',0, true, LAIgreen);
-  VarCreate('LAI', '',0, true, LAI);
+// Variables
+VarCreate('ACroot', '[-]', 0, true, ACroot, 'Dry matter allocation coefficient for roots (DM distribution coefficient at emergence)');
+VarCreate('BodBedeck', '[-]', 0, true, BodBedeck, 'Soil cover fraction (e.g., plant canopy cover)');
+VarCreate('LAIe', '[m²/m²]', 0, true, LAIe, 'Fitted leaf area index (LAI) based on field data (1 site, 1 year, 1 cultivar), LAIe is only activated if');
+VarCreate('CobGr', '[g/m²/d]', 0, true, CobGr, 'Cob growth rate (dry matter accumulation per day)');
+VarCreate('fCob', '[-]', 0, true, fCob, 'Fraction of total aboveground biomass allocated to the cob');
+VarCreate('fLEAF', '[-]', 0, true, fLEAF, 'Fraction of total aboveground biomass allocated to leaves');
+VarCreate('LeafGr', '[g/m²/d]', 0, true, LeafGr, 'Leaf growth rate (dry matter accumulation per day)');
+VarCreate('ShootGR', '[g/m²/d]', 0, true, ShootGR, 'Shoot growth rate (total aboveground biomass accumulation per day)');
+VarCreate('StemGr', '[g/m²/d]', 0, true, StemGr, 'Stem growth rate (dry matter accumulation per day)');
+VarCreate('CropHeight', '[m]', 0, true, CropHeight, 'Plant height [m]');
+VarCreate('XStage5', '[day]', 0, true, XStage5, 'XStage 5 = Maturity');
+VarCreate('TUEsim', '[g/l]', 0, true, TUEsim, 'Simulated transpiration use efficiency');
+VarCreate('WUEsim', '[g/l]', 0, true, WUEsim, 'Simulated water use efficiency (WUE) up to latest harvest date');
+VarCreate('LAItotal', '[m²/m²]', 0, true, LAItotal, 'Total green area index (leaves + stems) – equivalent to GAI');
+VarCreate('SLAleaf', '[m²/g]', 0, true, SLAleaf, 'Specific leaf area of leaves (leaf area per unit dry mass)');
+VarCreate('SLAstem', '[m²/g]', 0, true, SLAstem, 'Specific stem area (stem area per unit dry mass)');
+VarCreate('fSLAWR', '[-]', 0, true, fSLAWR, '?');
+VarCreate('SLAleaf_average', '[m²/g]', 0, true, SLAleaf_average, '?');
+VarCreate('SLAstem_average', '[m²/g]', 0, true, SLAstem_average, '?');
+VarCreate('ExtPAR_varLAI', '[-]', 0, true, ExtPAR_varLAI, 'Variable extinction coefficient for PAR (light extinction)');
+VarCreate('LAIgreen', '[m²/m²]', 0, true, LAIgreen, 'Green leaf area index (only living leaf tissue)');
+VarCreate('LAI', '[m²/m²]', 0, true, LAI, 'Leaf area index (LAI) – either LAIe or LAIgreen, depending on parameter LAIkrit. Used as input to SublightInt.');
 
-  //State Variables
- // StateCreate('DMRoot', '', 0, true, DMRoot);
- // DMRoot:=@DMFineRoot;
- // StateCreate('DMtot', '', 0, true, DMtot);
-  StateCreate('DMcob', '',0, true,DMcob);
-  StateCreate('DMleaf', '',0, true,DMleaf);
-  StateCreate('DMStem', '',0, true,DMStem);
-  StateCreate('DMShoot', '',0, true,DMShoot);
-  StateCreate('LAIleaf', '',0, true,LAIleaf);
-  StateCreate('LAIstem', '',0, true,LAIstem);
-  StateCreate('LeafDuration', '',0, true,LeafDuration);
-  StateCreate('cumET_Veg', '',0, true,cumET_Veg);
-  StateCreate('cumET_latestharvest', '',0, true,cumET_latestharvest);
-  StateCreate('SEEDRV', '[g/m²]',0, true,SEEDRV);
-  StateCreate('TSumLAI', '',0, true,TSumLAI);
+// State Variables
+StateCreate('DMcob', '[g/m²]', 0, true, DMcob, 'dry matter accumulation of reproductive organs [g/m²]');
+StateCreate('DMleaf', '[g/m²]', 0, true, DMleaf, 'Leaf dry matter accumulation [g/m²]');
+StateCreate('DMStem', '[g/m²]', 0, true, DMStem, 'Stem dry matter accumulation [g/m²]');
+StateCreate('DMShoot', '[g/m²]', 0, true, DMShoot, 'Total aboveground dry matter [g/m²]');
+StateCreate('LAIleaf', '[m²/m²]', 0, true, LAIleaf, 'Leaf area index (only leaves) [m²/m²]');
+StateCreate('LAIstem', '[m²/m²]', 0, true, LAIstem, 'Stem area index [m²/m²]');
+StateCreate('LeafDuration', '', 0, true, LeafDuration, '?');
+StateCreate('cumET_Veg', '[mm]', 0, true, cumET_Veg, 'Cumulative evapotranspiration during vegetative phase [mm]');
+StateCreate('cumET_latestharvest', '[mm]', 0, true, cumET_latestharvest, 'Cumulative actual evapotranspiration up to latest_harvestdate (parameter) [mm]');
+StateCreate('SEEDRV', '[g/m²]', 0, true, SEEDRV, 'Seed reserve dry matter (e.g., starch, protein) [g/m²]');
+StateCreate('TSumLAI', '[°C*d]', 0, true, TSumLAI, 'Cumulative thermal time since emergence (used for LAI curve switching, same value than GDD8_from_emergence)');
 
-  // Parameters
-  ParCreate('ACEroot', '', 0.35, ACEroot);
-  ParCreate('DSstop', '', 1.15, DSstop);
-  ParCreate ('g','', -0.2934,g);
-  ParCreate ('h','', 1.0318,h);
-  ParCreate ('fstemmin', '', 0.285,fstemmin);
-  ParCreate ('decay_a', '', -0.000000000000003232,decay_a);
-  ParCreate ('decay_b', '', 22.32,decay_b);
-  ParCreate ('SLAleafmin','', 0.01644612,SLAleafmin);
-  ParCreate ('SLAstemmin','', 0.0005716101,SLAstemmin);
-  ParCreate('LAI0', '',0.02, LAI0);
-  ParCreate('LAIkrit', '',0.2, LAIkrit);
-  ParCreate('LAImax', '',4.1, LAImax);
-  ParCreate('RGRL', '',0.0025, RGRL);
-  ParCreate('RGRdecay', '',0.0025, RGRdecay);
-  ParCreate('fCob_ini', '',0.0990676997, fCob_ini);
-  ParCreate('fCob_steig', '',0.6092739, fCob_steig);
-  ParCreate('fCob_e', '',1.01273817, fCob_e);
-  ParCreate('fla', '',1.74, fla);
-  ParCreate('flb', '',-3.8, flb);
-  ParCreate('SLAleaf_const', '',0.02109903, SLAleaf_const);
-  ParCreate('SLAstem_const', '',0.00149819299, SLAstem_const);
-  ParCreate('SLAl_a', '',0.0221, SLAl_a);
-  ParCreate('SLAl_b', '',0.1222, SLAl_b);
-  ParCreate('SLAs_a', '',0.0014, SLAs_a);
-  ParCreate('SLAs_b', '',0.4329, SLAs_b);
-  ParCreate('SLAleafini', '',0.0360954, SLAleafini);
-  ParCreate('SLAstemini', '',0.004444, SLAstemini);
-  ParCreate ('fCropHeight', '',0.61, fCropHeight);
-  ParCreate ('latestharvestdate', '', 293, latestharvestdate);
-  ParCreate ('INI_DMleaf', '', 0.006, INI_DMleaf);
-  ParCreate('k_SEEDRV','[-]', 0.15, k_SEEDRV); // mobilisation constant for seed reserves
-  ParCreate('Ini_SEEDRV','[-]', 3.5, Ini_SEEDRV);
-  ParCreate('f1fslawr','[-]', 0.2, f1fslawr);
-  ParCreate('psiWRsla','[pF]', 2.8, psiWRsla);
-  ParCreate('fSLAmin','[-]', 0.7, fSLAmin);
-  ParCreate('ExtPAR_const','[-]', 0.6537485, ExtPAR_const);
-  ParCreate('LAIcritExtPAR','[pF]', 1.932764, LAIcritExtPAR);
-  ParCreate('ExtPAR_steig','[-]', -0.05330567, ExtPAR_steig);
-  ParCreate ('g','', -0.2934,g);
-  ParCreate ('h','', 1.0318,h);
-  ParCreate ('fstemmin', '', 0.285,fstemmin);
+// Parameters
+ParCreate('ACEroot', '[-]', 0.35, ACEroot, 'Initial ACroot at emergence (root dry matter allocation coefficient)');
+ParCreate('DSstop', '[-]', 1.15, DSstop, 'Development (DS) stage at which root growth stops');
+ParCreate('g', '[-]', -0.2934, g, 'Slope parameter for leaf biomass fraction (Holzhauser model)');
+ParCreate('h', '[-]', 1.0318, h, 'Intercept parameter for leaf biomass fraction (Holzhauser model)');
+ParCreate('fstemmin', '[-]', 0.285, fstemmin, 'Minimum stem biomass fraction at harvest (~28.5%, based on Wienforth data)');
+ParCreate('decay_a', '[-]', -0.000000000000003232, decay_a, 'Decay parameter for leaf biomass after XStage=3 (slope)(Holzhauser model)');
+ParCreate('decay_b', '[-]', 22.32, decay_b, 'Decay parameter for leaf biomass after XStage=3 (exponent)(Holzhauser model)');
+ParCreate('SLAleafmin', '[m²/g]', 0.01644612, SLAleafmin, 'Minimum specific leaf area (second plateau),Lower limit of the negative exponential relation between LAI and SLA');
+ParCreate('SLAstemmin', '[m²/g]', 0.0005716101, SLAstemmin, 'Minimum specific stem area (second plateau), Lower limit of the negative exponential relation between SAI and SSA');
+ParCreate('LAI0', '[m²/m²]', 0.02, LAI0, 'Base LAI at emergence (for LAIe calculation)');
+ParCreate('LAIkrit', '[-]', 0.2, LAIkrit, 'Critical LAI threshold: if LAIkrit < 1 LAIgreen is activated; if LAIkrit >= 10 LAIe is activated');
+ParCreate('LAImax', '[m²/m²]', 5, LAImax, 'Maximum possible LAI (for LAIe calculation)');
+ParCreate('RGRL', '[-]', 0.0025, RGRL, 'Relative growth rate limit (LAIe calculation)');
+ParCreate('RGRdecay', '[-]', 0.0025, RGRdecay, 'Decay factor for RGR (exponential decline)');
+ParCreate('fCob_ini', '[-]', 0.0990676997, fCob_ini, 'Intercept of cob fraction increase');
+ParCreate('fCob_steig', '[-]', 0.6092739, fCob_steig, 'Slope of linear cob fraction increase over development stage');
+ParCreate('fCob_e', '[-]', 1.01273817, fCob_e, 'Final cob fraction at maturity (not used)');
+ParCreate('fla', '[-]', 1.74, fla, 'Parameter for allometric leaf fraction calculation (1/(1+exp(flb.v)*fla.v*power(DMleaf.v,(fla.v-1)) not activated');
+ParCreate('flb', '[-]', -3.8, flb, 'Parameter for allometric leaf fraction calculation  (1/(1+exp(flb.v)*fla.v*power(DMleaf.v,(fla.v-1)), not activated');
+ParCreate('SLAleaf_const', '[m²/g]', 0.02109903, SLAleaf_const, 'Constant specific leaf area (when option is on SLAconst)');
+ParCreate('SLAstem_const', '[m²/g]', 0.00149819299, SLAstem_const, 'Constant specific stem area (when option is on SLAconst)');
+ParCreate('SLAl_a', '[-]', 0.0221, SLAl_a, 'Parameter for decreasing SLA with GAI (leaves)');
+ParCreate('SLAl_b', '[-]', 0.1222, SLAl_b, 'Parameter for decreasing SLA with GAI (leaves)');
+ParCreate('SLAs_a', '[-]', 0.0014, SLAs_a, 'Parameter for decreasing SLA with GAI (stems)');
+ParCreate('SLAs_b', '[-]', 0.4329, SLAs_b, 'Parameter for decreasing SLA with GAI (stems)');
+ParCreate('SLAleafini', '[m²/g]', 0.0360954, SLAleafini, 'Upper limit of the negative exponential relation between LAI and SLA');
+ParCreate('SLAstemini', '[m²/g]', 0.004444, SLAstemini, 'Upper limit of the negative exponential relation between SAI and SSA');
+ParCreate('fCropHeight', '[-]', 0.61, fCropHeight, 'Scaling factor for crop height development relation to GAI (linear increse), not activated');
+ParCreate('latestharvestdate', '[day]', 293, latestharvestdate, 'Latest harvest date (simulation end date), no impact');
+ParCreate('INI_DMleaf', '[g/m²]', 0.006, INI_DMleaf, 'Initial leaf dry matter at emergence');
+ParCreate('k_SEEDRV', '[-]', 0.15, k_SEEDRV, 'Mobilization constant for seed reserves');
+ParCreate('Ini_SEEDRV', '[g/m²]', 3.5, Ini_SEEDRV, 'Initial seed reserve dry matter');
+ParCreate('f1fslawr', '[-]', 0.2, f1fslawr, 'Factor for SLA adjustment under root stress (option = DroughtImpact)');
+ParCreate('psiWRsla', '[pF]', 2.8, psiWRsla, 'Critical root water potential for SLA reduction (option = DroughtImpact)');
+ParCreate('fSLAmin', '[-]', 0.7, fSLAmin, 'Minimum SLA adjustment factor, (option = DroughtImpact)');
+ParCreate('ExtPAR_const', '[-]', 0.6537485, ExtPAR_const, 'Constant extinction coefficient for PAR (when LAI > LAIcritExtPAR)');
+ParCreate('LAIcritExtPAR', '[m²/m²]', 1.932764, LAIcritExtPAR, 'Critical LAI threshold for switching extinction coefficient (linear vs. constant)');
+ParCreate('ExtPAR_steig', '[-]', -0.05330567, ExtPAR_steig, 'Slope of linear extinction coefficient (when LAI < LAIcritExtPAR)');
+ParCreate('height_a','[-]',0.289441,height_a, 'Intercept of quadratic crop height relation to DMShoot (Bukowiecki and Holzhauser)');
+ParCreate('height_b','[-]',0.0027215773,height_b, 'Coefficient of quadratic crop height relation to DMShoot (Bukowiecki and Holzhauser)');
+ParCreate('height_c','[-]',0.0000007798244,height_c, 'Coefficient of quadratic crop height relation to DMShoot (Bukowiecki and Holzhauser)');
 
-  // External Variable
-  ExternVCreate('DS', '', statefield, DS);
-  ExternVCreate('TempSumR', '°C*d', statefield, TempSumR);
-  ExternVCreate('CumPH', '',statefield, CumPH);
-  ExternVCreate('TotTMgRate', '',statefield, TotTMgRate);
-  ExternVCreate('TLNO', '',statefield, TLNO);
-  ExternVCreate ('CumTrans', '', statefield, CumTrans);
-  ExternVCreate('XStage', '',statefield, XStage);
-  ExternVCreate('Tempfact', '',statefield, Tempfact);
-  ExternVCreate('CumET', '',ratefield, ETact);
-  ExternVCreate('psiroot', '',statefield, psiroot);
-  ExternVCreate('Sen_fact', '[-]', Statefield, Sen_fact);
-  ExternVCreate('Temp', '°C',statefield, Temp);
-  ExternVCreate('Tbase6', '',statefield, Tbase6);
+// External Variables
+ExternVCreate('DS', '[-]', statefield, DS, 'Development stage of roots');
+ExternVCreate('TempSumR', '[°C*d]', statefield, TempSumR, 'Cumulative temperature sum for root development');
+ExternVCreate('CumPH', '[-]', statefield, CumPH, 'Cumulative phyllochron');
+ExternVCreate('TotTMgRate', '[g/m²/d]', statefield, TotTMgRate, 'Total dry matter production rate');
+ExternVCreate('TLNO', '[-]', statefield, TLNO, 'Total leave number');
+ExternVCreate('CumTrans', '[mm]', statefield, CumTrans, 'Cumulative transpiration');
+ExternVCreate('XStage', '[-]', statefield, XStage, 'Numeric development stages 1-5');
+ExternVCreate('Tempfact', '[-]', statefield, Tempfact, 'Temperature factor influencing dry matter production (0–1)');
+ExternVCreate('CumET', '[mm]', ratefield, ETact, 'Cumulative evapotranspiration');
+ExternVCreate('psiroot', '[MPa]', statefield, psiroot, 'Root water potential');
+ExternVCreate('Sen_fact', '[-]', statefield, Sen_fact, 'Senescence factor (leaf decay rate)');
+ExternVCreate('Temp', '[°C]', statefield, Temp, 'Daily mean temperature');
+ExternVCreate('Tbase6', '[°C]', statefield, Tbase6, 'Base temperature for development (Tbase6)');
   
   // Options
   OptCreate('optDroughtimpact_SLA', 'DroughtImpact', optDroughtimpact_SLA);
@@ -354,7 +358,7 @@ begin
   optDroughtimpact_SLA.OptionList.Add('DroughtImpact');
   optDroughtimpact_SLA.OptionList.Add('NoDroughtImpact');
 
-  OptCreate('optSLA_', 'SLA', optSLA_);
+  OptCreate('optSLA_', 'SLA', optSLA_, 'SLAfGAI: SLA and SSA decrease with increasing LAI or SAI, SLAconst: constant SLA');
   optSLA_.OptionList.Clear;
   optSLA_.OptionList.Add('SLAfGAI');
   optSLA_.OptionList.Add('SLAconst');
@@ -565,7 +569,7 @@ begin
   end;
   DMShoot.v :=  DMleaf.v+DMStem.v+DMCob.v;
   LAItotal.v := LAIleaf.v+LAIstem.v;
-  CropHeight.v :=0.289441+DMShoot.v*0.002721573-0.0000007798244*power(DMShoot.v,2); //LAItotal.v*fCropHeight.v;   (bukowiecki)
+  CropHeight.v :=height_a.v+DMShoot.v*height_b.v - height_c.v*power(DMShoot.v,2); //  (bukowiecki)  LAItotal.v*fCropHeight.v; 
   If DMleaf.v>0 then
      SLAleaf_average.v:= LAIleaf.v/DMleaf.v;
   If DMstem.v>0 then

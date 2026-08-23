@@ -84,44 +84,108 @@
       </propertyref>
     </ancestor>
     <members>
-      <field name="b_sat" type="Double" visibility="public" size="8" offset="8" file="UGenucht.pas" line="29">
+      <field name="FbSat" type="Double" visibility="private" size="8" offset="8" file="UGenucht.pas" line="26" />
+      <field name="FbRest" type="Double" visibility="private" size="8" offset="16" file="UGenucht.pas" line="27" />
+      <field name="FKs" type="Double" visibility="private" size="8" offset="24" file="UGenucht.pas" line="28" />
+      <field name="FAlpha" type="Double" visibility="private" size="8" offset="32" file="UGenucht.pas" line="29" />
+      <field name="FnPar" type="Double" visibility="private" size="8" offset="40" file="UGenucht.pas" line="30" />
+      <field name="FmPar" type="Double" visibility="private" size="8" offset="48" file="UGenucht.pas" line="31" />
+      <field name="FlPar" type="Double" visibility="private" size="8" offset="56" file="UGenucht.pas" line="32" />
+      <field name="FCoefficientsCalculated" type="Boolean" visibility="private" size="1" offset="64" file="UGenucht.pas" line="34" />
+      <field name="FInvMParValid" type="Boolean" visibility="private" size="1" offset="65" file="UGenucht.pas" line="35" />
+      <field name="FInvNParValid" type="Boolean" visibility="private" size="1" offset="66" file="UGenucht.pas" line="36" />
+      <field name="FInvWaterContentRangeValid" type="Boolean" visibility="private" size="1" offset="67" file="UGenucht.pas" line="37" />
+      <field name="FCapacityCoefficientValid" type="Boolean" visibility="private" size="1" offset="68" file="UGenucht.pas" line="38" />
+      <field name="FDiffusivityCoefficientValid" type="Boolean" visibility="private" size="1" offset="69" file="UGenucht.pas" line="39" />
+      <field name="FInvMPar" type="Double" visibility="private" size="8" offset="72" file="UGenucht.pas" line="40" />
+      <field name="FInvNPar" type="Double" visibility="private" size="8" offset="80" file="UGenucht.pas" line="41" />
+      <field name="FWaterContentRange" type="Double" visibility="private" size="8" offset="88" file="UGenucht.pas" line="42" />
+      <field name="FInvWaterContentRange" type="Double" visibility="private" size="8" offset="96" file="UGenucht.pas" line="43" />
+      <field name="FLMinusInvMPar" type="Double" visibility="private" size="8" offset="104" file="UGenucht.pas" line="44" />
+      <field name="FCapacityCoefficient" type="Double" visibility="private" size="8" offset="112" file="UGenucht.pas" line="45" />
+      <field name="FDiffusivityCoefficient" type="Double" visibility="private" size="8" offset="120" file="UGenucht.pas" line="46" />
+      <procedure name="InvalidateCoefficients" visibility="private" procflags="inline" file="UGenucht.pas" line="48">
+      </procedure>
+      <procedure name="EnsureCoefficients" visibility="private" procflags="inline" file="UGenucht.pas" line="49">
+      </procedure>
+      <procedure name="SetBSat" visibility="private" file="UGenucht.pas" line="50">
+        <parameters>
+          <parameter name="Value" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="SetBRest" visibility="private" file="UGenucht.pas" line="51">
+        <parameters>
+          <parameter name="Value" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="SetKs" visibility="private" file="UGenucht.pas" line="52">
+        <parameters>
+          <parameter name="Value" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="SetAlpha" visibility="private" file="UGenucht.pas" line="53">
+        <parameters>
+          <parameter name="Value" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="SetNPar" visibility="private" file="UGenucht.pas" line="54">
+        <parameters>
+          <parameter name="Value" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="SetMPar" visibility="private" file="UGenucht.pas" line="55">
+        <parameters>
+          <parameter name="Value" type="Double" />
+        </parameters>
+      </procedure>
+      <procedure name="SetLPar" visibility="private" file="UGenucht.pas" line="56">
+        <parameters>
+          <parameter name="Value" type="Double" />
+        </parameters>
+      </procedure>
+      <property name="b_sat" visibility="public" read="FbSat" write="SetBSat" type="Double" default="0" file="UGenucht.pas" line="60">
         <devnotes>
            <summary>Water content at saturation [cm3/cm3].</summary>
         </devnotes>
-      </field>
-      <field name="b_rest" type="Double" visibility="public" size="8" offset="16" file="UGenucht.pas" line="32">
+      </property>
+      <property name="b_rest" visibility="public" read="FbRest" write="SetBRest" type="Double" default="0" file="UGenucht.pas" line="63">
         <devnotes>
            <summary>Residual water content [cm3/cm3].</summary>
         </devnotes>
-      </field>
-      <field name="Ks" type="Double" visibility="public" size="8" offset="24" file="UGenucht.pas" line="35">
+      </property>
+      <property name="Ks" visibility="public" read="FKs" write="SetKs" type="Double" default="0" file="UGenucht.pas" line="66">
         <devnotes>
            <summary>Saturated hydraulic conductivity [cm/d].</summary>
         </devnotes>
-      </field>
-      <field name="alpha" type="Double" visibility="public" size="8" offset="32" file="UGenucht.pas" line="38">
+      </property>
+      <property name="alpha" visibility="public" read="FAlpha" write="SetAlpha" type="Double" default="0" file="UGenucht.pas" line="69">
         <devnotes>
            <summary>Fitting parameter &quot;alpha&quot; [1/cm].</summary>
         </devnotes>
-      </field>
-      <field name="n_par" type="Double" visibility="public" size="8" offset="40" file="UGenucht.pas" line="41">
+      </property>
+      <property name="n_par" visibility="public" read="FnPar" write="SetNPar" type="Double" default="0" file="UGenucht.pas" line="72">
         <devnotes>
            <summary>Dimensionless fitting parameter &quot;n&quot;.</summary>
         </devnotes>
-      </field>
-      <field name="m_par" type="Double" visibility="public" size="8" offset="48" file="UGenucht.pas" line="46">
+      </property>
+      <property name="m_par" visibility="public" read="FmPar" write="SetMPar" type="Double" default="0" file="UGenucht.pas" line="77">
         <devnotes>
            <summary>
            Fitting parameter &quot;m&quot; = 1-1/n (Mualem), 1-2/n (Burdine), or 1 (Vereecken).
            </summary>
         </devnotes>
-      </field>
-      <field name="l_par" type="Double" visibility="public" size="8" offset="56" file="UGenucht.pas" line="49">
+      </property>
+      <property name="l_par" visibility="public" read="FlPar" write="SetLPar" type="Double" default="0" file="UGenucht.pas" line="80">
         <devnotes>
            <summary>Fitting parameter &quot;l&quot;.</summary>
         </devnotes>
-      </field>
-      <function name="b_rel_f" visibility="public" file="UGenucht.pas" line="55">
+      </property>
+      <procedure name="PrecalculateCoefficients" visibility="public" file="UGenucht.pas" line="83">
+        <devnotes>
+           <summary>Precalculates coefficients that depend only on soil parameters.</summary>
+        </devnotes>
+      </procedure>
+      <function name="b_rel_f" visibility="public" file="UGenucht.pas" line="89">
         <devnotes>
            <summary>
            Calculates the relative water content from volumetric water content (b),
@@ -133,7 +197,7 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="b_psi_f" visibility="public" file="UGenucht.pas" line="58">
+      <function name="b_psi_f" visibility="public" file="UGenucht.pas" line="92">
         <devnotes>
            <summary>Calculates volumetric water content (b) from water tension (psi).</summary>
         </devnotes>
@@ -142,7 +206,7 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="psi_b_f" visibility="public" file="UGenucht.pas" line="64">
+      <function name="psi_b_f" visibility="public" file="UGenucht.pas" line="98">
         <devnotes>
            <summary>
            Calculates the absolute value of water tension (positive)
@@ -154,7 +218,7 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="Ku_b_f" visibility="public" file="UGenucht.pas" line="67">
+      <function name="Ku_b_f" visibility="public" file="UGenucht.pas" line="101">
         <devnotes>
            <summary>Calculates unsaturated hydraulic conductivity.</summary>
         </devnotes>
@@ -163,7 +227,7 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="Ku_psi_f" visibility="public" file="UGenucht.pas" line="70">
+      <function name="Ku_psi_f" visibility="public" file="UGenucht.pas" line="104">
         <devnotes>
            <summary>Calculates unsaturated hydraulic conductivity.</summary>
         </devnotes>
@@ -172,7 +236,7 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="C_b_f" visibility="public" file="UGenucht.pas" line="73">
+      <function name="C_b_f" visibility="public" file="UGenucht.pas" line="107">
         <devnotes>
            <summary>Calculates specific water storage capacity.</summary>
         </devnotes>
@@ -181,7 +245,7 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="C_psi_f" visibility="public" file="UGenucht.pas" line="76">
+      <function name="C_psi_f" visibility="public" file="UGenucht.pas" line="110">
         <devnotes>
            <summary>Calculates specific water storage capacity.</summary>
         </devnotes>
@@ -190,7 +254,7 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="Dw_f" visibility="public" file="UGenucht.pas" line="79">
+      <function name="Dw_f" visibility="public" file="UGenucht.pas" line="113">
         <devnotes>
            <summary>Calculates water diffusivity.</summary>
         </devnotes>
@@ -199,7 +263,7 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="b_rel_psi_f" visibility="public" file="UGenucht.pas" line="82">
+      <function name="b_rel_psi_f" visibility="public" file="UGenucht.pas" line="116">
         <devnotes>
            <summary>Calculates relative water content from water tension &quot;psi&quot;.</summary>
         </devnotes>
