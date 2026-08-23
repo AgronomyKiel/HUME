@@ -60,7 +60,7 @@ type
   {$ENDIF}
 
   private
-    /// <summary>Name field.</summary>
+    /// <summary>Name field</summary>
     N { ame }: string;
     /// <summary>Field for comments/explanation.</summary>
     FComment: string;

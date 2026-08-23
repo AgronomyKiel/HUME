@@ -250,7 +250,7 @@ The value of psi_2 can vary between two limits $\psi_{2,low}$ at very high poten
 
 $$\psi_{2,high} = max \left(\psi_2-\frac{\psi_{2,diff}}{2}, \psi_{FK} \right)$$ {#eq-psi2Feddes_hightrans}
 
-$$\psi_{2,low} = max\left(\psi_2+\frac{\psi_{2,diff}}{2}, \psi_{PWP}\right)$$ {#eq-psi2Feddes_hightrans}
+$$\psi_{2,low} = max\left(\psi_2+\frac{\psi_{2,diff}}{2}, \psi_{PWP}\right)$$
 
 In between the value of $psi_2^{*}$ is calculated by linear interpolation ({#eq-psi2Feddes}).
 
@@ -493,6 +493,14 @@ The reduction factor for root water uptake (f~sinkred~) is calculated based on t
 
 The above shown appproaches do not take into account the physical limitations of the rate of total water uptake which can be seen by the sum of the maximum transport rates to the segments of the whole root system.
 
+### Theoretical background
+
+The theoretical background of the more mechanistic approaches is based on the calculation of water transport towards roots, for which the single root approximation (@fig-SingleRootCylinder1) is the most used geometrical simplification, reducing the complex system of a real branched root system taking up water from a layered soil into the calculation of the one dimension transport in radial coordiates (@Gardner1960, @Philip1957, @Carslaw1946, @vanLier2006, @Metselaar2011 and @vanLier2013).
+
+The single root or 'equivalent' cylinder assumes the roots in one layer are organized in equally spaced parallel array. There are no analytical solutions of the diffusion equation sufficiently simple to be of general use for this case (see @Youngs1963), and numerical solutions or approximations have to be employed. The latter are most useful for discussing the general features of the system. @Passioura1968 have discussed the two usual methods, the 'steady state' and 'steady rate' approximations.
+
+![Single root cylinder](images/singleroot.png){#fig-SingleRootCylinder1}
+
 ## Calculation of water transport towards roots
 
 The continuity equation for soil water ($\theta$) in radial coordinates is:
@@ -521,30 +529,51 @@ For this partial differential equation analytic solutions exists, but only for s
 
 ## Analytical solutions of the radial water transport problem
 
-@Gardner1960 and @Philip1957 first gave analytic solutions for boundary conditions given by (a) a constant rate ($I_w$) of water uptake per unit root length $[cm^3cm^{-1}d^{-1}]$ where the inner boundary condition is given by:
+@Gardner1960 and @Philip1957 first gave analytic solutions for boundary conditions given by (a) a constant rate (I~w~) of water uptake per unit root length $[cm^3cm^{-1}d^{-1}]$ where the inner boundary condition is given by:
 
 $$I_w = -2\pi aK \frac{d\psi}{dr} $$ {#eq-Iw} This can also be written in terms of soil water diffusivity and with a flux density $[d^{-1}]$ on the left hand side as the term $2\pi a$ is the root surface area per unit root length $[cm^2]$:
 
 $$\frac{I_w}{2\pi a}  = -D_w \frac{d\theta}{dr}=q $$ {#eq-Iw2pia}
 
-at r = a, and with the assumption of an infinite soil volume available for the sink, the solution is @Philip1957, @Carslaw1946):
+at r = a, and with the assumption of an infinite soil volume available for the sink, neglecting root competition, the solution is (@Philip1957, @Carslaw1946):
 
-$$\overline{\psi_s}-\psi_a=\frac{I_w}{4\pi K_u}\left[ln\left(\frac{4D_wt}{a^2}\right)-0.5772\right]$$ {#eq-CarslawJaeger} where $\overline{\psi_s}$ and $\psi_a$ are respectively the water potentials at the root surface and in the bulk soil, and a is the root radius. The value 0.5772 is the so called Euler-Mascheroni constant.
+$$\overline{\psi_s}-\psi_a=\frac{I_w}{4\pi K_u}\left[ln\left(\frac{4D_wt}{a^2}\right)-0.5772\right]$$ {#eq-CarslawJaeger}
 
-A similar formulation based on diffusivity and for water content differences is given by @vanLier2006: $$\overline{\theta_s}-\theta_a=\frac{x^2T_p}{4z D_w}\left[ln\left(\frac{4D_wt}{a^2}\right)-0.5772\right]$$ {#eq-QuirindeJong2006}
+where $\overline{\psi_s}$ and $\psi_a$ are the water potentials at the root surface and in the bulk soil, and a is the root radius. The value 0.5772 is the so called Euler-Mascheroni constant.
 
-The first terms on the right hand side of the equations \@ref(eq:CarslawJaeger) and \@ref(eq:QuirindeJong2006) contain different formulations of the dimensionless change of water content per day, which are, however, equivalent and can be transformed into terms which have the units of $d^{-1}$.
+A similar formulation based on diffusivity and for water content differences is given by @vanLier2006: 
 
-$$\frac{{{I}_{w}}}{\pi }=\frac{{{x}^{2}}{{T}_{p}}}{z} \\ 
+$$\overline{\theta_s}-\theta_a=\frac{x^2T_p}{4z D_w}\left[ln\left(\frac{4D_wt}{a^2}\right)-0.5772\right]$$ {#eq-QuirindeJong2006}
+
+The first terms on the right hand side of the equations @eq-CarslawJaeger and @eq-QuirindeJong2006) contain different formulations of the dimensionless change of water content per day, which are, however, equivalent and can be transformed into terms which have the units of $d^{-1}$.
+
+$$\frac{{{I}_{w}}}{\pi }=\frac{{{x}^{2}}{{T}_{p}}}{z} \\
+\\
 \frac{{{I}_{w}}}{\pi {{x}^{2}}}=\frac{{{T}_{p}}}{z} \\ $$
 
 The solution of the equation @eq-QuirindeJong2006 needs values for the soil water diffusivity and the unsaturated hydraulic conductivity as a function of volumetric soil water content or matrix potential, respectively.
 
 ## Steady state and steady rate solutions for finite soil volumes
 
-The above equation assumes that each root absorbs water from an infinite amount of soil, and that there is always more soil, at a steadily increasing distance, which can be drawn upon. In real root-soil systems this is not correct, since roots compete, and each root can be assumed to have a limited amount of soil for its sole exploitation. The root surface water potential will therefore fall faster than predicted above, and the mean water content and potential of the soil volume will decrease steadily. The simplest way of dealing with this situation is to assign an equal 'equivalent cylinder' @fig-SingleRootCylinder1 of soil to each root, and to assume that all water entering the root originates in this cylinder. This is nearly equivalent to saying that roots are organized in equally spaced parallel array. There are no analytical solutions of the diffusion equation sufficiently simple to be of general use for this case (see @Youngs1963), and numerical solutions or approximations have to be employed. The latter are most useful for discussing the general features of the system. @Passioura1968 have discussed the two usual methods, the 'steady state' and 'steady rate' approximations.
+The above equation assumes that each root absorbs water from an infinite amount of soil, and that there is always more soil, at a steadily increasing distance, which can be drawn upon. In real root-soil systems this is not correct, since roots compete, and each root can be assumed to have a limited amount of soil for its sole exploitation. The root surface water potential will therefore fall faster than predicted above, and the mean water content and potential of the soil volume will decrease steadily. 
 
-![Single root cylinder](images/singleroot.png){#fig-SingleRootCylinder1}
+### Boundary conditions
+
+For t \> 0 and at the root surface, i.e. the inner boundary condition, the water influx rate per unis root length $I_w$ is derived from the daily crop transpiration rate $\overline{T_w}$ $[cm^.d^{-1}]$ and the total root length $L_r$ $[cm^.cm^{-2}]$. The most simple assumption is that the water uptake rate is equal for the whole root system:
+
+$$t>0, \; r=a, \; 2\pi rD_w \left( \theta  \right) \frac{\partial \theta }{\partial r} = \overline{I_w} \frac{\left( x^2-r^2 \right)}{\left( x^2-a^2 \right)} = \frac{\overline{Tr}}{2\pi a L_r} = -\frac{\overline{I_w}}{2\pi a} $$ {#eq-BoundarySR}
+
+A bit more realistic is the assumption of a diurnal variation of transpiration rate and water influx rate following the radiation intensity:
+
+$$I_w\left( t \right)=\frac{Tr\left( t \right)}{L_r}=\frac{{{\overline{{{T}_{r}}}}\cdot}{{\frac{5}{3}}\cdot}\left[ 0.5+sin\left( {{\pi }^{.}}\frac{t}{12}+1.5 \right) \right]}{{{L}_{r}}} $$ {#eq-Iwt}
+
+It was further assumed that the water potential at the root surface can not be lower than the permanent wilting point, defined as a water potential of 1.5 MPa.
+
+#### outer boundary condition
+
+It was assumed that there is a watershed between two neighboring roots. At this line the flow rate is zero:
+
+$$t>0, \; r=x \;\;\;2\cdot{\pi }\cdot x \cdot D_w \cdot \frac{\partial\theta }{\partial r}=0 $$ {#eq-OuterBoundary}
 
 ### Steady state solution:
 
@@ -558,13 +587,14 @@ $$\theta_x-\theta_a=\frac{I_w}{2\pi D_w}ln\left( \frac{x}{a}\right) $$ {#eq-SRSt
 
 where x is the radius of the equivalent cylinder. Water is in fact being removed from the equivalent cylinder all the time, and this is allowed for by calculating the water loss after some convenient time interval at
 
-$$\frac{\Delta \theta}{\Delta t}=\frac{I_w}{\pi (x^2-a^2)}\approx \frac{I_w}{\pi x^2} $$ {#eq-Thetadt}
+$$\frac{\Delta \theta}{\Delta t}=\frac{I_w}{\pi (x^2-a^2)}\approx \\
+\frac{I_w}{\pi x^2} $$ {#eq-Thetadt}
 
 and recalculating with the new values of $\psi_b$ $K_u$ or $D_w$ to allow for the change in $\theta$.
 
-The steady rate approximation (@Cowan1965) is rather more realistic, since it embodies the assumption that water is being supplied uniformly from within the soil cylinder to maintain the constant flow (figure 1). The equation for this system is
+The steady rate approximation (@Cowan1965) is rather more realistic, since it embodies the assumption that water is being supplied uniformly from within the soil cylinder to maintain the constant flow (@fig-SingleRootCylinder1). The equation for this system is
 
-$${2\pi r{D}_{w}}\left( \theta  \right)\frac{\partial \theta }{\partial r}=\overline I_w \frac{\left(x^2-r^2\right)}{\left(x^2-a^2\right)}$$ {#eq-MassBalanceradial}
+$${2\pi r{D}_{w}}\left(\theta \right)\frac{\partial \theta }{\partial r}=\overline I_w \frac{\left(x^2-r^2\right)}{\left(x^2-a^2\right)}$$ {#eq-MassBalanceradial}
 
 this yields:
 
@@ -578,13 +608,13 @@ A similar equation can be defined by using unsaturated soil hydraulic conductivi
 
 $$\overline{\psi}=\psi_a+\frac{I_w}{2\pi k_u}\left(\frac{x^2}{x^2-a^2}ln\frac{x}{a}-ln\frac{1}{2} \right) \approx \psi_a+\frac{I_w}{2\pi k_u}ln\frac{x}{1.65a}$$ {#eq-SteadyStatepsi}
 
-Rearranging for Iw gives:
+Rearranging for I~w~ gives:
 
 $$I_w=2\pi k_u \cdot \frac{\psi_a-\overline{\psi}}{ln\frac{x}{1.65a}}$$ {#eq-SteadyStatepsi2}
 
 ### Steady rate solution
 
-The steady rate approximation (Cowan 1965) is rather more realistic, since it embodies the assumption that water is being supplied uniformly from within the soil cylinder to maintain the constant flow. The Steady rate solution and its approximation for for x \>\> a is @Tinker1976:
+The steady rate approximation (@Cowan1965) is rather more realistic, since it embodies the assumption that water is being supplied uniformly from within the soil cylinder to maintain the constant flow. The Steady rate solution and its approximation for for x \>\> a is (@Tinker1976):
 
 $$\overline{\theta}=\theta_a+\frac{I_w}{2\pi D_w\left( x^2-a^2\right)}\left[ \left(\frac{x^4}{x^2-a^2}ln\frac{x}{a}\right)-\left(\frac{3x^2-a^2}{4}\right) \right] \approx \theta_a+\frac{I_w}{2\pi D_w}ln\frac{x}{2.1a}$$ {#eq-SteadyRate}
 
@@ -597,6 +627,9 @@ $$Iw_{max}=2\pi {{D}_{w}}\cdot \frac{{{\left( \overline{\theta }-{{\theta }_{PWP
 The water content $\theta_r$ in any distance r from the root center then is given by:
 
 $$\theta_{r}=\theta_a\left( 1+{\frac{I_w}{2\pi Dw}}ln\left( \frac{r}{a} \right) \right) $$ {#eq-thetar}
+
+
+In @fig-WcontProfilesQ the water content distribution around roots is shown for different values of the water uptake rate per unit root length (I~w~) and for different values of the soil water diffusivity (D~w~), as affected by texture and volumetric soil water content, which decreases during the simulated extraction of water from an isolated single root cylnder. The water content at the root surface is lower than in the bulk soil, and the difference increases with increasing water uptake rate per unit root length (I~w~) and decreasing soil water diffusivity (D~w~). The silty soil (Ut2) with the higher soil water diffusivity (D~w~) shows a smaller difference between the water content at the root surface and in the bulk soil than the sandy soils (Sl3 and especially gS) with the lower soil water diffusivity (D~w~).
 
 ```{r}
 #| message: false
@@ -712,7 +745,7 @@ df.swcr$psi <- as.factor(df.swcr$psi)
 ```
 
 ```{r}
-#| label: WcontProfilesQ
+#| label: fig-WcontProfilesQ
 #| echo: FALSE
 #| fig.align: 'center'
 #| fig.height: 4
@@ -738,31 +771,15 @@ p
 
 The accuracy of the above shown approaches is, however, limited, as the assumption of a constant soil water diffusivity with respect to the radial distance to the root surface is obviously not correct. As the soil water content decreases near the root surface, the soil water diffusivity decreases as well, leading to a self reinforcing effect.
 
-### Boundary conditions
-
-For t \> 0 and at the root surface, i.e. the inner boundary condition, the water influx rate per unis root length $I_w$ is derived from the daily crop transpiration rate $\overline{T_w}$ $[cm^.d^{-1}]$ and the total root length $L_r$ $[cm^.cm^{-2}]$. The most simple assumption is that the water uptake rate is equal for the whole root system:
-
-$$t>0, \; r=a, \; 2\pi rD_w \left( \theta  \right) \frac{\partial \theta }{\partial r} = \overline{I_w} \frac{\left( x^2-r^2 \right)}{\left( x^2-a^2 \right)} = \frac{\overline{Tr}}{2\pi a L_r} = -\frac{\overline{I_w}}{2\pi a} $$ {#eq-BoundarySR}
-
-A bit more realistic is the assumption of a diurnal variation of transpiration rate and water influx rate following the radiation intensity:
-
-$$I_w\left( t \right)=\frac{Tr\left( t \right)}{L_r}=\frac{{{\overline{{{T}_{r}}}}\cdot}{{\frac{5}{3}}\cdot}\left[ 0.5+sin\left( {{\pi }^{.}}\frac{t}{12}+1.5 \right) \right]}{{{L}_{r}}} $$ {#eq-Iwt}
-
-It was further assumed that the water potential at the root surface can not be lower than the permanent wilting point, defined as a water potential of 1.5 MPa.
-
-#### outer boundary condition
-
-It was assumed that there is a watershed between two neighboring roots. At this line the flow rate is zero:
-
-$$t>0, \; r=x \;\;\;2\cdot{\pi }\cdot x \cdot D_w \cdot \frac{\partial\theta }{\partial r}=0 $$ {#eq-OuterBoundary}
-
 ### Definition of matric flux potential
 
-@vanLier2006 with correction by @Schroder2007 derived an expression to describe M as a function of the radial distance from the root surface r \[cm\] at the onset of the falling rate phase, based on the continuity equation for one‐dimensional axisymmetric flow Matric flux potential $(M) \left[ {cm^{2} d^{−1}} \right]$ is defined as the integral of unsaturated hydraulic conductivity, $K(h) [cm^.d^{−1}]$, over pressure head, or equivalently, as the integral of diffusivity, $D(θ) \left[cm^2d^{−1}\right]$, over volumetric water content $(\theta) \left[cm^{3}cm^{−3}\right]$. For convenience, the permanent wilting point in terms of pressure head $(h_w) \left[cm\right]$ or water content $\theta{_w} \left[cm^{3}cm^{−3}\right]$ is chosen as the lower bound of the integral:
+The matric flux potential (M) is a mathematical integration of unsaturated hydraulic conductivity over soil matric potential. It simplifies the non-linear governing equations of unsaturated soil water transport (such as Richards' equation) by combining conductivity and tension into a single scalar potential variable.
+
+@vanLier2006 with correction by @Schroder2007 derived an expression to describe M as a function of the radial distance from the root surface r \[cm\], based on the continuity equation for one‐dimensional axisymmetric flow Matric flux potential $(M) \left[ {cm^{2} d^{−1}} \right]$ is defined as the integral of unsaturated hydraulic conductivity, $K(h) [cm^.d^{−1}]$, over pressure head, or equivalently, as the integral of diffusivity, $D(θ) \left[cm^2d^{−1}\right]$, over volumetric water content $(\theta) \left[cm^{3}cm^{−3}\right]$. For convenience, the permanent wilting point in terms of pressure head $(h_w) \left[cm\right]$ or water content $\theta{_w} \left[cm^{3}cm^{−3}\right]$ is chosen as the lower bound of the integral:
 
 $$M=\int_{-h_w}^{h}K(h)dh=\int_{\theta{_w}}^{\theta}D(\theta)d(\theta)$$ {#eq-MFPdef}
 
-The Matric flux potential can be calculated numerically by integrating $k_u$ or $D_w$ from the permanent wilting point. Figure @fig-MFluxPotCurves) gives the curves for the matrix flux potential for the choosen soil textures.
+The Matric flux potential can be calculated numerically by integrating $k_u$ or $D_w$ from the permanent wilting point. @fig-MFluxPotCurves gives the curves for the matrix flux potential for three choosen soil textures (gS: coarse sand, Sl3: loamy sand, Ut2: clayey silt).
 
 ```{r}
 #| warning: FALSE
@@ -817,13 +834,13 @@ m
 
 ## Single root model with matrix flux potential
 
-A solutions of eq. \@ref(eq:DiffusionSingleRoot) using the matrix flux potential approach have been derived by @de_Willigen1987 and were more recently used to derive sink term formulation of macroscopic soil water transport models by @vanLier2006, @Schroder2007 and @vanLier2008.
+A solutions of @eq-DiffusionSingleRoot using the matrix flux potential approach have been derived by @de_Willigen1987 and were more recently used to derive sink term formulation of macroscopic soil water transport models by @vanLier2006, @Schroder2007 and @vanLier2008.
 
 From mass conservation, and ignoring the root volume it follows that:
 
-$$\frac{\partial\overline{\theta}}{\partial t}=-\frac{T_p}{z} $$ {#eq-Tpz1}
+$$\frac{\partial\overline{\theta}}{\partial t}=-\frac{T_p}{z}$$ {#eq-Tpz1}
 
-where $\overline{\theta}$ is the average water content in the entire rhizospere and z \[cm\] is the rooting depth.Assuming that $\frac{d\theta}{dt}$ is independent of r Eq. can be generalized:
+where $\overline{\theta}$ is the average water content in the entire rhizosphere and z \[cm\] is the rooting depth.Assuming that $\frac{d\theta}{dt}$ is independent of r Eq. can be generalized:
 
 $$\frac{\partial\theta}{\partial t}=-\frac{T_p}{z}$$ {#eq-Tpz2}
 
@@ -848,7 +865,9 @@ the total root length then is 'r format(Wl, digits=1)' $[cm.cm^{-2}]$ and the wa
 
 According to @vanLier2006 eq. 38 a second order differential equation follows:
 
-$$-\frac{T_p}{z}=\frac{I_wL}{z}=-\frac{-q}{r}-\frac{\partial q}{\partial r}=\frac{\partial M}{r\partial r}+\frac{{{\partial }^{2}}M}{\partial {{r}^{2}}} $$ {#eq-Tpz3} For this equation the following solution is found (@vanLier2006 eq. 39):
+$$-\frac{T_p}{z}=\frac{I_wL}{z}=-\frac{-q}{r}-\frac{\partial q}{\partial r}=\frac{\partial M}{r\partial r}+\frac{{{\partial }^{2}}M}{\partial {{r}^{2}}} $$ {#eq-Tpz3} 
+
+For this equation the following solution is found (@vanLier2006 eq. 39):
 
 $$M=\frac{-T_p}{4z}r^2+C_1ln(r)+C_2 $$ {#eq-MbaseIntegral}
 
@@ -876,7 +895,7 @@ $$C_2=\frac{T_p}{2z}\left[\frac{a^2}{2}-(x^2+a^2)\:ln(a)\right]+M_0 $$ {#eq-C2} 
 
 $$M-M_0=\frac{T_p}{2z}\left[\frac{a^2-r^2}{2}+\left(x^2-a^2\right)\:ln\left(\frac{r}{a}\right)\right] $$ {#eq-MM0)}
 
-@Metselaar2007 showed by numerical analysis that M(r) under limiting hydraulic conditions has the same shape as under non-limiting conditions and may be described with an expression equivalent to Eq. ??, with $T_p$ replaced by the actual transpiration rate $T_a$ and $M_0$ equal to the matric flux potential at the permanent wilting point ($M_w$), which by definition is equal to zero under limiting soil water conditions (Eq. \[4\]). Therefore, in the falling rate phase,
+@Metselaar2007 showed by numerical analysis that M(r) under limiting hydraulic conditions has the same shape as under non-limiting conditions and may be described with an expression, with $T_p$ replaced by the actual transpiration rate $T_a$ and $M_0$ equal to the matric flux potential at the permanent wilting point ($M_w$), which by definition is equal to zero under limiting soil water conditions. Therefore, in the falling rate phase,
 
 $$M=\frac{T_a}{2z}\left[\frac{a_z^2-r^2}{2}+\left(x_z^2+a_z^2\right)\:ln\left(\frac{r}{a}\right)\right] $$ {#eq-MTz}
 
@@ -894,7 +913,7 @@ At a radial distance from the root surface $\overline{r}$ (cm), the water conten
 
 $$d_z=\frac{\overline{r_z}}{x_z}$$ {#eq-dz}
 
-Using analytical methods, the value of d was shown to be $e^{−1/2}$ (≈0.607) assuming a constant diffusivity by @vanLier2006 For soils with van Genuchten hydraulic functions, these authors showed with numerical simulations that the value of d is slightly lower (0.56 ± 0.06, with a median value of 0.53). Substituting $\overline{M}$ and $\overline{r}$ into Eq. \[18\] and incorporating Eq. \[19\] yields
+Using analytic methods, the value of d was shown to be $e^{−1/2}$ (≈0.607) assuming a constant diffusivity by @vanLier2006 For soils with van Genuchten hydraulic functions, these authors showed with numerical simulations that the value of d is slightly lower (0.56 ± 0.06, with a median value of 0.53). Substituting $\overline{M}$ and $\overline{r}$ into Eq. \[18\] and incorporating Eq. \[19\] yields
 
 $$\overline{M_z}-M_{0,z}=\frac{S_z}{2}\left[\frac{a_z^2-d_z^2x_z}{2}+\left(x_z^2+a_z^2\right)\:ln\left(\frac{d_zx_z}{a_z}\right)\right] $$ {#eq-MzM0z}
 
@@ -957,11 +976,13 @@ df.swcr.all$psi <- as.factor(df.swcr.all$psi)
 ```
 
 ```{r}
-#|label: WcontProfilesMFP
+#|label: fig-WcontProfilesMFP
 #|echo: FALSE
 #|message: FALSE
+#|warning: FALSE
+#|include: FALSE
 #|fig.align: 'center'
-#|fig.cap: "Water content distribution around roots at different soil water potentials and for three different soil textures calculated with the matrix flux potential model. Upper dotted line: field apacity, fig.height=4, fig.width=6, warning=FALSE, lower dotted line: permanent wilting point"
+#|fig.cap: "Water content distribution around roots at different soil water potentials and for three different soil textures calculated with the matrix flux potential model. Upper dotted line: field apacity, lower dotted line: permanent wilting point"
 
 p <- ggplot(data = df.swcr.all)
 p <- p + theme_bw(base_size = 16)
@@ -987,7 +1008,22 @@ Because $\overline{M_{0,z}}$ is zero for limiting soil water conditions, i.e. th
 
 $$S_{z,max}=\frac{4\overline{M_z}}{a_z^2-0.56^2x_z^2+2(x_z^2-a_z^2)\;ln\frac{0.56\;x_z}{a_z}} $$ {#eq-Szmax}
 
+### Comparison of the steady rate and matric flux potential approach
+
+In @fig-SingleRootSimulation1 the water content distribution around a single root cylinder is shown for the steady rate and matric flux potential approach during a simulated water extraction period as an animated gif. As during the simulated water extraction period the soil water content decreases, the difference between the water content at the root surface and in the bulk soil increases. The difference is larger for the steady rate approach than for the matric flux potential approach, which is more realistic as it accounts for the decrease of soil water diffusivity with decreasing soil water content.
+
 ![Simulation of water uptake from a single root cylinder](images/swc_rad.gif){#fig-SingleRootSimulation1}
+
+### Implementation of the matric flux potential approach in the TSoilWaterModelR
+
+
+In the implementation, the root length density used by the `MFP` and `MFPvar` sink methods is the hydraulically active fraction of the available root length density:
+
+$$L_{rv,act}=f_{act}L_{rv}$$ {#eq-active-rld}
+
+Here, $f_{act}$ is the parameter `FracActRoots` \[-\], with a default value of 0.3. The active root length density is used both to derive the mean distance between active roots and to scale their maximum water uptake. For `MFPvar`, the factor is applied separately to every root length density moment. Other water sink methods are unaffected, and the factor is not yet applied to nitrate uptake.
+
+
 
 ## Approach for non-uniformely distributed roots
 
