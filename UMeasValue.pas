@@ -76,7 +76,7 @@ type
     Name: string;
     Units: string;
     actPos: integer;
-    SelForOpt: boolean; ///Für Optimierung selektiert ? }
+    SelForOpt: boolean; ///Fï¿½r Optimierung selektiert ? }
     LastDate: real;
     average_sim, /// average of simulated values
       average_meas, /// average of measured valuse
@@ -171,21 +171,48 @@ end;
 procedure TMeasList.WriteToFile(fileName: string);
 
 var
-  f: text;
+  f: TextFile;
   i: integer;
   Measurement: TMeasValue;
+  FormatSettings: TFormatSettings;
+
+  function CsvField(const Value: string): string;
+  begin
+    if (Pos(Separator, Value) > 0) or (Pos('"', Value) > 0) or
+      (Pos(#10, Value) > 0) or (Pos(#13, Value) > 0) then
+      Result := '"' + StringReplace(Value, '"', '""', [rfReplaceAll]) + '"'
+    else
+      Result := Value;
+  end;
+
+  function CsvFloat(const Value: double): string;
+  begin
+    Result := FloatToStrF(Value, ffGeneral, 17, 0, FormatSettings);
+  end;
+
 begin
+  FormatSettings := TFormatSettings.Create;
+  FormatSettings.DecimalSeparator := '.';
+
   assignfile(f, FileName);
   rewrite(f);
-  writeln(f, 'Zeit', Separator, name + '_sim', Separator, name + '_meas', separator, 'Source');
-  writeln(f, '[d]', Separator, units, Separator, Units, separator, '[Inifile]');
-  for i := 0 to count - 1 do begin
-    Measurement := Items[i];
-    writeln(f, floatToStrf(Measurement.Date, ffgeneral, 8, 2), Separator,
-      FloatToStrF(Measurement.sim, ffgeneral, 8, 2),
-      Separator, FloatToStrF(Measurement.meas, ffgeneral, 8, 2), separator, Measurement.source);
+  try
+    writeln(f, CsvField('Time'), Separator, CsvField(name + '_sim'),
+      Separator, CsvField(name + '_meas'), Separator, CsvField('Source'));
+    writeln(f, CsvField('[d]'), Separator, CsvField(units), Separator,
+      CsvField(Units), Separator, CsvField('[Inifile]'));
+    for i := 0 to count - 1 do begin
+      if not (TObject(Items[i]) is TMeasValue) then
+        raise EInvalidCast.CreateFmt(
+          'Item %d in measurement list "%s" is not a TMeasValue', [i, name]);
+      Measurement := TMeasValue(Items[i]);
+      writeln(f, CsvFloat(Measurement.Date), Separator,
+        CsvFloat(Measurement.sim), Separator, CsvFloat(Measurement.meas),
+        Separator, CsvField(Measurement.source));
+    end;
+  finally
+    CloseFile(f);
   end;
-  close(f);
 end;
 
 procedure TMeasList.leastsquares;
@@ -218,7 +245,7 @@ var
 
     function betacf(a, b, x: real): real;
 
-{komplementäre  Beta-Funktion aus Num.Recipes}
+{komplementï¿½re  Beta-Funktion aus Num.Recipes}
 
     label
       99;
