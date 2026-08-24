@@ -41,8 +41,11 @@ type
   TSoilWaterSinkMatrix = array [1 .. Max_Root_Index,
     1 .. RootLengthDensityMomentCount] of real;
 
-  /// <summary> Options for calculation of sink reduction factor for root water uptake </summary>
-  TSinkTermMethod = (nFK_crit, Psicrit, Psicrit_corr, Feddes, MFP, MFPvar);
+  /// <summary>Options for calculating the sink reduction factor for root water uptake.</summary>
+  TSinkTermMethod = (nFK_crit, Psicrit, Psicrit_corr, Feddes, MFP);
+
+  /// <summary>Options for distributing potential MFP uptake over layers or root length density classes.</summary>
+  TMFPUptakeDistribution = (MaximumFlow, Empirical);
 
   /// <summary> Options for calculation of automatic irrigation </summary>
   TAutoirriMethod = (amTransRatio, amProznFKWe, amProznFKActRootedComps);
@@ -83,8 +86,14 @@ type
     /// <summary> field for option to use log scale for sink reduction </summary>
     fpsi_logscale: boolean;
 
-    /// <summary> field for sink term calculation method (Feddes, Psicrit, Psicrit_corr, nFKcrit, MFP, MFPvar) </summary>
+    /// <summary>Field for the sink term calculation method.</summary>
     FSinkTermMethod: TSinkTermMethod;
+
+    /// <summary>Whether MFP uptake is resolved into root length density classes.</summary>
+    FWithClasses: boolean;
+
+    /// <summary>Method used to distribute potential MFP uptake.</summary>
+    FMFPUptakeDistribution: TMFPUptakeDistribution;
 
     /// <summary> field for option to write the matrix flux table </summary>
     fWriteMFPTable: boolean;
@@ -96,8 +105,12 @@ type
     procedure InitializeSoilWaterMatrices;
     /// <summary>Updates the actual standard deviation of volumetric soil water content in every layer.</summary>
     procedure CalculateSoilWaterContentStandardDeviations;
-    /// <summary>Calculates MFP-limited water uptake for every RLD moment and soil layer.</summary>
+    /// <summary>Calculates MFP-limited uptake for every root length density class and soil layer.</summary>
     procedure CalculateSinkMatrix;
+    /// <summary>Calculates MFP-limited uptake using one mean root length density per soil layer.</summary>
+    procedure CalculateMFPLayerSinks;
+    function CalculateEmpiricalSinkWeight(const RootLengthDensity,
+      LayerThickness: real; const LayerIndex: integer): real;
     procedure UpdateSoilWaterAmountMatrix(const SurfaceWaterAddition: real);
     procedure CalcPotentialSinks(Sum_Sqr_wl: real; sum_wl: real; i: Integer);
     procedure AddIrrigation;
@@ -106,7 +119,7 @@ type
     // function GetWLD(Index:Integer):real; virtual;
 
   protected
-    /// <summary>Applies the available-water limit and keeps MFPvar moment sinks synchronized with the layer sinks.</summary>
+    /// <summary>Applies the available-water limit and keeps class-resolved MFP sinks synchronized with the layer sinks.</summary>
     procedure LimitSinkRatesToAvailableWater; override;
 
   public
@@ -117,8 +130,14 @@ type
     /// <summary> Option for method of automatic irrigation (amTransRatio, amProznFKWe, amProznFKActRootedComps) </summary>
     AutoIrriMethodOptStr: Toption;
 
-    /// <summary> Option for method of sink term calculation (Feddes, Psicrit, Psicrit_corr, nFKcrit, MFP, MFPvar) </summary>
+    /// <summary>Option for the sink term calculation method.</summary>
     SinkTermMethodOptStr: Toption;
+
+    /// <summary>Option to resolve MFP uptake into root length density classes.</summary>
+    WithClassesOptStr: Toption;
+
+    /// <summary>Option for distributing potential MFP uptake.</summary>
+    MFPUptakeDistributionOptStr: Toption;
 
     /// <summary> Option to write the matrix flux table </summary>
     WriteMFPTable: Toption;
@@ -239,7 +258,7 @@ type
     /// <summary> root radius </summary>
     RootRad: Tpar;
 
-    /// <summary>Fraction of total root length density actively taking up water in the MFP and MFPvar sink methods [-].</summary>
+    /// <summary>Fraction of total root length density actively taking up water with the MFP sink method [-].</summary>
     FracActRoots: Tpar;
 
     /// <summary> array for matrix flux potential calculation </summary>
@@ -292,6 +311,9 @@ type
     property Opt_WithRoots: boolean read FWithRoots write setWithRoots;
     property OptSinkTermMethod: TSinkTermMethod read FSinkTermMethod
       write FSinkTermMethod;
+    property Opt_WithClasses: boolean read FWithClasses write FWithClasses;
+    property Opt_MFPUptakeDistribution: TMFPUptakeDistribution
+      read FMFPUptakeDistribution write FMFPUptakeDistribution;
     property Opt_Psi2: TSource read fPsi2Opt write fPsi2Opt;
     // Source of Psi2 value
     property OptWriteMFPtable: boolean read fWriteMFPTable write fWriteMFPTable;
@@ -361,21 +383,113 @@ begin
   end;
 end;
 
-procedure TSoilWaterModelR.CalculateSinkMatrix;
-var
-  LayerIndex, MomentIndex: integer;
-  MaximumSinkMatrix: TSoilWaterSinkMatrix;
-  EffectiveRootLengthDensity, LocalTheta, LocalPsi: real;
-  MatrixFluxPotential, MaximumInflux, RootCylinderRadius: extended;
-  PotentialProfileSink, RowMomentSum, TotalMaximumSink: real;
+function TSoilWaterModelR.CalculateEmpiricalSinkWeight
+  (const RootLengthDensity, LayerThickness: real;
+  const LayerIndex: integer): real;
 begin
-  TotalMaximumSink := 0.0;
+  result := 0.0;
+  if (RootLengthDensity <= 0.0) or (LayerThickness <= 0.0) then
+    exit;
+
+  result := power(RootLengthDensity * LayerThickness, CompFactor.v);
+  if f_Sqrwl_funct = ReductionFactor then
+    result := max(0.0, SinkRedF[LayerIndex]) * result;
+end;
+
+
+procedure TSoilWaterModelR.CalculateMFPLayerSinks;
+var
+  LayerIndex: integer;
+  MaximumSinkRate, DistributionWeight: TSoilArray;
+  ActiveRootLengthDensity, MatrixFluxPotential, MaximumInflux,
+    PotentialLayerSink, PotentialProfileSink, RootCylinderRadius,
+    TotalDistributionWeight: real;
+begin
   Sum_Sink := 0.0;
   act_rooted_comps.v := 0.0;
   psiRoot.v := 0.0;
+  TotalDistributionWeight := 0.0;
+
+  for LayerIndex := 1 to n_comp do
+  begin
+    Sink_arr[LayerIndex].v := 0.0;
+    MaximumSinkRate[LayerIndex] := 0.0;
+    DistributionWeight[LayerIndex] := 0.0;
+
+    if (LayerIndex <= act_n_comp) and (ExWld_arr[LayerIndex].v > 0.0) then
+    begin
+      act_rooted_comps.v := LayerIndex;
+      ActiveRootLengthDensity := FracActRoots.v *
+        ExWld_arr[LayerIndex].v;
+
+      if (ActiveRootLengthDensity > 0.0) and
+        (MFP_arr[LayerIndex] <> nil) then
+      begin
+        MatrixFluxPotential := max(0.0,
+          MFP_arr[LayerIndex].get_sumku(psi_arr[LayerIndex].v));
+        RootCylinderRadius := abstand_func(ActiveRootLengthDensity);
+        if (MatrixFluxPotential > 0.0) and
+          (0.56 * RootCylinderRadius > RootRad.v) then
+        begin
+          MaximumInflux := max(0.0, MFP_IWmax(MatrixFluxPotential,
+            RootCylinderRadius, RootRad.v));
+          MaximumSinkRate[LayerIndex] := MaximumInflux *
+            ActiveRootLengthDensity * Thick[LayerIndex];
+        end;
+      end;
+
+      case FMFPUptakeDistribution of
+        MaximumFlow:
+          DistributionWeight[LayerIndex] :=
+            MaximumSinkRate[LayerIndex];
+        Empirical:
+          DistributionWeight[LayerIndex] :=
+            CalculateEmpiricalSinkWeight(ExWld_arr[LayerIndex].v,
+            Thick[LayerIndex], LayerIndex);
+      end;
+      TotalDistributionWeight := TotalDistributionWeight +
+        DistributionWeight[LayerIndex];
+    end;
+  end;
+
+  PotentialProfileSink := max(0.0, 0.1 * PotTrans.v);
+  for LayerIndex := 1 to min(act_n_comp, Max_Root_Index) do
+  begin
+    if TotalDistributionWeight > 0.0 then
+      PotentialLayerSink := PotentialProfileSink *
+        DistributionWeight[LayerIndex] / TotalDistributionWeight
+    else
+      PotentialLayerSink := 0.0;
+
+    Sink_arr[LayerIndex].v := min(MaximumSinkRate[LayerIndex],
+      PotentialLayerSink);
+    if PotentialLayerSink > 0.0 then
+      SinkRedF[LayerIndex] := Sink_arr[LayerIndex].v / PotentialLayerSink
+    else
+      SinkRedF[LayerIndex] := 0.0;
+    Sum_Sink := Sum_Sink + Sink_arr[LayerIndex].v;
+  end;
+end;
+
+
+procedure TSoilWaterModelR.CalculateSinkMatrix;
+var
+  LayerIndex, MomentIndex: integer;
+  DistributionWeightMatrix, MaximumSinkMatrix: TSoilWaterSinkMatrix;
+  PotentialLayerSink: TSoilArray;
+  ActiveRootLengthDensity, LocalTheta, LocalPsi, RootLengthDensity: real;
+  MatrixFluxPotential, MaximumInflux, RootCylinderRadius: extended;
+  PotentialCellSink, PotentialProfileSink, RowMomentSum,
+    TotalDistributionWeight: real;
+begin
+  Sum_Sink := 0.0;
+  act_rooted_comps.v := 0.0;
+  psiRoot.v := 0.0;
+  TotalDistributionWeight := 0.0;
 
   for LayerIndex := 1 to Max_Root_Index do
   begin
+    PotentialLayerSink[LayerIndex] := 0.0;
     if LayerIndex <= n_comp then
       Sink_arr[LayerIndex].v := 0.0;
 
@@ -392,21 +506,19 @@ begin
     begin
       SinkMatrix[LayerIndex, MomentIndex] := 0.0;
       MaximumSinkMatrix[LayerIndex, MomentIndex] := 0.0;
+      DistributionWeightMatrix[LayerIndex, MomentIndex] := 0.0;
 
       if FWithRoots and (LayerIndex <= act_n_comp) and
         (MFP_arr[LayerIndex] <> nil) then
       begin
         if RowMomentSum > 0.0 then
-          EffectiveRootLengthDensity :=
-            max(0.0, fEffWldMoments^[LayerIndex, MomentIndex])
+          RootLengthDensity := max(0.0,
+            fEffWldMoments^[LayerIndex, MomentIndex])
         else
-          EffectiveRootLengthDensity := max(0.0, ExWld_arr[LayerIndex].v);
+          RootLengthDensity := max(0.0, ExWld_arr[LayerIndex].v);
 
-        // Only the configured active root fraction contributes to MFP uptake.
-        EffectiveRootLengthDensity := EffectiveRootLengthDensity *
-          FracActRoots.v;
-
-        if EffectiveRootLengthDensity > 0.0 then
+        ActiveRootLengthDensity := RootLengthDensity * FracActRoots.v;
+        if ActiveRootLengthDensity > 0.0 then
         begin
           // Each matrix cell stores one tenth of the layer water amount.
           LocalTheta := SoilWaterAmountMatrix[LayerIndex, MomentIndex] *
@@ -414,9 +526,9 @@ begin
           LocalTheta := max(WPar[LayerIndex].b_rest, min(WPar[LayerIndex].b_sat,
             LocalTheta));
           LocalPsi := WPar[LayerIndex].psi_b_f(LocalTheta);
-          MatrixFluxPotential :=
-            max(0.0, MFP_arr[LayerIndex].get_sumku(LocalPsi));
-          RootCylinderRadius := abstand_func(EffectiveRootLengthDensity);
+          MatrixFluxPotential := max(0.0,
+            MFP_arr[LayerIndex].get_sumku(LocalPsi));
+          RootCylinderRadius := abstand_func(ActiveRootLengthDensity);
 
           if (MatrixFluxPotential > 0.0) and
             (0.56 * RootCylinderRadius > RootRad.v) then
@@ -424,31 +536,53 @@ begin
             MaximumInflux := max(0.0, MFP_IWmax(MatrixFluxPotential,
               RootCylinderRadius, RootRad.v));
             MaximumSinkMatrix[LayerIndex, MomentIndex] := MaximumInflux *
-              EffectiveRootLengthDensity * Thick[LayerIndex] /
+              ActiveRootLengthDensity * Thick[LayerIndex] /
               RootLengthDensityMomentCount;
-            TotalMaximumSink := TotalMaximumSink + MaximumSinkMatrix
-              [LayerIndex, MomentIndex];
           end;
         end;
+
+        case FMFPUptakeDistribution of
+          MaximumFlow:
+            DistributionWeightMatrix[LayerIndex, MomentIndex] :=
+              MaximumSinkMatrix[LayerIndex, MomentIndex];
+          Empirical:
+            DistributionWeightMatrix[LayerIndex, MomentIndex] :=
+              CalculateEmpiricalSinkWeight(RootLengthDensity,
+              Thick[LayerIndex] / RootLengthDensityMomentCount, LayerIndex);
+        end;
+        TotalDistributionWeight := TotalDistributionWeight +
+          DistributionWeightMatrix[LayerIndex, MomentIndex];
       end;
     end;
   end;
 
   PotentialProfileSink := max(0.0, 0.1 * PotTrans.v);
-  if TotalMaximumSink > 0.0 then
-    for LayerIndex := 1 to act_n_comp do
-      for MomentIndex := 1 to RootLengthDensityMomentCount do
-      begin
-        SinkMatrix[LayerIndex, MomentIndex] :=
-          min(MaximumSinkMatrix[LayerIndex, MomentIndex],
-          PotentialProfileSink * MaximumSinkMatrix[LayerIndex, MomentIndex] /
-          TotalMaximumSink);
-        Sink_arr[LayerIndex].v := Sink_arr[LayerIndex].v + SinkMatrix
-          [LayerIndex, MomentIndex];
-      end;
+  for LayerIndex := 1 to min(act_n_comp, Max_Root_Index) do
+  begin
+    for MomentIndex := 1 to RootLengthDensityMomentCount do
+    begin
+      if TotalDistributionWeight > 0.0 then
+        PotentialCellSink := PotentialProfileSink *
+          DistributionWeightMatrix[LayerIndex, MomentIndex] /
+          TotalDistributionWeight
+      else
+        PotentialCellSink := 0.0;
 
-  for LayerIndex := 1 to act_n_comp do
+      SinkMatrix[LayerIndex, MomentIndex] :=
+        min(MaximumSinkMatrix[LayerIndex, MomentIndex], PotentialCellSink);
+      PotentialLayerSink[LayerIndex] := PotentialLayerSink[LayerIndex] +
+        PotentialCellSink;
+      Sink_arr[LayerIndex].v := Sink_arr[LayerIndex].v +
+        SinkMatrix[LayerIndex, MomentIndex];
+    end;
+
+    if PotentialLayerSink[LayerIndex] > 0.0 then
+      SinkRedF[LayerIndex] := Sink_arr[LayerIndex].v /
+        PotentialLayerSink[LayerIndex]
+    else
+      SinkRedF[LayerIndex] := 0.0;
     Sum_Sink := Sum_Sink + Sink_arr[LayerIndex].v;
+  end;
 end;
 
 procedure TSoilWaterModelR.LimitSinkRatesToAvailableWater;
@@ -462,7 +596,7 @@ begin
 
   inherited LimitSinkRatesToAvailableWater;
 
-  if OptSinkTermMethod = MFPvar then
+  if (OptSinkTermMethod = MFP) and FWithClasses then
     for LayerIndex := 1 to min(act_n_comp, Max_Root_Index) do
     begin
       OriginalSink := OriginalSinks[LayerIndex];
@@ -589,7 +723,7 @@ begin
     'Prozent nFK ab der bewässert wird, wenn AutoirriMeth auf amProznFKWe steht');
   ParCreate('RootRad', '[cm]', 0.02, RootRad, 'root radius [cm]');
   ParCreate('FracActRoots', '[-]', 0.3, FracActRoots,
-    'fraction of total root length density actively taking up water in the MFP and MFPvar sink methods');
+    'fraction of total root length density actively taking up water with the MFP sink method');
 
   ExternVcreate('PotTrans', '[mm.d-1]', stateField, PotTrans,
     'potential transpiration rate');
@@ -696,19 +830,24 @@ begin
   if uppercase(f_SqrWl_Option.Option) = uppercase('ReductionFactor') then
     f_Sqrwl_funct := ReductionFactor;
 
-  if uppercase(SinkTermMethodOptStr.Option) = uppercase('Feddes') then
+  if SameText(SinkTermMethodOptStr.Option, 'Feddes') then
     OptSinkTermMethod := Feddes;
-  if uppercase(SinkTermMethodOptStr.Option) = uppercase('Psicrit') then
+  if SameText(SinkTermMethodOptStr.Option, 'Psicrit') then
     OptSinkTermMethod := Psicrit;
-  if uppercase(SinkTermMethodOptStr.Option) = uppercase('Psicrit_corr') then
+  if SameText(SinkTermMethodOptStr.Option, 'Psicrit_corr') then
     OptSinkTermMethod := Psicrit_corr;
-  if uppercase(SinkTermMethodOptStr.Option) = uppercase('nFKcrit') then
+  if SameText(SinkTermMethodOptStr.Option, 'nFKcrit') then
     OptSinkTermMethod := nFK_crit;
-  if uppercase(SinkTermMethodOptStr.Option) = uppercase('MFP') then
+  if SameText(SinkTermMethodOptStr.Option, 'MFP') then
     OptSinkTermMethod := MFP;
-  if uppercase(SinkTermMethodOptStr.Option) = uppercase('MFPvar') then
-    OptSinkTermMethod := MFPvar;
-  if OptSinkTermMethod = MFPvar then
+
+  FWithClasses := SameText(WithClassesOptStr.Option, 'true');
+  if SameText(MFPUptakeDistributionOptStr.Option, 'MaximumFlow') then
+    FMFPUptakeDistribution := MaximumFlow
+  else
+    FMFPUptakeDistribution := Empirical;
+
+  if (OptSinkTermMethod = MFP) and FWithClasses then
     InitializeSoilWaterMatrices;
   if uppercase(AutoIrriMethodOptStr.Option) = uppercase('amTransRatio') then
     AutoirriMethod := amTransRatio;
@@ -752,15 +891,15 @@ begin
     DebugForm.Init;
 {$ENDIF}
   FreeMFPTables;
-  if (OptSinkTermMethod = MFP) or (OptSinkTermMethod = MFPvar) then
+  if OptSinkTermMethod = MFP then
     for i := 1 to n_comp do
       MFP_arr[i] := TMFP_table.create(WPar[i]);
 
   if fWriteMFPTable then
   begin
-    if not((OptSinkTermMethod = MFP) or (OptSinkTermMethod = MFPvar)) then
+    if OptSinkTermMethod <> MFP then
       raise EInvalidOp.create
-        ('WriteMFPTable requires SinkTermMethod MFP or MFPvar.');
+        ('WriteMFPTable requires SinkTermMethod MFP.');
 
     fn := ExtractFilePath(GlobMod.Get_ControlFileFn) +
       ExtractFileName(GlobMod.ActIniFile.FileName);
@@ -790,14 +929,8 @@ begin
   feddes_c.v := Treflow.v;
 end;
 
-/// <summary> Sink reduction calculation with 6 options
-/// 1) Feddes: reduction factor based on soil water tension thresholds and potential transpiration rate following Feddes et al. (1978)
-/// 2) Psicrit: reduction factor based on soil water tension threshold (Psi2) following Van Genuchten (1987)
-/// 3) nFKcrit: reduction factor based on relative soil water content (nFK) threshold following Van Genuchten (1987)
-/// 4) Psicrit_corr: reduction factor based on soil water tension at the root surface, which is calculated based on potential water uptake and root length distribution, and soil water retention curve
-/// 5) MFP: reduction factor based on soil water tension at the root surface, which is calculated based on potential water uptake and root length distribution, and soil water retention curve, with a maximum flow principle (MFP) approach for calculating the potential water uptake
-/// </summary>
-/// 6) MFPvar: MFP-limited uptake calculated separately for each RLD moment and soil layer
+/// <summary>Calculates sink reduction factors for the Feddes, Psicrit,
+/// nFKcrit, Psicrit_corr, and MFP sink methods.</summary>
 procedure TSoilWaterModelR.Calcsink_red_f;
 
 var
@@ -954,28 +1087,31 @@ begin
 end;
 
 procedure TSoilWaterModelR.CalcSinks;
-
 var
-  iw_max: TSoilArray;
   Sum_Sqr_wl, sum_wl: real;
   i: integer;
-  Wupmax: TSoilArray;
-
 begin
   inherited CalcSinks;
-  if FWithRoots then
+  if not FWithRoots then
+    exit;
+
+  if OptSinkTermMethod = MFP then
   begin
-    if OptSinkTermMethod = MFPvar then
+    if FWithClasses then
+      CalculateSinkMatrix
+    else
     begin
-      CalculateSinkMatrix;
-      exit;
+      CalculateMFPLayerSinks;
+      Calcsink_red_f;
     end;
-    Sum_Sqr_wl := 0.0;
-    sum_wl := 0.0;
-    i := 0;
-    CalcPotentialSinks(Sum_Sqr_wl, sum_wl, i);
-    Calcsink_red_f;
+    exit;
   end;
+
+  Sum_Sqr_wl := 0.0;
+  sum_wl := 0.0;
+  i := 0;
+  CalcPotentialSinks(Sum_Sqr_wl, sum_wl, i);
+  Calcsink_red_f;
 end;
 
 procedure TSoilWaterModelR.CalcRatesAndIntegrate;
@@ -991,7 +1127,7 @@ begin
   AddIrrigation;
 
   // calculate the daily values of Transpiration and cumulative transpiration change
-  if OptSinkTermMethod = MFPvar then
+  if (OptSinkTermMethod = MFP) and FWithClasses then
     UpdateSoilWaterAmountMatrix(WAmount[1].v - IntegratedTopWaterAmount);
   ActTrans.v := ActTrans.v + Sum_Sink * 10.0 * dt.v; // [mm]
   CumTrans.c := ActTrans.v; // cumTrans.c+sum_sink*10.0*dt.v;
@@ -1146,87 +1282,50 @@ begin
   end;
 end;
 
-procedure TSoilWaterModelR.CalcPotentialSinks(Sum_Sqr_wl: real; sum_wl: real; i: Integer);
+procedure TSoilWaterModelR.CalcPotentialSinks(Sum_Sqr_wl: real;
+  sum_wl: real; i: Integer);
 var
   Sqr_Wl_arr: TSoilArray;
-  ActiveRootLengthDensity: real;
-  MFP_: Extended;
-  rl: TSoilArray;
-  MFPsink: Extended;
   Local_i: Integer;
-  Local_i1: Integer;
 begin
+  Sum_Sqr_wl := 0.0;
+  sum_wl := 0.0;
+  psiRoot.v := 0.0;
 
-  if FWithRoots = true then
-  begin
-    Sum_Sqr_wl := 0.0;
-    sum_wl := 0.0;
-    psiRoot.v := 0.0;
+  act_rooted_comps.v := 0.0;
+  for i := 1 to act_n_comp do
+    if ExWld_arr[i].v > 0.0 then
+      act_rooted_comps.v := i;
 
-    act_rooted_comps.v := 0.0;
-    for i := 1 to act_n_comp do
-      if ExWld_arr[i].v > 0.0 then
-        act_rooted_comps.v := i;
-
-    if ShowWarnings then
-      if act_rooted_comps.v > self.bil_nr.v then
+  if ShowWarnings and (act_rooted_comps.v > self.bil_nr.v) then
 {$IFNDEF NONVISUAL}
-        showmessage
-          ('Number of rooted compartments larger than balance index, computed balance probably not correct');
+    showmessage
+      ('Number of rooted compartments larger than balance index, computed balance probably not correct');
 {$ELSE}
-        writeln('Number of rooted compartments larger than balance index, computed balance probably not correct');
+    writeln('Number of rooted compartments larger than balance index, computed balance probably not correct');
 {$ENDIF}
-
-  end; // withRoots
 
   for Local_i := 1 to act_n_comp do
   begin
-    /// Calculation of sink reduction factor based on root length density distribution and potential water uptake per layer
-    case f_Sqrwl_funct of
-      NoReductionFactor:
-        Sqr_Wl_arr[Local_i] := power(ExWld_arr[Local_i].v * Thick[Local_i], CompFactor.v);
-      ReductionFactor:
-        Sqr_Wl_arr[Local_i] := SinkRedF[Local_i] * power(ExWld_arr[Local_i].v * Thick[Local_i], CompFactor.v);
-    end;
+    Sqr_Wl_arr[Local_i] := CalculateEmpiricalSinkWeight(
+      ExWld_arr[Local_i].v, Thick[Local_i], Local_i);
     sum_wl := sum_wl + ExWld_arr[Local_i].v * Thick[Local_i];
     Sum_Sqr_wl := Sum_Sqr_wl + Sqr_Wl_arr[Local_i];
   end;
+
   Sum_Sink := 0.0;
-  for Local_i1 := 1 to act_n_comp do
+  for Local_i := 1 to act_n_comp do
   begin
-    if Sqr_Wl_arr[Local_i1] > 1E-6 then
-      // sink term calculation with proportional distribution of potential transpiration based on root length density distribution and sink reduction factor
-      // note the change of the units from [mm/d] to [cm/d] by multiplying with 0.1
-      Sink_arr[Local_i1].v := 0.1 * PotTrans.v * Sqr_Wl_arr[Local_i1] / Sum_Sqr_wl
+    if (Sum_Sqr_wl > 0.0) and (Sqr_Wl_arr[Local_i] > 1E-6) then
+      // Convert potential transpiration from mm.d-1 to cm.d-1.
+      Sink_arr[Local_i].v := 0.1 * PotTrans.v * Sqr_Wl_arr[Local_i] /
+        Sum_Sqr_wl
     else
-      Sink_arr[Local_i1].v := 0.0;
-    // sink term calculation with matrix flux potential based calculation of maximum root water uptake
-    if OptSinkTermMethod = MFP then
-    begin
-      if ExWld_arr[Local_i1].v > 0 then
-      begin
-        ActiveRootLengthDensity := FracActRoots.v * ExWld_arr[Local_i1].v;
-        // calculation of matrix by numerically integration of the unsaturated hydraulic conductivity from PWP to the actual soil water potential
-        MFP_ := MFP_arr[Local_i1].get_sumku(psi_arr[Local_i1].v);
-        // from RLD [cm.cm-3] to rl in cm.ha-1
-        rl[Local_i1] := ActiveRootLengthDensity * Thick[Local_i1] * 1E8;
-        // iw_max[i] := Iwmax(theta_arr[i].v, pwp_arr[i], Dw_arr[i] / 86400,
-        // abstand_func(ExWld_arr[i].v), 0.02);
-        // Wupmax[i] := iw_max[i] * rl[i] * 1E-4 * 1E-3 * 1E-1;
-        // maximum water uptake per layer [cm/d]
-        MFPsink := max(0, min(Sink_arr[Local_i1].v, MFP_Inflow(ActiveRootLengthDensity, Thick[Local_i1], MFP_, RootRad.v, Sink_arr[Local_i1].v)));
-        if Sink_arr[Local_i1].v > 0 then
-          SinkRedF[Local_i1] := MFPsink / Sink_arr[Local_i1].v
-        else
-          SinkRedF[Local_i1] := 0;
-        Sink_arr[Local_i1].v := MFPsink;
-      end
-      else
-        Sink_arr[Local_i1].v := 0.0;
-    end
-    else
-      Sink_arr[Local_i1].v := max(0, Sink_arr[Local_i1].v * SinkRedF[Local_i1]);
-    Sum_Sink := Sum_Sink + Sink_arr[Local_i1].v;
+      Sink_arr[Local_i].v := 0.0;
+
+    Sink_arr[Local_i].v := max(0.0,
+      Sink_arr[Local_i].v * SinkRedF[Local_i]);
+    Sum_Sink := Sum_Sink + Sink_arr[Local_i].v;
   end;
 end;
 
@@ -1259,7 +1358,19 @@ begin
   SinkTermMethodOptStr.OptionList.Add('nFkcrit');
   SinkTermMethodOptStr.OptionList.Add('Feddes');
   SinkTermMethodOptStr.OptionList.Add('MFP');
-  SinkTermMethodOptStr.OptionList.Add('MFPvar');
+
+  OptCreate('WithClasses', 'false', WithClassesOptStr,
+    'Resolve MFP uptake into root length density classes within each soil layer');
+  WithClassesOptStr.OptionList.Clear;
+  WithClassesOptStr.OptionList.Add('false');
+  WithClassesOptStr.OptionList.Add('true');
+
+  OptCreate('MFPuptakedistribution', 'empirical',
+    MFPUptakeDistributionOptStr,
+    'Distribute potential MFP uptake empirically or by relative maximum flow');
+  MFPUptakeDistributionOptStr.OptionList.Clear;
+  MFPUptakeDistributionOptStr.OptionList.Add('empirical');
+  MFPUptakeDistributionOptStr.OptionList.Add('MaximumFlow');
   OptCreate('WriteMFPTable', 'false', WriteMFPTable,
     'Option for MFP tables for each layer as txt-file');
   WriteMFPTable.OptionList.Add('true');
