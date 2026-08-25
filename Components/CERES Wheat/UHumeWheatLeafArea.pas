@@ -73,22 +73,27 @@ type
     /// private field for optional use of drought dependent leaf senescence
     /// </summary>
     fUseDroughtDependentLeafSenescence: boolean;
+    /// <summary>
+    /// True when the legacy published enum property was explicitly assigned.
+    /// </summary>
+    fLegacyDroughtImpactWasSet: boolean;
+    procedure SetDroughtImpact(const Value: TDroughtImpact);
     procedure SetLaiLayers;
     procedure CalcSingleLeafGrowth;
     procedure CalcLeafNumberOnMainStem;
     procedure SetSingleLeafGrowthRatesToZero;
     procedure InitializeLeafAreaOfFirstLeafAtEmergence;
     procedure SumUpSingleLeafAreas;
-    procedure CalcCERESAgeDependenLeafSenescence(var PLALR_a: real);
-    procedure CalcNdependentLeafSenescence(var PLALR_n: real);
-    procedure CalcLightDependendLeafSenescence(var PLALR_l: real);
-    procedure CalcDroughtDependentLeafSenescence(var PLALR_d: real);
+    function CalcCERESAgeDependentLeafSenescence: real;
+    function CalcNDependentLeafSenescence: real;
+    function CalcLightDependentLeafSenescence: real;
+    function CalcDroughtDependentLeafSenescence: real;
     procedure Calc_rc(exLAI: real; var ro: Extended; Temp_: real;
       var rc: Extended);
     procedure Calc_pETP(ro: Extended; rc: Extended; var pETP_: Extended;
       Net_beam_: real; Sat_def_: real; ra_: real; delta_: real; gamma_: real);
-    procedure CalcInterception(int_stor_: Extended; exLAI: real; PTI: Extended;
-      var interception_: Extended);
+    procedure CalcInterception(const int_stor_: Extended; const exLAI: real;
+      const PTI: Extended; var interception_: Extended);
     procedure CalcEvenTransIntRatio;
     procedure CalcRadiationAverage;
   protected
@@ -100,7 +105,7 @@ type
     function calcPotSLA(Wleaf, dWleaf, BBCH, SLA_old: real): real;
     function calcGAI(EC, LAI: real): real;
     procedure setleaf_arr(PLALR_: real);
-    procedure calcSenescence;
+    procedure CalcSenescence;
   public
 
     // --------------------------------------------------------------------
@@ -198,6 +203,11 @@ type
     /// low radiation induced leaf senescence
     /// </summary>
     PLALR_l: TVar;
+
+    /// <summary>
+    /// phenology induced potential leaf senescence rate during grain filling
+    /// </summary>
+    PLALR_p: TVar;
 
     /// <summary>
     /// Leaf area index [m2/m2]
@@ -614,8 +624,11 @@ type
     Property Ex_TMPMN: TExternV read TMPMN write TMPMN;
     Property Ex_TMPMX: TExternV read TMPMX write TMPMX;
     Property Ex_TSumInc: TExternV read TSumInc write TSumInc;
+    /// <summary>
+    /// Legacy alias for optUseDroughtDependentLeafSenescence.
+    /// </summary>
     property opt_DroughtImpact: TDroughtImpact read fDroughtImpact
-      write fDroughtImpact;
+      write SetDroughtImpact;
     // -----------------------------------
     property Ex_rc0: TExternV Read rc0 Write rc0;
     property Ex_rain: TExternV Read rain Write rain;
@@ -668,6 +681,8 @@ begin
     'pot. leaf senescence rate induced by N limitation (during grain filling)');
   VarCreate('PLALR_l', '[cm2/(plant*d)]', 0, true, PLALR_l,
     'low radiation induced leaf senescence');
+  VarCreate('PLALR_p', '[cm2/(plant*d)]', 0, true, PLALR_p,
+    'phenology induced potential leaf senescence rate during grain filling');
 
   for i := 1 to MaxLeafNumber do
     if i < 10 then
@@ -858,7 +873,7 @@ begin
     StateCreate('PARi' + inttostr(i), '[W/m2]', 0, true, PARi[i]);
   end;
   optCreate('optDroughtimpact', 'DroughtImpact', OptDroughtimpact,
-    'Option for drought impact');
+    'Deprecated: use optUseDroughtDependentLeafSenescence');
   OptDroughtimpact.OptionList.Clear;
   OptDroughtimpact.OptionList.Add('DroughtImpact');
   OptDroughtimpact.OptionList.Add('NoDroughtImpact');
@@ -1134,88 +1149,74 @@ begin
   s_LAI := exLAI;
 end; { End sLAI }
 
-procedure THumeWheatLeafArea.calcSenescence;
+procedure THumeWheatLeafArea.CalcSenescence;
 var
-  Nccrit_: real;
-  SLN_, maxLAIsen, NLAL_, MLAL_s, LAL_s, senrate, tmp: real;
-
+  dominantRate, strongestOtherRate: real;
 begin
+  // Calculate each potential mechanism independently. Every helper returns
+  // zero when its mechanism is inactive, preventing rates from leaking
+  // between the mechanisms.
   PLALR_a.v := 0;
   PLALR_d.v := 0;
   PLALR_n.v := 0;
   PLALR_l.v := 0;
+  PLALR_p.v := 0;
   PLALR.v := 0;
 
   if fUseAgeDependentLeafSenescence then
-    CalcCERESAgeDependenLeafSenescence(senrate)
-  else
-    senrate := 0.0;
-  PLALR_a.v := senrate;
+    PLALR_a.v := CalcCERESAgeDependentLeafSenescence;
 
-  // for later stages senescence happens according to the CERES-Wheat algorithm
+  // For later stages age/phenology senescence follows CERES-Wheat.
   if (ISTAGE.v >= 2) and (ISTAGE.v < 4) then
-    PLALR_a.v := PSENLeaf1.v * TSumInc.v * GPLA.v; // PLALR_a := 0.0;
-  if (ISTAGE.v >= 4) and (ISTAGE.v < 5) then
+    PLALR_a.v := PSENLeaf1.v * TSumInc.v * GPLA.v
+  else if (ISTAGE.v >= 4) and (ISTAGE.v < 5) then
     PLALR_a.v := PSENLeaf2.v * TSumInc.v * GPLA.v;
 
   if fSenescence = concentration then
-  begin
-    CalcNdependentLeafSenescence(senrate);
-  end
-  else
-    senrate := 0;
-  PLALR_n.v := senrate;
+    PLALR_n.v := CalcNDependentLeafSenescence;
 
-// calculation of leaf senescence during ripening according to CERES-Wheat 3
-// independently of N shortage but based on a quadratic function of temperature sum
-// within ISTAGE 5
-  if fSenescence = cwt3 then
-    If (ISTAGE.v >= 5) and (ISTAGE.v < 6) then
-      PLALR_n.v := GPLA.v * 2 * SUMDTT5.v * TSumInc.v / (p5_ * p5_)
-    else
-      PLALR_n.v := 0.0;
+  // CWT3 grain-filling senescence is phenological, not nitrogen-induced.
+  if (fSenescence = cwt3) and (ISTAGE.v >= 5) and (ISTAGE.v < 6) then
+    PLALR_p.v := GPLA.v * 2 * SUMDTT5.v * TSumInc.v / (p5_ * p5_);
 
-  if self.fUseLightDependentLeafSenescence then
-    CalcLightDependendLeafSenescence(senrate)
-  else
-    senrate := 0;
-  PLALR_l.v := senrate;
+  if fUseLightDependentLeafSenescence then
+    PLALR_l.v := CalcLightDependentLeafSenescence;
 
-  if self.fUseDroughtDependentLeafSenescence then
-    CalcDroughtDependentLeafSenescence(senrate)
-  else
-    senrate := 0.0;
-  PLALR_d.v := 0.0;
+  if fUseDroughtDependentLeafSenescence then
+    PLALR_d.v := CalcDroughtDependentLeafSenescence;
 
-  // set plant leaf area loss rate
-  //
+  // Simultaneous mechanisms do not add: the strongest potential rate
+  // determines the actual leaf-area loss.
+  dominantRate := max(PLALR_a.v, PLALR_d.v);
+  dominantRate := max(dominantRate, PLALR_n.v);
+  dominantRate := max(dominantRate, PLALR_l.v);
+  dominantRate := max(dominantRate, PLALR_p.v);
+
   if LAI.v > 0 then
-  begin
-    // PLALR.v:= min((LAI.v*1E4)/plants.v, max(max(PLALR_a.v,PLALR_d.v),
-    // max(PLALR_n.v, PLALR_l.v)))
-
-    tmp := max(PLALR_a.v, PLALR_d.v);
-    tmp := max(tmp, PLALR_n.v);
-    tmp := max(tmp, PLALR_l.v);
-    PLALR.v := min((LAI.v * 1E4) / plants.v, tmp);
-  end
+    PLALR.v := min((LAI.v * 1E4) / plants.v, dominantRate)
   else
     PLALR.v := 0;
 
-  // senescence fraction caused by drought stress
-  DSsen.v := max(0, PLALR_d.v - max(PLALR_a.v, max(PLALR_n.v, PLALR_l.v)));
+  // Preserve the established marginal-attribution rule: a mechanism is
+  // credited only for loss exceeding the strongest competing mechanism.
+  // Equal rates therefore have no exclusive cause.
+  strongestOtherRate := max(PLALR_a.v,
+    max(PLALR_n.v, max(PLALR_l.v, PLALR_p.v)));
+  DSsen.v := max(0, PLALR_d.v - strongestOtherRate);
 
-  // senescence fraction caused by N limitation
-  Nsen.v := max(0, PLALR_n.fv - max(PLALR_a.fv, max(PLALR_d.fv, PLALR_l.fv)));
+  strongestOtherRate := max(PLALR_a.v,
+    max(PLALR_d.v, max(PLALR_l.v, PLALR_p.v)));
+  Nsen.v := max(0, PLALR_n.v - strongestOtherRate);
+
+  strongestOtherRate := max(PLALR_a.v,
+    max(PLALR_d.v, max(PLALR_n.v, PLALR_p.v)));
+  LLsen.v := max(0, PLALR_l.v - strongestOtherRate);
 
   if PLALR.v > 0 then
-    // drought stress fraction (relative)
     fdsen.v := DSsen.v / PLALR.v
   else
     fdsen.v := 0;
-  // senescence fraction caused by light limitation
-  LLsen.v := max(0, PLALR_l.v - max(PLALR_a.v, max(PLALR_n.v, PLALR_d.v)));
-  // now senescence rate for canopy (plant level)
+
   SENLA.c := PLALR.v;
 end;
 
@@ -1336,15 +1337,70 @@ begin
     sumLAL.v := sumLAL.v;
 end;
 
+procedure THumeWheatLeafArea.SetDroughtImpact(const Value: TDroughtImpact);
+begin
+  fDroughtImpact := Value;
+  fLegacyDroughtImpactWasSet := true;
+  fUseDroughtDependentLeafSenescence :=
+    Value = UHumeWheatDryMatter.DroughtImpact;
+
+  if UseDroughtDependentLeafSenescence <> nil then
+  begin
+    if fUseDroughtDependentLeafSenescence then
+      UseDroughtDependentLeafSenescence.option := 'true'
+    else
+      UseDroughtDependentLeafSenescence.option := 'false';
+  end;
+end;
+
 procedure THumeWheatLeafArea.Init;
 var
   i: integer;
+  legacyDroughtOptionExists: boolean;
+  useLegacyDroughtOption: boolean;
+  legacyDroughtImpact: TDroughtImpact;
 begin
+  legacyDroughtOptionExists := false;
+  useLegacyDroughtOption := false;
+  legacyDroughtImpact := fDroughtImpact;
+
+  // Capture key presence before inherited InitOptions adds missing defaults.
+  if GlobMod <> nil then
+  begin
+    if GlobMod.OptionIniFile <> nil then
+    begin
+      legacyDroughtOptionExists := GlobMod.OptionIniFile.ValueExists(Name,
+        OptDroughtimpact.Name);
+      useLegacyDroughtOption :=
+        not GlobMod.OptionIniFile.ValueExists(Name,
+          UseDroughtDependentLeafSenescence.Name) and
+        (legacyDroughtOptionExists or fLegacyDroughtImpactWasSet);
+    end;
+  end;
+
   inherited Init(GlobMod);
-  if OptDroughtimpact.option = 'droughtimpact' then
-    fDroughtImpact := UHumeWheatDryMatter.DroughtImpact;
-  if OptDroughtimpact.option = 'nodroughtimpact' then
-    fDroughtImpact := UHumeWheatDryMatter.noDroughtImpact;
+
+  // New configurations use the Boolean option. When it is missing, translate
+  // the old INI option or streamed enum property and persist the new key.
+  if useLegacyDroughtOption then
+  begin
+    if legacyDroughtOptionExists then
+    begin
+      if OptDroughtimpact.option = 'nodroughtimpact' then
+        legacyDroughtImpact := UHumeWheatDryMatter.noDroughtImpact
+      else
+        legacyDroughtImpact := UHumeWheatDryMatter.DroughtImpact;
+    end;
+
+    if legacyDroughtImpact = UHumeWheatDryMatter.DroughtImpact then
+      UseDroughtDependentLeafSenescence.option := 'true'
+    else
+      UseDroughtDependentLeafSenescence.option := 'false';
+
+    GlobMod.OptionIniFile.WriteString(Name,
+      UseDroughtDependentLeafSenescence.Name,
+      UseDroughtDependentLeafSenescence.option);
+  end;
 
   LAI.v := 0;
   PLA.v := 0;
@@ -1359,37 +1415,28 @@ begin
   p5_ := 430 + P5.v * 20; // unscaled value of parameter p5
   LAIs := 0;
   for i := 10 downto 1 do
-  begin
     Icrop[i] := 0;
-  end;
+
   if OptNSenescenceType.option = 'concentration' then
-  begin
-    fSenescence := concentration;
-  end;
-  if OptNSenescenceType.option = 'cwt3' then
-  begin
+    fSenescence := concentration
+  else
     fSenescence := cwt3;
-  end;
 
-  if self.UseAgeDependentLeafSenescence.option = 'true' then
-    fUseAgeDependentLeafSenescence := true
-  else
-    fUseAgeDependentLeafSenescence := False;
+  fUseAgeDependentLeafSenescence :=
+    UseAgeDependentLeafSenescence.option = 'true';
+  fUseLightDependentLeafSenescence :=
+    UseLightDependentLeafSenescence.option = 'true';
+  fUseDroughtDependentLeafSenescence :=
+    UseDroughtDependentLeafSenescence.option = 'true';
 
-  if self.UseLightDependentLeafSenescence.option = 'true' then
-    fUseLightDependentLeafSenescence := true
+  // Keep the legacy enum property synchronized with the effective option.
+  if fUseDroughtDependentLeafSenescence then
+    fDroughtImpact := UHumeWheatDryMatter.DroughtImpact
   else
-    fUseLightDependentLeafSenescence := False;
-
-  if self.UseDroughtDependentLeafSenescence.option = 'true' then
-    fUseDroughtDependentLeafSenescence := true
-  else
-    fUseDroughtDependentLeafSenescence := False;
+    fDroughtImpact := UHumeWheatDryMatter.noDroughtImpact;
 
   for i := 10 downto 1 do
-  begin
     avTransIntRatio_arr[i] := 1;
-  end;
   potSLA.v := 0;
 end;
 
@@ -1402,8 +1449,11 @@ begin
 
   SetSingleLeafGrowthRatesToZero;
   CalcLeafNumberOnMainStem;
+
+  // Growth must be calculated before senescence: light-dependent senescence
+  // is limited by today's potential leaf-area growth (PLA.c).
   CalcSingleLeafGrowth;
-  calcSenescence;
+  CalcSenescence;
 end;
 
 procedure THumeWheatLeafArea.Integrate;
@@ -1513,35 +1563,25 @@ begin
   evenTransIntRatio.v := SUM_avTIR / 10;
 end;
 
-procedure THumeWheatLeafArea.CalcInterception(int_stor_: Extended; exLAI: real;
-  PTI: Extended; var interception_: Extended);
+procedure THumeWheatLeafArea.CalcInterception(const int_stor_: Extended;
+  const exLAI: real; const PTI: Extended; var interception_: Extended);
 var
-  max_int_cap: Extended;
-  int_cap: Extended;
+  maxIntCapacity: Extended;
+  availableStorage: Extended;
 begin
-  // interception:
-  max_int_cap := exLAI * sic.v;
-  int_cap := max_int_cap - int_stor_;
-  if int_cap > 0.0 then
-  begin
-    if int_cap > (rain.v * GlobTime.c) then
-    begin
-      int_stor_ := int_stor_ + rain.v * GlobTime.c;
-    end
-    else
-      int_stor_ := max_int_cap;
-  end;
-  if PTI * GlobTime.c > int_stor_ then
-  begin
-    PTI := PTI - int_stor_ / GlobTime.c;
-    interception_ := int_stor_ / GlobTime.c;
-    int_stor_ := 0.0;
-  end
+  // Work on a trial storage value. s_LAI calls this routine repeatedly and
+  // only the resulting interception rate is intended to leave the routine.
+  maxIntCapacity := exLAI * sic.v;
+  availableStorage := int_stor_;
+
+  if maxIntCapacity > availableStorage then
+    availableStorage := min(maxIntCapacity,
+      availableStorage + rain.v * GlobTime.c);
+
+  if PTI * GlobTime.c > availableStorage then
+    interception_ := availableStorage / GlobTime.c
   else
-  begin
     interception_ := PTI;
-    int_stor_ := int_stor_ - PTI * GlobTime.c;
-  end;
 end;
 
 procedure THumeWheatLeafArea.Calc_pETP(ro: Extended; rc: Extended;
@@ -1550,7 +1590,7 @@ procedure THumeWheatLeafArea.Calc_pETP(ro: Extended; rc: Extended;
 const
   cp = 1005.0;
 begin
-  pETP_ := (delta * Net_beam_ + ro * cp * Sat_def_ / ra_) /
+  pETP_ := (delta_ * Net_beam_ + ro * cp * Sat_def_ / ra_) /
     (delta_ + gamma_ * (1 + rc / ra_));
   pETP_ := pETP_ / (2.477 * 1E6) * 86400.0;
 end;
@@ -1573,74 +1613,60 @@ begin
     rc := 0.1;
 end;
 
-procedure THumeWheatLeafArea.CalcDroughtDependentLeafSenescence
-  (var PLALR_d: real);
+function THumeWheatLeafArea.CalcDroughtDependentLeafSenescence: real;
 var
   NetBeam: real;
 begin
-  // Leaf senescence due to water limitation (APSIM I_Wheat Meinke 1998)
-  if (fDroughtImpact = UHumeWheatDryMatter.DroughtImpact) then
+  Result := 0;
+
+  // Leaf senescence due to water limitation (APSIM I_Wheat Meinke 1998).
+  // The caller applies the single effective drought-senescence option.
+  CalcEvenTransIntRatio;
+  if (TransIntRatio.v < TRcrit.v) and (evenTransIntRatio.v < TRcrit.v) then
   begin
-    // calculate a 10 day running average of actual transpiration + interception /(potential transpiration + interception)
-    CalcEvenTransIntRatio;
-    if (TransIntRatio.v < TRcrit.v) and (evenTransIntRatio.v < TRcrit.v) then
-    begin
-      gamma := P.v * 0.000662;
-      // 0.000662 = Psychrometerkonstante [1/�K]  ;
-      delta := 239.0 * 17.4 * 6.11 * exp(17.4 * TMPM.v / (TMPM.v + 239.0)) /
-        sqr(TMPM.v + 239.0);
-      NetBeam := max(0, 0.6494 * (Rad_Int.v) - 18.417);
+    gamma := P.v * 0.000662;
+    // 0.000662 = psychrometric constant [1/K]
+    delta := 239.0 * 17.4 * 6.11 * exp(17.4 * TMPM.v / (TMPM.v + 239.0)) /
+      sqr(TMPM.v + 239.0);
+    NetBeam := max(0, 0.6494 * Rad_Int.v - 18.417);
 
-      // calculate a "sustainable LAI", i.e. a LAI which gives a TransIntration equal to TRcrit
-      LAIs := s_LAI(TMPM.v, Sat_def.v, NetBeam, delta, gamma, ra.v,
-        PotTrans.v * evenTransIntRatio.v, LAI.v);
+    // Calculate a sustainable LAI whose transpiration ratio equals TRcrit.
+    LAIs := s_LAI(TMPM.v, Sat_def.v, NetBeam, delta, gamma, ra.v,
+      PotTrans.v * evenTransIntRatio.v, LAI.v);
 
-      // calculate a drought induced senescence rate [cm2/plant/d]
-      if LAI.v > 0 then
-        PLALR_d := max(0, ((LAI.v - LAIs) / 15 * evenTransIntRatio.v * 1E4) /
-          plants.v);
-    end;
+    if LAI.v > 0 then
+      Result := max(0,
+        ((LAI.v - LAIs) / 15 * evenTransIntRatio.v * 1E4) / plants.v);
   end;
 end;
-
-procedure THumeWheatLeafArea.CalcLightDependendLeafSenescence
-  (var PLALR_l: real);
-
+function THumeWheatLeafArea.CalcLightDependentLeafSenescence: real;
 begin
-
-  // Calculate a 10 day average of irradiation
+  Result := 0;
   CalcRadiationAverage;
 
   if (ISTAGE.v >= 2) and (avIcrop.v < Icrit.v) and (EC.v < EC_lgend.v) then
   begin
-    // calc. shading forced senescence (similar to APSIM I_Wheat Meinke 1998)
-    // LAIs = (ln(I)-ln(I0))/-k || I = Icrit
-
-    // calculate a light dependend sustainable leaf area index
-    // LAIs := (ln(Icrit.v) - ln(avIcrop.v)) / -kPAR.v;
-    LAIs := (ln(Icrit.v / avIcrop.v)) / -kPAR.v; // changed HK 2025-05-22
+    // Sustainable LAI under low radiation: LAIs = ln(Icrit/Icrop) / -kPAR.
+    LAIs := ln(Icrit.v / avIcrop.v) / -kPAR.v;
 
     if LAI.v > 0 then
-      PLALR_l := max(0, min((((LAI.v - LAIs) / 20) * 1E4) / plants.v,
-        // shading only limits net increase of LAI (in contrast to Meinke 1998)
+      Result := max(0, min((((LAI.v - LAIs) / 20) * 1E4) / plants.v,
+        // Shading only limits net LAI increase.
         PLA.c));
   end;
 end;
 
-procedure THumeWheatLeafArea.CalcNdependentLeafSenescence(var PLALR_n: real);
+function THumeWheatLeafArea.CalcNDependentLeafSenescence: real;
 begin
-  // if the actual specific leaf nitrogen concentration is lower than the
-  // critical sln value
-  //
+  Result := 0;
   if (SLN.v < critSLNtot.v) and (LAI.v > 0) and (SLN.v > 0) then
-    PLALR_n := min((LAImax.v * 1E4 / plants.v) * maxPLALR.v / 100,
+    Result := min((LAImax.v * 1E4 / plants.v) * maxPLALR.v / 100,
       (LAI.v * 1E4 / plants.v) * (1 - SLN.v / critSLNtot.v));
 end;
 
-procedure THumeWheatLeafArea.CalcCERESAgeDependenLeafSenescence
-  (var PLALR_a: real);
+function THumeWheatLeafArea.CalcCERESAgeDependentLeafSenescence: real;
 begin
-  PLALR_a := 0.0;
+  Result := 0.0;
   // if crop is emerged and not shooting then 5th oldest leaf is decaying within one phyllochron
   if (round(ISTAGE.v) >= 1) and (round(ISTAGE.v) <= 2) and (CUMPH.v > 4) and
     (EC.v < 30) then
@@ -1658,15 +1684,15 @@ begin
     // the leaf loss rate of that leaf age fraction is calculated from the leaf area of this fraction
     // at the beginning of the senescence process and the fraction of the leaf fraction
     // of the effective temperature (T~eff~) and the phyllochron interval (PHINT)
-    PLALR_a := min(PLSC[trunc(LN_.v) - 4].v / GlobTime.c,
-      senratesLA[trunc(LN_.v) - 4] * TSumInc.v / (Phint.v));
+    Result := min(PLSC[trunc(LN_.v) - 4].v / GlobTime.c,
+      senratesLA[trunc(LN_.v) - 4] * TSumInc.v / Phint.v);
     // if (SENLA.v / PLA.v > 0.4) then
     // PLALR_a := 0;
 
     if (LN_.v > 5) and (PLSC[trunc(LN_.v) - 5].v > 0.0) then
     begin
       // if there is any leaf area left on leaves older than the 5th
-      PLALR_a := PLALR_a + PLSC[trunc(LN_.v) - 5].v / GlobTime.c;
+      Result := Result + PLSC[trunc(LN_.v) - 5].v / GlobTime.c;
     end;
 
   end; // (round(ISTAGE.v) >= 1) and (round(ISTAGE.v) <= 2) and (CUMPH.v > 4)
