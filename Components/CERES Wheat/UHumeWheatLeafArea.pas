@@ -96,6 +96,7 @@ type
       const PTI: Extended; var interception_: Extended);
     procedure CalcEvenTransIntRatio;
     procedure CalcRadiationAverage;
+    procedure CalcIStage5Tsum;
   protected
     // ----------------
     fDroughtImpact: TDroughtImpact;
@@ -1442,14 +1443,9 @@ end;
 
 procedure THumeWheatLeafArea.CalcRates;
 begin
-  if (ISTAGE.v >= 5) and (ISTAGE.v < 6) then
-    SUMDTT5.c := 0.25 * TMPMN.v + 0.75 * TMPMX.v
-  else
-    SUMDTT5.c := 0;
-
+  CalcIStage5Tsum;
   SetSingleLeafGrowthRatesToZero;
   CalcLeafNumberOnMainStem;
-
   // Growth must be calculated before senescence: light-dependent senescence
   // is limited by today's potential leaf-area growth (PLA.c).
   CalcSingleLeafGrowth;
@@ -1519,6 +1515,14 @@ begin
   if (LAI.v > LAImax.v) then
     LAImax.v := LAI.v;
 
+end;
+
+procedure THumeWheatLeafArea.CalcIStage5Tsum;
+begin
+  if (ISTAGE.v >= 5) and (ISTAGE.v < 6) then
+    SUMDTT5.c := 0.25 * TMPMN.v + 0.75 * TMPMX.v
+  else
+    SUMDTT5.c := 0;
 end;
 
 procedure THumeWheatLeafArea.CalcRadiationAverage;
