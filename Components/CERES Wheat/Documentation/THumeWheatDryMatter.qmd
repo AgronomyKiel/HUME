@@ -1,0 +1,494 @@
+---
+title: "THumeWheatDryMatter"
+author: "Agronomy and Crop Science Group, Kiel University"
+date: "`r Sys.Date()`"
+---
+
+```{r}
+#| label: SetupLibraries
+#| include: false
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  fig.width = 12,
+  fig.height = 6,
+  fig.pos = "h",
+  fig.cap = TRUE
+)
+
+rm(list = ls(all.names = TRUE))
+
+library(rmarkdown)
+library(bookdown)
+library(tidyverse)
+library(kableExtra)
+library(xml2)
+library(tools)
+library(here)
+
+source("ExtractInformationFromXML.R")
+source("Rlib/DokuUtilFunctions.R")
+
+options("citation_format" = "pandoc")
+```
+
+```{r}
+#| label: LoadDocumentationSources
+#| include: false
+
+fn_source <- here("Components/CERES Wheat/UHumeWheatDryMatter.pas")
+fn_xml_docu <- here("XML_Delphi_Docu/UHumeWheatDryMatter.xml")
+fn_csv <- here("csv_Hume_Docu/HumeWheatDryMatter.csv")
+
+NameSource <- file_path_sans_ext(basename(fn_source))
+doc <- read_xml(fn_xml_docu)
+
+output <- ExtractXMLDocuInformation(
+  fn_xml_docu,
+  ClassName = "THumeWheatDryMatter"
+)
+```
+
+# Summary
+
+```{r}
+#| label: DryMatterSummary
+#| echo: false
+#| results: asis
+
+GetFirstDevNotes(fn_xml_docu)
+```
+
+`THumeWheatDryMatter` calculates intercepted photosynthetically active radiation, potential canopy dry-matter production, and the reductions caused by temperature, water supply, nitrogen status, ripening, and atmospheric CO2. It provides daily biomass production per unit ground area and per plant, as well as cumulative radiation interception and biomass production.
+
+::: callout-note
+This page is an initial scientific description of the current implementation. The literature background, parameter justification, and validation evidence can be extended during review.
+:::
+
+## Descendence
+
+The class `THumeWheatDryMatter` has the ancestor classes shown in @tbl-DryMatterAncestorClasses.
+
+```{r}
+#| label: tbl-DryMatterAncestorClasses
+#| echo: false
+#| tbl-cap: "Ancestor classes of THumeWheatDryMatter"
+
+df_ancestors <- GetAncestorClasses(
+  fn_xml_docu,
+  "THumeWheatDryMatter"
+)
+
+kable(df_ancestors)
+```
+
+# Scientific Background
+
+The submodel follows a radiation-use-efficiency approach. Incoming global radiation is converted to photosynthetically active radiation (PAR), attenuated by the crop canopy, and multiplied by a potential light-use efficiency. Temperature determines the potential daily conversion of intercepted radiation into biomass. Water supply, nitrogen status or ripening, and optionally atmospheric CO2 subsequently modify this potential production.
+
+The main calculation sequence is:
+
+1.  calculate mean temperature, PAR, and canopy radiation interception;
+2.  calculate water and nitrogen/ripening reduction factors;
+3.  calculate temperature-limited potential biomass production;
+4.  apply the optional atmospheric CO2 factor;
+5.  apply the stronger of the water and nitrogen/ripening limitations; and
+6.  convert canopy production to production per plant and update cumulative quantities.
+
+## Mean daily temperature
+
+The externally supplied mean temperature $T_m$ is normally used directly. If the daily temperature range exceeds the threshold $\Delta T_{crit}$ and $T_m>0$, the submodel recalculates mean temperature from daily maximum and minimum temperature:
+
+$$T_m = w_{max} T_{max,d} + (1-w_{max})T_{min,d}$$
+ {#eq-DMMeanTemperature}
+
+where $w_{max}$ is `TmaxweightingF`. With the current defaults, recalculation occurs when $T_{max,d}-T_{min,d}>8\ ^\circ\mathrm{C}$ and $w_{max}=0.567$.
+
+## Radiation interception
+
+PAR is assumed to be 50% of incoming global radiation:
+
+$$PAR = 0.5 R_g$$
+ {#eq-DMPAR}
+
+where $R_g$\$R_g\$ is daily global radiation \[MJ m^-2^ d^-1^\].
+
+For $LAI>0$, the effective extinction coefficient is calculated as
+
+$$k_{eff} =
+\min\left(0.9,\max\left(k_{ini}+k_{inc}\ln(LAI),k_{PAR}\right)\right).$$
+ {#eq-DMExtinctionCoefficient}
+
+For $LAI\leq 0$, $k_{eff}=k_{PAR}$. The intercepted fraction of PAR follows a Beer--Lambert-type canopy attenuation equation:
+
+$$f_{INT}=1-\exp(-k_{eff}LAI)$$
+ {#eq-DMFractionalInterception}
+
+and intercepted PAR is
+
+$$IPAR=PAR\,f_{INT}.$$
+ {#eq-DMIPAR}
+
+The daily increase of the state variable `CumPAR` is set equal to $IPAR$.
+
+## Temperature effect
+
+The option `OptCalcTempEffect` selects either the Wang--Engel response (`WangEngel`) or a trapezoidal response (`Tranpzoidal`, using the spelling in the current source). Both functions return a dimensionless factor between 0 and 1.
+
+### Wang--Engel response
+
+The Wang--Engel function describes a curvilinear temperature response using minimum, optimum, and maximum temperatures [@Wang1998]. The shape parameter is
+
+$$\alpha =
+\frac{\ln(2)}
+{\ln\left(\dfrac{T_{max}-T_{min}}{T_{opt}-T_{min}}\right)}$$
+ {#eq-DMWangEngelAlpha}
+
+and, for $T_{min}\leq T\leq T_{max}$, the temperature factor is
+
+$$f_{T,WE}(T)=
+\frac{
+2(T-T_{min})^\alpha(T_{opt}-T_{min})^\alpha
+-(T-T_{min})^{2\alpha}
+}{
+(T_{opt}-T_{min})^{2\alpha}
+}.$$
+ {#eq-DMWangEngel}
+
+Outside this temperature interval, $f_{T,WE}=0$. The function reaches 1 at $T=T_{opt}$. The current default values are $T_{min}=0\ ^\circ\mathrm{C}$, $T_{opt}=20\ ^\circ\mathrm{C}$, and $T_{max}=35\ ^\circ\mathrm{C}$.
+
+### Trapezoidal response
+
+The alternative response uses a linear increase from $T_{min}$ to $T_{opt1}$, an optimum plateau between $T_{opt1}$ and $T_{opt2}$, and a linear decrease to zero at $T_{max}$:
+
+$$f_{T,tr}(T)=
+\begin{cases}
+0, & T\leq T_{min},\\
+\dfrac{T-T_{min}}{T_{opt1}-T_{min}}, & T_{min}<T<T_{opt1},\\
+1, & T_{opt1}\leq T\leq T_{opt2},\\
+\dfrac{T_{max}-T}{T_{max}-T_{opt2}}, & T_{opt2}<T<T_{max},\\
+0, & T\geq T_{max}.
+\end{cases}$$
+ {#eq-DMTrapezoidal}
+
+The default optimum range is 10--20 °C.
+
+For either option, the selected response is first evaluated for mean air temperature. If `DryMatterTemp` is higher than mean air temperature, the response is also evaluated for `DryMatterTemp`, and the lower of the two response factors is used:
+
+$$f_T^* =
+\begin{cases}
+\min\left(f_T(T_m),f_T(T_s)\right), & T_m<T_s,\\
+f_T(T_m), & T_m\geq T_s,
+\end{cases}$$
+ {#eq-DMEffectiveTemperatureFactor}
+
+where $T_s$ is `DryMatterTemp`.
+
+## Potential dry-matter production
+
+Before the stress and CO2 corrections are applied, potential canopy biomass production is
+
+$$PCARB_{pot}=pLUE\;PAR\;f_{INT}\;f_T^*
+           =pLUE\;IPAR\;f_T^*,$$
+ {#eq-DMPotentialBiomass}
+
+where `pLUE` is potential light-use efficiency \[g MJ^-1^\]. Its current default is 3.1 g MJ^-1^.
+
+## Water limitation
+
+When drought impact is enabled and a soil-water model is linked, the soil-water deficit factor is calculated from the ratio $r_{TI}$ of actual to potential transpiration plus interception:
+
+$$SWDF = 1-\left(1-r_{TI}\right)^{p_{SWDF}}.$$
+ {#eq-DMSWDF}
+
+This nonlinear formulation is attributed in the source to @ferreyra2003. With the default $p_{SWDF}=1$, $SWDF=r_{TI}$. For ratios between 0 and 1, values of $p_{SWDF}>1$ weaken the simulated limitation by increasing $SWDF$. If drought impact is disabled or no soil-water model is linked, $SWDF=1$.
+
+## Nitrogen limitation and ripening reduction
+
+The critical specific leaf nitrogen concentration is calculated as a linear function of green area index:
+
+$$SLN_{crit}=SLN_{crit,int}+SLN_{crit,inc}\,GAI.$$
+ {#eq-DMCriticalSLN}
+
+Before BBCH 30, a positive externally supplied optimum SLN additionally limits this value:
+
+$$SLN_{crit}=\min(SLN_{crit},SLN_{opt}).$$
+ {#eq-DMCriticalSLNAutumn}
+
+The specific-leaf-nitrogen index is
+
+$$SLNI=\min\left(1,\frac{SLN}{SLN_{crit}}\right).$$
+ {#eq-DMSLNI}
+
+If nitrogen impact is enabled, the reduction factor is calculated with the quadratic response described by @ratjen2015:
+
+$$CARBOred_N=
+\min\left(1,\max\left(0,a_N+b_N\,SLNI+c_N\,SLNI^2\right)\right).$$
+ {#eq-DMNitrogenReduction}
+
+The current coefficients are $a_N=-0.197$, $b_N=2.80$, and $c_N=-1.60$.
+
+If nitrogen impact is disabled, `CARBOred` instead represents a CERES-Wheat-type reduction during ripening. Before BBCH 62, $CARBOred=1$. From BBCH 62 onward:
+
+$$CARBOred_R =
+\max\left[
+0,\;
+1-
+\left(
+1.2-0.8\frac{SWMIN_{pl}}{STMWT_{pl}}
+\right)
+\frac{SUMDTT5+100}{430+20P5+100}
+\right].$$
+ {#eq-DMRipeningReduction}
+
+Thus the nitrogen-dependent and ripening-dependent formulations are alternative uses of the same reduction variable in the current implementation.
+
+## Atmospheric CO2 effect
+
+If `optCO2` is set to `WithCO2Effect`, a drought-sensitive empirical CO2 factor is calculated. First,
+
+$$CWSI=1-r_{TI}$$
+ {#eq-DMCWSI}
+
+and the minimum CO2 factor is
+
+$$f_{CO2,min}=f_{CO2,scale}+f_{CWSI}\,CWSI.$$
+ {#eq-DMMinimumCO2Factor}
+
+For atmospheric CO2 concentration $C_a$ above the compensation concentration $C_i$,
+
+$$f_{CO2}=
+\max\left[
+f_{CO2,min},
+f_{CO2,min}(C_a-C_i)^{p_{CO2}}
+\right].$$
+ {#eq-DMCO2Factor}
+
+For $C_a\leq C_i$, $f_{CO2}=f_{CO2,min}$. Potential biomass is multiplied by this factor. The current defaults are $f_{CO2,scale}=0.723$, $f_{CWSI}=0.077$, $C_i=350$ ppm, and $p_{CO2}=0.086$.
+
+::: callout-warning
+The CO2 formulation is identified as empirical in the source documentation. Its scientific provenance and parameter calibration should be added or verified during review.
+:::
+
+## Final biomass production and accumulated quantities
+
+After the optional CO2 correction, canopy biomass production is reduced by the stronger of water limitation and nitrogen/ripening limitation:
+
+$$PCARB =
+PCARB_{pot}\,f_{CO2}\,
+\min(SWDF,CARBOred),$$
+ {#eq-DMFinalBiomass}
+
+where $f_{CO2}=1$ when the CO2 effect is disabled. If $IPAR=0$, $PCARB=0$.
+
+For a positive plant density $N_{plants}$, daily biomass production per plant is
+
+$$CARBO=\frac{PCARB}{N_{plants}}.$$
+ {#eq-DMBiomassPerPlant}
+
+The daily increase of `CumCarbo` is $PCARB$. The realized light-use efficiency is updated after integration as
+
+$$LUE=
+\begin{cases}
+\dfrac{PCARB}{IPAR}, & IPAR>0,\\
+0, & IPAR=0.
+\end{cases}$$
+ {#eq-DMRealizedLUE}
+
+# Submodel objects
+
+Following the Hume implementation of dynamic system models, the submodel registers state variables, parameters, calculated variables, external driving variables, and options. The tables below are generated from `HumeWheatDryMatter.csv`.
+
+```{r}
+#| label: ReadDryMatterCSVInformation
+#| echo: false
+#| include: false
+
+Entities <- ExtractInformationFromCSV(fn_csv)
+
+csv_entities <- read.delim(
+  fn_csv,
+  header = TRUE,
+  sep = ";",
+  stringsAsFactors = FALSE,
+  check.names = FALSE
+) %>%
+  filter(!is.na(EntityType), EntityType != "")
+
+Entities$df.state <- Entities$df.state %>% distinct()
+Entities$df.par <- Entities$df.par %>% distinct()
+Entities$df.var <- Entities$df.var %>% distinct()
+
+# Current generated files use ExternalValue, whereas the shared helper expects ExtVar.
+Entities$df.ext <- csv_entities %>%
+  filter(EntityType %in% c("ExtVar", "ExternalValue")) %>%
+  mutate(
+    EntityName = if_else(
+      EntityName == "TMPM" &
+        str_detect(Comment, regex("weighted surface", ignore_case = TRUE)),
+      "DryMatterTemp",
+      EntityName
+    )
+  ) %>%
+  select(EntityName, Units, Comment, Option) %>%
+  distinct()
+names(Entities$df.ext) <- c(
+  "External variable",
+  "Units",
+  "Description",
+  "Source"
+)
+
+Entities$df.opt <- csv_entities %>%
+  filter(EntityType == "Option") %>%
+  select(EntityName, Option, Comment) %>%
+  distinct()
+names(Entities$df.opt) <- c(
+  "Option",
+  "Configured value",
+  "Description"
+)
+```
+
+## State variables
+
+The class `THumeWheatDryMatter` has `r nrow(Entities$df.state)` state variable(s).
+
+```{r}
+#| label: tbl-DryMatterStates
+#| echo: false
+#| tbl-cap: State variables of THumeWheatDryMatter
+
+kable(Entities$df.state, escape = FALSE)
+```
+
+## Parameters
+
+The class `THumeWheatDryMatter` has `r nrow(Entities$df.par)` parameter(s).
+
+```{r}
+#| label: tbl-DryMatterParameters
+#| echo: false
+#| tbl-cap: Parameters of THumeWheatDryMatter
+
+kable(Entities$df.par, escape = FALSE)
+```
+
+## Variables
+
+The class `THumeWheatDryMatter` has `r nrow(Entities$df.var)` calculated variable(s).
+
+```{r}
+#| label: tbl-DryMatterVariables
+#| echo: false
+#| tbl-cap: Variables of THumeWheatDryMatter
+
+kable(Entities$df.var, escape = FALSE)
+```
+
+## External variables
+
+The class `THumeWheatDryMatter` has `r nrow(Entities$df.ext)` external variable(s).
+
+```{r}
+#| label: tbl-DryMatterExternalVariables
+#| echo: false
+#| tbl-cap: External variables of THumeWheatDryMatter
+
+kable(Entities$df.ext, escape = FALSE)
+```
+
+The source column reflects the configuration from which the CSV documentation was generated and can differ between model setups. The current CSV labels the weighted surface-temperature entry as a second TMPM; the table displays this entry as DryMatterTemp, matching the Pascal and XML declarations.
+
+## Options
+
+The CSV documentation contains `r nrow(Entities$df.opt)` option(s), including inherited output options.
+
+```{r}
+#| label: tbl-DryMatterOptions
+#| echo: false
+#| tbl-cap: Options of THumeWheatDryMatter
+
+kable(Entities$df.opt, escape = FALSE)
+```
+
+# Further source code documentation
+
+The following information is extracted from the XML documentation of `THumeWheatDryMatter`. It includes enumerations, constants, functions, and procedures.
+
+## Enumerations
+
+The unit defines `r nrow(output$enum_df)` enumeration type(s).
+
+```{r}
+#| label: tbl-DryMatterEnumerations
+#| echo: false
+#| tbl-cap: Enumerations of unit UHumeWheatDryMatter
+
+kable(
+  output$enum_df,
+  escape = FALSE,
+  col.names = c("Name", "Summary", "Elements")
+) %>%
+  kable_styling(
+    full_width = FALSE,
+    bootstrap_options = c("striped", "hover")
+  ) %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "30em") %>%
+  column_spec(3, width = "30em")
+```
+
+## Constants
+
+```{r}
+#| label: tbl-DryMatterConstants
+#| echo: false
+#| results: asis
+#| tbl-cap: Constants of unit UHumeWheatDryMatter
+
+if (nrow(output$const_df) == 0) {
+  cat("No standalone constants are documented in this unit.")
+} else {
+  print(kable(
+    output$const_df,
+    escape = FALSE,
+    col.names = c("Name", "Type", "Summary", "Value")
+  ))
+}
+```
+
+## Functions
+
+```{r}
+#| label: tbl-DryMatterFunctions
+#| echo: false
+#| results: asis
+#| tbl-cap: Functions of class THumeWheatDryMatter
+
+if (nrow(output$fun_df) == 0) {
+  cat("No functions are documented for this class.")
+} else {
+  print(kable(output$fun_df, escape = FALSE))
+}
+```
+
+## Procedures
+
+```{r}
+#| label: tbl-DryMatterProcedures
+#| echo: false
+#| results: asis
+#| tbl-cap: Procedures of class THumeWheatDryMatter
+
+if (nrow(output$proc_df) == 0) {
+  cat("No procedures are documented for this class.")
+} else {
+  print(kable(output$proc_df, escape = FALSE))
+}
+```
+
+## References
