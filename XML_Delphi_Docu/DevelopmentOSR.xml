@@ -1,6 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<namespace name="Usnowpack" platform="Win32">
-  <class name="TSnowPack" file="USnowPack.pas" line="15">
+<namespace name="DevelopmentOSR" platform="Win32">
+  <const name="OOEC11" type="TOptimizeOpt" file="DevelopmentOSR.pas" line="19">
+    <value>
+      OOEC11
+    </value>
+  </const>
+  <const name="OOEC13" type="TOptimizeOpt" file="DevelopmentOSR.pas" line="19">
+    <value>
+      OOEC13
+    </value>
+  </const>
+  <const name="OOEC27" type="TOptimizeOpt" file="DevelopmentOSR.pas" line="19">
+    <value>
+      OOEC27
+    </value>
+  </const>
+  <const name="OOEC39" type="TOptimizeOpt" file="DevelopmentOSR.pas" line="19">
+    <value>
+      OOEC39
+    </value>
+  </const>
+  <const name="OOEC51" type="TOptimizeOpt" file="DevelopmentOSR.pas" line="19">
+    <value>
+      OOEC51
+    </value>
+  </const>
+  <const name="OOEC61" type="TOptimizeOpt" file="DevelopmentOSR.pas" line="19">
+    <value>
+      OOEC61
+    </value>
+  </const>
+  <const name="OOEC69" type="TOptimizeOpt" file="DevelopmentOSR.pas" line="19">
+    <value>
+      OOEC69
+    </value>
+  </const>
+  <const name="OOAll" type="TOptimizeOpt" file="DevelopmentOSR.pas" line="19">
+    <value>
+      OOAll
+    </value>
+  </const>
+  <enum name="TOptimizeOpt" file="DevelopmentOSR.pas" line="19">
+    <devnotes>
+       <summary>Selects the final phenological stage included during calibration or optimization.</summary>
+    </devnotes>
+    <element value="0" name="OOEC11" file="DevelopmentOSR.pas" line="19" />
+    <element value="1" name="OOEC13" file="DevelopmentOSR.pas" line="19" />
+    <element value="2" name="OOEC27" file="DevelopmentOSR.pas" line="19" />
+    <element value="3" name="OOEC39" file="DevelopmentOSR.pas" line="19" />
+    <element value="4" name="OOEC51" file="DevelopmentOSR.pas" line="19" />
+    <element value="5" name="OOEC61" file="DevelopmentOSR.pas" line="19" />
+    <element value="6" name="OOEC69" file="DevelopmentOSR.pas" line="19" />
+    <element value="7" name="OOAll" file="DevelopmentOSR.pas" line="19" />
+  </enum>
+  <class name="TDevelopmentOSR" file="DevelopmentOSR.pas" line="24">
+    <devnotes>
+       <summary>
+       Calculates phenological development of winter oilseed rape, including temperature, photoperiod, and vernalisation effects.
+       </summary>
+    </devnotes>
     <ancestor name="TSubmodel" namespace="UMod">
       <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
       </methodref>
@@ -1179,104 +1237,315 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="Es" type="TVar" visibility="public" size="4" offset="656" file="USnowPack.pas" line="22" />
-      <field name="EsS" type="TVar" visibility="public" size="4" offset="660" file="USnowPack.pas" line="23" />
-      <field name="Js" type="TVar" visibility="public" size="4" offset="664" file="USnowPack.pas" line="24" />
-      <field name="Evap_pot" type="TVar" visibility="public" size="4" offset="668" file="USnowPack.pas" line="25" />
-      <field name="M" type="TVar" visibility="public" size="4" offset="672" file="USnowPack.pas" line="26" />
-      <field name="maxM" type="TVar" visibility="public" size="4" offset="676" file="USnowPack.pas" line="27" />
-      <field name="minM" type="TVar" visibility="public" size="4" offset="680" file="USnowPack.pas" line="28" />
-      <field name="Mpot" type="TVar" visibility="public" size="4" offset="684" file="USnowPack.pas" line="29" />
-      <field name="mr" type="TVar" visibility="public" size="4" offset="688" file="USnowPack.pas" line="30" />
-      <field name="mt" type="TVar" visibility="public" size="4" offset="692" file="USnowPack.pas" line="31" />
-      <field name="P" type="TVar" visibility="public" size="4" offset="696" file="USnowPack.pas" line="32" />
-      <field name="Percolation" type="TVar" visibility="public" size="4" offset="700" file="USnowPack.pas" line="33" />
-      <field name="Pr" type="TVar" visibility="public" size="4" offset="704" file="USnowPack.pas" line="34" />
-      <field name="Ps" type="TVar" visibility="public" size="4" offset="708" file="USnowPack.pas" line="35" />
-      <field name="qh" type="TVar" visibility="public" size="4" offset="712" file="USnowPack.pas" line="36" />
-      <field name="rhop" type="TVar" visibility="public" size="4" offset="716" file="USnowPack.pas" line="37" />
-      <field name="ScS" type="TVar" visibility="public" size="4" offset="720" file="USnowPack.pas" line="39" />
-      <field name="Si" type="TVar" visibility="public" size="4" offset="724" file="USnowPack.pas" line="41" />
-      <field name="Tact" type="TVar" visibility="public" size="4" offset="728" file="USnowPack.pas" line="42" />
-      <field name="Zs" type="TVar" visibility="public" size="4" offset="732" file="USnowPack.pas" line="43" />
-      <field name="Ks" type="TVar" visibility="public" size="4" offset="736" file="USnowPack.pas" line="44" />
-      <field name="Tsf" type="TVar" visibility="public" size="4" offset="740" file="USnowPack.pas" line="45" />
-      <field name="SnowAge" type="TState" visibility="public" size="4" offset="744" file="USnowPack.pas" line="50" />
-      <field name="SsS" type="TState" visibility="public" size="4" offset="748" file="USnowPack.pas" line="51" />
-      <field name="SwS" type="TState" visibility="public" size="4" offset="752" file="USnowPack.pas" line="52" />
-      <field name="fc" type="TPar" visibility="public" size="4" offset="756" file="USnowPack.pas" line="56" />
-      <field name="Lm" type="TPar" visibility="public" size="4" offset="760" file="USnowPack.pas" line="57" />
-      <field name="m1" type="TPar" visibility="public" size="4" offset="764" file="USnowPack.pas" line="58" />
-      <field name="m2" type="TPar" visibility="public" size="4" offset="768" file="USnowPack.pas" line="59" />
-      <field name="mf" type="TPar" visibility="public" size="4" offset="772" file="USnowPack.pas" line="60" />
-      <field name="mrp" type="TPar" visibility="public" size="4" offset="776" file="USnowPack.pas" line="61" />
-      <field name="mtp" type="TPar" visibility="public" size="4" offset="780" file="USnowPack.pas" line="62" />
-      <field name="rhos" type="TPar" visibility="public" size="4" offset="784" file="USnowPack.pas" line="63" />
-      <field name="rhow" type="TPar" visibility="public" size="4" offset="788" file="USnowPack.pas" line="64" />
-      <field name="t1" type="TPar" visibility="public" size="4" offset="792" file="USnowPack.pas" line="65" />
-      <field name="t2" type="TPar" visibility="public" size="4" offset="796" file="USnowPack.pas" line="66" />
-      <field name="f" type="TPar" visibility="public" size="4" offset="800" file="USnowPack.pas" line="67" />
-      <field name="alpha_h" type="TPar" visibility="public" size="4" offset="804" file="USnowPack.pas" line="68" />
-      <field name="z1" type="TPar" visibility="public" size="4" offset="808" file="USnowPack.pas" line="69" />
-      <field name="Epot" type="TExternV" visibility="public" size="4" offset="812" file="USnowPack.pas" line="74" />
-      <field name="global_radiation" type="TExternV" visibility="public" size="4" offset="816" file="USnowPack.pas" line="75" />
-      <field name="rainfall_mm" type="TExternV" visibility="public" size="4" offset="820" file="USnowPack.pas" line="76" />
-      <field name="Temp1" type="TExternV" visibility="public" size="4" offset="824" file="USnowPack.pas" line="77" />
-      <field name="Lambda1" type="TExternV" visibility="public" size="4" offset="828" file="USnowPack.pas" line="78" />
-      <field name="AirTemp" type="TExternV" visibility="public" size="4" offset="832" file="USnowPack.pas" line="82" />
-      <procedure name="CreateAll" visibility="public" procflags="override" file="USnowPack.pas" line="84">
+      <field name="fOptimizeOpt" type="TOptimizeOpt" visibility="private" size="1" offset="656" file="DevelopmentOSR.pas" line="28">
+        <devnotes>
+           <summary>Internal representation of the selected optimization range.</summary>
+        </devnotes>
+      </field>
+      <field name="DVR1" type="TVar" visibility="public" size="4" offset="660" file="DevelopmentOSR.pas" line="34">
+        <devnotes>
+           <summary>Development rate from sowing to emergence.</summary>
+        </devnotes>
+      </field>
+      <field name="DVR2" type="TVar" visibility="public" size="4" offset="664" file="DevelopmentOSR.pas" line="36">
+        <devnotes>
+           <summary>Development rate from emergence to EC 27.</summary>
+        </devnotes>
+      </field>
+      <field name="DVR2a" type="TVar" visibility="public" size="4" offset="668" file="DevelopmentOSR.pas" line="38">
+        <devnotes>
+           <summary>Development rate from EC 27 to EC 39.</summary>
+        </devnotes>
+      </field>
+      <field name="DVR2b" type="TVar" visibility="public" size="4" offset="672" file="DevelopmentOSR.pas" line="40">
+        <devnotes>
+           <summary>Development rate from EC 39 to the beginning of flowering.</summary>
+        </devnotes>
+      </field>
+      <field name="DVR3" type="TVar" visibility="public" size="4" offset="676" file="DevelopmentOSR.pas" line="42">
+        <devnotes>
+           <summary>Development rate until the end of flowering.</summary>
+        </devnotes>
+      </field>
+      <field name="DVR4" type="TVar" visibility="public" size="4" offset="680" file="DevelopmentOSR.pas" line="44">
+        <devnotes>
+           <summary>Development rate until maturity.</summary>
+        </devnotes>
+      </field>
+      <field name="Teff" type="TVar" visibility="public" size="4" offset="684" file="DevelopmentOSR.pas" line="46">
+        <devnotes>
+           <summary>Effective daily temperature, calculated as daily mean temperature minus base temperature.</summary>
+        </devnotes>
+      </field>
+      <field name="Fp" type="TVar" visibility="public" size="4" offset="688" file="DevelopmentOSR.pas" line="48">
+        <devnotes>
+           <summary>Photoperiod factor.</summary>
+        </devnotes>
+      </field>
+      <field name="Fp_eff" type="TVar" visibility="public" size="4" offset="692" file="DevelopmentOSR.pas" line="50">
+        <devnotes>
+           <summary>Effective influence of photoperiod on the development rate.</summary>
+        </devnotes>
+      </field>
+      <field name="FV_eff" type="TVar" visibility="public" size="4" offset="696" file="DevelopmentOSR.pas" line="52">
+        <devnotes>
+           <summary>Effective influence of vernalisation on the development rate.</summary>
+        </devnotes>
+      </field>
+      <field name="BBCH" type="TVar" visibility="public" size="4" offset="700" file="DevelopmentOSR.pas" line="55">
+        <devnotes>
+           <summary>Phenological stage on the BBCH scale.</summary>
+        </devnotes>
+      </field>
+      <field name="EC" type="TVar" visibility="public" size="4" offset="704" file="DevelopmentOSR.pas" line="57">
+        <devnotes>
+           <summary>Phenological stage on the Schuette EC scale, derived from DVS.</summary>
+        </devnotes>
+      </field>
+      <field name="BBCH30" type="TVar" visibility="public" size="4" offset="708" file="DevelopmentOSR.pas" line="59">
+        <devnotes>
+           <summary>Auxiliary variable used to estimate DVS at BBCH 30.</summary>
+        </devnotes>
+      </field>
+      <field name="BBCH50" type="TVar" visibility="public" size="4" offset="712" file="DevelopmentOSR.pas" line="61">
+        <devnotes>
+           <summary>Auxiliary variable used to estimate DVS at inflorescence emergence.</summary>
+        </devnotes>
+      </field>
+      <field name="DOY51" type="TVar" visibility="public" size="4" offset="716" file="DevelopmentOSR.pas" line="63">
+        <devnotes>
+           <summary>Day of year on which flowering starts.</summary>
+        </devnotes>
+      </field>
+      <field name="DOY90" type="TVar" visibility="public" size="4" offset="720" file="DevelopmentOSR.pas" line="65">
+        <devnotes>
+           <summary>Day of year on which full ripening is reached.</summary>
+        </devnotes>
+      </field>
+      <field name="DVS" type="TState" visibility="public" size="4" offset="724" file="DevelopmentOSR.pas" line="69">
+        <devnotes>
+           <summary>Continuous development stage.</summary>
+        </devnotes>
+      </field>
+      <field name="Blattanzahl" type="TState" visibility="public" size="4" offset="728" file="DevelopmentOSR.pas" line="71">
+        <devnotes>
+           <summary>Number of leaves.</summary>
+        </devnotes>
+      </field>
+      <field name="NumExtInternodes" type="TState" visibility="public" size="4" offset="732" file="DevelopmentOSR.pas" line="73">
+        <devnotes>
+           <summary>Number of extended internodes between BBCH stages 30 and 39.</summary>
+        </devnotes>
+      </field>
+      <field name="Fv" type="TState" visibility="public" size="4" offset="736" file="DevelopmentOSR.pas" line="75">
+        <devnotes>
+           <summary>Accumulated vernalisation factor.</summary>
+        </devnotes>
+      </field>
+      <field name="TS" type="TState" visibility="public" size="4" offset="740" file="DevelopmentOSR.pas" line="77">
+        <devnotes>
+           <summary>Accumulated effective temperature sum.</summary>
+        </devnotes>
+      </field>
+      <field name="TS11" type="TState" visibility="public" size="4" offset="744" file="DevelopmentOSR.pas" line="79">
+        <devnotes>
+           <summary>Temperature sum accumulated after DVS 1 (BBCH 9 / EC 11).</summary>
+        </devnotes>
+      </field>
+      <field name="aT1" type="TPar" visibility="public" size="4" offset="748" file="DevelopmentOSR.pas" line="83">
+        <devnotes>
+           <summary>Temperature response coefficient for development up to EC 11.</summary>
+        </devnotes>
+      </field>
+      <field name="aT2" type="TPar" visibility="public" size="4" offset="752" file="DevelopmentOSR.pas" line="85">
+        <devnotes>
+           <summary>Temperature response coefficient for development from EC 11 to EC 39.</summary>
+        </devnotes>
+      </field>
+      <field name="aT2a" type="TPar" visibility="public" size="4" offset="756" file="DevelopmentOSR.pas" line="87">
+        <devnotes>
+           <summary>Temperature response coefficient for development from EC 39 to EC 61.</summary>
+        </devnotes>
+      </field>
+      <field name="aT3" type="TPar" visibility="public" size="4" offset="760" file="DevelopmentOSR.pas" line="89">
+        <devnotes>
+           <summary>Temperature response coefficient for development from EC 61 to EC 69.</summary>
+        </devnotes>
+      </field>
+      <field name="aT4" type="TPar" visibility="public" size="4" offset="764" file="DevelopmentOSR.pas" line="91">
+        <devnotes>
+           <summary>Temperature response coefficient for development from EC 69 to EC 89.</summary>
+        </devnotes>
+      </field>
+      <field name="fv_sens" type="TPar" visibility="public" size="4" offset="768" file="DevelopmentOSR.pas" line="93">
+        <devnotes>
+           <summary>Sensitivity of development to vernalisation.</summary>
+        </devnotes>
+      </field>
+      <field name="fp_sens" type="TPar" visibility="public" size="4" offset="772" file="DevelopmentOSR.pas" line="95">
+        <devnotes>
+           <summary>Sensitivity of development to photoperiod.</summary>
+        </devnotes>
+      </field>
+      <field name="Phyllochron" type="TPar" visibility="public" size="4" offset="776" file="DevelopmentOSR.pas" line="98">
+        <devnotes>
+           <summary>Thermal time required for the appearance of one leaf.</summary>
+        </devnotes>
+      </field>
+      <field name="TSumInternode" type="TPar" visibility="public" size="4" offset="780" file="DevelopmentOSR.pas" line="100">
+        <devnotes>
+           <summary>Thermal time required to extend one internode.</summary>
+        </devnotes>
+      </field>
+      <field name="Rvmax" type="TPar" visibility="public" size="4" offset="784" file="DevelopmentOSR.pas" line="102">
+        <devnotes>
+           <summary>Maximum vernalisation rate.</summary>
+        </devnotes>
+      </field>
+      <field name="Tb" type="TPar" visibility="public" size="4" offset="788" file="DevelopmentOSR.pas" line="104">
+        <devnotes>
+           <summary>Base temperature for development.</summary>
+        </devnotes>
+      </field>
+      <field name="Tvmin" type="TPar" visibility="public" size="4" offset="792" file="DevelopmentOSR.pas" line="106">
+        <devnotes>
+           <summary>Minimum temperature for vernalisation.</summary>
+        </devnotes>
+      </field>
+      <field name="Tvopt1" type="TPar" visibility="public" size="4" offset="796" file="DevelopmentOSR.pas" line="108">
+        <devnotes>
+           <summary>Lower optimum temperature for vernalisation.</summary>
+        </devnotes>
+      </field>
+      <field name="Tvopt2" type="TPar" visibility="public" size="4" offset="800" file="DevelopmentOSR.pas" line="110">
+        <devnotes>
+           <summary>Upper optimum temperature for vernalisation.</summary>
+        </devnotes>
+      </field>
+      <field name="Tvmax" type="TPar" visibility="public" size="4" offset="804" file="DevelopmentOSR.pas" line="112">
+        <devnotes>
+           <summary>Maximum temperature for vernalisation.</summary>
+        </devnotes>
+      </field>
+      <field name="Dlpmin" type="TPar" visibility="public" size="4" offset="808" file="DevelopmentOSR.pas" line="114">
+        <devnotes>
+           <summary>Minimum day length used by the photoperiod response.</summary>
+        </devnotes>
+      </field>
+      <field name="Dlpopt" type="TPar" visibility="public" size="4" offset="812" file="DevelopmentOSR.pas" line="116">
+        <devnotes>
+           <summary>Optimum day length used by the photoperiod response.</summary>
+        </devnotes>
+      </field>
+      <field name="DVS30" type="TPar" visibility="public" size="4" offset="816" file="DevelopmentOSR.pas" line="118">
+        <devnotes>
+           <summary>Estimated DVS at EC 30.</summary>
+        </devnotes>
+      </field>
+      <field name="DVS13" type="TPar" visibility="public" size="4" offset="820" file="DevelopmentOSR.pas" line="120">
+        <devnotes>
+           <summary>Estimated DVS at EC 13.</summary>
+        </devnotes>
+      </field>
+      <field name="DVSInflor" type="TPar" visibility="public" size="4" offset="824" file="DevelopmentOSR.pas" line="122">
+        <devnotes>
+           <summary>DVS at the beginning of inflorescence emergence (BBCH 50 / EC 51).</summary>
+        </devnotes>
+      </field>
+      <field name="TSumCotEm" type="TPar" visibility="public" size="4" offset="828" file="DevelopmentOSR.pas" line="124">
+        <devnotes>
+           <summary>Temperature sum from first cotyledon appearance to complete unfolding (DVS 1 / BBCH 9 to BBCH 10).</summary>
+        </devnotes>
+      </field>
+      <field name="SowingDate" type="TPar" visibility="public" size="4" offset="832" file="DevelopmentOSR.pas" line="126">
+        <devnotes>
+           <summary>Sowing date represented as simulation time.</summary>
+        </devnotes>
+      </field>
+      <field name="ScaleDevVeg" type="TPar" visibility="public" size="4" offset="836" file="DevelopmentOSR.pas" line="128">
+        <devnotes>
+           <summary>Scaling factor for the vegetative development rate.</summary>
+        </devnotes>
+      </field>
+      <field name="ScaleDevGen" type="TPar" visibility="public" size="4" offset="840" file="DevelopmentOSR.pas" line="130">
+        <devnotes>
+           <summary>Scaling factor for the generative development rate.</summary>
+        </devnotes>
+      </field>
+      <field name="OptimizeOpt" type="TOption" visibility="public" size="4" offset="844" file="DevelopmentOSR.pas" line="134">
+        <devnotes>
+           <summary>Defines the final EC stage considered in development calculations.</summary>
+        </devnotes>
+      </field>
+      <field name="DayLengthP" type="TExternV" visibility="public" size="4" offset="848" file="DevelopmentOSR.pas" line="138">
+        <devnotes>
+           <summary>External day length.</summary>
+        </devnotes>
+      </field>
+      <field name="Tmpm" type="TExternV" visibility="public" size="4" offset="852" file="DevelopmentOSR.pas" line="140">
+        <devnotes>
+           <summary>External daily mean temperature.</summary>
+        </devnotes>
+      </field>
+      <procedure name="CreateAll" visibility="public" procflags="override" file="DevelopmentOSR.pas" line="144">
+        <devnotes>
+           <summary>Creates and registers all variables, state variables, parameters, external variables, and options.</summary>
+        </devnotes>
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="USnowPack.pas" line="85">
+      <procedure name="Init" visibility="public" procflags="override" file="DevelopmentOSR.pas" line="146">
+        <devnotes>
+           <summary>Initializes state variables and resolves the selected optimization option.</summary>
+        </devnotes>
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="USnowPack.pas" line="86">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="DevelopmentOSR.pas" line="148">
+        <devnotes>
+           <summary>Calculates daily development, leaf appearance, internode extension, and vernalisation rates.</summary>
+        </devnotes>
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="override" file="USnowPack.pas" line="87">
+      <procedure name="Integrate" visibility="public" procflags="override" file="DevelopmentOSR.pas" line="150">
+        <devnotes>
+           <summary>Integrates state variables and maps DVS to EC and BBCH stages.</summary>
+        </devnotes>
       </procedure>
-      <property name="Var_Es" visibility="published" read="Es" write="Es" type="TVar" file="USnowPack.pas" line="90" />
-      <property name="Var_EsS" visibility="published" read="EsS" write="EsS" type="TVar" file="USnowPack.pas" line="91" />
-      <property name="Var_EvapPot" visibility="published" read="Evap_pot" write="Evap_pot" type="TVar" file="USnowPack.pas" line="92" />
-      <property name="Var_Js" visibility="published" read="Js" write="Js" type="TVar" file="USnowPack.pas" line="93" />
-      <property name="Var_M" visibility="published" read="M" write="M" type="TVar" file="USnowPack.pas" line="94" />
-      <property name="Var_maxM" visibility="published" read="maxM" write="maxM" type="TVar" file="USnowPack.pas" line="95" />
-      <property name="Var_minM" visibility="published" read="minM" write="minM" type="TVar" file="USnowPack.pas" line="96" />
-      <property name="Var_Mpot" visibility="published" read="Mpot" write="Mpot" type="TVar" file="USnowPack.pas" line="97" />
-      <property name="Var_mr" visibility="published" read="mr" write="mr" type="TVar" file="USnowPack.pas" line="98" />
-      <property name="Var_mt" visibility="published" read="mt" write="mt" type="TVar" file="USnowPack.pas" line="99" />
-      <property name="Var_P" visibility="published" read="P" write="P" type="TVar" file="USnowPack.pas" line="100" />
-      <property name="var_percolation" visibility="published" read="Percolation" write="Percolation" type="TVar" file="USnowPack.pas" line="101" />
-      <property name="Var_Pr" visibility="published" read="Pr" write="Pr" type="TVar" file="USnowPack.pas" line="102" />
-      <property name="Var_Ps" visibility="published" read="Ps" write="Ps" type="TVar" file="USnowPack.pas" line="103" />
-      <property name="Var_qh" visibility="published" read="qh" write="qh" type="TVar" file="USnowPack.pas" line="104" />
-      <property name="Var_rhop" visibility="published" read="rhop" write="rhop" type="TVar" file="USnowPack.pas" line="105" />
-      <property name="Var_ScS" visibility="published" read="ScS" write="ScS" type="TVar" file="USnowPack.pas" line="106" />
-      <property name="Var_Si" visibility="published" read="Si" write="Si" type="TVar" file="USnowPack.pas" line="107" />
-      <property name="Var_Tact" visibility="published" read="Tact" write="Tact" type="TVar" file="USnowPack.pas" line="108" />
-      <property name="Var_Zs" visibility="published" read="Zs" write="Zs" type="TVar" file="USnowPack.pas" line="109" />
-      <property name="St_SnowAge" visibility="published" read="SnowAge" write="SnowAge" type="TState" file="USnowPack.pas" line="110" />
-      <property name="St_SsS" visibility="published" read="SsS" write="SsS" type="TState" file="USnowPack.pas" line="111" />
-      <property name="St_SwS" visibility="published" read="SwS" write="SwS" type="TState" file="USnowPack.pas" line="112" />
-      <property name="Par_fc" visibility="published" read="fc" write="fc" type="TPar" file="USnowPack.pas" line="117" />
-      <property name="Par_Lm" visibility="published" read="Lm" write="Lm" type="TPar" file="USnowPack.pas" line="118" />
-      <property name="Par_m1" visibility="published" read="m1" write="m1" type="TPar" file="USnowPack.pas" line="119" />
-      <property name="Par_m2" visibility="published" read="m2" write="m2" type="TPar" file="USnowPack.pas" line="120" />
-      <property name="Par_mf" visibility="published" read="mf" write="mf" type="TPar" file="USnowPack.pas" line="121" />
-      <property name="Par_mrp" visibility="published" read="mrp" write="mrp" type="TPar" file="USnowPack.pas" line="122" />
-      <property name="Par_mtp" visibility="published" read="mtp" write="mtp" type="TPar" file="USnowPack.pas" line="123" />
-      <property name="Par_rhos" visibility="published" read="rhos" write="rhos" type="TPar" file="USnowPack.pas" line="124" />
-      <property name="Par_rhow" visibility="published" read="rhow" write="rhow" type="TPar" file="USnowPack.pas" line="125" />
-      <property name="Par_t1" visibility="published" read="t1" write="t1" type="TPar" file="USnowPack.pas" line="126" />
-      <property name="Par_t2" visibility="published" read="t2" write="t2" type="TPar" file="USnowPack.pas" line="127" />
-      <property name="Ex_Epot" visibility="published" read="Epot" write="Epot" type="TExternV" file="USnowPack.pas" line="131" />
-      <property name="Ex_global_radiation" visibility="published" read="global_radiation" write="global_radiation" type="TExternV" file="USnowPack.pas" line="132" />
-      <property name="Ex_rainfall_mm" visibility="published" read="rainfall_mm" write="rainfall_mm" type="TExternV" file="USnowPack.pas" line="134" />
-      <property name="Ex_AirTemp" visibility="published" read="AirTemp" write="AirTemp" type="TExternV" file="USnowPack.pas" line="136" />
-      <property name="Ex_Temp1" visibility="published" read="Temp1" write="Temp1" type="TExternV" file="USnowPack.pas" line="137" />
-      <property name="Ex_Lambda1" visibility="published" read="Lambda1" write="Lambda1" type="TExternV" file="USnowPack.pas" line="138" />
+      <property name="Var_DVR1" visibility="published" read="DVR1" write="DVR1" type="TVar" file="DevelopmentOSR.pas" line="154" />
+      <property name="Var_DVR2" visibility="published" read="DVR2" write="DVR2" type="TVar" file="DevelopmentOSR.pas" line="155" />
+      <property name="Var_DVR2a" visibility="published" read="DVR2a" write="DVR2a" type="TVar" file="DevelopmentOSR.pas" line="156" />
+      <property name="Var_DVR2b" visibility="published" read="DVR2b" write="DVR2b" type="TVar" file="DevelopmentOSR.pas" line="157" />
+      <property name="Var_DVR3" visibility="published" read="DVR3" write="DVR3" type="TVar" file="DevelopmentOSR.pas" line="158" />
+      <property name="Var_DVR4" visibility="published" read="DVR4" write="DVR4" type="TVar" file="DevelopmentOSR.pas" line="159" />
+      <property name="Var_Teff" visibility="published" read="Teff" write="Teff" type="TVar" file="DevelopmentOSR.pas" line="160" />
+      <property name="Var_BBCH" visibility="published" read="BBCH" write="BBCH" type="TVar" file="DevelopmentOSR.pas" line="161" />
+      <property name="Var_EC" visibility="published" read="EC" write="EC" type="TVar" file="DevelopmentOSR.pas" line="162" />
+      <property name="Var_Fp_eff" visibility="published" read="Fp_eff" write="Fp_eff" type="TVar" file="DevelopmentOSR.pas" line="163" />
+      <property name="Var_Fv_eff" visibility="published" read="FV_eff" write="FV_eff" type="TVar" file="DevelopmentOSR.pas" line="164" />
+      <property name="St_DVS" visibility="published" read="DVS" write="DVS" type="TState" file="DevelopmentOSR.pas" line="165" />
+      <property name="St_Blattanzahl" visibility="published" read="Blattanzahl" write="Blattanzahl" type="TState" file="DevelopmentOSR.pas" line="166" />
+      <property name="St_Fv" visibility="published" read="Fv" write="Fv" type="TState" file="DevelopmentOSR.pas" line="167" />
+      <property name="St_TS" visibility="published" read="TS" write="TS" type="TState" file="DevelopmentOSR.pas" line="168" />
+      <property name="Par_aT1" visibility="published" read="aT1" write="aT1" type="TPar" file="DevelopmentOSR.pas" line="172" />
+      <property name="Par_aT2" visibility="published" read="aT2" write="aT2" type="TPar" file="DevelopmentOSR.pas" line="173" />
+      <property name="Par_aT2a" visibility="published" read="aT2a" write="aT2a" type="TPar" file="DevelopmentOSR.pas" line="174" />
+      <property name="Par_aT3" visibility="published" read="aT3" write="aT3" type="TPar" file="DevelopmentOSR.pas" line="175" />
+      <property name="Par_aT4" visibility="published" read="aT4" write="aT4" type="TPar" file="DevelopmentOSR.pas" line="176" />
+      <property name="Par_fv_sens" visibility="published" read="fv_sens" write="fv_sens" type="TPar" file="DevelopmentOSR.pas" line="178" />
+      <property name="Par_fp_sens" visibility="published" read="fp_sens" write="fp_sens" type="TPar" file="DevelopmentOSR.pas" line="179" />
+      <property name="Par_Phyllochron" visibility="published" read="Phyllochron" write="Phyllochron" type="TPar" file="DevelopmentOSR.pas" line="181" />
+      <property name="Par_Rvmax" visibility="published" read="Rvmax" write="Rvmax" type="TPar" file="DevelopmentOSR.pas" line="182" />
+      <property name="Par_Tb" visibility="published" read="Tb" write="Tb" type="TPar" file="DevelopmentOSR.pas" line="183" />
+      <property name="Par_DVS30" visibility="published" read="DVS30" write="DVS30" type="TPar" file="DevelopmentOSR.pas" line="184" />
+      <property name="Par_DVS13" visibility="published" read="DVS13" write="DVS13" type="TPar" file="DevelopmentOSR.pas" line="185" />
+      <property name="Par_DVSInflor" visibility="published" read="DVSInflor" write="DVSInflor" type="TPar" file="DevelopmentOSR.pas" line="186" />
+      <property name="Par_SowingDate" visibility="published" read="SowingDate" write="SowingDate" type="TPar" file="DevelopmentOSR.pas" line="187" />
+      <property name="Par_TSumCotEm" visibility="published" read="TSumCotEm" write="TSumCotEm" type="TPar" file="DevelopmentOSR.pas" line="188" />
+      <property name="Par_ScaleDevVeg" visibility="published" read="ScaleDevVeg" write="ScaleDevVeg" type="TPar" file="DevelopmentOSR.pas" line="189" />
+      <property name="Par_ScaleDevGen" visibility="published" read="ScaleDevGen" write="ScaleDevGen" type="TPar" file="DevelopmentOSR.pas" line="190" />
+      <property name="Ex_DayLengthP" visibility="published" read="DayLengthP" write="DayLengthP" type="TExternV" file="DevelopmentOSR.pas" line="195" />
+      <property name="Ex_Tmpm" visibility="published" read="Tmpm" write="Tmpm" type="TExternV" file="DevelopmentOSR.pas" line="196" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="USnowPack.pas" line="352">
+  <procedure name="Register" visibility="public" file="DevelopmentOSR.pas" line="437">
   </procedure>
 </namespace>
