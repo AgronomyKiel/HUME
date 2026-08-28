@@ -1,18 +1,18 @@
-﻿unit UHumeWheatDryMatter;
+﻿/// <summary>
+/// Provides the dry-matter production submodel for CERES-Wheat.
+/// </summary>
+/// <remarks>
+/// This simplified module supports parameterisation. The soil-water deficit factor
+/// is a nonlinear function of the transpiration ratio (Ferreyra 2003), and potential
+/// biomass production is limited by soil-water availability or specific leaf nitrogen.
+/// Temperature effects use the Wang-Engel response function. The module also includes
+/// an empirical representation of the atmospheric CO2 effect.
+/// </remarks>
+unit UHumeWheatDryMatter;
 
- (*
- simplified version of the dry matter production module for parameterisation
- ->'SWDF' is a none linear funktion of 'tranintsratio' according to (Ferreyra 2003)
- ->'PCARB' is limited by 'SWDF' or spezific leaf N
- ->(SLN threshold according to Meinke 1998)
- -> Wang-Engel (WE)	temperature (0-1) function
- -> Empirical approach for CO2 impact (2016)    Wo kommt der nur her?? keine Quellangabe
-  ar
- *)
 interface
 
 uses
-
     {$IFNDEF NONVISUAL}
     windows,
     Messages,
@@ -28,115 +28,193 @@ uses
   URootedSoil;
 
 type
- // Options for drought impact
+  /// <summary>Specifies whether drought affects dry-matter production.</summary>
   TDroughtImpact = (DroughtImpact, NoDroughtImpact);
 
-
+  /// <summary>Specifies how assimilation is reduced during ripening.</summary>
   TCarboRed = (CWT3, Concentration, noCarboRed);
 
+  /// <summary>Specifies the function used to calculate the temperature effect.</summary>
+  TCalcTempEffect = (WangEngel, Tranpzoidal);
 
-/// <summary> Class for the dry matter production submodel of Ceres-Wheat
-/// </summary>
-/// <baseclass> TSubmodel </baseclass> </baseclass>
-/// <created> 01.12.2008
-/// <unit> HumeWheatDryMatter </unit>
-/// <author> A. Ratjen, H. Kage, A. Luig </author>
-/// <version> 0.7 </version>
-/// <changes> 01.12.2008 (JH) </changes>
-
-/// <remarks> simplified version of the dry matter production module for parameterisation
-/// ->'SWDF' is a none linear funktion of 'tranintsratio' according to (Ferreyra 2003)
-/// ->'PCARB' is limited by 'SWDF' or spezific leaf N
-/// ->(SLN threshold according to Meinke 1998)
-/// -> Wang-Engel (WE)	temperature (0-1) function
-/// -> Empirical approach for CO2 impact (2016)    Wo kommt der nur her?? keine Quellangabe
-/// </remarks>
-
-
-
-
+  /// <summary>
+  /// Implements the dry-matter production submodel for CERES-Wheat.
+  /// </summary>
+  /// <remarks>
+  /// The submodel calculates intercepted radiation, temperature, water and nitrogen
+  /// effects, and the resulting daily biomass production.
+  /// </remarks>
   THumeWheatDryMatter =  class(TSubmodel)
 
   private
+    /// <summary>Assigns the soil-water model used to calculate drought effects.</summary>
+    /// <param name="SoilWaterMod">The soil-water model to associate with this submodel.</param>
     Procedure SetSoilWaterMod(SoilWaterMod: TSoilWaterModelR);
+    /// <summary>Recalculates mean daily temperature from the daily minimum and maximum.</summary>
     procedure ReCalcDailyMeanTemperature;
+    /// <summary>Calculates the effect of drought on dry-matter production.</summary>
     procedure CalcDroughtImpact;
   protected
 
-  fSoilWaterModel : TSoilWaterModelR;
-  fDroughtImpact : TDroughtImpact;
-  fNImpact : boolean;
+    /// <summary>References the soil-water model used by this submodel.</summary>
+    fSoilWaterModel : TSoilWaterModelR;
 
-  function fT_WE(T,Tmin,Tmax,Topt: real): real;
+    /// <summary>Stores the selected drought-impact option.</summary>
+    fDroughtImpact : TDroughtImpact;
+
+    /// <summary>Indicates whether nitrogen availability affects assimilation.</summary>
+    fNImpact : boolean;
+
+    /// <summary>Stores the selected temperature-effect calculation method.</summary>
+    fCalcTempEffect : TCalcTempEffect;
+
+    /// <summary>Calculates the Wang-Engel temperature response.</summary>
+    /// <param name="T">The temperature for which the response is calculated.</param>
+    /// <param name="Tmin">The lower temperature threshold.</param>
+    /// <param name="Tmax">The upper temperature threshold.</param>
+    /// <param name="Topt">The optimum temperature.</param>
+    /// <returns>A dimensionless temperature-response factor in the range 0..1.</returns>
+    function fT_WE(T,Tmin,Tmax,Topt: real): real;
   public
-    CumPAR   : TState;     /// cumulative PAR uptake [MJ/m2]
-    CumCarbo : TState;     /// cumulative assimilated production
-//    int:         TPar;
-//    pGAI:         TPar;    /// for scaling LAI->GAI after booting
-    pSWDF:       TPAR;     /// parameter for none linear relation between Tansratio and SWDF (Ferreyra 2003)
+
+    /// <summary>Cumulative intercepted photosynthetically active radiation [MJ/m2].</summary>
+    CumPAR   : TState;
+    /// <summary>Cumulative assimilated dry matter [g/m2].</summary>
+    CumCarbo : TState;
+
+    /// <summary>Controls the nonlinear relationship between transpiration ratio and SWDF (Ferreyra 2003).</summary>
+    pSWDF:       TPAR;
+
+    /// <summary>Intercept of the critical-SLN function (Ratjen &amp; Kage 2015).</summary>
     SLN_crit_int:  TPAR;
+
+    /// <summary>Slope of the critical-SLN function (Ratjen &amp; Kage 2015).</summary>
     SLN_crit_inc:  TPAR;
+
+    /// <summary>Constant coefficient of the SLN-index response.</summary>
     SLNI_a:  TPAR;
+
+    /// <summary>Linear coefficient of the SLN-index response.</summary>
     SLNI_b:  TPAR;
+
+    /// <summary>Quadratic coefficient of the SLN-index response.</summary>
     SLNI_c:  TPAR;
+
+    /// <summary>Initial PAR extinction coefficient, which decreases as LAI increases.</summary>
     k_ini:       TPar;
-    k_inc:       TPar; // decrease per LAI unit
-    pLUE   : TPar;   // light use efficiency assuming constant LUE
-    Tmin : TPar;    // minimum temperature for assimilation
-    Topt1 : Tpar;   // temperature where optimum range for assimilation begins
-    Topt2 : TPar;   // temperature where optimum range for assimilation ends
-    Topt_WE: TPar;  // temperature where optimum of WE-function
-    Tmax : Tpar;    // minimum temperature for assimilation
-    kPAR : TPar;   // Extinction coefficient for PAR
+
+    /// <summary>Decrease in the PAR extinction coefficient per unit of LAI.</summary>
+    k_inc:       TPar;
+
+    /// <summary>Potential light-use efficiency assuming a constant LUE.</summary>
+    pLUE   : TPar;
+
+    /// <summary>Minimum temperature for assimilation.</summary>
+    Tmin : TPar;
+
+    /// <summary>Temperature at which the optimum assimilation range begins.</summary>
+    Topt1 : Tpar;
+
+    /// <summary>Temperature at which the optimum assimilation range ends.</summary>
+    Topt2 : TPar;
+
+    /// <summary>Optimum temperature of the Wang-Engel response function.</summary>
+    Topt_WE: TPar;
+
+    /// <summary>Maximum temperature for assimilation.</summary>
+    Tmax : Tpar;
+
+    /// <summary>PAR extinction coefficient.</summary>
+    kPAR : TPar;
+    /// <summary>Baseline scaling parameter for the atmospheric CO2 effect.</summary>
     fCO2_scale     : TPar;
+    /// <summary>Exponent used to calculate the atmospheric CO2 effect.</summary>
     fCO2           : TPar;
-    fCWSI          : TPar;  /// adjusting CO2-effect for drought stress level
+    /// <summary>Adjusts the atmospheric CO2 effect according to drought stress.</summary>
+    fCWSI          : TPar;
+    /// <summary>CO2 concentration at which photosynthesis is not limited by CO2 [ppm].</summary>
     CiCompensation : TPar;
-    critTempDiff   : TPar;  /// critical difference between max. and min. temp. for calculating Tmean
-    TmaxweightingF : TPar;  ///
+    /// <summary>Critical daily temperature range for recalculating mean temperature [°C].</summary>
+    critTempDiff   : TPar;
+    /// <summary>Weight assigned to maximum temperature when the critical daily range is exceeded.</summary>
+    TmaxweightingF : TPar;
 
-    CARBOred: TVar;    /// Reduction factor for assimilation during ripening [0..1]
-    PAR       : TVar;   /// Photosynthetic active radiation [MJ/(m2*d]
-    kPar_eff  : TVar;   /// effective  Extinction coefficient
-    fINT      : TVar;   /// fractional Interception of PAR
-    SWDF     : TVar;   /// Soil Water Deficit Factor [0..1]
-    SLNI      : TVar;   /// SLN based N nutrition index (see Raten & Kage 2015)
-    TempF     : TVar;   /// Temperature Factor
-    Tempf_surface     : TVar;   /// Temperature Factor
+    /// <summary>Assimilation reduction factor during ripening [0..1].</summary>
+    CARBOred: TVar;
+    /// <summary>Photosynthetically active radiation [MJ/(m2*d)].</summary>
+    PAR       : TVar;
+    /// <summary>Effective PAR extinction coefficient.</summary>
+    kPar_eff  : TVar;
+    /// <summary>Fraction of PAR intercepted by the canopy.</summary>
+    fINT      : TVar;
+    /// <summary>Soil-water deficit factor [0..1].</summary>
+    SWDF     : TVar;
+    /// <summary>Specific-leaf-nitrogen nutrition index (Ratjen &amp; Kage 2015).</summary>
+    SLNI      : TVar;
+    /// <summary>Temperature factor calculated from mean daily temperature.</summary>
+    TempF     : TVar;
+    /// <summary>Temperature factor calculated from the weighted surface temperature.</summary>
+    Tempf_surface     : TVar;
 
-    CARBO     : TVar;   /// The daily biomass production [g/(plant*d)]
-    PCARB     : TVar;   /// Potential biomass production in [g/(m2*d)]
-    LUE       : TVar;   /// Light use efficiency [g/MJ]
-    SLN_crit:    TVar; /// according to Ratjen & Kage 2015
-    CO2_factor :TVar;  /// factor for adjusting LUE for CO2-effect
-    IPAR      : TVar;   /// intercepted photosynthetically active radiation [MJ/(m2*d)]
+    /// <summary>Daily biomass production [g/(plant*d)].</summary>
+    CARBO     : TVar;
+    /// <summary>Potential daily biomass production [g/(m2*d)].</summary>
+    PCARB     : TVar;
+    /// <summary>Light-use efficiency [g/MJ].</summary>
+    LUE       : TVar;
+    /// <summary>Critical specific leaf nitrogen concentration (Ratjen &amp; Kage 2015).</summary>
+    SLN_crit:    TVar;
+    /// <summary>Factor that adjusts light-use efficiency for atmospheric CO2.</summary>
+    CO2_factor :TVar;
+    /// <summary>Intercepted photosynthetically active radiation [MJ/(m2*d)].</summary>
+    IPAR      : TVar;
+    /// <summary>External EC or BBCH development stage.</summary>
     EC:      TExternV;
-    Ncleaf:      TExternV;   /// actual nitrogen concentration of the leaf fraction [%]
-    SLN:         TExternV;   /// actual area related nitrogen concentration of the leaf fraction [g/m2]
-    GAI:         TExternV;   /// green area index [m2/m2]
-    TMPM   : TExternV;       /// mean daily temperature [°C]
-    TMPMX   : TExternV;      /// maximum daily temperature [°C]
-    TMPMN   : TExternV;      /// miniimum daily temperature [°C]
-    DryMatterTemp:  TExternV;    /// 'weighted surface temp.'
-    LAI     : TExternV;   ///   leaf area index
-    GlobRad : TExternV;   ///   global radiation [MJ/m2/d]
-    Plants  : TExternV;   ///        number of Plants/m2 [1/m²]
-    TransIntRatio:  TExternV;  /// ratio of actual to potential transpiration+interception
-    CO2pp:    TExternV;        /// external atmospheric CO2-concentration
-    optSLN: TExternV;          ///  optimum specific leaf nitrogen concentration
-    SWMIN_pl : TExternV;   /// minimum stem weight for calculation of translocation and senescence
-    STMWT_pl : TExternV;   /// stem weight per plant
-    SUMDTT5 : TExternV;    /// temperature sum 5 starting from stage
-    P5 : TExternV;         /// development parameter for stage 5 from CERES Wheat
-    ///
+    /// <summary>Actual nitrogen concentration of the leaf fraction [%].</summary>
+    Ncleaf:      TExternV;
+    /// <summary>Actual area-based nitrogen concentration of the leaf fraction [g/m2].</summary>
+    SLN:         TExternV;
+    /// <summary>Green area index [m2/m2].</summary>
+    GAI:         TExternV;
+    /// <summary>Mean daily temperature [°C].</summary>
+    TMPM   : TExternV;
+    /// <summary>Maximum daily temperature [°C].</summary>
+    TMPMX   : TExternV;
+    /// <summary>Minimum daily temperature [°C].</summary>
+    TMPMN   : TExternV;
+    /// <summary>Weighted surface temperature used by the dry-matter submodel [°C].</summary>
+    DryMatterTemp:  TExternV;
+    /// <summary>Leaf area index [m2/m2].</summary>
+    LAI     : TExternV;
+    /// <summary>Global radiation [MJ/(m2*d)].</summary>
+    GlobRad : TExternV;
+    /// <summary>Plant density [plants/m2].</summary>
+    Plants  : TExternV;
+    /// <summary>Ratio of actual to potential transpiration plus interception.</summary>
+    TransIntRatio:  TExternV;
+    /// <summary>Atmospheric CO2 concentration [ppm].</summary>
+    CO2pp:    TExternV;
+    /// <summary>Optimum specific leaf nitrogen concentration.</summary>
+    optSLN: TExternV;
+    /// <summary>Minimum stem weight used to calculate translocation and senescence.</summary>
+    SWMIN_pl : TExternV;
+    /// <summary>Stem weight per plant.</summary>
+    STMWT_pl : TExternV;
+    /// <summary>Temperature sum accumulated from the beginning of stage 5.</summary>
+    SUMDTT5 : TExternV;
+    /// <summary>CERES-Wheat development parameter for stage 5.</summary>
+    P5 : TExternV;
     SUMGRHI: real;
-    k_ : real; // intermediate value for technical reason
+    /// <summary>Intermediate value used in the PAR extinction calculation.</summary>
+    k_ : real;
     SUMTEMPHI: real;
 
 
     OptDroughtimpact : Toption;
     OptNimpact: TOption;
     OptWithCO2: TOption;
+    /// <summary>Selects the temperature-response function used for assimilation.</summary>
+    OptCalcTempEffect: TOption;
     procedure createAll; override;
     procedure Init(var GlobMod: TMod); override;
     procedure CalcRates; override;
@@ -165,7 +243,7 @@ type
     property opt_DroughtImpact : TDroughtImpact read fDroughtImpact write fDroughtImpact;
     property SoilWaterModel : TSoilWaterModelR read fSoilWaterModel write SetSoilWaterMod;
 
-  end;  // SubmodelName
+  end;
 
 procedure Register;
 
@@ -173,13 +251,12 @@ implementation
 
 uses Math, UModUtils;
 
-
+/// <summary>Calculates the Wang-Engel temperature response.</summary>
+/// <param name="T">The temperature for which the response is calculated.</param>
+/// <param name="Tmin">The lower temperature threshold.</param>
+/// <param name="Tmax">The upper temperature threshold.</param>
+/// <param name="Topt">The optimum temperature.</param>
 function THumeWheatDryMatter.fT_WE(T,Tmin,Tmax,Topt: real): real;
-{
- Wang-Engel	 (WE)	 temperature	 function (0-1)	 constructs	 a	 curvilinear
- response	 based	 on	 the	base,
- optimum,	and	 maximum	 temperatures	 of	 the	 simulated	 process.
-}
   var
   alpha: real;
   begin
@@ -196,7 +273,6 @@ Procedure THumeWheatDryMatter.SetSoilWaterMod(SoilWaterMod: TSoilWaterModelR);
 
 begin
   fSoilWaterModel := SoilWaterMod;
-
 end;
 
 procedure THumeWheatDryMatter.createAll;
@@ -264,7 +340,6 @@ begin
   ExternVCreate('SUMDTT5', '[°Cd]', Statefield, SUMDTT5,   'temperature sum from stage 5 on');
   ExternVCreate('P5', '[-]', Statefield, P5,   'Development paramter for stage 5 of CERES Wheat');
 
-
   OptCreate('optDroughtimpact', 'DroughtImpact', optDroughtimpact);
 	optDroughtimpact.OptionList.Clear;
   optDroughtimpact.OptionList.Add('DroughtImpact');
@@ -275,14 +350,16 @@ begin
 	OptNimpact.OptionList.Add('NImpact');
 	OptNimpact.OptionList.Add('NoNImpact');
 
-
-
   OptCreate('optCO2', 'NoCO2Effect', OptWithCO2);
   OptWithCO2.OptionList.Clear;
   OptWithCO2.OptionList.Add('NoCO2Effect');
   OptWithCO2.OptionList.Add('WithCO2Effect');
 
-
+  OptCreate('OptCalcTempEffect', 'WangEngel', OptCalcTempEffect,
+    'Selects the function used to calculate the temperature effect on assimilation');
+  OptCalcTempEffect.OptionList.Clear;
+  OptCalcTempEffect.OptionList.Add('WangEngel');
+  OptCalcTempEffect.OptionList.Add('Tranpzoidal');
 end;
 
 
@@ -312,12 +389,15 @@ begin
 
   end;
 
-
   if OptWithCO2.option = 'withco2effect' then
     CO2pp.Search := true
     else
     CO2pp.Search := false;
 
+  if SameText(OptCalcTempEffect.Option, 'Tranpzoidal') then
+    fCalcTempEffect := Tranpzoidal
+  else
+    fCalcTempEffect := WangEngel;
 
 end;
 
@@ -357,14 +437,11 @@ procedure THumeWheatDryMatter.CalcRates;
 // calculation drought impact
   CalcDroughtImpact;
 
-
-
   // calculation of SLN_crit as a function of GAI
   SLN_crit.v:= SLN_crit_int.v+SLN_crit_inc.v*GAI.v;
   // before booting SLN_crit is always lower than optSLN
   if(optSLN.v>0) and (EC.v<30) then    // SLN_crit during autumn as a function of
     SLN_crit.v:=min(SLN_crit.v, optSLN.v); // N-dilution
-
 
 // calculation of SLN based N nutrition index
     SLNI.v:= min(1, SLN.v / SLN_crit.v);
@@ -374,23 +451,33 @@ procedure THumeWheatDryMatter.CalcRates;
       CarboRed.v := min(1, max(0, SLNI_a.v+ SLNI_b.v*SLNI.v+ SLNI_c.v*power(SLNI.v,2)))
     else begin
       if EC.v >= 62 then
-       CarboRed.v := 1.0//  max(0,(1.-(1.2-0.8*SWMIN_pl.v/stmwt_pl.v)*(sumdtt5.v+100.0)/((430+ p5.v*20)+100.0)))
+//       CarboRed.v := 1.0//  max(0,(1.-(1.2-0.8*SWMIN_pl.v/stmwt_pl.v)*(sumdtt5.v+100.0)/((430+ p5.v*20)+100.0)))
+       CarboRed.v :=  max(0,(1.-(1.2-0.8*SWMIN_pl.v/stmwt_pl.v)*(sumdtt5.v+100.0)/((430+ p5.v*20)+100.0)))
       else
         CarboRed.v := 1.0;
     end;
 
     if ipar.v > 0 then
     begin
-     //Tempf.v := trapez_f(tmpm.v, Tmin.v, Topt1.v, Topt2.v, Tmax.v, 0, 1);
- // calculation of the temperature effect according to the Wang-Engel equation
-     Tempf.v := fT_WE(tmpm.v,Tmin.v,Tmax.v,Topt_WE.v);
- // in case the
-     if(tmpm.v < DryMatterTemp.v) then begin
-      Tempf_surface.v := fT_WE(DryMatterTemp.v,Tmin.v,Tmax.v,Topt_WE.v);
-      PCARB.v := pLUE.v * PAR.v * fint.v * min(Tempf.v,Tempf_surface.v);
-     end
+      case fCalcTempEffect of
+        WangEngel:
+          begin
+            Tempf.v := fT_WE(TMPM.v, Tmin.v, Tmax.v, Topt_WE.v);
+            if TMPM.v < DryMatterTemp.v then
+              Tempf_surface.v := fT_WE(DryMatterTemp.v, Tmin.v, Tmax.v, Topt_WE.v);
+          end;
+        Tranpzoidal:
+          begin
+            Tempf.v := trapez_f(TMPM.v, Tmin.v, Topt1.v, Topt2.v, Tmax.v, 0, 1);
+            if TMPM.v < DryMatterTemp.v then
+              Tempf_surface.v := trapez_f(DryMatterTemp.v, Tmin.v, Topt1.v, Topt2.v, Tmax.v, 0, 1);
+          end;
+      end;
+
+      if TMPM.v < DryMatterTemp.v then
+        PCARB.v := pLUE.v * PAR.v * fINT.v * Min(Tempf.v, Tempf_surface.v)
       else
-      PCARB.v := pLUE.v * PAR.v * fint.v * Tempf.v;
+        PCARB.v := pLUE.v * PAR.v * fINT.v * Tempf.v;
 // Impact of CO2
      if OptWithCO2.option = 'withco2effect' then begin
        // under drought stress the CO2 effect is increased, described by a linear function of CWSI
@@ -401,7 +488,7 @@ procedure THumeWheatDryMatter.CalcRates;
        else
         CO2_factor.v := CO2_factor_min;
 
-        PCARB.v :=PCARB.v *CO2_factor.v;
+        PCARB.v :=PCARB.v * CO2_factor.v;
      end;  // CO2 end
 
     end
