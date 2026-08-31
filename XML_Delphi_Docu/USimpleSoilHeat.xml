@@ -445,6 +445,8 @@
                 </methodref>
                 <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
                 </methodref>
+                <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+                </methodref>
                 <methodref name="Changed" visibility="protected">
                 </methodref>
                 <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -686,6 +688,8 @@
                 <methodref name="Destroy" visibility="public" procflags="destructor override">
                 </methodref>
                 <methodref name="CheckNonMainThreadUsage" visibility="public">
+                </methodref>
+                <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
                 </methodref>
                 <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
                 </methodref>
@@ -933,6 +937,8 @@
                   <methodref name="ReadDeltaStream" visibility="private">
                   </methodref>
                   <methodref name="ReadDeltaState" visibility="private">
+                  </methodref>
+                  <methodref name="InitObservers" visibility="private">
                   </methodref>
                   <methodref name="FindSortedComponent" visibility="private">
                   </methodref>
@@ -1204,12 +1210,12 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="WCapa" type="TSoilArray" visibility="private" size="416" offset="2784" file="USimpleSoilHeat.pas" line="15" />
-      <field name="fClay" type="Double" visibility="private" size="8" offset="3200" file="USimpleSoilHeat.pas" line="16" />
-      <field name="lower" type="TSoilArray" visibility="private" size="416" offset="3208" file="USimpleSoilHeat.pas" line="18" />
-      <field name="diag" type="TSoilArray" visibility="private" size="416" offset="3624" file="USimpleSoilHeat.pas" line="18" />
-      <field name="upper" type="TSoilArray" visibility="private" size="416" offset="4040" file="USimpleSoilHeat.pas" line="18" />
-      <field name="b_vektor" type="TSoilArray" visibility="private" size="416" offset="4456" file="USimpleSoilHeat.pas" line="18" />
+      <field name="WCapa" type="TSoilArray" visibility="private" size="416" offset="2792" file="USimpleSoilHeat.pas" line="15" />
+      <field name="fClay" type="Double" visibility="private" size="8" offset="3208" file="USimpleSoilHeat.pas" line="16" />
+      <field name="lower" type="TSoilArray" visibility="private" size="416" offset="3216" file="USimpleSoilHeat.pas" line="18" />
+      <field name="diag" type="TSoilArray" visibility="private" size="416" offset="3632" file="USimpleSoilHeat.pas" line="18" />
+      <field name="upper" type="TSoilArray" visibility="private" size="416" offset="4048" file="USimpleSoilHeat.pas" line="18" />
+      <field name="b_vektor" type="TSoilArray" visibility="private" size="416" offset="4464" file="USimpleSoilHeat.pas" line="18" />
       <procedure name="UpperBoundary" visibility="private" file="USimpleSoilHeat.pas" line="19">
       </procedure>
       <procedure name="MiddleLayers" visibility="private" file="USimpleSoilHeat.pas" line="20">
@@ -1218,13 +1224,13 @@
       </procedure>
       <procedure name="CalcConductivities" visibility="private" file="USimpleSoilHeat.pas" line="22">
       </procedure>
-      <field name="fSoilWaterModel" type="TSoilWaterMod" visibility="protected" size="4" offset="4872" file="USimpleSoilHeat.pas" line="25" />
-      <field name="SpecWeight" type="TPar" visibility="public" size="4" offset="4876" file="USimpleSoilHeat.pas" line="28" />
-      <field name="ClayContent" type="TPar" visibility="public" size="4" offset="4880" file="USimpleSoilHeat.pas" line="28" />
-      <field name="GPV" type="TPar" visibility="public" size="4" offset="4884" file="USimpleSoilHeat.pas" line="28" />
-      <field name="Theta" type="TSoilExtArray" visibility="public" size="208" offset="4888" file="USimpleSoilHeat.pas" line="29" />
-      <field name="Lambda" type="TSoilVarArray" visibility="public" size="212" offset="5096" file="USimpleSoilHeat.pas" line="30" />
-      <field name="AirTemp" type="TExternV" visibility="public" size="4" offset="5308" file="USimpleSoilHeat.pas" line="31" />
+      <field name="fSoilWaterModel" type="TSoilWaterMod" visibility="protected" size="4" offset="4880" file="USimpleSoilHeat.pas" line="25" />
+      <field name="SpecWeight" type="TPar" visibility="public" size="4" offset="4884" file="USimpleSoilHeat.pas" line="28" />
+      <field name="ClayContent" type="TPar" visibility="public" size="4" offset="4888" file="USimpleSoilHeat.pas" line="28" />
+      <field name="GPV" type="TPar" visibility="public" size="4" offset="4892" file="USimpleSoilHeat.pas" line="28" />
+      <field name="Theta" type="TSoilExtArray" visibility="public" size="208" offset="4896" file="USimpleSoilHeat.pas" line="29" />
+      <field name="Lambda" type="TSoilVarArray" visibility="public" size="212" offset="5104" file="USimpleSoilHeat.pas" line="30" />
+      <field name="AirTemp" type="TExternV" visibility="public" size="4" offset="5316" file="USimpleSoilHeat.pas" line="31" />
       <procedure name="Init" visibility="public" procflags="override" file="USimpleSoilHeat.pas" line="32">
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />

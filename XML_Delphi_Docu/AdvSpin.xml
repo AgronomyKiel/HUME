@@ -337,6 +337,8 @@
       </methodref>
       <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
       </methodref>
+      <methodref name="WMGetObject" visibility="private" procflags="message">
+      </methodref>
       <methodref name="CMChanged" visibility="private" procflags="message">
       </methodref>
       <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -543,6 +545,10 @@
       </methodref>
       <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
       </methodref>
+      <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="Loaded" visibility="protected" procflags="override">
+      </methodref>
       <methodref name="KeyDown" visibility="protected" procflags="dynamic">
       </methodref>
       <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -665,6 +671,8 @@
       </propertyref>
       <propertyref name="WindowHandle" visibility="protected">
       </propertyref>
+      <propertyref name="UIAutomationProvider" visibility="protected">
+      </propertyref>
       <eventref name="OnAlignInsertBefore" visibility="protected">
       </eventref>
       <eventref name="OnAlignPosition" visibility="protected">
@@ -700,6 +708,12 @@
       <methodref name="Broadcast" visibility="public">
       </methodref>
       <methodref name="CanFocus" visibility="public" procflags="dynamic">
+      </methodref>
+      <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
       </methodref>
       <methodref name="ContainsControl" visibility="public">
       </methodref>
@@ -1080,6 +1094,8 @@
         </methodref>
         <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
         </methodref>
+        <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+        </methodref>
         <methodref name="Changed" visibility="protected">
         </methodref>
         <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -1321,6 +1337,8 @@
         <methodref name="Destroy" visibility="public" procflags="destructor override">
         </methodref>
         <methodref name="CheckNonMainThreadUsage" visibility="public">
+        </methodref>
+        <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
         </methodref>
         <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
         </methodref>
@@ -1568,6 +1586,8 @@
           <methodref name="ReadDeltaStream" visibility="private">
           </methodref>
           <methodref name="ReadDeltaState" visibility="private">
+          </methodref>
+          <methodref name="InitObservers" visibility="private">
           </methodref>
           <methodref name="FindSortedComponent" visibility="private">
           </methodref>
@@ -2042,6 +2062,8 @@
       </methodref>
       <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
       </methodref>
+      <methodref name="WMGetObject" visibility="private" procflags="message">
+      </methodref>
       <methodref name="CMChanged" visibility="private" procflags="message">
       </methodref>
       <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -2248,6 +2270,10 @@
       </methodref>
       <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
       </methodref>
+      <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="Loaded" visibility="protected" procflags="override">
+      </methodref>
       <methodref name="KeyDown" visibility="protected" procflags="dynamic">
       </methodref>
       <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -2370,6 +2396,8 @@
       </propertyref>
       <propertyref name="WindowHandle" visibility="protected">
       </propertyref>
+      <propertyref name="UIAutomationProvider" visibility="protected">
+      </propertyref>
       <eventref name="OnAlignInsertBefore" visibility="protected">
       </eventref>
       <eventref name="OnAlignPosition" visibility="protected">
@@ -2405,6 +2433,12 @@
       <methodref name="Broadcast" visibility="public">
       </methodref>
       <methodref name="CanFocus" visibility="public" procflags="dynamic">
+      </methodref>
+      <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
       </methodref>
       <methodref name="ContainsControl" visibility="public">
       </methodref>
@@ -2785,6 +2819,8 @@
         </methodref>
         <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
         </methodref>
+        <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+        </methodref>
         <methodref name="Changed" visibility="protected">
         </methodref>
         <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -3026,6 +3062,8 @@
         <methodref name="Destroy" visibility="public" procflags="destructor override">
         </methodref>
         <methodref name="CheckNonMainThreadUsage" visibility="public">
+        </methodref>
+        <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
         </methodref>
         <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
         </methodref>
@@ -3273,6 +3311,8 @@
           <methodref name="ReadDeltaStream" visibility="private">
           </methodref>
           <methodref name="ReadDeltaState" visibility="private">
+          </methodref>
+          <methodref name="InitObservers" visibility="private">
           </methodref>
           <methodref name="FindSortedComponent" visibility="private">
           </methodref>
@@ -3540,13 +3580,13 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="FUpButton" type="TAdvTimerSpeedButton" visibility="private" size="4" offset="712" file="advspin.pas" line="83" />
-      <field name="FDownButton" type="TAdvTimerSpeedButton" visibility="private" size="4" offset="716" file="advspin.pas" line="84" />
-      <field name="FFocusedButton" type="TAdvTimerSpeedButton" visibility="private" size="4" offset="720" file="advspin.pas" line="85" />
-      <field name="FFocusControl" type="TWinControl" visibility="private" size="4" offset="724" file="advspin.pas" line="86" />
-      <field name="FOnUpClick" type="TNotifyEvent" visibility="private" size="8" offset="728" file="advspin.pas" line="87" />
-      <field name="FOnDownClick" type="TNotifyEvent" visibility="private" size="8" offset="736" file="advspin.pas" line="88" />
-      <field name="FDirection" type="TSpinDirection" visibility="private" size="1" offset="744" file="advspin.pas" line="89" />
+      <field name="FUpButton" type="TAdvTimerSpeedButton" visibility="private" size="4" offset="728" file="advspin.pas" line="83" />
+      <field name="FDownButton" type="TAdvTimerSpeedButton" visibility="private" size="4" offset="732" file="advspin.pas" line="84" />
+      <field name="FFocusedButton" type="TAdvTimerSpeedButton" visibility="private" size="4" offset="736" file="advspin.pas" line="85" />
+      <field name="FFocusControl" type="TWinControl" visibility="private" size="4" offset="740" file="advspin.pas" line="86" />
+      <field name="FOnUpClick" type="TNotifyEvent" visibility="private" size="8" offset="744" file="advspin.pas" line="87" />
+      <field name="FOnDownClick" type="TNotifyEvent" visibility="private" size="8" offset="752" file="advspin.pas" line="88" />
+      <field name="FDirection" type="TSpinDirection" visibility="private" size="1" offset="760" file="advspin.pas" line="89" />
       <function name="CreateButton" visibility="private" file="advspin.pas" line="90">
         <parameters>
           <retval type="TAdvTimerSpeedButton" />
@@ -4186,6 +4226,8 @@
           </methodref>
           <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
           </methodref>
+          <methodref name="WMGetObject" visibility="private" procflags="message">
+          </methodref>
           <methodref name="CMChanged" visibility="private" procflags="message">
           </methodref>
           <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -4392,6 +4434,10 @@
           </methodref>
           <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
           </methodref>
+          <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Loaded" visibility="protected" procflags="override">
+          </methodref>
           <methodref name="KeyDown" visibility="protected" procflags="dynamic">
           </methodref>
           <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -4514,6 +4560,8 @@
           </propertyref>
           <propertyref name="WindowHandle" visibility="protected">
           </propertyref>
+          <propertyref name="UIAutomationProvider" visibility="protected">
+          </propertyref>
           <eventref name="OnAlignInsertBefore" visibility="protected">
           </eventref>
           <eventref name="OnAlignPosition" visibility="protected">
@@ -4549,6 +4597,12 @@
           <methodref name="Broadcast" visibility="public">
           </methodref>
           <methodref name="CanFocus" visibility="public" procflags="dynamic">
+          </methodref>
+          <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
           </methodref>
           <methodref name="ContainsControl" visibility="public">
           </methodref>
@@ -4929,6 +4983,8 @@
             </methodref>
             <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
             </methodref>
+            <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+            </methodref>
             <methodref name="Changed" visibility="protected">
             </methodref>
             <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -5170,6 +5226,8 @@
             <methodref name="Destroy" visibility="public" procflags="destructor override">
             </methodref>
             <methodref name="CheckNonMainThreadUsage" visibility="public">
+            </methodref>
+            <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
             </methodref>
@@ -5417,6 +5475,8 @@
               <methodref name="ReadDeltaStream" visibility="private">
               </methodref>
               <methodref name="ReadDeltaState" visibility="private">
+              </methodref>
+              <methodref name="InitObservers" visibility="private">
               </methodref>
               <methodref name="FindSortedComponent" visibility="private">
               </methodref>
@@ -5686,51 +5746,51 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="FFlat" type="Boolean" visibility="private" size="1" offset="816" file="advspin.pas" line="162" />
-      <field name="FFlatLineColor" type="TColor" visibility="private" size="4" offset="820" file="advspin.pas" line="163" />
-      <field name="FLabel" type="TLabel" visibility="private" size="4" offset="824" file="advspin.pas" line="164" />
-      <field name="FLabelFont" type="TFont" visibility="private" size="4" offset="828" file="advspin.pas" line="165" />
-      <field name="FLabelPosition" type="TLabelPosition" visibility="private" size="1" offset="832" file="advspin.pas" line="166" />
-      <field name="FLabelMargin" type="Integer" visibility="private" size="4" offset="836" file="advspin.pas" line="167" />
-      <field name="FLabelTransparent" type="Boolean" visibility="private" size="1" offset="840" file="advspin.pas" line="168" />
-      <field name="FMinValue" type="Integer" visibility="private" size="4" offset="844" file="advspin.pas" line="169" />
-      <field name="FMaxValue" type="Integer" visibility="private" size="4" offset="848" file="advspin.pas" line="170" />
-      <field name="FMinFloatValue" type="Double" visibility="private" size="8" offset="856" file="advspin.pas" line="171" />
-      <field name="FMaxFloatValue" type="Double" visibility="private" size="8" offset="864" file="advspin.pas" line="172" />
-      <field name="FMinDateValue" type="TDateTime" visibility="private" size="8" offset="872" file="advspin.pas" line="173" />
-      <field name="FMaxDateValue" type="TDateTime" visibility="private" size="8" offset="880" file="advspin.pas" line="174" />
-      <field name="FDateValue" type="TDateTime" visibility="private" size="8" offset="888" file="advspin.pas" line="175" />
-      <field name="FTimeValue" type="TDateTime" visibility="private" size="8" offset="896" file="advspin.pas" line="176" />
-      <field name="FHexValue" type="Integer" visibility="private" size="4" offset="904" file="advspin.pas" line="177" />
-      <field name="FIncrement" type="Integer" visibility="private" size="4" offset="908" file="advspin.pas" line="178" />
-      <field name="FIncrementFloat" type="Double" visibility="private" size="8" offset="912" file="advspin.pas" line="179" />
-      <field name="FIncrementPage" type="Integer" visibility="private" size="4" offset="920" file="advspin.pas" line="180" />
-      <field name="FIncrementFloatPage" type="Double" visibility="private" size="8" offset="928" file="advspin.pas" line="181" />
-      <field name="FIncrementSmart" type="Boolean" visibility="private" size="1" offset="936" file="advspin.pas" line="182" />
-      <field name="FButton" type="TAdvSpinButton" visibility="private" size="4" offset="940" file="advspin.pas" line="183" />
-      <field name="FEditorEnabled" type="Boolean" visibility="private" size="1" offset="944" file="advspin.pas" line="184" />
-      <field name="FDirection" type="TSpinDirection" visibility="private" size="1" offset="945" file="advspin.pas" line="185" />
-      <field name="FSpinType" type="TAdvSpinType" visibility="private" size="1" offset="946" file="advspin.pas" line="186" />
-      <field name="FPrecision" type="Integer" visibility="private" size="4" offset="948" file="advspin.pas" line="187" />
-      <field name="FReturnIsTab" type="Boolean" visibility="private" size="1" offset="952" file="advspin.pas" line="188" />
-      <field name="FNormalColor" type="TColor" visibility="private" size="4" offset="956" file="advspin.pas" line="189" />
-      <field name="FUSDates" type="Boolean" visibility="private" size="1" offset="960" file="advspin.pas" line="190" />
-      <field name="FSpinFlat" type="Boolean" visibility="private" size="1" offset="961" file="advspin.pas" line="192" />
-      <field name="FSpinTransparent" type="Boolean" visibility="private" size="1" offset="962" file="advspin.pas" line="195" />
-      <field name="FTransparent" type="Boolean" visibility="private" size="1" offset="963" file="advspin.pas" line="197" />
-      <field name="FAutoFocus" type="Boolean" visibility="private" size="1" offset="964" file="advspin.pas" line="198" />
-      <field name="FIncrementHours" type="Integer" visibility="private" size="4" offset="968" file="advspin.pas" line="199" />
-      <field name="FIncrementMinutes" type="Integer" visibility="private" size="4" offset="972" file="advspin.pas" line="200" />
-      <field name="FShowSeconds" type="Boolean" visibility="private" size="1" offset="976" file="advspin.pas" line="201" />
-      <field name="FSigned" type="Boolean" visibility="private" size="1" offset="977" file="advspin.pas" line="202" />
-      <field name="FLabelAlwaysEnabled" type="Boolean" visibility="private" size="1" offset="978" file="advspin.pas" line="203" />
-      <field name="FEditAlign" type="TEditAlign" visibility="private" size="1" offset="979" file="advspin.pas" line="204" />
-      <field name="FFocusBorderColor" type="TColor" visibility="private" size="4" offset="980" file="advspin.pas" line="205" />
-      <field name="FFocusColor" type="TColor" visibility="private" size="4" offset="984" file="advspin.pas" line="206" />
-      <field name="FOnUpClick" type="TNotifyEvent" visibility="private" size="8" offset="992" file="advspin.pas" line="207" />
-      <field name="FOnDownClick" type="TNotifyEvent" visibility="private" size="8" offset="1000" file="advspin.pas" line="208" />
-      <field name="FAllowNullValue" type="Boolean" visibility="private" size="1" offset="1008" file="advspin.pas" line="209" />
-      <field name="FBlockChange" type="Boolean" visibility="private" size="1" offset="1009" file="advspin.pas" line="210" />
+      <field name="FFlat" type="Boolean" visibility="private" size="1" offset="832" file="advspin.pas" line="162" />
+      <field name="FFlatLineColor" type="TColor" visibility="private" size="4" offset="836" file="advspin.pas" line="163" />
+      <field name="FLabel" type="TLabel" visibility="private" size="4" offset="840" file="advspin.pas" line="164" />
+      <field name="FLabelFont" type="TFont" visibility="private" size="4" offset="844" file="advspin.pas" line="165" />
+      <field name="FLabelPosition" type="TLabelPosition" visibility="private" size="1" offset="848" file="advspin.pas" line="166" />
+      <field name="FLabelMargin" type="Integer" visibility="private" size="4" offset="852" file="advspin.pas" line="167" />
+      <field name="FLabelTransparent" type="Boolean" visibility="private" size="1" offset="856" file="advspin.pas" line="168" />
+      <field name="FMinValue" type="Integer" visibility="private" size="4" offset="860" file="advspin.pas" line="169" />
+      <field name="FMaxValue" type="Integer" visibility="private" size="4" offset="864" file="advspin.pas" line="170" />
+      <field name="FMinFloatValue" type="Double" visibility="private" size="8" offset="872" file="advspin.pas" line="171" />
+      <field name="FMaxFloatValue" type="Double" visibility="private" size="8" offset="880" file="advspin.pas" line="172" />
+      <field name="FMinDateValue" type="TDateTime" visibility="private" size="8" offset="888" file="advspin.pas" line="173" />
+      <field name="FMaxDateValue" type="TDateTime" visibility="private" size="8" offset="896" file="advspin.pas" line="174" />
+      <field name="FDateValue" type="TDateTime" visibility="private" size="8" offset="904" file="advspin.pas" line="175" />
+      <field name="FTimeValue" type="TDateTime" visibility="private" size="8" offset="912" file="advspin.pas" line="176" />
+      <field name="FHexValue" type="Integer" visibility="private" size="4" offset="920" file="advspin.pas" line="177" />
+      <field name="FIncrement" type="Integer" visibility="private" size="4" offset="924" file="advspin.pas" line="178" />
+      <field name="FIncrementFloat" type="Double" visibility="private" size="8" offset="928" file="advspin.pas" line="179" />
+      <field name="FIncrementPage" type="Integer" visibility="private" size="4" offset="936" file="advspin.pas" line="180" />
+      <field name="FIncrementFloatPage" type="Double" visibility="private" size="8" offset="944" file="advspin.pas" line="181" />
+      <field name="FIncrementSmart" type="Boolean" visibility="private" size="1" offset="952" file="advspin.pas" line="182" />
+      <field name="FButton" type="TAdvSpinButton" visibility="private" size="4" offset="956" file="advspin.pas" line="183" />
+      <field name="FEditorEnabled" type="Boolean" visibility="private" size="1" offset="960" file="advspin.pas" line="184" />
+      <field name="FDirection" type="TSpinDirection" visibility="private" size="1" offset="961" file="advspin.pas" line="185" />
+      <field name="FSpinType" type="TAdvSpinType" visibility="private" size="1" offset="962" file="advspin.pas" line="186" />
+      <field name="FPrecision" type="Integer" visibility="private" size="4" offset="964" file="advspin.pas" line="187" />
+      <field name="FReturnIsTab" type="Boolean" visibility="private" size="1" offset="968" file="advspin.pas" line="188" />
+      <field name="FNormalColor" type="TColor" visibility="private" size="4" offset="972" file="advspin.pas" line="189" />
+      <field name="FUSDates" type="Boolean" visibility="private" size="1" offset="976" file="advspin.pas" line="190" />
+      <field name="FSpinFlat" type="Boolean" visibility="private" size="1" offset="977" file="advspin.pas" line="192" />
+      <field name="FSpinTransparent" type="Boolean" visibility="private" size="1" offset="978" file="advspin.pas" line="195" />
+      <field name="FTransparent" type="Boolean" visibility="private" size="1" offset="979" file="advspin.pas" line="197" />
+      <field name="FAutoFocus" type="Boolean" visibility="private" size="1" offset="980" file="advspin.pas" line="198" />
+      <field name="FIncrementHours" type="Integer" visibility="private" size="4" offset="984" file="advspin.pas" line="199" />
+      <field name="FIncrementMinutes" type="Integer" visibility="private" size="4" offset="988" file="advspin.pas" line="200" />
+      <field name="FShowSeconds" type="Boolean" visibility="private" size="1" offset="992" file="advspin.pas" line="201" />
+      <field name="FSigned" type="Boolean" visibility="private" size="1" offset="993" file="advspin.pas" line="202" />
+      <field name="FLabelAlwaysEnabled" type="Boolean" visibility="private" size="1" offset="994" file="advspin.pas" line="203" />
+      <field name="FEditAlign" type="TEditAlign" visibility="private" size="1" offset="995" file="advspin.pas" line="204" />
+      <field name="FFocusBorderColor" type="TColor" visibility="private" size="4" offset="996" file="advspin.pas" line="205" />
+      <field name="FFocusColor" type="TColor" visibility="private" size="4" offset="1000" file="advspin.pas" line="206" />
+      <field name="FOnUpClick" type="TNotifyEvent" visibility="private" size="8" offset="1008" file="advspin.pas" line="207" />
+      <field name="FOnDownClick" type="TNotifyEvent" visibility="private" size="8" offset="1016" file="advspin.pas" line="208" />
+      <field name="FAllowNullValue" type="Boolean" visibility="private" size="1" offset="1024" file="advspin.pas" line="209" />
+      <field name="FBlockChange" type="Boolean" visibility="private" size="1" offset="1025" file="advspin.pas" line="210" />
       <function name="GetMinHeight" visibility="private" file="advspin.pas" line="211">
         <parameters>
           <retval type="Integer" />
@@ -6859,6 +6919,8 @@
             </methodref>
             <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
             </methodref>
+            <methodref name="WMGetObject" visibility="private" procflags="message">
+            </methodref>
             <methodref name="CMChanged" visibility="private" procflags="message">
             </methodref>
             <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -7065,6 +7127,10 @@
             </methodref>
             <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
             </methodref>
+            <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="override">
+            </methodref>
             <methodref name="KeyDown" visibility="protected" procflags="dynamic">
             </methodref>
             <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -7187,6 +7253,8 @@
             </propertyref>
             <propertyref name="WindowHandle" visibility="protected">
             </propertyref>
+            <propertyref name="UIAutomationProvider" visibility="protected">
+            </propertyref>
             <eventref name="OnAlignInsertBefore" visibility="protected">
             </eventref>
             <eventref name="OnAlignPosition" visibility="protected">
@@ -7222,6 +7290,12 @@
             <methodref name="Broadcast" visibility="public">
             </methodref>
             <methodref name="CanFocus" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="ContainsControl" visibility="public">
             </methodref>
@@ -7602,6 +7676,8 @@
               </methodref>
               <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
               </methodref>
+              <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Changed" visibility="protected">
               </methodref>
               <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -7843,6 +7919,8 @@
               <methodref name="Destroy" visibility="public" procflags="destructor override">
               </methodref>
               <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
               </methodref>
               <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
               </methodref>
@@ -8090,6 +8168,8 @@
                 <methodref name="ReadDeltaStream" visibility="private">
                 </methodref>
                 <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="InitObservers" visibility="private">
                 </methodref>
                 <methodref name="FindSortedComponent" visibility="private">
                 </methodref>
@@ -8904,6 +8984,8 @@
             </methodref>
             <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
             </methodref>
+            <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+            </methodref>
             <methodref name="Changed" visibility="protected">
             </methodref>
             <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -9145,6 +9227,8 @@
             <methodref name="Destroy" visibility="public" procflags="destructor override">
             </methodref>
             <methodref name="CheckNonMainThreadUsage" visibility="public">
+            </methodref>
+            <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
             </methodref>
@@ -9392,6 +9476,8 @@
               <methodref name="ReadDeltaStream" visibility="private">
               </methodref>
               <methodref name="ReadDeltaState" visibility="private">
+              </methodref>
+              <methodref name="InitObservers" visibility="private">
               </methodref>
               <methodref name="FindSortedComponent" visibility="private">
               </methodref>
@@ -9661,11 +9747,11 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="FRepeatTimer" type="TTimer" visibility="private" size="4" offset="536" file="advspin.pas" line="413" />
-      <field name="FTimeBtnState" type="TTimeBtnState" visibility="private" size="1" offset="540" file="advspin.pas" line="414" />
-      <field name="FButtonDirection" type="TButtonDirection" visibility="private" size="1" offset="541" file="advspin.pas" line="415" />
-      <field name="FIsWinXP" type="Boolean" visibility="private" size="1" offset="542" file="advspin.pas" line="416" />
-      <field name="FHasMouse" type="Boolean" visibility="private" size="1" offset="543" file="advspin.pas" line="417" />
+      <field name="FRepeatTimer" type="TTimer" visibility="private" size="4" offset="544" file="advspin.pas" line="413" />
+      <field name="FTimeBtnState" type="TTimeBtnState" visibility="private" size="1" offset="548" file="advspin.pas" line="414" />
+      <field name="FButtonDirection" type="TButtonDirection" visibility="private" size="1" offset="549" file="advspin.pas" line="415" />
+      <field name="FIsWinXP" type="Boolean" visibility="private" size="1" offset="550" file="advspin.pas" line="416" />
+      <field name="FHasMouse" type="Boolean" visibility="private" size="1" offset="551" file="advspin.pas" line="417" />
       <procedure name="TimerExpired" visibility="private" file="advspin.pas" line="418">
         <parameters>
           <parameter name="Sender" type="TObject" />

@@ -1095,6 +1095,8 @@
             </methodref>
             <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
             </methodref>
+            <methodref name="WMGetObject" visibility="private" procflags="message">
+            </methodref>
             <methodref name="CMChanged" visibility="private" procflags="message">
             </methodref>
             <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -1301,6 +1303,10 @@
             </methodref>
             <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
             </methodref>
+            <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="override">
+            </methodref>
             <methodref name="KeyDown" visibility="protected" procflags="dynamic">
             </methodref>
             <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -1423,6 +1429,8 @@
             </propertyref>
             <propertyref name="WindowHandle" visibility="protected">
             </propertyref>
+            <propertyref name="UIAutomationProvider" visibility="protected">
+            </propertyref>
             <eventref name="OnAlignInsertBefore" visibility="protected">
             </eventref>
             <eventref name="OnAlignPosition" visibility="protected">
@@ -1458,6 +1466,12 @@
             <methodref name="Broadcast" visibility="public">
             </methodref>
             <methodref name="CanFocus" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="ContainsControl" visibility="public">
             </methodref>
@@ -1838,6 +1852,8 @@
               </methodref>
               <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
               </methodref>
+              <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Changed" visibility="protected">
               </methodref>
               <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -2079,6 +2095,8 @@
               <methodref name="Destroy" visibility="public" procflags="destructor override">
               </methodref>
               <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
               </methodref>
               <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
               </methodref>
@@ -2326,6 +2344,8 @@
                 <methodref name="ReadDeltaStream" visibility="private">
                 </methodref>
                 <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="InitObservers" visibility="private">
                 </methodref>
                 <methodref name="FindSortedComponent" visibility="private">
                 </methodref>
@@ -2596,97 +2616,97 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="SpeedButtonDown" type="TSpeedButton" visibility="published" size="4" offset="1080" file="UFormModelEditor.pas" line="11" />
-      <field name="PageControl_ModelSettings" type="TPageControl" visibility="published" size="4" offset="1084" file="UFormModelEditor.pas" line="12" />
-      <field name="TabSheet_Modeltime" type="TTabSheet" visibility="published" size="4" offset="1088" file="UFormModelEditor.pas" line="13" />
-      <field name="TabSheet_Modelpath" type="TTabSheet" visibility="published" size="4" offset="1092" file="UFormModelEditor.pas" line="14" />
-      <field name="PageControl_ModelPath" type="TPageControl" visibility="published" size="4" offset="1096" file="UFormModelEditor.pas" line="15" />
-      <field name="TabSheet_Inputpath" type="TTabSheet" visibility="published" size="4" offset="1100" file="UFormModelEditor.pas" line="16" />
-      <field name="TabSheet_Outputpath" type="TTabSheet" visibility="published" size="4" offset="1104" file="UFormModelEditor.pas" line="17" />
-      <field name="TabSheet_Parameterfile" type="TTabSheet" visibility="published" size="4" offset="1108" file="UFormModelEditor.pas" line="18" />
-      <field name="TabSheet_regressionfile" type="TTabSheet" visibility="published" size="4" offset="1112" file="UFormModelEditor.pas" line="19" />
-      <field name="DriveComboBox_Inputpath" type="TDriveComboBox" visibility="published" size="4" offset="1116" file="UFormModelEditor.pas" line="20" />
-      <field name="DirectoryListBox_Inputpath" type="TDirectoryListBox" visibility="published" size="4" offset="1120" file="UFormModelEditor.pas" line="21" />
-      <field name="DriveComboBox_Outputpath" type="TDriveComboBox" visibility="published" size="4" offset="1124" file="UFormModelEditor.pas" line="22" />
-      <field name="DirectoryListBox_Outputpath" type="TDirectoryListBox" visibility="published" size="4" offset="1128" file="UFormModelEditor.pas" line="23" />
-      <field name="DriveComboBox_Parameterfile" type="TDriveComboBox" visibility="published" size="4" offset="1132" file="UFormModelEditor.pas" line="24" />
-      <field name="DirectoryListBox_Parameterfile" type="TDirectoryListBox" visibility="published" size="4" offset="1136" file="UFormModelEditor.pas" line="25" />
-      <field name="FileListBox_Parameterfile" type="TFileListBox" visibility="published" size="4" offset="1140" file="UFormModelEditor.pas" line="26" />
-      <field name="FilterComboBox_Parameterfile" type="TFilterComboBox" visibility="published" size="4" offset="1144" file="UFormModelEditor.pas" line="27" />
-      <field name="DriveComboBox_Regressionfile" type="TDriveComboBox" visibility="published" size="4" offset="1148" file="UFormModelEditor.pas" line="28" />
-      <field name="DirectoryListBox_regressionfile" type="TDirectoryListBox" visibility="published" size="4" offset="1152" file="UFormModelEditor.pas" line="29" />
-      <field name="FileListBox_Regressionfile" type="TFileListBox" visibility="published" size="4" offset="1156" file="UFormModelEditor.pas" line="30" />
-      <field name="FilterComboBox_Regressionfile" type="TFilterComboBox" visibility="published" size="4" offset="1160" file="UFormModelEditor.pas" line="31" />
-      <field name="TabSheet_Globalsettings" type="TTabSheet" visibility="published" size="4" offset="1164" file="UFormModelEditor.pas" line="32" />
-      <field name="Panel1" type="TPanel" visibility="published" size="4" offset="1168" file="UFormModelEditor.pas" line="33" />
-      <field name="Label4" type="TLabel" visibility="published" size="4" offset="1172" file="UFormModelEditor.pas" line="34" />
-      <field name="ComboBox_Separator" type="TComboBox" visibility="published" size="4" offset="1176" file="UFormModelEditor.pas" line="35" />
-      <field name="TabSheet_MarquardOptions" type="TTabSheet" visibility="published" size="4" offset="1180" file="UFormModelEditor.pas" line="36" />
-      <field name="Label10" type="TLabel" visibility="published" size="4" offset="1184" file="UFormModelEditor.pas" line="37" />
-      <field name="Label11" type="TLabel" visibility="published" size="4" offset="1188" file="UFormModelEditor.pas" line="38" />
-      <field name="Label12" type="TLabel" visibility="published" size="4" offset="1192" file="UFormModelEditor.pas" line="39" />
-      <field name="Label13" type="TLabel" visibility="published" size="4" offset="1196" file="UFormModelEditor.pas" line="40" />
-      <field name="Edit_MO_DefaultError" type="TEdit" visibility="published" size="4" offset="1200" file="UFormModelEditor.pas" line="41" />
-      <field name="Edit_MO_Divisor" type="TEdit" visibility="published" size="4" offset="1204" file="UFormModelEditor.pas" line="42" />
-      <field name="Edit_MO_IniLambda" type="TEdit" visibility="published" size="4" offset="1208" file="UFormModelEditor.pas" line="43" />
-      <field name="Edit_MP_Inputpath" type="TEdit" visibility="published" size="4" offset="1212" file="UFormModelEditor.pas" line="44" />
-      <field name="Label_Inputpath" type="TLabel" visibility="published" size="4" offset="1216" file="UFormModelEditor.pas" line="45" />
-      <field name="Label15" type="TLabel" visibility="published" size="4" offset="1220" file="UFormModelEditor.pas" line="46" />
-      <field name="Edit_MP_Outputpath" type="TEdit" visibility="published" size="4" offset="1224" file="UFormModelEditor.pas" line="47" />
-      <field name="Label_TModName" type="TLabel" visibility="published" size="4" offset="1228" file="UFormModelEditor.pas" line="48" />
-      <field name="Edit_ModelName" type="TEdit" visibility="published" size="4" offset="1232" file="UFormModelEditor.pas" line="49" />
-      <field name="BitBtn_close" type="TBitBtn" visibility="published" size="4" offset="1236" file="UFormModelEditor.pas" line="50" />
-      <field name="BitBtn_uebernehmen" type="TBitBtn" visibility="published" size="4" offset="1240" file="UFormModelEditor.pas" line="51" />
-      <field name="BitBtn_verwerfen" type="TBitBtn" visibility="published" size="4" offset="1244" file="UFormModelEditor.pas" line="52" />
-      <field name="Label17" type="TLabel" visibility="published" size="4" offset="1248" file="UFormModelEditor.pas" line="53" />
-      <field name="Edit_MP_Controlfilepath" type="TEdit" visibility="published" size="4" offset="1252" file="UFormModelEditor.pas" line="54" />
-      <field name="Label18" type="TLabel" visibility="published" size="4" offset="1256" file="UFormModelEditor.pas" line="55" />
-      <field name="Edit_MP_Regressionfilepath" type="TEdit" visibility="published" size="4" offset="1260" file="UFormModelEditor.pas" line="56" />
-      <field name="PageControl2" type="TPageControl" visibility="published" size="4" offset="1264" file="UFormModelEditor.pas" line="57" />
-      <field name="TabSheet_ModTime" type="TTabSheet" visibility="published" size="4" offset="1268" file="UFormModelEditor.pas" line="58" />
-      <field name="TabSheet_Runtime" type="TTabSheet" visibility="published" size="4" offset="1272" file="UFormModelEditor.pas" line="59" />
-      <field name="Label5" type="TLabel" visibility="published" size="4" offset="1276" file="UFormModelEditor.pas" line="60" />
-      <field name="Edit_MT_Name" type="TEdit" visibility="published" size="4" offset="1280" file="UFormModelEditor.pas" line="61" />
-      <field name="Label6" type="TLabel" visibility="published" size="4" offset="1284" file="UFormModelEditor.pas" line="62" />
-      <field name="Edit_MT_Unit" type="TEdit" visibility="published" size="4" offset="1288" file="UFormModelEditor.pas" line="63" />
-      <field name="Label7" type="TLabel" visibility="published" size="4" offset="1292" file="UFormModelEditor.pas" line="64" />
-      <field name="Edit_MT_Value" type="TEdit" visibility="published" size="4" offset="1296" file="UFormModelEditor.pas" line="65" />
-      <field name="Label8" type="TLabel" visibility="published" size="4" offset="1300" file="UFormModelEditor.pas" line="66" />
-      <field name="Label9" type="TLabel" visibility="published" size="4" offset="1304" file="UFormModelEditor.pas" line="67" />
-      <field name="Edit_MT_Precision" type="TEdit" visibility="published" size="4" offset="1308" file="UFormModelEditor.pas" line="68" />
-      <field name="Edit_MT_Digits" type="TEdit" visibility="published" size="4" offset="1312" file="UFormModelEditor.pas" line="69" />
-      <field name="CheckBox_MT_WriteToFile" type="TCheckBox" visibility="published" size="4" offset="1316" file="UFormModelEditor.pas" line="70" />
-      <field name="Label1" type="TLabel" visibility="published" size="4" offset="1320" file="UFormModelEditor.pas" line="71" />
-      <field name="DateTimePicker_MT_Starttime" type="TDateTimePicker" visibility="published" size="4" offset="1324" file="UFormModelEditor.pas" line="72" />
-      <field name="Label2" type="TLabel" visibility="published" size="4" offset="1328" file="UFormModelEditor.pas" line="73" />
-      <field name="DateTimePicker_MT_Endtime" type="TDateTimePicker" visibility="published" size="4" offset="1332" file="UFormModelEditor.pas" line="74" />
-      <field name="Label3" type="TLabel" visibility="published" size="4" offset="1336" file="UFormModelEditor.pas" line="75" />
-      <field name="Edit_MT_Timestep" type="TEdit" visibility="published" size="4" offset="1340" file="UFormModelEditor.pas" line="76" />
-      <field name="UpDown_Timestep" type="TUpDown" visibility="published" size="4" offset="1344" file="UFormModelEditor.pas" line="77" />
-      <field name="ComboBox_MO_WeightOptions" type="TComboBox" visibility="published" size="4" offset="1348" file="UFormModelEditor.pas" line="78" />
-      <field name="SubModels" type="TTabSheet" visibility="published" size="4" offset="1352" file="UFormModelEditor.pas" line="79" />
-      <field name="ListBoxSubModels" type="TListBox" visibility="published" size="4" offset="1356" file="UFormModelEditor.pas" line="80" />
-      <field name="SpeedButtonUp" type="TSpeedButton" visibility="published" size="4" offset="1360" file="UFormModelEditor.pas" line="81" />
-      <field name="TabSheet1" type="TTabSheet" visibility="published" size="4" offset="1364" file="UFormModelEditor.pas" line="82" />
-      <field name="ListBoxControlFileStrings" type="TListBox" visibility="published" size="4" offset="1368" file="UFormModelEditor.pas" line="83" />
-      <field name="EditNameControlFile" type="TEdit" visibility="published" size="4" offset="1372" file="UFormModelEditor.pas" line="84" />
-      <field name="LabelNameControlFile" type="TLabel" visibility="published" size="4" offset="1376" file="UFormModelEditor.pas" line="85" />
-      <field name="SaveDialogIniFile" type="TSaveDialog" visibility="published" size="4" offset="1380" file="UFormModelEditor.pas" line="86" />
-      <field name="BitBtnSaveTo" type="TBitBtn" visibility="published" size="4" offset="1384" file="UFormModelEditor.pas" line="87" />
-      <field name="LabelStateIniFile" type="TLabel" visibility="published" size="4" offset="1388" file="UFormModelEditor.pas" line="88" />
-      <field name="EditStateInifile" type="TEdit" visibility="published" size="4" offset="1392" file="UFormModelEditor.pas" line="89" />
-      <field name="LabelParInifile" type="TLabel" visibility="published" size="4" offset="1396" file="UFormModelEditor.pas" line="90" />
-      <field name="EditParIniFile" type="TEdit" visibility="published" size="4" offset="1400" file="UFormModelEditor.pas" line="91" />
-      <field name="LabelWeatherFile" type="TLabel" visibility="published" size="4" offset="1404" file="UFormModelEditor.pas" line="92" />
-      <field name="EditWeatherFile" type="TEdit" visibility="published" size="4" offset="1408" file="UFormModelEditor.pas" line="93" />
-      <field name="SpeedButtonEditStateIniFileName" type="TSpeedButton" visibility="published" size="4" offset="1412" file="UFormModelEditor.pas" line="94" />
-      <field name="SpeedButtonEditParInifileName" type="TSpeedButton" visibility="published" size="4" offset="1416" file="UFormModelEditor.pas" line="95" />
-      <field name="SpeedButtonEditWeatherFileName" type="TSpeedButton" visibility="published" size="4" offset="1420" file="UFormModelEditor.pas" line="96" />
-      <field name="DateTimePickerStartHour" type="TDateTimePicker" visibility="published" size="4" offset="1424" file="UFormModelEditor.pas" line="97" />
-      <field name="DateTimePickerEndHour" type="TDateTimePicker" visibility="published" size="4" offset="1428" file="UFormModelEditor.pas" line="98" />
-      <field name="Label14" type="TLabel" visibility="published" size="4" offset="1432" file="UFormModelEditor.pas" line="99" />
-      <field name="Label16" type="TLabel" visibility="published" size="4" offset="1436" file="UFormModelEditor.pas" line="100" />
-      <field name="DateTimePicker1" type="TDateTimePicker" visibility="published" size="4" offset="1440" file="UFormModelEditor.pas" line="101" />
+      <field name="SpeedButtonDown" type="TSpeedButton" visibility="published" size="4" offset="1096" file="UFormModelEditor.pas" line="11" />
+      <field name="PageControl_ModelSettings" type="TPageControl" visibility="published" size="4" offset="1100" file="UFormModelEditor.pas" line="12" />
+      <field name="TabSheet_Modeltime" type="TTabSheet" visibility="published" size="4" offset="1104" file="UFormModelEditor.pas" line="13" />
+      <field name="TabSheet_Modelpath" type="TTabSheet" visibility="published" size="4" offset="1108" file="UFormModelEditor.pas" line="14" />
+      <field name="PageControl_ModelPath" type="TPageControl" visibility="published" size="4" offset="1112" file="UFormModelEditor.pas" line="15" />
+      <field name="TabSheet_Inputpath" type="TTabSheet" visibility="published" size="4" offset="1116" file="UFormModelEditor.pas" line="16" />
+      <field name="TabSheet_Outputpath" type="TTabSheet" visibility="published" size="4" offset="1120" file="UFormModelEditor.pas" line="17" />
+      <field name="TabSheet_Parameterfile" type="TTabSheet" visibility="published" size="4" offset="1124" file="UFormModelEditor.pas" line="18" />
+      <field name="TabSheet_regressionfile" type="TTabSheet" visibility="published" size="4" offset="1128" file="UFormModelEditor.pas" line="19" />
+      <field name="DriveComboBox_Inputpath" type="TDriveComboBox" visibility="published" size="4" offset="1132" file="UFormModelEditor.pas" line="20" />
+      <field name="DirectoryListBox_Inputpath" type="TDirectoryListBox" visibility="published" size="4" offset="1136" file="UFormModelEditor.pas" line="21" />
+      <field name="DriveComboBox_Outputpath" type="TDriveComboBox" visibility="published" size="4" offset="1140" file="UFormModelEditor.pas" line="22" />
+      <field name="DirectoryListBox_Outputpath" type="TDirectoryListBox" visibility="published" size="4" offset="1144" file="UFormModelEditor.pas" line="23" />
+      <field name="DriveComboBox_Parameterfile" type="TDriveComboBox" visibility="published" size="4" offset="1148" file="UFormModelEditor.pas" line="24" />
+      <field name="DirectoryListBox_Parameterfile" type="TDirectoryListBox" visibility="published" size="4" offset="1152" file="UFormModelEditor.pas" line="25" />
+      <field name="FileListBox_Parameterfile" type="TFileListBox" visibility="published" size="4" offset="1156" file="UFormModelEditor.pas" line="26" />
+      <field name="FilterComboBox_Parameterfile" type="TFilterComboBox" visibility="published" size="4" offset="1160" file="UFormModelEditor.pas" line="27" />
+      <field name="DriveComboBox_Regressionfile" type="TDriveComboBox" visibility="published" size="4" offset="1164" file="UFormModelEditor.pas" line="28" />
+      <field name="DirectoryListBox_regressionfile" type="TDirectoryListBox" visibility="published" size="4" offset="1168" file="UFormModelEditor.pas" line="29" />
+      <field name="FileListBox_Regressionfile" type="TFileListBox" visibility="published" size="4" offset="1172" file="UFormModelEditor.pas" line="30" />
+      <field name="FilterComboBox_Regressionfile" type="TFilterComboBox" visibility="published" size="4" offset="1176" file="UFormModelEditor.pas" line="31" />
+      <field name="TabSheet_Globalsettings" type="TTabSheet" visibility="published" size="4" offset="1180" file="UFormModelEditor.pas" line="32" />
+      <field name="Panel1" type="TPanel" visibility="published" size="4" offset="1184" file="UFormModelEditor.pas" line="33" />
+      <field name="Label4" type="TLabel" visibility="published" size="4" offset="1188" file="UFormModelEditor.pas" line="34" />
+      <field name="ComboBox_Separator" type="TComboBox" visibility="published" size="4" offset="1192" file="UFormModelEditor.pas" line="35" />
+      <field name="TabSheet_MarquardOptions" type="TTabSheet" visibility="published" size="4" offset="1196" file="UFormModelEditor.pas" line="36" />
+      <field name="Label10" type="TLabel" visibility="published" size="4" offset="1200" file="UFormModelEditor.pas" line="37" />
+      <field name="Label11" type="TLabel" visibility="published" size="4" offset="1204" file="UFormModelEditor.pas" line="38" />
+      <field name="Label12" type="TLabel" visibility="published" size="4" offset="1208" file="UFormModelEditor.pas" line="39" />
+      <field name="Label13" type="TLabel" visibility="published" size="4" offset="1212" file="UFormModelEditor.pas" line="40" />
+      <field name="Edit_MO_DefaultError" type="TEdit" visibility="published" size="4" offset="1216" file="UFormModelEditor.pas" line="41" />
+      <field name="Edit_MO_Divisor" type="TEdit" visibility="published" size="4" offset="1220" file="UFormModelEditor.pas" line="42" />
+      <field name="Edit_MO_IniLambda" type="TEdit" visibility="published" size="4" offset="1224" file="UFormModelEditor.pas" line="43" />
+      <field name="Edit_MP_Inputpath" type="TEdit" visibility="published" size="4" offset="1228" file="UFormModelEditor.pas" line="44" />
+      <field name="Label_Inputpath" type="TLabel" visibility="published" size="4" offset="1232" file="UFormModelEditor.pas" line="45" />
+      <field name="Label15" type="TLabel" visibility="published" size="4" offset="1236" file="UFormModelEditor.pas" line="46" />
+      <field name="Edit_MP_Outputpath" type="TEdit" visibility="published" size="4" offset="1240" file="UFormModelEditor.pas" line="47" />
+      <field name="Label_TModName" type="TLabel" visibility="published" size="4" offset="1244" file="UFormModelEditor.pas" line="48" />
+      <field name="Edit_ModelName" type="TEdit" visibility="published" size="4" offset="1248" file="UFormModelEditor.pas" line="49" />
+      <field name="BitBtn_close" type="TBitBtn" visibility="published" size="4" offset="1252" file="UFormModelEditor.pas" line="50" />
+      <field name="BitBtn_uebernehmen" type="TBitBtn" visibility="published" size="4" offset="1256" file="UFormModelEditor.pas" line="51" />
+      <field name="BitBtn_verwerfen" type="TBitBtn" visibility="published" size="4" offset="1260" file="UFormModelEditor.pas" line="52" />
+      <field name="Label17" type="TLabel" visibility="published" size="4" offset="1264" file="UFormModelEditor.pas" line="53" />
+      <field name="Edit_MP_Controlfilepath" type="TEdit" visibility="published" size="4" offset="1268" file="UFormModelEditor.pas" line="54" />
+      <field name="Label18" type="TLabel" visibility="published" size="4" offset="1272" file="UFormModelEditor.pas" line="55" />
+      <field name="Edit_MP_Regressionfilepath" type="TEdit" visibility="published" size="4" offset="1276" file="UFormModelEditor.pas" line="56" />
+      <field name="PageControl2" type="TPageControl" visibility="published" size="4" offset="1280" file="UFormModelEditor.pas" line="57" />
+      <field name="TabSheet_ModTime" type="TTabSheet" visibility="published" size="4" offset="1284" file="UFormModelEditor.pas" line="58" />
+      <field name="TabSheet_Runtime" type="TTabSheet" visibility="published" size="4" offset="1288" file="UFormModelEditor.pas" line="59" />
+      <field name="Label5" type="TLabel" visibility="published" size="4" offset="1292" file="UFormModelEditor.pas" line="60" />
+      <field name="Edit_MT_Name" type="TEdit" visibility="published" size="4" offset="1296" file="UFormModelEditor.pas" line="61" />
+      <field name="Label6" type="TLabel" visibility="published" size="4" offset="1300" file="UFormModelEditor.pas" line="62" />
+      <field name="Edit_MT_Unit" type="TEdit" visibility="published" size="4" offset="1304" file="UFormModelEditor.pas" line="63" />
+      <field name="Label7" type="TLabel" visibility="published" size="4" offset="1308" file="UFormModelEditor.pas" line="64" />
+      <field name="Edit_MT_Value" type="TEdit" visibility="published" size="4" offset="1312" file="UFormModelEditor.pas" line="65" />
+      <field name="Label8" type="TLabel" visibility="published" size="4" offset="1316" file="UFormModelEditor.pas" line="66" />
+      <field name="Label9" type="TLabel" visibility="published" size="4" offset="1320" file="UFormModelEditor.pas" line="67" />
+      <field name="Edit_MT_Precision" type="TEdit" visibility="published" size="4" offset="1324" file="UFormModelEditor.pas" line="68" />
+      <field name="Edit_MT_Digits" type="TEdit" visibility="published" size="4" offset="1328" file="UFormModelEditor.pas" line="69" />
+      <field name="CheckBox_MT_WriteToFile" type="TCheckBox" visibility="published" size="4" offset="1332" file="UFormModelEditor.pas" line="70" />
+      <field name="Label1" type="TLabel" visibility="published" size="4" offset="1336" file="UFormModelEditor.pas" line="71" />
+      <field name="DateTimePicker_MT_Starttime" type="TDateTimePicker" visibility="published" size="4" offset="1340" file="UFormModelEditor.pas" line="72" />
+      <field name="Label2" type="TLabel" visibility="published" size="4" offset="1344" file="UFormModelEditor.pas" line="73" />
+      <field name="DateTimePicker_MT_Endtime" type="TDateTimePicker" visibility="published" size="4" offset="1348" file="UFormModelEditor.pas" line="74" />
+      <field name="Label3" type="TLabel" visibility="published" size="4" offset="1352" file="UFormModelEditor.pas" line="75" />
+      <field name="Edit_MT_Timestep" type="TEdit" visibility="published" size="4" offset="1356" file="UFormModelEditor.pas" line="76" />
+      <field name="UpDown_Timestep" type="TUpDown" visibility="published" size="4" offset="1360" file="UFormModelEditor.pas" line="77" />
+      <field name="ComboBox_MO_WeightOptions" type="TComboBox" visibility="published" size="4" offset="1364" file="UFormModelEditor.pas" line="78" />
+      <field name="SubModels" type="TTabSheet" visibility="published" size="4" offset="1368" file="UFormModelEditor.pas" line="79" />
+      <field name="ListBoxSubModels" type="TListBox" visibility="published" size="4" offset="1372" file="UFormModelEditor.pas" line="80" />
+      <field name="SpeedButtonUp" type="TSpeedButton" visibility="published" size="4" offset="1376" file="UFormModelEditor.pas" line="81" />
+      <field name="TabSheet1" type="TTabSheet" visibility="published" size="4" offset="1380" file="UFormModelEditor.pas" line="82" />
+      <field name="ListBoxControlFileStrings" type="TListBox" visibility="published" size="4" offset="1384" file="UFormModelEditor.pas" line="83" />
+      <field name="EditNameControlFile" type="TEdit" visibility="published" size="4" offset="1388" file="UFormModelEditor.pas" line="84" />
+      <field name="LabelNameControlFile" type="TLabel" visibility="published" size="4" offset="1392" file="UFormModelEditor.pas" line="85" />
+      <field name="SaveDialogIniFile" type="TSaveDialog" visibility="published" size="4" offset="1396" file="UFormModelEditor.pas" line="86" />
+      <field name="BitBtnSaveTo" type="TBitBtn" visibility="published" size="4" offset="1400" file="UFormModelEditor.pas" line="87" />
+      <field name="LabelStateIniFile" type="TLabel" visibility="published" size="4" offset="1404" file="UFormModelEditor.pas" line="88" />
+      <field name="EditStateInifile" type="TEdit" visibility="published" size="4" offset="1408" file="UFormModelEditor.pas" line="89" />
+      <field name="LabelParInifile" type="TLabel" visibility="published" size="4" offset="1412" file="UFormModelEditor.pas" line="90" />
+      <field name="EditParIniFile" type="TEdit" visibility="published" size="4" offset="1416" file="UFormModelEditor.pas" line="91" />
+      <field name="LabelWeatherFile" type="TLabel" visibility="published" size="4" offset="1420" file="UFormModelEditor.pas" line="92" />
+      <field name="EditWeatherFile" type="TEdit" visibility="published" size="4" offset="1424" file="UFormModelEditor.pas" line="93" />
+      <field name="SpeedButtonEditStateIniFileName" type="TSpeedButton" visibility="published" size="4" offset="1428" file="UFormModelEditor.pas" line="94" />
+      <field name="SpeedButtonEditParInifileName" type="TSpeedButton" visibility="published" size="4" offset="1432" file="UFormModelEditor.pas" line="95" />
+      <field name="SpeedButtonEditWeatherFileName" type="TSpeedButton" visibility="published" size="4" offset="1436" file="UFormModelEditor.pas" line="96" />
+      <field name="DateTimePickerStartHour" type="TDateTimePicker" visibility="published" size="4" offset="1440" file="UFormModelEditor.pas" line="97" />
+      <field name="DateTimePickerEndHour" type="TDateTimePicker" visibility="published" size="4" offset="1444" file="UFormModelEditor.pas" line="98" />
+      <field name="Label14" type="TLabel" visibility="published" size="4" offset="1448" file="UFormModelEditor.pas" line="99" />
+      <field name="Label16" type="TLabel" visibility="published" size="4" offset="1452" file="UFormModelEditor.pas" line="100" />
+      <field name="DateTimePicker1" type="TDateTimePicker" visibility="published" size="4" offset="1456" file="UFormModelEditor.pas" line="101" />
       <procedure name="BitBtn_CloseClick" visibility="published" file="UFormModelEditor.pas" line="102">
         <parameters>
           <parameter name="Sender" type="TObject" />
@@ -2772,15 +2792,15 @@
           <parameter name="Sender" type="TObject" />
         </parameters>
       </procedure>
-      <field name="TimeInit" type="string" visibility="public" size="4" offset="1444" file="UFormModelEditor.pas" line="123" />
-      <field name="FileNames" type="string" visibility="public" size="4" offset="1448" file="UFormModelEditor.pas" line="124" />
-      <field name="StartZeit" type="string" visibility="public" size="4" offset="1452" file="UFormModelEditor.pas" line="125" />
-      <field name="endZeit" type="string" visibility="public" size="4" offset="1456" file="UFormModelEditor.pas" line="126" />
-      <field name="TimeStep" type="string" visibility="public" size="4" offset="1460" file="UFormModelEditor.pas" line="127" />
-      <field name="StateIniFN" type="string" visibility="public" size="4" offset="1464" file="UFormModelEditor.pas" line="128" />
-      <field name="ParamIniFN" type="string" visibility="public" size="4" offset="1468" file="UFormModelEditor.pas" line="129" />
-      <field name="WeatherFileFN" type="string" visibility="public" size="4" offset="1472" file="UFormModelEditor.pas" line="130" />
-      <field name="Save_Status" type="Boolean" visibility="public" size="1" offset="1476" file="UFormModelEditor.pas" line="132" />
+      <field name="TimeInit" type="string" visibility="public" size="4" offset="1460" file="UFormModelEditor.pas" line="123" />
+      <field name="FileNames" type="string" visibility="public" size="4" offset="1464" file="UFormModelEditor.pas" line="124" />
+      <field name="StartZeit" type="string" visibility="public" size="4" offset="1468" file="UFormModelEditor.pas" line="125" />
+      <field name="endZeit" type="string" visibility="public" size="4" offset="1472" file="UFormModelEditor.pas" line="126" />
+      <field name="TimeStep" type="string" visibility="public" size="4" offset="1476" file="UFormModelEditor.pas" line="127" />
+      <field name="StateIniFN" type="string" visibility="public" size="4" offset="1480" file="UFormModelEditor.pas" line="128" />
+      <field name="ParamIniFN" type="string" visibility="public" size="4" offset="1484" file="UFormModelEditor.pas" line="129" />
+      <field name="WeatherFileFN" type="string" visibility="public" size="4" offset="1488" file="UFormModelEditor.pas" line="130" />
+      <field name="Save_Status" type="Boolean" visibility="public" size="1" offset="1492" file="UFormModelEditor.pas" line="132" />
     </members>
   </class>
   <variable name="ModelEdit" type="TModelEdit" file="UFormModelEditor.pas" line="136" />

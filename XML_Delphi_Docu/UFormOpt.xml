@@ -1095,6 +1095,8 @@
             </methodref>
             <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
             </methodref>
+            <methodref name="WMGetObject" visibility="private" procflags="message">
+            </methodref>
             <methodref name="CMChanged" visibility="private" procflags="message">
             </methodref>
             <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -1301,6 +1303,10 @@
             </methodref>
             <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
             </methodref>
+            <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="override">
+            </methodref>
             <methodref name="KeyDown" visibility="protected" procflags="dynamic">
             </methodref>
             <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -1423,6 +1429,8 @@
             </propertyref>
             <propertyref name="WindowHandle" visibility="protected">
             </propertyref>
+            <propertyref name="UIAutomationProvider" visibility="protected">
+            </propertyref>
             <eventref name="OnAlignInsertBefore" visibility="protected">
             </eventref>
             <eventref name="OnAlignPosition" visibility="protected">
@@ -1458,6 +1466,12 @@
             <methodref name="Broadcast" visibility="public">
             </methodref>
             <methodref name="CanFocus" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="ContainsControl" visibility="public">
             </methodref>
@@ -1838,6 +1852,8 @@
               </methodref>
               <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
               </methodref>
+              <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Changed" visibility="protected">
               </methodref>
               <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -2079,6 +2095,8 @@
               <methodref name="Destroy" visibility="public" procflags="destructor override">
               </methodref>
               <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
               </methodref>
               <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
               </methodref>
@@ -2326,6 +2344,8 @@
                 <methodref name="ReadDeltaStream" visibility="private">
                 </methodref>
                 <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="InitObservers" visibility="private">
                 </methodref>
                 <methodref name="FindSortedComponent" visibility="private">
                 </methodref>
@@ -2596,45 +2616,45 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="SrcListPar" type="TListBox" visibility="published" size="4" offset="1080" file="UFormOpt.pas" line="11" />
-      <field name="DstListPar" type="TListBox" visibility="published" size="4" offset="1084" file="UFormOpt.pas" line="12" />
-      <field name="SrcLabel" type="TLabel" visibility="published" size="4" offset="1088" file="UFormOpt.pas" line="13" />
-      <field name="DstLabel" type="TLabel" visibility="published" size="4" offset="1092" file="UFormOpt.pas" line="14" />
-      <field name="IncludeBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1096" file="UFormOpt.pas" line="15" />
-      <field name="IncAllBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1100" file="UFormOpt.pas" line="16" />
-      <field name="ExcludeBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1104" file="UFormOpt.pas" line="17" />
-      <field name="ExAllBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1108" file="UFormOpt.pas" line="18" />
-      <field name="Label1" type="TLabel" visibility="published" size="4" offset="1112" file="UFormOpt.pas" line="19" />
-      <field name="Label2" type="TLabel" visibility="published" size="4" offset="1116" file="UFormOpt.pas" line="20" />
-      <field name="IncAllBtnData" type="TSpeedButton" visibility="published" size="4" offset="1120" file="UFormOpt.pas" line="21" />
-      <field name="ExcludeBtnData" type="TSpeedButton" visibility="published" size="4" offset="1124" file="UFormOpt.pas" line="22" />
-      <field name="ExAllBtnData" type="TSpeedButton" visibility="published" size="4" offset="1128" file="UFormOpt.pas" line="23" />
-      <field name="SrcListData" type="TListBox" visibility="published" size="4" offset="1132" file="UFormOpt.pas" line="24" />
-      <field name="DstListData" type="TListBox" visibility="published" size="4" offset="1136" file="UFormOpt.pas" line="25" />
-      <field name="IncludeBtnData" type="TSpeedButton" visibility="published" size="4" offset="1140" file="UFormOpt.pas" line="26" />
-      <field name="StatusBarOpt" type="TStatusBar" visibility="published" size="4" offset="1144" file="UFormOpt.pas" line="27" />
-      <field name="Label3" type="TLabel" visibility="published" size="4" offset="1148" file="UFormOpt.pas" line="28" />
-      <field name="Label4" type="TLabel" visibility="published" size="4" offset="1152" file="UFormOpt.pas" line="29" />
-      <field name="ListBoxParaValues" type="TListBox" visibility="published" size="4" offset="1156" file="UFormOpt.pas" line="30" />
-      <field name="LabelOldValues" type="TLabel" visibility="published" size="4" offset="1160" file="UFormOpt.pas" line="31" />
-      <field name="LabelOptmierteWerte" type="TLabel" visibility="published" size="4" offset="1164" file="UFormOpt.pas" line="32" />
-      <field name="ListBoxOptimizedValues" type="TListBox" visibility="published" size="4" offset="1168" file="UFormOpt.pas" line="33" />
-      <field name="LblStderror" type="TLabel" visibility="published" size="4" offset="1172" file="UFormOpt.pas" line="34" />
-      <field name="LstBxStderror" type="TListBox" visibility="published" size="4" offset="1176" file="UFormOpt.pas" line="35" />
-      <field name="LabelWeightOption" type="TLabel" visibility="published" size="4" offset="1180" file="UFormOpt.pas" line="36" />
-      <field name="ComboBoxWeightOption" type="TComboBox" visibility="published" size="4" offset="1184" file="UFormOpt.pas" line="37" />
-      <field name="RadioGroupINIFiles" type="TRadioGroup" visibility="published" size="4" offset="1188" file="UFormOpt.pas" line="38" />
-      <field name="EditTeiler" type="TEdit" visibility="published" size="4" offset="1192" file="UFormOpt.pas" line="39" />
-      <field name="LabelTeiler" type="TLabel" visibility="published" size="4" offset="1196" file="UFormOpt.pas" line="40" />
-      <field name="LabelLambda" type="TLabel" visibility="published" size="4" offset="1200" file="UFormOpt.pas" line="41" />
-      <field name="EditLambda" type="TEdit" visibility="published" size="4" offset="1204" file="UFormOpt.pas" line="42" />
-      <field name="btnUebernehmenBtn1" type="TSpeedButton" visibility="published" size="4" offset="1208" file="UFormOpt.pas" line="43" />
-      <field name="btnOKBtn1" type="TSpeedButton" visibility="published" size="4" offset="1212" file="UFormOpt.pas" line="44" />
-      <field name="btnResetBtn1" type="TSpeedButton" visibility="published" size="4" offset="1216" file="UFormOpt.pas" line="45" />
-      <field name="btnStartBtn1" type="TSpeedButton" visibility="published" size="4" offset="1220" file="UFormOpt.pas" line="46" />
-      <field name="btnViewBtn1" type="TSpeedButton" visibility="published" size="4" offset="1224" file="UFormOpt.pas" line="47" />
-      <field name="lbl_actininame" type="TLabel" visibility="published" size="4" offset="1228" file="UFormOpt.pas" line="48" />
-      <field name="lbl1" type="TLabel" visibility="published" size="4" offset="1232" file="UFormOpt.pas" line="49" />
+      <field name="SrcListPar" type="TListBox" visibility="published" size="4" offset="1096" file="UFormOpt.pas" line="11" />
+      <field name="DstListPar" type="TListBox" visibility="published" size="4" offset="1100" file="UFormOpt.pas" line="12" />
+      <field name="SrcLabel" type="TLabel" visibility="published" size="4" offset="1104" file="UFormOpt.pas" line="13" />
+      <field name="DstLabel" type="TLabel" visibility="published" size="4" offset="1108" file="UFormOpt.pas" line="14" />
+      <field name="IncludeBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1112" file="UFormOpt.pas" line="15" />
+      <field name="IncAllBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1116" file="UFormOpt.pas" line="16" />
+      <field name="ExcludeBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1120" file="UFormOpt.pas" line="17" />
+      <field name="ExAllBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1124" file="UFormOpt.pas" line="18" />
+      <field name="Label1" type="TLabel" visibility="published" size="4" offset="1128" file="UFormOpt.pas" line="19" />
+      <field name="Label2" type="TLabel" visibility="published" size="4" offset="1132" file="UFormOpt.pas" line="20" />
+      <field name="IncAllBtnData" type="TSpeedButton" visibility="published" size="4" offset="1136" file="UFormOpt.pas" line="21" />
+      <field name="ExcludeBtnData" type="TSpeedButton" visibility="published" size="4" offset="1140" file="UFormOpt.pas" line="22" />
+      <field name="ExAllBtnData" type="TSpeedButton" visibility="published" size="4" offset="1144" file="UFormOpt.pas" line="23" />
+      <field name="SrcListData" type="TListBox" visibility="published" size="4" offset="1148" file="UFormOpt.pas" line="24" />
+      <field name="DstListData" type="TListBox" visibility="published" size="4" offset="1152" file="UFormOpt.pas" line="25" />
+      <field name="IncludeBtnData" type="TSpeedButton" visibility="published" size="4" offset="1156" file="UFormOpt.pas" line="26" />
+      <field name="StatusBarOpt" type="TStatusBar" visibility="published" size="4" offset="1160" file="UFormOpt.pas" line="27" />
+      <field name="Label3" type="TLabel" visibility="published" size="4" offset="1164" file="UFormOpt.pas" line="28" />
+      <field name="Label4" type="TLabel" visibility="published" size="4" offset="1168" file="UFormOpt.pas" line="29" />
+      <field name="ListBoxParaValues" type="TListBox" visibility="published" size="4" offset="1172" file="UFormOpt.pas" line="30" />
+      <field name="LabelOldValues" type="TLabel" visibility="published" size="4" offset="1176" file="UFormOpt.pas" line="31" />
+      <field name="LabelOptmierteWerte" type="TLabel" visibility="published" size="4" offset="1180" file="UFormOpt.pas" line="32" />
+      <field name="ListBoxOptimizedValues" type="TListBox" visibility="published" size="4" offset="1184" file="UFormOpt.pas" line="33" />
+      <field name="LblStderror" type="TLabel" visibility="published" size="4" offset="1188" file="UFormOpt.pas" line="34" />
+      <field name="LstBxStderror" type="TListBox" visibility="published" size="4" offset="1192" file="UFormOpt.pas" line="35" />
+      <field name="LabelWeightOption" type="TLabel" visibility="published" size="4" offset="1196" file="UFormOpt.pas" line="36" />
+      <field name="ComboBoxWeightOption" type="TComboBox" visibility="published" size="4" offset="1200" file="UFormOpt.pas" line="37" />
+      <field name="RadioGroupINIFiles" type="TRadioGroup" visibility="published" size="4" offset="1204" file="UFormOpt.pas" line="38" />
+      <field name="EditTeiler" type="TEdit" visibility="published" size="4" offset="1208" file="UFormOpt.pas" line="39" />
+      <field name="LabelTeiler" type="TLabel" visibility="published" size="4" offset="1212" file="UFormOpt.pas" line="40" />
+      <field name="LabelLambda" type="TLabel" visibility="published" size="4" offset="1216" file="UFormOpt.pas" line="41" />
+      <field name="EditLambda" type="TEdit" visibility="published" size="4" offset="1220" file="UFormOpt.pas" line="42" />
+      <field name="btnUebernehmenBtn1" type="TSpeedButton" visibility="published" size="4" offset="1224" file="UFormOpt.pas" line="43" />
+      <field name="btnOKBtn1" type="TSpeedButton" visibility="published" size="4" offset="1228" file="UFormOpt.pas" line="44" />
+      <field name="btnResetBtn1" type="TSpeedButton" visibility="published" size="4" offset="1232" file="UFormOpt.pas" line="45" />
+      <field name="btnStartBtn1" type="TSpeedButton" visibility="published" size="4" offset="1236" file="UFormOpt.pas" line="46" />
+      <field name="btnViewBtn1" type="TSpeedButton" visibility="published" size="4" offset="1240" file="UFormOpt.pas" line="47" />
+      <field name="lbl_actininame" type="TLabel" visibility="published" size="4" offset="1244" file="UFormOpt.pas" line="48" />
+      <field name="lbl1" type="TLabel" visibility="published" size="4" offset="1248" file="UFormOpt.pas" line="49" />
       <procedure name="IncludeBtnDataClick" visibility="published" file="UFormOpt.pas" line="50">
         <parameters>
           <parameter name="Sender" type="TObject" />
@@ -2752,12 +2772,12 @@
           <parameter name="Sender" type="TObject" />
         </parameters>
       </procedure>
-      <field name="SaveNewResults" type="Boolean" visibility="private" size="1" offset="1236" file="UFormOpt.pas" line="78" />
+      <field name="SaveNewResults" type="Boolean" visibility="private" size="1" offset="1252" file="UFormOpt.pas" line="78" />
       <procedure name="RunOptimizationForActIni" visibility="private" file="UFormOpt.pas" line="79">
       </procedure>
-      <field name="model" type="TMod" visibility="public" size="4" offset="1240" file="UFormOpt.pas" line="83" />
-      <field name="SaveParList" type="TStringList" visibility="public" size="4" offset="1244" file="UFormOpt.pas" line="84" />
-      <field name="fn" type="string" visibility="public" size="4" offset="1248" file="UFormOpt.pas" line="85" />
+      <field name="model" type="TMod" visibility="public" size="4" offset="1256" file="UFormOpt.pas" line="83" />
+      <field name="SaveParList" type="TStringList" visibility="public" size="4" offset="1260" file="UFormOpt.pas" line="84" />
+      <field name="fn" type="string" visibility="public" size="4" offset="1264" file="UFormOpt.pas" line="85" />
     </members>
   </class>
   <variable name="FormOpt" type="TFormOpt" file="UFormOpt.pas" line="90" />

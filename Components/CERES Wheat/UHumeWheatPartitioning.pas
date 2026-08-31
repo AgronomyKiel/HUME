@@ -985,7 +985,7 @@ end;
 
 procedure THumeWheatPartitioning.CreateAllOptions;
 begin
-  OptCreate('optRSWT', 'pothi', optRSWT);
+  OptCreate('optRSWT', 'CWT3', optRSWT);
   optRSWT.OptionList.Clear;
   optRSWT.OptionList.Add('pothi');
   optRSWT.OptionList.Add('CWT3');

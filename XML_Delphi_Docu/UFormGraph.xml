@@ -1106,6 +1106,8 @@
             </methodref>
             <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
             </methodref>
+            <methodref name="WMGetObject" visibility="private" procflags="message">
+            </methodref>
             <methodref name="CMChanged" visibility="private" procflags="message">
             </methodref>
             <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -1312,6 +1314,10 @@
             </methodref>
             <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
             </methodref>
+            <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="override">
+            </methodref>
             <methodref name="KeyDown" visibility="protected" procflags="dynamic">
             </methodref>
             <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -1434,6 +1440,8 @@
             </propertyref>
             <propertyref name="WindowHandle" visibility="protected">
             </propertyref>
+            <propertyref name="UIAutomationProvider" visibility="protected">
+            </propertyref>
             <eventref name="OnAlignInsertBefore" visibility="protected">
             </eventref>
             <eventref name="OnAlignPosition" visibility="protected">
@@ -1469,6 +1477,12 @@
             <methodref name="Broadcast" visibility="public">
             </methodref>
             <methodref name="CanFocus" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="ContainsControl" visibility="public">
             </methodref>
@@ -1849,6 +1863,8 @@
               </methodref>
               <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
               </methodref>
+              <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Changed" visibility="protected">
               </methodref>
               <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -2090,6 +2106,8 @@
               <methodref name="Destroy" visibility="public" procflags="destructor override">
               </methodref>
               <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
               </methodref>
               <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
               </methodref>
@@ -2337,6 +2355,8 @@
                 <methodref name="ReadDeltaStream" visibility="private">
                 </methodref>
                 <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="InitObservers" visibility="private">
                 </methodref>
                 <methodref name="FindSortedComponent" visibility="private">
                 </methodref>
@@ -2607,42 +2627,42 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="SaveDialog1" type="TSaveDialog" visibility="published" size="4" offset="1080" file="UFormGraph.pas" line="19" />
-      <field name="PrintDialog1" type="TPrintDialog" visibility="published" size="4" offset="1084" file="UFormGraph.pas" line="20" />
-      <field name="OpenDialog1" type="TOpenDialog" visibility="published" size="4" offset="1088" file="UFormGraph.pas" line="21" />
-      <field name="StatusBar1" type="TStatusBar" visibility="published" size="4" offset="1092" file="UFormGraph.pas" line="22" />
-      <field name="PageControl1" type="TPageControl" visibility="published" size="4" offset="1096" file="UFormGraph.pas" line="23" />
-      <field name="TabSheet1" type="TTabSheet" visibility="published" size="4" offset="1100" file="UFormGraph.pas" line="24" />
-      <field name="Chart1" type="TChart" visibility="published" size="4" offset="1104" file="UFormGraph.pas" line="25" />
-      <field name="TabSheet2" type="TTabSheet" visibility="published" size="4" offset="1108" file="UFormGraph.pas" line="26" />
-      <field name="SrcLabel" type="TLabel" visibility="published" size="4" offset="1112" file="UFormGraph.pas" line="27" />
-      <field name="DstLabel" type="TLabel" visibility="published" size="4" offset="1116" file="UFormGraph.pas" line="28" />
-      <field name="IncludeBtnSim" type="TSpeedButton" visibility="published" size="4" offset="1120" file="UFormGraph.pas" line="29" />
-      <field name="IncAllBtnSim" type="TSpeedButton" visibility="published" size="4" offset="1124" file="UFormGraph.pas" line="30" />
-      <field name="ExcludeBtnSim" type="TSpeedButton" visibility="published" size="4" offset="1128" file="UFormGraph.pas" line="31" />
-      <field name="ExAllBtnSim" type="TSpeedButton" visibility="published" size="4" offset="1132" file="UFormGraph.pas" line="32" />
-      <field name="OKBtn" type="TButton" visibility="published" size="4" offset="1136" file="UFormGraph.pas" line="33" />
-      <field name="CancelBtn" type="TButton" visibility="published" size="4" offset="1140" file="UFormGraph.pas" line="34" />
-      <field name="SrcListSim" type="TListBox" visibility="published" size="4" offset="1144" file="UFormGraph.pas" line="35" />
-      <field name="DstListSim" type="TListBox" visibility="published" size="4" offset="1148" file="UFormGraph.pas" line="36" />
-      <field name="ButtonUebernehmen" type="TButton" visibility="published" size="4" offset="1152" file="UFormGraph.pas" line="37" />
-      <field name="Simulationsergebnisse" type="TLabel" visibility="published" size="4" offset="1156" file="UFormGraph.pas" line="38" />
-      <field name="ToolBar1" type="TToolBar" visibility="published" size="4" offset="1160" file="UFormGraph.pas" line="39" />
-      <field name="Label1" type="TLabel" visibility="published" size="4" offset="1164" file="UFormGraph.pas" line="40" />
-      <field name="Label2" type="TLabel" visibility="published" size="4" offset="1168" file="UFormGraph.pas" line="41" />
-      <field name="Label3" type="TLabel" visibility="published" size="4" offset="1172" file="UFormGraph.pas" line="42" />
-      <field name="BtnSimFileOpen" type="TButton" visibility="published" size="4" offset="1176" file="UFormGraph.pas" line="43" />
-      <field name="BtnDataFileOpen" type="TButton" visibility="published" size="4" offset="1180" file="UFormGraph.pas" line="44" />
-      <field name="IncludeBtnMeas" type="TSpeedButton" visibility="published" size="4" offset="1184" file="UFormGraph.pas" line="45" />
-      <field name="InclAllBtnMeas" type="TSpeedButton" visibility="published" size="4" offset="1188" file="UFormGraph.pas" line="46" />
-      <field name="ExcludeBtnMeas" type="TSpeedButton" visibility="published" size="4" offset="1192" file="UFormGraph.pas" line="47" />
-      <field name="ExAllBtnMeas" type="TSpeedButton" visibility="published" size="4" offset="1196" file="UFormGraph.pas" line="48" />
-      <field name="SrcListMeas" type="TListBox" visibility="published" size="4" offset="1200" file="UFormGraph.pas" line="49" />
-      <field name="DstListMeas" type="TListBox" visibility="published" size="4" offset="1204" file="UFormGraph.pas" line="50" />
-      <field name="BtnPrint" type="TSpeedButton" visibility="published" size="4" offset="1208" file="UFormGraph.pas" line="51" />
-      <field name="BtnSave" type="TSpeedButton" visibility="published" size="4" offset="1212" file="UFormGraph.pas" line="52" />
-      <field name="LblDaten" type="TLabel" visibility="published" size="4" offset="1216" file="UFormGraph.pas" line="53" />
-      <field name="BtnUpdateSeries" type="TSpeedButton" visibility="published" size="4" offset="1220" file="UFormGraph.pas" line="54" />
+      <field name="SaveDialog1" type="TSaveDialog" visibility="published" size="4" offset="1096" file="UFormGraph.pas" line="19" />
+      <field name="PrintDialog1" type="TPrintDialog" visibility="published" size="4" offset="1100" file="UFormGraph.pas" line="20" />
+      <field name="OpenDialog1" type="TOpenDialog" visibility="published" size="4" offset="1104" file="UFormGraph.pas" line="21" />
+      <field name="StatusBar1" type="TStatusBar" visibility="published" size="4" offset="1108" file="UFormGraph.pas" line="22" />
+      <field name="PageControl1" type="TPageControl" visibility="published" size="4" offset="1112" file="UFormGraph.pas" line="23" />
+      <field name="TabSheet1" type="TTabSheet" visibility="published" size="4" offset="1116" file="UFormGraph.pas" line="24" />
+      <field name="Chart1" type="TChart" visibility="published" size="4" offset="1120" file="UFormGraph.pas" line="25" />
+      <field name="TabSheet2" type="TTabSheet" visibility="published" size="4" offset="1124" file="UFormGraph.pas" line="26" />
+      <field name="SrcLabel" type="TLabel" visibility="published" size="4" offset="1128" file="UFormGraph.pas" line="27" />
+      <field name="DstLabel" type="TLabel" visibility="published" size="4" offset="1132" file="UFormGraph.pas" line="28" />
+      <field name="IncludeBtnSim" type="TSpeedButton" visibility="published" size="4" offset="1136" file="UFormGraph.pas" line="29" />
+      <field name="IncAllBtnSim" type="TSpeedButton" visibility="published" size="4" offset="1140" file="UFormGraph.pas" line="30" />
+      <field name="ExcludeBtnSim" type="TSpeedButton" visibility="published" size="4" offset="1144" file="UFormGraph.pas" line="31" />
+      <field name="ExAllBtnSim" type="TSpeedButton" visibility="published" size="4" offset="1148" file="UFormGraph.pas" line="32" />
+      <field name="OKBtn" type="TButton" visibility="published" size="4" offset="1152" file="UFormGraph.pas" line="33" />
+      <field name="CancelBtn" type="TButton" visibility="published" size="4" offset="1156" file="UFormGraph.pas" line="34" />
+      <field name="SrcListSim" type="TListBox" visibility="published" size="4" offset="1160" file="UFormGraph.pas" line="35" />
+      <field name="DstListSim" type="TListBox" visibility="published" size="4" offset="1164" file="UFormGraph.pas" line="36" />
+      <field name="ButtonUebernehmen" type="TButton" visibility="published" size="4" offset="1168" file="UFormGraph.pas" line="37" />
+      <field name="Simulationsergebnisse" type="TLabel" visibility="published" size="4" offset="1172" file="UFormGraph.pas" line="38" />
+      <field name="ToolBar1" type="TToolBar" visibility="published" size="4" offset="1176" file="UFormGraph.pas" line="39" />
+      <field name="Label1" type="TLabel" visibility="published" size="4" offset="1180" file="UFormGraph.pas" line="40" />
+      <field name="Label2" type="TLabel" visibility="published" size="4" offset="1184" file="UFormGraph.pas" line="41" />
+      <field name="Label3" type="TLabel" visibility="published" size="4" offset="1188" file="UFormGraph.pas" line="42" />
+      <field name="BtnSimFileOpen" type="TButton" visibility="published" size="4" offset="1192" file="UFormGraph.pas" line="43" />
+      <field name="BtnDataFileOpen" type="TButton" visibility="published" size="4" offset="1196" file="UFormGraph.pas" line="44" />
+      <field name="IncludeBtnMeas" type="TSpeedButton" visibility="published" size="4" offset="1200" file="UFormGraph.pas" line="45" />
+      <field name="InclAllBtnMeas" type="TSpeedButton" visibility="published" size="4" offset="1204" file="UFormGraph.pas" line="46" />
+      <field name="ExcludeBtnMeas" type="TSpeedButton" visibility="published" size="4" offset="1208" file="UFormGraph.pas" line="47" />
+      <field name="ExAllBtnMeas" type="TSpeedButton" visibility="published" size="4" offset="1212" file="UFormGraph.pas" line="48" />
+      <field name="SrcListMeas" type="TListBox" visibility="published" size="4" offset="1216" file="UFormGraph.pas" line="49" />
+      <field name="DstListMeas" type="TListBox" visibility="published" size="4" offset="1220" file="UFormGraph.pas" line="50" />
+      <field name="BtnPrint" type="TSpeedButton" visibility="published" size="4" offset="1224" file="UFormGraph.pas" line="51" />
+      <field name="BtnSave" type="TSpeedButton" visibility="published" size="4" offset="1228" file="UFormGraph.pas" line="52" />
+      <field name="LblDaten" type="TLabel" visibility="published" size="4" offset="1232" file="UFormGraph.pas" line="53" />
+      <field name="BtnUpdateSeries" type="TSpeedButton" visibility="published" size="4" offset="1236" file="UFormGraph.pas" line="54" />
       <procedure name="PrintClick" visibility="published" file="UFormGraph.pas" line="55">
         <parameters>
           <parameter name="Sender" type="TObject" />
@@ -2766,14 +2786,14 @@
           <parameter name="Sender" type="TObject" />
         </parameters>
       </procedure>
-      <field name="DataFileSim" type="TTextFileH" visibility="public" size="4" offset="1224" file="UFormGraph.pas" line="84" />
-      <field name="DataFileMeas" type="TTextFileH" visibility="public" size="4" offset="1228" file="UFormGraph.pas" line="85" />
-      <field name="SelSeriesSim" type="TStringList" visibility="public" size="4" offset="1232" file="UFormGraph.pas" line="86" />
-      <field name="SelSeriesDat" type="TStringList" visibility="public" size="4" offset="1236" file="UFormGraph.pas" line="87" />
-      <field name="LineSeriesArr" type="TLineSeriesArr" visibility="public" size="40" offset="1240" file="UFormGraph.pas" line="88" />
-      <field name="PointSeriesArr" type="TPointSeriesArr" visibility="public" size="40" offset="1280" file="UFormGraph.pas" line="89" />
-      <field name="n_LineSeries" type="Integer" visibility="public" size="4" offset="1320" file="UFormGraph.pas" line="90" />
-      <field name="n_PointSeries" type="Integer" visibility="public" size="4" offset="1324" file="UFormGraph.pas" line="90" />
+      <field name="DataFileSim" type="TTextFileH" visibility="public" size="4" offset="1240" file="UFormGraph.pas" line="84" />
+      <field name="DataFileMeas" type="TTextFileH" visibility="public" size="4" offset="1244" file="UFormGraph.pas" line="85" />
+      <field name="SelSeriesSim" type="TStringList" visibility="public" size="4" offset="1248" file="UFormGraph.pas" line="86" />
+      <field name="SelSeriesDat" type="TStringList" visibility="public" size="4" offset="1252" file="UFormGraph.pas" line="87" />
+      <field name="LineSeriesArr" type="TLineSeriesArr" visibility="public" size="40" offset="1256" file="UFormGraph.pas" line="88" />
+      <field name="PointSeriesArr" type="TPointSeriesArr" visibility="public" size="40" offset="1296" file="UFormGraph.pas" line="89" />
+      <field name="n_LineSeries" type="Integer" visibility="public" size="4" offset="1336" file="UFormGraph.pas" line="90" />
+      <field name="n_PointSeries" type="Integer" visibility="public" size="4" offset="1340" file="UFormGraph.pas" line="90" />
       <procedure name="UpdateSeries" visibility="public" file="UFormGraph.pas" line="92">
       </procedure>
     </members>

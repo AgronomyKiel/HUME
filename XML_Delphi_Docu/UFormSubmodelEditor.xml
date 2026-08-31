@@ -1095,6 +1095,8 @@
             </methodref>
             <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
             </methodref>
+            <methodref name="WMGetObject" visibility="private" procflags="message">
+            </methodref>
             <methodref name="CMChanged" visibility="private" procflags="message">
             </methodref>
             <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -1301,6 +1303,10 @@
             </methodref>
             <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
             </methodref>
+            <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="override">
+            </methodref>
             <methodref name="KeyDown" visibility="protected" procflags="dynamic">
             </methodref>
             <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -1423,6 +1429,8 @@
             </propertyref>
             <propertyref name="WindowHandle" visibility="protected">
             </propertyref>
+            <propertyref name="UIAutomationProvider" visibility="protected">
+            </propertyref>
             <eventref name="OnAlignInsertBefore" visibility="protected">
             </eventref>
             <eventref name="OnAlignPosition" visibility="protected">
@@ -1458,6 +1466,12 @@
             <methodref name="Broadcast" visibility="public">
             </methodref>
             <methodref name="CanFocus" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="ContainsControl" visibility="public">
             </methodref>
@@ -1838,6 +1852,8 @@
               </methodref>
               <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
               </methodref>
+              <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Changed" visibility="protected">
               </methodref>
               <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -2079,6 +2095,8 @@
               <methodref name="Destroy" visibility="public" procflags="destructor override">
               </methodref>
               <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
               </methodref>
               <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
               </methodref>
@@ -2326,6 +2344,8 @@
                 <methodref name="ReadDeltaStream" visibility="private">
                 </methodref>
                 <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="InitObservers" visibility="private">
                 </methodref>
                 <methodref name="FindSortedComponent" visibility="private">
                 </methodref>
@@ -2596,27 +2616,27 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="PageControl1" type="TPageControl" visibility="published" size="4" offset="1080" file="UFormSubmodelEditor.pas" line="12" />
-      <field name="TabSheet_Par" type="TTabSheet" visibility="published" size="4" offset="1084" file="UFormSubmodelEditor.pas" line="13" />
-      <field name="TabSheet_Var" type="TTabSheet" visibility="published" size="4" offset="1088" file="UFormSubmodelEditor.pas" line="14" />
-      <field name="TabSheet_State" type="TTabSheet" visibility="published" size="4" offset="1092" file="UFormSubmodelEditor.pas" line="15" />
-      <field name="Panel1" type="TPanel" visibility="published" size="4" offset="1096" file="UFormSubmodelEditor.pas" line="16" />
-      <field name="ADV_Par" type="TAdvStringGrid" visibility="published" size="4" offset="1100" file="UFormSubmodelEditor.pas" line="17" />
-      <field name="ADV_Var" type="TAdvStringGrid" visibility="published" size="4" offset="1104" file="UFormSubmodelEditor.pas" line="18" />
-      <field name="ADV_State" type="TAdvStringGrid" visibility="published" size="4" offset="1108" file="UFormSubmodelEditor.pas" line="19" />
-      <field name="TabSheet_ExternV" type="TTabSheet" visibility="published" size="4" offset="1112" file="UFormSubmodelEditor.pas" line="20" />
-      <field name="ADV_ExternV" type="TAdvStringGrid" visibility="published" size="4" offset="1116" file="UFormSubmodelEditor.pas" line="21" />
-      <field name="BitBtnAccept" type="TBitBtn" visibility="published" size="4" offset="1120" file="UFormSubmodelEditor.pas" line="22" />
-      <field name="BitBtnClose" type="TBitBtn" visibility="published" size="4" offset="1124" file="UFormSubmodelEditor.pas" line="23" />
-      <field name="BitBtnUndo" type="TBitBtn" visibility="published" size="4" offset="1128" file="UFormSubmodelEditor.pas" line="24" />
-      <field name="TabSheetFileName" type="TTabSheet" visibility="published" size="4" offset="1132" file="UFormSubmodelEditor.pas" line="25" />
-      <field name="EditDataFileName" type="TEdit" visibility="published" size="4" offset="1136" file="UFormSubmodelEditor.pas" line="26" />
-      <field name="LabelDataFileName" type="TLabel" visibility="published" size="4" offset="1140" file="UFormSubmodelEditor.pas" line="27" />
-      <field name="SpeedButtonEditDataFileName" type="TSpeedButton" visibility="published" size="4" offset="1144" file="UFormSubmodelEditor.pas" line="28" />
-      <field name="LabelOutputFile" type="TLabel" visibility="published" size="4" offset="1148" file="UFormSubmodelEditor.pas" line="29" />
-      <field name="EditOutPutFileName" type="TEdit" visibility="published" size="4" offset="1152" file="UFormSubmodelEditor.pas" line="30" />
-      <field name="SpeedButtonEditOutputFileName" type="TSpeedButton" visibility="published" size="4" offset="1156" file="UFormSubmodelEditor.pas" line="31" />
-      <field name="SaveDialog1" type="TSaveDialog" visibility="published" size="4" offset="1160" file="UFormSubmodelEditor.pas" line="32" />
+      <field name="PageControl1" type="TPageControl" visibility="published" size="4" offset="1096" file="UFormSubmodelEditor.pas" line="12" />
+      <field name="TabSheet_Par" type="TTabSheet" visibility="published" size="4" offset="1100" file="UFormSubmodelEditor.pas" line="13" />
+      <field name="TabSheet_Var" type="TTabSheet" visibility="published" size="4" offset="1104" file="UFormSubmodelEditor.pas" line="14" />
+      <field name="TabSheet_State" type="TTabSheet" visibility="published" size="4" offset="1108" file="UFormSubmodelEditor.pas" line="15" />
+      <field name="Panel1" type="TPanel" visibility="published" size="4" offset="1112" file="UFormSubmodelEditor.pas" line="16" />
+      <field name="ADV_Par" type="TAdvStringGrid" visibility="published" size="4" offset="1116" file="UFormSubmodelEditor.pas" line="17" />
+      <field name="ADV_Var" type="TAdvStringGrid" visibility="published" size="4" offset="1120" file="UFormSubmodelEditor.pas" line="18" />
+      <field name="ADV_State" type="TAdvStringGrid" visibility="published" size="4" offset="1124" file="UFormSubmodelEditor.pas" line="19" />
+      <field name="TabSheet_ExternV" type="TTabSheet" visibility="published" size="4" offset="1128" file="UFormSubmodelEditor.pas" line="20" />
+      <field name="ADV_ExternV" type="TAdvStringGrid" visibility="published" size="4" offset="1132" file="UFormSubmodelEditor.pas" line="21" />
+      <field name="BitBtnAccept" type="TBitBtn" visibility="published" size="4" offset="1136" file="UFormSubmodelEditor.pas" line="22" />
+      <field name="BitBtnClose" type="TBitBtn" visibility="published" size="4" offset="1140" file="UFormSubmodelEditor.pas" line="23" />
+      <field name="BitBtnUndo" type="TBitBtn" visibility="published" size="4" offset="1144" file="UFormSubmodelEditor.pas" line="24" />
+      <field name="TabSheetFileName" type="TTabSheet" visibility="published" size="4" offset="1148" file="UFormSubmodelEditor.pas" line="25" />
+      <field name="EditDataFileName" type="TEdit" visibility="published" size="4" offset="1152" file="UFormSubmodelEditor.pas" line="26" />
+      <field name="LabelDataFileName" type="TLabel" visibility="published" size="4" offset="1156" file="UFormSubmodelEditor.pas" line="27" />
+      <field name="SpeedButtonEditDataFileName" type="TSpeedButton" visibility="published" size="4" offset="1160" file="UFormSubmodelEditor.pas" line="28" />
+      <field name="LabelOutputFile" type="TLabel" visibility="published" size="4" offset="1164" file="UFormSubmodelEditor.pas" line="29" />
+      <field name="EditOutPutFileName" type="TEdit" visibility="published" size="4" offset="1168" file="UFormSubmodelEditor.pas" line="30" />
+      <field name="SpeedButtonEditOutputFileName" type="TSpeedButton" visibility="published" size="4" offset="1172" file="UFormSubmodelEditor.pas" line="31" />
+      <field name="SaveDialog1" type="TSaveDialog" visibility="published" size="4" offset="1176" file="UFormSubmodelEditor.pas" line="32" />
       <procedure name="BitBtnAcceptClick" visibility="published" file="UFormSubmodelEditor.pas" line="33">
         <parameters>
           <parameter name="Sender" type="TObject" />
@@ -2669,7 +2689,7 @@
           <parameter name="Sender" type="TObject" />
         </parameters>
       </procedure>
-      <field name="Save_Status" type="Boolean" visibility="public" size="1" offset="1164" file="UFormSubmodelEditor.pas" line="49" />
+      <field name="Save_Status" type="Boolean" visibility="public" size="1" offset="1180" file="UFormSubmodelEditor.pas" line="49" />
     </members>
   </class>
   <variable name="F_SubmodelEditor" type="TF_SubmodelEditor" file="UFormSubmodelEditor.pas" line="53" />

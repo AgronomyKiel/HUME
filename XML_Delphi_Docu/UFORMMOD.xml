@@ -1106,6 +1106,8 @@
             </methodref>
             <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
             </methodref>
+            <methodref name="WMGetObject" visibility="private" procflags="message">
+            </methodref>
             <methodref name="CMChanged" visibility="private" procflags="message">
             </methodref>
             <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -1312,6 +1314,10 @@
             </methodref>
             <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
             </methodref>
+            <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="override">
+            </methodref>
             <methodref name="KeyDown" visibility="protected" procflags="dynamic">
             </methodref>
             <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -1434,6 +1440,8 @@
             </propertyref>
             <propertyref name="WindowHandle" visibility="protected">
             </propertyref>
+            <propertyref name="UIAutomationProvider" visibility="protected">
+            </propertyref>
             <eventref name="OnAlignInsertBefore" visibility="protected">
             </eventref>
             <eventref name="OnAlignPosition" visibility="protected">
@@ -1469,6 +1477,12 @@
             <methodref name="Broadcast" visibility="public">
             </methodref>
             <methodref name="CanFocus" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="ContainsControl" visibility="public">
             </methodref>
@@ -1849,6 +1863,8 @@
               </methodref>
               <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
               </methodref>
+              <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Changed" visibility="protected">
               </methodref>
               <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -2090,6 +2106,8 @@
               <methodref name="Destroy" visibility="public" procflags="destructor override">
               </methodref>
               <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
               </methodref>
               <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
               </methodref>
@@ -2337,6 +2355,8 @@
                 <methodref name="ReadDeltaStream" visibility="private">
                 </methodref>
                 <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="InitObservers" visibility="private">
                 </methodref>
                 <methodref name="FindSortedComponent" visibility="private">
                 </methodref>
@@ -2607,156 +2627,156 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="MainMenu1" type="TMainMenu" visibility="published" size="4" offset="1080" file="UFORMMOD.pas" line="22" />
-      <field name="Menu_File" type="TMenuItem" visibility="published" size="4" offset="1084" file="UFORMMOD.pas" line="23" />
-      <field name="Menu_Run" type="TMenuItem" visibility="published" size="4" offset="1088" file="UFORMMOD.pas" line="24" />
-      <field name="Menu_Exit" type="TMenuItem" visibility="published" size="4" offset="1092" file="UFORMMOD.pas" line="25" />
-      <field name="Menu_Edit" type="TMenuItem" visibility="published" size="4" offset="1096" file="UFORMMOD.pas" line="26" />
-      <field name="Menu_Parameter" type="TMenuItem" visibility="published" size="4" offset="1100" file="UFORMMOD.pas" line="27" />
-      <field name="MenuInitParams" type="TMenuItem" visibility="published" size="4" offset="1104" file="UFORMMOD.pas" line="28" />
-      <field name="MenuView" type="TMenuItem" visibility="published" size="4" offset="1108" file="UFORMMOD.pas" line="29" />
-      <field name="MenuViewState" type="TMenuItem" visibility="published" size="4" offset="1112" file="UFORMMOD.pas" line="30" />
-      <field name="StatusBarMain" type="TStatusBar" visibility="published" size="4" offset="1116" file="UFORMMOD.pas" line="31" />
-      <field name="Optimize1" type="TMenuItem" visibility="published" size="4" offset="1120" file="UFORMMOD.pas" line="32" />
-      <field name="Graph1" type="TMenuItem" visibility="published" size="4" offset="1124" file="UFORMMOD.pas" line="33" />
-      <field name="Timer1" type="TTimer" visibility="published" size="4" offset="1128" file="UFORMMOD.pas" line="34" />
-      <field name="PageControl" type="TPageControl" visibility="published" size="4" offset="1132" file="UFORMMOD.pas" line="35" />
-      <field name="TabSheetGlobal" type="TTabSheet" visibility="published" size="4" offset="1136" file="UFORMMOD.pas" line="36" />
-      <field name="TabSheetParameter" type="TTabSheet" visibility="published" size="4" offset="1140" file="UFORMMOD.pas" line="37" />
-      <field name="TabSheetState" type="TTabSheet" visibility="published" size="4" offset="1144" file="UFORMMOD.pas" line="38" />
-      <field name="TabSheetData" type="TTabSheet" visibility="published" size="4" offset="1148" file="UFORMMOD.pas" line="39" />
-      <field name="AdvStringGridParam" type="TAdvStringGrid" visibility="published" size="4" offset="1152" file="UFORMMOD.pas" line="40" />
-      <field name="AdvStringGridState" type="TAdvStringGrid" visibility="published" size="4" offset="1156" file="UFORMMOD.pas" line="41" />
-      <field name="AdvStringGridData" type="TAdvStringGrid" visibility="published" size="4" offset="1160" file="UFORMMOD.pas" line="42" />
-      <field name="TabSheetModelDiagram" type="TTabSheet" visibility="published" size="4" offset="1164" file="UFORMMOD.pas" line="43" />
-      <field name="TabSheetStat" type="TTabSheet" visibility="published" size="4" offset="1168" file="UFORMMOD.pas" line="44" />
-      <field name="TabSheetResultTab" type="TTabSheet" visibility="published" size="4" offset="1172" file="UFORMMOD.pas" line="45" />
-      <field name="AdvStringGridResults" type="TAdvStringGrid" visibility="published" size="4" offset="1176" file="UFORMMOD.pas" line="46" />
-      <field name="TabSheetGraphResult" type="TTabSheet" visibility="published" size="4" offset="1180" file="UFORMMOD.pas" line="47" />
-      <field name="ChartSimResults" type="TChart" visibility="published" size="4" offset="1184" file="UFORMMOD.pas" line="48" />
-      <field name="TabSheetVariables" type="TTabSheet" visibility="published" size="4" offset="1188" file="UFORMMOD.pas" line="49" />
-      <field name="AdvStringGridVar" type="TAdvStringGrid" visibility="published" size="4" offset="1192" file="UFORMMOD.pas" line="50" />
-      <field name="ToolBarStateSheet" type="TToolBar" visibility="published" size="4" offset="1196" file="UFORMMOD.pas" line="51" />
-      <field name="LabelStateFileName" type="TLabel" visibility="published" size="4" offset="1200" file="UFORMMOD.pas" line="52" />
-      <field name="EditStateFileName" type="TEdit" visibility="published" size="4" offset="1204" file="UFORMMOD.pas" line="53" />
-      <field name="ToolBarPlotPage" type="TToolBar" visibility="published" size="4" offset="1208" file="UFORMMOD.pas" line="54" />
-      <field name="ToolBarPageTable" type="TToolBar" visibility="published" size="4" offset="1212" file="UFORMMOD.pas" line="55" />
-      <field name="ToolBarDataPage" type="TToolBar" visibility="published" size="4" offset="1216" file="UFORMMOD.pas" line="56" />
-      <field name="LabelDataFileNameDesc" type="TLabel" visibility="published" size="4" offset="1220" file="UFORMMOD.pas" line="57" />
-      <field name="EditDataFileName" type="TEdit" visibility="published" size="4" offset="1224" file="UFORMMOD.pas" line="58" />
-      <field name="SpeedButtonInsRow" type="TSpeedButton" visibility="published" size="4" offset="1228" file="UFORMMOD.pas" line="59" />
-      <field name="ToolBarVarPage" type="TToolBar" visibility="published" size="4" offset="1232" file="UFORMMOD.pas" line="60" />
-      <field name="ToolBarParSheet" type="TToolBar" visibility="published" size="4" offset="1236" file="UFORMMOD.pas" line="61" />
-      <field name="LabelparamFileName" type="TLabel" visibility="published" size="4" offset="1240" file="UFORMMOD.pas" line="62" />
-      <field name="EditParamFileName" type="TEdit" visibility="published" size="4" offset="1244" file="UFORMMOD.pas" line="63" />
-      <field name="PrintButton" type="TSpeedButton" visibility="published" size="4" offset="1248" file="UFORMMOD.pas" line="64" />
-      <field name="PrintDialog1" type="TPrintDialog" visibility="published" size="4" offset="1252" file="UFORMMOD.pas" line="65" />
-      <field name="ButtonSaveState" type="TBitBtn" visibility="published" size="4" offset="1256" file="UFORMMOD.pas" line="66" />
-      <field name="ButtonSaveParam" type="TBitBtn" visibility="published" size="4" offset="1260" file="UFORMMOD.pas" line="67" />
-      <field name="OpenDialog1" type="TOpenDialog" visibility="published" size="4" offset="1264" file="UFORMMOD.pas" line="68" />
-      <field name="Help1" type="TMenuItem" visibility="published" size="4" offset="1268" file="UFORMMOD.pas" line="69" />
-      <field name="Info1" type="TMenuItem" visibility="published" size="4" offset="1272" file="UFORMMOD.pas" line="70" />
-      <field name="SensitivityAnalysis" type="TMenuItem" visibility="published" size="4" offset="1276" file="UFORMMOD.pas" line="71" />
-      <field name="ComboBoxTimeAxisOption" type="TComboBox" visibility="published" size="4" offset="1280" file="UFORMMOD.pas" line="72" />
-      <field name="LabelTimeSeriesOption" type="TLabel" visibility="published" size="4" offset="1284" file="UFORMMOD.pas" line="73" />
-      <field name="SelectMeasDataCheckBox" type="TCheckBox" visibility="published" size="4" offset="1288" file="UFORMMOD.pas" line="74" />
-      <field name="GroupBoxStarttime" type="TGroupBox" visibility="published" size="4" offset="1292" file="UFORMMOD.pas" line="75" />
-      <field name="SaveDialog1" type="TSaveDialog" visibility="published" size="4" offset="1296" file="UFORMMOD.pas" line="76" />
-      <field name="SpeedChangeParamIniFile" type="TSpeedButton" visibility="published" size="4" offset="1300" file="UFORMMOD.pas" line="77" />
-      <field name="BitBtnSaveParamTo" type="TBitBtn" visibility="published" size="4" offset="1304" file="UFORMMOD.pas" line="78" />
-      <field name="GroupBoxWeatherDates" type="TGroupBox" visibility="published" size="4" offset="1308" file="UFORMMOD.pas" line="79" />
-      <field name="LabelWeatherDataFirstEntry" type="TLabel" visibility="published" size="4" offset="1312" file="UFORMMOD.pas" line="80" />
-      <field name="FWDLabel" type="TLabel" visibility="published" size="4" offset="1316" file="UFORMMOD.pas" line="81" />
-      <field name="LabelWeatherDataLatEntry" type="TLabel" visibility="published" size="4" offset="1320" file="UFORMMOD.pas" line="82" />
-      <field name="LWDLabel" type="TLabel" visibility="published" size="4" offset="1324" file="UFORMMOD.pas" line="83" />
-      <field name="BitBtnSaveStateTo" type="TBitBtn" visibility="published" size="4" offset="1328" file="UFORMMOD.pas" line="84" />
-      <field name="SpeedButtonOpenDataFile" type="TSpeedButton" visibility="published" size="4" offset="1332" file="UFORMMOD.pas" line="85" />
-      <field name="LabelOutputdatafile" type="TLabel" visibility="published" size="4" offset="1336" file="UFORMMOD.pas" line="86" />
-      <field name="EditOutputdatafilename" type="TEdit" visibility="published" size="4" offset="1340" file="UFORMMOD.pas" line="87" />
-      <field name="SpeedButtonOpenOutputFile" type="TSpeedButton" visibility="published" size="4" offset="1344" file="UFORMMOD.pas" line="88" />
-      <field name="TabSheetOptions" type="TTabSheet" visibility="published" size="4" offset="1348" file="UFORMMOD.pas" line="89" />
-      <field name="ToolBarOptions" type="TToolBar" visibility="published" size="4" offset="1352" file="UFORMMOD.pas" line="90" />
-      <field name="ButtonSaveOptions" type="TBitBtn" visibility="published" size="4" offset="1356" file="UFORMMOD.pas" line="91" />
-      <field name="BitBtnSaveOptionsTo" type="TBitBtn" visibility="published" size="4" offset="1360" file="UFORMMOD.pas" line="92" />
-      <field name="LabelOptionsFilename" type="TLabel" visibility="published" size="4" offset="1364" file="UFORMMOD.pas" line="93" />
-      <field name="EditOptionsFileName" type="TEdit" visibility="published" size="4" offset="1368" file="UFORMMOD.pas" line="94" />
-      <field name="SpeedButtonChangeOptionsFilename" type="TSpeedButton" visibility="published" size="4" offset="1372" file="UFORMMOD.pas" line="95" />
-      <field name="AdvStringGridOptions" type="TAdvStringGrid" visibility="published" size="4" offset="1376" file="UFORMMOD.pas" line="96" />
-      <field name="ChisquareAnalysis" type="TMenuItem" visibility="published" size="4" offset="1380" file="UFORMMOD.pas" line="97" />
-      <field name="N1" type="TMenuItem" visibility="published" size="4" offset="1384" file="UFORMMOD.pas" line="98" />
-      <field name="CheckBoxDateFormat" type="TCheckBox" visibility="published" size="4" offset="1388" file="UFORMMOD.pas" line="99" />
-      <field name="CheckBoxDataDateFormat" type="TCheckBox" visibility="published" size="4" offset="1392" file="UFORMMOD.pas" line="100" />
-      <field name="SpeedButtonFinalvalues" type="TSpeedButton" visibility="published" size="4" offset="1396" file="UFORMMOD.pas" line="101" />
-      <field name="TabSheetExternalValues" type="TTabSheet" visibility="published" size="4" offset="1400" file="UFORMMOD.pas" line="102" />
-      <field name="AdvStringGridExternV" type="TAdvStringGrid" visibility="published" size="4" offset="1404" file="UFORMMOD.pas" line="103" />
-      <field name="ViewVariables1" type="TMenuItem" visibility="published" size="4" offset="1408" file="UFORMMOD.pas" line="104" />
-      <field name="EditExternals1" type="TMenuItem" visibility="published" size="4" offset="1412" file="UFORMMOD.pas" line="105" />
-      <field name="EditOptions1" type="TMenuItem" visibility="published" size="4" offset="1416" file="UFORMMOD.pas" line="106" />
-      <field name="Statistics1" type="TMenuItem" visibility="published" size="4" offset="1420" file="UFORMMOD.pas" line="107" />
-      <field name="AdvStringGridStat" type="TAdvStringGrid" visibility="published" size="4" offset="1424" file="UFORMMOD.pas" line="108" />
-      <field name="ToolBarStatistics" type="TToolBar" visibility="published" size="4" offset="1428" file="UFORMMOD.pas" line="109" />
-      <field name="PanelMainFormHeader" type="TPanel" visibility="published" size="4" offset="1432" file="UFORMMOD.pas" line="110" />
-      <field name="ComboBoxIniFile" type="TComboBox" visibility="published" size="4" offset="1436" file="UFORMMOD.pas" line="111" />
-      <field name="ComboBoxSubMod" type="TComboBox" visibility="published" size="4" offset="1440" file="UFORMMOD.pas" line="112" />
-      <field name="LabelActIniFileDesc" type="TLabel" visibility="published" size="4" offset="1444" file="UFORMMOD.pas" line="113" />
-      <field name="LabelSubModelCombobox" type="TLabel" visibility="published" size="4" offset="1448" file="UFORMMOD.pas" line="114" />
-      <field name="SpeedButtonRun" type="TSpeedButton" visibility="published" size="4" offset="1452" file="UFORMMOD.pas" line="115" />
-      <field name="btnSaveasPNG" type="TSpeedButton" visibility="published" size="4" offset="1456" file="UFORMMOD.pas" line="116" />
-      <field name="ToolBarExternals" type="TToolBar" visibility="published" size="4" offset="1460" file="UFORMMOD.pas" line="117" />
-      <field name="btnAdvStatToClipBoardButton" type="TSpeedButton" visibility="published" size="4" offset="1464" file="UFORMMOD.pas" line="118" />
-      <field name="btnSaveDataChanges" type="TSpeedButton" visibility="published" size="4" offset="1468" file="UFORMMOD.pas" line="119" />
-      <field name="il1" type="TImageList" visibility="published" size="4" offset="1472" file="UFORMMOD.pas" line="120" />
-      <field name="SpeedButtonIncFontSize" type="TSpeedButton" visibility="published" size="4" offset="1476" file="UFORMMOD.pas" line="121" />
-      <field name="TabSheetDocumentation" type="TTabSheet" visibility="published" size="4" offset="1480" file="UFORMMOD.pas" line="122" />
-      <field name="ToolBarDocu" type="TToolBar" visibility="published" size="4" offset="1484" file="UFORMMOD.pas" line="123" />
-      <field name="SpeedButtonCreateDocu" type="TSpeedButton" visibility="published" size="4" offset="1488" file="UFORMMOD.pas" line="124" />
-      <field name="MemoModelDocu" type="TMemo" visibility="published" size="4" offset="1492" file="UFORMMOD.pas" line="125" />
-      <field name="EditDokuFilename" type="TEdit" visibility="published" size="4" offset="1496" file="UFORMMOD.pas" line="126" />
-      <field name="AdvStringGridModelSummary" type="TAdvStringGrid" visibility="published" size="4" offset="1500" file="UFORMMOD.pas" line="127" />
-      <field name="SpeedButtonMergeData" type="TSpeedButton" visibility="published" size="4" offset="1504" file="UFORMMOD.pas" line="128" />
-      <field name="btnCheckButton1" type="TSpeedButton" visibility="published" size="4" offset="1508" file="UFORMMOD.pas" line="129" />
-      <field name="GroupBoxIniFileEdits" type="TGroupBox" visibility="published" size="4" offset="1512" file="UFORMMOD.pas" line="131" />
-      <field name="GroupBoxControlFileName" type="TGroupBox" visibility="published" size="4" offset="1516" file="UFORMMOD.pas" line="132" />
-      <field name="EditControlFile" type="TEdit" visibility="published" size="4" offset="1520" file="UFORMMOD.pas" line="133" />
-      <field name="btnButtonChangeControlFile" type="TSpeedButton" visibility="published" size="4" offset="1524" file="UFORMMOD.pas" line="134" />
-      <field name="GroupBoxEndtime" type="TGroupBox" visibility="published" size="4" offset="1528" file="UFORMMOD.pas" line="135" />
-      <field name="EditEndTime" type="TEdit" visibility="published" size="4" offset="1532" file="UFORMMOD.pas" line="136" />
-      <field name="EndTimePicker" type="TDateTimePicker" visibility="published" size="4" offset="1536" file="UFORMMOD.pas" line="137" />
-      <field name="EditStartTime" type="TEdit" visibility="published" size="4" offset="1540" file="UFORMMOD.pas" line="138" />
-      <field name="DateTimePickerStart" type="TDateTimePicker" visibility="published" size="4" offset="1544" file="UFORMMOD.pas" line="139" />
-      <field name="GroupBoxTimestep" type="TGroupBox" visibility="published" size="4" offset="1548" file="UFORMMOD.pas" line="140" />
-      <field name="EditTimeStep" type="TEdit" visibility="published" size="4" offset="1552" file="UFORMMOD.pas" line="141" />
-      <field name="GroupBoxStateIniFile" type="TGroupBox" visibility="published" size="4" offset="1556" file="UFORMMOD.pas" line="142" />
-      <field name="EditStateIniFileName" type="TEdit" visibility="published" size="4" offset="1560" file="UFORMMOD.pas" line="143" />
-      <field name="SpeedButtonChangeStateIniFile" type="TSpeedButton" visibility="published" size="4" offset="1564" file="UFORMMOD.pas" line="144" />
-      <field name="GroupBoxPamIniFileName" type="TGroupBox" visibility="published" size="4" offset="1568" file="UFORMMOD.pas" line="145" />
-      <field name="EditParamIniFileName" type="TEdit" visibility="published" size="4" offset="1572" file="UFORMMOD.pas" line="146" />
-      <field name="SpeedButtonChangeParamIniFile" type="TSpeedButton" visibility="published" size="4" offset="1576" file="UFORMMOD.pas" line="147" />
-      <field name="GroupBoxWeatherFile" type="TGroupBox" visibility="published" size="4" offset="1580" file="UFORMMOD.pas" line="148" />
-      <field name="EditWeatherfile" type="TEdit" visibility="published" size="4" offset="1584" file="UFORMMOD.pas" line="149" />
-      <field name="SpeedButtonChangeWeatherFile" type="TSpeedButton" visibility="published" size="4" offset="1588" file="UFORMMOD.pas" line="150" />
-      <field name="GroupBoxOutput" type="TGroupBox" visibility="published" size="4" offset="1592" file="UFORMMOD.pas" line="151" />
-      <field name="GroupBoxOutputDirectory" type="TGroupBox" visibility="published" size="4" offset="1596" file="UFORMMOD.pas" line="152" />
-      <field name="SpeedButtonOutputDirectory" type="TSpeedButton" visibility="published" size="4" offset="1600" file="UFORMMOD.pas" line="153" />
-      <field name="EditOutputDirectory" type="TEdit" visibility="published" size="4" offset="1604" file="UFORMMOD.pas" line="154" />
-      <field name="GroupBoxContinousOutput" type="TGroupBox" visibility="published" size="4" offset="1608" file="UFORMMOD.pas" line="155" />
-      <field name="ComboBoxContOutput" type="TComboBox" visibility="published" size="4" offset="1612" file="UFORMMOD.pas" line="156" />
-      <field name="GroupBoxSaveIniFileChanges" type="TGroupBox" visibility="published" size="4" offset="1616" file="UFORMMOD.pas" line="157" />
-      <field name="btnButtonSaveIntegrChanges1" type="TSpeedButton" visibility="published" size="4" offset="1620" file="UFORMMOD.pas" line="158" />
-      <field name="btnButtonSaveToNewIniFile1" type="TSpeedButton" visibility="published" size="4" offset="1624" file="UFORMMOD.pas" line="159" />
-      <field name="BitBtnMergeWeatherFN" type="TBitBtn" visibility="published" size="4" offset="1628" file="UFORMMOD.pas" line="160" />
-      <field name="ToggleSwitchVarContOutput" type="TToggleSwitch" visibility="published" size="4" offset="1632" file="UFORMMOD.pas" line="161" />
-      <field name="ToggleSwitchStateContOutput" type="TToggleSwitch" visibility="published" size="4" offset="1636" file="UFORMMOD.pas" line="162" />
-      <field name="ToggleSwitchExternContOutput" type="TToggleSwitch" visibility="published" size="4" offset="1640" file="UFORMMOD.pas" line="163" />
-      <field name="GroupBox1" type="TGroupBox" visibility="published" size="4" offset="1644" file="UFORMMOD.pas" line="164" />
-      <field name="SpeedButtonNoContOutput" type="TSpeedButton" visibility="published" size="4" offset="1648" file="UFORMMOD.pas" line="165" />
-      <field name="SpeedButtonAllContOutput" type="TSpeedButton" visibility="published" size="4" offset="1652" file="UFORMMOD.pas" line="166" />
-      <field name="LMod" type="TModLink" visibility="published" size="4" offset="1656" file="UFORMMOD.pas" line="167" />
-      <field name="Constants" type="TTabSheet" visibility="published" size="4" offset="1660" file="UFORMMOD.pas" line="168" />
-      <field name="ToolBarConstPage" type="TToolBar" visibility="published" size="4" offset="1664" file="UFORMMOD.pas" line="169" />
-      <field name="ToggleSwitch1" type="TToggleSwitch" visibility="published" size="4" offset="1668" file="UFORMMOD.pas" line="170" />
-      <field name="AdvStringGridConstants" type="TAdvStringGrid" visibility="published" size="4" offset="1672" file="UFORMMOD.pas" line="171" />
-      <field name="SpeedButtonRunActIni" type="TSpeedButton" visibility="published" size="4" offset="1676" file="UFORMMOD.pas" line="172" />
+      <field name="MainMenu1" type="TMainMenu" visibility="published" size="4" offset="1096" file="UFORMMOD.pas" line="22" />
+      <field name="Menu_File" type="TMenuItem" visibility="published" size="4" offset="1100" file="UFORMMOD.pas" line="23" />
+      <field name="Menu_Run" type="TMenuItem" visibility="published" size="4" offset="1104" file="UFORMMOD.pas" line="24" />
+      <field name="Menu_Exit" type="TMenuItem" visibility="published" size="4" offset="1108" file="UFORMMOD.pas" line="25" />
+      <field name="Menu_Edit" type="TMenuItem" visibility="published" size="4" offset="1112" file="UFORMMOD.pas" line="26" />
+      <field name="Menu_Parameter" type="TMenuItem" visibility="published" size="4" offset="1116" file="UFORMMOD.pas" line="27" />
+      <field name="MenuInitParams" type="TMenuItem" visibility="published" size="4" offset="1120" file="UFORMMOD.pas" line="28" />
+      <field name="MenuView" type="TMenuItem" visibility="published" size="4" offset="1124" file="UFORMMOD.pas" line="29" />
+      <field name="MenuViewState" type="TMenuItem" visibility="published" size="4" offset="1128" file="UFORMMOD.pas" line="30" />
+      <field name="StatusBarMain" type="TStatusBar" visibility="published" size="4" offset="1132" file="UFORMMOD.pas" line="31" />
+      <field name="Optimize1" type="TMenuItem" visibility="published" size="4" offset="1136" file="UFORMMOD.pas" line="32" />
+      <field name="Graph1" type="TMenuItem" visibility="published" size="4" offset="1140" file="UFORMMOD.pas" line="33" />
+      <field name="Timer1" type="TTimer" visibility="published" size="4" offset="1144" file="UFORMMOD.pas" line="34" />
+      <field name="PageControl" type="TPageControl" visibility="published" size="4" offset="1148" file="UFORMMOD.pas" line="35" />
+      <field name="TabSheetGlobal" type="TTabSheet" visibility="published" size="4" offset="1152" file="UFORMMOD.pas" line="36" />
+      <field name="TabSheetParameter" type="TTabSheet" visibility="published" size="4" offset="1156" file="UFORMMOD.pas" line="37" />
+      <field name="TabSheetState" type="TTabSheet" visibility="published" size="4" offset="1160" file="UFORMMOD.pas" line="38" />
+      <field name="TabSheetData" type="TTabSheet" visibility="published" size="4" offset="1164" file="UFORMMOD.pas" line="39" />
+      <field name="AdvStringGridParam" type="TAdvStringGrid" visibility="published" size="4" offset="1168" file="UFORMMOD.pas" line="40" />
+      <field name="AdvStringGridState" type="TAdvStringGrid" visibility="published" size="4" offset="1172" file="UFORMMOD.pas" line="41" />
+      <field name="AdvStringGridData" type="TAdvStringGrid" visibility="published" size="4" offset="1176" file="UFORMMOD.pas" line="42" />
+      <field name="TabSheetModelDiagram" type="TTabSheet" visibility="published" size="4" offset="1180" file="UFORMMOD.pas" line="43" />
+      <field name="TabSheetStat" type="TTabSheet" visibility="published" size="4" offset="1184" file="UFORMMOD.pas" line="44" />
+      <field name="TabSheetResultTab" type="TTabSheet" visibility="published" size="4" offset="1188" file="UFORMMOD.pas" line="45" />
+      <field name="AdvStringGridResults" type="TAdvStringGrid" visibility="published" size="4" offset="1192" file="UFORMMOD.pas" line="46" />
+      <field name="TabSheetGraphResult" type="TTabSheet" visibility="published" size="4" offset="1196" file="UFORMMOD.pas" line="47" />
+      <field name="ChartSimResults" type="TChart" visibility="published" size="4" offset="1200" file="UFORMMOD.pas" line="48" />
+      <field name="TabSheetVariables" type="TTabSheet" visibility="published" size="4" offset="1204" file="UFORMMOD.pas" line="49" />
+      <field name="AdvStringGridVar" type="TAdvStringGrid" visibility="published" size="4" offset="1208" file="UFORMMOD.pas" line="50" />
+      <field name="ToolBarStateSheet" type="TToolBar" visibility="published" size="4" offset="1212" file="UFORMMOD.pas" line="51" />
+      <field name="LabelStateFileName" type="TLabel" visibility="published" size="4" offset="1216" file="UFORMMOD.pas" line="52" />
+      <field name="EditStateFileName" type="TEdit" visibility="published" size="4" offset="1220" file="UFORMMOD.pas" line="53" />
+      <field name="ToolBarPlotPage" type="TToolBar" visibility="published" size="4" offset="1224" file="UFORMMOD.pas" line="54" />
+      <field name="ToolBarPageTable" type="TToolBar" visibility="published" size="4" offset="1228" file="UFORMMOD.pas" line="55" />
+      <field name="ToolBarDataPage" type="TToolBar" visibility="published" size="4" offset="1232" file="UFORMMOD.pas" line="56" />
+      <field name="LabelDataFileNameDesc" type="TLabel" visibility="published" size="4" offset="1236" file="UFORMMOD.pas" line="57" />
+      <field name="EditDataFileName" type="TEdit" visibility="published" size="4" offset="1240" file="UFORMMOD.pas" line="58" />
+      <field name="SpeedButtonInsRow" type="TSpeedButton" visibility="published" size="4" offset="1244" file="UFORMMOD.pas" line="59" />
+      <field name="ToolBarVarPage" type="TToolBar" visibility="published" size="4" offset="1248" file="UFORMMOD.pas" line="60" />
+      <field name="ToolBarParSheet" type="TToolBar" visibility="published" size="4" offset="1252" file="UFORMMOD.pas" line="61" />
+      <field name="LabelparamFileName" type="TLabel" visibility="published" size="4" offset="1256" file="UFORMMOD.pas" line="62" />
+      <field name="EditParamFileName" type="TEdit" visibility="published" size="4" offset="1260" file="UFORMMOD.pas" line="63" />
+      <field name="PrintButton" type="TSpeedButton" visibility="published" size="4" offset="1264" file="UFORMMOD.pas" line="64" />
+      <field name="PrintDialog1" type="TPrintDialog" visibility="published" size="4" offset="1268" file="UFORMMOD.pas" line="65" />
+      <field name="ButtonSaveState" type="TBitBtn" visibility="published" size="4" offset="1272" file="UFORMMOD.pas" line="66" />
+      <field name="ButtonSaveParam" type="TBitBtn" visibility="published" size="4" offset="1276" file="UFORMMOD.pas" line="67" />
+      <field name="OpenDialog1" type="TOpenDialog" visibility="published" size="4" offset="1280" file="UFORMMOD.pas" line="68" />
+      <field name="Help1" type="TMenuItem" visibility="published" size="4" offset="1284" file="UFORMMOD.pas" line="69" />
+      <field name="Info1" type="TMenuItem" visibility="published" size="4" offset="1288" file="UFORMMOD.pas" line="70" />
+      <field name="SensitivityAnalysis" type="TMenuItem" visibility="published" size="4" offset="1292" file="UFORMMOD.pas" line="71" />
+      <field name="ComboBoxTimeAxisOption" type="TComboBox" visibility="published" size="4" offset="1296" file="UFORMMOD.pas" line="72" />
+      <field name="LabelTimeSeriesOption" type="TLabel" visibility="published" size="4" offset="1300" file="UFORMMOD.pas" line="73" />
+      <field name="SelectMeasDataCheckBox" type="TCheckBox" visibility="published" size="4" offset="1304" file="UFORMMOD.pas" line="74" />
+      <field name="GroupBoxStarttime" type="TGroupBox" visibility="published" size="4" offset="1308" file="UFORMMOD.pas" line="75" />
+      <field name="SaveDialog1" type="TSaveDialog" visibility="published" size="4" offset="1312" file="UFORMMOD.pas" line="76" />
+      <field name="SpeedChangeParamIniFile" type="TSpeedButton" visibility="published" size="4" offset="1316" file="UFORMMOD.pas" line="77" />
+      <field name="BitBtnSaveParamTo" type="TBitBtn" visibility="published" size="4" offset="1320" file="UFORMMOD.pas" line="78" />
+      <field name="GroupBoxWeatherDates" type="TGroupBox" visibility="published" size="4" offset="1324" file="UFORMMOD.pas" line="79" />
+      <field name="LabelWeatherDataFirstEntry" type="TLabel" visibility="published" size="4" offset="1328" file="UFORMMOD.pas" line="80" />
+      <field name="FWDLabel" type="TLabel" visibility="published" size="4" offset="1332" file="UFORMMOD.pas" line="81" />
+      <field name="LabelWeatherDataLatEntry" type="TLabel" visibility="published" size="4" offset="1336" file="UFORMMOD.pas" line="82" />
+      <field name="LWDLabel" type="TLabel" visibility="published" size="4" offset="1340" file="UFORMMOD.pas" line="83" />
+      <field name="BitBtnSaveStateTo" type="TBitBtn" visibility="published" size="4" offset="1344" file="UFORMMOD.pas" line="84" />
+      <field name="SpeedButtonOpenDataFile" type="TSpeedButton" visibility="published" size="4" offset="1348" file="UFORMMOD.pas" line="85" />
+      <field name="LabelOutputdatafile" type="TLabel" visibility="published" size="4" offset="1352" file="UFORMMOD.pas" line="86" />
+      <field name="EditOutputdatafilename" type="TEdit" visibility="published" size="4" offset="1356" file="UFORMMOD.pas" line="87" />
+      <field name="SpeedButtonOpenOutputFile" type="TSpeedButton" visibility="published" size="4" offset="1360" file="UFORMMOD.pas" line="88" />
+      <field name="TabSheetOptions" type="TTabSheet" visibility="published" size="4" offset="1364" file="UFORMMOD.pas" line="89" />
+      <field name="ToolBarOptions" type="TToolBar" visibility="published" size="4" offset="1368" file="UFORMMOD.pas" line="90" />
+      <field name="ButtonSaveOptions" type="TBitBtn" visibility="published" size="4" offset="1372" file="UFORMMOD.pas" line="91" />
+      <field name="BitBtnSaveOptionsTo" type="TBitBtn" visibility="published" size="4" offset="1376" file="UFORMMOD.pas" line="92" />
+      <field name="LabelOptionsFilename" type="TLabel" visibility="published" size="4" offset="1380" file="UFORMMOD.pas" line="93" />
+      <field name="EditOptionsFileName" type="TEdit" visibility="published" size="4" offset="1384" file="UFORMMOD.pas" line="94" />
+      <field name="SpeedButtonChangeOptionsFilename" type="TSpeedButton" visibility="published" size="4" offset="1388" file="UFORMMOD.pas" line="95" />
+      <field name="AdvStringGridOptions" type="TAdvStringGrid" visibility="published" size="4" offset="1392" file="UFORMMOD.pas" line="96" />
+      <field name="ChisquareAnalysis" type="TMenuItem" visibility="published" size="4" offset="1396" file="UFORMMOD.pas" line="97" />
+      <field name="N1" type="TMenuItem" visibility="published" size="4" offset="1400" file="UFORMMOD.pas" line="98" />
+      <field name="CheckBoxDateFormat" type="TCheckBox" visibility="published" size="4" offset="1404" file="UFORMMOD.pas" line="99" />
+      <field name="CheckBoxDataDateFormat" type="TCheckBox" visibility="published" size="4" offset="1408" file="UFORMMOD.pas" line="100" />
+      <field name="SpeedButtonFinalvalues" type="TSpeedButton" visibility="published" size="4" offset="1412" file="UFORMMOD.pas" line="101" />
+      <field name="TabSheetExternalValues" type="TTabSheet" visibility="published" size="4" offset="1416" file="UFORMMOD.pas" line="102" />
+      <field name="AdvStringGridExternV" type="TAdvStringGrid" visibility="published" size="4" offset="1420" file="UFORMMOD.pas" line="103" />
+      <field name="ViewVariables1" type="TMenuItem" visibility="published" size="4" offset="1424" file="UFORMMOD.pas" line="104" />
+      <field name="EditExternals1" type="TMenuItem" visibility="published" size="4" offset="1428" file="UFORMMOD.pas" line="105" />
+      <field name="EditOptions1" type="TMenuItem" visibility="published" size="4" offset="1432" file="UFORMMOD.pas" line="106" />
+      <field name="Statistics1" type="TMenuItem" visibility="published" size="4" offset="1436" file="UFORMMOD.pas" line="107" />
+      <field name="AdvStringGridStat" type="TAdvStringGrid" visibility="published" size="4" offset="1440" file="UFORMMOD.pas" line="108" />
+      <field name="ToolBarStatistics" type="TToolBar" visibility="published" size="4" offset="1444" file="UFORMMOD.pas" line="109" />
+      <field name="PanelMainFormHeader" type="TPanel" visibility="published" size="4" offset="1448" file="UFORMMOD.pas" line="110" />
+      <field name="ComboBoxIniFile" type="TComboBox" visibility="published" size="4" offset="1452" file="UFORMMOD.pas" line="111" />
+      <field name="ComboBoxSubMod" type="TComboBox" visibility="published" size="4" offset="1456" file="UFORMMOD.pas" line="112" />
+      <field name="LabelActIniFileDesc" type="TLabel" visibility="published" size="4" offset="1460" file="UFORMMOD.pas" line="113" />
+      <field name="LabelSubModelCombobox" type="TLabel" visibility="published" size="4" offset="1464" file="UFORMMOD.pas" line="114" />
+      <field name="SpeedButtonRun" type="TSpeedButton" visibility="published" size="4" offset="1468" file="UFORMMOD.pas" line="115" />
+      <field name="btnSaveasPNG" type="TSpeedButton" visibility="published" size="4" offset="1472" file="UFORMMOD.pas" line="116" />
+      <field name="ToolBarExternals" type="TToolBar" visibility="published" size="4" offset="1476" file="UFORMMOD.pas" line="117" />
+      <field name="btnAdvStatToClipBoardButton" type="TSpeedButton" visibility="published" size="4" offset="1480" file="UFORMMOD.pas" line="118" />
+      <field name="btnSaveDataChanges" type="TSpeedButton" visibility="published" size="4" offset="1484" file="UFORMMOD.pas" line="119" />
+      <field name="il1" type="TImageList" visibility="published" size="4" offset="1488" file="UFORMMOD.pas" line="120" />
+      <field name="SpeedButtonIncFontSize" type="TSpeedButton" visibility="published" size="4" offset="1492" file="UFORMMOD.pas" line="121" />
+      <field name="TabSheetDocumentation" type="TTabSheet" visibility="published" size="4" offset="1496" file="UFORMMOD.pas" line="122" />
+      <field name="ToolBarDocu" type="TToolBar" visibility="published" size="4" offset="1500" file="UFORMMOD.pas" line="123" />
+      <field name="SpeedButtonCreateDocu" type="TSpeedButton" visibility="published" size="4" offset="1504" file="UFORMMOD.pas" line="124" />
+      <field name="MemoModelDocu" type="TMemo" visibility="published" size="4" offset="1508" file="UFORMMOD.pas" line="125" />
+      <field name="EditDokuFilename" type="TEdit" visibility="published" size="4" offset="1512" file="UFORMMOD.pas" line="126" />
+      <field name="AdvStringGridModelSummary" type="TAdvStringGrid" visibility="published" size="4" offset="1516" file="UFORMMOD.pas" line="127" />
+      <field name="SpeedButtonMergeData" type="TSpeedButton" visibility="published" size="4" offset="1520" file="UFORMMOD.pas" line="128" />
+      <field name="btnCheckButton1" type="TSpeedButton" visibility="published" size="4" offset="1524" file="UFORMMOD.pas" line="129" />
+      <field name="GroupBoxIniFileEdits" type="TGroupBox" visibility="published" size="4" offset="1528" file="UFORMMOD.pas" line="131" />
+      <field name="GroupBoxControlFileName" type="TGroupBox" visibility="published" size="4" offset="1532" file="UFORMMOD.pas" line="132" />
+      <field name="EditControlFile" type="TEdit" visibility="published" size="4" offset="1536" file="UFORMMOD.pas" line="133" />
+      <field name="btnButtonChangeControlFile" type="TSpeedButton" visibility="published" size="4" offset="1540" file="UFORMMOD.pas" line="134" />
+      <field name="GroupBoxEndtime" type="TGroupBox" visibility="published" size="4" offset="1544" file="UFORMMOD.pas" line="135" />
+      <field name="EditEndTime" type="TEdit" visibility="published" size="4" offset="1548" file="UFORMMOD.pas" line="136" />
+      <field name="EndTimePicker" type="TDateTimePicker" visibility="published" size="4" offset="1552" file="UFORMMOD.pas" line="137" />
+      <field name="EditStartTime" type="TEdit" visibility="published" size="4" offset="1556" file="UFORMMOD.pas" line="138" />
+      <field name="DateTimePickerStart" type="TDateTimePicker" visibility="published" size="4" offset="1560" file="UFORMMOD.pas" line="139" />
+      <field name="GroupBoxTimestep" type="TGroupBox" visibility="published" size="4" offset="1564" file="UFORMMOD.pas" line="140" />
+      <field name="EditTimeStep" type="TEdit" visibility="published" size="4" offset="1568" file="UFORMMOD.pas" line="141" />
+      <field name="GroupBoxStateIniFile" type="TGroupBox" visibility="published" size="4" offset="1572" file="UFORMMOD.pas" line="142" />
+      <field name="EditStateIniFileName" type="TEdit" visibility="published" size="4" offset="1576" file="UFORMMOD.pas" line="143" />
+      <field name="SpeedButtonChangeStateIniFile" type="TSpeedButton" visibility="published" size="4" offset="1580" file="UFORMMOD.pas" line="144" />
+      <field name="GroupBoxPamIniFileName" type="TGroupBox" visibility="published" size="4" offset="1584" file="UFORMMOD.pas" line="145" />
+      <field name="EditParamIniFileName" type="TEdit" visibility="published" size="4" offset="1588" file="UFORMMOD.pas" line="146" />
+      <field name="SpeedButtonChangeParamIniFile" type="TSpeedButton" visibility="published" size="4" offset="1592" file="UFORMMOD.pas" line="147" />
+      <field name="GroupBoxWeatherFile" type="TGroupBox" visibility="published" size="4" offset="1596" file="UFORMMOD.pas" line="148" />
+      <field name="EditWeatherfile" type="TEdit" visibility="published" size="4" offset="1600" file="UFORMMOD.pas" line="149" />
+      <field name="SpeedButtonChangeWeatherFile" type="TSpeedButton" visibility="published" size="4" offset="1604" file="UFORMMOD.pas" line="150" />
+      <field name="GroupBoxOutput" type="TGroupBox" visibility="published" size="4" offset="1608" file="UFORMMOD.pas" line="151" />
+      <field name="GroupBoxOutputDirectory" type="TGroupBox" visibility="published" size="4" offset="1612" file="UFORMMOD.pas" line="152" />
+      <field name="SpeedButtonOutputDirectory" type="TSpeedButton" visibility="published" size="4" offset="1616" file="UFORMMOD.pas" line="153" />
+      <field name="EditOutputDirectory" type="TEdit" visibility="published" size="4" offset="1620" file="UFORMMOD.pas" line="154" />
+      <field name="GroupBoxContinousOutput" type="TGroupBox" visibility="published" size="4" offset="1624" file="UFORMMOD.pas" line="155" />
+      <field name="ComboBoxContOutput" type="TComboBox" visibility="published" size="4" offset="1628" file="UFORMMOD.pas" line="156" />
+      <field name="GroupBoxSaveIniFileChanges" type="TGroupBox" visibility="published" size="4" offset="1632" file="UFORMMOD.pas" line="157" />
+      <field name="btnButtonSaveIntegrChanges1" type="TSpeedButton" visibility="published" size="4" offset="1636" file="UFORMMOD.pas" line="158" />
+      <field name="btnButtonSaveToNewIniFile1" type="TSpeedButton" visibility="published" size="4" offset="1640" file="UFORMMOD.pas" line="159" />
+      <field name="BitBtnMergeWeatherFN" type="TBitBtn" visibility="published" size="4" offset="1644" file="UFORMMOD.pas" line="160" />
+      <field name="ToggleSwitchVarContOutput" type="TToggleSwitch" visibility="published" size="4" offset="1648" file="UFORMMOD.pas" line="161" />
+      <field name="ToggleSwitchStateContOutput" type="TToggleSwitch" visibility="published" size="4" offset="1652" file="UFORMMOD.pas" line="162" />
+      <field name="ToggleSwitchExternContOutput" type="TToggleSwitch" visibility="published" size="4" offset="1656" file="UFORMMOD.pas" line="163" />
+      <field name="GroupBox1" type="TGroupBox" visibility="published" size="4" offset="1660" file="UFORMMOD.pas" line="164" />
+      <field name="SpeedButtonNoContOutput" type="TSpeedButton" visibility="published" size="4" offset="1664" file="UFORMMOD.pas" line="165" />
+      <field name="SpeedButtonAllContOutput" type="TSpeedButton" visibility="published" size="4" offset="1668" file="UFORMMOD.pas" line="166" />
+      <field name="LMod" type="TModLink" visibility="published" size="4" offset="1672" file="UFORMMOD.pas" line="167" />
+      <field name="Constants" type="TTabSheet" visibility="published" size="4" offset="1676" file="UFORMMOD.pas" line="168" />
+      <field name="ToolBarConstPage" type="TToolBar" visibility="published" size="4" offset="1680" file="UFORMMOD.pas" line="169" />
+      <field name="ToggleSwitch1" type="TToggleSwitch" visibility="published" size="4" offset="1684" file="UFORMMOD.pas" line="170" />
+      <field name="AdvStringGridConstants" type="TAdvStringGrid" visibility="published" size="4" offset="1688" file="UFORMMOD.pas" line="171" />
+      <field name="SpeedButtonRunActIni" type="TSpeedButton" visibility="published" size="4" offset="1692" file="UFORMMOD.pas" line="172" />
       <procedure name="RunModel" visibility="published" procflags="virtual" file="UFORMMOD.pas" line="174">
       </procedure>
       <procedure name="RunActIni" visibility="published" procflags="virtual" file="UFORMMOD.pas" line="175">
@@ -3355,18 +3375,18 @@
           <parameter name="Sender" type="TObject" />
         </parameters>
       </procedure>
-      <field name="n_lineSeries" type="Integer" visibility="private" size="4" offset="1680" file="UFORMMOD.pas" line="312" />
-      <field name="n_PointSeries" type="Integer" visibility="private" size="4" offset="1684" file="UFORMMOD.pas" line="312" />
-      <field name="nFormGraph" type="Integer" visibility="private" size="4" offset="1688" file="UFORMMOD.pas" line="312" />
-      <field name="FormGraphArray" visibility="private" size="40" offset="1692" file="UFORMMOD.pas" line="313">
+      <field name="n_lineSeries" type="Integer" visibility="private" size="4" offset="1696" file="UFORMMOD.pas" line="312" />
+      <field name="n_PointSeries" type="Integer" visibility="private" size="4" offset="1700" file="UFORMMOD.pas" line="312" />
+      <field name="nFormGraph" type="Integer" visibility="private" size="4" offset="1704" file="UFORMMOD.pas" line="312" />
+      <field name="FormGraphArray" visibility="private" size="40" offset="1708" file="UFORMMOD.pas" line="313">
         <array name="FormGraphArray" visibility="private" low="1" high="10" file="UFORMMOD.pas" line="313">
           <element type="TFormGraph" />
         </array>
       </field>
-      <field name="LineSeriesArr" type="TLineSeriesArr" visibility="private" size="4000" offset="1732" file="UFORMMOD.pas" line="314" />
-      <field name="img_help" type="TBitmap" visibility="private" size="4" offset="5732" file="UFORMMOD.pas" line="318" />
-      <field name="img_savetoall" type="TBitmap" visibility="private" size="4" offset="5736" file="UFORMMOD.pas" line="318" />
-      <field name="EXE_PATH" type="string" visibility="private" size="4" offset="5740" file="UFORMMOD.pas" line="319" />
+      <field name="LineSeriesArr" type="TLineSeriesArr" visibility="private" size="4000" offset="1748" file="UFORMMOD.pas" line="314" />
+      <field name="img_help" type="TBitmap" visibility="private" size="4" offset="5748" file="UFORMMOD.pas" line="318" />
+      <field name="img_savetoall" type="TBitmap" visibility="private" size="4" offset="5752" file="UFORMMOD.pas" line="318" />
+      <field name="EXE_PATH" type="string" visibility="private" size="4" offset="5756" file="UFORMMOD.pas" line="319" />
       <function name="getLinkedModel" visibility="private" file="UFORMMOD.pas" line="320">
         <parameters>
           <retval type="TMod">
@@ -3394,7 +3414,7 @@
           <parameter name="submodname" type="string" />
         </parameters>
       </procedure>
-      <field name="ModelWasRunning" type="Boolean" visibility="public" size="1" offset="5744" file="UFORMMOD.pas" line="326" />
+      <field name="ModelWasRunning" type="Boolean" visibility="public" size="1" offset="5760" file="UFORMMOD.pas" line="326" />
       <procedure name="UpdateStringGridParam" visibility="public" file="UFORMMOD.pas" line="327">
       </procedure>
       <procedure name="UpdateStringGridState" visibility="public" file="UFORMMOD.pas" line="328">

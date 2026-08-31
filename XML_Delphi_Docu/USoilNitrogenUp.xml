@@ -770,6 +770,8 @@
                     </methodref>
                     <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
                     </methodref>
+                    <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+                    </methodref>
                     <methodref name="Changed" visibility="protected">
                     </methodref>
                     <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -1011,6 +1013,8 @@
                     <methodref name="Destroy" visibility="public" procflags="destructor override">
                     </methodref>
                     <methodref name="CheckNonMainThreadUsage" visibility="public">
+                    </methodref>
+                    <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
                     </methodref>
                     <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
                     </methodref>
@@ -1258,6 +1262,8 @@
                       <methodref name="ReadDeltaStream" visibility="private">
                       </methodref>
                       <methodref name="ReadDeltaState" visibility="private">
+                      </methodref>
+                      <methodref name="InitObservers" visibility="private">
                       </methodref>
                       <methodref name="FindSortedComponent" visibility="private">
                       </methodref>
@@ -1531,88 +1537,88 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fplantNDemand" type="Double" visibility="private" size="8" offset="24496" file="USoilNitrogenUp.pas" line="16" />
+      <field name="fplantNDemand" type="Double" visibility="private" size="8" offset="24504" file="USoilNitrogenUp.pas" line="16" />
       <procedure name="SetPlantModel" visibility="protected" procflags="override" file="USoilNitrogenUp.pas" line="19">
         <parameters>
           <parameter name="NewPlantModel" type="TAbstractPlant" />
         </parameters>
       </procedure>
-      <field name="ActNUptake" type="TVar" visibility="public" size="4" offset="24504" file="USoilNitrogenUp.pas" line="23">
+      <field name="ActNUptake" type="TVar" visibility="public" size="4" offset="24512" file="USoilNitrogenUp.pas" line="23">
         <devnotes>
            <summary>Actual N uptake rate averaged over the day.</summary>
         </devnotes>
       </field>
-      <field name="MaxNUptake" type="TVar" visibility="public" size="4" offset="24508" file="USoilNitrogenUp.pas" line="25">
+      <field name="MaxNUptake" type="TVar" visibility="public" size="4" offset="24516" file="USoilNitrogenUp.pas" line="25">
         <devnotes>
            <summary>Maximum N uptake rate averaged over the day.</summary>
         </devnotes>
       </field>
-      <field name="MassFlow" type="TVar" visibility="public" size="4" offset="24512" file="USoilNitrogenUp.pas" line="27">
+      <field name="MassFlow" type="TVar" visibility="public" size="4" offset="24520" file="USoilNitrogenUp.pas" line="27">
         <devnotes>
            <summary>Sum of apparent mass flow transport to roots [kg N/ha/d].</summary>
         </devnotes>
       </field>
-      <field name="NUptake" type="TSoilVarArray" visibility="public" size="212" offset="24516" file="USoilNitrogenUp.pas" line="29">
+      <field name="NUptake" type="TSoilVarArray" visibility="public" size="212" offset="24524" file="USoilNitrogenUp.pas" line="29">
         <devnotes>
            <summary>N uptake per day [kg N/ha/d].</summary>
         </devnotes>
       </field>
-      <field name="WInflux" type="TSoilArray" visibility="public" size="416" offset="24728" file="USoilNitrogenUp.pas" line="31">
+      <field name="WInflux" type="TSoilArray" visibility="public" size="416" offset="24736" file="USoilNitrogenUp.pas" line="31">
         <devnotes>
            <summary>Water influx per unit root length [cm3/cm/d].</summary>
         </devnotes>
       </field>
-      <field name="NInflux_WL" type="TVar" visibility="public" size="4" offset="25144" file="USoilNitrogenUp.pas" line="33">
+      <field name="NInflux_WL" type="TVar" visibility="public" size="4" offset="25152" file="USoilNitrogenUp.pas" line="33">
         <devnotes>
            <summary>Nitrate influx per unit root length.</summary>
         </devnotes>
       </field>
-      <field name="NInflux_WL_eff" type="TVar" visibility="public" size="4" offset="25148" file="USoilNitrogenUp.pas" line="35">
+      <field name="NInflux_WL_eff" type="TVar" visibility="public" size="4" offset="25156" file="USoilNitrogenUp.pas" line="35">
         <devnotes>
            <summary>Nitrate influx per unit effective root length.</summary>
         </devnotes>
       </field>
-      <field name="SumSoilNUptake" type="TState" visibility="public" size="4" offset="25152" file="USoilNitrogenUp.pas" line="38">
+      <field name="SumSoilNUptake" type="TState" visibility="public" size="4" offset="25160" file="USoilNitrogenUp.pas" line="38">
         <devnotes>
            <summary>Average N uptake rate per day for plotting as a state variable.</summary>
         </devnotes>
       </field>
-      <field name="SoilNUptakeGrowth" type="TState" visibility="public" size="4" offset="25156" file="USoilNitrogenUp.pas" line="40">
+      <field name="SoilNUptakeGrowth" type="TState" visibility="public" size="4" offset="25164" file="USoilNitrogenUp.pas" line="40">
         <devnotes>
            <summary>Average N uptake rate per day in units of g/m2/d.</summary>
         </devnotes>
       </field>
-      <field name="SumPlantNDemand" type="TState" visibility="public" size="4" offset="25160" file="USoilNitrogenUp.pas" line="42">
+      <field name="SumPlantNDemand" type="TState" visibility="public" size="4" offset="25168" file="USoilNitrogenUp.pas" line="42">
         <devnotes>
            <summary>Total sum of plant nitrogen demand.</summary>
         </devnotes>
       </field>
-      <field name="Cmin" type="TPar" visibility="public" size="4" offset="25164" file="USoilNitrogenUp.pas" line="45">
+      <field name="Cmin" type="TPar" visibility="public" size="4" offset="25172" file="USoilNitrogenUp.pas" line="45">
         <devnotes>
            <summary>Minimum nitrate concentration subtracted from the actual concentration [kg/cm water].</summary>
         </devnotes>
       </field>
-      <field name="not_av_N" type="TPar" visibility="public" size="4" offset="25168" file="USoilNitrogenUp.pas" line="47">
+      <field name="not_av_N" type="TPar" visibility="public" size="4" offset="25176" file="USoilNitrogenUp.pas" line="47">
         <devnotes>
            <summary>Plant unavailable share of nitrate [kg N/10 cm].</summary>
         </devnotes>
       </field>
-      <field name="Max_Wl_Nuptake" type="TPar" visibility="public" size="4" offset="25172" file="USoilNitrogenUp.pas" line="49">
+      <field name="Max_Wl_Nuptake" type="TPar" visibility="public" size="4" offset="25180" file="USoilNitrogenUp.pas" line="49">
         <devnotes>
            <summary>Maximum value for N uptake per unit root length [kg/cm/d].</summary>
         </devnotes>
       </field>
-      <field name="Ex_PlantNDemand" type="TExternV" visibility="public" size="4" offset="25176" file="USoilNitrogenUp.pas" line="52">
+      <field name="Ex_PlantNDemand" type="TExternV" visibility="public" size="4" offset="25184" file="USoilNitrogenUp.pas" line="52">
         <devnotes>
            <summary>Plant N demand [g N/m/d].</summary>
         </devnotes>
       </field>
-      <field name="SRL" type="TExternV" visibility="public" size="4" offset="25180" file="USoilNitrogenUp.pas" line="54">
+      <field name="SRL" type="TExternV" visibility="public" size="4" offset="25188" file="USoilNitrogenUp.pas" line="54">
         <devnotes>
            <summary>Sum of root length [cm/cm2].</summary>
         </devnotes>
       </field>
-      <field name="SRL_eff" type="TExternV" visibility="public" size="4" offset="25184" file="USoilNitrogenUp.pas" line="56">
+      <field name="SRL_eff" type="TExternV" visibility="public" size="4" offset="25192" file="USoilNitrogenUp.pas" line="56">
         <devnotes>
            <summary>Effective sum of root length [cm/cm2].</summary>
         </devnotes>

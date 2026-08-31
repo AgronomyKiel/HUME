@@ -268,9 +268,9 @@
       </propertyref>
       <propertyref name="StackInfo" visibility="public">
       </propertyref>
-      <methodref name="RaiseOuterException" visibility="public" procflags="static">
+      <methodref name="RaiseOuterException" visibility="public" procflags="static" symflags="noreturn">
       </methodref>
-      <methodref name="ThrowOuterException" visibility="public" procflags="static">
+      <methodref name="ThrowOuterException" visibility="public" procflags="static" symflags="noreturn">
       </methodref>
       <ancestor name="TObject" namespace="System">
         <methodref name="Create" visibility="public" procflags="constructor">
@@ -406,9 +406,9 @@
       </propertyref>
       <propertyref name="StackInfo" visibility="public">
       </propertyref>
-      <methodref name="RaiseOuterException" visibility="public" procflags="static">
+      <methodref name="RaiseOuterException" visibility="public" procflags="static" symflags="noreturn">
       </methodref>
-      <methodref name="ThrowOuterException" visibility="public" procflags="static">
+      <methodref name="ThrowOuterException" visibility="public" procflags="static" symflags="noreturn">
       </methodref>
       <ancestor name="TObject" namespace="System">
         <methodref name="Create" visibility="public" procflags="constructor">
@@ -1881,6 +1881,8 @@
           </methodref>
           <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
           </methodref>
+          <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+          </methodref>
           <methodref name="Changed" visibility="protected">
           </methodref>
           <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -2122,6 +2124,8 @@
           <methodref name="Destroy" visibility="public" procflags="destructor override">
           </methodref>
           <methodref name="CheckNonMainThreadUsage" visibility="public">
+          </methodref>
+          <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
           </methodref>
           <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
           </methodref>
@@ -2369,6 +2373,8 @@
             <methodref name="ReadDeltaStream" visibility="private">
             </methodref>
             <methodref name="ReadDeltaState" visibility="private">
+            </methodref>
+            <methodref name="InitObservers" visibility="private">
             </methodref>
             <methodref name="FindSortedComponent" visibility="private">
             </methodref>
@@ -2637,22 +2643,22 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="maxth" type="Integer" visibility="private" size="4" offset="624" file="MathImge.pas" line="543" />
-      <field name="maxxtw" type="Integer" visibility="private" size="4" offset="628" file="MathImge.pas" line="543" />
-      <field name="maxytw" type="Integer" visibility="private" size="4" offset="632" file="MathImge.pas" line="543" />
-      <field name="fClipRect" type="TRect" visibility="private" size="16" offset="636" file="MathImge.pas" line="544" />
-      <field name="fVersion" type="string" visibility="private" size="4" offset="652" file="MathImge.pas" line="545" />
-      <field name="Rotating" type="Boolean" visibility="private" size="1" offset="656" file="MathImge.pas" line="546" />
-      <field name="Zooming" type="Boolean" visibility="private" size="1" offset="657" file="MathImge.pas" line="546" />
-      <field name="Moving" type="Boolean" visibility="private" size="1" offset="658" file="MathImge.pas" line="546" />
-      <field name="FRecordMetafile" type="Boolean" visibility="private" size="1" offset="659" file="MathImge.pas" line="546" />
-      <field name="FOnRotating" type="TNotifyEvent" visibility="private" size="8" offset="664" file="MathImge.pas" line="547" />
-      <field name="FOnEndRotate" type="TNotifyEvent" visibility="private" size="8" offset="672" file="MathImge.pas" line="547" />
-      <field name="FOnMoving" type="TNotifyEvent" visibility="private" size="8" offset="680" file="MathImge.pas" line="547" />
-      <field name="FOnEndMove" type="TNotifyEvent" visibility="private" size="8" offset="688" file="MathImge.pas" line="547" />
-      <field name="FOnZooming" type="TNotifyEvent" visibility="private" size="8" offset="696" file="MathImge.pas" line="548" />
-      <field name="FOnEndZoom" type="TNotifyEvent" visibility="private" size="8" offset="704" file="MathImge.pas" line="548" />
-      <field name="fWorldDrawing" type="TCrackerDrawing" visibility="private" size="4" offset="712" file="MathImge.pas" line="549" />
+      <field name="maxth" type="Integer" visibility="private" size="4" offset="632" file="MathImge.pas" line="543" />
+      <field name="maxxtw" type="Integer" visibility="private" size="4" offset="636" file="MathImge.pas" line="543" />
+      <field name="maxytw" type="Integer" visibility="private" size="4" offset="640" file="MathImge.pas" line="543" />
+      <field name="fClipRect" type="TRect" visibility="private" size="16" offset="644" file="MathImge.pas" line="544" />
+      <field name="fVersion" type="string" visibility="private" size="4" offset="660" file="MathImge.pas" line="545" />
+      <field name="Rotating" type="Boolean" visibility="private" size="1" offset="664" file="MathImge.pas" line="546" />
+      <field name="Zooming" type="Boolean" visibility="private" size="1" offset="665" file="MathImge.pas" line="546" />
+      <field name="Moving" type="Boolean" visibility="private" size="1" offset="666" file="MathImge.pas" line="546" />
+      <field name="FRecordMetafile" type="Boolean" visibility="private" size="1" offset="667" file="MathImge.pas" line="546" />
+      <field name="FOnRotating" type="TNotifyEvent" visibility="private" size="8" offset="672" file="MathImge.pas" line="547" />
+      <field name="FOnEndRotate" type="TNotifyEvent" visibility="private" size="8" offset="680" file="MathImge.pas" line="547" />
+      <field name="FOnMoving" type="TNotifyEvent" visibility="private" size="8" offset="688" file="MathImge.pas" line="547" />
+      <field name="FOnEndMove" type="TNotifyEvent" visibility="private" size="8" offset="696" file="MathImge.pas" line="547" />
+      <field name="FOnZooming" type="TNotifyEvent" visibility="private" size="8" offset="704" file="MathImge.pas" line="548" />
+      <field name="FOnEndZoom" type="TNotifyEvent" visibility="private" size="8" offset="712" file="MathImge.pas" line="548" />
+      <field name="fWorldDrawing" type="TCrackerDrawing" visibility="private" size="4" offset="720" file="MathImge.pas" line="549" />
       <procedure name="SetVersion" visibility="private" file="MathImge.pas" line="551">
         <parameters>
           <parameter name="x" type="string" />
