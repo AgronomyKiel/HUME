@@ -117,11 +117,13 @@ type
     LabelSubModelCombobox: TLabel;
     SpeedButtonRun: TSpeedButton;
     btnSaveasPNG: TSpeedButton;
+    SpeedButtonSaveToWMF: TSpeedButton;
     ToolBarExternals: TToolBar;
     btnAdvStatToClipBoardButton: TSpeedButton;
     btnSaveDataChanges: TSpeedButton;
     il1: TImageList;
     SpeedButtonIncFontSize: TSpeedButton;
+    SpeedButtonDecFontSize: TSpeedButton;
     TabSheetDocumentation: TTabSheet;
     ToolBarDocu: TToolBar;
     SpeedButtonCreateDocu: TSpeedButton;

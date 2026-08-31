@@ -1,11 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<namespace name="UFertilization" platform="Win32">
-  <const name="MaxDuengDates" type="Integer" file="UFertilization.pas" line="9">
+<namespace name="USubDataEx" platform="Win32">
+  <const name="DataEx" type="TOptDataEx" file="USubDataEx.pas" line="15">
     <value>
-      $64
+      DataEx
     </value>
   </const>
-  <class name="TFertilization" file="UFertilization.pas" line="13">
+  <const name="NoDataEx" type="TOptDataEx" file="USubDataEx.pas" line="15">
+    <value>
+      NoDataEx
+    </value>
+  </const>
+  <const name="weTMPM" type="TWeatherEx" file="USubDataEx.pas" line="17">
+    <value>
+      weTMPM
+    </value>
+  </const>
+  <const name="weTMPMX" type="TWeatherEx" file="USubDataEx.pas" line="17">
+    <value>
+      weTMPMX
+    </value>
+  </const>
+  <const name="weTMPMN" type="TWeatherEx" file="USubDataEx.pas" line="17">
+    <value>
+      weTMPMN
+    </value>
+  </const>
+  <const name="weGlobRad" type="TWeatherEx" file="USubDataEx.pas" line="17">
+    <value>
+      weGlobRad
+    </value>
+  </const>
+  <const name="weRain" type="TWeatherEx" file="USubDataEx.pas" line="17">
+    <value>
+      weRain
+    </value>
+  </const>
+  <const name="weLF" type="TWeatherEx" file="USubDataEx.pas" line="17">
+    <value>
+      weLF
+    </value>
+  </const>
+  <const name="weWind" type="TWeatherEx" file="USubDataEx.pas" line="17">
+    <value>
+      weWind
+    </value>
+  </const>
+  <enum name="TOptDataEx" file="USubDataEx.pas" line="15">
+    <element value="0" name="DataEx" file="USubDataEx.pas" line="15" />
+    <element value="1" name="NoDataEx" file="USubDataEx.pas" line="15" />
+  </enum>
+  <enum name="TWeatherEx" file="USubDataEx.pas" line="17">
+    <element value="0" name="weTMPM" file="USubDataEx.pas" line="17" />
+    <element value="1" name="weTMPMX" file="USubDataEx.pas" line="17" />
+    <element value="2" name="weTMPMN" file="USubDataEx.pas" line="17" />
+    <element value="3" name="weGlobRad" file="USubDataEx.pas" line="17" />
+    <element value="4" name="weRain" file="USubDataEx.pas" line="17" />
+    <element value="5" name="weLF" file="USubDataEx.pas" line="17" />
+    <element value="6" name="weWind" file="USubDataEx.pas" line="17" />
+  </enum>
+  <class name="TSubDataEX" file="USubDataEx.pas" line="19">
     <ancestor name="TSubmodel" namespace="UMod">
       <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
       </methodref>
@@ -1205,50 +1258,124 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fSoilLayerMod" type="TPlantRelatedSubMod" visibility="private" size="4" offset="656" file="UFertilization.pas" line="15" />
-      <field name="dates" visibility="public" size="400" offset="660" file="UFertilization.pas" line="19">
-        <array name="dates" visibility="public" low="1" high="100" file="UFertilization.pas" line="19">
-          <element type="TPar" />
+      <field name="fSWMOD" type="TSoilWaterMod" visibility="private" size="4" offset="656" file="USubDataEx.pas" line="21" />
+      <field name="ExportAbb_Act" type="Boolean" visibility="private" size="1" offset="660" file="USubDataEx.pas" line="24" />
+      <field name="ExportAbb_Ref" type="Boolean" visibility="private" size="1" offset="661" file="USubDataEx.pas" line="24" />
+      <field name="done" type="Boolean" visibility="private" size="1" offset="662" file="USubDataEx.pas" line="25" />
+      <field name="done1" type="Boolean" visibility="private" size="1" offset="663" file="USubDataEx.pas" line="25" />
+      <field name="done2" type="Boolean" visibility="private" size="1" offset="664" file="USubDataEx.pas" line="25" />
+      <field name="done3" type="Boolean" visibility="private" size="1" offset="665" file="USubDataEx.pas" line="25" />
+      <field name="done4" type="Boolean" visibility="private" size="1" offset="666" file="USubDataEx.pas" line="25" />
+      <field name="done5" type="Boolean" visibility="private" size="1" offset="667" file="USubDataEx.pas" line="25" />
+      <field name="done6" type="Boolean" visibility="private" size="1" offset="668" file="USubDataEx.pas" line="25" />
+      <field name="done7" type="Boolean" visibility="private" size="1" offset="669" file="USubDataEx.pas" line="25" />
+      <field name="done8" type="Boolean" visibility="private" size="1" offset="670" file="USubDataEx.pas" line="25" />
+      <field name="done9" type="Boolean" visibility="private" size="1" offset="671" file="USubDataEx.pas" line="25" />
+      <field name="done10" type="Boolean" visibility="private" size="1" offset="672" file="USubDataEx.pas" line="26" />
+      <field name="done11" type="Boolean" visibility="private" size="1" offset="673" file="USubDataEx.pas" line="26" />
+      <field name="done12" type="Boolean" visibility="private" size="1" offset="674" file="USubDataEx.pas" line="26" />
+      <field name="done13" type="Boolean" visibility="private" size="1" offset="675" file="USubDataEx.pas" line="26" />
+      <field name="done14" type="Boolean" visibility="private" size="1" offset="676" file="USubDataEx.pas" line="26" />
+      <field name="done15" type="Boolean" visibility="private" size="1" offset="677" file="USubDataEx.pas" line="26" />
+      <field name="dateC2" type="Double" visibility="private" size="8" offset="680" file="USubDataEx.pas" line="27" />
+      <field name="dateC3" type="Double" visibility="private" size="8" offset="688" file="USubDataEx.pas" line="27" />
+      <field name="sumIrrigation_" type="Double" visibility="private" size="8" offset="696" file="USubDataEx.pas" line="28" />
+      <field name="IrriAmount" type="Double" visibility="private" size="8" offset="704" file="USubDataEx.pas" line="28" />
+      <field name="PSI_Crit_min" type="Double" visibility="private" size="8" offset="712" file="USubDataEx.pas" line="29" />
+      <field name="PSI_Crit_max" type="Double" visibility="private" size="8" offset="720" file="USubDataEx.pas" line="29" />
+      <field name="PSI_Root_of_PSI_Crit" type="Double" visibility="private" size="8" offset="728" file="USubDataEx.pas" line="30" />
+      <field name="WG0_90_" type="Double" visibility="private" size="8" offset="736" file="USubDataEx.pas" line="31" />
+      <field name="DateWeatherEx" type="Double" visibility="private" size="8" offset="744" file="USubDataEx.pas" line="33" />
+      <field name="Weather" visibility="private" size="672" offset="752" file="USubDataEx.pas" line="35">
+        <array name="Weather" visibility="private" low="0" high="6" file="USubDataEx.pas" line="35">
+          <array name="Weather" visibility="private" low="0" high="11" file="USubDataEx.pas" line="35">
+            <element type="Double" />
+          </array>
         </array>
       </field>
-      <field name="quantities" visibility="public" size="400" offset="1060" file="UFertilization.pas" line="20">
-        <array name="quantities" visibility="public" low="1" high="100" file="UFertilization.pas" line="20">
-          <element type="TPar" />
+      <field name="projname" type="string" visibility="private" size="4" offset="1424" file="USubDataEx.pas" line="37" />
+      <field name="fn_DatFile" type="string" visibility="private" size="4" offset="1428" file="USubDataEx.pas" line="38" />
+      <field name="fn_AbbFile" type="string" visibility="private" size="4" offset="1432" file="USubDataEx.pas" line="39" />
+      <field name="exDatFile" type="TStringList" visibility="private" size="4" offset="1436" file="USubDataEx.pas" line="41" />
+      <field name="exAbbFile" type="TStringList" visibility="private" size="4" offset="1440" file="USubDataEx.pas" line="43" />
+      <procedure name="WriteActLine" visibility="private" file="USubDataEx.pas" line="45">
+      </procedure>
+      <procedure name="WriteActAbbLine" visibility="private" file="USubDataEx.pas" line="46">
+      </procedure>
+      <procedure name="WriteRefLine" visibility="private" file="USubDataEx.pas" line="47">
+      </procedure>
+      <procedure name="WriteRefAbbLine" visibility="private" file="USubDataEx.pas" line="48">
+      </procedure>
+      <field name="optDataEx" type="TOption" visibility="public" size="4" offset="1444" file="USubDataEx.pas" line="51" />
+      <field name="optProject" type="TOption" visibility="public" size="4" offset="1448" file="USubDataEx.pas" line="52" />
+      <field name="MinType" type="TPar" visibility="public" size="4" offset="1452" file="USubDataEx.pas" line="54" />
+      <field name="ExportType" type="TPar" visibility="public" size="4" offset="1456" file="USubDataEx.pas" line="55" />
+      <field name="avNuptake" type="TPar" visibility="public" size="4" offset="1460" file="USubDataEx.pas" line="56" />
+      <field name="sumDrainVB" type="TVar" visibility="public" size="4" offset="1464" file="USubDataEx.pas" line="57" />
+      <field name="sumMinVB" type="TVar" visibility="public" size="4" offset="1468" file="USubDataEx.pas" line="57" />
+      <field name="TMPM" type="TExternV" visibility="public" size="4" offset="1472" file="USubDataEx.pas" line="59" />
+      <field name="TMPMX" type="TExternV" visibility="public" size="4" offset="1476" file="USubDataEx.pas" line="60" />
+      <field name="TMPMN" type="TExternV" visibility="public" size="4" offset="1480" file="USubDataEx.pas" line="61" />
+      <field name="GlobRad" type="TExternV" visibility="public" size="4" offset="1484" file="USubDataEx.pas" line="62" />
+      <field name="Rain" type="TExternV" visibility="public" size="4" offset="1488" file="USubDataEx.pas" line="63" />
+      <field name="LF" type="TExternV" visibility="public" size="4" offset="1492" file="USubDataEx.pas" line="64" />
+      <field name="Wind" type="TExternV" visibility="public" size="4" offset="1496" file="USubDataEx.pas" line="65" />
+      <field name="DayOfYear" type="TExternV" visibility="public" size="4" offset="1500" file="USubDataEx.pas" line="67" />
+      <field name="NAPP1" type="TExternV" visibility="public" size="4" offset="1504" file="USubDataEx.pas" line="68" />
+      <field name="NAPP2" type="TExternV" visibility="public" size="4" offset="1508" file="USubDataEx.pas" line="69" />
+      <field name="NAPP3" type="TExternV" visibility="public" size="4" offset="1512" file="USubDataEx.pas" line="70" />
+      <field name="SumDrain" type="TExternV" visibility="public" size="4" offset="1516" file="USubDataEx.pas" line="71" />
+      <field name="CumDrainage" type="TExternV" visibility="public" size="4" offset="1520" file="USubDataEx.pas" line="72" />
+      <field name="ProznFK0_Weff" type="TExternV" visibility="public" size="4" offset="1524" file="USubDataEx.pas" line="73" />
+      <field name="ProznFK0_30" type="TExternV" visibility="public" size="4" offset="1528" file="USubDataEx.pas" line="74" />
+      <field name="GRYD" type="TExternV" visibility="public" size="4" offset="1532" file="USubDataEx.pas" line="75" />
+      <field name="NUpTake" type="TExternV" visibility="public" size="4" offset="1536" file="USubDataEx.pas" line="76" />
+      <field name="Vorfrucht" type="TExternV" visibility="public" size="4" offset="1540" file="USubDataEx.pas" line="77" />
+      <field name="MineralisedN" type="TExternV" visibility="public" size="4" offset="1544" file="USubDataEx.pas" line="78" />
+      <field name="TransRatio" type="TExternV" visibility="public" size="4" offset="1548" file="USubDataEx.pas" line="79" />
+      <field name="zr" type="TExternV" visibility="public" size="4" offset="1552" file="USubDataEx.pas" line="80" />
+      <field name="EC" type="TExternV" visibility="public" size="4" offset="1556" file="USubDataEx.pas" line="81" />
+      <field name="sumIrrigation" type="TExternV" visibility="public" size="4" offset="1560" file="USubDataEx.pas" line="83" />
+      <field name="pF_Crit" type="TExternV" visibility="public" size="4" offset="1564" file="USubDataEx.pas" line="84" />
+      <field name="Szenario" type="TExternV" visibility="public" size="4" offset="1568" file="USubDataEx.pas" line="85" />
+      <field name="LAI" type="TExternV" visibility="public" size="4" offset="1572" file="USubDataEx.pas" line="86" />
+      <field name="psiRoot" type="TExternV" visibility="public" size="4" offset="1576" file="USubDataEx.pas" line="87" />
+      <field name="WG0_90" type="TExternV" visibility="public" size="4" offset="1580" file="USubDataEx.pas" line="88" />
+      <field name="WMenge" visibility="public" size="84" offset="1584" file="USubDataEx.pas" line="90">
+        <array name="WMenge" visibility="public" low="1" high="21" file="USubDataEx.pas" line="90">
+          <element type="TExternV" />
         </array>
       </field>
-      <field name="quantitiesNH3" visibility="public" size="400" offset="1460" file="UFertilization.pas" line="21">
-        <array name="quantitiesNH3" visibility="public" low="1" high="100" file="UFertilization.pas" line="21">
-          <element type="TPar" />
+      <field name="theta_arr" visibility="public" size="84" offset="1668" file="USubDataEx.pas" line="91">
+        <array name="theta_arr" visibility="public" low="1" high="21" file="USubDataEx.pas" line="91">
+          <element type="TExternV" />
         </array>
       </field>
-      <field name="fractionsNFast" visibility="public" size="400" offset="1860" file="UFertilization.pas" line="22">
-        <array name="fractionsNFast" visibility="public" low="1" high="100" file="UFertilization.pas" line="22">
-          <element type="TPar" />
-        </array>
-      </field>
-      <field name="SoilNitrate" type="TExternV" visibility="public" size="4" offset="2260" file="UFertilization.pas" line="24" />
-      <constructor name="Create" visibility="public" file="UFertilization.pas" line="26">
-        <parameters>
-          <parameter name="AOwner" type="TComponent" />
-        </parameters>
-      </constructor>
-      <procedure name="Init" visibility="public" procflags="override" file="UFertilization.pas" line="28">
+      <field name="cumTemp" type="Double" visibility="public" size="8" offset="1752" file="USubDataEx.pas" line="93" />
+      <field name="cumRain" type="Double" visibility="public" size="8" offset="1760" file="USubDataEx.pas" line="93" />
+      <field name="cumRad" type="Double" visibility="public" size="8" offset="1768" file="USubDataEx.pas" line="93" />
+      <field name="cumRad_" type="Double" visibility="public" size="8" offset="1776" file="USubDataEx.pas" line="93" />
+      <field name="cumCWSI" type="Double" visibility="public" size="8" offset="1784" file="USubDataEx.pas" line="93" />
+      <field name="DrainStart" type="Double" visibility="public" size="8" offset="1792" file="USubDataEx.pas" line="94" />
+      <field name="MinStart" type="Double" visibility="public" size="8" offset="1800" file="USubDataEx.pas" line="94" />
+      <procedure name="Init" visibility="public" procflags="override" file="USubDataEx.pas" line="96">
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="UFertilization.pas" line="30">
+      <procedure name="CreateAll" visibility="public" procflags="override" file="USubDataEx.pas" line="97">
       </procedure>
-      <procedure name="Set_GlobMod" visibility="public" procflags="override" file="UFertilization.pas" line="32">
+      <destructor name="Destroy" visibility="public" file="USubDataEx.pas" line="98">
         <parameters>
-          <parameter name="value" type="TMod" />
         </parameters>
+      </destructor>
+      <procedure name="CalcRates" visibility="public" procflags="override" file="USubDataEx.pas" line="99">
       </procedure>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="UFertilization.pas" line="33">
+      <procedure name="Integrate" visibility="public" procflags="override" file="USubDataEx.pas" line="100">
       </procedure>
-      <property name="SoilLayerMod" visibility="published" read="fSoilLayerMod" write="fSoilLayerMod" type="TPlantRelatedSubMod" file="UFertilization.pas" line="36" />
+      <property name="swmod" visibility="published" read="fSWMOD" write="fSWMOD" type="TSoilWaterMod" file="USubDataEx.pas" line="103" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="UFertilization.pas" line="162">
+  <procedure name="Register" visibility="public" file="USubDataEx.pas" line="946">
   </procedure>
 </namespace>

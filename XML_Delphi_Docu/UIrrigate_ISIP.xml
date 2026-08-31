@@ -1,11 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<namespace name="UFertilization" platform="Win32">
-  <const name="MaxDuengDates" type="Integer" file="UFertilization.pas" line="9">
+<namespace name="UIrrigate_ISIP" platform="Win32">
+  <const name="MaxIrriDates" type="Integer" file="UIrrigate_ISIP.pas" line="16">
     <value>
       $64
     </value>
   </const>
-  <class name="TFertilization" file="UFertilization.pas" line="13">
+  <const name="irri" type="TIrrigation" file="UIrrigate_ISIP.pas" line="19">
+    <value>
+      irri
+    </value>
+  </const>
+  <const name="no_irri" type="TIrrigation" file="UIrrigate_ISIP.pas" line="19">
+    <value>
+      no_irri
+    </value>
+  </const>
+  <const name="calculated" type="TpFcrit" file="UIrrigate_ISIP.pas" line="20">
+    <value>
+      calculated
+    </value>
+  </const>
+  <const name="fromparam" type="TpFcrit" file="UIrrigate_ISIP.pas" line="20">
+    <value>
+      fromparam
+    </value>
+  </const>
+  <enum name="TIrrigation" file="UIrrigate_ISIP.pas" line="19">
+    <element value="0" name="irri" file="UIrrigate_ISIP.pas" line="19" />
+    <element value="1" name="no_irri" file="UIrrigate_ISIP.pas" line="19" />
+  </enum>
+  <enum name="TpFcrit" file="UIrrigate_ISIP.pas" line="20">
+    <element value="0" name="calculated" file="UIrrigate_ISIP.pas" line="20" />
+    <element value="1" name="fromparam" file="UIrrigate_ISIP.pas" line="20" />
+  </enum>
+  <class name="TIrrigate_ISIP" file="UIrrigate_ISIP.pas" line="21">
     <ancestor name="TSubmodel" namespace="UMod">
       <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
       </methodref>
@@ -1205,50 +1233,33 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fSoilLayerMod" type="TPlantRelatedSubMod" visibility="private" size="4" offset="656" file="UFertilization.pas" line="15" />
-      <field name="dates" visibility="public" size="400" offset="660" file="UFertilization.pas" line="19">
-        <array name="dates" visibility="public" low="1" high="100" file="UFertilization.pas" line="19">
-          <element type="TPar" />
-        </array>
-      </field>
-      <field name="quantities" visibility="public" size="400" offset="1060" file="UFertilization.pas" line="20">
-        <array name="quantities" visibility="public" low="1" high="100" file="UFertilization.pas" line="20">
-          <element type="TPar" />
-        </array>
-      </field>
-      <field name="quantitiesNH3" visibility="public" size="400" offset="1460" file="UFertilization.pas" line="21">
-        <array name="quantitiesNH3" visibility="public" low="1" high="100" file="UFertilization.pas" line="21">
-          <element type="TPar" />
-        </array>
-      </field>
-      <field name="fractionsNFast" visibility="public" size="400" offset="1860" file="UFertilization.pas" line="22">
-        <array name="fractionsNFast" visibility="public" low="1" high="100" file="UFertilization.pas" line="22">
-          <element type="TPar" />
-        </array>
-      </field>
-      <field name="SoilNitrate" type="TExternV" visibility="public" size="4" offset="2260" file="UFertilization.pas" line="24" />
-      <constructor name="Create" visibility="public" file="UFertilization.pas" line="26">
-        <parameters>
-          <parameter name="AOwner" type="TComponent" />
-        </parameters>
-      </constructor>
-      <procedure name="Init" visibility="public" procflags="override" file="UFertilization.pas" line="28">
+      <field name="fIrri" type="TIrrigation" visibility="private" size="1" offset="656" file="UIrrigate_ISIP.pas" line="24" />
+      <field name="fTH" type="TpFcrit" visibility="private" size="1" offset="657" file="UIrrigate_ISIP.pas" line="25" />
+      <procedure name="CreateAll" visibility="protected" procflags="override" file="UIrrigate_ISIP.pas" line="30">
+      </procedure>
+      <field name="TransRatio" type="TExternV" visibility="public" size="4" offset="660" file="UIrrigate_ISIP.pas" line="33" />
+      <field name="ProzNFK0_Weff" type="TExternV" visibility="public" size="4" offset="664" file="UIrrigate_ISIP.pas" line="34" />
+      <field name="PSIroot" type="TExternV" visibility="public" size="4" offset="668" file="UIrrigate_ISIP.pas" line="35" />
+      <field name="Rain" type="TExternV" visibility="public" size="4" offset="672" file="UIrrigate_ISIP.pas" line="36" />
+      <field name="EC" type="TExternV" visibility="public" size="4" offset="676" file="UIrrigate_ISIP.pas" line="37" />
+      <field name="IrrQuantity" type="TPar" visibility="public" size="4" offset="680" file="UIrrigate_ISIP.pas" line="38" />
+      <field name="sumIrrigation" type="TState" visibility="public" size="4" offset="684" file="UIrrigate_ISIP.pas" line="39" />
+      <field name="IrrTHV" type="TPar" visibility="public" size="4" offset="688" file="UIrrigate_ISIP.pas" line="40" />
+      <field name="IrrEvents" type="TPar" visibility="public" size="4" offset="692" file="UIrrigate_ISIP.pas" line="41" />
+      <field name="pF_Crit" type="TVar" visibility="public" size="4" offset="696" file="UIrrigate_ISIP.pas" line="43" />
+      <field name="LeftIrr" type="Integer" visibility="public" size="4" offset="700" file="UIrrigate_ISIP.pas" line="44" />
+      <field name="LastIrr" type="Double" visibility="public" size="8" offset="704" file="UIrrigate_ISIP.pas" line="45" />
+      <field name="optIrrigation" type="TOption" visibility="public" size="4" offset="712" file="UIrrigate_ISIP.pas" line="46" />
+      <field name="optTH" type="TOption" visibility="public" size="4" offset="716" file="UIrrigate_ISIP.pas" line="47" />
+      <procedure name="CalcRates" visibility="public" procflags="override" file="UIrrigate_ISIP.pas" line="48">
+      </procedure>
+      <procedure name="Init" visibility="public" procflags="override" file="UIrrigate_ISIP.pas" line="49">
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="UFertilization.pas" line="30">
-      </procedure>
-      <procedure name="Set_GlobMod" visibility="public" procflags="override" file="UFertilization.pas" line="32">
-        <parameters>
-          <parameter name="value" type="TMod" />
-        </parameters>
-      </procedure>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="UFertilization.pas" line="33">
-      </procedure>
-      <property name="SoilLayerMod" visibility="published" read="fSoilLayerMod" write="fSoilLayerMod" type="TPlantRelatedSubMod" file="UFertilization.pas" line="36" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="UFertilization.pas" line="162">
+  <procedure name="Register" visibility="public" file="UIrrigate_ISIP.pas" line="159">
   </procedure>
 </namespace>

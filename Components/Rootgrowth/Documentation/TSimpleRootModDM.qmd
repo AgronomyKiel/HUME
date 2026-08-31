@@ -45,7 +45,7 @@ library(xml2)
 library(here)
 library(ggpmisc)
 library(tidyr)
-source("Q:/HUME/HUME/RLib/DokuUtilFunctions.R")
+source("RLib/DokuUtilFunctions.R")
 
 options("citation_format" = "pandoc")
 
@@ -53,8 +53,8 @@ options("citation_format" = "pandoc")
 
 ```{r}
 #| include: false
-fn_source <- "Q:/HUME/HUME/Components/Rootgrowth/USimpleRootModDM.pas"
-fn_xml_docu <- "Q:/HUME/HUME/XML_Delphi_Docu/USimpleRootModDM.xml"
+fn_source <- "Components/Rootgrowth/USimpleRootModDM.pas"
+fn_xml_docu <- "XML_Delphi_Docu/USimpleRootModDM.xml"
 ```
 
 # Summary
@@ -386,9 +386,65 @@ m
 
 ```
 
+## Root length density classes within soil layers
+
+The vertical distribution described above assigns one mean root length density to each soil layer. `TSimpleRootModDM` can additionally represent spatial variation around this layer mean with ten equally weighted root length density (RLD) classes. These classes are named *moments* in parts of the source code, but their values are representative quantiles of a lognormal distribution rather than statistical moments. The feature is implemented for 20 soil layers and for both total RLD (`Wld_moments`) and effective RLD (`EffWld_moments`).
+
+### Coefficient of variation
+
+For layer $i$, the coefficient of variation $CV_i$ (%) is calculated from the mean total root length density $\overline{L}_{rv,i}$:
+
+$$CV_i = \max\left[0,\; CV_{int} + CV_{slope}\ln\left(\overline{L}_{rv,i}\right)\right]$$ {#eq-rld-cv}
+
+where $CV_{int}$ is `VK_lrv_int` and $CV_{slope}$ is `VK_lrv_slope`. The logarithm uses the numerical value of `Wld_arr[i]` in its declared unit of $cm\,cm^{-3}$. If the mean total RLD is zero or negative, $CV_i$ is set to zero. The same layer-specific $CV_i$ is used to construct the total and effective RLD classes.
+
+### Construction of the ten classes
+
+The percentage coefficient of variation is first converted to a fraction, $c_i=CV_i/100$. The parameters of the corresponding lognormal distribution are
+
+$$\sigma_{\ln,i}=\sqrt{\ln\left(1+c_i^2\right)}$$ {#eq-rld-log-sd}
+
+and
+
+$$\mu_{\ln,i}=\ln\left(\overline{L}_{rv,i}\right)-\frac{1}{2}\sigma_{\ln,i}^{2}.$$ {#eq-rld-log-mean}
+
+For class $j=1,\ldots,10$, the preliminary representative value is evaluated at the midpoint of an equally probable interval of the standard normal distribution:
+
+$$L^{*}_{rv,i,j}=\exp\left[\mu_{\ln,i}+\sigma_{\ln,i}\Phi^{-1}\left(\frac{j-0.5}{10}\right)\right],$$ {#eq-rld-class-preliminary}
+
+where $\Phi^{-1}$ is the inverse standard normal cumulative distribution function. Thus, the probabilities are 0.05, 0.15, ..., 0.95. Because ten discrete quantiles do not reproduce the analytical mean exactly, the implementation rescales them:
+
+$$L_{rv,i,j}=L^{*}_{rv,i,j}\frac{10\overline{L}_{rv,i}}{\sum_{j=1}^{10}L^{*}_{rv,i,j}}.$$ {#eq-rld-class-rescaling}
+
+Consequently, the arithmetic mean of the ten class representatives equals the layer mean:
+
+$$\frac{1}{10}\sum_{j=1}^{10}L_{rv,i,j}=\overline{L}_{rv,i}.$$ {#eq-rld-class-mean}
+
+The same procedure is applied to the effective mean root length density `EffWld_arr[i]`, using the $CV_i$ obtained from total RLD. If a supplied mean is zero or negative, all ten representatives of that distribution are set to zero.
+
+The reported standard deviations `WLD_stdev_i` and `effWLD_stdev_i` are calculated from the discrete representatives:
+
+$$s_{L,i}=\sqrt{\frac{1}{10}\sum_{j=1}^{10}\left(L_{rv,i,j}-\overline{L}_{rv,i}\right)^2}.$$ {#eq-rld-class-sd}
+
+### Activation and coupling to soil water uptake
+
+The RLD classes are updated at every model time step only when `CalcMoments` is `true`. The default parameter values `VK_lrv_int = 0` and `VK_lrv_slope = 0` produce ten identical class values, so non-zero variability parameters are needed to represent within-layer heterogeneity.
+
+Assigning a `TSoilWaterModelR` component to the `RootedSoilWaterModel` property links the total and effective RLD class matrices directly to that soil water model. To use the classes for water uptake, configure the linked soil water model with `SinkTermMethod = MFP` and `WithClasses = true`; see the [TSoilWaterModelR documentation](../../Soil/Documentation/TSoilWaterModelR.qmd). The soil water model then calculates MFP-limited uptake separately for every RLD class, maintains a separate water amount for each class, and sums the ten class contributions to recover each layer's sink term. `MFPuptakedistribution` controls whether potential uptake is allocated empirically or in proportion to maximum flow.
+
+| Item | Unit or values | Default | Role |
+|---|---:|---:|---|
+| `CalcMoments` | `false`, `true` | `false` | Recalculate total and effective RLD classes at every time step. |
+| `VK_lrv_int` | % | 0 | Intercept $CV_{int}$ in @eq-rld-cv. |
+| `VK_lrv_slope` | % | 0 | Slope $CV_{slope}$ in @eq-rld-cv. |
+| `VK_lrv_i` | % | calculated | Coefficient of variation in layer $i$. |
+| `WLD_stdev_i` | $cm\,cm^{-3}$ | calculated | Standard deviation of the ten total-RLD representatives in layer $i$. |
+| `effWLD_stdev_i` | $cm\,cm^{-3}$ | calculated | Standard deviation of the ten effective-RLD representatives in layer $i$. |
+| `RootedSoilWaterModel` | component reference | none | Links the RLD class matrices to a `TSoilWaterModelR` instance. |
+
 ## Boxcar representation of active root length
 
-In `USimpleRootModDM.pas`, active root length is represented with a **boxcar ageing scheme**. For each soil compartment, root length is stored in a matrix of discrete age classes (`Root_Matrix[i,j]`). Each column corresponds to one age class, so the matrix keeps track of how much root length in a compartment belongs to young, recently formed roots and how much belongs to older roots.
+In `USimpleRootModDM.pas`, active root length is represented with a **boxcar ageing scheme**. These temporal age classes are distinct from the within-layer RLD classes described above. For each soil compartment, root length is stored in a matrix of discrete age classes (`Root_Matrix[i,j]`). Each column corresponds to one age class, so the matrix keeps track of how much root length in a compartment belongs to young, recently formed roots and how much belongs to older roots.
 
 At the beginning of a simulation run, the age-class counter `n_age_cl` is set to zero. During the simulation it increases by one per day until the maximum number of age classes (`MaxAgeCl`) is reached. On each day, the content of the age classes is shifted by one position toward older classes:
 
@@ -443,7 +499,7 @@ This quantity represents the density of roots that are still considered active i
 
 The boxcar approach is a simple discrete ageing model. New roots enter the first age class, then move day by day into older classes. Root activity is restricted to the youngest fraction of the root system, as defined by `ActiveDuration`. In this way, the algorithm distinguishes between total root length and the smaller fraction of roots that are still effective for uptake processes.
 
-##Parameterisation for silage maize 
+## Parameterisation for silage maize
 
 The calibration of the root growth parameters was done with independent data of the field trials with a newer hybrid only (KWS Stefano, field trials in 2021-22 at the experimental farm Hohenschulen of Kiel University (54.18°N, 9.58°E, 18 m a.s.l.). Root length (RL) and root length density (RLD) were monitored to a soil depth of 120 cm, either by soil pits or by soil cores. Soil cores were sampled at silking and grain filling and divided into 10 cm sections. After washing the samples, extracted roots were scanned using the Epson Perfection V850 Pro. The scans were analysed using RhizoVision Explorer v2.0.3 (Seethepalli et al. 2021). Rooting depth (zr) was investigated at four timepoints during the growing period of 2022 measuring the deepest visible root in the soil pit.
 
@@ -460,10 +516,9 @@ df <- read.delim(fn, header = TRUE, sep = ";")|>filter(Submodel=="SimpleRootModD
 names(df) <- c("Parameter", "Units", "Value", "Description")
 ```
 
-
 ## Parameters
+The parameters configured for `SimpleRootModDM1` in the silage maize model are shown in @tbl-Parameter.
 
-The class Tsubpartitioning_Maize_Roots_N has `r trunc(nrow(Entities$df.par))` following parameter(s).
 
 ```{r}
 #| label: tbl-Parameter
@@ -490,4 +545,3 @@ kable(df, escape = FALSE,
   kableExtra::row_spec(0, bold = TRUE)
 
 ```
-
