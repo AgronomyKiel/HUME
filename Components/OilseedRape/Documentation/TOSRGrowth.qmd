@@ -1,0 +1,557 @@
+---
+title: "TOSRGrowth"
+author: "Agronomy and Crop Science Group, Kiel University"
+date: today
+---
+
+```{r}
+#| label: SetupLibraries
+#| include: false
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                     fig.align = "center", fig.width = 10, fig.height = 5)
+rm(list = ls(all.names = TRUE))
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(xml2)
+library(here)
+source("ExtractInformationFromXML.R")
+source("Rlib/DokuUtilFunctions.R")
+options("citation_format" = "pandoc")
+
+fn_source <- here("Components/OilseedRape/OSRGrowth.pas")
+fn_xml_docu <- here("XML_Delphi_Docu/OSRGrowth.xml")
+fn_csv <- here("csv_Hume_Docu/OSRGrowth.csv")
+NameSource <- tools::file_path_sans_ext(basename(fn_source))
+doc <- read_xml(fn_xml_docu)
+output <- ExtractXMLDocuInformation(fn_xml_docu, ClassName = "TOSRGrowth")
+
+entities <- read.delim(fn_csv, sep = ";", quote = "\"", encoding = "UTF-8",
+  colClasses = "character", na.strings = c("NA", ""),
+  check.names = FALSE, fill = TRUE)
+names(entities) <- sub("^\ufeff", "", names(entities))
+entities <- entities[, !is.na(names(entities)) & nzchar(names(entities)), drop = FALSE]
+entities <- entities |> filter(!is.na(EntityType), nzchar(EntityType))
+
+normalize_units <- function(x) {
+  bad <- intToUtf8(65533)
+  x <- ifelse(is.na(x), "", x)
+  x <- gsub(paste0("cm", bad), "cm2", x, fixed = TRUE)
+  x <- gsub(paste0("m", bad), "m2", x, fixed = TRUE)
+  x <- gsub(paste0(bad, "C"), "degree C", x, fixed = TRUE)
+  gsub(bad, "degree ", x, fixed = TRUE)
+}
+entity_table <- function(type) {
+  result <- entities |>
+    filter(EntityType == type) |>
+    transmute(Name = EntityName, Units = normalize_units(Units),
+      Configured_value = ifelse(is.na(Value), "", Value),
+      Option_or_source = ifelse(is.na(Option), "", Option),
+      Description = ifelse(is.na(Comment), "", Comment))
+  names(result)[3:4] <- c("Configured value", "Option / source")
+  result
+}
+parameter_value <- function(name) {
+  value <- entities |> filter(EntityType == "Parameter", EntityName == name) |> pull(Value)
+  as.numeric(value[[1]])
+}
+```
+
+# Summary
+
+```{r}
+#| label: DryMatterSummary
+#| echo: false
+#| results: asis
+
+GetFirstDevNotes(fn_xml_docu)
+```
+
+`TOSRGrowth` is the winter oilseed rape growth component in HUME-OSR. It converts weather, phenological development, soil water status and soil nitrogen supply into daily dry-matter production, organ partitioning, green area, nitrogen uptake, senescence, seed yield and residue fluxes. The implementation combines radiation-use-efficiency growth with empirically fitted allometric allocation rules [@Bottcher2020; @Weymann2017b].
+
+The exported configuration contains 91 states, 95 parameters, 103 variables, 10 external values and 9 options. These totals include inherited entities exposed by `TAbstractPlant`.
+
+## Descendence
+
+The class `TOSRGrowth` has the ancestor classes shown in @tbl-AncestorClasses.
+
+```{r}
+#| label: tbl-AncestorClasses
+#| echo: false
+#| tbl-cap: "Ancestor classes of TOSRGrowth"
+kable(GetAncestorClasses(fn_xml_docu, "TOSRGrowth"))
+```
+
+## Scope and collaborating components
+
+| Collaborator | Role in `TOSRGrowth` |
+|------------------------------------|------------------------------------|
+| `TDevelopmentOSR` | Supplies BBCH stage (`EC`), development rate (`DVS`) and emergence information. |
+| Weather inputs | Supply mean temperature (`TMPM`) and global radiation (`GRad`). |
+| Water-balance component | Supplies the actual-to-potential transpiration ratio for drought limitation. |
+| Soil nitrogen component | Supplies actual N uptake and receives demand and residue information. |
+| Root component | Receives root growth and provides total and effective root length. |
+| `TSnowPack` | Modifies plant temperature for winter senescence. |
+
+The two external entities both named `DVS` are intentional: one links to a development **state**, the other to its **rate**. They must be connected to corresponding fields of the same phenology component.
+
+# Scientific background
+
+HUME-OSR was developed for winter oilseed rape under optimal, water-limited and nitrogen-limited conditions. It represents vernalisation, frost-, shade- and age-induced senescence, assimilate and N translocation, light absorption by a flower/pod layer, organ-specific N dilution and oil synthesis [@Bottcher2020]. Its allometric dry-matter and nitrogen relations were derived from multi-year field observations at Hohenschulen [@Weymann2017b]. Earlier winter oilseed rape modelling informed leaf-area and senescence concepts [@Gabrielle1998], while phenological timing is handled by the separate BBCH component [@Bottcher2016].
+
+The model was calibrated with two data sets from the experimental farm Hohenschulen, Germany, and validated with data from Germany, France, Great Britain and the Czech Republic. Calibration RMSE values include 78.94 g m^-2^ for shoot dry matter, 0.54 for LAI and 1.76 g N m^-2^ for shoot N. Final yield is still substantially less predictable (RMSE 1.0 Mg ha^-1^, model efficiency 0.05). The published evaluation likewise concludes that relative treatment responses were represented more reliably than year-to-year seed-yield variability [@Bottcher2020]. These values describe the manuscript model version; they are context, not a fresh validation of the current source or parameter set.
+
+## Daily calculation sequence
+
+`CalcRates` performs the following sequence between sowing and harvest:
+
+1.  Read phenology, weather and linked component values.
+2.  Calculate effective temperature, absorbed radiation and stress multipliers.
+3.  Calculate internal or externally supplied dry-matter growth.
+4.  Partition new dry matter among roots, leaves, stems, pods and seeds.
+5.  Calculate organ-specific N demand and constrain allocation by N status.
+6.  Calculate leaf, stem and pod area development and senescence.
+7.  Calculate yield, oil concentration, residue and diagnostic variables.
+
+Outside the sowing-to-harvest interval all state rates are set to zero. `Integrate` exchanges N with the soil module, invokes inherited integration and updates harvest and residue outputs. The first occurrence of BBCH 90 is stored as harvest date.
+
+# Process description
+
+## Temperature response
+
+Daily effective temperature is
+
+$$T_{eff}=\max(0,T-T_b)$$ {#eq-effective-temperature}
+
+The multiplicative growth response uses four cardinal temperatures:
+
+$$f_T(T)=
+\begin{cases}
+0, & T<C_{t1},\\
+\dfrac{T-C_{t1}}{C_{t2}-C_{t1}}, & C_{t1}\le T<C_{t2},\\
+1, & C_{t2}\le T<C_{t3},\\
+\dfrac{C_{t4}-T}{C_{t4}-C_{t3}}, & C_{t3}\le T<C_{t4},\\
+0, & T\ge C_{t4}.
+\end{cases}$$ {#eq-temperature-response}
+
+```{r}
+#| label: fig-temperature-response
+#| echo: false
+#| fig-cap: "Temperature multiplier calculated from the configured cardinal temperatures."
+ct <- c(Ct1 = parameter_value("Ct1"), Ct2 = parameter_value("Ct2"),
+        Ct3 = parameter_value("Ct3"), Ct4 = parameter_value("Ct4"))
+temp_response <- function(temp) {
+  ifelse(temp < ct[["Ct1"]], 0,
+    ifelse(temp < ct[["Ct2"]],
+      (temp - ct[["Ct1"]]) / (ct[["Ct2"]] - ct[["Ct1"]]),
+      ifelse(temp < ct[["Ct3"]], 1,
+        ifelse(temp < ct[["Ct4"]],
+          (ct[["Ct4"]] - temp) / (ct[["Ct4"]] - ct[["Ct3"]]), 0))))
+}
+temperature_data <- data.frame(
+  Temperature = seq(ct[["Ct1"]] - 5, ct[["Ct4"]] + 5, 0.1)) |>
+  mutate(Response = temp_response(Temperature))
+ggplot(temperature_data, aes(Temperature, Response)) +
+  geom_line(linewidth = 1, colour = "#2b6f3e") +
+  geom_vline(xintercept = ct, linetype = "dotted", colour = "grey45") +
+  annotate("text", x = ct, y = c(0.08, 0.92, 0.92, 0.08),
+           label = names(ct), vjust = -0.4) +
+  scale_y_continuous(limits = c(0, 1.05)) +
+  labs(x = "Mean temperature (degree C)", y = expression(f[T])) +
+  theme_minimal(base_size = 12)
+```
+
+## Radiation interception
+
+Incoming photosynthetically active radiation (PAR) is half of global radiation. The source converts radiation flux to MJ m^-2^ d^-1^ using $86\,400/10^6$. For area index $A$ and extinction coefficient $k$, absorbed radiation follows
+
+$$f_{int}=1-\exp(-kA)$$ {#eq-light-interception}
+
+At low shoot LAI, the leaf extinction coefficient interpolates between $k_0$ and $k$:
+
+$$k_{leaf}=k+(k_0-k)\frac{LAI_{crit}-LAI_{shoot}}{LAI_{crit}},
+\quad LAI_{shoot}<LAI_{crit}$$ {#eq-extinction-coefficient}
+
+Above the critical LAI it uses $k$. After BBCH 51, `CalcRates` sets the active leaf coefficient to 0.8. Pods use 0.6. Flowers intercept radiation between BBCH 60 and 70; their transmission declines from 1 at BBCH 60 to 0.7 at BBCH 65 and rises to 1 at BBCH 70. The code allocates absorbed PAR first to the generative layer and then exposes leaves to the remainder.
+
+```{r}
+#| label: fig-flower-transmission
+#| echo: false
+#| fig-cap: "Flower-layer transmission implemented in OSRGrowth.pas."
+flower_transmission <- data.frame(EC = seq(55, 75, 0.05)) |>
+  mutate(Transmission = case_when(
+    EC < 60 | EC > 70 ~ 1,
+    EC <= 65 ~ 1 - 0.3 * (EC - 60) / 5,
+    TRUE ~ 0.7 + 0.3 * (EC - 65) / 5))
+ggplot(flower_transmission, aes(EC, Transmission)) +
+  geom_line(linewidth = 1, colour = "#d19a00") +
+  geom_vline(xintercept = c(60, 65, 70),
+             linetype = "dotted", colour = "grey45") +
+  scale_y_continuous(limits = c(0.65, 1.02)) +
+  labs(x = "BBCH stage", y = "Flower-layer transmission") +
+  theme_minimal(base_size = 12)
+```
+
+## Radiation-use-efficiency growth
+
+With internal growth, post-initialisation dry-matter production can be summarized as
+
+$$\frac{dDM_{plant}}{dt}=
+\left(Q_{leaf}LUE\,w_{veg}+Q_{gen}LUE_{gen}NNI_{gen}\right)
+f_Tf_Wf_{CO_2}+DM_{trans},$$ {#eq-dm-production}
+
+where
+
+$$w_{veg}=\frac{LAI_{leaf}NNI_{leaf}+LAI_{stem}NNI_{stem}}
+{LAI_{leaf}+LAI_{stem}}$$ {#eq-vegetative-n-status}
+
+LUE changes with calendar period and phenological stage and is multiplied by `LUEscaling`. `LUEGen` applies to intercepted radiation assigned to generative organs. The CO2 option calculates a multiplier from simulation time and temperature; the alternative fixes it at one.
+
+With `DMCrit` initialisation, shoot dry matter grows exponentially until `DMcrit`:
+
+$$\frac{dDM_{shoot}}{dt}=k_1DM_{shoot}T_{eff}$$ {#eq-establishment-growth}
+
+With external dry-matter growth, `DMGrowth_ex` directly supplies shoot growth and root growth is reconstructed from `fRoot`.
+
+## Water limitation
+
+If drought effects are active,
+
+$$f_W=1-\left(1-\frac{T_{act}}{T_{pot}}\right)^{p_{fW}}$$ {#eq-water-response}
+
+The alternative option sets $f_W=1$. The source assumes that the transpiration ratio lies in $[0,1]$; it does not clip the value.
+
+## Root and shoot allocation
+
+Before spring regrowth, root fraction is a quadratic function of thermal time since emergence:
+
+$$f_{root}=\max\left(0,root_iTS_{emergence}^2+root_sTS_{emergence}\right)$$ {#eq-root-fraction-autumn}
+
+The maximum is retained. In spring and until BBCH 69 the fraction declines toward 0.05 with `TempSumRoots`; from BBCH 69 it is fixed at 0.05. Normal internal growth is separated as
+
+$$\frac{dDM_{shoot}}{dt}=(1-f_{root})\frac{dDM_{plant}}{dt},
+\qquad
+\frac{dDM_{root}}{dt}=f_{root}\frac{dDM_{plant}}{dt}$$ {#eq-root-shoot-growth}
+
+The establishment branch instead uses `fRoot * (1 + fRoot) * DMShoot.c` for root growth, so it does not follow @eq-root-shoot-growth during that phase.
+
+## Shoot partitioning and seed formation
+
+The component uses allometric partitioning relationships derived for winter oilseed rape under contrasting nitrogen supply and sowing dates [@Weymann2017b]. The approach follows the marginal-allocation method of @kage1999a and is described in the HUME-OSR publication [@Bottcher2020, equations 14--24]. The equations below use source-code names where this makes comparison with `OSRGrowth.pas` easier.
+
+### Leaf, stem and generative fractions
+
+The underlying relation between accumulated leaf and stem dry matter is
+
+$$\ln(DM_{stem})=g\ln(DM_{leaf})+h$$ {#eq-stem-leaf-allometry}
+
+Differentiating @eq-stem-leaf-allometry gives the marginal fraction allocated to leaves:
+
+$$f_{leaf}=\frac{1}{1+\exp(h)\,g\,DM_{leaf}^{g-1}}$$ {#eq-leaf-fraction}
+
+The active implementation uses autumn coefficients $(g_h,h_h)$ before BBCH 30 and spring coefficients $(g_f,h_f)$ from BBCH 30 to 50. From BBCH 51 to 79, the leaf fraction decreases with `TempSumLeafLoss`; it is clipped to the interval from zero to its previous value and is zero from BBCH 80 onward:
+
+$$\widetilde f_{leaf}=
+\begin{cases}
+\left[1+\exp(h_h)g_hDM_{leaf}^{g_h-1}\right]^{-1}, & EC<30,\\
+\left[1+\exp(h_f)g_fDM_{leaf}^{g_f-1}\right]^{-1}, & 30\le EC<51,\\
+f_{leaf,51}+c\,TS_{leafloss}, & 51\le EC<80,\\
+0, & EC\ge80.
+\end{cases}$$ {#eq-leaf-fraction-stages}
+
+For $51\le EC\le70$, the remaining shoot increment is split between stems and generative organs using a second allometric marginal fraction. Stem growth stops after BBCH 70, and all shoot growth is generative from BBCH 80:
+
+$$\begin{aligned}
+\phi_{stem}&=\left[1+\exp(a)bDM_{stem}^{b-1}\right]^{-1},\\
+f_{stem}^{*}&=
+\begin{cases}
+1-f_{leaf}^{*}, & EC<51,\\
+(1-f_{leaf}^{*})\phi_{stem}, & 51\le EC\le70,\\
+0, & EC>70,
+\end{cases}\\
+f_{gen}^{*}&=
+\begin{cases}
+0, & EC<51,\\
+(1-f_{leaf}^{*})(1-f_{stem}^{*}), & 51\le EC\le70,\\
+1-f_{leaf}^{*}, & 70<EC<80,\\
+1, & EC\ge80.
+\end{cases}
+\end{aligned}$$ {#eq-shoot-fractions}
+
+Here the asterisk denotes the provisional shoot fraction before root allocation and nitrogen adjustment. The source multiplies the three shoot fractions by $(1-f_{root})$, reweights them with the organ-specific nitrogen indices, and then calculates organ growth:
+
+$$\frac{dDM_i}{dt}=f_i\frac{dDM_{shoot}}{dt},
+\qquad i\in\{leaf,stem,gen\}$$
+ {#eq-organ-growth}
+
+The use of an allometric stem fraction during flowering is consistent with the crop-growth analysis of @Weymann2017b. The HUME-OSR publication also relates reproductive allocation to the pod-formation literature [@Habekotte1993; @Diepenbrock2000].
+
+### Pod walls and seeds
+
+The publication presents an exponentially declining pod-wall fraction. The active Pascal code instead calculates a logistic seed fraction and assigns the complement to pod walls:
+
+$$f_{seed}=
+\operatorname{clamp}_{0,1}\left[
+\frac{1}{1+fPW_0\exp\{(EC-50)fPW_{exp}\}}
+\right],
+\qquad f_{wall}=1-f_{seed}$$ {#eq-seed-fraction}
+
+The corresponding rates are
+
+$$\frac{dDM_{seed}}{dt}=f_{seed}\frac{dDM_{gen}}{dt},
+\qquad
+\frac{dDM_{wall}}{dt}=f_{wall}\frac{dDM_{gen}}{dt}$$ {#eq-pod-seed-growth}
+
+At BBCH 80 and later, $f_{seed}=1$ and $f_{wall}=0$. During oil formation, `CalcConversionLosses` removes 40% of the seed dry-matter increment. The publication multiplies this conversion loss by oil concentration, but that factor is commented out in the current source [@Bottcher2020].
+
+## Leaf, stem and pod area
+
+Green area index is the sum of leaf area index (LAI), stem area index (SAI) and pod area index (PAI). At emergence, LAI is initialized from cotyledon area per plant and plant density. Subsequent positive leaf-area growth is calculated from leaf dry matter and specific leaf area (SLA), following the relationships reported by @Weymann2017b and @Bottcher2020.
+
+Before BBCH 30, SLA is a bounded linear function of thermal time since sowing. From BBCH 30 through 64, it increases with simulated shoot area but cannot fall below its previous value. It remains unchanged after BBCH 64:
+
+$$SLA=
+\begin{cases}
+\operatorname{clamp}_{SLA_{min},SLA_{max}}
+  (SLA_{hin}+SLA_{hst}TS_{sowing}), & EC<30,\\
+\min\left[500,\max\{SLA(t^-),SLA_{spring}+f_{SLA,spring}LAI_{shoot}\}\right],
+  & 30\le EC\le64,\\
+SLA(t^-), & EC>64.
+\end{cases}$$ {#eq-specific-leaf-area}
+
+For positive leaf growth, the code updates LAI toward the area implied by total leaf mass. For negative growth, it uses the average SLA of the existing canopy:
+
+$$\frac{dLAI}{dt}=
+\begin{cases}
+\dfrac{(DM_{leaf}+dDM_{leaf}/dt)SLA}{10^4}-LAI,
+  & dDM_{leaf}/dt\ge0,\\[6pt]
+\dfrac{dDM_{leaf}}{dt}\dfrac{\overline{SLA}}{10^4},
+  & dDM_{leaf}/dt<0.
+\end{cases}$$ {#eq-leaf-area-growth}
+
+Before BBCH 80, stem and pod area increments follow
+
+$$\frac{dSAI}{dt}=\frac{SSA}{10^4}\frac{dDM_{stem}}{dt},
+\qquad
+\frac{dPAI}{dt}=\frac{SPA}{10^4}\frac{dDM_{gen}}{dt}$$ {#eq-stem-pod-area-growth}
+
+The active specific pod area is
+
+$$SPA=
+\begin{cases}
+0, & EC<51,\\
+SPA_{max}\dfrac{EC-51}{65-51}, & 51\le EC\le65,\\
+\max\{0,SPA_{max}\exp(SPA_{exp}EC)\}, & 65<EC\le70,\\
+0, & EC>70.
+\end{cases}$$ {#eq-specific-pod-area}
+
+The manuscript extends the last nonzero SPA branch to BBCH 80, whereas `CalcRates` stops it after BBCH 70. From BBCH 80, SAI and PAI decline from their recorded maxima with thermal time since the start of seed filling; the slope used by the source is $-0.001$ per degree-day.
+
+## Nitrogen concentration, demand and distribution
+
+Organ-specific optimal and critical nitrogen concentrations are based on dilution relationships fitted to leaf, stem, root and generative dry matter [@Weymann2017b]. The publication calls the lower relationship *critical*, while noting that its definition differs from the critical dilution curve of @Colnenne1998. The same functional forms are used for optimal and critical concentrations, with separate parameter sets [@Bottcher2020, equations 31--35].
+
+The active source applies the following phase structure:
+
+- Leaf concentration is linear in leaf dry matter during autumn, interpolated during spring transition, held constant before flowering, and reduced toward zero after BBCH 60.
+- Stem concentration follows logarithmic dilution relationships before BBCH 70 and declines toward a lower limit of 0.6% afterward.
+- Root concentration follows logarithmic or linear dilution relationships before BBCH 70 and declines toward a lower limit of 0.8% afterward.
+- Generative concentration follows a logarithmic dilution relationship once generative dry matter is present.
+
+For organ $i$, the optimal and critical nitrogen amounts are
+
+$$N_{opt,i}=DM_i\frac{Nc_{opt,i}}{100},
+\qquad
+N_{crit,i}=DM_i\frac{Nc_{crit,i}}{100}$$ {#eq-organ-n-targets}
+
+Potential uptake combines nitrogen demand for new growth with the current deficit to optimal organ contents:
+
+$$NUptake_{pot}=
+\max\left[0,
+NDemand_{growth}+\sum_i(N_{opt,i}-N_i)
+\right]$$ {#eq-potential-n-uptake}
+
+The organ-specific nitrogen nutrition index used for growth limitation is
+
+$$NNI_i=
+\begin{cases}
+0, & Nc_{opt,i}\le Nc_{crit,i},\\
+\operatorname{clamp}_{0,1}\left(
+\dfrac{N_i-N_{crit,i}}{N_{opt,i}-N_{crit,i}}
+\right), & Nc_{opt,i}>Nc_{crit,i}.
+\end{cases}$$ {#eq-organ-nni}
+
+When the concentration terms needed by @eq-organ-nni are absent, the source generally assigns one; the generative index is applied only after BBCH 70. The `N_unlimited` option forces every organ index to one. The provisional allocation fractions in @eq-shoot-fractions are multiplied by these indices and normalized before the growth rates in @eq-organ-growth are calculated.
+
+During `Integrate`, nitrogen supply consists of soil uptake, mobilizable organ surplus and the plant nitrogen pool. If supply is below growth demand, positive organ increments are scaled by the supply-to-demand ratio. If supply exceeds growth demand, the remainder compensates organ deficits and may replenish or deplete the stem/root pool. This allocation logic implements the conceptual distribution scheme described by @Bottcher2020.
+
+## Senescence and translocation
+
+### Frost senescence
+
+Winter dry-matter loss begins when accumulated subzero thermal time exceeds `fTminus`. The publication relates this process to earlier winter oilseed rape studies [@Bottcher2020; @Colnenne1998]. The active rate is capped by available shoot growth and leaf mass:
+
+$$DMDead_W=
+\begin{cases}
+\min\left(DM_{shoot}\,\Delta TS_{minus}\,f_{Sws},
+          \Delta DM_{shoot}+DM_{leaf}\right), & TS_{minus}\ge fT_{minus},\\
+0, & TS_{minus}<fT_{minus}.
+\end{cases}$$ {#eq-frost-senescence}
+
+Snow cover modifies the temperature used to accumulate `TempSumMinus`.
+
+### Self-shading and ageing
+
+Shading-induced senescence follows the maintainable-leaf-area concept of @Gabrielle1998. The model averages PAR over ten days and calculates the maintenance temperature multiplier
+
+$$f_{Tm}=pfTm_{Q10}^{(T-pfTm_{opt})/10}$$ {#eq-maintenance-temperature}
+
+When available radiation exceeds the phase-specific maintenance threshold, maintainable LAI is
+
+$$LAI_m=\frac{1}{k_{leaf}}\log_{10}
+\left(\frac{PAR_{av}\,f_{T,sen}\,f_{tr}}
+{PAR_m f_{Tm}}\right),$$ {#eq-maintainable-lai}
+
+where $f_{tr}=1$ before flowering and is the generative-layer transmission coefficient from BBCH 60 onward. Otherwise $LAI_m=0$. The base-10 logarithm in @eq-maintainable-lai matches `Log10` in `CalcMaintainableLAI`.
+
+Senescent leaf area is converted into dead and translocatable dry matter as
+
+$$DMDead_{sh}=\frac{10^4\,LAI_s}{SLA_{dead}},
+\qquad
+DMTrans_{sh}=10^4LAI_s
+\left(\frac{1}{\overline{SLA}}-\frac{1}{SLA_{dead}}\right)$$ {#eq-shading-dm-loss}
+
+After BBCH 70, age-related senescence replaces the shading response and drives leaf area linearly from its value at BBCH 70 toward zero at BBCH 90.
+
+### Nitrogen translocation and storage
+
+Nitrogen released by senescing organs can be transferred to generative growth or stored temporarily in stems and roots. For leaves, 65% is potentially remobilized by the default `pCnTrans` value, consistent with the mobilization study represented by @Malagoli2005 and the HUME-OSR publication [@Bottcher2020]. In the active source,
+
+$$NTrans_{leaf}=
+\begin{cases}
+\min(N_{leaf},-\Delta N_{leaf})pCn_{trans},
+  & \Delta N_{leaf}<0\ \text{and}\ DMDead_W=0,\\
+0, & \text{otherwise}.
+\end{cases}$$ {#eq-leaf-n-translocation}
+
+Stem and root losses are handled similarly but without the `pCnTrans` multiplier. Potentially translocated nitrogen first meets generative demand. Before BBCH 80, any remainder may enter a pool limited by maximum stem and root nitrogen contents; excess nitrogen is recorded as dead material. If generative demand exceeds current translocation, the existing pool is depleted.
+
+## Crop height, yield and oil concentration
+
+Crop height is capped at 1.8 m:
+
+$$H=\min\left[1.8,0.0539\exp(0.0458EC)\right]$$ {#eq-crop-height}
+
+These coefficients are hard-coded in `CalcRates`, although the manuscript presents them as fitted values. Actual seed yield is
+
+$$Yield=\frac{DM_{seed}}{10}$$ {#eq-actual-yield}
+
+Potential yield uses a nitrogen-sensitive harvest index:
+
+$$HI=y_1\left[1-0.8\left(1-
+\frac{DM_{shoot,nB}}{DM_{shoot,nB,pot}}\right)\right],
+\qquad
+Y_{max}=\frac{DM_{shoot}}{10}HI$$ {#eq-potential-yield}
+
+Oil concentration depends on the duration of BBCH 81--89 and seed nitrogen amount, following the formulation reported by @Bottcher2020 and the general importance of seed-ripening duration discussed by @Diepenbrock2000. The active formulation is:
+
+$$OilConc=(Oil_a\,Duration_{81:89}+Oil_b)
+        (Oil_cN_{seed}+Oil_d)$$ {#eq-oil-concentration}
+
+`OilYield` is calculated from $Y_{max}$ rather than actual `Yield`; downstream analyses should therefore select the intended output.
+
+# Options
+
+::: {#tbl-runtime-options}
+| Option | Values | Effect |
+|------------------------|------------------------|------------------------|
+| `LAIOption` | `InternLAI`, `ExternLAI` | Calculate area internally or read external LAI/SAI/PAI. |
+| `DMGrowthOption` | `InternDM`, `ExternDM` | Calculate growth internally or read an external rate. |
+| `InitOption` | `DMCrit`, `LAIInit` | End establishment at critical DM or initialise from external LAI. |
+| `NSensOption` | `N_sensitiv`, `N_unlimited` | Apply N limitation or force all N indices to one. |
+| `DroughtOption` | `DroughtImpact`, `NoDroughtImpact` | Apply or suppress the transpiration response. |
+| `OptWithCO2` | `NoCO2Effect`, `WithCO2Effect` | Apply or suppress the CO2 multiplier. |
+| `ContOutput`, `FinalOutput`, `WithRoots` | inherited values | Control inherited output and root behaviour. |
+:::
+
+Most option parsing in `Init` is case-insensitive. The active CO2 test in `CalcRates` compares with lowercase `withco2effect`; confirm the stored text if CO2 effects appear inactive.
+
+# Public methods and properties
+
+| Member | Purpose |
+|------------------------------------|------------------------------------|
+| `CreateAll` | Creates variables, states, parameters, options and external links. |
+| `Init` | Resolves options and component links and initialises state. |
+| `CalcRates` | Calculates all daily state rates and diagnostic variables. |
+| `Integrate` | Couples N supply and demand, integrates states and updates residues. |
+| `SetSowingDate` | Sets the sowing date used to open the simulation interval. |
+| `GetLAI` | Returns simulated shoot LAI. |
+| `GetCropHeight` | Returns crop height calculated from BBCH stage. |
+| `GetNUptakeRate` | Returns potential plant N uptake rate. |
+| `GetWLD` | Returns water-limited demand information. |
+| `GetSumRootLength`, `GetSumRootLength_eff` | Delegate root length to the root model. |
+| `getExtCoeffPAR` | Returns the LAI-dependent leaf extinction coefficient. |
+
+# Configured entity inventories
+
+These tables are generated from `csv_Hume_Docu/OSRGrowth.csv` and include inherited entities. Values describe the supplied configuration, not necessarily constructor defaults. Empty descriptions reflect empty export fields.
+
+## States
+
+```{r}
+#| label: tbl-states
+#| echo: false
+#| tbl-cap: "States exported for OSRGrowth"
+kable(entity_table("State"), row.names = FALSE)
+```
+
+## Parameters
+
+```{r}
+#| label: tbl-parameters
+#| echo: false
+#| tbl-cap: "Parameters exported for OSRGrowth"
+kable(entity_table("Parameter"), row.names = FALSE)
+```
+
+## Variables
+
+```{r}
+#| label: tbl-variables
+#| echo: false
+#| tbl-cap: "Variables exported for OSRGrowth"
+kable(entity_table("Variable"), row.names = FALSE)
+```
+
+## External values
+
+```{r}
+#| label: tbl-external-values
+#| echo: false
+#| tbl-cap: "External values exported for OSRGrowth"
+kable(entity_table("ExternalValue"), row.names = FALSE)
+```
+
+## Exported options
+
+```{r}
+#| label: tbl-options
+#| echo: false
+#| tbl-cap: "Options exported for OSRGrowth"
+kable(entity_table("Option"), row.names = FALSE)
+```
+
+# Implementation notes
+
+- `MaxParDays` is 10, matching the rolling PAR window for shading.
+- `PARRad` assumes `GRad` is a mean flux in W m^-2^ and converts it to daily energy.
+- Several BBCH boundaries and constants are hard-coded, including crop height and the post-BBCH-51 extinction coefficient.
+- Root-length getters return a dummy variable when the associated root model is inactive.
+- A meaningful simulation requires consistent dates and linked phenology, weather, transpiration, soil-N and root components.
+
+# Source provenance
+
+This page documents `Components/OilseedRape/OSRGrowth.pas` using declarations from `XML_Delphi_Docu/OSRGrowth.xml` and configured entities from `csv_Hume_Docu/OSRGrowth.csv`. Scientific context and historical evaluation statistics were informed by the supplied manuscript *Development and evaluation of HUME-OSR: A dynamic crop growth model for winter oilseed rape*, published as @Bottcher2020. Where manuscript equations and active Pascal statements differ, the source behaviour is stated explicitly.
+
+# References

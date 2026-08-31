@@ -132,6 +132,7 @@
         </propertyref>
         <methodref name="DblClick" visibility="public" procflags="override">
         </methodref>
+        <propertyref name="CalcTimeTicks" visibility="public" />
         <propertyref name="SM_GlobMod" visibility="published">
         </propertyref>
         <propertyref name="SM_ExternVStrList" visibility="published">
@@ -1189,30 +1190,30 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="MinRate" type="TVar" visibility="public" size="4" offset="656" file="UMinMod2Pool.pas" line="21" />
-      <field name="Nfast_Min_N" type="TVar" visibility="public" size="4" offset="660" file="UMinMod2Pool.pas" line="21" />
-      <field name="Nslow_Min_N" type="TVar" visibility="public" size="4" offset="664" file="UMinMod2Pool.pas" line="21" />
-      <field name="k_water_reduction_factor" type="TVar" visibility="public" size="4" offset="668" file="UMinMod2Pool.pas" line="23" />
-      <field name="kfast_temp_coeff" type="TVar" visibility="public" size="4" offset="672" file="UMinMod2Pool.pas" line="24" />
-      <field name="kslow_temp_coeff" type="TVar" visibility="public" size="4" offset="676" file="UMinMod2Pool.pas" line="24" />
-      <field name="kfast_factor" type="TPar" visibility="public" size="4" offset="680" file="UMinMod2Pool.pas" line="26" />
-      <field name="kslow_factor" type="TPar" visibility="public" size="4" offset="684" file="UMinMod2Pool.pas" line="26" />
-      <field name="Nfast" type="TState" visibility="public" size="4" offset="688" file="UMinMod2Pool.pas" line="28" />
-      <field name="Nslow" type="TState" visibility="public" size="4" offset="692" file="UMinMod2Pool.pas" line="29" />
-      <field name="Nfast_par" type="TPar" visibility="public" size="4" offset="696" file="UMinMod2Pool.pas" line="31" />
-      <field name="Nslow_par" type="TPar" visibility="public" size="4" offset="700" file="UMinMod2Pool.pas" line="31" />
-      <field name="MineralisedN" type="TState" visibility="public" size="4" offset="704" file="UMinMod2Pool.pas" line="32" />
-      <field name="Temp" type="TExternV" visibility="public" size="4" offset="708" file="UMinMod2Pool.pas" line="33" />
-      <field name="WG0_30" type="TExternV" visibility="public" size="4" offset="712" file="UMinMod2Pool.pas" line="34" />
-      <field name="Nmin_1" type="TExternV" visibility="public" size="4" offset="716" file="UMinMod2Pool.pas" line="35" />
-      <field name="Nmin_2" type="TExternV" visibility="public" size="4" offset="720" file="UMinMod2Pool.pas" line="36" />
-      <field name="Nmin_3" type="TExternV" visibility="public" size="4" offset="724" file="UMinMod2Pool.pas" line="37" />
-      <field name="theta_300" type="TPar" visibility="public" size="4" offset="728" file="UMinMod2Pool.pas" line="38" />
-      <field name="theta_PWP" type="TExternV" visibility="public" size="4" offset="732" file="UMinMod2Pool.pas" line="39" />
-      <field name="theta_FK" type="TExternV" visibility="public" size="4" offset="736" file="UMinMod2Pool.pas" line="39" />
-      <field name="theta_SAT" type="TExternV" visibility="public" size="4" offset="740" file="UMinMod2Pool.pas" line="39" />
-      <field name="calcRatesIsActive" type="Boolean" visibility="public" size="1" offset="744" file="UMinMod2Pool.pas" line="41" />
-      <field name="isfirstminmod" type="Boolean" visibility="public" size="1" offset="745" file="UMinMod2Pool.pas" line="41" />
+      <field name="MinRate" type="TVar" visibility="public" size="4" offset="664" file="UMinMod2Pool.pas" line="21" />
+      <field name="Nfast_Min_N" type="TVar" visibility="public" size="4" offset="668" file="UMinMod2Pool.pas" line="21" />
+      <field name="Nslow_Min_N" type="TVar" visibility="public" size="4" offset="672" file="UMinMod2Pool.pas" line="21" />
+      <field name="k_water_reduction_factor" type="TVar" visibility="public" size="4" offset="676" file="UMinMod2Pool.pas" line="23" />
+      <field name="kfast_temp_coeff" type="TVar" visibility="public" size="4" offset="680" file="UMinMod2Pool.pas" line="24" />
+      <field name="kslow_temp_coeff" type="TVar" visibility="public" size="4" offset="684" file="UMinMod2Pool.pas" line="24" />
+      <field name="kfast_factor" type="TPar" visibility="public" size="4" offset="688" file="UMinMod2Pool.pas" line="26" />
+      <field name="kslow_factor" type="TPar" visibility="public" size="4" offset="692" file="UMinMod2Pool.pas" line="26" />
+      <field name="Nfast" type="TState" visibility="public" size="4" offset="696" file="UMinMod2Pool.pas" line="28" />
+      <field name="Nslow" type="TState" visibility="public" size="4" offset="700" file="UMinMod2Pool.pas" line="29" />
+      <field name="Nfast_par" type="TPar" visibility="public" size="4" offset="704" file="UMinMod2Pool.pas" line="31" />
+      <field name="Nslow_par" type="TPar" visibility="public" size="4" offset="708" file="UMinMod2Pool.pas" line="31" />
+      <field name="MineralisedN" type="TState" visibility="public" size="4" offset="712" file="UMinMod2Pool.pas" line="32" />
+      <field name="Temp" type="TExternV" visibility="public" size="4" offset="716" file="UMinMod2Pool.pas" line="33" />
+      <field name="WG0_30" type="TExternV" visibility="public" size="4" offset="720" file="UMinMod2Pool.pas" line="34" />
+      <field name="Nmin_1" type="TExternV" visibility="public" size="4" offset="724" file="UMinMod2Pool.pas" line="35" />
+      <field name="Nmin_2" type="TExternV" visibility="public" size="4" offset="728" file="UMinMod2Pool.pas" line="36" />
+      <field name="Nmin_3" type="TExternV" visibility="public" size="4" offset="732" file="UMinMod2Pool.pas" line="37" />
+      <field name="theta_300" type="TPar" visibility="public" size="4" offset="736" file="UMinMod2Pool.pas" line="38" />
+      <field name="theta_PWP" type="TExternV" visibility="public" size="4" offset="740" file="UMinMod2Pool.pas" line="39" />
+      <field name="theta_FK" type="TExternV" visibility="public" size="4" offset="744" file="UMinMod2Pool.pas" line="39" />
+      <field name="theta_SAT" type="TExternV" visibility="public" size="4" offset="748" file="UMinMod2Pool.pas" line="39" />
+      <field name="calcRatesIsActive" type="Boolean" visibility="public" size="1" offset="752" file="UMinMod2Pool.pas" line="41" />
+      <field name="isfirstminmod" type="Boolean" visibility="public" size="1" offset="753" file="UMinMod2Pool.pas" line="41" />
       <procedure name="CreateAll" visibility="public" procflags="override" file="UMinMod2Pool.pas" line="43">
       </procedure>
       <procedure name="Init" visibility="public" procflags="override" file="UMinMod2Pool.pas" line="44">

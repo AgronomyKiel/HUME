@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Agronomy and Crop Science Group, Kiel University">
+<meta name="dcterms.date" content="2026-08-29">
 
-<title>Plant Growth Model – Hume Documentation</title>
+<title>TDevelopmentOSR – Hume Documentation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,7 +21,62 @@ ul.task-list li input[type="checkbox"] {
 width: 0.8em;
 margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
 }
-</style>
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+}
+pre.numberSource { margin-left: 3em; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}</style>
 
 
 <script>const headroomChanged = new CustomEvent("quarto-hrChanged", {
@@ -3892,7 +3948,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Sub-models/components</li><li class="breadcrumb-item"><a href="../../../Components/OilseedRape/Documentation/TDevelopmentOSR.html">HumeOSR model</a></li><li class="breadcrumb-item"><a href="../../../Components/OilseedRape/Documentation/OSR_growth_model.html">Plant Growth Model</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Sub-models/components</li><li class="breadcrumb-item"><a href="../../../Components/OilseedRape/Documentation/TDevelopmentOSR.html">HumeOSR model</a></li><li class="breadcrumb-item"><a href="../../../Components/OilseedRape/Documentation/TDevelopmentOSR.html">TDevelopmentOSR</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -4041,13 +4097,19 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../Components/OilseedRape/Documentation/TDevelopmentOSR.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../Components/OilseedRape/Documentation/TDevelopmentOSR.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">TDevelopmentOSR</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../Components/OilseedRape/Documentation/OSR_growth_model.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../../Components/OilseedRape/Documentation/TOSRGrowth.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TOSRGrowth</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../Components/OilseedRape/Documentation/OSR_growth_model.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Plant Growth Model</span></a>
   </div>
 </li>
@@ -4090,12 +4152,45 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#oilseed-rape-osr-plant-growth-model" id="toc-oilseed-rape-osr-plant-growth-model" class="nav-link active" data-scroll-target="#oilseed-rape-osr-plant-growth-model"><span class="header-section-number">1</span> Oilseed rape (OSR) plant growth model</a>
+  <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary"><span class="header-section-number">1</span> Summary</a>
   <ul>
-  <li><a href="#crop-height" id="toc-crop-height" class="nav-link" data-scroll-target="#crop-height"><span class="header-section-number">1.1</span> Crop height</a></li>
-  <li><a href="#dry-matter-production" id="toc-dry-matter-production" class="nav-link" data-scroll-target="#dry-matter-production"><span class="header-section-number">1.2</span> Dry matter production</a></li>
-  <li><a href="#dry-matter-partitioning" id="toc-dry-matter-partitioning" class="nav-link" data-scroll-target="#dry-matter-partitioning"><span class="header-section-number">1.3</span> Dry matter partitioning</a></li>
+  <li><a href="#descendence" id="toc-descendence" class="nav-link" data-scroll-target="#descendence"><span class="header-section-number">1.1</span> Descendence</a></li>
   </ul></li>
+  <li><a href="#scientific-background" id="toc-scientific-background" class="nav-link" data-scroll-target="#scientific-background"><span class="header-section-number">2</span> Scientific Background</a>
+  <ul>
+  <li><a href="#model-concept-and-developmental-phases" id="toc-model-concept-and-developmental-phases" class="nav-link" data-scroll-target="#model-concept-and-developmental-phases"><span class="header-section-number">2.1</span> Model concept and developmental phases</a></li>
+  <li><a href="#effective-temperature-and-thermal-time" id="toc-effective-temperature-and-thermal-time" class="nav-link" data-scroll-target="#effective-temperature-and-thermal-time"><span class="header-section-number">2.2</span> Effective temperature and thermal time</a></li>
+  <li><a href="#vernalisation" id="toc-vernalisation" class="nav-link" data-scroll-target="#vernalisation"><span class="header-section-number">2.3</span> Vernalisation</a></li>
+  <li><a href="#photoperiod-and-sensitivity" id="toc-photoperiod-and-sensitivity" class="nav-link" data-scroll-target="#photoperiod-and-sensitivity"><span class="header-section-number">2.4</span> Photoperiod and sensitivity</a></li>
+  <li><a href="#development-rates" id="toc-development-rates" class="nav-link" data-scroll-target="#development-rates"><span class="header-section-number">2.5</span> Development rates</a>
+  <ul class="collapse">
+  <li><a href="#crossing-a-development-boundary" id="toc-crossing-a-development-boundary" class="nav-link" data-scroll-target="#crossing-a-development-boundary"><span class="header-section-number">2.5.1</span> Crossing a development boundary</a></li>
+  </ul></li>
+  <li><a href="#cotyledon-unfolding-and-leaf-appearance" id="toc-cotyledon-unfolding-and-leaf-appearance" class="nav-link" data-scroll-target="#cotyledon-unfolding-and-leaf-appearance"><span class="header-section-number">2.6</span> Cotyledon unfolding and leaf appearance</a></li>
+  <li><a href="#internode-extension" id="toc-internode-extension" class="nav-link" data-scroll-target="#internode-extension"><span class="header-section-number">2.7</span> Internode extension</a></li>
+  <li><a href="#conversion-from-dvs-to-ec-and-bbch" id="toc-conversion-from-dvs-to-ec-and-bbch" class="nav-link" data-scroll-target="#conversion-from-dvs-to-ec-and-bbch"><span class="header-section-number">2.8</span> Conversion from DVS to EC and BBCH</a>
+  <ul class="collapse">
+  <li><a href="#diagnostic-variables-and-dates" id="toc-diagnostic-variables-and-dates" class="nav-link" data-scroll-target="#diagnostic-variables-and-dates"><span class="header-section-number">2.8.1</span> Diagnostic variables and dates</a></li>
+  </ul></li>
+  <li><a href="#calibration-validation-and-scope" id="toc-calibration-validation-and-scope" class="nav-link" data-scroll-target="#calibration-validation-and-scope"><span class="header-section-number">2.9</span> Calibration, validation and scope</a></li>
+  </ul></li>
+  <li><a href="#submodel-objects" id="toc-submodel-objects" class="nav-link" data-scroll-target="#submodel-objects"><span class="header-section-number">3</span> Submodel objects</a>
+  <ul>
+  <li><a href="#state-variables" id="toc-state-variables" class="nav-link" data-scroll-target="#state-variables"><span class="header-section-number">3.1</span> State variables</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters"><span class="header-section-number">3.2</span> Parameters</a></li>
+  <li><a href="#variables" id="toc-variables" class="nav-link" data-scroll-target="#variables"><span class="header-section-number">3.3</span> Variables</a></li>
+  <li><a href="#external-variables" id="toc-external-variables" class="nav-link" data-scroll-target="#external-variables"><span class="header-section-number">3.4</span> External variables</a></li>
+  <li><a href="#options" id="toc-options" class="nav-link" data-scroll-target="#options"><span class="header-section-number">3.5</span> Options</a></li>
+  </ul></li>
+  <li><a href="#further-source-code-documentation" id="toc-further-source-code-documentation" class="nav-link" data-scroll-target="#further-source-code-documentation"><span class="header-section-number">4</span> Further source code documentation</a>
+  <ul>
+  <li><a href="#enumerations" id="toc-enumerations" class="nav-link" data-scroll-target="#enumerations"><span class="header-section-number">4.1</span> Enumerations</a></li>
+  <li><a href="#constants" id="toc-constants" class="nav-link" data-scroll-target="#constants"><span class="header-section-number">4.2</span> Constants</a></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions"><span class="header-section-number">4.3</span> Functions</a></li>
+  <li><a href="#procedures" id="toc-procedures" class="nav-link" data-scroll-target="#procedures"><span class="header-section-number">4.4</span> Procedures</a></li>
+  <li><a href="#execution-order-and-implementation-cautions" id="toc-execution-order-and-implementation-cautions" class="nav-link" data-scroll-target="#execution-order-and-implementation-cautions"><span class="header-section-number">4.5</span> Execution order and implementation cautions</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">5</span> References</a></li>
   </ul>
 </nav>
 </nav>
@@ -4106,9 +4201,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Sub-models/components</li><li class="breadcrumb-item"><a href="../../../Components/OilseedRape/Documentation/TDevelopmentOSR.html">HumeOSR model</a></li><li class="breadcrumb-item"><a href="../../../Components/OilseedRape/Documentation/OSR_growth_model.html">Plant Growth Model</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Sub-models/components</li><li class="breadcrumb-item"><a href="../../../Components/OilseedRape/Documentation/TDevelopmentOSR.html">HumeOSR model</a></li><li class="breadcrumb-item"><a href="../../../Components/OilseedRape/Documentation/TDevelopmentOSR.html">TDevelopmentOSR</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Plant Growth Model</h1>
+<h1 class="title">TDevelopmentOSR</h1>
 </div>
 
 
@@ -4122,6 +4217,12 @@ window.Quarto = {
           </div>
   </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 29, 2026</p>
+    </div>
+  </div>
   
     
   </div>
@@ -4131,60 +4232,1145 @@ window.Quarto = {
 </header>
 
 
-<section id="oilseed-rape-osr-plant-growth-model" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Oilseed rape (OSR) plant growth model</h1>
-<section id="crop-height" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="crop-height"><span class="header-section-number">1.1</span> Crop height</h2>
-<p>Crop height was calculated with an exponential function based on growth stages and had an upper limit of 1.8 m (Eq. 1).</p>
-<p><span class="math display">\text{CropHeight=min(1}\text{.8,}{{\text{p}}_{\text{H1}}}\text{*e}{{\text{ }\!\!~\!\!\text{ }}^{{{\text{p}}_{\text{H2}}}\text{*EC}}}\text{)}</span> (1)</p>
+<section id="summary" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Summary</h1>
+<p><code>TDevelopmentOSR</code>, implemented in <code>DevelopmentOSR.pas</code>, simulates the phenological development of winter oilseed rape (<em>Brassica napus</em> L.). Daily mean temperature and photoperiod drive a continuous development state (<code>DVS</code>). Additional states describe vernalisation, unfolded leaves, extended internodes and thermal time. After integration, the model converts these states first to a legacy EC scale and then to BBCH.</p>
+<p>The scientific concept is the BBCH extension of BRASNAP-PH described by <span class="citation" data-cites="Bottcher2016">Bottcher et al. (<a href="#ref-Bottcher2016" role="doc-biblioref">2016</a>)</span>, based on <span class="citation" data-cites="Habekotte1997">Habekotte (<a href="#ref-Habekotte1997" role="doc-biblioref">1997</a>)</span>. Six phases are represented: emergence, leaf development, stem elongation, inflorescence emergence, flowering, and pod development to maturity. Biomass growth, nitrogen uptake, soil water and branching are outside this class.</p>
+<p>This page follows the organisation of the <a href="../../../Components/CERES Wheat/Documentation/THumeWheatLeafArea.html">THumeWheatLeafArea documentation</a>. Its sources are the <a href="../DevelopmentOSR.pas">Pascal unit</a>, <a href="../../../XML_Delphi_Docu/DevelopmentOSR.xml">XML export</a>, <a href="../../../csv_Hume_Docu/OSRDevelopment.csv">CSV export</a>, and supplied <a href="A Phenological Model of Winter Oilseed Rape According to the BBCH Scale.docx">publication manuscript</a>. For the wider crop model, see <a href="../../../Components/OilseedRape/Documentation/OSR_growth_model.html">OSR growth model</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Source code, configured values and manuscript
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Equations below describe the current Pascal implementation unless explicitly identified as manuscript equations. The CSV is an export for <code>DevelopmentOSR1</code> from <code>Rosenthal_Patron_150_2002.ini</code>; its parameter values are <strong>configured values</strong>, not constructor defaults. Tables show both where relevant. XML supplies the class structure but contains no descriptive <code>devnotes</code> for this unit, so explanations are derived from the source and manuscript.</p>
+</div>
+</div>
+<section id="descendence" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="descendence"><span class="header-section-number">1.1</span> Descendence</h2>
+<p>The ancestor classes of <code>TDevelopmentOSR</code> in the supplied Win32 XML export are shown in <a href="#tbl-OSRAncestorClasses" class="quarto-xref">Table 1</a>.</p>
+<div class="cell" data-layout-align="center">
+<div id="tbl-OSRAncestorClasses" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-OSRAncestorClasses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 1: Ancestor classes of TDevelopmentOSR in the supplied XML export.
+</figcaption>
+<div aria-describedby="tbl-OSRAncestorClasses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">AncestorClass</th>
+<th style="text-align: left;">Namespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TSubmodel</td>
+<td style="text-align: left;">UMod</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TGraphicControl</td>
+<td style="text-align: left;">Vcl.Controls</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TControl</td>
+<td style="text-align: left;">Vcl.Controls</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TComponent</td>
+<td style="text-align: left;">System.Classes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TPersistent</td>
+<td style="text-align: left;">System.Classes</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TObject</td>
+<td style="text-align: left;">System</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p><code>TSubmodel</code> supplies the object lists, initialisation from configuration files, external variable connections and state integration. The VCL ancestors shown here belong to the visual build.</p>
 </section>
-<section id="dry-matter-production" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="dry-matter-production"><span class="header-section-number">1.2</span> Dry matter production</h2>
-<p>Daily increase of crop dry matter (DMPlant, [g m<sup>-2</sup>] eqs. 2 and 3) was calculated from photosynthetic active radiation (PAR [MJ m-2 d-1]) absorbed by leaves (QLeaf [MJ m<sup>-2</sup> d-1], eq. 7) and pods (QPod [MJ m-2 d-1], eq. 8), potential light use efficiency (LUE [g MJ-1]) during vegetative (LUEveg) and generative (LUEgen) growth stages, a temperature dependent scaling factor for photosynthetic activity (fT, eq. 13) and a soil water deficit scaling factor (SWDF, eq. 9). N deficiencies were considered by an organ specific N deficit scaling factor (NNIi, section 2.2.2.7). During vegetative growth (EC &lt; 51), dry matter production is calculated as follows:</p>
-<p><span class="math display">\frac{\text{dD}{{\text{M}}_{\text{Plant}}}}{\text{dt}}\text{= }\!\!~\!\!\text{ }{{\text{Q}}_{\text{Leaf}}}\text{*LU}{{\text{E}}_{\text{veg}}}\text{*}\left( \frac{\text{LAI*NN}{{\text{I}}_{\text{Leaf}}}\text{+SAI*NN}{{\text{I}}_{\text{Stem}}}}{\text{LAI+SAI}} \right)\text{*fT*SWDF}</span> (2) Dry matter production during generative growth (EC ? 51) is calculated according to the following equation:</p>
-<p><span class="math display">\frac{\text{dD}{{\text{M}}_{\text{Plant}}}}{\text{dt}}\text{=((}{{\text{Q}}_{\text{Leaf}}}\text{*LU}{{\text{E}}_{\text{Gen}}}\text{*}\left( \frac{\text{LAI*NN}{{\text{I}}_{\text{Leaf}}}\text{+SAI*NN}{{\text{I}}_{\text{Stem}}}}{\text{LAI+SAI}} \right)\text{)+(}{{\text{Q}}_{\text{Pod}}}\text{*LU}{{\text{E}}_{\text{Gen}}}\text{*NN}{{\text{I}}_{\text{Gen}}}\text{))*fT*SWDF}</span> (3) where LAI is the leaf area index and SAI is the stem area index. This calculation of crop DM growth considers the net effect of photosynthesis and autotrophic respiration. However, during seed filling an increased respiration loss is assumed due to the conversion of carbohydrates to lipids in the growing seeds. This respiration loss is subtracted from the dry matter accumulation according to <span class="math display">\text{Res}{{\text{p}}_{\text{loss}}}\text{=}\frac{\text{DMseed}}{\text{dt}}\text{*Oilconcentration*0}\text{.4}</span> (4) Absorbed PAR is reduced by canopy reflection. As in many crop growth models, the empirical extinction coefficient used to calculate light interception implicitly accounts for this effect. As long as LAI does not exceed LAIcrit of 1.5, light extinction coefficient of leaves (kLeaf) varies between 0.8 and 0.9 and is described by a negative linear-plateau function of LAI (eq. 6). This assumption is based on experimental data showing that kLeaf decreases with increasing LAI (Data set 2). To calculate the absorbed PAR by the crop, the light extinction coefficient of pods (kPod) and the pod area index (PAI) have to be considered. Furthermore, only a fraction (fTr) of PAR is transmitted to the leaves while the rest is reflected or absorbed by flowers and pods. Canopy architecture was simplified by assuming that flower and pod layers are located above the leaves. We assumed that at the onset of flowering, flower layer starts to absorb and reflect PAR (eq. 5). The proportion of absorbed and reflected PAR increases linearly with growth stage, until 30% of incoming PAR is absorbed and reflected by the flower layer at full flower. From full flower until end of flowering, the proportion of absorbed and reflected PAR decreases linearly.</p>
-<p><span class="math display">{{\text{f}}_{\text{Tr}}}\text{=}\left\{ \begin{array}{*{35}{l}}
-   \text{1} &amp; \text{EC60}  \\
-   \text{1+}\frac{\text{0}\text{.7-1}}{\text{65-60}}\text{*(EC-60)} &amp; \text{60}\le \text{EC}\le \text{65}  \\
-   \text{0}\text{.7+}\frac{\text{1-0}\text{.7}}{\text{70-65}}\text{*(EC-65)} &amp; \text{65EC}\le \text{70}  \\
-   \text{1} &amp; \text{EC70}  \\
-\end{array} \right.</span> (5)</p>
-<p><span class="math display">{{\text{k}}_{\text{Leaf}}}\text{=0}\text{.9-}\left( \text{0}\text{.8-0}\text{.9} \right)\text{*}\frac{\text{LAI}}{\text{LA}{{\text{I}}_{\text{crit}}}}\text{, }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{ LAILA}{{\text{I}}_{\text{crit}}}$    (6)
-${{\text{Q}}_{\text{Leaf}}}\text{=}\left\{ \begin{array}{*{35}{l}}
-   \text{PAR*}\left( \text{1-}{{\text{e}}^{\text{-}{{\text{k}}_{\text{Leaf}}}\text{*LAI}}} \right)\text{*}{{\text{f}}_{\text{Tr}}}\text{, }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{ EC}\le \text{51}  \\
-   \text{PAR- }\!\!~\!\!\text{ }{{\text{Q}}_{\text{Pod}}}\text{*}\left( \text{1-}{{\text{e}}^{\text{-}{{\text{k}}_{\text{Leaf}}}\text{*LAI}}} \right)\text{*}{{\text{f}}_{\text{Tr}}}\text{, }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{ EC51 }\!\!~\!\!\text{  }\!\!~\!\!\text{ }  \\
-\end{array} \right.</span> (7)</p>
-<p><span class="math display">{{\text{Q}}_{\text{Pod}}}\text{=PAR*}\left( \text{1-}{{\text{e}}^{\text{-}{{\text{k}}_{\text{Pod}}}\text{*PAI}}} \right)</span> (8)</p>
-<p>The soil water deficit factor is defined as the ratio between actual and potential transpiration (Tact/Tpot) and a parameter describing a non-linear response to drought stress (pfW), as proposed by Ferreyra et al. (2003):</p>
-<p><span class="math display">\text{SWDF=1-(1-}\frac{{{\text{T}}_{\text{act}}}}{{{\text{T}}_{\text{pot}}}}{{\text{)}}^{\text{pfW}}}</span> (9)</p>
-<p>The temperature function of photosynthetic activity (eq. 10) is described by an optimum function with four cardinal temperatures, as follows (Marshall and Squire 1996, Porter and Gawith 1999):</p>
-<p><span class="math display">\text{fT=}\left\{ \begin{array}{*{35}{l}}
-   \text{0, }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{ }{{\text{T}}_{\text{mean}}}\text{}{{\text{T}}_{\text{1}}}  \\
-   \frac{{{\text{T}}_{\text{mean}}}\text{-}{{\text{T}}_{\text{1}}}}{{{\text{T}}_{\text{2}}}\text{-}{{\text{T}}_{\text{1}}}}\text{, }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{ }{{\text{T}}_{\text{1}}}\text{}\le {{\text{T}}_{\text{2}}}  \\
-   \begin{array}{*{35}{l}}
-   \text{1, }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{ }{{\text{T}}_{\text{2}}}\text{}{{\text{T}}_{\text{mean}}}\le {{\text{T}}_{\text{3}}}  \\
-   \begin{array}{*{35}{l}}
-   \frac{{{\text{T}}_{\text{4}}}\text{-}{{\text{T}}_{\text{mean}}}}{{{\text{T}}_{\text{4}}}\text{-}{{\text{T}}_{\text{3}}}}\text{, }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{ }{{\text{T}}_{\text{3}}}\text{}{{\text{T}}_{\text{mean}}}\le {{\text{T}}_{\text{4}}}  \\
-   \text{0, }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{ }{{\text{T}}_{\text{mean}}}\text{}{{\text{T}}_{\text{4}}}  \\
-\end{array}  \\
-\end{array}  \\
-\end{array} \right.</span> (10)</p>
 </section>
-<section id="dry-matter-partitioning" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="dry-matter-partitioning"><span class="header-section-number">1.3</span> Dry matter partitioning</h2>
-<p>Total dry matter growth is split between growth of root dry matter (DMRoot [g m<sup>-2</sup>], eq. 12) and shoot dry matter (DMShoot [g m<sup>-2</sup>], eq. 13). Before stem elongation, root dry matter growth depends on the temperature sum from emergence (Fehler! Verweisquelle konnte nicht gefunden werden.). The ratio dDMRoot/dDMPlant (fRoot, eq. 11) is described by an exponential function of the temperature sum after emergence (TempSumEmerge) with a base temperature of 3°C. From the beginning of stem elongation, fRoot decreased linearly to a minimum of 0.05 within 100°Cd. After flowering, it was assumed that 5% of total dry matter increase was allocated to the roots (Barraclough 1989).</p>
-<p><span class="math display">{{\text{f}}_{\text{Root}}}\text{=}\left\{ \begin{array}{*{35}{l}}
-   \text{roo}{{\text{t}}_{\text{i}}}\text{*(TempSu}{{\text{m}}_{\text{Emerge}}}{{\text{)}}^{\text{2}}}\text{+roo}{{\text{t}}_{\text{s}}}\text{*TempSu}{{\text{m}}_{\text{Emerge}}}\text{, }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{ EC}\le \text{30}  \\
-   \frac{\text{0}\text{.05-roo}{{\text{t}}_{\text{EC30}}}}{\text{100}}\text{*TempSum+roo}{{\text{t}}_{\text{EC30}}}\text{, }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{ 30EC}\le \text{69}  \\
-   \text{0}\text{.05, }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{  }\!\!~\!\!\text{ EC69}  \\
-\end{array} \right.</span> (11)</p>
-<p><span class="math display">\begin{matrix}
-   \frac{\text{dDMRoot}}{\text{dt}}\text{=fRoot*}\frac{\text{dDMPlant}}{\text{dt}}  \\
-\end{matrix}</span> (12)</p>
-<p><span class="math display">\frac{\text{dDMShoot}}{\text{dt}}\text{=}\frac{\text{dDMPlant}}{\text{dt}}\text{-}\frac{\text{dDMRoot}}{\text{dt}}</span> (13)</p>
+<section id="scientific-background" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Scientific Background</h1>
+<section id="model-concept-and-developmental-phases" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="model-concept-and-developmental-phases"><span class="header-section-number">2.1</span> Model concept and developmental phases</h2>
+<p>The manuscript describes winter oilseed rape phenology as a response to temperature, vernalisation and photoperiod. Extending BRASNAP-PH with leaf and internode counters permits a more detailed morphological description than predicting emergence, flowering and maturity alone. The photoperiod and vernalisation effects on <code>DVS</code> end at inflorescence emergence, earlier than in the original BRASNAP-PH formulation. This is the main reason for introducing <code>DVSInflor</code> and <code>aT2a</code>.</p>
+<p>The six model phases and their rate equations are summarised in <a href="#tbl-OSRPhases" class="quarto-xref">Table 2</a>. The ranges indicate the intended morphological phases; the exact numerical boundary behaviour of the implementation is described below.</p>
+<div id="tbl-OSRPhases" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-OSRPhases-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 2: Developmental phases represented by TDevelopmentOSR.
+</figcaption>
+<div aria-describedby="tbl-OSRPhases-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<caption>Developmental phases represented by TDevelopmentOSR.</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Phase</th>
+<th>Intended BBCH range</th>
+<th>Development interval</th>
+<th>Active rate in normal operation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sowing to emergence</td>
+<td>00–09</td>
+<td><span class="math inline">0 \le DVS &lt; 1</span></td>
+<td><code>DVR1</code></td>
+</tr>
+<tr class="even">
+<td>Cotyledon unfolding and leaf development</td>
+<td>09–19</td>
+<td><span class="math inline">1 \le DVS &lt; DVS30</span></td>
+<td><code>DVR2</code></td>
+</tr>
+<tr class="odd">
+<td>Stem elongation</td>
+<td>30–39</td>
+<td><span class="math inline">DVS30 \le DVS &lt; DVSInflor</span></td>
+<td><code>DVR2</code></td>
+</tr>
+<tr class="even">
+<td>Inflorescence emergence</td>
+<td>50–59, approaching 60</td>
+<td><span class="math inline">DVSInflor \le DVS &lt; 2</span></td>
+<td><code>DVR2a</code></td>
+</tr>
+<tr class="odd">
+<td>Flowering</td>
+<td>60–69</td>
+<td><span class="math inline">2 \le DVS &lt; 3</span></td>
+<td><code>DVR3</code></td>
+</tr>
+<tr class="even">
+<td>Pod development and maturity</td>
+<td>70–89</td>
+<td><span class="math inline">3 \le DVS \le 4</span></td>
+<td><code>DVR4</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The manuscript calls <code>DVSInflor</code> <span class="math inline">DVS50</span> and fixes it at 1.5 during calibration. The constructor instead supplies 1.327; the provided CSV contains 1.5. The model does not simulate a separate BBCH 20–29 branching phase. In the manuscript, side shoot development is treated as overlapping with stem elongation and inflorescence emergence.</p>
+</section>
+<section id="effective-temperature-and-thermal-time" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="effective-temperature-and-thermal-time"><span class="header-section-number">2.2</span> Effective temperature and thermal time</h2>
+<p>The effective temperature is the non-negative difference between the external daily mean temperature <span class="math inline">T</span> (<code>TMPM</code>) and the base temperature <span class="math inline">T_b</span> (<code>Tb</code>):</p>
+<p><span id="eq-OSRTeff"><span class="math display">T_{\mathrm{eff}} = \max(0,T-T_b). \tag{1}</span></span></p>
+<p>The source default and CSV value for <span class="math inline">T_b</span> are both <span class="math inline">3\,^\circ\mathrm{C}</span>. The manuscript used a common base temperature because estimating separate base temperatures for the developmental phases produced uncertain and correlated parameter estimates. Temperature here has no upper optimum or maximum for development; the upper limit introduced below applies only to vernalisation.</p>
+<p>The total effective temperature sum obeys</p>
+<p><span id="eq-OSRTS"><span class="math display">\frac{dTS}{dt}=T_{\mathrm{eff}}. \tag{2}</span></span></p>
+<p><code>TS</code> accumulates even before sowing; it is not the same as thermal time since emergence. <code>TS11</code> accumulates effective temperature after <span class="math inline">DVS=1</span>. On a step crossing emergence, the code assigns</p>
+<p><span id="eq-OSRTS11Crossing"><span class="math display">\Delta TS11 = T_{\mathrm{eff}}-\frac{1-DVS}{aT1}. \tag{3}</span></span></p>
+<p>This crossing expression assumes a daily step and does not include <code>ScaleDevVeg</code>. Once <span class="math inline">DVS\ge1</span>, <code>TS11.c</code> equals <code>Teff.v</code>. These sums have the physical unit <span class="math inline">^\circ\mathrm{C}\,\mathrm{d}</span>, although the source registers them as dimensionless.</p>
+</section>
+<section id="vernalisation" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="vernalisation"><span class="header-section-number">2.3</span> Vernalisation</h2>
+<p>The local function <code>dFv_dt(T)</code> returns a <strong>dimensionless temperature response</strong>, denoted <span class="math inline">f_{v,T}</span> here. It is not yet the daily change of <code>Fv</code>:</p>
+<p><span id="eq-OSRVernalisationTemperature"><span class="math display">f_{v,T}(T)=
+\begin{cases}
+0, &amp; T\le T_{v,\min}\ \mathrm{or}\ T\ge T_{v,\max},\\
+\dfrac{T-T_{v,\min}}{T_{v,\mathrm{opt1}}-T_{v,\min}},
+&amp; T_{v,\min}&lt;T&lt;T_{v,\mathrm{opt1}},\\
+1, &amp; T_{v,\mathrm{opt1}}\le T\le T_{v,\mathrm{opt2}},\\
+\dfrac{T_{v,\max}-T}{T_{v,\max}-T_{v,\mathrm{opt2}}},
+&amp; T_{v,\mathrm{opt2}}&lt;T&lt;T_{v,\max}.
+\end{cases} \tag{4}</span></span></p>
+<p>For a daily step, the change assigned to <code>Fv.c</code> is</p>
+<p><span id="eq-OSRFv"><span class="math display">\frac{dF_v}{dt}=
+\begin{cases}
+\min(R_{v,\max}f_{v,T}(T),\,1-F_v), &amp; DVS\ge1\ \mathrm{and}\ F_v&lt;1,\\
+0, &amp; \mathrm{otherwise}.
+\end{cases} \tag{5}</span></span></p>
+<p>The state starts at zero and is capped at one for daily integration. <code>Rvmax</code> therefore has an effective unit of <span class="math inline">\mathrm{d}^{-1}</span> in this implementation, despite the empty unit string in the constructor and different notation in the manuscript table. The code does not stop accumulation at flowering: it continues until full vernalisation or the final EC stop condition. Only the <code>DVR2</code> development rate uses this state.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-OSRVernalisation" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-OSRVernalisation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img role="img" src="data:image/png;base64,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l5szbbf98PoRz/73lo8h7fihPVthHlfON1L9FgoY+VHAmIhaAd98/u3aFz96ZbH7vTXv5HrzVuus7Swc1x0KeH7vf7qojpubxm8+3sECvv7wuUUV3m+9ww4FfP/qvfkdnD3/fu2Pvft+WjeythXpDn+xuULFdmc1/9ybUVb/LbN88vep+bdVL3XR8sPLR5zdevt+28eQdj7izq1YefI3Nxff8dQ3apmggJEfBQx003YWDg3humSrgHt7NMAfKNzQMEIUMNDN5WmlUVC4LjmigC+3Xp/dd4YrF+GGhhGigIFOdjwDrSBclxxRwNXrJVc/E5xNuKFhhChg4LD7y3M0ZD/qyiRclxxRwMuX8BefpLr+9N3zIf484YaGEaKAgYPsDVyqB8DxumT1xuc+h7GXlffQrU7JkUv68FKsoWGEKGDgICsM0VeAR1LA1/+2+Ujv83n7lwLGQChg4KCrd2ezp94+/H1BjaOAr68+emX5caHvZq5fChhDoYABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgYAoAAKGACAAihgAAAKoIABACiAAgb2+/K9m7PZ7Owbbzdvu/W39xe/u7o9m71R+epXL83O3jn+Aa/eO5/f9+u3Z3/wy+PvJPlysYFXLnd1/DbUhpXX/I/6TOvD2FDfaPvS1s+nUX05wNZi6ihgYJ8nd2YrT7+fbrt6d33b2Z8vbric1Xb7j2azZ094yLvLe/Yo4Kt3l3dRtIAbw8r7aLsK2IbauYDT5ICsKGBgj8fns43VAdTd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" class="img-fluid quarto-figure quarto-figure-center figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-OSRVernalisation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 1: Daily vernalisation response using the configured CSV values and constructor defaults. This is an illustration of the response function, not a crop simulation.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="photoperiod-and-sensitivity" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="photoperiod-and-sensitivity"><span class="header-section-number">2.4</span> Photoperiod and sensitivity</h2>
+<p>For the external day length <span class="math inline">L</span> (<code>DayLengthP</code>), the local function <code>Fphoto</code> calculates</p>
+<p><span id="eq-OSRFp"><span class="math display">F_p(L)=
+\begin{cases}
+0, &amp; L&lt;L_{\min},\\
+\dfrac{L-L_{\min}}{L_{\mathrm{opt}}-L_{\min}},
+&amp; L_{\min}\le L&lt;L_{\mathrm{opt}},\\
+1, &amp; L\ge L_{\mathrm{opt}}.
+\end{cases} \tag{6}</span></span></p>
+<p><code>Dlpmin</code> and <code>Dlpopt</code> correspond to the manuscript’s basic and saturating photoperiod, respectively. The CSV contains 5.74 and 14.59 h; the constructor uses 5.7 and 14.8 h. Latitude is not an input to this class: an external day length component must perform the astronomical calculation.</p>
+<p>The code adds sensitivity parameters <span class="math inline">s_p</span> (<code>fp_sens</code>) and <span class="math inline">s_v</span> (<code>fv_sens</code>):</p>
+<p><span id="eq-OSRSensitivity"><span class="math display">F_{p,\mathrm{eff}}=\operatorname{clip}_{[0,1]}
+\left(F_p+(1-s_p)(1-F_p)\right),
+\qquad
+F_{v,\mathrm{eff}}=\operatorname{clip}_{[0,1]}
+\left(F_v+(1-s_v)(1-F_v)\right). \tag{7}</span></span></p>
+<p>Here <span class="math inline">\operatorname{clip}_{[0,1]}(x)=\max(0,\min(1,x))</span>. A sensitivity of one gives the full response; zero makes the corresponding effective multiplier one. Both defaults are one. The documented sensitivity range is zero to one.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-OSRPhotoperiod" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-OSRPhotoperiod-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img role="img" src="data:image/png;base64,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" class="img-fluid quarto-figure quarto-figure-center figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-OSRPhotoperiod-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 2: Effect of photoperiod sensitivity on the effective photoperiod multiplier, using the CSV day length thresholds.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="development-rates" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="development-rates"><span class="header-section-number">2.5</span> Development rates</h2>
+<p>With <span class="math inline">S_{\mathrm{veg}}</span> denoting <code>ScaleDevVeg</code> and <span class="math inline">S_{\mathrm{gen}}</span> denoting <code>ScaleDevGen</code>, the five calculated potential rates are</p>
+<p><span id="eq-OSRDevelopmentRates"><span class="math display">\begin{aligned}
+DVR1 &amp;= S_{\mathrm{veg}}\,T_{\mathrm{eff}}\,aT1,\\
+DVR2 &amp;= S_{\mathrm{veg}}\,T_{\mathrm{eff}}\,aT2
+        \,F_{p,\mathrm{eff}}\,F_{v,\mathrm{eff}},\\
+DVR2a &amp;= S_{\mathrm{veg}}\,T_{\mathrm{eff}}\,aT2a,\\
+DVR3 &amp;= S_{\mathrm{gen}}\,T_{\mathrm{eff}}\,aT3,\\
+DVR4 &amp;= S_{\mathrm{gen}}\,T_{\mathrm{eff}}\,aT4.
+\end{aligned} \tag{8}</span></span></p>
+<p>The coefficients <span class="math inline">aT_i</span> have units <span class="math inline">(^\circ\mathrm{C}\,\mathrm{d})^{-1}</span>, so development rates have units <span class="math inline">\mathrm{d}^{-1}</span>. <code>DVR2b</code> is declared and registered, but is neither calculated nor used. <code>ScaleDevVeg</code> also scales inflorescence emergence through <code>DVR2a</code>; it does not scale leaf appearance, internode extension or vernalisation.</p>
+<p>With <code>OptimizeOption = All</code>, the active rate is selected according to <a href="#tbl-OSRPhases" class="quarto-xref">Table 2</a>, once <code>GlobTime &gt;= SowingDate</code> and while <code>EC &lt; 100</code>. All five potential rates are calculated each time <code>CalcRates</code> runs, irrespective of the active phase.</p>
+<section id="crossing-a-development-boundary" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="crossing-a-development-boundary"><span class="header-section-number">2.5.1</span> Crossing a development boundary</h3>
+<p>For a daily step crossing a threshold <span class="math inline">D_b</span>, the implementation replaces the old rate by the increment</p>
+<p><span id="eq-OSRBoundary"><span class="math display">\Delta DVS=(D_b-DVS)+r_{\mathrm{next}}
+\left(1-\frac{D_b-DVS}{r_{\mathrm{current}}}\right). \tag{9}</span></span></p>
+<p>The first term completes the current phase; the remaining fraction of the day uses the next phase’s rate. Separate checks occur at 1, <code>DVSInflor</code>, 2 and 3, with additional conditions for optimisation modes.</p>
+<p>The inherited <code>TSubmodel.Integrate</code> updates each state as <span class="math inline">X_{\mathrm{new}}=X+X.c\,\Delta t</span>. However, the boundary checks use <code>DVS + DVS.c</code> without multiplying by <span class="math inline">\Delta t</span>, and the vernalisation cap also assumes one day. <strong>A one-day integration step is therefore required to reproduce the intended calculations.</strong> These expressions are not a general variable-step event solver.</p>
+</section>
+</section>
+<section id="cotyledon-unfolding-and-leaf-appearance" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="cotyledon-unfolding-and-leaf-appearance"><span class="header-section-number">2.6</span> Cotyledon unfolding and leaf appearance</h2>
+<p>Cotyledon unfolding is tracked with <code>TS11</code>. Once <code>TS11 &gt;= TSumCotEm</code> and while <code>DVS &lt; DVS30</code>, the leaf state <code>Blattanzahl</code>, denoted <span class="math inline">N_L</span>, increases as</p>
+<p><span id="eq-OSRLeafNumber"><span class="math display">\frac{dN_L}{dt}=
+\begin{cases}
+T_{\mathrm{eff}}/\mathrm{Phyllochron},
+&amp; TS11\ge TSumCotEm\ \mathrm{and}\ DVS&lt;DVS30,\\
+0, &amp; \mathrm{otherwise}.
+\end{cases} \tag{10}</span></span></p>
+<p>The manuscript estimates <code>TSumCotEm</code> at 19.97 <span class="math inline">^\circ\mathrm{C}\,\mathrm{d}</span> and the phyllochron at 64.05 <span class="math inline">^\circ\mathrm{C}\,\mathrm{d}</span>, matching the CSV. The source defaults are 60 and 59.2, respectively. Leaf number remains a continuous state, rather than an integer counter. Its rate has no explicit photoperiod or vernalisation multiplier, although these factors affect the duration of the leaf development phase through <code>DVS</code>.</p>
+<p>The manuscript’s direct conversion is <span class="math inline">BBCH=10+\min(N_L,9)</span>. The current source instead computes leaf EC using</p>
+<p><span id="eq-OSRLeafEC"><span class="math display">EC_{\mathrm{leaf}}=
+\begin{cases}
+13+2N_L, &amp; N_L\le4,\\
+21+(N_L-4), &amp; 4&lt;N_L\le9,\\
+26+(N_L-9)/3, &amp; 9&lt;N_L\le12,\\
+27, &amp; N_L&gt;12,
+\end{cases} \tag{11}</span></span></p>
+<p>then converts EC to BBCH. Within this leaf branch, the composed conversion agrees with the manuscript’s capped relationship: <span class="math inline">BBCH=10+N_L</span> up to nine leaves, then BBCH remains 19. For example, <span class="math inline">N_L=5</span> gives EC 22 and BBCH 15, while <span class="math inline">N_L=9</span> gives EC 26 and BBCH 19.</p>
+</section>
+<section id="internode-extension" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="internode-extension"><span class="header-section-number">2.7</span> Internode extension</h2>
+<p>The state <code>NumExtInternodes</code>, denoted <span class="math inline">N_I</span>, increases according to</p>
+<p><span id="eq-OSRInternodes"><span class="math display">\frac{dN_I}{dt}=
+\begin{cases}
+T_{\mathrm{eff}}/TSumInternode,
+&amp; DVS\ge DVS30\ \mathrm{and}\
+   (DVS&lt;DVSInflor\ \mathrm{or}\ fOptimizeOpt=OOEC39),\\
+0, &amp; \mathrm{otherwise}.
+\end{cases} \tag{12}</span></span></p>
+<p>During the stem elongation conversion branch, <span class="math inline">EC=30+\min(N_I,9)</span> and BBCH equals EC. The CSV value of <code>TSumInternode</code> is 17.06 <span class="math inline">^\circ\mathrm{C}\,\mathrm{d}</span>; the source default is 25. As in leaf appearance, the state itself is not capped at nine; the stage conversion is capped. The manuscript’s estimate of this thermal interval used only 12 observations, which limits its precision.</p>
+</section>
+<section id="conversion-from-dvs-to-ec-and-bbch" class="level2" data-number="2.8">
+<h2 data-number="2.8" class="anchored" data-anchor-id="conversion-from-dvs-to-ec-and-bbch"><span class="header-section-number">2.8</span> Conversion from DVS to EC and BBCH</h2>
+<p><code>Integrate</code> first advances the states and then selects the first matching EC branch in <a href="#tbl-OSRECConversion" class="quarto-xref">Table 3</a>. This order matters: cotyledon unfolding is tested before the <code>DVS30</code> threshold, and the comparisons use <code>&lt;=</code> whereas rate selection uses <code>&lt;</code>.</p>
+<div id="tbl-OSRECConversion" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-OSRECConversion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 3: EC conversion after state integration, excluding the optimisation overrides.
+</figcaption>
+<div aria-describedby="tbl-OSRECConversion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<caption>EC conversion after state integration, excluding the optimisation overrides.</caption>
+<thead>
+<tr class="header">
+<th>Condition, in source order (<code>All</code> mode)</th>
+<th>EC calculation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">DVS\le1</span></td>
+<td><span class="math inline">1+10DVS</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">TS11\le TSumCotEm</span></td>
+<td><span class="math inline">11+2TS11/TSumCotEm</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">DVS\le DVS30</span></td>
+<td>Leaf conversion in <a href="#eq-OSRLeafEC" class="quarto-xref">Eq. 11</a></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">DVS\le DVSInflor</span></td>
+<td><span class="math inline">30+\min(N_I,9)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">DVS\le2</span></td>
+<td><span class="math inline">51+10(DVS-DVSInflor)/(2-DVSInflor)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">DVS\le3</span></td>
+<td><span class="math inline">61+9(DVS-2)</span></td>
+</tr>
+<tr class="odd">
+<td>Otherwise</td>
+<td><span class="math inline">70+19(DVS-3)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The final transformation is a piecewise mapping of EC to BBCH. Important landmarks include EC 11 → BBCH 9 (emergence), EC 13 → BBCH 10 (cotyledons unfolded), EC 51 → BBCH 50 (inflorescence emergence), EC 61 → BBCH 60 (onset of flowering), and EC 89 → BBCH 89 (maturity).</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Differences from the manuscript’s direct BBCH equations
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before emergence, the manuscript uses <span class="math inline">BBCH=9DVS</span>, whereas the source applies the nonlinear EC-to-BBCH mapping to <span class="math inline">EC=1+10DVS</span>. During inflorescence emergence and flowering, the source also uses a piecewise mapping instead of a single linear interpolation in BBCH. At exactly <span class="math inline">DVS=3</span>, the source yields EC 70 and BBCH 70, while the manuscript labels this boundary as end of flowering, BBCH 69. At exactly <span class="math inline">DVSInflor</span>, the earlier stem elongation branch still applies if reached.</p>
+<p>The source continues past <span class="math inline">DVS=4</span>: its final rate stop is <code>EC &gt;= 100</code>, not BBCH 89. For <span class="math inline">89&lt;EC&lt;90</span> none of the BBCH assignments applies, so the preceding BBCH value is retained. At <span class="math inline">EC\ge90</span>, BBCH is set equal to EC. These are implementation details, not additional validated phenological phases.</p>
+</div>
+</div>
+<p>The exact conversion can be inspected in the following source excerpt.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode" id="cb1"><pre class="sourceCode pascal code-with-copy"><code class="sourceCode pascal"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> EC.v&lt;=<span class="dv">3</span> <span class="kw">then</span> BBCH.v:= EC.v<span class="dv">-1</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;=<span class="dv">5</span> <span class="kw">then</span> BBCH.v:= (EC.v<span class="dv">-3</span>)/<span class="dv">2</span>*<span class="dv">3</span>+<span class="dv">2</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;=<span class="dv">7</span> <span class="kw">then</span> BBCH.v:= EC.v</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> Ec.v&lt;=<span class="dv">21</span> <span class="kw">then</span> BBCH.v:= (EC.v<span class="dv">-7</span>)/<span class="dv">2</span>+<span class="dv">7</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;=<span class="dv">26</span> <span class="kw">then</span> BBCH.v:= EC.v<span class="dv">-7</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;<span class="dv">30</span> <span class="kw">then</span> BBCH.v:= <span class="dv">19</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;<span class="dv">40</span> <span class="kw">then</span> BBCH.v:= EC.v</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;=<span class="dv">57</span> <span class="kw">then</span> BBCH.v:= (EC.v<span class="dv">-50</span>)/<span class="dv">2+49.5</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;=<span class="dv">60</span> <span class="kw">then</span> BBCH.v:= (EC.v<span class="dv">-57</span>)*<span class="dv">2</span>+<span class="dv">53</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;=<span class="dv">61</span> <span class="kw">then</span> BBCH.v:= EC.v<span class="dv">-1</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;=<span class="dv">64</span> <span class="kw">then</span> BBCH.v:= (EC.v<span class="dv">-61</span>)/<span class="dv">3</span>*<span class="dv">5</span>+<span class="dv">60</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;=<span class="dv">65</span> <span class="kw">then</span> BBCH.v:= (EC.v<span class="dv">-64</span>)*<span class="dv">2</span>+<span class="dv">65</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;=<span class="dv">69</span> <span class="kw">then</span> BBCH.v:= (EC.v<span class="dv">-65</span>)/<span class="dv">2</span>+<span class="dv">67</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;=<span class="dv">79</span> <span class="kw">then</span> BBCH.v:= EC.v</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;=<span class="dv">83</span> <span class="kw">then</span> BBCH.v:= (EC.v<span class="dv">-79</span>)/<span class="dv">2</span>+<span class="dv">79</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;=<span class="dv">87</span> <span class="kw">then</span> BBCH.v:= Ec.v<span class="dv">-2</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> EC.v&lt;=<span class="dv">89</span> <span class="kw">then</span> BBCH.v:= (EC.v<span class="dv">-87</span>)*<span class="dv">2</span>+<span class="dv">85</span>;</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> EC.v &gt;= <span class="dv">90</span> <span class="kw">then</span> BBCH.v := EC.v;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="diagnostic-variables-and-dates" class="level3" data-number="2.8.1">
+<h3 data-number="2.8.1" class="anchored" data-anchor-id="diagnostic-variables-and-dates"><span class="header-section-number">2.8.1</span> Diagnostic variables and dates</h3>
+<p><code>BBCH30</code> and <code>BBCH50</code> are ratios, not BBCH codes:</p>
+<p><span class="math display">BBCH30=\frac{DVS}{DVS30},\qquad
+BBCH50=\frac{DVS}{DVSInflor}.</span> {#eq-OSRDiagnosticRatios}</p>
+<p>The source returns zero if the respective denominator is zero. The ratios reach one at the configured DVS thresholds and can be used when estimating these thresholds.</p>
+<p><code>DOY51</code> records the first integrated step with <code>EC &gt;= 51</code>, corresponding to BBCH 50. Its source/CSV description says “flowering start”, but the implemented event is <strong>inflorescence emergence</strong>. Flowering starts at EC 61 / BBCH 60. <code>DOY90</code> records the first step with <code>EC &gt;= 90</code>, later than the maturity point <span class="math inline">DVS=4</span>, EC 89. Both are day-of-year numbers and do not retain a year. They are recorded only once after <code>Init</code>.</p>
+</section>
+</section>
+<section id="calibration-validation-and-scope" class="level2" data-number="2.9">
+<h2 data-number="2.9" class="anchored" data-anchor-id="calibration-validation-and-scope"><span class="header-section-number">2.9</span> Calibration, validation and scope</h2>
+<p>The supplied manuscript reports observations from Germany (839), Italy (577) and France (144). For the BBCH model, 659 observations were used for calibration and 658 for cross-calibration. Another 243 German observations, unsuitable for the boundary-based calibration procedure, were included in validation. The corresponding validation and cross-validation totals were 901 and 902.</p>
+<p>The manuscript’s pooled results are given in <a href="#tbl-OSRValidation" class="quarto-xref">Table 4</a>. They describe the study’s model and parameterisation; they are <strong>not a fresh validation of the current Pascal file or of the supplied INI configuration</strong>.</p>
+<div id="tbl-OSRValidation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-OSRValidation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 4: Reported BBCH-model performance from manuscript Table 6.
+</figcaption>
+<div aria-describedby="tbl-OSRValidation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<caption>Reported BBCH-model performance from manuscript Table 6.</caption>
+<thead>
+<tr class="header">
+<th>Evaluation</th>
+<th style="text-align: right;">Observations</th>
+<th style="text-align: right;">RMSE in BBCH stages</th>
+<th style="text-align: right;">RMSE in days</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Validation</td>
+<td style="text-align: right;">901</td>
+<td style="text-align: right;">2.84</td>
+<td style="text-align: right;">21.19</td>
+</tr>
+<tr class="even">
+<td>Cross-validation</td>
+<td style="text-align: right;">902</td>
+<td style="text-align: right;">3.21</td>
+<td style="text-align: right;">26.42</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Errors measured in BBCH stages and in calendar days should not be interchanged. During slow winter development, a small stage error can correspond to many days. In manuscript Table 7, leaf development had an RMSE of 2.40 BBCH stages but 23.33 days, while inflorescence emergence had an RMSE of 4.14 BBCH stages and 8.00 days.</p>
+<p>The manuscript’s emergence calculation assumes suitable seedbed conditions, sowing depth and water supply. Those effects are not model inputs here. Other limitations are the lack of explicit genotype-specific responses in the study’s calibration, uncertain estimates of some photoperiod/vernalisation parameters, and overlapping morphological events during stem elongation and inflorescence emergence. The supplied parameter set should not be assumed suitable for all cultivars or environments without evaluation.</p>
+</section>
+</section>
+<section id="submodel-objects" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Submodel objects</h1>
+<p>Following the HUME dynamic-system structure, states are integrated, parameters configure the process equations, variables store calculated quantities, and external variables provide driving data. The following inventories are generated from the CSV. Descriptions are reconciled with the current source, and physical units are supplied where the export has missing, dimensionless or incorrectly encoded labels. The input files themselves are not modified.</p>
+<section id="state-variables" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="state-variables"><span class="header-section-number">3.1</span> State variables</h2>
+<p>The CSV contains 6 state variables.</p>
+<div class="cell" data-layout-align="center">
+<div id="tbl-OSRStates" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-OSRStates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 5: State variables and initial values in the supplied CSV.
+</figcaption>
+<div aria-describedby="tbl-OSRStates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 11%">
+<col style="width: 16%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">State</th>
+<th style="text-align: left;">Units</th>
+<th style="text-align: left;">CSV initial value</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Blattanzahl</td>
+<td style="text-align: left;">[n]</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Number of unfolded true leaves after cotyledon unfolding.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DVS</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Continuous development stage; integrated from the active DVR.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fv</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Accumulated vernalisation, normally between zero and one.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NumExtInternodes</td>
+<td style="text-align: left;">[n]</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Number of extended internodes during stem elongation.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TS</td>
+<td style="text-align: left;">[degree C d]</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Effective temperature sum, including time before sowing.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TS11</td>
+<td style="text-align: left;">[degree C d]</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Effective temperature sum after emergence (DVS = 1).</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>All six constructor state defaults are zero. After inherited initialisation, <code>Init</code> explicitly resets <code>Blattanzahl</code>, <code>Fv</code> and <code>TS</code> to zero; <code>DVS</code>, <code>TS11</code> and <code>NumExtInternodes</code> retain the values supplied by inherited initialisation. This distinction matters when attempting to restart a simulation from an intermediate stage.</p>
+</section>
+<section id="parameters" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="parameters"><span class="header-section-number">3.2</span> Parameters</h2>
+<p>The CSV contains 24 parameters. <a href="#tbl-OSRParameters" class="quarto-xref">Table 6</a> compares the constructor defaults extracted from <code>ParCreate</code> calls with the supplied configuration. Several coefficients differ substantially, especially <code>aT2</code> and <code>aT2a</code>; do not mix values from the two columns to reproduce the manuscript.</p>
+<div class="cell" data-layout-align="center">
+<div id="tbl-OSRParameters" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-OSRParameters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 6: Parameters: constructor defaults versus the supplied CSV configuration.
+</figcaption>
+<div aria-describedby="tbl-OSRParameters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 12%">
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 60%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: left;">Units</th>
+<th style="text-align: left;">Source default</th>
+<th style="text-align: left;">CSV value</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">aT1</td>
+<td style="text-align: left;">[1/(degree C d)]</td>
+<td style="text-align: left;">0.0077212</td>
+<td style="text-align: left;">0.00631</td>
+<td style="text-align: left;">Temperature coefficient before emergence.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">aT2</td>
+<td style="text-align: left;">[1/(degree C d)]</td>
+<td style="text-align: left;">0.0296873</td>
+<td style="text-align: left;">0.00307</td>
+<td style="text-align: left;">Temperature coefficient from emergence to DVSInflor.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">aT2a</td>
+<td style="text-align: left;">[1/(degree C d)]</td>
+<td style="text-align: left;">0.0296873</td>
+<td style="text-align: left;">0.00299</td>
+<td style="text-align: left;">Temperature coefficient from DVSInflor to DVS = 2.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">aT3</td>
+<td style="text-align: left;">[1/(degree C d)]</td>
+<td style="text-align: left;">0.0051036</td>
+<td style="text-align: left;">0.00366</td>
+<td style="text-align: left;">Temperature coefficient during flowering (DVS 2 to 3).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">aT4</td>
+<td style="text-align: left;">[1/(degree C d)]</td>
+<td style="text-align: left;">0.0014651</td>
+<td style="text-align: left;">0.00165</td>
+<td style="text-align: left;">Temperature coefficient after flowering (DVS &gt;= 3).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dlpmin</td>
+<td style="text-align: left;">[h]</td>
+<td style="text-align: left;">5.7</td>
+<td style="text-align: left;">5.74</td>
+<td style="text-align: left;">Day length below which the raw photoperiod response is zero.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Dlpopt</td>
+<td style="text-align: left;">[h]</td>
+<td style="text-align: left;">14.8</td>
+<td style="text-align: left;">14.59</td>
+<td style="text-align: left;">Day length at which the raw photoperiod response reaches one.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DVS13</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">1.00072</td>
+<td style="text-align: left;">1.0002</td>
+<td style="text-align: left;">Legacy parameter; not read by CalcRates or Integrate.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DVS30</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">1.3</td>
+<td style="text-align: left;">1.34</td>
+<td style="text-align: left;">DVS threshold for the onset of stem elongation.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DVSInflor</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">1.327</td>
+<td style="text-align: left;">1.5</td>
+<td style="text-align: left;">DVS threshold for the onset of inflorescence emergence; DVS50 in the manuscript.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fp_sens</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">Photoperiod sensitivity: zero disables the response, one gives the full response.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fv_sens</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">Vernalisation sensitivity: zero disables the response, one gives the full response.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Phyllochron</td>
+<td style="text-align: left;">[degree C d]</td>
+<td style="text-align: left;">59.2</td>
+<td style="text-align: left;">64.05</td>
+<td style="text-align: left;">Effective thermal time per unfolded true leaf.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rvmax</td>
+<td style="text-align: left;">[1/d]</td>
+<td style="text-align: left;">0.014553</td>
+<td style="text-align: left;">0.0141</td>
+<td style="text-align: left;">Maximum daily increase in the vernalisation state.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ScaleDevGen</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">Multiplier of DVR3 and DVR4.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ScaleDevVeg</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">Multiplier of DVR1, DVR2 and DVR2a.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SowingDate</td>
+<td style="text-align: left;">[date serial]</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">38234</td>
+<td style="text-align: left;">Sowing date as a Delphi date serial, in the same time coordinate as GlobTime.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tb</td>
+<td style="text-align: left;">[degree C]</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">Common base temperature for development, leaf appearance and internode extension.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TSumCotEm</td>
+<td style="text-align: left;">[degree C d]</td>
+<td style="text-align: left;">60</td>
+<td style="text-align: left;">19.97</td>
+<td style="text-align: left;">Effective thermal time from emergence to complete cotyledon unfolding.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TSumInternode</td>
+<td style="text-align: left;">[degree C d]</td>
+<td style="text-align: left;">25</td>
+<td style="text-align: left;">17.06</td>
+<td style="text-align: left;">Effective thermal time per extended internode.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Tvmax</td>
+<td style="text-align: left;">[degree C]</td>
+<td style="text-align: left;">17.2022</td>
+<td style="text-align: left;">17.2</td>
+<td style="text-align: left;">Upper temperature limit for vernalisation.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tvmin</td>
+<td style="text-align: left;">[degree C]</td>
+<td style="text-align: left;">-3.7182</td>
+<td style="text-align: left;">-3.72</td>
+<td style="text-align: left;">Lower temperature limit for vernalisation.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Tvopt1</td>
+<td style="text-align: left;">[degree C]</td>
+<td style="text-align: left;">0.726</td>
+<td style="text-align: left;">0.73</td>
+<td style="text-align: left;">Lower optimum temperature for vernalisation.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tvopt2</td>
+<td style="text-align: left;">[degree C]</td>
+<td style="text-align: left;">5.377</td>
+<td style="text-align: left;">5.38</td>
+<td style="text-align: left;">Upper optimum temperature for vernalisation.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p><code>SowingDate</code> is a Delphi serial date, not a day of year. The exported value corresponds to 2004-09-04. The filename of the original INI does not itself establish the sowing year; the configured date must agree with the simulation’s time axis.</p>
+<p>For meaningful normal operation, the equations require positive <code>Phyllochron</code>, <code>TSumInternode</code> and <code>TSumCotEm</code>, ordered cardinal temperatures, <code>Dlpopt &gt; Dlpmin</code>, and thresholds <span class="math inline">1&lt;DVS30&lt;DVSInflor&lt;2</span>. The source does not systematically validate these conditions.</p>
+</section>
+<section id="variables" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="variables"><span class="header-section-number">3.3</span> Variables</h2>
+<p>The CSV contains 16 variables.</p>
+<div class="cell" data-layout-align="center">
+<div id="tbl-OSRVariables" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-OSRVariables-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 7: Calculated and diagnostic variables, with descriptions following the current source.
+</figcaption>
+<div aria-describedby="tbl-OSRVariables-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 11%">
+<col style="width: 80%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Variable</th>
+<th style="text-align: left;">Units</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">BBCH</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">BBCH stage converted from the legacy EC scale.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BBCH30</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">DVS / DVS30; zero if the denominator is zero.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BBCH50</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">DVS / DVSInflor; zero if the denominator is zero.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DOY51</td>
+<td style="text-align: left;">[day of year]</td>
+<td style="text-align: left;">First day of year with EC &gt;= 51: inflorescence emergence, not flowering.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DOY90</td>
+<td style="text-align: left;">[day of year]</td>
+<td style="text-align: left;">First day of year with EC &gt;= 90; not the DVS = 4 maturity threshold.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DVR1</td>
+<td style="text-align: left;">[1/d]</td>
+<td style="text-align: left;">Potential development rate before emergence.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DVR2</td>
+<td style="text-align: left;">[1/d]</td>
+<td style="text-align: left;">Potential development rate from emergence to DVSInflor; includes photoperiod and vernalisation.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DVR2a</td>
+<td style="text-align: left;">[1/d]</td>
+<td style="text-align: left;">Potential development rate from DVSInflor to onset of flowering.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DVR2b</td>
+<td style="text-align: left;">[1/d]</td>
+<td style="text-align: left;">Created but not assigned or used by CalcRates.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DVR3</td>
+<td style="text-align: left;">[1/d]</td>
+<td style="text-align: left;">Potential development rate during flowering.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DVR4</td>
+<td style="text-align: left;">[1/d]</td>
+<td style="text-align: left;">Potential development rate after flowering.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EC</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">Legacy Schuette EC stage calculated after integration.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fp</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">Photoperiod response before sensitivity adjustment.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fp_eff</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">Photoperiod multiplier after sensitivity adjustment.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fv_eff</td>
+<td style="text-align: left;">[-]</td>
+<td style="text-align: left;">Vernalisation multiplier after sensitivity adjustment.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Teff</td>
+<td style="text-align: left;">[degree C]</td>
+<td style="text-align: left;">Daily mean temperature above Tb, bounded below by zero.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="external-variables" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="external-variables"><span class="header-section-number">3.4</span> External variables</h2>
+<p>The CSV contains 2 external variables. The present export labels these <code>ExternalValue</code>. Its connection names are configuration metadata, not portable paths or constructor defaults.</p>
+<div class="cell" data-layout-align="center">
+<div id="tbl-OSRExternalVariables" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-OSRExternalVariables-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 8: External driving variables and connection names from the CSV.
+</figcaption>
+<div aria-describedby="tbl-OSRExternalVariables-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 50%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Variable</th>
+<th style="text-align: left;">Units</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">CSV connection (basename)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">DayLengthP</td>
+<td style="text-align: left;">[h]</td>
+<td style="text-align: left;">Daily photoperiod supplied by another submodel.</td>
+<td style="text-align: left;">Daylength1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TMPM</td>
+<td style="text-align: left;">[degree C]</td>
+<td style="text-align: left;">Daily mean air temperature supplied externally.</td>
+<td style="text-align: left;">DWD_Intpol_Rosenthal.csv</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>The weather series and day length component must supply daily values for the same simulation dates. No weather or crop observations are embedded in the CSV; the figures above illustrate the equations only.</p>
+</section>
+<section id="options" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="options"><span class="header-section-number">3.5</span> Options</h2>
+<p>The CSV contains 3 options, including inherited output controls.</p>
+<div class="cell" data-layout-align="center">
+<div id="tbl-OSROptions" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-OSROptions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 9: Configured options in the supplied CSV.
+</figcaption>
+<div aria-describedby="tbl-OSROptions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 12%">
+<col style="width: 73%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Option</th>
+<th style="text-align: left;">CSV setting</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ContOutput</td>
+<td style="text-align: left;">true</td>
+<td style="text-align: left;">Output every time step?</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FinalOutput</td>
+<td style="text-align: left;">true</td>
+<td style="text-align: left;">Output of final values in separate file?</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OptimizeOption</td>
+<td style="text-align: left;">all</td>
+<td style="text-align: left;">Specifies until which EC stage data and development rates are considered</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p><code>OptimizeOption</code> is stored in the field <code>OptimizeOpt</code>. <code>Init</code> interprets its value without regard to case. The recognised values and their enum mapping are shown in <a href="#tbl-OSROptimiseModes" class="quarto-xref">Table 10</a>.</p>
+<div id="tbl-OSROptimiseModes" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-OSROptimiseModes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 10: Optimisation option strings and internal enum values.
+</figcaption>
+<div aria-describedby="tbl-OSROptimiseModes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<caption>Optimisation option strings and internal enum values.</caption>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Option string</th>
+<th>Enum</th>
+<th>Effect on phase handling</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>All</code></td>
+<td><code>OOAll</code></td>
+<td>Normal sequence through all development phases.</td>
+</tr>
+<tr class="even">
+<td><code>Until_EC11_BBCH09</code></td>
+<td><code>OOEC11</code></td>
+<td>Continues the emergence rate and emergence EC conversion.</td>
+</tr>
+<tr class="odd">
+<td><code>Until_EC13_BBCH10</code></td>
+<td><code>OOEC13</code></td>
+<td>Extends the cotyledon EC branch after emergence.</td>
+</tr>
+<tr class="even">
+<td><code>Until_EC27_BBCH19</code></td>
+<td><code>OOEC27</code></td>
+<td>Extends the leaf EC branch after cotyledon unfolding.</td>
+</tr>
+<tr class="odd">
+<td><code>Until_EC39_BBCH39</code></td>
+<td><code>OOEC39</code></td>
+<td>Extends stem EC conversion and internode accumulation.</td>
+</tr>
+<tr class="even">
+<td><code>Until_EC51_BBCH50</code></td>
+<td><code>OOEC51</code></td>
+<td>Extends selection of <code>DVR2</code>; the inflorescence crossing correction remains enabled.</td>
+</tr>
+<tr class="odd">
+<td><code>Until_EC61_BBCH60</code></td>
+<td><code>OOEC61</code></td>
+<td>Extends selection of <code>DVR2a</code> after earlier phases.</td>
+</tr>
+<tr class="even">
+<td><code>Until_EC69_BBCH69</code></td>
+<td><code>OOEC69</code></td>
+<td>Extends selection of <code>DVR3</code> after earlier phases.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>These are phase-specific fitting modes, <strong>not stop-at-stage controls</strong>. They alter rate selection, selected crossing corrections and some EC branches; this class does not itself filter observations. Normal simulations should use <code>All</code>. Unrecognised strings have no explicit rejection or fallback in <code>Init</code>, so use a recognised value.</p>
+</section>
+</section>
+<section id="further-source-code-documentation" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Further source code documentation</h1>
+<section id="enumerations" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="enumerations"><span class="header-section-number">4.1</span> Enumerations</h2>
+<p>The XML contains 1 enumeration type.</p>
+<div class="cell" data-layout-align="center">
+<div id="tbl-OSREnumerations" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-OSREnumerations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 11: Enumeration declared in DevelopmentOSR.
+</figcaption>
+<div aria-describedby="tbl-OSREnumerations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 82%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">elements</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TOptimizeOpt</td>
+<td style="text-align: left;">OOEC11, OOEC13, OOEC27, OOEC39, OOEC51, OOEC61, OOEC69, OOAll</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>The ordinal order is significant: <code>CalcRates</code> compares <code>Ord(fOptimizeOpt)</code> with enum values to select rates and enable boundary corrections. The order of strings in <code>OptimizeOpt.OptionList</code> is different (<code>All</code> is first), but <code>Init</code> maps strings explicitly rather than using list positions.</p>
+</section>
+<section id="constants" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="constants"><span class="header-section-number">4.2</span> Constants</h2>
+<p>After excluding enumeration members, the XML contains 0 standalone constants. The eight <code>OO...</code> identifiers listed as <code>const</code> nodes by the exporter are the members of <code>TOptimizeOpt</code>, not additional numeric model parameters.</p>
+</section>
+<section id="functions" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="functions"><span class="header-section-number">4.3</span> Functions</h2>
+<p>The XML contains 0 class-level functions. The two local functions nested inside <code>CalcRates</code> are not included in that inventory:</p>
+<div id="tbl-OSRLocalFunctions" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-OSRLocalFunctions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 12
+</figcaption>
+<div aria-describedby="tbl-OSRLocalFunctions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Local function</th>
+<th>Input</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>dFv_dt(T: real): real</code></td>
+<td>Daily mean temperature</td>
+<td>Dimensionless trapezoidal vernalisation response (<a href="#eq-OSRVernalisationTemperature" class="quarto-xref">Eq. 4</a>).</td>
+</tr>
+<tr class="even">
+<td><code>Fphoto(Dl: real): real</code></td>
+<td>Day length</td>
+<td>Dimensionless photoperiod response (<a href="#eq-OSRFp" class="quarto-xref">Eq. 6</a>).</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section id="procedures" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="procedures"><span class="header-section-number">4.4</span> Procedures</h2>
+<p>The four class procedures declared in the XML are listed in <a href="#tbl-OSRProcedures" class="quarto-xref">Table 13</a>. Their explanations are supplied here from the Pascal bodies because the XML summaries are empty.</p>
+<div class="cell" data-layout-align="center">
+<div id="tbl-OSRProcedures" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-OSRProcedures-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 13: Procedures of TDevelopmentOSR, with source-derived responsibilities.
+</figcaption>
+<div aria-describedby="tbl-OSRProcedures-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 10%">
+<col style="width: 77%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Procedure</th>
+<th style="text-align: left;">Visibility</th>
+<th style="text-align: left;">Parameters</th>
+<th style="text-align: left;">Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">CreateAll</td>
+<td style="text-align: left;">public</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Calls inherited CreateAll; creates states, variables, parameters, external inputs and the optimisation option.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Init</td>
+<td style="text-align: left;">public</td>
+<td style="text-align: left;">var GlobMod: TMod</td>
+<td style="text-align: left;">Calls inherited Init; resets selected states and diagnostics; maps the optimisation string to its enum.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CalcRates</td>
+<td style="text-align: left;">public</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Calculates environmental responses, potential and active development rates, thermal-time rates, leaf appearance and internode extension.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Integrate</td>
+<td style="text-align: left;">public</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Calls inherited state integration; converts states to EC and BBCH; updates threshold ratios and first-occurrence dates.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>The unit-level <code>Register</code> procedure registers <code>TDevelopmentOSR</code> on the <code>Simulation</code> component palette unless <code>NONVISUAL</code> is defined.</p>
+</section>
+<section id="execution-order-and-implementation-cautions" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="execution-order-and-implementation-cautions"><span class="header-section-number">4.5</span> Execution order and implementation cautions</h2>
+<ol type="1">
+<li><code>CreateAll</code> establishes the objects and constructor defaults.</li>
+<li><code>Init</code> invokes the inherited configuration and connection setup, then resets selected states and maps the optimisation option.</li>
+<li><code>CalcRates</code> uses the current state and external drivers. The effective vernalisation multiplier uses the current <code>Fv</code>; newly accumulated vernalisation enters after integration.</li>
+<li><code>Integrate</code> advances states and updates the stage outputs. Repeat the rate and integration steps daily.</li>
+</ol>
+<p>Only assignment of the <code>DVS</code> rate is gated explicitly by the sowing date. Other rates, particularly <code>TS.c</code>, can be calculated before sowing. <code>DVS.c</code> has no explicit zero assignment in the pre-sowing branch, and <code>TS11.c</code> is not explicitly reset in every branch below emergence. Standard initialisation sets state rates to zero, but arbitrary restarts or manual state changes need care.</p>
+<p>When the previously calculated <code>EC</code> reaches 100, the end of <code>CalcRates</code> sets <strong>all</strong> state change rates to zero. The documentation does not correct these behaviours, the unused <code>DVS13</code> parameter, or the unused <code>DVR2b</code> variable; the source remains unchanged.</p>
+</section>
+</section>
+<section id="references" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> References</h1>
+<p>Scientific background and reported evaluation results were drawn from the supplied manuscript, identified in the repository bibliography as <span class="citation" data-cites="Bottcher2016">Bottcher et al. (<a href="#ref-Bottcher2016" role="doc-biblioref">2016</a>)</span>. <span class="citation" data-cites="Habekotte1997">Habekotte (<a href="#ref-Habekotte1997" role="doc-biblioref">1997</a>)</span> is the underlying BRASNAP-PH model cited by that manuscript. The Pascal implementation is authoritative for the equations and execution details documented here.</p>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-Bottcher2016" class="csl-entry" role="listitem">
+Bottcher, U., Rampin, E., Hartmann, K., Zanetti, F., Flenet, F., Morison, M., Kage, H., 2016. A phenological model of winter oilseed rape according to the BBCH scale. Crop <span>&amp;</span> Pasture Science 67, 345–358. <a href="https://doi.org/10.1071/cp15321">https://doi.org/10.1071/cp15321</a>
+</div>
+<div id="ref-Habekotte1997" class="csl-entry" role="listitem">
+Habekotte, B., 1997. A model of the phenological development of winter oilseed rape (brassica napus l.). Field Crops Research 54, 127–136.
+</div>
+</div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
