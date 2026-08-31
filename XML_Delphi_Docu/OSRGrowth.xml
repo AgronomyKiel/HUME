@@ -1,0 +1,2885 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="OSRGrowth" platform="Win32">
+  <devnotes>
+     <summary>
+     Module for growth, carbon and nitrogen partitioning of oilseed rape crop
+     Authors: Wiebke Weymann, Ulf Böttcher &amp; Agronomy Group, University of Kiel
+     <References>
+     <item> Weymann, W., Sieling, K., Kage, H., 2017. Organ-specific approaches describing crop growth of winter oilseed rape under optimal and N-limited conditions.
+     European Journal of Agronomy 82, 71–79. https://doi.org/10.1016/j.eja.2016.10.005</item>
+      <item> Böttcher, U., Weymann, W., Pullens, J.W.M., Olesen, J.E., Kage, H., 2020. Development and evaluation of HUME-OSR:
+     A dynamic crop growth model for winter oilseed rape. Field Crops Research 246, 107679. https://doi.org/10.1016/j.fcr.2019.107679 </item>
+     </References>
+     </summary>
+  </devnotes>
+  <const name="MaxParDays" type="Integer" file="OSRGrowth.pas" line="37">
+    <value>
+      $A
+    </value>
+  </const>
+  <const name="InternLAI" type="TLAIOption" file="OSRGrowth.pas" line="42">
+    <value>
+      InternLAI
+    </value>
+  </const>
+  <const name="ExternLAI" type="TLAIOption" file="OSRGrowth.pas" line="42">
+    <value>
+      ExternLAI
+    </value>
+  </const>
+  <const name="InternDM" type="TDMOption" file="OSRGrowth.pas" line="43">
+    <value>
+      InternDM
+    </value>
+  </const>
+  <const name="ExternDM" type="TDMOption" file="OSRGrowth.pas" line="43">
+    <value>
+      ExternDM
+    </value>
+  </const>
+  <const name="DMCritInit" type="TInitOption" file="OSRGrowth.pas" line="44">
+    <value>
+      DMCritInit
+    </value>
+  </const>
+  <const name="LAIInit" type="TInitOption" file="OSRGrowth.pas" line="44">
+    <value>
+      LAIInit
+    </value>
+  </const>
+  <const name="N_sensitiv" type="TNSensOption" file="OSRGrowth.pas" line="45">
+    <value>
+      N_sensitiv
+    </value>
+  </const>
+  <const name="N_unlimited" type="TNSensOption" file="OSRGrowth.pas" line="45">
+    <value>
+      N_unlimited
+    </value>
+  </const>
+  <const name="DroughtImpact" type="TDroughtOption" file="OSRGrowth.pas" line="46">
+    <value>
+      DroughtImpact
+    </value>
+  </const>
+  <const name="NoDroughtImpact" type="TDroughtOption" file="OSRGrowth.pas" line="46">
+    <value>
+      NoDroughtImpact
+    </value>
+  </const>
+  <enum name="TLAIOption" file="OSRGrowth.pas" line="42">
+    <element value="0" name="InternLAI" file="OSRGrowth.pas" line="42" />
+    <element value="1" name="ExternLAI" file="OSRGrowth.pas" line="42" />
+  </enum>
+  <enum name="TDMOption" file="OSRGrowth.pas" line="43">
+    <element value="0" name="InternDM" file="OSRGrowth.pas" line="43" />
+    <element value="1" name="ExternDM" file="OSRGrowth.pas" line="43" />
+  </enum>
+  <enum name="TInitOption" file="OSRGrowth.pas" line="44">
+    <element value="0" name="DMCritInit" file="OSRGrowth.pas" line="44" />
+    <element value="1" name="LAIInit" file="OSRGrowth.pas" line="44" />
+  </enum>
+  <enum name="TNSensOption" file="OSRGrowth.pas" line="45">
+    <element value="0" name="N_sensitiv" file="OSRGrowth.pas" line="45" />
+    <element value="1" name="N_unlimited" file="OSRGrowth.pas" line="45" />
+  </enum>
+  <enum name="TDroughtOption" file="OSRGrowth.pas" line="46">
+    <element value="0" name="DroughtImpact" file="OSRGrowth.pas" line="46" />
+    <element value="1" name="NoDroughtImpact" file="OSRGrowth.pas" line="46" />
+  </enum>
+  <class name="TOSRGrowth" file="OSRGrowth.pas" line="48">
+    <ancestor name="TAbstractPlant" namespace="UAbstractPlant">
+      <methodref name="setNextCrop" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="GetLAI" visibility="protected" procflags="abstract virtual">
+      </methodref>
+      <methodref name="SetLai" visibility="protected" procflags="abstract virtual">
+      </methodref>
+      <methodref name="GetCropHeight" visibility="protected" procflags="abstract virtual">
+      </methodref>
+      <methodref name="SetCropHeight" visibility="protected" procflags="abstract virtual">
+      </methodref>
+      <methodref name="GetNUptakeRate" visibility="protected" procflags="abstract virtual">
+      </methodref>
+      <methodref name="SetNUptakeRate" visibility="protected" procflags="abstract virtual">
+      </methodref>
+      <methodref name="GetWLD" visibility="protected" procflags="abstract virtual">
+      </methodref>
+      <methodref name="GetSumRootLength" visibility="protected" procflags="abstract virtual">
+      </methodref>
+      <methodref name="GetSumRootLength_eff" visibility="protected" procflags="abstract virtual">
+      </methodref>
+      <methodref name="SetWLD" visibility="protected" procflags="abstract virtual">
+      </methodref>
+      <methodref name="getExtCoeffPAR" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="getExtCoeffGlobRad" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="getrc0" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="getPsi2" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="getWeff" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="getDM_c" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="setDM_c" visibility="protected" procflags="abstract virtual">
+      </methodref>
+      <methodref name="SetDMprodModel" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="setSoilNitrogenMod" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="SetSowingDate" visibility="public" procflags="virtual">
+      </methodref>
+      <methodref name="Integrate" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="CalcRates" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="CreateAll" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="Init" visibility="public" procflags="override">
+      </methodref>
+      <propertyref name="ExtCoeffPAR" visibility="public">
+      </propertyref>
+      <propertyref name="ExtCoeffGlobRad" visibility="public">
+      </propertyref>
+      <propertyref name="rc0" visibility="public">
+      </propertyref>
+      <propertyref name="Psi2" visibility="public">
+      </propertyref>
+      <propertyref name="Weff" visibility="public">
+      </propertyref>
+      <propertyref name="p_WLD" visibility="public">
+      </propertyref>
+      <propertyref name="p_SumRootLength" visibility="public">
+      </propertyref>
+      <propertyref name="p_SumRootLength_eff" visibility="public">
+      </propertyref>
+      <propertyref name="p_LAI" visibility="public">
+      </propertyref>
+      <propertyref name="p_CropHeight" visibility="public">
+      </propertyref>
+      <propertyref name="p_TotalDryMatterGR" visibility="public">
+      </propertyref>
+      <propertyref name="p_NUptakeRate" visibility="public">
+      </propertyref>
+      <propertyref name="SoilMinMod" visibility="published">
+      </propertyref>
+      <propertyref name="SoilLayerMod" visibility="published">
+      </propertyref>
+      <propertyref name="EvapModel" visibility="published">
+      </propertyref>
+      <propertyref name="DMprodModel" visibility="published">
+      </propertyref>
+      <propertyref name="SoilNitrogenMod" visibility="published">
+      </propertyref>
+      <propertyref name="Par_SowingDate" visibility="published">
+      </propertyref>
+      <propertyref name="Par_HarvestDate" visibility="published">
+      </propertyref>
+      <propertyref name="NextCrop" visibility="published">
+      </propertyref>
+      <propertyref name="Rotationlength" visibility="published">
+      </propertyref>
+      <propertyref name="St_C_Residues" visibility="published">
+      </propertyref>
+      <propertyref name="St_N_Residues" visibility="published">
+      </propertyref>
+      <propertyref name="St_DMtotal" visibility="published">
+      </propertyref>
+      <propertyref name="St_DMFineRoot" visibility="published">
+      </propertyref>
+      <propertyref name="SetNewDates" visibility="published">
+      </propertyref>
+      <propertyref name="withRoots" visibility="published">
+      </propertyref>
+      <ancestor name="TSubmodel" namespace="UMod">
+        <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="RegistrateOption" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="RegistrateVariable" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="RegistrateStateVar" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="RegistrateConstant" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="RegistrateSubMod" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="set_State" visibility="private" procflags="virtual" />
+        <methodref name="get_State" visibility="private" />
+        <methodref name="set_Par" visibility="private" />
+        <methodref name="Get_Par" visibility="private" />
+        <methodref name="set_Var" visibility="private" />
+        <methodref name="Get_Var" visibility="private" />
+        <methodref name="set_Const" visibility="private" />
+        <methodref name="get_Const" visibility="private" />
+        <methodref name="set_Option" visibility="private" />
+        <methodref name="get_Option" visibility="private" />
+        <methodref name="set_ExternVar" visibility="private" />
+        <methodref name="get_ExternVar" visibility="private" />
+        <methodref name="InitStates" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="InitParms" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="InitVars" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="InitOptions" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="InitOutputFileNames" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="InitUpdateFile" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="IsOutput" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="Get_GlobMod" visibility="protected">
+        </methodref>
+        <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="UpdateValue" visibility="protected" />
+        <methodref name="Paint" visibility="protected" procflags="override">
+        </methodref>
+        <methodref name="Notification" visibility="protected" procflags="virtual" />
+        <methodref name="Create" visibility="public" procflags="constructor override">
+        </methodref>
+        <methodref name="free" visibility="public">
+        </methodref>
+        <methodref name="BeforeDestruction" visibility="public" procflags="override">
+        </methodref>
+        <methodref name="ParCreate" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="OptCreate" visibility="public">
+        </methodref>
+        <methodref name="VarCreate" visibility="public">
+        </methodref>
+        <methodref name="ConstCreate" visibility="public">
+        </methodref>
+        <methodref name="StateCreate" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ExternVcreate" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="ExternVinit" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="CreateAll" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Init" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="CalcRates" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="Integrate" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="CalcVars" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="UpdateValues" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="WriteStateName" visibility="public">
+        </methodref>
+        <methodref name="WriteFinalStateName" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="WriteRateName" visibility="public">
+        </methodref>
+        <methodref name="SaveState" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="SaveRate" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="SaveFinalState" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="closeOutputfiles" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="activate" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="deactivate" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AddDataValueToDataSeries" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="AddSimValueToDataSeries" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="write_1_1_files" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="CalcLinearRegressions" visibility="public">
+        </methodref>
+        <propertyref name="StateVar" visibility="public">
+        </propertyref>
+        <propertyref name="ParamVar" visibility="public">
+        </propertyref>
+        <propertyref name="VarVar" visibility="public">
+        </propertyref>
+        <propertyref name="ConstVar" visibility="public">
+        </propertyref>
+        <propertyref name="Option" visibility="public">
+        </propertyref>
+        <propertyref name="ExternVar" visibility="public">
+        </propertyref>
+        <methodref name="DblClick" visibility="public" procflags="override">
+        </methodref>
+        <propertyref name="CalcTimeTicks" visibility="public" />
+        <propertyref name="SM_GlobMod" visibility="published">
+        </propertyref>
+        <propertyref name="SM_ExternVStrList" visibility="published">
+        </propertyref>
+        <propertyref name="SM_VarStrList" visibility="published">
+        </propertyref>
+        <propertyref name="SM_ConstStrList" visibility="published">
+        </propertyref>
+        <propertyref name="SM_ParStrList" visibility="published">
+        </propertyref>
+        <propertyref name="SM_StateStrList" visibility="published">
+        </propertyref>
+        <propertyref name="CompIndex" visibility="published">
+        </propertyref>
+        <propertyref name="FN_ratefn" visibility="published">
+        </propertyref>
+        <propertyref name="FN_Statefn" visibility="published">
+        </propertyref>
+        <propertyref name="MeasFile" visibility="published">
+        </propertyref>
+        <propertyref name="AssimilatedSubmodList" visibility="published">
+        </propertyref>
+        <propertyref name="DebugModus" visibility="published">
+        </propertyref>
+        <propertyref name="OptContOutput" visibility="published">
+        </propertyref>
+        <propertyref name="Parent" visibility="published" />
+        <propertyref name="Canvas" visibility="published" />
+        <propertyref name="Visible" visibility="published" />
+        <propertyref name="color" visibility="published" />
+        <propertyref name="DebugForm" visibility="published" />
+        <propertyref name="OnDblclick" visibility="published" />
+        <ancestor name="TGraphicControl" namespace="Vcl.Controls">
+          <methodref name="WMPaint" visibility="private" procflags="message">
+          </methodref>
+          <methodref name="Paint" visibility="protected" procflags="virtual">
+          </methodref>
+          <propertyref name="Canvas" visibility="protected">
+          </propertyref>
+          <methodref name="Create" visibility="public" procflags="constructor override">
+          </methodref>
+          <methodref name="Destroy" visibility="public" procflags="destructor override">
+          </methodref>
+          <ancestor name="TControl" namespace="Vcl.Controls">
+            <methodref name="GetCustomHint" visibility="private">
+            </methodref>
+            <methodref name="CalcDockSizes" visibility="private">
+            </methodref>
+            <methodref name="UpdateRootControl" visibility="private">
+            </methodref>
+            <methodref name="CheckNewSize" visibility="private">
+            </methodref>
+            <methodref name="CreateFloatingDockSite" visibility="private">
+            </methodref>
+            <methodref name="DoActionChange" visibility="private">
+            </methodref>
+            <methodref name="DoCanAutoSize" visibility="private">
+            </methodref>
+            <methodref name="DoCanResize" visibility="private">
+            </methodref>
+            <methodref name="DoConstraintsChange" visibility="private">
+            </methodref>
+            <methodref name="DoConstrainedResize" visibility="private">
+            </methodref>
+            <methodref name="DoDragMsg" visibility="private">
+            </methodref>
+            <methodref name="DoMouseActivate" visibility="private">
+            </methodref>
+            <methodref name="DoMouseDown" visibility="private">
+            </methodref>
+            <methodref name="DoMouseUp" visibility="private">
+            </methodref>
+            <methodref name="DoMarginChange" visibility="private">
+            </methodref>
+            <methodref name="FontChanged" visibility="private">
+            </methodref>
+            <methodref name="GetAlignWithMargins" visibility="private" procflags="inline">
+            </methodref>
+            <methodref name="GetBoundsRect" visibility="private">
+            </methodref>
+            <methodref name="GetClientHeight" visibility="private">
+            </methodref>
+            <methodref name="GetClientWidth" visibility="private">
+            </methodref>
+            <methodref name="GetLRDockWidth" visibility="private">
+            </methodref>
+            <methodref name="GetMouseCapture" visibility="private">
+            </methodref>
+            <methodref name="GetTBDockHeight" visibility="private">
+            </methodref>
+            <methodref name="GetUndockWidth" visibility="private">
+            </methodref>
+            <methodref name="GetUndockHeight" visibility="private">
+            </methodref>
+            <methodref name="InvalidateControl" visibility="private">
+            </methodref>
+            <methodref name="IsAnchorsStored" visibility="private">
+            </methodref>
+            <methodref name="IsBiDiModeStored" visibility="private">
+            </methodref>
+            <methodref name="IsCaptionStored" visibility="private">
+            </methodref>
+            <methodref name="IsColorStored" visibility="private">
+            </methodref>
+            <methodref name="IsEnabledStored" visibility="private">
+            </methodref>
+            <methodref name="IsFontStored" visibility="private">
+            </methodref>
+            <methodref name="IsHintStored" visibility="private">
+            </methodref>
+            <methodref name="IsHelpContextStored" visibility="private">
+            </methodref>
+            <methodref name="IsOnClickStored" visibility="private">
+            </methodref>
+            <methodref name="IsShowHintStored" visibility="private">
+            </methodref>
+            <methodref name="IsVisibleStored" visibility="private">
+            </methodref>
+            <methodref name="ReadIsControl" visibility="private">
+            </methodref>
+            <methodref name="ReadExplicitLeft" visibility="private">
+            </methodref>
+            <methodref name="ReadExplicitTop" visibility="private">
+            </methodref>
+            <methodref name="ReadExplicitWidth" visibility="private">
+            </methodref>
+            <methodref name="ReadExplicitHeight" visibility="private">
+            </methodref>
+            <methodref name="SetAlignWithMargins" visibility="private">
+            </methodref>
+            <methodref name="SetAnchors" visibility="private">
+            </methodref>
+            <methodref name="SetAction" visibility="private">
+            </methodref>
+            <methodref name="SetAlign" visibility="private">
+            </methodref>
+            <methodref name="SetBoundsRect" visibility="private">
+            </methodref>
+            <methodref name="SetClientHeight" visibility="private">
+            </methodref>
+            <methodref name="SetClientSize" visibility="private">
+            </methodref>
+            <methodref name="SetClientWidth" visibility="private">
+            </methodref>
+            <methodref name="SetColor" visibility="private">
+            </methodref>
+            <methodref name="SetCursor" visibility="private">
+            </methodref>
+            <methodref name="SetDesktopFont" visibility="private">
+            </methodref>
+            <methodref name="SetFont" visibility="private">
+            </methodref>
+            <methodref name="SetHeight" visibility="private">
+            </methodref>
+            <methodref name="SetHelpContext" visibility="private">
+            </methodref>
+            <methodref name="SetHelpKeyword" visibility="private">
+            </methodref>
+            <methodref name="SetHostDockSite" visibility="private">
+            </methodref>
+            <methodref name="SetLeft" visibility="private">
+            </methodref>
+            <methodref name="SetMouseCapture" visibility="private">
+            </methodref>
+            <methodref name="SetParentColor" visibility="private">
+            </methodref>
+            <methodref name="SetParentFont" visibility="private">
+            </methodref>
+            <methodref name="SetShowHint" visibility="private">
+            </methodref>
+            <methodref name="SetParentShowHint" visibility="private">
+            </methodref>
+            <methodref name="SetParentCustomHint" visibility="private">
+            </methodref>
+            <methodref name="SetPopupMenu" visibility="private">
+            </methodref>
+            <methodref name="SetTop" visibility="private">
+            </methodref>
+            <methodref name="SetVisible" visibility="private">
+            </methodref>
+            <methodref name="SetWidth" visibility="private">
+            </methodref>
+            <methodref name="SetZOrderPosition" visibility="private">
+            </methodref>
+            <methodref name="UpdateAnchorRules" visibility="private">
+            </methodref>
+            <methodref name="WriteIsControl" visibility="private">
+            </methodref>
+            <methodref name="WriteExplicitLeft" visibility="private">
+            </methodref>
+            <methodref name="WriteExplicitTop" visibility="private">
+            </methodref>
+            <methodref name="WriteExplicitWidth" visibility="private">
+            </methodref>
+            <methodref name="WriteExplicitHeight" visibility="private">
+            </methodref>
+            <methodref name="WMLButtonDown" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMNCLButtonDown" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMRButtonDown" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMMButtonDown" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMLButtonDblClk" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMRButtonDblClk" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMMButtonDblClk" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMMouseMove" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMLButtonUp" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMRButtonUp" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMMButtonUp" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMMouseWheel" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMCancelMode" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMWindowPosChanged" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMVisibleChanged" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMEnabledChanged" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMFontChanged" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMColorChanged" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMMouseActivate" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMParentFontChanged" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMSysFontChanged" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMParentColorChanged" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMParentShowHintChanged" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMHintShow" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMHitTest" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMMouseEnter" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMMouseLeave" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMDesignHitTest" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMBiDiModeChanged" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMParentBiDiModeChanged" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMMouseWheel" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMGesture" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="WMContextMenu" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMParentTabletOptionsChanged" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="CMStyleElementsChanged" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="SetConstraints" visibility="private">
+            </methodref>
+            <methodref name="SetMargins" visibility="private">
+            </methodref>
+            <methodref name="SetTouchManager" visibility="private">
+            </methodref>
+            <methodref name="GetText" visibility="private">
+            </methodref>
+            <methodref name="SetText" visibility="private">
+            </methodref>
+            <methodref name="CMFloat" visibility="private" procflags="message">
+            </methodref>
+            <methodref name="GetDesignDpi" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetParentCurrentDpi" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetCurrentPPI" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetDPIForDesigner" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="AsyncSchedule" visibility="protected" procflags="override">
+            </methodref>
+            <methodref name="ActionChange" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="AdjustSize" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="AssignTo" visibility="protected" procflags="override">
+            </methodref>
+            <methodref name="BeginAutoDrag" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="CanResize" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Changed" visibility="protected">
+            </methodref>
+            <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
+            </methodref>
+            <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
+            </methodref>
+            <methodref name="Click" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="ConstrainedResize" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="CalcCursorPos" visibility="protected">
+            </methodref>
+            <methodref name="CreateTouchManager" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="DblClick" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DefaultDockImage" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DefineProperties" visibility="protected" procflags="override">
+            </methodref>
+            <methodref name="DockTrackNoTarget" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DoContextPopup" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DoEndDock" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DoDock" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DoStartDock" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DoMouseWheel" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DoMouseWheelDown" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DoMouseWheelUp" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DragCanceled" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DragOver" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DoEndDrag" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DoStartDrag" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="DoGesture" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="DoGetGestureOptions" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="DoStyleElementsChanged" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="DrawDragDockImage" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="EraseDragDockImage" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="GetAction" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetActionLinkClass" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="GetClientOrigin" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetClientRect" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetDeviceContext" visibility="protected" procflags="overload virtual">
+            </methodref>
+            <methodref name="GetDockEdge" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="GetEnabled" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetFloating" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetFloatingDockSiteClass" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetPalette" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="GetPopupMenu" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="GetDragMode" visibility="protected">
+            </methodref>
+            <methodref name="IsTouchPropertyStored" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="override">
+            </methodref>
+            <methodref name="MouseActivate" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="MouseDown" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="MouseMove" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="MouseUp" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="Notification" visibility="protected" procflags="override">
+            </methodref>
+            <methodref name="PositionDockRect" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="PaletteChanged" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="ReadState" visibility="protected" procflags="override">
+            </methodref>
+            <methodref name="RequestAlign" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Resize" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="ScaleConstraints" visibility="protected">
+            </methodref>
+            <methodref name="ScaleMargins" visibility="protected">
+            </methodref>
+            <methodref name="DefaultScalingFlags" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="SendCancelMode" visibility="protected">
+            </methodref>
+            <methodref name="SendDockNotification" visibility="protected">
+            </methodref>
+            <methodref name="SetAutoSize" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="SetDragMode" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="SetEnabled" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="SetName" visibility="protected" procflags="override">
+            </methodref>
+            <methodref name="SetParent" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="SetParentBiDiMode" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="SetBiDiMode" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetStyleElements" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="SetStyleElements" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="SetStyleName" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="SetZOrder" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="SetCustomHint" visibility="protected">
+            </methodref>
+            <methodref name="UpdateExplicitBounds" visibility="protected">
+            </methodref>
+            <methodref name="UpdateBoundsRect" visibility="protected">
+            </methodref>
+            <methodref name="VisibleChanging" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="WndProc" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="UpdateStyleElements" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="DesignWndProc" visibility="protected" procflags="dynamic">
+            </methodref>
+            <methodref name="GetDragImages" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="GetAllocatedWindowHandle" visibility="protected" procflags="virtual">
+            </methodref>
+            <propertyref name="ActionLink" visibility="protected">
+            </propertyref>
+            <propertyref name="AutoSize" visibility="protected">
+            </propertyref>
+            <propertyref name="Caption" visibility="protected">
+            </propertyref>
+            <propertyref name="DesktopFont" visibility="protected">
+            </propertyref>
+            <propertyref name="DragKind" visibility="protected">
+            </propertyref>
+            <propertyref name="DragCursor" visibility="protected">
+            </propertyref>
+            <propertyref name="DragMode" visibility="protected">
+            </propertyref>
+            <propertyref name="IsControl" visibility="protected">
+            </propertyref>
+            <propertyref name="MouseCapture" visibility="protected">
+            </propertyref>
+            <propertyref name="ParentBiDiMode" visibility="protected">
+            </propertyref>
+            <propertyref name="ParentColor" visibility="protected">
+            </propertyref>
+            <propertyref name="ParentFont" visibility="protected">
+            </propertyref>
+            <propertyref name="ParentShowHint" visibility="protected">
+            </propertyref>
+            <propertyref name="PopupMenu" visibility="protected">
+            </propertyref>
+            <propertyref name="ScalingFlags" visibility="protected">
+            </propertyref>
+            <propertyref name="Text" visibility="protected">
+            </propertyref>
+            <propertyref name="WheelAccumulator" visibility="protected">
+            </propertyref>
+            <propertyref name="Color" visibility="protected">
+            </propertyref>
+            <propertyref name="Font" visibility="protected">
+            </propertyref>
+            <propertyref name="IScaling" visibility="protected">
+            </propertyref>
+            <propertyref name="WindowText" visibility="protected">
+            </propertyref>
+            <eventref name="OnCanResize" visibility="protected">
+            </eventref>
+            <eventref name="OnClick" visibility="protected">
+            </eventref>
+            <eventref name="OnConstrainedResize" visibility="protected">
+            </eventref>
+            <eventref name="OnContextPopup" visibility="protected">
+            </eventref>
+            <eventref name="OnDblClick" visibility="protected">
+            </eventref>
+            <eventref name="OnDragDrop" visibility="protected">
+            </eventref>
+            <eventref name="OnDragOver" visibility="protected">
+            </eventref>
+            <eventref name="OnEndDock" visibility="protected">
+            </eventref>
+            <eventref name="OnEndDrag" visibility="protected">
+            </eventref>
+            <eventref name="OnMouseActivate" visibility="protected">
+            </eventref>
+            <eventref name="OnMouseDown" visibility="protected">
+            </eventref>
+            <eventref name="OnMouseEnter" visibility="protected">
+            </eventref>
+            <eventref name="OnMouseLeave" visibility="protected">
+            </eventref>
+            <eventref name="OnMouseMove" visibility="protected">
+            </eventref>
+            <eventref name="OnMouseUp" visibility="protected">
+            </eventref>
+            <eventref name="OnMouseWheel" visibility="protected">
+            </eventref>
+            <eventref name="OnMouseWheelDown" visibility="protected">
+            </eventref>
+            <eventref name="OnMouseWheelUp" visibility="protected">
+            </eventref>
+            <eventref name="OnResize" visibility="protected">
+            </eventref>
+            <eventref name="OnStartDock" visibility="protected">
+            </eventref>
+            <eventref name="OnStartDrag" visibility="protected">
+            </eventref>
+            <methodref name="Create" visibility="public" procflags="constructor override">
+            </methodref>
+            <methodref name="Destroy" visibility="public" procflags="destructor override">
+            </methodref>
+            <methodref name="CheckNonMainThreadUsage" visibility="public">
+            </methodref>
+            <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="IsLightStyleColor" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ScaleForPPI" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="BeginDrag" visibility="public">
+            </methodref>
+            <methodref name="BringToFront" visibility="public">
+            </methodref>
+            <methodref name="ClientToScreen" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="ClientToScreen" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="ClientToParent" visibility="public">
+            </methodref>
+            <methodref name="Dock" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="Dragging" visibility="public">
+            </methodref>
+            <methodref name="DragDrop" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="DrawTextBiDiModeFlags" visibility="public">
+            </methodref>
+            <methodref name="DrawTextBiDiModeFlagsReadingOnly" visibility="public">
+            </methodref>
+            <propertyref name="Enabled" visibility="public">
+            </propertyref>
+            <methodref name="EndDrag" visibility="public">
+            </methodref>
+            <methodref name="GetControlsAlignment" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="GetParentComponent" visibility="public" procflags="override">
+            </methodref>
+            <methodref name="HasParent" visibility="public" procflags="override">
+            </methodref>
+            <methodref name="Hide" visibility="public">
+            </methodref>
+            <methodref name="InitiateAction" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="Invalidate" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="MouseWheelHandler" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="IsRightToLeft" visibility="public">
+            </methodref>
+            <methodref name="ManualDock" visibility="public">
+            </methodref>
+            <methodref name="ManualFloat" visibility="public">
+            </methodref>
+            <methodref name="Perform" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="Refresh" visibility="public">
+            </methodref>
+            <methodref name="Repaint" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="ReplaceDockedControl" visibility="public">
+            </methodref>
+            <methodref name="ScreenToClient" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="ScreenToClient" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="ParentToClient" visibility="public">
+            </methodref>
+            <methodref name="SendToBack" visibility="public">
+            </methodref>
+            <methodref name="SetBounds" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="SetDesignVisible" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="SetParentComponent" visibility="public" procflags="override">
+            </methodref>
+            <methodref name="Show" visibility="public">
+            </methodref>
+            <methodref name="Update" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="UseRightToLeftAlignment" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="UseRightToLeftReading" visibility="public">
+            </methodref>
+            <methodref name="UseRightToLeftScrollBar" visibility="public">
+            </methodref>
+            <methodref name="DefaultHandler" visibility="public" procflags="override">
+            </methodref>
+            <methodref name="GetTextBuf" visibility="public">
+            </methodref>
+            <methodref name="GetTextLen" visibility="public">
+            </methodref>
+            <methodref name="Perform" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="Perform" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="SetTextBuf" visibility="public">
+            </methodref>
+            <methodref name="GetSystemMetrics" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetStyleName" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="GetInternalStyleElements" visibility="public">
+            </methodref>
+            <methodref name="ScaleValue" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="ScaleValue" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="ScaleValue" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="ScaleValue" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="ScaleValue" visibility="public" procflags="overload">
+            </methodref>
+            <methodref name="ScaleRectSize" visibility="public">
+            </methodref>
+            <propertyref name="Action" visibility="public">
+            </propertyref>
+            <propertyref name="Align" visibility="public">
+            </propertyref>
+            <propertyref name="Anchors" visibility="public">
+            </propertyref>
+            <propertyref name="BiDiMode" visibility="public">
+            </propertyref>
+            <propertyref name="BoundsRect" visibility="public">
+            </propertyref>
+            <propertyref name="ClientHeight" visibility="public">
+            </propertyref>
+            <propertyref name="ClientOrigin" visibility="public">
+            </propertyref>
+            <propertyref name="ClientRect" visibility="public">
+            </propertyref>
+            <propertyref name="ClientWidth" visibility="public">
+            </propertyref>
+            <propertyref name="Constraints" visibility="public">
+            </propertyref>
+            <propertyref name="ControlState" visibility="public">
+            </propertyref>
+            <propertyref name="ControlStyle" visibility="public">
+            </propertyref>
+            <propertyref name="CurrentPPI" visibility="public">
+            </propertyref>
+            <propertyref name="DockOrientation" visibility="public">
+            </propertyref>
+            <propertyref name="ExplicitLeft" visibility="public">
+            </propertyref>
+            <propertyref name="ExplicitTop" visibility="public">
+            </propertyref>
+            <propertyref name="ExplicitWidth" visibility="public">
+            </propertyref>
+            <propertyref name="ExplicitHeight" visibility="public">
+            </propertyref>
+            <propertyref name="Floating" visibility="public">
+            </propertyref>
+            <propertyref name="FloatingDockSiteClass" visibility="public">
+            </propertyref>
+            <propertyref name="HostDockSite" visibility="public">
+            </propertyref>
+            <propertyref name="LRDockWidth" visibility="public">
+            </propertyref>
+            <propertyref name="ScaleFactor" visibility="public">
+            </propertyref>
+            <propertyref name="ShowHint" visibility="public">
+            </propertyref>
+            <propertyref name="TBDockHeight" visibility="public">
+            </propertyref>
+            <propertyref name="Touch" visibility="public">
+            </propertyref>
+            <propertyref name="UndockHeight" visibility="public">
+            </propertyref>
+            <propertyref name="UndockWidth" visibility="public">
+            </propertyref>
+            <propertyref name="Visible" visibility="public">
+            </propertyref>
+            <eventref name="WindowProc" visibility="public">
+            </eventref>
+            <propertyref name="Parent" visibility="public">
+            </propertyref>
+            <propertyref name="StyleElements" visibility="public">
+            </propertyref>
+            <propertyref name="StyleName" visibility="public">
+            </propertyref>
+            <eventref name="OnGesture" visibility="public">
+            </eventref>
+            <propertyref name="RaiseOnNonMainThreadUsage" visibility="public">
+            </propertyref>
+            <propertyref name="AlignWithMargins" visibility="published">
+            </propertyref>
+            <propertyref name="Left" visibility="published">
+            </propertyref>
+            <propertyref name="Top" visibility="published">
+            </propertyref>
+            <propertyref name="Width" visibility="published">
+            </propertyref>
+            <propertyref name="Height" visibility="published">
+            </propertyref>
+            <propertyref name="Cursor" visibility="published">
+            </propertyref>
+            <propertyref name="Hint" visibility="published">
+            </propertyref>
+            <propertyref name="HelpType" visibility="published">
+            </propertyref>
+            <propertyref name="HelpKeyword" visibility="published">
+            </propertyref>
+            <propertyref name="HelpContext" visibility="published">
+            </propertyref>
+            <propertyref name="Margins" visibility="published">
+            </propertyref>
+            <propertyref name="CustomHint" visibility="published">
+            </propertyref>
+            <propertyref name="ParentCustomHint" visibility="published">
+            </propertyref>
+            <ancestor name="TComponent" namespace="System.Classes">
+              <interfaces>
+                <implements name="IInterfaceComponentReference" />
+                <implements name="IInterface" />
+              </interfaces>
+              <methodref name="GetComObject" visibility="private">
+              </methodref>
+              <methodref name="GetComponent" visibility="private">
+              </methodref>
+              <methodref name="GetComponentCount" visibility="private">
+              </methodref>
+              <methodref name="GetComponentIndex" visibility="private">
+              </methodref>
+              <methodref name="Insert" visibility="private">
+              </methodref>
+              <methodref name="ReadLeft" visibility="private">
+              </methodref>
+              <methodref name="ReadTop" visibility="private">
+              </methodref>
+              <methodref name="Remove" visibility="private">
+              </methodref>
+              <methodref name="RemoveNotification" visibility="private">
+              </methodref>
+              <methodref name="SetComponentIndex" visibility="private">
+              </methodref>
+              <methodref name="SetReference" visibility="private">
+              </methodref>
+              <methodref name="WriteLeft" visibility="private">
+              </methodref>
+              <methodref name="WriteTop" visibility="private">
+              </methodref>
+              <methodref name="IntfGetComponent" visibility="private">
+              </methodref>
+              <methodref name="DoGetDeltaStreams" visibility="private">
+              </methodref>
+              <methodref name="ReadDeltaStream" visibility="private">
+              </methodref>
+              <methodref name="ReadDeltaState" visibility="private">
+              </methodref>
+              <methodref name="FindSortedComponent" visibility="private">
+              </methodref>
+              <methodref name="AddSortedComponent" visibility="private">
+              </methodref>
+              <methodref name="RemoveSortedComponent" visibility="private" procflags="inline">
+              </methodref>
+              <methodref name="Create@" visibility="class private" procflags="class constructor noself">
+              </methodref>
+              <methodref name="AsyncSchedule" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="ChangeName" visibility="protected">
+              </methodref>
+              <methodref name="DefineProperties" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="GetChildren" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetChildOwner" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetChildParent" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="GetOwner" visibility="protected" procflags="override">
+              </methodref>
+              <methodref name="Loaded" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="Notification" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetDeltaStreams" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="ReadState" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="CanObserve" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="ObserverAdded" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="GetObservers" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetAncestor" visibility="protected">
+              </methodref>
+              <methodref name="SetDesigning" visibility="protected">
+              </methodref>
+              <methodref name="SetInline" visibility="protected">
+              </methodref>
+              <methodref name="SetDesignInstance" visibility="protected">
+              </methodref>
+              <methodref name="SetName" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="SetChildOrder" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="SetParentComponent" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="Updating" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="Updated" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="UpdateRegistry" visibility="protected" procflags="class virtual">
+              </methodref>
+              <methodref name="ValidateRename" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="ValidateContainer" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="ValidateInsert" visibility="protected" procflags="dynamic">
+              </methodref>
+              <methodref name="WriteState" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="RemoveFreeNotifications" visibility="protected">
+              </methodref>
+              <methodref name="QueryInterface" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="_AddRef" visibility="protected">
+              </methodref>
+              <methodref name="_Release" visibility="protected">
+              </methodref>
+              <methodref name="GetTypeInfoCount" visibility="protected">
+              </methodref>
+              <methodref name="GetTypeInfo" visibility="protected">
+              </methodref>
+              <methodref name="GetIDsOfNames" visibility="protected">
+              </methodref>
+              <methodref name="Invoke" visibility="protected">
+              </methodref>
+              <eventref name="OnGetDeltaStreams" visibility="protected">
+              </eventref>
+              <methodref name="Create" visibility="public" procflags="constructor virtual">
+              </methodref>
+              <methodref name="Destroy" visibility="public" procflags="destructor override">
+              </methodref>
+              <methodref name="BeforeDestruction" visibility="public" procflags="override">
+              </methodref>
+              <methodref name="BeginInvoke" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="BeginInvoke" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="BeginInvoke" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="BeginInvoke" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="BeginInvoke" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="BeginInvoke" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="BeginInvoke" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="BeginInvoke" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="EndInvoke" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="EndInvoke" visibility="public" procflags="overload">
+              </methodref>
+              <methodref name="EndFunctionInvoke" visibility="public">
+              </methodref>
+              <methodref name="DestroyComponents" visibility="public">
+              </methodref>
+              <methodref name="Destroying" visibility="public">
+              </methodref>
+              <methodref name="ExecuteAction" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="FindComponent" visibility="public">
+              </methodref>
+              <methodref name="FreeNotification" visibility="public">
+              </methodref>
+              <methodref name="RemoveFreeNotification" visibility="public">
+              </methodref>
+              <methodref name="FreeOnRelease" visibility="public">
+              </methodref>
+              <methodref name="GetEnumerator" visibility="public" procflags="inline">
+              </methodref>
+              <methodref name="GetParentComponent" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="GetNamePath" visibility="public" procflags="override">
+              </methodref>
+              <methodref name="HasParent" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="InsertComponent" visibility="public">
+              </methodref>
+              <methodref name="RemoveComponent" visibility="public">
+              </methodref>
+              <methodref name="SetSubComponent" visibility="public">
+              </methodref>
+              <methodref name="SafeCallException" visibility="public" procflags="override">
+              </methodref>
+              <methodref name="UpdateAction" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="IsImplementorOf" visibility="public">
+              </methodref>
+              <methodref name="ReferenceInterface" visibility="public">
+              </methodref>
+              <propertyref name="ComObject" visibility="public">
+              </propertyref>
+              <propertyref name="Components" visibility="public">
+              </propertyref>
+              <propertyref name="ComponentCount" visibility="public">
+              </propertyref>
+              <propertyref name="ComponentIndex" visibility="public">
+              </propertyref>
+              <propertyref name="ComponentState" visibility="public">
+              </propertyref>
+              <propertyref name="ComponentStyle" visibility="public">
+              </propertyref>
+              <propertyref name="DesignInfo" visibility="public">
+              </propertyref>
+              <propertyref name="Owner" visibility="public">
+              </propertyref>
+              <propertyref name="VCLComObject" visibility="public">
+              </propertyref>
+              <propertyref name="Observers" visibility="public">
+              </propertyref>
+              <propertyref name="Name" visibility="published">
+              </propertyref>
+              <propertyref name="Tag" visibility="published">
+              </propertyref>
+              <ancestor name="TPersistent" namespace="System.Classes">
+                <methodref name="AssignError" visibility="private">
+                </methodref>
+                <methodref name="AssignTo" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="DefineProperties" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="GetOwner" visibility="protected" procflags="dynamic">
+                </methodref>
+                <methodref name="Destroy" visibility="public" procflags="destructor override">
+                </methodref>
+                <methodref name="Assign" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="GetNamePath" visibility="public" procflags="dynamic">
+                </methodref>
+                <ancestor name="TObject" namespace="System">
+                  <methodref name="Create" visibility="public" procflags="constructor">
+                  </methodref>
+                  <methodref name="Free" visibility="public">
+                  </methodref>
+                  <methodref name="DisposeOf" visibility="public" procflags="inline" symflags="deprecated">
+                  </methodref>
+                  <methodref name="InitInstance" visibility="public" procflags="class">
+                  </methodref>
+                  <methodref name="CleanupInstance" visibility="public">
+                  </methodref>
+                  <methodref name="ClassType" visibility="public" procflags="inline">
+                  </methodref>
+                  <methodref name="ClassName" visibility="public" procflags="class">
+                  </methodref>
+                  <methodref name="ClassNameIs" visibility="public" procflags="class">
+                  </methodref>
+                  <methodref name="ClassParent" visibility="public" procflags="class inline">
+                  </methodref>
+                  <methodref name="ClassInfo" visibility="public" procflags="class inline">
+                  </methodref>
+                  <methodref name="InstanceSize" visibility="public" procflags="class inline">
+                  </methodref>
+                  <methodref name="InheritsFrom" visibility="public" procflags="class">
+                  </methodref>
+                  <methodref name="MethodAddress" visibility="public" procflags="class overload">
+                  </methodref>
+                  <methodref name="MethodAddress" visibility="public" procflags="class overload">
+                  </methodref>
+                  <methodref name="MethodName" visibility="public" procflags="class">
+                  </methodref>
+                  <methodref name="QualifiedClassName" visibility="public" procflags="class">
+                  </methodref>
+                  <methodref name="FieldAddress" visibility="public" procflags="overload">
+                  </methodref>
+                  <methodref name="FieldAddress" visibility="public" procflags="overload">
+                  </methodref>
+                  <methodref name="GetInterface" visibility="public">
+                  </methodref>
+                  <methodref name="GetInterfaceEntry" visibility="public" procflags="class">
+                  </methodref>
+                  <methodref name="GetInterfaceTable" visibility="public" procflags="class inline">
+                  </methodref>
+                  <methodref name="UnitName" visibility="public" procflags="class">
+                  </methodref>
+                  <methodref name="UnitScope" visibility="public" procflags="class">
+                  </methodref>
+                  <methodref name="Equals" visibility="public" procflags="virtual">
+                  </methodref>
+                  <methodref name="GetHashCode" visibility="public" procflags="virtual">
+                  </methodref>
+                  <methodref name="ToString" visibility="public" procflags="virtual">
+                  </methodref>
+                  <methodref name="SafeCallException" visibility="public" procflags="virtual">
+                  </methodref>
+                  <methodref name="AfterConstruction" visibility="public" procflags="virtual">
+                  </methodref>
+                  <methodref name="BeforeDestruction" visibility="public" procflags="virtual">
+                  </methodref>
+                  <methodref name="Dispatch" visibility="public" procflags="virtual">
+                  </methodref>
+                  <methodref name="DefaultHandler" visibility="public" procflags="virtual">
+                  </methodref>
+                  <methodref name="NewInstance" visibility="public" procflags="class virtual">
+                  </methodref>
+                  <methodref name="FreeInstance" visibility="public" procflags="virtual">
+                  </methodref>
+                  <methodref name="Destroy" visibility="public" procflags="destructor virtual">
+                  </methodref>
+                  <methodref name="GetDisposed" visibility="protected" procflags="inline">
+                  </methodref>
+                  <methodref name="CheckDisposed" visibility="protected" procflags="inline">
+                  </methodref>
+                  <propertyref name="Disposed" visibility="protected">
+                  </propertyref>
+                </ancestor>
+              </ancestor>
+            </ancestor>
+          </ancestor>
+        </ancestor>
+      </ancestor>
+    </ancestor>
+    <members>
+      <field name="DateHarvestWasSet" type="Boolean" visibility="private" size="1" offset="936" file="OSRGrowth.pas" line="51" />
+      <field name="StateVar" type="TState" visibility="private" size="4" offset="940" file="OSRGrowth.pas" line="52" />
+      <field name="avs_day" type="Integer" visibility="private" size="4" offset="944" file="OSRGrowth.pas" line="53" />
+      <field name="Par_arr" visibility="private" size="80" offset="952" file="OSRGrowth.pas" line="54">
+        <array name="Par_arr" visibility="private" low="1" high="10" file="OSRGrowth.pas" line="54">
+          <element type="Double" />
+        </array>
+      </field>
+      <procedure name="CalcTempSums" visibility="private" file="OSRGrowth.pas" line="55">
+      </procedure>
+      <procedure name="InitAfterEmergence" visibility="private" file="OSRGrowth.pas" line="56">
+      </procedure>
+      <procedure name="CalcRadiationUptake" visibility="private" file="OSRGrowth.pas" line="57">
+      </procedure>
+      <procedure name="CalcLUE" visibility="private" file="OSRGrowth.pas" line="58">
+      </procedure>
+      <procedure name="CalcRootFraction" visibility="private" file="OSRGrowth.pas" line="59">
+      </procedure>
+      <procedure name="CalcShootRootGrowth" visibility="private" file="OSRGrowth.pas" line="60">
+      </procedure>
+      <procedure name="CalcMaintainableLAI" visibility="private" file="OSRGrowth.pas" line="61">
+        <parameters>
+          <parameter name="LAIm_ave" type="Double" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="CalculateOrganNuptakerates" visibility="private" file="OSRGrowth.pas" line="62">
+      </procedure>
+      <procedure name="CalculateNTranslocation" visibility="private" file="OSRGrowth.pas" line="63">
+      </procedure>
+      <procedure name="CalculateNDemandNDeficiency" visibility="private" file="OSRGrowth.pas" line="64">
+      </procedure>
+      <procedure name="CalculateIntermediateVariables" visibility="private" file="OSRGrowth.pas" line="65">
+      </procedure>
+      <procedure name="CalcConversionLosses" visibility="private" file="OSRGrowth.pas" line="66">
+      </procedure>
+      <procedure name="CalcDMLossFrostShading" visibility="private" file="OSRGrowth.pas" line="67">
+      </procedure>
+      <field name="fDevelopmentModel" type="TDevelopmentOSR" visibility="protected" size="4" offset="1032" file="OSRGrowth.pas" line="70" />
+      <field name="fSnowModel" type="TSnowPack" visibility="protected" size="4" offset="1036" file="OSRGrowth.pas" line="71" />
+      <procedure name="setDevelopmentModel" visibility="protected" file="OSRGrowth.pas" line="72">
+        <parameters>
+          <parameter name="AModel" type="TDevelopmentOSR" />
+        </parameters>
+      </procedure>
+      <function name="GetLAI" visibility="protected" procflags="override" file="OSRGrowth.pas" line="73">
+        <parameters>
+          <retval type="THumeNumEntity">
+            <devnotes>
+               <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+               <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
+            </devnotes>
+          </retval>
+        </parameters>
+      </function>
+      <function name="GetCropHeight" visibility="protected" procflags="override" file="OSRGrowth.pas" line="75">
+        <parameters>
+          <retval type="THumeNumEntity">
+            <devnotes>
+               <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+               <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
+            </devnotes>
+          </retval>
+        </parameters>
+      </function>
+      <function name="GetNUptakeRate" visibility="protected" procflags="override" file="OSRGrowth.pas" line="77">
+        <parameters>
+          <retval type="THumeNumEntity">
+            <devnotes>
+               <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+               <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
+            </devnotes>
+          </retval>
+        </parameters>
+      </function>
+      <procedure name="setNextCrop" visibility="protected" procflags="override" file="OSRGrowth.pas" line="79">
+        <parameters>
+          <parameter name="NextCrop" type="TAbstractPlant" />
+        </parameters>
+      </procedure>
+      <function name="GetWLD" visibility="protected" procflags="override" file="OSRGrowth.pas" line="80">
+        <parameters>
+          <parameter name="Index" type="Integer" />
+          <retval type="THumeNumEntity">
+            <devnotes>
+               <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+               <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
+            </devnotes>
+          </retval>
+        </parameters>
+      </function>
+      <function name="GetSumRootLength" visibility="protected" procflags="override" file="OSRGrowth.pas" line="81">
+        <parameters>
+          <retval type="THumeNumEntity">
+            <devnotes>
+               <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+               <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
+            </devnotes>
+          </retval>
+        </parameters>
+      </function>
+      <function name="GetSumRootLength_eff" visibility="protected" procflags="override" file="OSRGrowth.pas" line="82">
+        <parameters>
+          <retval type="THumeNumEntity">
+            <devnotes>
+               <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+               <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
+            </devnotes>
+          </retval>
+        </parameters>
+      </function>
+      <function name="getExtCoeffPAR" visibility="protected" procflags="override" file="OSRGrowth.pas" line="84">
+        <parameters>
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <field name="PARRad" type="TVar" visibility="public" size="4" offset="1040" file="OSRGrowth.pas" line="90">
+        <devnotes>
+           <summary>Photosynthetically active radiation [W/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="fT" type="TVar" visibility="public" size="4" offset="1044" file="OSRGrowth.pas" line="92">
+        <devnotes>
+           <summary>Photosynthesis response factor derived from temperature</summary>
+        </devnotes>
+      </field>
+      <field name="Q" type="TVar" visibility="public" size="4" offset="1048" file="OSRGrowth.pas" line="94">
+        <devnotes>
+           <summary>Absorbed radiation [MJ]</summary>
+        </devnotes>
+      </field>
+      <field name="QLeaf" type="TVar" visibility="public" size="4" offset="1052" file="OSRGrowth.pas" line="96">
+        <devnotes>
+           <summary>Radiation absorbed by leaves</summary>
+        </devnotes>
+      </field>
+      <field name="QGen" type="TVar" visibility="public" size="4" offset="1056" file="OSRGrowth.pas" line="98">
+        <devnotes>
+           <summary>Radiation absorbed by pods</summary>
+        </devnotes>
+      </field>
+      <field name="Transkoeff" type="TVar" visibility="public" size="4" offset="1060" file="OSRGrowth.pas" line="100">
+        <devnotes>
+           <summary>Transmission coefficient during pod development</summary>
+        </devnotes>
+      </field>
+      <field name="fInt" type="TVar" visibility="public" size="4" offset="1064" file="OSRGrowth.pas" line="102">
+        <devnotes>
+           <summary>Fraction of absorbed radiation []</summary>
+        </devnotes>
+      </field>
+      <field name="fIntLeaf" type="TVar" visibility="public" size="4" offset="1068" file="OSRGrowth.pas" line="104">
+        <devnotes>
+           <summary>Fraction of radiation absorbed by leaves</summary>
+        </devnotes>
+      </field>
+      <field name="fIntGen" type="TVar" visibility="public" size="4" offset="1072" file="OSRGrowth.pas" line="106">
+        <devnotes>
+           <summary>Fraction of radiation absorbed by pods</summary>
+        </devnotes>
+      </field>
+      <field name="Teff" type="TVar" visibility="public" size="4" offset="1076" file="OSRGrowth.pas" line="108">
+        <devnotes>
+           <summary>Temperature minus base temperature [°C]</summary>
+        </devnotes>
+      </field>
+      <field name="fRoot" type="TVar" visibility="public" size="4" offset="1080" file="OSRGrowth.pas" line="110">
+        <devnotes>
+           <summary>Root growth fraction []</summary>
+        </devnotes>
+      </field>
+      <field name="maxfRoot" type="TVar" visibility="public" size="4" offset="1084" file="OSRGrowth.pas" line="112">
+        <devnotes>
+           <summary>Maximum root growth fraction</summary>
+        </devnotes>
+      </field>
+      <field name="fBl" type="TVar" visibility="public" size="4" offset="1088" file="OSRGrowth.pas" line="114">
+        <devnotes>
+           <summary>Leaf growth fraction</summary>
+        </devnotes>
+      </field>
+      <field name="fBl_EC51" type="TVar" visibility="public" size="4" offset="1092" file="OSRGrowth.pas" line="116">
+        <devnotes>
+           <summary>Leaf growth fraction at BBCH 51</summary>
+        </devnotes>
+      </field>
+      <field name="fSt" type="TVar" visibility="public" size="4" offset="1096" file="OSRGrowth.pas" line="118">
+        <devnotes>
+           <summary>Stem growth fraction</summary>
+        </devnotes>
+      </field>
+      <field name="fGen" type="TVar" visibility="public" size="4" offset="1100" file="OSRGrowth.pas" line="120">
+        <devnotes>
+           <summary>Pod growth fraction</summary>
+        </devnotes>
+      </field>
+      <field name="fPW" type="TVar" visibility="public" size="4" offset="1104" file="OSRGrowth.pas" line="122">
+        <devnotes>
+           <summary>Pod-wall fraction of total generative growth</summary>
+        </devnotes>
+      </field>
+      <field name="fSeedGen" type="TVar" visibility="public" size="4" offset="1108" file="OSRGrowth.pas" line="124">
+        <devnotes>
+           <summary>Seed growth fraction within the pod</summary>
+        </devnotes>
+      </field>
+      <field name="fSeedStarch" type="TVar" visibility="public" size="4" offset="1112" file="OSRGrowth.pas" line="126">
+        <devnotes>
+           <summary> Seed starch fraction of total seed growth</summary>
+        </devnotes>
+      </field>
+      <field name="fSeedOil" type="TVar" visibility="public" size="4" offset="1116" file="OSRGrowth.pas" line="128">
+        <devnotes>
+           <summary>Seed oil fraction of total seed growth</summary>
+        </devnotes>
+      </field>
+      <field name="fSum" type="TVar" visibility="public" size="4" offset="1120" file="OSRGrowth.pas" line="129" />
+      <field name="fNNILeaf" type="TVar" visibility="public" size="4" offset="1124" file="OSRGrowth.pas" line="132">
+        <devnotes>
+           <summary>fraction of NNI related to leaves</summary>
+        </devnotes>
+      </field>
+      <field name="fNNIStem" type="TVar" visibility="public" size="4" offset="1128" file="OSRGrowth.pas" line="135">
+        <devnotes>
+           <summary>fraction of NNI related to stems</summary>
+        </devnotes>
+      </field>
+      <field name="fNNIGen" type="TVar" visibility="public" size="4" offset="1132" file="OSRGrowth.pas" line="138">
+        <devnotes>
+           <summary>fraction of NNI related to generative organs</summary>
+        </devnotes>
+      </field>
+      <field name="fNNIRoot" type="TVar" visibility="public" size="4" offset="1136" file="OSRGrowth.pas" line="141">
+        <devnotes>
+           <summary>fraction of NNI related to roots</summary>
+        </devnotes>
+      </field>
+      <field name="Tminus" type="TVar" visibility="public" size="4" offset="1140" file="OSRGrowth.pas" line="143">
+        <devnotes>
+           <summary>Temperature below zero [°C]</summary>
+        </devnotes>
+      </field>
+      <field name="NcLeaf" type="TVar" visibility="public" size="4" offset="1144" file="OSRGrowth.pas" line="145">
+        <devnotes>
+           <summary>Leaf N concentration [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcLeaf_VA" type="TVar" visibility="public" size="4" offset="1148" file="OSRGrowth.pas" line="147">
+        <devnotes>
+           <summary>Leaf N concentration at the beginning of the growing season [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcStem" type="TVar" visibility="public" size="4" offset="1152" file="OSRGrowth.pas" line="150">
+        <devnotes>
+           <summary>Stem N concentration [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcStem_VA" type="TVar" visibility="public" size="4" offset="1156" file="OSRGrowth.pas" line="152">
+        <devnotes>
+           <summary>Stem N concentration at the beginning of the growing season [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcStem_EC70" type="TVar" visibility="public" size="4" offset="1160" file="OSRGrowth.pas" line="154">
+        <devnotes>
+           <summary>Stem N concentration at BBCH 70 [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcGen" type="TVar" visibility="public" size="4" offset="1164" file="OSRGrowth.pas" line="156">
+        <devnotes>
+           <summary>Generative-organ N concentration [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcRoot" type="TVar" visibility="public" size="4" offset="1168" file="OSRGrowth.pas" line="158">
+        <devnotes>
+           <summary>Root N concentration [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcRoot_EC70" type="TVar" visibility="public" size="4" offset="1172" file="OSRGrowth.pas" line="160">
+        <devnotes>
+           <summary>Root N concentration at BBCH 70 [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcLeaf_EC70" type="TVar" visibility="public" size="4" offset="1176" file="OSRGrowth.pas" line="162">
+        <devnotes>
+           <summary>Leaf N concentration at BBCH 70 [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NUptakeRate_pot" type="TVar" visibility="public" size="4" offset="1180" file="OSRGrowth.pas" line="164">
+        <devnotes>
+           <summary>Potential N uptake rate g/m²*d</summary>
+        </devnotes>
+      </field>
+      <field name="NNI" type="TVar" visibility="public" size="4" offset="1184" file="OSRGrowth.pas" line="166">
+        <devnotes>
+           <summary>Nitrogen Nutrition Index</summary>
+        </devnotes>
+      </field>
+      <field name="CropHeight" type="TVar" visibility="public" size="4" offset="1188" file="OSRGrowth.pas" line="168">
+        <devnotes>
+           <summary>Crop height</summary>
+        </devnotes>
+      </field>
+      <field name="LAILeaf_EC70" type="TVar" visibility="public" size="4" offset="1192" file="OSRGrowth.pas" line="170">
+        <devnotes>
+           <summary>LAI at BBCH 70</summary>
+        </devnotes>
+      </field>
+      <field name="actSLA" type="TVar" visibility="public" size="4" offset="1196" file="OSRGrowth.pas" line="172">
+        <devnotes>
+           <summary>Specific leaf area [cm²/g]</summary>
+        </devnotes>
+      </field>
+      <field name="avSLA" type="TVar" visibility="public" size="4" offset="1200" file="OSRGrowth.pas" line="173" />
+      <field name="actSPA" type="TVar" visibility="public" size="4" offset="1204" file="OSRGrowth.pas" line="175">
+        <devnotes>
+           <summary>Specific pod area [cm²/g]</summary>
+        </devnotes>
+      </field>
+      <field name="avSPA" type="TVar" visibility="public" size="4" offset="1208" file="OSRGrowth.pas" line="178">
+        <devnotes>
+           <summary>Average specific pod area [cm²/g]</summary>
+        </devnotes>
+      </field>
+      <field name="LUE" type="TVar" visibility="public" size="4" offset="1212" file="OSRGrowth.pas" line="180">
+        <devnotes>
+           <summary>Radiation-use efficiency expressed as dry matter produced per unit of absorbed radiation [g/MJ]</summary>
+        </devnotes>
+      </field>
+      <field name="LUEGen" type="TVar" visibility="public" size="4" offset="1216" file="OSRGrowth.pas" line="182">
+        <devnotes>
+           <summary>Radiation-use efficiency of pods</summary>
+        </devnotes>
+      </field>
+      <field name="CO2_factor" type="TVar" visibility="public" size="4" offset="1220" file="OSRGrowth.pas" line="184">
+        <devnotes>
+           <summary>Factor used to adjust LUE for CO2 effects</summary>
+        </devnotes>
+      </field>
+      <field name="g" type="TVar" visibility="public" size="4" offset="1224" file="OSRGrowth.pas" line="186">
+        <devnotes>
+           <summary>Slope of the allometric function</summary>
+        </devnotes>
+      </field>
+      <field name="h" type="TVar" visibility="public" size="4" offset="1228" file="OSRGrowth.pas" line="188">
+        <devnotes>
+           <summary>Intercept of the allometric function</summary>
+        </devnotes>
+      </field>
+      <field name="LAIm" type="TVar" visibility="public" size="4" offset="1232" file="OSRGrowth.pas" line="190">
+        <devnotes>
+           <summary>Maximum maintainable LAI at the available radiation [m²/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="fTm" type="TVar" visibility="public" size="4" offset="1236" file="OSRGrowth.pas" line="192">
+        <devnotes>
+           <summary>Temperature factor for maintenance respiration used to calculate PARm</summary>
+        </devnotes>
+      </field>
+      <field name="fTSen" type="TVar" visibility="public" size="4" offset="1240" file="OSRGrowth.pas" line="193" />
+      <field name="fSen_sh" type="TVar" visibility="public" size="4" offset="1244" file="OSRGrowth.pas" line="195">
+        <devnotes>
+           <summary>Shading-senescence factor</summary>
+        </devnotes>
+      </field>
+      <field name="Auflauf" type="TVar" visibility="public" size="4" offset="1248" file="OSRGrowth.pas" line="197">
+        <devnotes>
+           <summary>Simulation time at emergence</summary>
+        </devnotes>
+      </field>
+      <field name="QT" type="TVar" visibility="public" size="4" offset="1252" file="OSRGrowth.pas" line="199">
+        <devnotes>
+           <summary>Temperature-corrected absorbed radiation [MJ]</summary>
+        </devnotes>
+      </field>
+      <field name="act_k" type="TVar" visibility="public" size="4" offset="1256" file="OSRGrowth.pas" line="201">
+        <devnotes>
+           <summary>PAR extinction coefficient: exk or a variable value when LAI is below LAIcrit_exk</summary>
+        </devnotes>
+      </field>
+      <field name="act_k_Leaf" type="TVar" visibility="public" size="4" offset="1260" file="OSRGrowth.pas" line="203">
+        <devnotes>
+           <summary>Leaf extinction coefficient</summary>
+        </devnotes>
+      </field>
+      <field name="act_k_Gen" type="TVar" visibility="public" size="4" offset="1264" file="OSRGrowth.pas" line="205">
+        <devnotes>
+           <summary>Pod extinction coefficient</summary>
+        </devnotes>
+      </field>
+      <field name="DummyVar" type="TVar" visibility="public" size="4" offset="1268" file="OSRGrowth.pas" line="206" />
+      <field name="EC_act" type="TVar" visibility="public" size="4" offset="1272" file="OSRGrowth.pas" line="208">
+        <devnotes>
+           <summary>BBCH stage at which LAIShoot equals 2.0</summary>
+        </devnotes>
+      </field>
+      <field name="maxGAI" type="TVar" visibility="public" size="4" offset="1276" file="OSRGrowth.pas" line="210">
+        <devnotes>
+           <summary>Maximum GAI</summary>
+        </devnotes>
+      </field>
+      <field name="maxLAIGen" type="TVar" visibility="public" size="4" offset="1280" file="OSRGrowth.pas" line="212">
+        <devnotes>
+           <summary>Maximum PAI</summary>
+        </devnotes>
+      </field>
+      <field name="maxLAIStem" type="TVar" visibility="public" size="4" offset="1284" file="OSRGrowth.pas" line="214">
+        <devnotes>
+           <summary>Maximum SAI</summary>
+        </devnotes>
+      </field>
+      <field name="dNcLeaf" type="TVar" visibility="public" size="4" offset="1288" file="OSRGrowth.pas" line="215" />
+      <field name="dNcStem" type="TVar" visibility="public" size="4" offset="1292" file="OSRGrowth.pas" line="216" />
+      <field name="dNcRoot" type="TVar" visibility="public" size="4" offset="1296" file="OSRGrowth.pas" line="217" />
+      <field name="dNcGen" type="TVar" visibility="public" size="4" offset="1300" file="OSRGrowth.pas" line="218" />
+      <field name="NcritLeaf" type="TVar" visibility="public" size="4" offset="1304" file="OSRGrowth.pas" line="221">
+        <devnotes>
+           <summary>Critical N concentration of leaves [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcLeaf_act" type="TVar" visibility="public" size="4" offset="1308" file="OSRGrowth.pas" line="224">
+        <devnotes>
+           <summary>Actual N concentration of leaves [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcritStem" type="TVar" visibility="public" size="4" offset="1312" file="OSRGrowth.pas" line="226">
+        <devnotes>
+           <summary>Critical N concentration of stems [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcStem_act" type="TVar" visibility="public" size="4" offset="1316" file="OSRGrowth.pas" line="228">
+        <devnotes>
+           <summary>Actual N concentration of stems [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcritGen" type="TVar" visibility="public" size="4" offset="1320" file="OSRGrowth.pas" line="230">
+        <devnotes>
+           <summary>Critical N concentration of generative organs [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcGen_act" type="TVar" visibility="public" size="4" offset="1324" file="OSRGrowth.pas" line="232">
+        <devnotes>
+           <summary>Actual N concentration of generative organs [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcritRoot" type="TVar" visibility="public" size="4" offset="1328" file="OSRGrowth.pas" line="234">
+        <devnotes>
+           <summary>Critical N concentration of roots [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcritRoot_VA" type="TVar" visibility="public" size="4" offset="1332" file="OSRGrowth.pas" line="236">
+        <devnotes>
+           <summary>Critical N concentration of roots at the beginning of the growing season [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcRoot_act" type="TVar" visibility="public" size="4" offset="1336" file="OSRGrowth.pas" line="238">
+        <devnotes>
+           <summary>Actual N concentration of roots [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcRoot_VA" type="TVar" visibility="public" size="4" offset="1340" file="OSRGrowth.pas" line="240">
+        <devnotes>
+           <summary>Actual N concentration of roots at the beginning of the growing season [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcritLeaf_VA" type="TVar" visibility="public" size="4" offset="1344" file="OSRGrowth.pas" line="242">
+        <devnotes>
+           <summary>Critical N concentration of leaves at the beginning of the growing season [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcritStem_VA" type="TVar" visibility="public" size="4" offset="1348" file="OSRGrowth.pas" line="244">
+        <devnotes>
+           <summary>Critical N concentration of stems at the beginning of the growing season [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcritStem_EC70" type="TVar" visibility="public" size="4" offset="1352" file="OSRGrowth.pas" line="247">
+        <devnotes>
+           <summary>Critical N concentration of stems at BBCH 70 [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NcritRoot_EC70" type="TVar" visibility="public" size="4" offset="1356" file="OSRGrowth.pas" line="249">
+        <devnotes>
+           <summary>Critical N concentration of generative organs at BBCH 70 [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="NNILeaf" type="TVar" visibility="public" size="4" offset="1360" file="OSRGrowth.pas" line="252">
+        <devnotes>
+           <summary>Nitrogen Nutrition Index of leaves</summary>
+        </devnotes>
+      </field>
+      <field name="NNIStem" type="TVar" visibility="public" size="4" offset="1364" file="OSRGrowth.pas" line="254">
+        <devnotes>
+           <summary>Nitrogen Nutrition Index of stems</summary>
+        </devnotes>
+      </field>
+      <field name="NNIGen" type="TVar" visibility="public" size="4" offset="1368" file="OSRGrowth.pas" line="256">
+        <devnotes>
+           <summary>Nitrogen Nutrition Index of generative organs</summary>
+        </devnotes>
+      </field>
+      <field name="NNIRoot" type="TVar" visibility="public" size="4" offset="1372" file="OSRGrowth.pas" line="258">
+        <devnotes>
+           <summary>Nitrogen Nutrition Index of roots</summary>  
+        </devnotes>
+      </field>
+      <field name="PARav" type="TVar" visibility="public" size="4" offset="1376" file="OSRGrowth.pas" line="261">
+        <devnotes>
+           <summary>10 day average of incident PAR [W/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="PAI" type="TVar" visibility="public" size="4" offset="1380" file="OSRGrowth.pas" line="263">
+        <devnotes>
+           <summary>Pod area index [m²/m²]</summary> 
+        </devnotes>
+      </field>
+      <field name="SAI" type="TVar" visibility="public" size="4" offset="1384" file="OSRGrowth.pas" line="265">
+        <devnotes>
+           <summary>Stem area index [m²/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="SLAf" type="TVar" visibility="public" size="4" offset="1388" file="OSRGrowth.pas" line="268">
+        <devnotes>
+           <summary>Specific leaf area in spring [cm²/g]</summary>
+        </devnotes>
+      </field>
+      <field name="NDemandGrowth" type="TVar" visibility="public" size="4" offset="1392" file="OSRGrowth.pas" line="270" />
+      <field name="NDemandDeficit" type="TVar" visibility="public" size="4" offset="1396" file="OSRGrowth.pas" line="273">
+        <devnotes>
+           <summary>Total N-demand deficit [gN/m²] </summary>
+        </devnotes>
+      </field>
+      <field name="NDemandDeficitLeaf" type="TVar" visibility="public" size="4" offset="1400" file="OSRGrowth.pas" line="276">
+        <devnotes>
+           <summary>N-demand deficit of leaves [gN/m²] </summary>
+        </devnotes>
+      </field>
+      <field name="NDemandDeficitStem" type="TVar" visibility="public" size="4" offset="1404" file="OSRGrowth.pas" line="279">
+        <devnotes>
+           <summary>N-demand deficit of stems [gN/m²] </summary>
+        </devnotes>
+      </field>
+      <field name="NDemandDeficitRoot" type="TVar" visibility="public" size="4" offset="1408" file="OSRGrowth.pas" line="282">
+        <devnotes>
+           <summary>N-demand deficit of root [gN/m²] </summary>
+        </devnotes>
+      </field>
+      <field name="NDemandDeficitGen" type="TVar" visibility="public" size="4" offset="1412" file="OSRGrowth.pas" line="285">
+        <devnotes>
+           <summary>N-demand deficit of generative organs [gN/m²] </summary>
+        </devnotes>
+      </field>
+      <field name="NSupply" type="TVar" visibility="public" size="4" offset="1416" file="OSRGrowth.pas" line="288">
+        <devnotes>
+           <summary>N-supply from soil [gN/m²/d] </summary>
+        </devnotes>
+      </field>
+      <field name="TKM" type="TVar" visibility="public" size="4" offset="1420" file="OSRGrowth.pas" line="291">
+        <devnotes>
+           <summary>Thousand-seed mass</summary>
+        </devnotes>
+      </field>
+      <field name="Samenanzahl" type="TVar" visibility="public" size="4" offset="1424" file="OSRGrowth.pas" line="293">
+        <devnotes>
+           <summary>Number of seeds per m²</summary>
+        </devnotes>
+      </field>
+      <field name="HI" type="TVar" visibility="public" size="4" offset="1428" file="OSRGrowth.pas" line="295">
+        <devnotes>
+           <summary>Harvest Index</summary>
+        </devnotes>
+      </field>
+      <field name="NHI" type="TVar" visibility="public" size="4" offset="1432" file="OSRGrowth.pas" line="297">
+        <devnotes>
+           <summary>Nitrogen Harvest Index</summary>
+        </devnotes>
+      </field>
+      <field name="NUE" type="TVar" visibility="public" size="4" offset="1436" file="OSRGrowth.pas" line="299">
+        <devnotes>
+           <summary>Nitrogen Use Efficiency</summary>
+        </devnotes>
+      </field>
+      <field name="ConversionLoss" type="TVar" visibility="public" size="4" offset="1440" file="OSRGrowth.pas" line="302">
+        <devnotes>
+           <summary>Conversion loss of assimilates due to conversion to oil </summary>
+        </devnotes>
+      </field>
+      <field name="avs" type="TVar" visibility="public" size="4" offset="1444" file="OSRGrowth.pas" line="304">
+        <devnotes>
+           <summary>Day of year at the beginning of the growing season, derived from temperature</summary>
+        </devnotes>
+      </field>
+      <field name="fW" type="TVar" visibility="public" size="4" offset="1448" file="OSRGrowth.pas" line="307">
+        <devnotes>
+           <summary>Drought-stress response factor (Ferreya 2013)</summary>
+        </devnotes>
+      </field>
+      <field name="N_Def" type="TVar" visibility="public" size="4" offset="1452" file="OSRGrowth.pas" line="310">
+        <devnotes>
+           <summary>N-deficit factor (ratio of N demand to N uptake)</summary>
+        </devnotes>
+      </field>
+      <field name="LAImarray" visibility="public" size="80" offset="1456" file="OSRGrowth.pas" line="312">
+        <array name="LAImarray" visibility="public" low="1" high="10" file="OSRGrowth.pas" line="312">
+          <element type="Double" />
+        </array>
+      </field>
+      <field name="fRootModel" type="TGrowthCurvePlantRoots" visibility="public" size="4" offset="1536" file="OSRGrowth.pas" line="314" />
+      <field name="DMShoot" type="TState" visibility="public" size="4" offset="1540" file="OSRGrowth.pas" line="319">
+        <devnotes>
+           <summary>Shoot dry matter [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMShoot_vW" type="TState" visibility="public" size="4" offset="1544" file="OSRGrowth.pas" line="321">
+        <devnotes>
+           <summary>Shoot dry matter before winter [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMShoot_OF" type="TState" visibility="public" size="4" offset="1548" file="OSRGrowth.pas" line="323">
+        <devnotes>
+           <summary>Shoot dry matter before flowering begins</summary>
+        </devnotes>
+      </field>
+      <field name="DMShoot_nB" type="TState" visibility="public" size="4" offset="1552" file="OSRGrowth.pas" line="325">
+        <devnotes>
+           <summary>Shoot dry-matter accumulation since flowering</summary>
+        </devnotes>
+      </field>
+      <field name="DMShoot_nB_pot" type="TState" visibility="public" size="4" offset="1556" file="OSRGrowth.pas" line="327">
+        <devnotes>
+           <summary>Potential shoot dry-matter accumulation since flowering without drought stress</summary>
+        </devnotes>
+      </field>
+      <field name="DMLeaf" type="TState" visibility="public" size="4" offset="1560" file="OSRGrowth.pas" line="329">
+        <devnotes>
+           <summary>Leaf dry matter [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMStem" type="TState" visibility="public" size="4" offset="1564" file="OSRGrowth.pas" line="331">
+        <devnotes>
+           <summary>Stem dry matter [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMRoot" type="TState" visibility="public" size="4" offset="1568" file="OSRGrowth.pas" line="333">
+        <devnotes>
+           <summary>Root dry matter [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMGen" type="TState" visibility="public" size="4" offset="1572" file="OSRGrowth.pas" line="335">
+        <devnotes>
+           <summary>Generative dry matter [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMPodWall" type="TState" visibility="public" size="4" offset="1576" file="OSRGrowth.pas" line="337">
+        <devnotes>
+           <summary>Pod-wall dry matter [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMSeed" type="TState" visibility="public" size="4" offset="1580" file="OSRGrowth.pas" line="339">
+        <devnotes>
+           <summary>Seed dry matter [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMSeedStarch" type="TState" visibility="public" size="4" offset="1584" file="OSRGrowth.pas" line="340" />
+      <field name="DMSeedOil" type="TState" visibility="public" size="4" offset="1588" file="OSRGrowth.pas" line="341" />
+      <field name="DMPlant" type="TState" visibility="public" size="4" offset="1592" file="OSRGrowth.pas" line="343">
+        <devnotes>
+           <summary>Total plant dry matter [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="LAIShoot" type="TState" visibility="public" size="4" offset="1596" file="OSRGrowth.pas" line="345">
+        <devnotes>
+           <summary>Shoot area index [m²/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="LAILeaf" type="TState" visibility="public" size="4" offset="1600" file="OSRGrowth.pas" line="347">
+        <devnotes>
+           <summary>Leaf area index [m²/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="LAIStem" type="TState" visibility="public" size="4" offset="1604" file="OSRGrowth.pas" line="349">
+        <devnotes>
+           <summary>Stem area index [m²/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="NShoot" type="TState" visibility="public" size="4" offset="1608" file="OSRGrowth.pas" line="351">
+        <devnotes>
+           <summary>Shoot N amount [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="NLeaf" type="TState" visibility="public" size="4" offset="1612" file="OSRGrowth.pas" line="353">
+        <devnotes>
+           <summary>Leaf N amount [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="strNStem" type="TState" visibility="public" size="4" offset="1616" file="OSRGrowth.pas" line="355">
+        <devnotes>
+           <summary>Structural stem N amount [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="poolNStem" type="TState" visibility="public" size="4" offset="1620" file="OSRGrowth.pas" line="357">
+        <devnotes>
+           <summary>Stem N pool</summary>
+        </devnotes>
+      </field>
+      <field name="NStem" type="TState" visibility="public" size="4" offset="1624" file="OSRGrowth.pas" line="359">
+        <devnotes>
+           <summary>Total stem N amount</summary>
+        </devnotes>
+      </field>
+      <field name="NGen" type="TState" visibility="public" size="4" offset="1628" file="OSRGrowth.pas" line="361">
+        <devnotes>
+           <summary>Generative-organ N amount [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="strNRoot" type="TState" visibility="public" size="4" offset="1632" file="OSRGrowth.pas" line="363">
+        <devnotes>
+           <summary>Structural root N amount [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="poolNRoot" type="TState" visibility="public" size="4" offset="1636" file="OSRGrowth.pas" line="365">
+        <devnotes>
+           <summary>Root N pool</summary>
+        </devnotes>
+      </field>
+      <field name="NRoot" type="TState" visibility="public" size="4" offset="1640" file="OSRGrowth.pas" line="367">
+        <devnotes>
+           <summary>Total root N amount</summary>
+        </devnotes>
+      </field>
+      <field name="NDead" type="TState" visibility="public" size="4" offset="1644" file="OSRGrowth.pas" line="369">
+        <devnotes>
+           <summary>N amount in dead leaves [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="NPlant" type="TState" visibility="public" size="4" offset="1648" file="OSRGrowth.pas" line="371">
+        <devnotes>
+           <summary>Total plant N amount [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="NSeed" type="TState" visibility="public" size="4" offset="1652" file="OSRGrowth.pas" line="373">
+        <devnotes>
+           <summary>Seed N amount [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="NPodWall" type="TState" visibility="public" size="4" offset="1656" file="OSRGrowth.pas" line="375">
+        <devnotes>
+           <summary>Pod-wall N amount [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="NDeadW" type="TState" visibility="public" size="4" offset="1660" file="OSRGrowth.pas" line="377">
+        <devnotes>
+           <summary>N amount in leaves killed by frost [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="NDeadSh" type="TState" visibility="public" size="4" offset="1664" file="OSRGrowth.pas" line="379">
+        <devnotes>
+           <summary>N amount in leaves senesced by shading [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="NTransLeaf" type="TState" visibility="public" size="4" offset="1668" file="OSRGrowth.pas" line="381">
+        <devnotes>
+           <summary>N amount translocated from leaves [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="NTransStem" type="TState" visibility="public" size="4" offset="1672" file="OSRGrowth.pas" line="383">
+        <devnotes>
+           <summary>N amount translocated from stems [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="NTransGen" type="TState" visibility="public" size="4" offset="1676" file="OSRGrowth.pas" line="385">
+        <devnotes>
+           <summary>N amount translocated from generative organs [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="NTransRoot" type="TState" visibility="public" size="4" offset="1680" file="OSRGrowth.pas" line="387">
+        <devnotes>
+           <summary>N amount translocated from roots [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="NTrans" type="TState" visibility="public" size="4" offset="1684" file="OSRGrowth.pas" line="389">
+        <devnotes>
+           <summary>Total translocated N amount [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="potNTrans" type="TState" visibility="public" size="4" offset="1688" file="OSRGrowth.pas" line="391">
+        <devnotes>
+           <summary>Potentially translocatable N amount [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="potNPool" type="TState" visibility="public" size="4" offset="1692" file="OSRGrowth.pas" line="392" />
+      <field name="NUptake_pot" type="TState" visibility="public" size="4" offset="1696" file="OSRGrowth.pas" line="394">
+        <devnotes>
+           <summary>Potential N uptake [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="NUptake_act" type="TState" visibility="public" size="4" offset="1700" file="OSRGrowth.pas" line="396">
+        <devnotes>
+           <summary>Actual N uptake [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="TempSum" type="TState" visibility="public" size="4" offset="1704" file="OSRGrowth.pas" line="398">
+        <devnotes>
+           <summary>Thermal time [°Cd]</summary>
+        </devnotes>
+      </field>
+      <field name="TempSumAussaat" type="TState" visibility="public" size="4" offset="1708" file="OSRGrowth.pas" line="400">
+        <devnotes>
+           <summary>Thermal time since sowing[°Cd]</summary>
+        </devnotes>
+      </field>
+      <field name="TempSumMinus" type="TState" visibility="public" size="4" offset="1712" file="OSRGrowth.pas" line="402">
+        <devnotes>
+           <summary>Thermal time below zero [°Cd]</summary>
+        </devnotes>
+      </field>
+      <field name="TempSumAuflauf" type="TState" visibility="public" size="4" offset="1716" file="OSRGrowth.pas" line="404">
+        <devnotes>
+           <summary>Thermal time since emergence [°Cd]</summary>
+        </devnotes>
+      </field>
+      <field name="TempSumPodGrowth" type="TState" visibility="public" size="4" offset="1720" file="OSRGrowth.pas" line="406">
+        <devnotes>
+           <summary>Thermal time since BBCH 70 [°Cd]</summary>
+        </devnotes>
+      </field>
+      <field name="TempSumSeed" type="TState" visibility="public" size="4" offset="1724" file="OSRGrowth.pas" line="407" />
+      <field name="TempSumLeafLoss" type="TState" visibility="public" size="4" offset="1728" file="OSRGrowth.pas" line="409">
+        <devnotes>
+           <summary>Thermal time controlling the decline in leaf growth</summary>
+        </devnotes>
+      </field>
+      <field name="TempSumRoots" type="TState" visibility="public" size="4" offset="1732" file="OSRGrowth.pas" line="411">
+        <devnotes>
+           <summary>Thermal time controlling the decline in root fraction</summary>
+        </devnotes>
+      </field>
+      <field name="LAIs" type="TState" visibility="public" size="4" offset="1736" file="OSRGrowth.pas" line="413">
+        <devnotes>
+           <summary>Area senesced by shading [m²/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMDead" type="TState" visibility="public" size="4" offset="1740" file="OSRGrowth.pas" line="415">
+        <devnotes>
+           <summary>Senescent shoot dry matter [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMDeadW" type="TState" visibility="public" size="4" offset="1744" file="OSRGrowth.pas" line="417">
+        <devnotes>
+           <summary>Dry matter killed by frost [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMDeadLeafW" type="TState" visibility="public" size="4" offset="1748" file="OSRGrowth.pas" line="419">
+        <devnotes>
+           <summary>Leaf dry matter killed by frost senescence</summary>
+        </devnotes>
+      </field>
+      <field name="DMDeadStemW" type="TState" visibility="public" size="4" offset="1752" file="OSRGrowth.pas" line="421">
+        <devnotes>
+           <summary>Stem dry matter killed by frost senescence</summary>
+        </devnotes>
+      </field>
+      <field name="DMDeadRootW" type="TState" visibility="public" size="4" offset="1756" file="OSRGrowth.pas" line="423">
+        <devnotes>
+           <summary>Root dry matter lost over winter</summary>
+        </devnotes>
+      </field>
+      <field name="DMDeadSh" type="TState" visibility="public" size="4" offset="1760" file="OSRGrowth.pas" line="425">
+        <devnotes>
+           <summary>Leaf dry matter senesced by shading [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMDeadN" type="TState" visibility="public" size="4" offset="1764" file="OSRGrowth.pas" line="427">
+        <devnotes>
+           <summary>Leaf dry matter senesced by N deficiency [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DM_N" type="TState" visibility="public" size="4" offset="1768" file="OSRGrowth.pas" line="429">
+        <devnotes>
+           <summary>Former live (green) dry matter of leaves senesced by N deficiency</summary>
+        </devnotes>
+      </field>
+      <field name="DMNTrans" type="TState" visibility="public" size="4" offset="1772" file="OSRGrowth.pas" line="431">
+        <devnotes>
+           <summary>Leaf dry matter translocated following N-deficiency senescence</summary>
+        </devnotes>
+      </field>
+      <field name="DMSh" type="TState" visibility="public" size="4" offset="1776" file="OSRGrowth.pas" line="433">
+        <devnotes>
+           <summary>Former live dry matter of leaves senesced by shading [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMShTrans" type="TState" visibility="public" size="4" offset="1780" file="OSRGrowth.pas" line="435">
+        <devnotes>
+           <summary>Leaf dry matter translocated following shading senescence</summary>
+        </devnotes>
+      </field>
+      <field name="DMTransStem" type="TState" visibility="public" size="4" offset="1784" file="OSRGrowth.pas" line="437">
+        <devnotes>
+           <summary>Translocated stem dry matter [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMTransLeaf" type="TState" visibility="public" size="4" offset="1788" file="OSRGrowth.pas" line="439">
+        <devnotes>
+           <summary>Translocated leaf dry matter [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="DMTrans" type="TState" visibility="public" size="4" offset="1792" file="OSRGrowth.pas" line="441">
+        <devnotes>
+           <summary>Translocated dry matter [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="LAIGen" type="TState" visibility="public" size="4" offset="1796" file="OSRGrowth.pas" line="443">
+        <devnotes>
+           <summary>Pod area index</summary>
+        </devnotes>
+      </field>
+      <field name="sumQ" type="TState" visibility="public" size="4" offset="1800" file="OSRGrowth.pas" line="445">
+        <devnotes>
+           <summary>Cumulative absorbed radiation [MJ]</summary>
+        </devnotes>
+      </field>
+      <field name="sumQT" type="TState" visibility="public" size="4" offset="1804" file="OSRGrowth.pas" line="447">
+        <devnotes>
+           <summary>Cumulative temperature-corrected absorbed radiation [MJ]</summary>
+        </devnotes>
+      </field>
+      <field name="sumQT_TactTpot" type="TState" visibility="public" size="4" offset="1808" file="OSRGrowth.pas" line="449">
+        <devnotes>
+           <summary>Cumulative drought- and temperature-corrected absorbed radiation [MJ]</summary>
+        </devnotes>
+      </field>
+      <field name="sumQLeaf" type="TState" visibility="public" size="4" offset="1812" file="OSRGrowth.pas" line="451">
+        <devnotes>
+           <summary>Cumulative radiation absorbed by leaves</summary>
+        </devnotes>
+      </field>
+      <field name="sumQGen" type="TState" visibility="public" size="4" offset="1816" file="OSRGrowth.pas" line="453">
+        <devnotes>
+           <summary>Cumulative radiation absorbed by pods</summary>
+        </devnotes>
+      </field>
+      <field name="RadSum" type="TState" visibility="public" size="4" offset="1820" file="OSRGrowth.pas" line="455">
+        <devnotes>
+           <summary>Cumulative radiation</summary>
+        </devnotes>
+      </field>
+      <field name="C_Dead" type="TState" visibility="public" size="4" offset="1824" file="OSRGrowth.pas" line="458">
+        <devnotes>
+           <summary>C amount in shed leaves [kg/ha]</summary>
+        </devnotes>
+      </field>
+      <field name="N_Dead" type="TState" visibility="public" size="4" offset="1828" file="OSRGrowth.pas" line="460">
+        <devnotes>
+           <summary>N amount in shed leaves [kg/ha]</summary>
+        </devnotes>
+      </field>
+      <field name="DMDeadAge" type="TState" visibility="public" size="4" offset="1832" file="OSRGrowth.pas" line="462" />
+      <field name="NDeadAge" type="TState" visibility="public" size="4" offset="1836" file="OSRGrowth.pas" line="463" />
+      <field name="NPool" type="TState" visibility="public" size="4" offset="1840" file="OSRGrowth.pas" line="465" />
+      <field name="Yield" type="TState" visibility="public" size="4" offset="1844" file="OSRGrowth.pas" line="467">
+        <devnotes>
+           <summary> seed yield [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="Ymax" type="TState" visibility="public" size="4" offset="1848" file="OSRGrowth.pas" line="470">
+        <devnotes>
+           <summary>seed yield [g/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="OilYield" type="TState" visibility="public" size="4" offset="1852" file="OSRGrowth.pas" line="472" />
+      <field name="Oilconc" type="TState" visibility="public" size="4" offset="1856" file="OSRGrowth.pas" line="473" />
+      <field name="Protein" type="TState" visibility="public" size="4" offset="1860" file="OSRGrowth.pas" line="474" />
+      <field name="FullFlower" type="TState" visibility="public" size="4" offset="1864" file="OSRGrowth.pas" line="476" />
+      <field name="SumConversionLoss" type="TState" visibility="public" size="4" offset="1868" file="OSRGrowth.pas" line="477" />
+      <field name="NBalance" type="TState" visibility="public" size="4" offset="1872" file="OSRGrowth.pas" line="479" />
+      <field name="NUptake_vW" type="TState" visibility="public" size="4" offset="1876" file="OSRGrowth.pas" line="480" />
+      <field name="NUptake_aF" type="TState" visibility="public" size="4" offset="1880" file="OSRGrowth.pas" line="481" />
+      <field name="Tb" type="TPar" visibility="public" size="4" offset="1884" file="OSRGrowth.pas" line="486">
+        <devnotes>
+           <summary>Base temperature (3 °C)</summary>
+        </devnotes>
+      </field>
+      <field name="gh" type="TPar" visibility="public" size="4" offset="1888" file="OSRGrowth.pas" line="488">
+        <devnotes>
+           <summary>Slope of the autumn allometric function</summary>
+        </devnotes>
+      </field>
+      <field name="hh" type="TPar" visibility="public" size="4" offset="1892" file="OSRGrowth.pas" line="490">
+        <devnotes>
+           <summary>Intercept of the autumn allometric function</summary>
+        </devnotes>
+      </field>
+      <field name="gf" type="TPar" visibility="public" size="4" offset="1896" file="OSRGrowth.pas" line="492">
+        <devnotes>
+           <summary>Slope of the spring allometric function</summary>
+        </devnotes>
+      </field>
+      <field name="hf" type="TPar" visibility="public" size="4" offset="1900" file="OSRGrowth.pas" line="494">
+        <devnotes>
+           <summary>Intercept of the spring allometric function</summary>
+        </devnotes>
+      </field>
+      <field name="a" type="TPar" visibility="public" size="4" offset="1904" file="OSRGrowth.pas" line="496">
+        <devnotes>
+           <summary>Parameter for dry-matter partitioning after BBCH 51</summary>
+        </devnotes>
+      </field>
+      <field name="b" type="TPar" visibility="public" size="4" offset="1908" file="OSRGrowth.pas" line="498">
+        <devnotes>
+           <summary>Parameter for dry-matter partitioning after BBCH 51</summary>
+        </devnotes>
+      </field>
+      <field name="c" type="TPar" visibility="public" size="4" offset="1912" file="OSRGrowth.pas" line="500">
+        <devnotes>
+           <summary>Parameter for dry-matter partitioning after BBCH 51</summary>
+        </devnotes>
+      </field>
+      <field name="d" type="TPar" visibility="public" size="4" offset="1916" file="OSRGrowth.pas" line="502">
+        <devnotes>
+           <summary>Parameter for dry-matter partitioning after BBCH 51</summary>
+        </devnotes>
+      </field>
+      <field name="e" type="TPar" visibility="public" size="4" offset="1920" file="OSRGrowth.pas" line="504">
+        <devnotes>
+           <summary>Parameter for dry-matter partitioning after BBCH 51</summary>
+        </devnotes>
+      </field>
+      <field name="root_exp" type="TPar" visibility="public" size="4" offset="1924" file="OSRGrowth.pas" line="506">
+        <devnotes>
+           <summary>Parameter of the DMRoot exponential function</summary>
+        </devnotes>
+      </field>
+      <field name="SPA_exp" type="TPar" visibility="public" size="4" offset="1928" file="OSRGrowth.pas" line="508">
+        <devnotes>
+           <summary>Parameter of the SPA exponential function</summary>
+        </devnotes>
+      </field>
+      <field name="fPW_0" type="TPar" visibility="public" size="4" offset="1932" file="OSRGrowth.pas" line="510">
+        <devnotes>
+           <summary>Parameter of the yield function (fPW)</summary>
+        </devnotes>
+      </field>
+      <field name="fPW_exp" type="TPar" visibility="public" size="4" offset="1936" file="OSRGrowth.pas" line="512">
+        <devnotes>
+           <summary>Parameter of the yield function (fSSt)</summary>
+        </devnotes>
+      </field>
+      <field name="pCnPod1" type="TPar" visibility="public" size="4" offset="1940" file="OSRGrowth.pas" line="513" />
+      <field name="pCnPod2" type="TPar" visibility="public" size="4" offset="1944" file="OSRGrowth.pas" line="514" />
+      <field name="pCnstem1h" type="TPar" visibility="public" size="4" offset="1948" file="OSRGrowth.pas" line="516">
+        <devnotes>
+           <summary>Coefficient preceding the exponential term of the autumn stem N-dilution function</summary>
+        </devnotes>
+      </field>
+      <field name="pCnstem2h" type="TPar" visibility="public" size="4" offset="1952" file="OSRGrowth.pas" line="518">
+        <devnotes>
+           <summary>Coefficient preceding the variable term of the autumn stem N-dilution function</summary>
+        </devnotes>
+      </field>
+      <field name="pCnRoot1h" type="TPar" visibility="public" size="4" offset="1956" file="OSRGrowth.pas" line="520">
+        <devnotes>
+           <summary>Coefficient preceding the exponential term of the root N-dilution function</summary>
+        </devnotes>
+      </field>
+      <field name="pCnRoot2h" type="TPar" visibility="public" size="4" offset="1960" file="OSRGrowth.pas" line="522">
+        <devnotes>
+           <summary>Coefficient preceding the variable term of the root N-dilution function</summary>
+        </devnotes>
+      </field>
+      <field name="pCnRoot1f" type="TPar" visibility="public" size="4" offset="1964" file="OSRGrowth.pas" line="524">
+        <devnotes>
+           <summary>Coefficient preceding the exponential term of the root N-dilution function</summary>
+        </devnotes>
+      </field>
+      <field name="pCnRoot2f" type="TPar" visibility="public" size="4" offset="1968" file="OSRGrowth.pas" line="526">
+        <devnotes>
+           <summary>Coefficient preceding the variable term of the root N-dilution function</summary>
+        </devnotes>
+      </field>
+      <field name="pCnleaf" type="TPar" visibility="public" size="4" offset="1972" file="OSRGrowth.pas" line="528">
+        <devnotes>
+           <summary>Leaf N concentration [%%] (spring)</summary>
+        </devnotes>
+      </field>
+      <field name="pCn1leaf" type="TPar" visibility="public" size="4" offset="1976" file="OSRGrowth.pas" line="530">
+        <devnotes>
+           <summary>Intercept of the autumn leaf N-dilution function</summary>
+        </devnotes>
+      </field>
+      <field name="pCn2leaf" type="TPar" visibility="public" size="4" offset="1980" file="OSRGrowth.pas" line="532">
+        <devnotes>
+           <summary>Slope of the autumn leaf N-dilution function</summary>
+        </devnotes>
+      </field>
+      <field name="pCnDead" type="TPar" visibility="public" size="4" offset="1984" file="OSRGrowth.pas" line="534">
+        <devnotes>
+           <summary>N concentration of dead leaves [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="pCnRoot" type="TPar" visibility="public" size="4" offset="1988" file="OSRGrowth.pas" line="536">
+        <devnotes>
+           <summary>Root N concentration [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="pCnSeed" type="TPar" visibility="public" size="4" offset="1992" file="OSRGrowth.pas" line="538">
+        <devnotes>
+           <summary>Seed N concentration [%%]</summary>
+        </devnotes>
+      </field>
+      <field name="pCnTrans" type="TPar" visibility="public" size="4" offset="1996" file="OSRGrowth.pas" line="540">
+        <devnotes>
+           <summary>Fraction of N translocated from senescent leaves</summary>
+        </devnotes>
+      </field>
+      <field name="Ct1" type="TPar" visibility="public" size="4" offset="2000" file="OSRGrowth.pas" line="542">
+        <devnotes>
+           <summary>Lower cardinal temperature for growth</summary>
+        </devnotes>
+      </field>
+      <field name="Ct2" type="TPar" visibility="public" size="4" offset="2004" file="OSRGrowth.pas" line="544">
+        <devnotes>
+           <summary>Lower cardinal temperature of the optimum range</summary>
+        </devnotes>
+      </field>
+      <field name="Ct3" type="TPar" visibility="public" size="4" offset="2008" file="OSRGrowth.pas" line="546">
+        <devnotes>
+           <summary>Upper cardinal temperature of the optimum range</summary>
+        </devnotes>
+      </field>
+      <field name="Ct4" type="TPar" visibility="public" size="4" offset="2012" file="OSRGrowth.pas" line="548">
+        <devnotes>
+           <summary>Upper cardinal temperature for growth</summary>
+        </devnotes>
+      </field>
+      <field name="SLAnB" type="TPar" visibility="public" size="4" offset="2016" file="OSRGrowth.pas" line="550">
+        <devnotes>
+           <summary>Specific leaf area after flowering [cm²/g]</summary>
+        </devnotes>
+      </field>
+      <field name="SLAhst" type="TPar" visibility="public" size="4" offset="2020" file="OSRGrowth.pas" line="552">
+        <devnotes>
+           <summary>Slope parameter for autumn specific leaf area</summary>
+        </devnotes>
+      </field>
+      <field name="SLAhin" type="TPar" visibility="public" size="4" offset="2024" file="OSRGrowth.pas" line="554">
+        <devnotes>
+           <summary>Intercept parameter for autumn specific leaf area</summary>
+        </devnotes>
+      </field>
+      <field name="SLAmin" type="TPar" visibility="public" size="4" offset="2028" file="OSRGrowth.pas" line="556">
+        <devnotes>
+           <summary>Minimum autumn specific leaf area [cm²/g]</summary>
+        </devnotes>
+      </field>
+      <field name="SLAmax" type="TPar" visibility="public" size="4" offset="2032" file="OSRGrowth.pas" line="558">
+        <devnotes>
+           <summary>Maximum autumn specific leaf area [cm²/g]</summary>
+        </devnotes>
+      </field>
+      <field name="SLADead" type="TPar" visibility="public" size="4" offset="2036" file="OSRGrowth.pas" line="560">
+        <devnotes>
+           <summary>SLA of senescent leaves [cm²/g]</summary>
+        </devnotes>
+      </field>
+      <field name="fTminus" type="TPar" visibility="public" size="4" offset="2040" file="OSRGrowth.pas" line="562">
+        <devnotes>
+           <summary>Temperature threshold for winter senescence [cm²/g]</summary>
+        </devnotes>
+      </field>
+      <field name="SSA" type="TPar" visibility="public" size="4" offset="2044" file="OSRGrowth.pas" line="564">
+        <devnotes>
+           <summary>Specific stem area [cm²/g]</summary>
+        </devnotes>
+      </field>
+      <field name="SPAmax" type="TPar" visibility="public" size="4" offset="2048" file="OSRGrowth.pas" line="566">
+        <devnotes>
+           <summary>Maximum specific pod area [cm²/g]</summary>
+        </devnotes>
+      </field>
+      <field name="k1" type="TPar" visibility="public" size="4" offset="2052" file="OSRGrowth.pas" line="568">
+        <devnotes>
+           <summary>Growth rate from BBCH 10 until DMcrit</summary>
+        </devnotes>
+      </field>
+      <field name="DMcrit" type="TPar" visibility="public" size="4" offset="2056" file="OSRGrowth.pas" line="570">
+        <devnotes>
+           <summary>Dry-matter threshold for exponential growth</summary>
+        </devnotes>
+      </field>
+      <field name="rooti" type="TPar" visibility="public" size="4" offset="2060" file="OSRGrowth.pas" line="572">
+        <devnotes>
+           <summary>Intercept of the root-fraction regression</summary>
+        </devnotes>
+      </field>
+      <field name="roots" type="TPar" visibility="public" size="4" offset="2064" file="OSRGrowth.pas" line="574">
+        <devnotes>
+           <summary>Slope of the root-fraction regression</summary>
+        </devnotes>
+      </field>
+      <field name="exk" type="TPar" visibility="public" size="4" offset="2068" file="OSRGrowth.pas" line="576">
+        <devnotes>
+           <summary>Light extinction coefficient</summary>
+        </devnotes>
+      </field>
+      <field name="exk_0" type="TPar" visibility="public" size="4" offset="2072" file="OSRGrowth.pas" line="578">
+        <devnotes>
+           <summary>Extinction coefficient at LAI = 0</summary>
+        </devnotes>
+      </field>
+      <field name="LAIcrit_exk" type="TPar" visibility="public" size="4" offset="2076" file="OSRGrowth.pas" line="580">
+        <devnotes>
+           <summary>Critical LAI at which the extinction coefficient equals exk</summary>
+        </devnotes>
+      </field>
+      <field name="LUELeaf" type="TPar" visibility="public" size="4" offset="2080" file="OSRGrowth.pas" line="582">
+        <devnotes>
+           <summary>LUE</summary>
+        </devnotes>
+      </field>
+      <field name="LUE0" type="TPar" visibility="public" size="4" offset="2084" file="OSRGrowth.pas" line="584">
+        <devnotes>
+           <summary>Intercept of the pre-winter LUE equation</summary>
+        </devnotes>
+      </field>
+      <field name="LUEPod" type="TPar" visibility="public" size="4" offset="2088" file="OSRGrowth.pas" line="586">
+        <devnotes>
+           <summary>Pod radiation-use efficiency</summary>
+        </devnotes>
+      </field>
+      <field name="PARmh" type="TPar" visibility="public" size="4" offset="2092" file="OSRGrowth.pas" line="588">
+        <devnotes>
+           <summary>Incident radiation required to maintain DMShoot at pfTm_opt in autumn</summary>
+        </devnotes>
+      </field>
+      <field name="PARmf" type="TPar" visibility="public" size="4" offset="2096" file="OSRGrowth.pas" line="590">
+        <devnotes>
+           <summary>Incident radiation required to maintain DMShoot at pfTm_opt in spring</summary>
+        </devnotes>
+      </field>
+      <field name="pfTm_opt" type="TPar" visibility="public" size="4" offset="2100" file="OSRGrowth.pas" line="592">
+        <devnotes>
+           <summary>Optimum temperature for the Arrhenius-type fTm response</summary>
+        </devnotes>
+      </field>
+      <field name="pfTm_Q10" type="TPar" visibility="public" size="4" offset="2104" file="OSRGrowth.pas" line="594">
+        <devnotes>
+           <summary>Q10 value for the Arrhenius-type fTm response</summary>
+        </devnotes>
+      </field>
+      <field name="pSen_sh" type="TPar" visibility="public" size="4" offset="2108" file="OSRGrowth.pas" line="596">
+        <devnotes>
+           <summary>Number of days over which PARm is averaged</summary>
+        </devnotes>
+      </field>
+      <field name="pSen_sh_w" type="TPar" visibility="public" size="4" offset="2112" file="OSRGrowth.pas" line="598">
+        <devnotes>
+           <summary>Exponent controlling the effect of fSen_sh</summary>
+        </devnotes>
+      </field>
+      <field name="fSws" type="TPar" visibility="public" size="4" offset="2116" file="OSRGrowth.pas" line="600">
+        <devnotes>
+           <summary>Slope of the linear relation between DMShoot loss and MinTempSum</summary>
+        </devnotes>
+      </field>
+      <field name="Plants" type="TPar" visibility="public" size="4" offset="2120" file="OSRGrowth.pas" line="602">
+        <devnotes>
+           <summary>Plants per m²</summary>
+        </devnotes>
+      </field>
+      <field name="pIniLAI" type="TPar" visibility="public" size="4" offset="2124" file="OSRGrowth.pas" line="604">
+        <devnotes>
+           <summary>LAI after emergence with InitOption LAIInit [cm²/plant]</summary>
+        </devnotes>
+      </field>
+      <field name="pCncritLeaf" type="TPar" visibility="public" size="4" offset="2128" file="OSRGrowth.pas" line="605" />
+      <field name="pCncrit1Leaf" type="TPar" visibility="public" size="4" offset="2132" file="OSRGrowth.pas" line="606" />
+      <field name="pCncrit2Leaf" type="TPar" visibility="public" size="4" offset="2136" file="OSRGrowth.pas" line="607" />
+      <field name="pCncritStem1h" type="TPar" visibility="public" size="4" offset="2140" file="OSRGrowth.pas" line="608" />
+      <field name="pCncritStem2h" type="TPar" visibility="public" size="4" offset="2144" file="OSRGrowth.pas" line="609" />
+      <field name="pCncritPod1" type="TPar" visibility="public" size="4" offset="2148" file="OSRGrowth.pas" line="610" />
+      <field name="pCncritPod2" type="TPar" visibility="public" size="4" offset="2152" file="OSRGrowth.pas" line="611" />
+      <field name="pCncritRoot1h" type="TPar" visibility="public" size="4" offset="2156" file="OSRGrowth.pas" line="612" />
+      <field name="pCncritRoot2h" type="TPar" visibility="public" size="4" offset="2160" file="OSRGrowth.pas" line="613" />
+      <field name="pCncritRoot1f" type="TPar" visibility="public" size="4" offset="2164" file="OSRGrowth.pas" line="614" />
+      <field name="pCncritRoot2f" type="TPar" visibility="public" size="4" offset="2168" file="OSRGrowth.pas" line="615" />
+      <field name="pCnStem1f" type="TPar" visibility="public" size="4" offset="2172" file="OSRGrowth.pas" line="616" />
+      <field name="pCnStem2f" type="TPar" visibility="public" size="4" offset="2176" file="OSRGrowth.pas" line="617" />
+      <field name="pCncritStem1f" type="TPar" visibility="public" size="4" offset="2180" file="OSRGrowth.pas" line="618" />
+      <field name="pCncritStem2f" type="TPar" visibility="public" size="4" offset="2184" file="OSRGrowth.pas" line="619" />
+      <field name="y1" type="TPar" visibility="public" size="4" offset="2188" file="OSRGrowth.pas" line="620" />
+      <field name="SLAspring" type="TPar" visibility="public" size="4" offset="2192" file="OSRGrowth.pas" line="621" />
+      <field name="fSLAspring" type="TPar" visibility="public" size="4" offset="2196" file="OSRGrowth.pas" line="622" />
+      <field name="Oila" type="TPar" visibility="public" size="4" offset="2200" file="OSRGrowth.pas" line="623" />
+      <field name="Oilb" type="TPar" visibility="public" size="4" offset="2204" file="OSRGrowth.pas" line="624" />
+      <field name="Oilc" type="TPar" visibility="public" size="4" offset="2208" file="OSRGrowth.pas" line="625" />
+      <field name="Oild" type="TPar" visibility="public" size="4" offset="2212" file="OSRGrowth.pas" line="626" />
+      <field name="pfW" type="TPar" visibility="public" size="4" offset="2216" file="OSRGrowth.pas" line="627" />
+      <field name="LUEscaling" type="TPar" visibility="public" size="4" offset="2220" file="OSRGrowth.pas" line="629">
+        <devnotes>
+           <summary>Scaling factor applied simultaneously to vegetative and generative LUE</summary>
+        </devnotes>
+      </field>
+      <field name="fCO2_scale" type="TPar" visibility="public" size="4" offset="2224" file="OSRGrowth.pas" line="632" />
+      <field name="fCO2" type="TPar" visibility="public" size="4" offset="2228" file="OSRGrowth.pas" line="633" />
+      <field name="fCWSI" type="TPar" visibility="public" size="4" offset="2232" file="OSRGrowth.pas" line="635">
+        <devnotes>
+           <summary>Adjustment of the CO2 effect for drought stress</summary>
+        </devnotes>
+      </field>
+      <field name="CiCompensation" type="TPar" visibility="public" size="4" offset="2236" file="OSRGrowth.pas" line="637">
+        <devnotes>
+           <summary>CO2 compensation point</summary>
+        </devnotes>
+      </field>
+      <field name="GRad" type="TExternV" visibility="public" size="4" offset="2240" file="OSRGrowth.pas" line="643">
+        <devnotes>
+           <summary>Global radiation [W/m²]</summary>
+        </devnotes>
+      </field>
+      <field name="TMPM" type="TExternV" visibility="public" size="4" offset="2244" file="OSRGrowth.pas" line="645">
+        <devnotes>
+           <summary>Daily mean temperature</summary>
+        </devnotes>
+      </field>
+      <field name="EC" type="TExternV" visibility="public" size="4" offset="2248" file="OSRGrowth.pas" line="647">
+        <devnotes>
+           <summary>BBCH stage</summary>
+        </devnotes>
+      </field>
+      <field name="DVS_rate" type="TExternV" visibility="public" size="4" offset="2252" file="OSRGrowth.pas" line="649">
+        <devnotes>
+           <summary>Development-stage rate field</summary>
+        </devnotes>
+      </field>
+      <field name="DVS" type="TExternV" visibility="public" size="4" offset="2256" file="OSRGrowth.pas" line="651">
+        <devnotes>
+           <summary>Development stage</summary>
+        </devnotes>
+      </field>
+      <field name="DayofYear" type="TExternV" visibility="public" size="4" offset="2260" file="OSRGrowth.pas" line="653">
+        <devnotes>
+           <summary>Day of year</summary>
+        </devnotes>
+      </field>
+      <field name="LUE_LAI" type="TExternV" visibility="public" size="4" offset="2264" file="OSRGrowth.pas" line="655">
+        <devnotes>
+           <summary>LAI data</summary>
+        </devnotes>
+      </field>
+      <field name="DMGrowth_ex" type="TExternV" visibility="public" size="4" offset="2268" file="OSRGrowth.pas" line="657">
+        <devnotes>
+           <summary>DMShoot growth for option ExternDM [g.m-2.d-1]</summary>
+        </devnotes>
+      </field>
+      <field name="TransRatio" type="TExternV" visibility="public" size="4" offset="2272" file="OSRGrowth.pas" line="659">
+        <devnotes>
+           <summary>Water deficit</summary>
+        </devnotes>
+      </field>
+      <field name="TransIntRatio" type="TExternV" visibility="public" size="4" offset="2276" file="OSRGrowth.pas" line="660" />
+      <field name="DauerEC81_89" type="TState" visibility="public" size="4" offset="2280" file="OSRGrowth.pas" line="667" />
+      <field name="fLAIOption" type="TLAIOption" visibility="public" size="1" offset="2284" file="OSRGrowth.pas" line="671" />
+      <field name="LAIOption" type="TOption" visibility="public" size="4" offset="2288" file="OSRGrowth.pas" line="672" />
+      <field name="fDMGrowthOption" type="TDMOption" visibility="public" size="1" offset="2292" file="OSRGrowth.pas" line="673" />
+      <field name="DMGrowthOption" type="TOption" visibility="public" size="4" offset="2296" file="OSRGrowth.pas" line="674" />
+      <field name="fInitOption" type="TInitOption" visibility="public" size="1" offset="2300" file="OSRGrowth.pas" line="675" />
+      <field name="InitOption" type="TOption" visibility="public" size="4" offset="2304" file="OSRGrowth.pas" line="676" />
+      <field name="fNSensOption" type="TNSensOption" visibility="public" size="1" offset="2308" file="OSRGrowth.pas" line="677" />
+      <field name="NSensOption" type="TOption" visibility="public" size="4" offset="2312" file="OSRGrowth.pas" line="678" />
+      <field name="fDroughtOption" type="TDroughtOption" visibility="public" size="1" offset="2316" file="OSRGrowth.pas" line="679" />
+      <field name="DroughtOption" type="TOption" visibility="public" size="4" offset="2320" file="OSRGrowth.pas" line="680" />
+      <field name="OptWithCO2" type="TOption" visibility="public" size="4" offset="2324" file="OSRGrowth.pas" line="681" />
+      <procedure name="CreateAll" visibility="public" procflags="override" file="OSRGrowth.pas" line="684">
+      </procedure>
+      <procedure name="Init" visibility="public" procflags="override" file="OSRGrowth.pas" line="685">
+        <parameters>
+          <parameter name="GlobMod" type="TMod" paramflags="var" />
+        </parameters>
+      </procedure>
+      <procedure name="CalcRates" visibility="public" procflags="override" file="OSRGrowth.pas" line="686">
+      </procedure>
+      <procedure name="Integrate" visibility="public" procflags="override" file="OSRGrowth.pas" line="687">
+      </procedure>
+      <procedure name="SetSowingDate" visibility="public" procflags="override" file="OSRGrowth.pas" line="688">
+        <parameters>
+          <parameter name="NewSowingDate" type="Double" />
+        </parameters>
+      </procedure>
+      <property name="Var_PARRad" visibility="published" read="PARRad" write="PARRad" type="TVar" file="OSRGrowth.pas" line="695" />
+      <property name="Var_fT" visibility="published" read="fT" write="fT" type="TVar" file="OSRGrowth.pas" line="696" />
+      <property name="Var_Q" visibility="published" read="Q" write="Q" type="TVar" file="OSRGrowth.pas" line="697" />
+      <property name="Var_QT" visibility="published" read="QT" write="QT" type="TVar" file="OSRGrowth.pas" line="698" />
+      <property name="Var_Teff" visibility="published" read="Teff" write="Teff" type="TVar" file="OSRGrowth.pas" line="699" />
+      <property name="Var_fRoot" visibility="published" read="fRoot" write="fRoot" type="TVar" file="OSRGrowth.pas" line="700" />
+      <property name="Var_maxfRoot" visibility="published" read="maxfRoot" write="maxfRoot" type="TVar" file="OSRGrowth.pas" line="701" />
+      <property name="Var_fBl" visibility="published" read="fBl" write="fBl" type="TVar" file="OSRGrowth.pas" line="702" />
+      <property name="Var_fPW" visibility="published" read="fPW" write="fPW" type="TVar" file="OSRGrowth.pas" line="703" />
+      <property name="Var_Tminus" visibility="published" read="Tminus" write="Tminus" type="TVar" file="OSRGrowth.pas" line="704" />
+      <property name="Var_NcLeaf" visibility="published" read="NcLeaf" write="NcLeaf" type="TVar" file="OSRGrowth.pas" line="705" />
+      <property name="Var_NcStem" visibility="published" read="NcStem" write="NcStem" type="TVar" file="OSRGrowth.pas" line="706" />
+      <property name="Var_NUptakeRate_pot" visibility="published" read="NUptakeRate_pot" write="NUptakeRate_pot" type="TVar" file="OSRGrowth.pas" line="707" />
+      <property name="Var_CropHeight" visibility="published" read="CropHeight" write="CropHeight" type="TVar" file="OSRGrowth.pas" line="708" />
+      <property name="Var_actSLA" visibility="published" read="actSLA" write="actSLA" type="TVar" file="OSRGrowth.pas" line="709" />
+      <property name="Var_LUE" visibility="published" read="LUE" write="LUE" type="TVar" file="OSRGrowth.pas" line="710" />
+      <property name="Var_g" visibility="published" read="g" write="g" type="TVar" file="OSRGrowth.pas" line="711" />
+      <property name="Var_h" visibility="published" read="h" write="h" type="TVar" file="OSRGrowth.pas" line="712" />
+      <property name="Var_LAIm" visibility="published" read="LAIm" write="LAIm" type="TVar" file="OSRGrowth.pas" line="713" />
+      <property name="Var_fTm" visibility="published" read="fTm" write="fTm" type="TVar" file="OSRGrowth.pas" line="714" />
+      <property name="Var_Auflauf" visibility="published" read="Auflauf" write="Auflauf" type="TVar" file="OSRGrowth.pas" line="715" />
+      <property name="Var_EC_act" visibility="published" read="EC_act" write="EC_act" type="TVar" file="OSRGrowth.pas" line="716" />
+      <property name="St_DMShoot" visibility="published" read="DMShoot" write="DMShoot" type="TState" file="OSRGrowth.pas" line="720" />
+      <property name="St_DMLeaf" visibility="published" read="DMLeaf" write="DMLeaf" type="TState" file="OSRGrowth.pas" line="721" />
+      <property name="St_DMStem" visibility="published" read="DMStem" write="DMStem" type="TState" file="OSRGrowth.pas" line="722" />
+      <property name="St_DMPlant" visibility="published" read="DMPlant" write="DMPlant" type="TState" file="OSRGrowth.pas" line="723" />
+      <property name="St_DMRoot" visibility="published" read="DMRoot" write="DMRoot" type="TState" file="OSRGrowth.pas" line="724" />
+      <property name="St_DMGen" visibility="published" read="DMGen" write="DMGen" type="TState" file="OSRGrowth.pas" line="725" />
+      <property name="St_DMPodWall" visibility="published" read="DMPodWall" write="DMPodWall" type="TState" file="OSRGrowth.pas" line="726" />
+      <property name="St_DMSeed" visibility="published" read="DMSeed" write="DMSeed" type="TState" file="OSRGrowth.pas" line="727" />
+      <property name="St_LAIShoot" visibility="published" read="LAIShoot" write="LAIShoot" type="TState" file="OSRGrowth.pas" line="728" />
+      <property name="St_LAILeaf" visibility="published" read="LAILeaf" write="LAILeaf" type="TState" file="OSRGrowth.pas" line="729" />
+      <property name="St_LAIStem" visibility="published" read="LAIStem" write="LAIStem" type="TState" file="OSRGrowth.pas" line="730" />
+      <property name="St_NShoot" visibility="published" read="NShoot" write="NShoot" type="TState" file="OSRGrowth.pas" line="731" />
+      <property name="St_NLeaf" visibility="published" read="NLeaf" write="NLeaf" type="TState" file="OSRGrowth.pas" line="732" />
+      <property name="St_strNStem" visibility="published" read="strNStem" write="strNStem" type="TState" file="OSRGrowth.pas" line="733" />
+      <property name="St_strNRoot" visibility="published" read="strNRoot" write="strNRoot" type="TState" file="OSRGrowth.pas" line="734" />
+      <property name="St_NDead" visibility="published" read="NDead" write="NDead" type="TState" file="OSRGrowth.pas" line="735" />
+      <property name="St_TempSum" visibility="published" read="TempSum" write="TempSum" type="TState" file="OSRGrowth.pas" line="736" />
+      <property name="St_TempSumAussaat" visibility="published" read="TempSumAussaat" write="TempSumAussaat" type="TState" file="OSRGrowth.pas" line="737" />
+      <property name="St_TempSumMinus" visibility="published" read="TempSumMinus" write="TempSumMinus" type="TState" file="OSRGrowth.pas" line="738" />
+      <property name="St_TempSumAuflauf" visibility="published" read="TempSumAuflauf" write="TempSumAuflauf" type="TState" file="OSRGrowth.pas" line="739" />
+      <property name="St_LAIs" visibility="published" read="LAIs" write="LAIs" type="TState" file="OSRGrowth.pas" line="740" />
+      <property name="St_DMdead" visibility="published" read="DMDead" write="DMDead" type="TState" file="OSRGrowth.pas" line="741" />
+      <property name="St_DMDeadW" visibility="published" read="DMDeadW" write="DMDeadW" type="TState" file="OSRGrowth.pas" line="742" />
+      <property name="St_DMDeadSh" visibility="published" read="DMDeadSh" write="DMDeadSh" type="TState" file="OSRGrowth.pas" line="743" />
+      <property name="St_DMDeadN" visibility="published" read="DMDeadN" write="DMDeadN" type="TState" file="OSRGrowth.pas" line="744" />
+      <property name="St_DMSh" visibility="published" read="DMSh" write="DMSh" type="TState" file="OSRGrowth.pas" line="745" />
+      <property name="St_DMShTrans" visibility="published" read="DMShTrans" write="DMShTrans" type="TState" file="OSRGrowth.pas" line="746" />
+      <property name="St_LAIGen" visibility="published" read="LAIGen" write="LAIGen" type="TState" file="OSRGrowth.pas" line="747" />
+      <property name="St_sumQ" visibility="published" read="sumQ" write="sumQ" type="TState" file="OSRGrowth.pas" line="749">
+        <devnotes>
+           <summary>Cumulative absorbed radiation [MJ]</summary>
+        </devnotes>
+      </property>
+      <property name="St_sumQT" visibility="published" read="sumQT" write="sumQT" type="TState" file="OSRGrowth.pas" line="751">
+        <devnotes>
+           <summary>Cumulative temperature-corrected absorbed radiation [MJ]</summary>
+        </devnotes>
+      </property>
+      <property name="St_sumQLeaf" visibility="published" read="sumQLeaf" write="sumQLeaf" type="TState" file="OSRGrowth.pas" line="753">
+        <devnotes>
+           <summary>Cumulative radiation absorbed by leaves</summary>
+        </devnotes>
+      </property>
+      <property name="St_sumQGen" visibility="published" read="sumQGen" write="sumQGen" type="TState" file="OSRGrowth.pas" line="755">
+        <devnotes>
+           <summary>Cumulative radiation absorbed by pods</summary>
+        </devnotes>
+      </property>
+      <property name="St_sumQT_TactTpot" visibility="published" read="sumQT_TactTpot" write="sumQT_TactTpot" type="TState" file="OSRGrowth.pas" line="757">
+        <devnotes>
+           <summary>Cumulative drought- and temperature-corrected absorbed radiation [MJ]</summary>
+        </devnotes>
+      </property>
+      <property name="Par_Tb" visibility="published" read="Tb" write="Tb" type="TPar" file="OSRGrowth.pas" line="762" />
+      <property name="Par_gh" visibility="published" read="gh" write="gh" type="TPar" file="OSRGrowth.pas" line="763" />
+      <property name="Par_hh" visibility="published" read="hh" write="hh" type="TPar" file="OSRGrowth.pas" line="764" />
+      <property name="Par_a" visibility="published" read="a" write="a" type="TPar" file="OSRGrowth.pas" line="765" />
+      <property name="Par_b" visibility="published" read="b" write="b" type="TPar" file="OSRGrowth.pas" line="766" />
+      <property name="Par_c" visibility="published" read="c" write="c" type="TPar" file="OSRGrowth.pas" line="767" />
+      <property name="Par_d" visibility="published" read="d" write="d" type="TPar" file="OSRGrowth.pas" line="768" />
+      <property name="Par_pCnstem1h" visibility="published" read="pCnstem1h" write="pCnstem1h" type="TPar" file="OSRGrowth.pas" line="769" />
+      <property name="Par_pCnstem2h" visibility="published" read="pCnstem2h" write="pCnstem2h" type="TPar" file="OSRGrowth.pas" line="770" />
+      <property name="Par_pCnleaf" visibility="published" read="pCnleaf" write="pCnleaf" type="TPar" file="OSRGrowth.pas" line="771" />
+      <property name="Par_pCn1leaf" visibility="published" read="pCn1leaf" write="pCn1leaf" type="TPar" file="OSRGrowth.pas" line="772" />
+      <property name="Par_pCn2leaf" visibility="published" read="pCn2leaf" write="pCn2leaf" type="TPar" file="OSRGrowth.pas" line="773" />
+      <property name="Par_Ct1" visibility="published" read="Ct1" write="Ct1" type="TPar" file="OSRGrowth.pas" line="774" />
+      <property name="Par_Ct2" visibility="published" read="Ct2" write="Ct2" type="TPar" file="OSRGrowth.pas" line="775" />
+      <property name="Par_Ct3" visibility="published" read="Ct3" write="Ct3" type="TPar" file="OSRGrowth.pas" line="776" />
+      <property name="Par_Ct4" visibility="published" read="Ct4" write="Ct4" type="TPar" file="OSRGrowth.pas" line="777" />
+      <property name="Par_SLAhst" visibility="published" read="SLAhst" write="SLAhst" type="TPar" file="OSRGrowth.pas" line="778" />
+      <property name="Par_SLAhin" visibility="published" read="SLAhin" write="SLAhin" type="TPar" file="OSRGrowth.pas" line="779" />
+      <property name="Par_SLAmin" visibility="published" read="SLAmin" write="SLAmin" type="TPar" file="OSRGrowth.pas" line="780" />
+      <property name="Par_SLAmax" visibility="published" read="SLAmax" write="SLAmax" type="TPar" file="OSRGrowth.pas" line="781" />
+      <property name="Par_fTminus" visibility="published" read="fTminus" write="fTminus" type="TPar" file="OSRGrowth.pas" line="782" />
+      <property name="Par_SSA" visibility="published" read="SSA" write="SSA" type="TPar" file="OSRGrowth.pas" line="783" />
+      <property name="Par_k1" visibility="published" read="k1" write="k1" type="TPar" file="OSRGrowth.pas" line="784" />
+      <property name="Par_DMcrit" visibility="published" read="DMcrit" write="DMcrit" type="TPar" file="OSRGrowth.pas" line="785" />
+      <property name="Par_rooti" visibility="published" read="rooti" write="rooti" type="TPar" file="OSRGrowth.pas" line="786" />
+      <property name="Par_roots" visibility="published" read="roots" write="roots" type="TPar" file="OSRGrowth.pas" line="787" />
+      <property name="Par_exk" visibility="published" read="exk" write="exk" type="TPar" file="OSRGrowth.pas" line="788" />
+      <property name="Par_LUELeaf" visibility="published" read="LUELeaf" write="LUELeaf" type="TPar" file="OSRGrowth.pas" line="789" />
+      <property name="Par_LUE0" visibility="published" read="LUE0" write="LUE0" type="TPar" file="OSRGrowth.pas" line="790" />
+      <property name="Par_PARmh" visibility="published" read="PARmh" write="PARmh" type="TPar" file="OSRGrowth.pas" line="791" />
+      <property name="Par_PARmf" visibility="published" read="PARmf" write="PARmf" type="TPar" file="OSRGrowth.pas" line="792" />
+      <property name="Par_fSws" visibility="published" read="fSws" write="fSws" type="TPar" file="OSRGrowth.pas" line="793" />
+      <property name="Ex_GRad" visibility="published" read="GRad" write="GRad" type="TExternV" file="OSRGrowth.pas" line="797" />
+      <property name="Ex_TMPM" visibility="published" read="TMPM" write="TMPM" type="TExternV" file="OSRGrowth.pas" line="798" />
+      <property name="Ex_EC" visibility="published" read="EC" write="EC" type="TExternV" file="OSRGrowth.pas" line="799" />
+      <property name="Ex_DayofYear" visibility="published" read="DayofYear" write="DayofYear" type="TExternV" file="OSRGrowth.pas" line="800" />
+      <property name="Ex_ExternLAI" visibility="published" read="LUE_LAI" write="LUE_LAI" type="TExternV" file="OSRGrowth.pas" line="801" />
+      <property name="Ex_DMGrowth" visibility="published" read="DMGrowth_ex" write="DMGrowth_ex" type="TExternV" file="OSRGrowth.pas" line="802" />
+      <property name="Ex_TransRatio" visibility="published" read="TransRatio" write="TransRatio" type="TExternV" file="OSRGrowth.pas" line="803" />
+      <property name="Opt_LAI" visibility="published" read="LAIOption" write="LAIOption" type="TOption" file="OSRGrowth.pas" line="809" />
+      <property name="Opt_Init" visibility="published" read="InitOption" write="InitOption" type="TOption" file="OSRGrowth.pas" line="810" />
+      <property name="Opt_Drought" visibility="published" read="DroughtOption" write="DroughtOption" type="TOption" file="OSRGrowth.pas" line="811" />
+      <property name="DevelopmentModel" visibility="published" read="fDevelopmentModel" write="setDevelopmentModel" type="TDevelopmentOSR" file="OSRGrowth.pas" line="813" />
+      <property name="RootModel" visibility="published" read="fRootModel" write="fRootModel" type="TGrowthCurvePlantRoots" file="OSRGrowth.pas" line="814" />
+      <property name="SnowModel" visibility="published" read="fSnowModel" write="fSnowModel" type="TSnowPack" file="OSRGrowth.pas" line="816" />
+    </members>
+  </class>
+  <procedure name="Register" visibility="public" file="OSRGrowth.pas" line="2517">
+  </procedure>
+</namespace>
