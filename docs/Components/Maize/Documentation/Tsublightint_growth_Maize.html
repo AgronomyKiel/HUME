@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Katja Holzhauser, Agronomy and Crop Science Group, Kiel University">
-<meta name="dcterms.date" content="2026-08-21">
+<meta name="dcterms.date" content="2026-08-31">
 
 <title>Tsublightint_growth_Maize – Hume Documentation</title>
 <style>
@@ -4288,8 +4288,14 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../Components/OilseedRape/Documentation/OSR_growth_model.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Plant Growth Model</span></a>
+  <a href="../../../Components/OilseedRape/Documentation/TDevelopmentOSR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TDevelopmentOSR</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../Components/OilseedRape/Documentation/TOSRGrowth.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TOSRGrowth</span></a>
   </div>
 </li>
       </ul>
@@ -4375,7 +4381,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 21, 2026</p>
+      <p class="date">August 31, 2026</p>
     </div>
   </div>
   
@@ -4474,24 +4480,22 @@ System
 <h1 data-number="2"><span class="header-section-number">2</span> Scientific Background</h1>
 <section id="modelling-dm-production" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="modelling-dm-production"><span class="header-section-number">2.1</span> Modelling DM production</h2>
-<p>Within season, daily dry matter production (<span class="math inline">\frac{dDM_{tot}}{dt}</span> is driven by absorbed photosynthetic radiation (Q, MJ m<sup>-2</sup> d<sup>-1</sup>) and potential light use efficiency (LUE, g MJ<sup>-1</sup> PAR<sup>-1</sup>):</p>
+<p>Within season, daily dry matter production (<span class="math inline">\frac{dDM_{tot}}{dt}</span>$\frac{dDM_{tot}}{dt}$ is driven by absorbed photosynthetic radiation (Q, MJ m<sup>-2</sup> d<sup>-1</sup>) and potential light use efficiency (LUE, g MJ<sup>-1</sup> PAR<sup>-1</sup>):</p>
 <p><span id="eq-DMproduction"><span class="math display">\frac{{\mathrm{dDM}}_{\mathrm{total}}}{\mathrm{dt}}\mathrm{=Q*}LUE * Temp_{fact} * SWDF \tag{1}</span></span></p>
 <p>With <span class="math inline">Temp_{\text{fact}}</span>, a temperature weight factor for photosynthetic activity [-], ranging between 0 to 1 and calculated with a trapezoidal function (<span class="citation" data-cites="Marshall1996">(<a href="#ref-Marshall1996" role="doc-biblioref"><strong>Marshall1996?</strong></a>)</span>; <span class="citation" data-cites="Porter1999">Porter et al. (<a href="#ref-Porter1999" role="doc-biblioref">1999</a>)</span>) and the soil water deficit factor (SWDF).</p>
-<p><span class="math display">
-Temp_{fact} = \begin{cases}
+<p><span id="eq-trapez"><span class="math display">Temp_{fact} = \begin{cases}
 0 &amp; \text{if  } TMPM &lt; C_1 \\
 \frac{TMPM - C_1}{C_2 - C_1} &amp; \text{if  } C_1 \leq TMPM \leq C_2 \\
 1 &amp; \text{if  } C_2 &lt; T_{mean} \leq C_3 \\
 \frac{C_4 - TMPM}{C_4 - C_3} &amp; \text{if } C_3 &lt; TMPM \leq C_4 \\
 0 &amp; \text{if } TMPM &gt; C_4
-\end{cases}
-</span> {#eq-trapez}</p>
+\end{cases} \tag{2}</span></span></p>
 <p>The Q is calculated according to the Beer-Lambert law (<span class="citation" data-cites="Monsi1953">Monsi and Saeki (<a href="#ref-Monsi1953" role="doc-biblioref">1953</a>)</span>), using the photosynthetically active radiation (PAR, MJ m<sup>-2</sup> d<sup>-1</sup>) and green area index (GAI, m<sup>2</sup> m<sup>-2</sup>) as input variable. Thereby, utilised PAR is an approximation, as it is commonly referred to as half of global radiation (GR, MJ m<sup>-2</sup> d<sup>-1</sup>, <span class="citation" data-cites="Szeicz1974">Szeicz (<a href="#ref-Szeicz1974" role="doc-biblioref">1974</a>)</span>):</p>
-<p><span id="eq-Q"><span class="math display">\mathrm{Q\ =\ PAR*}\left(\mathrm{1-}\mathrm{e}^{{\mathrm{-k}}_{\mathrm{PAR}}\mathrm{*GAI} }\right) \tag{2}</span></span></p>
+<p><span id="eq-Q"><span class="math display">\mathrm{Q\ =\ PAR*}\left(\mathrm{1-}\mathrm{e}^{{\mathrm{-k}}_{\mathrm{PAR}}\mathrm{*GAI} }\right) \tag{3}</span></span></p>
 <p>with a constant extinction coefficient <span class="math inline">k_{PAR}</span> [-] (Par_ExtCoeffPAR, see Tsubpartitioning_Maize_Roots1), which is set to 0.654 (<span class="citation" data-cites="Rose2023">Rose et al. (<a href="#ref-Rose2023" role="doc-biblioref">2023</a>)</span>). The GAI [m<sup>2</sup> m<sup>-2</sup>] is an external value provided by the dry matter partitioning component. The LUE decreases linearly with increasing Q , describing the effect of light saturation of the single leaf photosynthesis with higher irradiance at the canopy level (<span class="citation" data-cites="Kage2001d">Kage et al. (<a href="#ref-Kage2001d" role="doc-biblioref">2001a</a>)</span>; <span class="citation" data-cites="Kage2001e">Kage et al. (<a href="#ref-Kage2001e" role="doc-biblioref">2001b</a>)</span>). In contrast to many crop growth models, where radiation use efficiency is assumed to be constant or only indirectly affected by environmental stress factors, this approach explicitly accounts for the decline in efficiency at high radiation levels.</p>
-<p><span id="eq-LUE"><span class="math display">{\mathrm{LUE}}\mathrm{=}LUE_{max} - LUE_{steig}*PAR \tag{3}</span></span></p>
+<p><span id="eq-LUE"><span class="math display">{\mathrm{LUE}}\mathrm{=}LUE_{max} - LUE_{steig}*PAR \tag{4}</span></span></p>
 <p>with <span class="math inline">LUE_{\text{max}}</span> [-] and <span class="math inline">LUE_{\text{steig}}</span> [-] as regression parameters, which were optimized by the model internal Levenberg-Marquard algorithm. In case of drought stress, LUE is reduced by the SWDF [-], originally proposed in a peanut growth model (<span class="citation" data-cites="ferreyra2003">Ferreyra et al. (<a href="#ref-ferreyra2003" role="doc-biblioref">2003</a>)</span>), describing the effects of water stress as non-linear function. This formulation allows for a more gradual decline in LUE under moderate stress and a stronger limitation under severe drought conditions, which was not accounted in another maize model.</p>
-<p><span id="eq-SWDF"><span class="math display">SWDF\mathrm{=\ 1\ -\ }{\frac{\mathrm{Act}_{\mathrm{trans}}}{\mathrm{Pot}_{\mathrm{trans}}}}^{SWDF_{fact}} \tag{4}</span></span></p>
+<p><span id="eq-SWDF"><span class="math display">SWDF\mathrm{=\ 1\ -\ }{\frac{\mathrm{Act}_{\mathrm{trans}}}{\mathrm{Pot}_{\mathrm{trans}}}}^{SWDF_{fact}} \tag{5}</span></span> 1\ -\ }{\frac{\mathrm{Act}_{\mathrm{trans}}}{\mathrm{Pot}_{\mathrm{trans}}}}^{SWDF_{fact}}$$</p>
 <p>with the ratio between actual transpiration (<span class="math inline">Act_{\text{trans}}</span>, mm d<sup>-1</sup>) and potential transpiration (<span class="math inline">Pot_{\text{trans}}</span> mm d<sup>-1</sup>) and a power value <span class="math inline">SWDF_{\text{fact}}</span> [-] describing the non-linear relation of SWDF. The parameter <span class="math inline">SWDF_{\text{fact}}</span> was set to 1.6 after model internal optimisation.</p>
 </section>
 <section id="results-of-calibration-and-evaluations" class="level2" data-number="2.2">
@@ -4563,7 +4567,7 @@ Figure 2: Trial sites (n=68) of calibration (triangles) and evaluation data (cr
 </figcaption>
 </figure>
 </div>
-<p>The large-scale evaluation for the prediction of final silage maize yields of the baseline-model resulted in a prediction error rRMSE of 0.16 and 0.24, for the older and the newer hybrid, respectively (<a href="#fig-RRMSE" class="quarto-xref">Fig. 3</a> A). Overall d-statistic was 0.61, with a 0.62 for the old and 0.60 for the new hybrid. By the hybrid-specific parameterisation, the rRMSE for the newer hybrid was reduced to 0.21 and the d-statistic to 0.69. The comprehensive dataset enabled a further residual analysis of parameters affecting yield prediction accuracy. Thereby, a significant influence of drought stress was detected, which is computed by fSWDF (<a href="#eq-SWDF" class="quarto-xref">Eq. 4</a>), with yields being tendentially underestimated. Without drought stress, the residuals declined below 0 (<a href="#fig-RRMSE" class="quarto-xref">Fig. 3</a> B).</p>
+<p>The large-scale evaluation for the prediction of final silage maize yields of the baseline-model resulted in a prediction error rRMSE of 0.16 and 0.24, for the older and the newer hybrid, respectively (<a href="#fig-RRMSE" class="quarto-xref">Fig. 3</a> A). Overall d-statistic was 0.61, with a 0.62 for the old and 0.60 for the new hybrid. By the hybrid-specific parameterisation, the rRMSE for the newer hybrid was reduced to 0.21 and the d-statistic to 0.69. The comprehensive dataset enabled a further residual analysis of parameters affecting yield prediction accuracy. Thereby, a significant influence of drought stress was detected, which is computed by fSWDF (<a href="#eq-SWDF" class="quarto-xref">Eq. 5</a>), with yields being tendentially underestimated. Without drought stress, the residuals declined below 0 (<a href="#fig-RRMSE" class="quarto-xref">Fig. 3</a> B).</p>
 <div id="fig-RRMSE" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-RRMSE-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">

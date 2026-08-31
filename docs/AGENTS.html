@@ -3963,8 +3963,14 @@ vertical-align: -.125em;
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./Components/OilseedRape/Documentation/OSR_growth_model.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Plant Growth Model</span></a>
+  <a href="./Components/OilseedRape/Documentation/TDevelopmentOSR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TDevelopmentOSR</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Components/OilseedRape/Documentation/TOSRGrowth.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TOSRGrowth</span></a>
   </div>
 </li>
       </ul>
@@ -4010,7 +4016,10 @@ vertical-align: -.125em;
   <ul>
   <li><a href="#project-overview" id="toc-project-overview" class="nav-link" data-scroll-target="#project-overview"><span class="header-section-number">1.1</span> Project Overview</a></li>
   <li><a href="#repo-map" id="toc-repo-map" class="nav-link" data-scroll-target="#repo-map"><span class="header-section-number">1.2</span> Repo Map</a></li>
-  <li><a href="#build-and-verification" id="toc-build-and-verification" class="nav-link" data-scroll-target="#build-and-verification"><span class="header-section-number">1.3</span> Build And Verification</a></li>
+  <li><a href="#build-and-verification" id="toc-build-and-verification" class="nav-link" data-scroll-target="#build-and-verification"><span class="header-section-number">1.3</span> Build And Verification</a>
+  <ul class="collapse">
+  <li><a href="#local-windows-execution-environment" id="toc-local-windows-execution-environment" class="nav-link" data-scroll-target="#local-windows-execution-environment"><span class="header-section-number">1.3.1</span> Local Windows Execution Environment</a></li>
+  </ul></li>
   <li><a href="#working-rules" id="toc-working-rules" class="nav-link" data-scroll-target="#working-rules"><span class="header-section-number">1.4</span> Working Rules</a></li>
   <li><a href="#generated-and-high-risk-files" id="toc-generated-and-high-risk-files" class="nav-link" data-scroll-target="#generated-and-high-risk-files"><span class="header-section-number">1.5</span> Generated And High-Risk Files</a></li>
   <li><a href="#documentation-workflow" id="toc-documentation-workflow" class="nav-link" data-scroll-target="#documentation-workflow"><span class="header-section-number">1.6</span> Documentation Workflow</a></li>
@@ -4093,13 +4102,25 @@ vertical-align: -.125em;
 <li>prefer <code>Win32 Debug</code> unless the task specifically requires another target</li>
 <li>mention clearly if you could not run a Delphi build in the current environment</li>
 <li>On this machine, initialize command-line builds with <code>C:\Program Files (x86)\Embarcadero\Studio\23.0\bin\rsvars.bat</code>. The default <code>Hume1</code> BPL output under <code>C:\Users\Public\Documents\Embarcadero\Studio\23.0\Bpl</code> may reject automated writes with error <code>F2039</code>; do not change project output settings to work around this without explicit approval.</li>
-<li>The repository is exposed as <code>Q:\HUME\HUME</code> and also maps to <code>C:\Users\h_kage\Documents\Modell\HUME\HUME</code>. Sandboxed process launches against <code>Q:</code> may fail with Windows error 267; retry read-only checks through the local path or request the required shell approval rather than altering repository paths.</li>
+</ul>
+<section id="local-windows-execution-environment" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="local-windows-execution-environment"><span class="header-section-number">1.3.1</span> Local Windows Execution Environment</h3>
+<ul>
+<li>Treat <code>Q:\HUME\HUME</code> and <code>C:\Users\h_kage\Documents\Modell\HUME\HUME</code> as two paths to the same worktree. RAD Studio may use <code>Q:</code>, but automated shell, Git, build, Quarto, and patch commands should use the local <code>C:</code> path as their working directory. Never copy or synchronize files between these paths.</li>
+<li>A sandboxed child process started with a <code>Q:</code> working directory may fail before executing with Windows error 267. After one such failure, switch immediately to the local <code>C:</code> path; do not repeat the same <code>Q:</code> attempt or alter the drive mapping.</li>
+<li>Git commands through the local path may report dubious repository ownership. Use a per-command override such as <code>git -c safe.directory=C:/Users/h_kage/Documents/Modell/HUME/HUME ...</code>; do not modify the user’s global Git configuration for this.</li>
+<li>Keep RAD Studio/Kai buffers authoritative when the IDE integration is available. If it is unavailable, operate on the same files through the local <code>C:</code> path. If the standard patch helper itself fails with error 267 because it inherited <code>Q:</code>, try it only once, then use a context-validated patch fallback through the local path and inspect the resulting diff carefully.</li>
+<li>Preserve the existing encoding and line endings. Delphi sources in this worktree commonly use UTF-8 with a BOM and CRLF; after a patch fallback, verify that the patch engine did not silently convert the whole file to LF.</li>
+<li>From PowerShell, pass the complete RAD Studio initialization/build sequence to <code>cmd.exe</code> as one literal argument, for example <code>cmd.exe /d /s /c &#39;call &quot;C:\Program Files (x86)\Embarcadero\Studio\23.0\bin\rsvars.bat&quot; &amp;&amp; msbuild ...&#39;</code>. This avoids PowerShell interpreting <code>(x86)</code> or <code>&amp;&amp;</code>.</li>
+<li><code>SoilWaterPackage</code> may stop before compiling changed units when the external <code>Jcl</code> package is unavailable, and visual unit compilation may require <code>AdvGrid</code>. When the affected numerical unit supports it, use an isolated Win32 <code>NONVISUAL</code> unit compile with DCU output under <code>%TEMP%</code> rather than changing project search paths, dependencies, or output settings.</li>
+<li>Treat these as known environment conditions, not new discoveries. Mention a fallback once when it changes the execution strategy; do not repeat the same warning before every command. Include it in the final summary only when it materially limited verification.</li>
 </ul>
 <p>When changing documentation:</p>
 <ul>
 <li>update the <code>.qmd</code> source files and supporting assets first</li>
 <li>regenerate <code>docs/</code> only if the task asks for built output or the repo normally commits generated docs</li>
 </ul>
+</section>
 </section>
 <section id="working-rules" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="working-rules"><span class="header-section-number">1.4</span> Working Rules</h2>

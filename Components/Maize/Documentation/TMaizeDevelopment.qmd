@@ -122,31 +122,31 @@ The development process is divided into five stages, hereafter referred to as XS
 
 Development rates between the individual stages are calculated as the ratio between effective temperature ($T_{eff}$) and the corresponding temperature sums (growing degree days, GDD). Specifically, development rates are defined for the phases between sowing and emergence (@eq-DevRate0), emergence and tassel initiation (@eq-DevRate1), tassel initiation and silking (@eq-DevRate2), and silking and grain filling (@eq-DevRate3). The corresponding temperature sums are defined by the parameters $GDD_{Emergence}$, $GDD_{Tasini}$, $GDD_{Stage2}$, and $GDD_{Stage3}$ (@tbl-Parameters).
 
-$$DevRate_{S0} = \frac{T_{eff}}{{GDD}_{emergence}}$${#eq-DevRate0}
+$$DevRate_{S0} = \frac{T_{eff}}{{GDD}_{emergence}}$$ {#eq-DevRate0}
 
-$$\mathrm{DevRateS1=}\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{tasini}}}$${#eq-DevRate1}
+$$\mathrm{DevRateS1=}\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{tasini}}}$$ {#eq-DevRate1}
 
-$$\mathrm{DevRateS2=\ }\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{S2}}}$${#eq-DevRate2}
+$$\mathrm{DevRateS2=\ }\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{S2}}}$$ {#eq-DevRate2}
 
-$$\mathrm{DevRateS3=}\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{S3}}}$${#eq-DevRate3}
+$$\mathrm{DevRateS3=}\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{S3}}}$$ {#eq-DevRate3}
 
 Compared to the approach of @yang2016, an additional temperature sum from emergence to silking ($GDD_{Silking}$) is introduced. This parameter is used to calculate the development rate from grain filling until maturity ($Dev_{Rate,S4}$). The development rate is derived from the remaining temperature requirement between the total temperature sum to maturity ($GDD_{total}$) and the temperature sums of the preceding stages.
 
-$$\mathrm{DevRateS4=}\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{total}}\mathrm{-} {\mathrm{GDD}}_{\mathrm{emer}}\mathrm{-} {\mathrm{GDD}}_{\mathrm{silk}}\mathrm{-} {\mathrm{GDD}}_{\mathrm{S3}}}$${#eq-DevRate4}
+$$\mathrm{DevRateS4=}\frac{\mathrm{T}_{\mathrm{eff}}}{{\mathrm{GDD}}_{\mathrm{total}}\mathrm{-} {\mathrm{GDD}}_{\mathrm{emer}}\mathrm{-} {\mathrm{GDD}}_{\mathrm{silk}}\mathrm{-} {\mathrm{GDD}}_{\mathrm{S3}}}$$ {#eq-DevRate4}
 
 All temperature sums are defined as cultivar-specific parameters according to the assumptions of @bignon1990 for a mid-early maize cultivar grown on soils with medium warming dynamics. The crop is assumed to be harvested at the dough stage, corresponding to the typical harvest time of whole-crop silage maize with a dry matter content of approximately 35 %.
 
 Leaf appearance is simulated following the approaches implemented in HYBRID-Maize and CERES-Maize (@Jones1986; @yang2016). The rate of leaf appearance is calculated as the ratio between effective temperature ($T_{eff}$) and the phyllochron parameter (phy; @eq-phy).
 
-$$\frac{{\mathrm{dLeaf}}_{\mathrm{No}}}{\mathrm{dt}}\mathrm{\mathrm{=}}\frac{\mathrm{Teff}}{\mathrm{phy\ *\ }\mathrm{f}_{\mathrm{phy}}}$${#eq-LeafNo}
+$$\frac{{\mathrm{dLeaf}}_{\mathrm{No}}}{\mathrm{dt}}\mathrm{\mathrm{=}}\frac{\mathrm{Teff}}{\mathrm{phy\ *\ }\mathrm{f}_{\mathrm{phy}}}$$ {#eq-LeafNo}
 
-$$\mathrm{f}_{\mathrm{phy}}\mathrm{\mathrm{=}}0.66+0.068 * LeafNo \quad |\quad LeafNo < 5 \\1 \quad |\quad LeafNo ≥ 5$${#eq-phy}
+$$\mathrm{f}_{\mathrm{phy}}\mathrm{\mathrm{=}}0.66+0.068 * LeafNo \quad |\quad LeafNo < 5 \\1 \quad |\quad LeafNo ≥ 5$$ {#eq-phy}
 
 During the early growth period, when the plant has fewer than five leaves (\< BBCH15), leaf appearance is assumed to occur at a higher rate. To account for this effect, a reduction factor ($f_{phy}$) is applied to the phyllochron (@eq-phy).
 
 In the field trials used for model evaluation, phenological stages were recorded according to the BBCH scale of @lancashire1991a. These observations were subsequently converted into the corresponding XStages for comparison with the model simulations (@fig-XStages).
 
-##Calibration and Evaluation results
+## Calibration and Evaluation results
 
 Plant development describing XStages, translated to BBCH (@lancashire1991a) was simulated sufficiently with R² of 0.93 and 0.98 in calibration and evaluation (@tbl-results), respectively. Variations due to different sowing dates, geographical position and soil types were well estimated (@fig-ev). Inaccuracies occurred during BBCH 50 and 65, as the period of tassel initiation to silking may be difficult to quantify in the field.
 

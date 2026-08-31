@@ -1376,7 +1376,7 @@ begin
   WriteMFPTable.OptionList.Add('true');
   WriteMFPTable.OptionList.Add('false');
 
-  OptCreate('psi_logscale', 'false', psi_logscale,
+  OptCreate('psi_logscale', 'true', psi_logscale,
     'Option for log scale or linear scale for sink reduction factor calculation');
   psi_logscale.OptionList.Add('true');
   psi_logscale.OptionList.Add('false');

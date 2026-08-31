@@ -1,7 +1,16 @@
+ï»¿/// <summary>
+/// Module for growth, carbon and nitrogen partitioning of oilseed rape crop
+/// Authors: Wiebke Weymann, Ulf BÃ¶ttcher &amp; Agronomy Group, University of Kiel
+/// <References>
+/// <item> Weymann, W., Sieling, K., Kage, H., 2017. Organ-specific approaches describing crop growth of winter oilseed rape under optimal and N-limited conditions.
+/// European Journal of Agronomy 82, 71â€“79. https://doi.org/10.1016/j.eja.2016.10.005</item>
+///  <item> BÃ¶ttcher, U., Weymann, W., Pullens, J.W.M., Olesen, J.E., Kage, H., 2020. Development and evaluation of HUME-OSR:
+/// A dynamic crop growth model for winter oilseed rape. Field Crops Research 246, 107679. https://doi.org/10.1016/j.fcr.2019.107679 </item>
+/// </References>
+/// </summary>
+
 unit OSRGrowth;
-{Modellbeschreibung in: Dissertation W. Weymann 2015, Chapter 4:
- Development and evaluation of a new dynamic crop growth model for
- winter oilseed rape in temperate regions in Europe}
+
 
 interface
 
@@ -29,6 +38,7 @@ const
 
 
 Type
+
 TLAIOption = (InternLAI,ExternLAI);
 TDMOption = (InternDM,ExternDM);
 TInitOption = (DMCritInit,LAIInit);
@@ -42,6 +52,19 @@ private
   StateVar : TState;
   avs_day : integer;
   Par_arr : array[1..MaxParDays] of real;
+    procedure CalcTempSums;
+    procedure InitAfterEmergence;
+    procedure CalcRadiationUptake;
+    procedure CalcLUE;
+    procedure CalcRootFraction;
+    procedure CalcShootRootGrowth;
+    procedure CalcMaintainableLAI(var LAIm_ave: Double);
+    procedure CalculateOrganNuptakerates;
+    procedure CalculateNTranslocation;
+    procedure CalculateNDemandNDeficiency;
+    procedure CalculateIntermediateVariables;
+    procedure CalcConversionLosses;
+    procedure CalcDMLossFrostShading;
 
 protected
   fDevelopmentModel: TDevelopmentOSR;
@@ -63,115 +86,228 @@ protected
 
 public
   // Variables
-  PARRad : TVar;     // photosynthetisch aktive Strahlungssumme [W/m²]
-  fT : TVar;         // Wirkungsfaktor der Photosynthese, aus Temperatur abgeleitet
-  Q : TVar;          // aufgenommene Strahlungsmenge  [MJ]
-  QLeaf : TVar;      // aufgenommene Strahlungsmenge Blätter
-  QGen : TVar;       // aufgenommene Strahlungsmenge Schoten
-  Transkoeff : TVar; // Transmissionskoeffizient Schotenentwicklung
-  fInt: TVar;        // Anteil aufgenommener Strahlung []
-  fIntLeaf : TVar;   // Anteil aufgenommener Strahlung Blätter
-  fIntGen : TVar;    // Anteil aufgenommener Strahlung Schoten
-  Teff : TVar;       // Temperatur-BasisTemperatur [°C]
-  fRoot: TVar;       // Anteil Wurzelzuwachs []
-  maxfRoot : TVar;   // maximaler Anteil Wurzelzuwachs
-  fBl : TVar;        // Anteil Blattzuwachs
-  fBl_EC51 : TVar;   // Anteil Blattzuwachs bei EC 51
-  fSt : TVar;        // Anteil Stängelzuwachs
-  fGen : TVar;       // Anteil Schotenzuwachs
-  fPW : TVar;        // Anteil der Schotenhülle am generativen Gesamtwachstum
-  fSeedGen : TVar;   // Anteil Samenzuwachs in der Schote
+  /// <summary>Photosynthetically active radiation [W/mÂ²]</summary>
+  PARRad : TVar;
+  /// <summary>Photosynthesis response factor derived from temperature</summary>
+  fT : TVar;
+  /// <summary>Absorbed radiation [MJ]</summary>
+  Q : TVar;
+  /// <summary>Radiation absorbed by leaves</summary>
+  QLeaf : TVar;
+  /// <summary>Radiation absorbed by pods</summary>
+  QGen : TVar;
+  /// <summary>Transmission coefficient during pod development</summary>
+  Transkoeff : TVar;
+  /// <summary>Fraction of absorbed radiation []</summary>
+  fInt: TVar;
+  /// <summary>Fraction of radiation absorbed by leaves</summary>
+  fIntLeaf : TVar;
+  /// <summary>Fraction of radiation absorbed by pods</summary>
+  fIntGen : TVar;
+  /// <summary>Temperature minus base temperature [Â°C]</summary>
+  Teff : TVar;
+  /// <summary>Root growth fraction []</summary>
+  fRoot: TVar;
+  /// <summary>Maximum root growth fraction</summary>
+  maxfRoot : TVar;
+  /// <summary>Leaf growth fraction</summary>
+  fBl : TVar;
+  /// <summary>Leaf growth fraction at BBCH 51</summary>
+  fBl_EC51 : TVar;
+  /// <summary>Stem growth fraction</summary>
+  fSt : TVar;
+  /// <summary>Pod growth fraction</summary>
+  fGen : TVar;
+  /// <summary>Pod-wall fraction of total generative growth</summary>
+  fPW : TVar;
+  /// <summary>Seed growth fraction within the pod</summary>
+  fSeedGen : TVar;
+  /// <summary> Seed starch fraction of total seed growth</summary>
   fSeedStarch : TVar;
+  /// <summary>Seed oil fraction of total seed growth</summary>
   fSeedOil : TVar;
   fSum : TVar;
+
+  /// <summary>fraction of NNI related to leaves</summary>
   fNNILeaf : TVar;
+
+  /// <summary>fraction of NNI related to stems</summary>
   fNNIStem : TVar;
+
+  /// <summary>fraction of NNI related to generative organs</summary>
   fNNIGen : TVar;
+
+  /// <summary>fraction of NNI related to roots</summary>
   fNNIRoot : TVar;
-  Tminus : TVar;     // Temperatur unter Null [°C]
-  NcLeaf : TVar;     // Blatt N-Konzentration  [%]
-  NcLeaf_VA : TVar;  // Blatt N-Konzentration zu Vegetationsbeginn [%]
-  NcStem : TVar;     // Stängel N-Konzentration  [%]
+  /// <summary>Temperature below zero [Â°C]</summary>
+  Tminus : TVar;
+  /// <summary>Leaf N concentration [%]</summary>
+  NcLeaf : TVar;
+  /// <summary>Leaf N concentration at the beginning of the growing season [%]</summary>
+  NcLeaf_VA : TVar;
+
+  /// <summary>Stem N concentration [%]</summary>
+  NcStem : TVar;
+  /// <summary>Stem N concentration at the beginning of the growing season [%]</summary>
   NcStem_VA : TVar;
-  NcStem_EC70 : TVar;// Stängel N-Konzentration bei EC 70 [%]
-  NcGen : TVar;      // generative N-Konzentration [%]
-  NcRoot : TVar;     // Wurzel N-Konzentration  [%]
-  NcRoot_VA : TVar;
-  NcRoot_EC70 : TVar;// Wurzel N-Konzentration bei EC 70 [%]
-  NUptakeRate_pot : TVar;  // potenzielle N-Aufnahmerate  g/m²*d
-  NNI: TVar;               // Nitrogen Nutrition Index
-  CropHeight : TVar;       // Bestandeshöhe
-  LAILeaf_EC70 : TVar;     // LAI zu EC 70
-  actSLA : TVar;           // Spezifische Blattfläche [cm²/g]
+  /// <summary>Stem N concentration at BBCH 70 [%]</summary>
+  NcStem_EC70 : TVar;
+  /// <summary>Generative-organ N concentration [%]</summary>
+  NcGen : TVar;
+  /// <summary>Root N concentration [%]</summary>
+  NcRoot : TVar;
+  /// <summary>Root N concentration at BBCH 70 [%]</summary>
+  NcRoot_EC70 : TVar;
+  /// <summary>Leaf N concentration at BBCH 70 [%]</summary>
+  NcLeaf_EC70 : TVar;
+  /// <summary>Potential N uptake rate g/mÂ²*d</summary>
+  NUptakeRate_pot : TVar;
+  /// <summary>Nitrogen Nutrition Index</summary>
+  NNI: TVar;
+  /// <summary>Crop height</summary>
+  CropHeight : TVar;
+  /// <summary>LAI at BBCH 70</summary>
+  LAILeaf_EC70 : TVar;
+  /// <summary>Specific leaf area [cmÂ²/g]</summary>
+  actSLA : TVar;
   avSLA: TVar;
-  actSPA : TVar;     // Spezifische Schotenfläche [cm²/g]
+  /// <summary>Specific pod area [cmÂ²/g]</summary>
+  actSPA : TVar;
+
+  /// <summary>Average specific pod area [cmÂ²/g]</summary>
   avSPA : TVar;
-  LUE : TVar;     // Lichtnutzungeffizienz gebildetet Trockenmasse pro aufgenommener Strahlungsmenge [g/MJ]
-  LUEGen : TVar;  // Lichtnutzungseffizienz Schoten
-  CO2_factor :TVar;  /// factor for adjusting LUE for CO2-effect
-  g : TVar;       // Steigung der allometrischen Funktion
-  h : TVar;       // Interzept der allometrischen Funktion
-  LAIm : TVar;    // Maximaler LAI bei vorhandener Strahlung [m²/m²]
-  fTm : TVar;     // Temperaturfaktor Erhaltungsatmung zur Berechnung von PARm
+  /// <summary>Radiation-use efficiency expressed as dry matter produced per unit of absorbed radiation [g/MJ]</summary>
+  LUE : TVar;
+  /// <summary>Radiation-use efficiency of pods</summary>
+  LUEGen : TVar;
+  /// <summary>Factor used to adjust LUE for CO2 effects</summary>
+  CO2_factor :TVar;
+  /// <summary>Slope of the allometric function</summary>
+  g : TVar;
+  /// <summary>Intercept of the allometric function</summary>
+  h : TVar;
+  /// <summary>Maximum maintainable LAI at the available radiation [mÂ²/mÂ²]</summary>
+  LAIm : TVar;
+  /// <summary>Temperature factor for maintenance respiration used to calculate PARm</summary>
+  fTm : TVar;
   fTSen : TVar;
-  fSen_sh: TVar;  // Seneszenzfaktor Beschattung
-  Auflauf : TVar; // Zeitpunkt des Auflaufens [Zahl]
-  QT : TVar;      // Temperatur korrigierte aufgenommene Strahlungsmenge [MJ]
-  act_k : TVar;   // Extinktionskoeffizient für PAR = exk bzw. variabler Wert für LAI < LAIcrit_exk
-  act_k_Leaf : TVar;  // Extinkttionskoeffizient der Blätter
-  act_k_Gen : TVar;   // Extinktionskoeffizient der Schoten
+  /// <summary>Shading-senescence factor</summary>
+  fSen_sh: TVar;
+  /// <summary>Simulation time at emergence</summary>
+  Auflauf : TVar;
+  /// <summary>Temperature-corrected absorbed radiation [MJ]</summary>
+  QT : TVar;
+  /// <summary>PAR extinction coefficient: exk or a variable value when LAI is below LAIcrit_exk</summary>
+  act_k : TVar;
+  /// <summary>Leaf extinction coefficient</summary>
+  act_k_Leaf : TVar;
+  /// <summary>Pod extinction coefficient</summary>
+  act_k_Gen : TVar;
   DummyVar : TVar;
-  EC_act : TVar;  // EC-Wert bei LAIShoot LAIShoot = 2.0
-  maxGAI : TVar;      //  maximaler GAI
-  maxLAIGen : TVar;   // maximaler PAI
-  maxLAIStem : TVar;  // maximaler SAI
+  /// <summary>BBCH stage at which LAIShoot equals 2.0</summary>
+  EC_act : TVar;
+  /// <summary>Maximum GAI</summary>
+  maxGAI : TVar;
+  /// <summary>Maximum PAI</summary>
+  maxLAIGen : TVar;
+  /// <summary>Maximum SAI</summary>
+  maxLAIStem : TVar;
   dNcLeaf : TVar;
   dNcStem : TVar;
   dNcRoot : TVar;
   dNcGen : TVar;
+
+  /// <summary>Critical N concentration of leaves [%]</summary>
   NcritLeaf : TVar;
+
+  /// <summary>Actual N concentration of leaves [%]</summary>
   NcLeaf_act : TVar;
+  /// <summary>Critical N concentration of stems [%]</summary>
   NcritStem : TVar;
+  /// <summary>Actual N concentration of stems [%]</summary>
   NcStem_act : TVar;
+  /// <summary>Critical N concentration of generative organs [%]</summary>
   NcritGen : TVar;
+  /// <summary>Actual N concentration of generative organs [%]</summary>
   NcGen_act : TVar;
+  /// <summary>Critical N concentration of roots [%]</summary>
   NcritRoot : TVar;
+  /// <summary>Critical N concentration of roots at the beginning of the growing season [%]</summary>
   NcritRoot_VA : TVar;
+  /// <summary>Actual N concentration of roots [%]</summary>
   NcRoot_act : TVar;
+  /// <summary>Actual N concentration of roots at the beginning of the growing season [%]</summary>
+  NcRoot_VA : TVar;
+  /// <summary>Critical N concentration of leaves at the beginning of the growing season [%]</summary>
   NcritLeaf_VA : TVar;
+  /// <summary>Critical N concentration of stems at the beginning of the growing season [%]</summary>
   NcritStem_VA : TVar;
+
+  /// <summary>Critical N concentration of stems at BBCH 70 [%]</summary>
   NcritStem_EC70 : TVar;
+  /// <summary>Critical N concentration of generative organs at BBCH 70 [%]</summary>
   NcritRoot_EC70 : TVar;
+
+  /// <summary>Nitrogen Nutrition Index of leaves</summary>
   NNILeaf : TVar;
+  /// <summary>Nitrogen Nutrition Index of stems</summary>
   NNIStem : TVar;
+  /// <summary>Nitrogen Nutrition Index of generative organs</summary>
   NNIGen : TVar;
+  /// <summary>Nitrogen Nutrition Index of roots</summary>  
   NNIRoot : TVar;
+
+  /// <summary>10 day average of incident PAR [W/mÂ²]</summary>
   PARav : Tvar;
+  /// <summary>Pod area index [mÂ²/mÂ²]</summary> 
   PAI : TVar;
+  /// <summary>Stem area index [mÂ²/mÂ²]</summary>
   SAI : TVar;
+
+  /// <summary>Specific leaf area in spring [cmÂ²/g]</summary>
   SLAf : TVar;
 
   NDemandGrowth : TVar;
+
+  /// <summary>Total N-demand deficit [gN/mÂ²] </summary>
   NDemandDeficit : TVar;
+
+  /// <summary>N-demand deficit of leaves [gN/mÂ²] </summary>
   NDemandDeficitLeaf : TVar;
+
+  /// <summary>N-demand deficit of stems [gN/mÂ²] </summary>
   NDemandDeficitStem : TVar;
+
+  /// <summary>N-demand deficit of root [gN/mÂ²] </summary>
   NDemandDeficitRoot : TVar;
+
+  /// <summary>N-demand deficit of generative organs [gN/mÂ²] </summary>
   NDemandDeficitGen : TVar;
+
+  /// <summary>N-supply from soil [gN/mÂ²/d] </summary>
   NSupply : TVar;
 
-  TKM : TVar;              // Tausend-Korn-Masse
-  Samenanzahl : TVar;      // Anzahl Samen pro m²
-  HI : TVar;               // Harvest Index
-  NHI : TVar;              // Nitrogen Harvest Index
-  NUE : TVar;              // Nitrogen Use Efficiency
+  /// <summary>Thousand-seed mass</summary>
+  TKM : TVar;
+  /// <summary>Number of seeds per mÂ²</summary>
+  Samenanzahl : TVar;
+  /// <summary>Harvest Index</summary>
+  HI : TVar;
+  /// <summary>Nitrogen Harvest Index</summary>
+  NHI : TVar;
+  /// <summary>Nitrogen Use Efficiency</summary>
+  NUE : TVar;
 
-
-  KonversionVerlust : TVar;
-
+  /// <summary>Conversion loss of assimilates due to conversion to oil </summary>
+  ConversionLoss : TVar;
+  /// <summary>Day of year at the beginning of the growing season, derived from temperature</summary>
   avs : TVar;
+
+  /// <summary>Drought-stress response factor (Ferreya 2013)</summary>
   fW : TVar;
 
-  N_Def : TVar;         // N-Defizitfaktor (Verhältnis von N-Bedarf und N-Aufnahme)
+  /// <summary>N-deficit factor (ratio of N demand to N uptake)</summary>
+  N_Def : TVar;
 
   LAImarray : Array [1..10] of real;
 
@@ -179,94 +315,166 @@ public
 
   // Constant Variables
 
-  DMShoot : TState;  // Sprosstrockenmasse [g/m²]
-  DMShoot_vW : TState;  // Sprosstrockenmasse vor Winter [g/m²]
-  DMShoot_OF : TState;  // shoot dm before onset flowering
-  DMShoot_nB : TState;  // shoot dm accumulation since flowering
-  DMShoot_nB_pot : TState;  // potentical, drought stress free shoot dm accumulation since flowering
-  DMLeaf : TState;   // Blatttrockenmasse [g/m²]
-  DMStem : TState;   // Stängeltrockenmasse  [g/m²]
-  DMRoot : TState;   // Wurzeltrockenmasse  [g/m²]
-  DMGen : TState;    // generative Biomasse [g/m²]
-  DMPodWall : TState;// Schotenhüllentrockenmasse [g/m²]
-  DMSeed : TState;   // Samentrockenmasse [g/m²]
+  /// <summary>Shoot dry matter [g/mÂ²]</summary>
+  DMShoot : TState;
+  /// <summary>Shoot dry matter before winter [g/mÂ²]</summary>
+  DMShoot_vW : TState;
+  /// <summary>Shoot dry matter before flowering begins</summary>
+  DMShoot_OF : TState;
+  /// <summary>Shoot dry-matter accumulation since flowering</summary>
+  DMShoot_nB : TState;
+  /// <summary>Potential shoot dry-matter accumulation since flowering without drought stress</summary>
+  DMShoot_nB_pot : TState;
+  /// <summary>Leaf dry matter [g/mÂ²]</summary>
+  DMLeaf : TState;
+  /// <summary>Stem dry matter [g/mÂ²]</summary>
+  DMStem : TState;
+  /// <summary>Root dry matter [g/mÂ²]</summary>
+  DMRoot : TState;
+  /// <summary>Generative dry matter [g/mÂ²]</summary>
+  DMGen : TState;
+  /// <summary>Pod-wall dry matter [g/mÂ²]</summary>
+  DMPodWall : TState;
+  /// <summary>Seed dry matter [g/mÂ²]</summary>
+  DMSeed : TState;
   DMSeedStarch : TState;
   DMSeedOil : TState;
-  DMPlant : TState;  // Gesamttrockenmasse  [g/m²]
-  LAIShoot : TState; // Sprossfläche [m²/m²]
-  LAILeaf : TState;  // Blattfläche [m²/m²]
-  LAIStem : TState;  // Stängelfläche [m²/m²]
-  NShoot : TState;   // Spross N-Menge    [g/m²]
-  NLeaf : TState;    // Blatt N-Menge    [g/m²]
-  strNStem : TState; // strukturelle Stängel N-Menge    [g/m²]
-  poolNStem : TState; // N-Pool im Stängel
-  NStem : TState;    // Gesamt-N-Menge im Stängel
-  NGen : TState;     // generative N-Menge [g/m²]
-  strNRoot : TState; // strukturelle Wurzel N-Menge    [g/m²]
-  poolNRoot : TState; // N-Pool in den Wurzeln
-  NRoot : TState;    // Gesamt-N-Menge in den Wurzeln
-  NDead : TState;    // N-Menge in abgestorbenen Blättern [g/m²]
-  NPlant : TState;   // N-Menge in Gesamtpflanze [g/m²]
-  NSeed : TState;    // N-Menge Samen [g/m²]
-  NPodWall : TState; // N-Menge Schotenwände [g/m²]
-  NDeadW : TState;   // N-Menge in durch Frost abgestorbenen Blättern [g/m²]
-  NDeadSh : TState;  // N-Menge in durch Beschattung abgestorbenen Blättern [g/m²]
-  NTransLeaf : TState;  // aus den Blättern translozierte N-Menge [g/m²]
-  NTransStem : TState;  // aus den Stängeln translozierte N-Menge [g/m²]
-  NTransGen : TState;   // aus den generativen Organene translozierte N-Menge [g/m²]
-  NTransRoot : TState;  // aus den Wurzeln translozierte N-Menge [g/m²]
-  NTrans : TState;      // gesamte translozierte N-Menge [g/m²]
-  potNTrans : TState;   // potentiell translozierbare N-Menge [g/m²]
+  /// <summary>Total plant dry matter [g/mÂ²]</summary>
+  DMPlant : TState;
+  /// <summary>Shoot area index [mÂ²/mÂ²]</summary>
+  LAIShoot : TState;
+  /// <summary>Leaf area index [mÂ²/mÂ²]</summary>
+  LAILeaf : TState;
+  /// <summary>Stem area index [mÂ²/mÂ²]</summary>
+  LAIStem : TState;
+  /// <summary>Shoot N amount [g/mÂ²]</summary>
+  NShoot : TState;
+  /// <summary>Leaf N amount [g/mÂ²]</summary>
+  NLeaf : TState;
+  /// <summary>Structural stem N amount [g/mÂ²]</summary>
+  strNStem : TState;
+  /// <summary>Stem N pool</summary>
+  poolNStem : TState;
+  /// <summary>Total stem N amount</summary>
+  NStem : TState;
+  /// <summary>Generative-organ N amount [g/mÂ²]</summary>
+  NGen : TState;
+  /// <summary>Structural root N amount [g/mÂ²]</summary>
+  strNRoot : TState;
+  /// <summary>Root N pool</summary>
+  poolNRoot : TState;
+  /// <summary>Total root N amount</summary>
+  NRoot : TState;
+  /// <summary>N amount in dead leaves [g/mÂ²]</summary>
+  NDead : TState;
+  /// <summary>Total plant N amount [g/mÂ²]</summary>
+  NPlant : TState;
+  /// <summary>Seed N amount [g/mÂ²]</summary>
+  NSeed : TState;
+  /// <summary>Pod-wall N amount [g/mÂ²]</summary>
+  NPodWall : TState;
+  /// <summary>N amount in leaves killed by frost [g/mÂ²]</summary>
+  NDeadW : TState;
+  /// <summary>N amount in leaves senesced by shading [g/mÂ²]</summary>
+  NDeadSh : TState;
+  /// <summary>N amount translocated from leaves [g/mÂ²]</summary>
+  NTransLeaf : TState;
+  /// <summary>N amount translocated from stems [g/mÂ²]</summary>
+  NTransStem : TState;
+  /// <summary>N amount translocated from generative organs [g/mÂ²]</summary>
+  NTransGen : TState;
+  /// <summary>N amount translocated from roots [g/mÂ²]</summary>
+  NTransRoot : TState;
+  /// <summary>Total translocated N amount [g/mÂ²]</summary>
+  NTrans : TState;
+  /// <summary>Potentially translocatable N amount [g/mÂ²]</summary>
+  potNTrans : TState;
   potNPool : TState;
-  NUptake_pot : TState; // potenziell aufgenommene N-Menge [g/m²]
-  NUptake_act : TState; // aktuell aufgenommene N-Menge [g/m²]
-  TempSum : TState;     // Temperatursumme [°Cd]
-  TempSumAussaat : TState;     // Temperatursumme ab Aussaat[°Cd]
-  TempSumMinus : TState;       // Temperatursumme unter Null [°Cd]
-  TempSumAuflauf : TState;     // Temperatursumme ab Auflaufen [°Cd]
-  TempSumPodGrowth : TState;   // Temperatursumme ab EC70 [°Cd]
+  /// <summary>Potential N uptake [g/mÂ²]</summary>
+  NUptake_pot : TState;
+  /// <summary>Actual N uptake [g/mÂ²]</summary>
+  NUptake_act : TState;
+  /// <summary>Thermal time [Â°Cd]</summary>
+  TempSum : TState;
+  /// <summary>Thermal time since sowing[Â°Cd]</summary>
+  TempSumAussaat : TState;
+  /// <summary>Thermal time below zero [Â°Cd]</summary>
+  TempSumMinus : TState;
+  /// <summary>Thermal time since emergence [Â°Cd]</summary>
+  TempSumAuflauf : TState;
+  /// <summary>Thermal time since BBCH 70 [Â°Cd]</summary>
+  TempSumPodGrowth : TState;
   TempSumSeed : TState;
-  TempSumLeafLoss : TState;    // Temperatursumme zur Abnahme des Blattwachstums
-  TempSumRoots : TState;       // Temperatursumme zur Abnahme des Wurzelanteils
-  LAIs : TState;      // Schatten induzierte Seneszenzfläche [m²/m²]
-  DMDead : TState;    // seneszente Spross Trockenmasse [g/m²]
-  DMDeadW : TState;   // durch Frost abgestorbene Trockenmasse [g/m²]
-  DMDeadLeafW : TState; // durch Frostseneszenz abgestorbene Blatttrockenmasse
-  DMDeadStemW : TState; // durch Frostseneszenz abgestorbene Stängeltrockenmasse
-  DMDeadRootW : TState; // über Winter abgestorbene Wurzeltrockenmasse
-  DMDeadSh : TState;  // durch Beschattung abgestorbene Blatttrockenmasse [g/m²]
-  DMDeadN : TState;   // durch N-Mangel abgestorbene Blatttrockenmasse [g/m²]
-  DM_N : TState;      // ehemalige lebendige (grüne) Trockenmasse, der durch N-Mangel abgestorbenen Blätter
-  DMNTrans : TState;  // translozierte Blatttrockenmasse aus N-Mangel
-  DMSh : TState;      // ehemalige lebendige Trockenmasse, der durch Beschattung abgestorbenen Blätter [g/m²]
-  DMShTrans : TState; // translozierte Blatttrockenmasse aus Beschattungsseneszenz
-  DMTransStem : TState; // translozierte Stängel-Trockenmasse [g/m²]
-  DMTransLeaf : TState; // translozierte Blatt-Trockenmasse [g/m²]
-  DMTrans : TState;     // translozierte Trockenmasse [g/m²]
-  LAIGen : TState;    // PodAreaIndex
-  sumQ : TState;          // Summe aufgenommene Strahlungsmenge  [MJ]
-  sumQT : TState;          // Summe tempeaturkorrigierte aufgenommene Strahlungsmenge  [MJ]
-  sumQT_TactTpot : TState; // Summe Trockenstress/Temperatur korrigierte aufgenommene Strahlungsmenge  [MJ]
-  sumQLeaf : TState;      // Summe aufgenommene Strahlungsmenge Blätter
-  sumQGen : TState;       // Summe aufgenommene Strahlungsmenge Schoten
-  RadSum : TState;    // Strahlungssumme
+  /// <summary>Thermal time controlling the decline in leaf growth</summary>
+  TempSumLeafLoss : TState;
+  /// <summary>Thermal time controlling the decline in root fraction</summary>
+  TempSumRoots : TState;
+  /// <summary>Area senesced by shading [mÂ²/mÂ²]</summary>
+  LAIs : TState;
+  /// <summary>Senescent shoot dry matter [g/mÂ²]</summary>
+  DMDead : TState;
+  /// <summary>Dry matter killed by frost [g/mÂ²]</summary>
+  DMDeadW : TState;
+  /// <summary>Leaf dry matter killed by frost senescence</summary>
+  DMDeadLeafW : TState;
+  /// <summary>Stem dry matter killed by frost senescence</summary>
+  DMDeadStemW : TState;
+  /// <summary>Root dry matter lost over winter</summary>
+  DMDeadRootW : TState;
+  /// <summary>Leaf dry matter senesced by shading [g/mÂ²]</summary>
+  DMDeadSh : TState;
+  /// <summary>Leaf dry matter senesced by N deficiency [g/mÂ²]</summary>
+  DMDeadN : TState;
+  /// <summary>Former live (green) dry matter of leaves senesced by N deficiency</summary>
+  DM_N : TState;
+  /// <summary>Leaf dry matter translocated following N-deficiency senescence</summary>
+  DMNTrans : TState;
+  /// <summary>Former live dry matter of leaves senesced by shading [g/mÂ²]</summary>
+  DMSh : TState;
+  /// <summary>Leaf dry matter translocated following shading senescence</summary>
+  DMShTrans : TState;
+  /// <summary>Translocated stem dry matter [g/mÂ²]</summary>
+  DMTransStem : TState;
+  /// <summary>Translocated leaf dry matter [g/mÂ²]</summary>
+  DMTransLeaf : TState;
+  /// <summary>Translocated dry matter [g/mÂ²]</summary>
+  DMTrans : TState;
+  /// <summary>Pod area index</summary>
+  LAIGen : TState;
+  /// <summary>Cumulative absorbed radiation [MJ]</summary>
+  sumQ : TState;
+  /// <summary>Cumulative temperature-corrected absorbed radiation [MJ]</summary>
+  sumQT : TState;
+  /// <summary>Cumulative drought- and temperature-corrected absorbed radiation [MJ]</summary>
+  sumQT_TactTpot : TState;
+  /// <summary>Cumulative radiation absorbed by leaves</summary>
+  sumQLeaf : TState;
+  /// <summary>Cumulative radiation absorbed by pods</summary>
+  sumQGen : TState;
+  /// <summary>Cumulative radiation</summary>
+  RadSum : TState;
 
-  C_Dead : TState;    // C-Menge der abgeworfenen Blätter [kg/ha]
-  N_Dead : TState;    // N-Menge der abgeworfenen Blätter [kg/ha]
+  /// <summary>C amount in shed leaves [kg/ha]</summary>
+  C_Dead : TState;
+  /// <summary>N amount in shed leaves [kg/ha]</summary>
+  N_Dead : TState;
 
   DMDeadAge : TState;
   NDeadAge : TState;
 
   NPool : TState;
-
+  /// <summary> seed yield [g/mÂ²]</summary>
   Yield : TState;
+
+  /// <summary>seed yield [g/mÂ²]</summary>
+  Ymax : TState;
+  
   OilYield : TState;
   Oilconc : TState;
   Protein : TState;
-  Ymax : TState;
 
   FullFlower : TState;
-  SumKonversionVerlust : TState;
+  SumConversionLoss : TState;
 
   NBalance : TState;
   NUptake_vW : TState;
@@ -274,67 +482,126 @@ public
 
   // Parameters
 
-  Tb : TPar;   // Basistemperatur 3 [°C]
-  gh : TPar;   // Steigung der Allometrischen Funktion im Herbst
-  hh : TPar;   // Interzept  der Allometrischen Funktion im Herbst
-  gf : TPar;   // Steigung der Allometrischen Funktion im Frühjahr
-  hf : TPar;   // Interzept der Allometrischen Funktion im Frühjahr
-  a : TPar;    // Parameter zur DM-Fraktionierung nach EC51
-  b : TPar;    // Parameter zur DM-Fraktionierung nach EC51
-  c : TPar;    // Parameter zur DM-Fraktionierung nach EC51
-  d : TPar;    // Parameter zur DM-Fraktionierung nach EC51
-  e : TPar;    // Parameter zur DM-Fraktionierung nach EC51
-  root_exp : TPar;    // Parameter für Exponentialfunktion von DMRoot
-  SPA_exp : TPar;    // Parameter für Exponentialfunktion von SPA
-  fPW_0 : TPar;    // Parameter für Ertragsfunktion (fPW)
-  fPW_exp : TPar;    // Parameter für Ertragsfunktion (fSSt)
+  /// <summary>Base temperature (3 Â°C)</summary>
+  Tb : TPar;
+  /// <summary>Slope of the autumn allometric function</summary>
+  gh : TPar;
+  /// <summary>Intercept of the autumn allometric function</summary>
+  hh : TPar;
+  /// <summary>Slope of the spring allometric function</summary>
+  gf : TPar;
+  /// <summary>Intercept of the spring allometric function</summary>
+  hf : TPar;
+  /// <summary>Parameter for dry-matter partitioning after BBCH 51</summary>
+  a : TPar;
+  /// <summary>Parameter for dry-matter partitioning after BBCH 51</summary>
+  b : TPar;
+  /// <summary>Parameter for dry-matter partitioning after BBCH 51</summary>
+  c : TPar;
+  /// <summary>Parameter for dry-matter partitioning after BBCH 51</summary>
+  d : TPar;
+  /// <summary>Parameter for dry-matter partitioning after BBCH 51</summary>
+  e : TPar;
+  /// <summary>Parameter of the DMRoot exponential function</summary>
+  root_exp : TPar;
+  /// <summary>Parameter of the SPA exponential function</summary>
+  SPA_exp : TPar;
+  /// <summary>Parameter of the yield function (fPW)</summary>
+  fPW_0 : TPar;
+  /// <summary>Parameter of the yield function (fSSt)</summary>
+  fPW_exp : TPar;
   pCnPod1 : TPar;
   pCnPod2 : TPar;
-  pCnstem1h : TPar;   // vor Eulerschen Zahl für Stängel-Verdünnungsfunktion (Herbst)
-  pCnstem2h : TPar;   // vor Variablen für Stängel-Verdünnungsfunktion (Herbst)
-  pCnRoot1h : TPar;    // vor Eulerschen Zahl für Wurzel-Verdünnungsfunktion
-  pCnRoot2h : TPar;    // vor Variablen für Wurzel-Verdünnungsfunktion
-  pCnRoot1f : TPar;    // vor Eulerschen Zahl für Wurzel-Verdünnungsfunktion
-  pCnRoot2f : TPar;    // vor Variablen für Wurzel-Verdünnungsfunktion
-  pCnleaf : TPar;     // Blatt N-Konzentration [%]  (Frühjahr)
-  pCn1leaf : TPar;    // Interzept der Verdünnungsfunktion Blatt (Herbst)
-  pCn2leaf : TPar;    // Steigung der Verdünnungsfunktion Blatt (Herbst)
-  pCnDead: TPar;      // N-Konzentration abgestorbener Blätter  [%]
-  pCnRoot: TPar;      // N-Konzentration Wurzeln [%]
-  pCnSeed : TPar;     // N-Konzentration Samen [%]
-  pCnTrans : TPar;    // Anteil N-Menge, der aus seneszenten Blättern transloziert wird
-  Ct1 : TPar;    // Kardinaltemperatur untere Wachstumsgrenze
-  Ct2 : TPar;    // Kardinaltemperatur untere Optimumsgrenze
-  Ct3 : TPar;    // Kardinaltemperatur obere Optimumsgrenze
-  Ct4 : TPar;    // Kardinaltemperatur obere Wachstumsgrenze
-  SLAnB : TPar;  // Spezifische Blattfläche nach der Blüte [cm²/g]
-  SLAhst : TPar; // Spezifische Blattfläche Herbst Steigungsparameter
-  SLAhin : TPar; // Spezifische Blattfläche Herbst Interzeptparameter
-  SLAmin : TPar; // Minimale spezifische Blattfläche Herbst  [cm²/g]
-  SLAmax : TPar; // Maximale spezifische Blattfläche Herbst  [cm²/g]
-  SLADead : TPar;// SLA seneszenter Blätter [cm²/g]
-  fTminus : TPar;// Temperaturschwellenwert für Seneszenz über Winter [cm²/g]
-  SSA : TPar;    // Spezifische Stängelfläche [cm²/g]
-  SPAmax : TPar; // Maximale spezifische Schotenfläche [cm²/g]
-  k1 : TPar;     // Wachstumsrate zwischen EC10 bis DMcrit
-  DMcrit : TPar; // DM-Grenzwert des exponentiellen Wachstums
-  rooti : TPar;  // Interzept der Wurzelanteilregression
-  roots : TPar;  // Steigung der Wurzelanteilregression
-  exk : TPar;    // Lichtextinktionskoeffizient
-  exk_0 : TPar;  // Extinktionskoeffizient bei LAI=0
-  LAIcrit_exk : TPar; // LAIcrit, bei dem Extinktionskoeffizient = exk
-  LUELeaf : TPar;         // LUE
-  LUE0 : TPar;        // Interzept der LUE Gleichung VW
-  LUEPod : TPar;      // LUE der Schoten
-  PARmh : TPar;       // einfallende Strahlungsmenge, die zur Erhaltung von DMShoot nötig ist (bei pfTm_opt); Herbst
-  PARmf : TPar;       // einfallende Strahlungsmenge, die zur Erhaltung von DMShoot nötig ist (bei pfTm_opt); Frühjahr
-  pfTm_opt: TPar;     // Optimaltemperatur für fTm nach Arrhenius
-  pfTm_Q10: TPar;     // Q10-Wert für fTm nach Arrhenius
-  pSen_sh: TPar;      // Anzahl Tage, über die PARm gemittelt wird
-  pSen_sh_w: TPar;    // Exponent für Wirkung des Faktors fSen_sh
-  fSws : TPar;        // Steigung der linearen Regression von DMShoot Verlust zu MinTempSum
-  Plants: TPar;       // Pflanzen pro m²
-  pIniLAI: TPar;      // LAI nach Auflaufen bei InitOption LAIInit [cm²/Pflanze]
+  /// <summary>Coefficient preceding the exponential term of the autumn stem N-dilution function</summary>
+  pCnstem1h : TPar;
+  /// <summary>Coefficient preceding the variable term of the autumn stem N-dilution function</summary>
+  pCnstem2h : TPar;
+  /// <summary>Coefficient preceding the exponential term of the root N-dilution function</summary>
+  pCnRoot1h : TPar;
+  /// <summary>Coefficient preceding the variable term of the root N-dilution function</summary>
+  pCnRoot2h : TPar;
+  /// <summary>Coefficient preceding the exponential term of the root N-dilution function</summary>
+  pCnRoot1f : TPar;
+  /// <summary>Coefficient preceding the variable term of the root N-dilution function</summary>
+  pCnRoot2f : TPar;
+  /// <summary>Leaf N concentration [%] (spring)</summary>
+  pCnleaf : TPar;
+  /// <summary>Intercept of the autumn leaf N-dilution function</summary>
+  pCn1leaf : TPar;
+  /// <summary>Slope of the autumn leaf N-dilution function</summary>
+  pCn2leaf : TPar;
+  /// <summary>N concentration of dead leaves [%]</summary>
+  pCnDead: TPar;
+  /// <summary>Root N concentration [%]</summary>
+  pCnRoot: TPar;
+  /// <summary>Seed N concentration [%]</summary>
+  pCnSeed : TPar;
+  /// <summary>Fraction of N translocated from senescent leaves</summary>
+  pCnTrans : TPar;
+  /// <summary>Lower cardinal temperature for growth</summary>
+  Ct1 : TPar;
+  /// <summary>Lower cardinal temperature of the optimum range</summary>
+  Ct2 : TPar;
+  /// <summary>Upper cardinal temperature of the optimum range</summary>
+  Ct3 : TPar;
+  /// <summary>Upper cardinal temperature for growth</summary>
+  Ct4 : TPar;
+  /// <summary>Specific leaf area after flowering [cmÂ²/g]</summary>
+  SLAnB : TPar;
+  /// <summary>Slope parameter for autumn specific leaf area</summary>
+  SLAhst : TPar;
+  /// <summary>Intercept parameter for autumn specific leaf area</summary>
+  SLAhin : TPar;
+  /// <summary>Minimum autumn specific leaf area [cmÂ²/g]</summary>
+  SLAmin : TPar;
+  /// <summary>Maximum autumn specific leaf area [cmÂ²/g]</summary>
+  SLAmax : TPar;
+  /// <summary>SLA of senescent leaves [cmÂ²/g]</summary>
+  SLADead : TPar;
+  /// <summary>Temperature threshold for winter senescence [cmÂ²/g]</summary>
+  fTminus : TPar;
+  /// <summary>Specific stem area [cmÂ²/g]</summary>
+  SSA : TPar;
+  /// <summary>Maximum specific pod area [cmÂ²/g]</summary>
+  SPAmax : TPar;
+  /// <summary>Growth rate from BBCH 10 until DMcrit</summary>
+  k1 : TPar;
+  /// <summary>Dry-matter threshold for exponential growth</summary>
+  DMcrit : TPar;
+  /// <summary>Intercept of the root-fraction regression</summary>
+  rooti : TPar;
+  /// <summary>Slope of the root-fraction regression</summary>
+  roots : TPar;
+  /// <summary>Light extinction coefficient</summary>
+  exk : TPar;
+  /// <summary>Extinction coefficient at LAI = 0</summary>
+  exk_0 : TPar;
+  /// <summary>Critical LAI at which the extinction coefficient equals exk</summary>
+  LAIcrit_exk : TPar;
+  /// <summary>LUE</summary>
+  LUELeaf : TPar;
+  /// <summary>Intercept of the pre-winter LUE equation</summary>
+  LUE0 : TPar;
+  /// <summary>Pod radiation-use efficiency</summary>
+  LUEPod : TPar;
+  /// <summary>Incident radiation required to maintain DMShoot at pfTm_opt in autumn</summary>
+  PARmh : TPar;
+  /// <summary>Incident radiation required to maintain DMShoot at pfTm_opt in spring</summary>
+  PARmf : TPar;
+  /// <summary>Optimum temperature for the Arrhenius-type fTm response</summary>
+  pfTm_opt: TPar;
+  /// <summary>Q10 value for the Arrhenius-type fTm response</summary>
+  pfTm_Q10: TPar;
+  /// <summary>Number of days over which PARm is averaged</summary>
+  pSen_sh: TPar;
+  /// <summary>Exponent controlling the effect of fSen_sh</summary>
+  pSen_sh_w: TPar;
+  /// <summary>Slope of the linear relation between DMShoot loss and MinTempSum</summary>
+  fSws : TPar;
+  /// <summary>Plants per mÂ²</summary>
+  Plants: TPar;
+  /// <summary>LAI after emergence with InitOption LAIInit [cmÂ²/plant]</summary>
+  pIniLAI: TPar;
   pCncritLeaf : TPar;
   pCncrit1Leaf : TPar;
   pCncrit2Leaf : TPar;
@@ -358,26 +625,38 @@ public
   Oilc : TPar;
   Oild : TPar;
   pfW:   TPAR;
-  LUEscaling: TPAR; /// Parameter for simultanous scalue of LUEveg and LUEgen []
+  /// <summary>Scaling factor applied simultaneously to vegetative and generative LUE</summary>
+  LUEscaling: TPAR;
 //  minNNI : TPar; /// minimum NNI Value [0..1]
 
   fCO2_scale     : TPar;
   fCO2           : TPar;
-  fCWSI          : TPar;  /// adjusting CO2-effect for drought stress level
-  CiCompensation : TPar; /// CO2-compensation Point
+  /// <summary>Adjustment of the CO2 effect for drought stress</summary>
+  fCWSI          : TPar;
+  /// <summary>CO2 compensation point</summary>
+  CiCompensation : TPar;
 
 
   // External Variables
 
-  GRad : TExternV;         // Globalstrahlung [W/m²]
-  TMPM : TExternV;         // Tagesmitteltemperatur
-  EC : TExternV;           // EC-Stadium
-  DVS_rate : TExternV;      // ratefield DVS
-  DVS : TExternV;          // Development-Stage
-  DayofYear : TExternV;    // Tag des Jahres
-  LUE_LAI : TExternV;      // LAI-Daten
-  DMGrowth_ex: TExternV;   // DMShoot-Zuwachs für Option ExternDM [g.m-2.d-1]
-  TransRatio : TExternV;   // Wasserdefizit
+  /// <summary>Global radiation [W/mÂ²]</summary>
+  GRad : TExternV;
+  /// <summary>Daily mean temperature</summary>
+  TMPM : TExternV;
+  /// <summary>BBCH stage</summary>
+  EC : TExternV;
+  /// <summary>Development-stage rate field</summary>
+  DVS_rate : TExternV;
+  /// <summary>Development stage</summary>
+  DVS : TExternV;
+  /// <summary>Day of year</summary>
+  DayofYear : TExternV;
+  /// <summary>LAI data</summary>
+  LUE_LAI : TExternV;
+  /// <summary>DMShoot growth for option ExternDM [g.m-2.d-1]</summary>
+  DMGrowth_ex: TExternV;
+  /// <summary>Water deficit</summary>
+  TransRatio : TExternV;
   TransIntRatio : TExternV;
 //  CO2pp:    TExternV;        /// external atmospheric CO2-concentration
 
@@ -387,7 +666,7 @@ public
 //  DauerEC81_89 : TExternV;
   DauerEC81_89: TState;
 
-  //Options
+  // Options
 
   fLAIOption : TLAIOption;
   LAIOption : TOption;
@@ -466,11 +745,16 @@ published
   Property St_DMSh : TState read DMSh write DMSh;
   Property St_DMShTrans : TState read DMShTrans write DMShTrans;
   Property St_LAIGen : TState read LAIGen write LAIGen;
-  Property St_sumQ : TState read  sumQ write sumQ;          // Summe aufgenommene Strahlungsmenge  [MJ]
-  Property St_sumQT : TState read  sumQT write sumQT;          // Summe temperaturkorrierte aufgenommene Strahlungsmenge  [MJ]
-  Property St_sumQLeaf : TState read sumQLeaf write sumQLeaf;      // Summe aufgenommene Strahlungsmenge Blätter
-  Property St_sumQGen : TState read sumQGen write sumQGen;       // Summe aufgenommene Strahlungsmenge Schoten
-  Property St_sumQT_TactTpot : TState read sumQT_TactTpot write sumQT_TactTpot; // Summe Trockenstress/Temperatur korrigierte aufgenommene Strahlungsmenge  [MJ]
+  /// <summary>Cumulative absorbed radiation [MJ]</summary>
+  Property St_sumQ : TState read  sumQ write sumQ;
+  /// <summary>Cumulative temperature-corrected absorbed radiation [MJ]</summary>
+  Property St_sumQT : TState read  sumQT write sumQT;
+  /// <summary>Cumulative radiation absorbed by leaves</summary>
+  Property St_sumQLeaf : TState read sumQLeaf write sumQLeaf;
+  /// <summary>Cumulative radiation absorbed by pods</summary>
+  Property St_sumQGen : TState read sumQGen write sumQGen;
+  /// <summary>Cumulative drought- and temperature-corrected absorbed radiation [MJ]</summary>
+  Property St_sumQT_TactTpot : TState read sumQT_TactTpot write sumQT_TactTpot;
 
 
          // Parameters
@@ -558,340 +842,340 @@ end;
 procedure TOSRGrowth.createAll;
 begin
   inherited createAll;
-  VarCreate('PARRad', 'W/m²',0, true, PARRad,'photosynthetisch aktive Strahlung');
-  VarCreate('fT', '',0, true, fT,'Wirkungsfaktor Photosynthese');
-  VarCreate('fRoot', '',0, true, fRoot,'Anteil Wurzelzuwachs');
-  VarCreate('maxfRoot','',0,true,maxfRoot,'maximaler Anteil Wurzelzuwachs');
-  VarCreate('fBl','',0,true,fBl,'Anteil Blattzuwachs am Sprosszuwachs');
-  VarCreate('fBl_EC51','',0,true,fBl_EC51,'Anteil Blattzuwachs EC 51');
-  VarCreate('fSt','',0,true,fSt,'Anteil Stängelzuwachs am Sprosszuwachs');
-  VarCreate('fGen','',0,true,fGen,'Anteil Schotenzuwachs am Sprosszuwachs');
-  VarCreate('fPW','',0,true,fPW,'Anteil Schotenhüllenzuwachs am Schotenzuwachs');
-  VarCreate('fSeedGen','',0,true,fSeedGen,'Anteil Samenzuwachs am Schotenzuwachs');
-  VarCreate('fSeedStarch','',0,true,fSeedStarch,'Berechung Stärkeanteil im Samen');
-  VarCreate('fSeedOil','',0,true,fSeedOil,'Berechnung Ölanteil im Samen');
-  VarCreate('fSum','',0,true,fSum,'Summe der anteiligen organspezifischen NNI');
-  VarCreate('fNNILeaf','',0,true,fNNILeaf,'Zwischenschritt zur Berechnung der NNILeaf');
-  VarCreate('fNNIStem','',0,true,fNNIStem,'Zwischenschritt zur Berechnung der NNIStem');
-  VarCreate('fNNIGen','',0,true,fNNIGen,'Zwischenschritt zur Berechnung der NNIGen');
-  VarCreate('fNNIRoot','',0,true,fNNIRoot,'Zwischenschritt zur Berechnung der NNIRoot');
-  VarCreate('Q', 'MJ',0, true, Q,'aufgenommene Strahlungsmenge');
-  VarCreate('QLeaf', 'MJ',0, true, QLeaf,'aufgenommene Strahlungsmenge Blätter');
-  VarCreate('QGen', 'MJ',0, true, QGen,'aufgenommene Strahlungsmenge Schoten');
-  VarCreate('fInt', '',0, true, fInt,'Anteil aufgenommener Strahlung');
-  VarCreate('fIntLeaf', '',0, true, fIntLeaf,'Anteil aufgenommener Strahlung Blätter');
-  VarCreate('fIntGen', '',0, true, fIntGen,'Anteil aufgenommener Strahlung Schoten');
-  VarCreate('act_k', '',0, true, act_k,'Extinktionskoeffizient für PAR = exk bzw. variabler Wert für LAI < LAIcrit_exk');
-  VarCreate('act_k_Leaf', '',0, true, act_k_Leaf,'Extinktionskoeffizient Blätter');
-  VarCreate('act_k_Gen', '',0, true, act_k_Gen,'Extinktionskoeffizient Schoten');
-  VarCreate('QT', 'MJ',0, true, QT,'Temperatur korrigierte aufgenommene Strahlungsmenge');
-  VarCreate('Teff', '°C',0, true, Teff,'effektive Temperatur');
-  VarCreate('Tminus', '°C',0, true, Tminus,'Temperatur unter Null');
-  VarCreate('NcLeaf', '%',0, true, NcLeaf,'Blatt N-Konzentration');
-  VarCreate('NcLeaf_VA','%',0,true,NcLeaf_VA,'Blatt N-Konzentration zu Vegetationsbeginn');
-  VarCreate('NcStem', '%',0, true, NcStem,'Stängel N-Konzentration');
-  VarCreate('NcStem_VA','%',0,true,NcStem_VA,'Stängel N-Konzentration zu Vegetationsbeginn');
-  VarCreate('NcStem_EC70','%',0,true,NcStem_EC70,'Stängel N-Konzentration bei EC 70');
-  VarCreate('NcGen','%',0,true,NcGen,'generative N-Konzentration');
-  VarCreate('NcRoot', '%',0, true, NcRoot,'Wurzel N-Konzentration');
-  VarCreate('NcRoot_VA', '%',0, true, NcRoot_VA,'Wurzel N-Konzentration Vegetationsanfang');
-  VarCreate('NcRoot_EC70','%',0,true,NcRoot_EC70,'Wurzel N-Konzentration bei EC 70');
-  VarCreate('NUptakeRate_pot', 'g m-2 d-1',0, true, NUptakeRate_pot,'potenzielle N-Aufnahmerate (g.m-2.d-1)');
+  VarCreate('PARRad', 'W/mÂ²',0, true, PARRad,'Photosynthetically active radiation');
+  VarCreate('fT', '',0, true, fT,'Photosynthesis response factor');
+  VarCreate('fRoot', '',0, true, fRoot,'Root growth fraction');
+  VarCreate('maxfRoot','',0,true,maxfRoot,'Maximum root growth fraction');
+  VarCreate('fBl','',0,true,fBl,'Leaf fraction of shoot growth');
+  VarCreate('fBl_EC51','',0,true,fBl_EC51,'Leaf growth fraction at BBCH 51');
+  VarCreate('fSt','',0,true,fSt,'Stem fraction of shoot growth');
+  VarCreate('fGen','',0,true,fGen,'Pod fraction of shoot growth');
+  VarCreate('fPW','',0,true,fPW,'Pod-wall growth fraction of pod growth');
+  VarCreate('fSeedGen','',0,true,fSeedGen,'Seed growth fraction of pod growth');
+  VarCreate('fSeedStarch','',0,true,fSeedStarch,'Seed starch fraction');
+  VarCreate('fSeedOil','',0,true,fSeedOil,'Seed oil fraction');
+  VarCreate('fSum','',0,true,fSum,'Sum of organ-specific NNI-weighted fractions');
+  VarCreate('fNNILeaf','',0,true,fNNILeaf,'Intermediate value used to calculate NNILeaf');
+  VarCreate('fNNIStem','',0,true,fNNIStem,'Intermediate value used to calculate NNIStem');
+  VarCreate('fNNIGen','',0,true,fNNIGen,'Intermediate value used to calculate NNIGen');
+  VarCreate('fNNIRoot','',0,true,fNNIRoot,'Intermediate value used to calculate NNIRoot');
+  VarCreate('Q', 'MJ',0, true, Q,'Absorbed radiation');
+  VarCreate('QLeaf', 'MJ',0, true, QLeaf,'Radiation absorbed by leaves');
+  VarCreate('QGen', 'MJ',0, true, QGen,'Radiation absorbed by pods');
+  VarCreate('fInt', '',0, true, fInt,'Fraction of absorbed radiation');
+  VarCreate('fIntLeaf', '',0, true, fIntLeaf,'Fraction of radiation absorbed by leaves');
+  VarCreate('fIntGen', '',0, true, fIntGen,'Fraction of radiation absorbed by pods');
+  VarCreate('act_k', '',0, true, act_k,'PAR extinction coefficient: exk or a variable value when LAI is below LAIcrit_exk');
+  VarCreate('act_k_Leaf', '',0, true, act_k_Leaf,'Leaf extinction coefficient');
+  VarCreate('act_k_Gen', '',0, true, act_k_Gen,'Pod extinction coefficient');
+  VarCreate('QT', 'MJ',0, true, QT,'Temperature-corrected absorbed radiation');
+  VarCreate('Teff', 'Â°C',0, true, Teff,'Effective temperature');
+  VarCreate('Tminus', 'Â°C',0, true, Tminus,'Temperature below zero');
+  VarCreate('NcLeaf', '%',0, true, NcLeaf,'Leaf N concentration');
+  VarCreate('NcLeaf_VA','%',0,true,NcLeaf_VA,'Leaf N concentration at the beginning of the growing season');
+  VarCreate('NcStem', '%',0, true, NcStem,'Stem N concentration');
+  VarCreate('NcStem_VA','%',0,true,NcStem_VA,'Stem N concentration at the beginning of the growing season');
+  VarCreate('NcStem_EC70','%',0,true,NcStem_EC70,'Stem N concentration at BBCH 70');
+  VarCreate('NcGen','%',0,true,NcGen,'Generative-organ N concentration');
+  VarCreate('NcRoot', '%',0, true, NcRoot,'Root N concentration');
+  VarCreate('NcRoot_VA', '%',0, true, NcRoot_VA,'Root N concentration at the beginning of the growing season');
+  VarCreate('NcRoot_EC70','%',0,true,NcRoot_EC70,'Root N concentration at BBCH 70');
+  VarCreate('NUptakeRate_pot', 'g m-2 d-1',0, true, NUptakeRate_pot,'Potential N uptake rate (g.m-2.d-1)');
   VarCreate('NNI', '-',1, true, NNI,'Nitrogen Nutrition Index');
-  VarCreate('CropHeight', 'm',0, true, CropHeight,'Bestandeshöhe');
-  VarCreate('LAILeaf_EC70','m²/m²',0,true,LAILeaf_EC70, 'LAI zu EC 70');
-  VarCreate('actSLA', 'cm²/g', 0 ,true, actSLA,'Spezifische Blattfläche');
-  VarCreate('SLA', 'cm²/g', 0 ,true, avSLA,'Spezifische Blattfläche');
-  VarCreate('actSPA','cm²/g',0,true,actSPA,'Spezifische Schotenfläche');
-  VarCreate('SPA','cm²/g',0,true,avSPA,'Spezifische Schotenfläche');
-  VarCreate('LUE', 'g/MJ', 0 ,true, LUE,'Lichtnutzungseffizienz');
-  VarCreate('LUEGen','g/MJ',0,true,LUEGen,'Lichtnutzungseffizienz Schoten');
-  VarCreate('g', '', 0 ,true, g,'Steigung der allometrischen Funktion');
-  VarCreate('h', '', 0 ,true, h,'Interzept der allometrischen Funktion');
-  VarCreate('LAIm', 'm²/m²',0, true,LAIm,'Maximaler LAI bei vorhandener Strahlungsmenge');
-  VarCreate('fTm', '',0, true, fTm,'Temperaturfaktor Erhaltungsatmung zur Berechnung von PARm');
-  VarCreate('fTSen','',0,true,fTSen,'Temperaturfaktor bei der Seneszenzberechnung');
-  VarCreate('fSen_sh', '',0, true, fSen_sh,'Seneszenzfaktor Beschattung / Erhaltungsatmung');
-  VarCreate('Auflauf', 'd',0, true,Auflauf,'Zeitpunkt des Auflaufens');
+  VarCreate('CropHeight', 'm',0, true, CropHeight,'Crop height');
+  VarCreate('LAILeaf_EC70','mÂ²/mÂ²',0,true,LAILeaf_EC70, 'LAI at BBCH 70');
+  VarCreate('actSLA', 'cmÂ²/g', 0 ,true, actSLA,'Specific leaf area');
+  VarCreate('SLA', 'cmÂ²/g', 0 ,true, avSLA,'Specific leaf area');
+  VarCreate('actSPA','cmÂ²/g',0,true,actSPA,'Specific pod area');
+  VarCreate('SPA','cmÂ²/g',0,true,avSPA,'Specific pod area');
+  VarCreate('LUE', 'g/MJ', 0 ,true, LUE,'Radiation-use efficiency');
+  VarCreate('LUEGen','g/MJ',0,true,LUEGen,'Radiation-use efficiency of pods');
+  VarCreate('g', '', 0 ,true, g,'Slope of the allometric function');
+  VarCreate('h', '', 0 ,true, h,'Intercept of the allometric function');
+  VarCreate('LAIm', 'mÂ²/mÂ²',0, true,LAIm,'Maximum maintainable LAI at the available radiation');
+  VarCreate('fTm', '',0, true, fTm,'Temperature factor for maintenance respiration used to calculate PARm');
+  VarCreate('fTSen','',0,true,fTSen,'Temperature factor used in the senescence calculation');
+  VarCreate('fSen_sh', '',0, true, fSen_sh,'Shading and maintenance-respiration senescence factor');
+  VarCreate('Auflauf', 'd',0, true,Auflauf,'Time of emergence');
   VarCreate('DummyVar', '',0, true, DummyVar);
-  VarCreate('EC_act','',0,true,EC_act,'EC-Wert bei LAIShoot = 2.0');
-  VarCreate('Transkoeff','',0,true,Transkoeff,'Transmissionskoeffizient Schotenentwicklung');
-  VarCreate('maxGAI','m²/m²',0,true,maxGAI,'max. GAI');
-  VarCreate('maxLAIGen','m²/m²',0,true,maxLAIGen,'max. PAI');
-  VarCreate('maxLAIStem','m²/m²',0,true,maxLAIStem,'max. SAI');
-  VarCreate('dNcLeaf','',0,true,dNcLeaf,'Änderung NcLeaf');
-  VarCreate('dNcStem','',0,true,dNcStem,'Änderung NcStem');
-  VarCreate('dNcRoot','',0,true,dNcRoot,'Änderung NcRoot');
-  VarCreate('dNcGen','',0,true,dNcGen,'Änderung NcGen');
-  VarCreate('NcritLeaf','%',0,true,NcritLeaf,'kritische N-Konz Blätter');
-  VarCreate('NcLeaf_act','%',0,true,NcLeaf_act,'aktuelle N-Konzentration der Blätter');
-  VarCreate('NcStem_act','%',0,true,NcStem_act,'aktuelle N-Konzentration der Stängel');
-  VarCreate('NcGen_act','%',0,true,NcGen_act,'aktuelle N-Konzentration der Schoten');
-  VarCreate('NcRoot_act','%',0,true,NcRoot_act,'aktuelle N-Konzentration der Wurzeln');
-  VarCreate('NcritStem','%',0,true,NcritStem,'kritische N-Konz Stängel');
-  VarCreate('NcritGen','%',0,true,NcritGen,'kritische N-Konz Schoten');
-  VarCreate('NcritRoot','%',0,true,NcritRoot,'kritische N-Konz Wurzeln');
-  VarCreate('NcritRoot_VA','%',0,true,NcritRoot_VA,'kritische N-Konz Wurzeln Vegetationsanfang');
-  VarCreate('NcritLeaf_VA','%',0,true,NcritLeaf_VA,'kritische N-Konz Blätter VA');
-  VarCreate('NcritStem_VA','%',0,true,NcritStem_VA,'kritische N-Konz Stängel VA');
-  VarCreate('NcritStem_EC70','%',0,true,NcritStem_EC70,'kritische N-Konz Stängel EC70');
-  VarCreate('NcritRoot_EC70','%',0,true,NcritRoot_EC70,'kritische N-Konz Wurzeln EC70');
-  VarCreate('NNILeaf','-',1,true,NNILeaf,'NNI der Blätter');
-  VarCreate('NNIStem','-',1,true,NNIStem,'NNI der Stängel');
-  VarCreate('NNIGen','-',1,true,NNIGen,'NNI der Schoten');
-  VarCreate('NNIRoot','-',1,true,NNIRoot,'NNI der Wurzeln');
-  VarCreate('PAI','',0,true,PAI,'Schotenflächenindex');
-  VarCreate('SAI','',0,true,SAI,'Stängelflächeniindex');
-  VarCreate('SLAf','cm²/g',0,true,SLAf,'SLA im Frühjahr');
-  VarCreate('NDemandGrowth','g/m²',0,true,NDemandGrowth,'N-Bedarf für aktuelles Wachstum');
-  VarCreate('NDemandDeficit','g/m²',0,true,NDemandDeficit,'N-Bedarf zum Auffüllen von bestehendem N-Mangel');
-  VarCreate('NDemandDeficitLeaf','g/m²',0,true,NDemandDeficitLeaf,'N-Bedarf zum Auffüllen von bestehendem N-Mangel in den Blättern');
-  VarCreate('NDemandDeficitStem','g/m²',0,true,NDemandDeficitStem,'N-Bedarf zum Auffüllen von bestehendem N-Mangel in den Stängeln');
-  VarCreate('NDemandDeficitRoot','g/m²',0,true,NDemandDeficitRoot,'N-Bedarf zum Auffüllen von bestehendem N-Mangel in den Wurzeln');
-  VarCreate('NDemandDeficitGen','g/m²',0,true,NDemandDeficitGen,'N-Bedarf zum Auffüllen von bestehendem N-Mangel in den Schoten');
-  VarCreate('NSupply','g/m²',0,true,NSupply,'verfügbare N-Menge');
+  VarCreate('EC_act','',0,true,EC_act,'BBCH stage at which LAIShoot equals 2.0');
+  VarCreate('Transkoeff','',0,true,Transkoeff,'Transmission coefficient during pod development');
+  VarCreate('maxGAI','mÂ²/mÂ²',0,true,maxGAI,'max. GAI');
+  VarCreate('maxLAIGen','mÂ²/mÂ²',0,true,maxLAIGen,'max. PAI');
+  VarCreate('maxLAIStem','mÂ²/mÂ²',0,true,maxLAIStem,'max. SAI');
+  VarCreate('dNcLeaf','',0,true,dNcLeaf,'Change in NcLeaf');
+  VarCreate('dNcStem','',0,true,dNcStem,'Change in NcStem');
+  VarCreate('dNcRoot','',0,true,dNcRoot,'Change in NcRoot');
+  VarCreate('dNcGen','',0,true,dNcGen,'Change in NcGen');
+  VarCreate('NcritLeaf','%',0,true,NcritLeaf,'Critical leaf N concentration');
+  VarCreate('NcLeaf_act','%',0,true,NcLeaf_act,'Current leaf N concentration');
+  VarCreate('NcStem_act','%',0,true,NcStem_act,'Current stem N concentration');
+  VarCreate('NcGen_act','%',0,true,NcGen_act,'Current pod N concentration');
+  VarCreate('NcRoot_act','%',0,true,NcRoot_act,'Current root N concentration');
+  VarCreate('NcritStem','%',0,true,NcritStem,'Critical stem N concentration');
+  VarCreate('NcritGen','%',0,true,NcritGen,'Critical pod N concentration');
+  VarCreate('NcritRoot','%',0,true,NcritRoot,'Critical root N concentration');
+  VarCreate('NcritRoot_VA','%',0,true,NcritRoot_VA,'Critical root N concentration at the beginning of the growing season');
+  VarCreate('NcritLeaf_VA','%',0,true,NcritLeaf_VA,'Critical leaf N concentration at the beginning of the growing season');
+  VarCreate('NcritStem_VA','%',0,true,NcritStem_VA,'Critical stem N concentration at the beginning of the growing season');
+  VarCreate('NcritStem_EC70','%',0,true,NcritStem_EC70,'Critical stem N concentration at BBCH 70');
+  VarCreate('NcritRoot_EC70','%',0,true,NcritRoot_EC70,'Critical root N concentration at BBCH 70');
+  VarCreate('NNILeaf','-',1,true,NNILeaf,'Leaf NNI');
+  VarCreate('NNIStem','-',1,true,NNIStem,'Stem NNI');
+  VarCreate('NNIGen','-',1,true,NNIGen,'Pod NNI');
+  VarCreate('NNIRoot','-',1,true,NNIRoot,'Root NNI');
+  VarCreate('PAI','',0,true,PAI,'Pod area index');
+  VarCreate('SAI','',0,true,SAI,'Stem area index');
+  VarCreate('SLAf','cmÂ²/g',0,true,SLAf,'SLA in spring');
+  VarCreate('NDemandGrowth','g/mÂ²',0,true,NDemandGrowth,'N demand for current growth');
+  VarCreate('NDemandDeficit','g/mÂ²',0,true,NDemandDeficit,'N demand to compensate for an existing N deficit');
+  VarCreate('NDemandDeficitLeaf','g/mÂ²',0,true,NDemandDeficitLeaf,'N demand to compensate for an existing leaf N deficit');
+  VarCreate('NDemandDeficitStem','g/mÂ²',0,true,NDemandDeficitStem,'N demand to compensate for an existing stem N deficit');
+  VarCreate('NDemandDeficitRoot','g/mÂ²',0,true,NDemandDeficitRoot,'N demand to compensate for an existing root N deficit');
+  VarCreate('NDemandDeficitGen','g/mÂ²',0,true,NDemandDeficitGen,'N demand to compensate for an existing pod N deficit');
+  VarCreate('NSupply','g/mÂ²',0,true,NSupply,'Available N amount');
 
-  VarCreate('TKM','g',0,true,TKM,'Tausend-Korn-Masse');
-  VarCreate('Samenanzahl','m-2',0,true,Samenanzahl,'Anzahl Samen pro m²');
-  VarCreate('HI','',0,true,HI,'Harvest-Index');
+  VarCreate('TKM','g',0,true,TKM,'Thousand seed mass');
+  VarCreate('Samenanzahl','m-2',0,true,Samenanzahl,'Number of seeds per mÂ²');
+  VarCreate('HI','',0,true,HI,'Harvest index');
   VarCreate('NHI','',0,true,NHI,'Nitrogen Harvest Index');
   VarCreate('NUE','',0,true,NUE,'Nitrogen Use Efficiency');
 
-  VarCreate('KonversionVerlust','',0,true,KonversionVerlust,'Konversionsverlust durch Bildung von Öl statt Stärke');
+  VarCreate('KonversionVerlust','',0,true,ConversionLoss,'Conversion loss caused by oil formation instead of starch formation');
 
-  VarCreate('avs','',0,true,avs,'Day of Year des Vegetationsbeginns (aus Temperaturwerten ermittelt)');
-  VarCreate('Parav','[-]', 0.0, false, Parav,'mittlere Einstrahlung von PAR über 5 Tage für den Grenzwert zur Berechnung der Erhaltungsatmung');
-  VarCreate('fW','',1,true,fW,'Faktor für den Einfluss von Trockenstress (Ferreya 2013)');
+  VarCreate('avs','',0,true,avs,'Day of year at the beginning of the growing season, derived from temperature');
+  VarCreate('Parav','[-]', 0.0, false, Parav,'Mean PAR over five days used as the maintenance-respiration threshold');
+  VarCreate('fW','',1,true,fW,'Drought-stress response factor (Ferreya 2013)');
 
-  VarCreate('N_Def','',0,true,N_Def,'N-Defizitfaktor (Verhältnis von N-Bedarf und N-Aufnahme)');
+  VarCreate('N_Def','',0,true,N_Def,'N-deficit factor (ratio of N demand to N uptake)');
   VarCreate('CO2_factor', '[-]',1, true,  CO2_factor);
 
-  StateCreate('DMShoot', 'g/m²',0.1, true,DMShoot,'Sprosstrockenmasse');
-  StateCreate('DMShoot_OF','g/m²',0,true,DMShoot_OF,'Sprosstrockenmasse zum Onset of Flowering');
-  StateCreate('DMShoot_nB','g/m²',0,true,DMShoot_nB,'Sprosstrockenmasse nach der Blüte');
-  StateCreate('DMShoot_nB_pot','g/m²',0,true, DMShoot_nB_pot,'potentielle Sprosstrockenmasse nach der Blüte');
-  StateCreate('DMShoot_vW','g/m²',0.1,true,DMShoot_vW,'Sprosstrockenmasse vor Winter');
-  StateCreate('DMLeaf', 'g/m²',0, true,DMLeaf,'Blatttrockenmasse');
-  StateCreate('DMStem', 'g/m²',0, true,DMStem,'Stängeltrockenmasse');
-  StateCreate('DMRoot', 'g/m²',0, true,DMRoot,'Wurzeltrockenmasse');
-  StateCreate('DMGen', 'g/m²',0,true,DMGen,'generative Trockenmasse');
-  StateCreate('DMPodWall','g/m²',0,true,DMPodWall,'Schotenhüllentrockenmasse');
-  StateCreate('DMSeed','g/m²',0,true,DMSeed,'Samentrockenmasse');
-  StateCreate('DMSeedStarch','g/m²',0,true,DMSeedStarch,'Trockenmasse des Stärkeanteils im Samen');
-  StateCreate('DMSeedOil','g/m²',0,true,DMSeedOil,'Trockenmasse des Ölanteils im Samen');
-  StateCreate('DMPlant', 'g/m²',0, true,DMPlant,'Gesamtpflanzentrockenmasse');
-  StateCreate('LAIShoot', 'm²/m²',0, true,LAIShoot,'Sprossfläche');
-  StateCreate('LAILeaf', 'm²/m²',0, true,LAILeaf,'Blattfläche');
-  StateCreate('LAIStem', 'm²/m²',0, true,LAIStem,'Stängelfläche');
-  StateCreate('NShoot', 'g/m²',0, true,NShoot,'Spross-N-Menge');
-  StateCreate('NLeaf', 'g/m²',0, true,NLeaf,'Blatt-N-Menge');
-  StateCreate('strNStem', 'g/m²',0, true,strNStem,'strukturelle Stängel-N-Menge');
-  StateCreate('poolNStem', 'g/m²',0, true,poolNStem,'Stängel-N-Menge (Pool)');
-  StateCreate('NStem', 'g/m²',0, true,NStem,'Stängel-N-Menge');
-  StateCreate('NGen','g/m²',0,true,NGen,'generative N-Menge');
-  StateCreate('strNRoot', 'g/m²',0, true,strNRoot,'strukturelle Wurzel-N-Menge');
-  StateCreate('poolNRoot', 'g/m²',0, true,poolNRoot,'Wurzel-N-Menge (Pool)');
-  StateCreate('NRoot', 'g/m²',0, true,NRoot,'Wurzel-N-Menge');
-  StateCreate('NDead', 'g/m²',0, true,NDead,'N-Menge in abgestorbenen Blättern [g/m²]');
-  StateCreate('NPlant', 'g/m²',0, true,NPlant,'N-Menge in Gesamtpflanze [g/m²]');
-  StateCreate('NSeed','g/m²',0,true,NSeed,'N-Menge im Samen [g/m²]');
-  StateCreate('NPodWall','g/m²',0,true,NPodWall,'N-Menge in Schotenwänden [g/m²]');
-  StateCreate('NDeadW','g/m²',0,true,NDeadW,'durch Frostseneszenz verlorene N-Menge');
-  StateCreate('NDeadSh','g/m²',0,true,NDeadSh,'durch Beschattungsseneszenz verlorene N-Menge');
-  StateCreate('NTransLeaf','g/m²',0,true,NTransLeaf,'translozierbare N-Menge aus den Blättern');
-  StateCreate('NTransStem','g/m²',0,true,NTransStem,'translozierbare N-Menge aus den Stängeln');
-  StateCreate('NTransGen','g/m²',0,true,NTransGen,'translozierbare N-Menge aus den Schoten');
-  StateCreate('NTransRoot','g/m²',0,true,NTransRoot,'translozierbare N-Menge aus den Wurzeln');
-  StateCreate('NTrans','g/m²',0,true,NTrans,'translozierbare Gesamt-N-Menge');
-  StateCreate('potNTrans','g/m²',0,true,potNTrans,'potentiell translozierbare N-Menge');
-  StateCreate('potNPool','g/m²',0,true,potNPool,'potentielle N-Menge im Pool');
-  StateCreate('NUptake_pot', 'g/m²',0, true,NUptake_pot,'potenziell aufgenommene N-Menge [g/m²]');
-  StateCreate('NUptake_act', 'g/m²',0, true,NUptake_act,'aktuell aufgenommene N-Menge [g/m²]');
-  StateCreate('TempSum', '[°Cd]',0, true,TempSum,'Temperatursumme');
-  StateCreate('TempSumAussaat', '[°Cd]',0, true,TempSumAussaat,'Temperatursumme ab Aussaat');
-  StateCreate('TempSumMinus', '[°Cd]',0, true,TempSumMinus,'Temperatursumme');
-  StateCreate('TempSumAuflauf','[°Cd]',0,true,TempSumAuflauf,'Temperatursumme ab Auflauf (Tb = 0°C)');
-  StateCreate('TempSumPodGrowth','[°Cd]',0,true,TempSumPodGrowth,'Temperatursumme ab EC70');
-  StateCreate('TempSumSeed','[°Cd]',0,true,TempSumSeed,'Temperatursumme während der Samenreifung');
-  StateCreate('TempSumLeafLoss','[°Cd]',0,true,TempSumLeafLoss,'Temperatursumme ab EC51 zur Berechnung der Abnahme des Blattanteils am Gesamtpflanzenwachstum');
-  StateCreate('TempSumRoots','[°Cd]',0,true,TempSumRoots,'Temperatursumme zwischen DoY 30 und DoY 150 zur Berechnung von fRoot');
-  StateCreate('LAIs', 'm²/m²',0, true,LAIs,'Schatten induzierte Seneszenzfläche');
-  StateCreate('DMdead', 'g/m²',0, true, DMdead,'seneszente Trockenmasse');
-  StateCreate('DMDeadW', 'g/m²',0, true, DMDeadW,'durch Frostseneszenz abgestorbene Trockenmasse');
-  StateCreate('DMDeadLeafW', 'g/m²',0, true, DMDeadLeafW,'durch Frostseneszenz abgestorbene Blatttrockenmasse');
-  StateCreate('DMDeadStemW', 'g/m²',0, true, DMDeadStemW,'durch Frostseneszenz abgestorbene Stängeltrockenmasse');
-  StateCreate('DMDeadRootW','g/m²',0,true,DMDeadRootW,'über Winter abgestorbene Wurzeltrockenmasse');
-  StateCreate('DMDeadSh', 'g/m²',0, true, DMDeadSh,'durch Beschattungs-Seneszenz abgestorbene Blatttrockenmasse');
-  StateCreate('DMDeadN', 'g/m²', 0, true, DMDeadN,'durch N-Mangel abgestorbene Blatttrockenmasse');
-  StateCreate('DM_N','g/m²',0,true,DM_N,'ehemalige lebendige (grüne) Trockenmasse, der durch N-Mangel abgestorbenen Blätter');
-  StateCreate('DMNTrans','g/m²',0,true,DMNTrans,'translozierte Blatttrockenmasse aus N-Mangel');
-  StateCreate('DMSh','g/m²',0,true,DMSh,'potentiell durch Beschattungs-Seneszenz aus den Blättern abgestorbene und translozierte Trockenmasse');
-  StateCreate('DMShTrans','g/m²',0,true,DMShTrans,'durch Beschattungs-Seneszenz translozierte Blattrockenmasse zu den Schoten');
-  StateCreate('DMTransStem','g/m²',0,true,DMTransStem,'translozierte Stängel-Trockenmasse');
-  StateCreate('DMTransLeaf','g/m²',0,true,DMTransLeaf,'translozierte Blatt-Trockenmasse');
-  StateCreate('DMTrans','g/m²',0,true,DMTrans,'translozierte Trockenmasse');
-  StateCreate('LAIGen','m²/m²',0,true,LAIGen,'PodAreaIndex');
-  StateCreate('C_Dead','kg/ha',0,true,C_Dead,'C-Menge der abgeworfenen Blätter');
-  StateCreate('N_Dead','kg/ha',0,true,N_Dead,'N-Menge der abgeworfenen Blätter');
+  StateCreate('DMShoot', 'g/mÂ²',0.1, true,DMShoot,'Shoot dry matter');
+  StateCreate('DMShoot_OF','g/mÂ²',0,true,DMShoot_OF,'Shoot dry matter at the onset of flowering');
+  StateCreate('DMShoot_nB','g/mÂ²',0,true,DMShoot_nB,'Shoot dry-matter accumulation since flowering');
+  StateCreate('DMShoot_nB_pot','g/mÂ²',0,true, DMShoot_nB_pot,'Potential shoot dry-matter accumulation since flowering without drought stress');
+  StateCreate('DMShoot_vW','g/mÂ²',0.1,true,DMShoot_vW,'Shoot dry matter before winter');
+  StateCreate('DMLeaf', 'g/mÂ²',0, true,DMLeaf,'Leaf dry matter');
+  StateCreate('DMStem', 'g/mÂ²',0, true,DMStem,'Stem dry matter');
+  StateCreate('DMRoot', 'g/mÂ²',0, true,DMRoot,'Root dry matter');
+  StateCreate('DMGen', 'g/mÂ²',0,true,DMGen,'Generative dry matter');
+  StateCreate('DMPodWall','g/mÂ²',0,true,DMPodWall,'Pod-wall dry matter');
+  StateCreate('DMSeed','g/mÂ²',0,true,DMSeed,'Seed dry matter');
+  StateCreate('DMSeedStarch','g/mÂ²',0,true,DMSeedStarch,'Seed starch dry matter');
+  StateCreate('DMSeedOil','g/mÂ²',0,true,DMSeedOil,'Seed oil dry matter');
+  StateCreate('DMPlant', 'g/mÂ²',0, true,DMPlant,'Total plant dry matter');
+  StateCreate('LAIShoot', 'mÂ²/mÂ²',0, true,LAIShoot,'Shoot area index');
+  StateCreate('LAILeaf', 'mÂ²/mÂ²',0, true,LAILeaf,'Leaf area index');
+  StateCreate('LAIStem', 'mÂ²/mÂ²',0, true,LAIStem,'Stem area index');
+  StateCreate('NShoot', 'g/mÂ²',0, true,NShoot,'Shoot N amount');
+  StateCreate('NLeaf', 'g/mÂ²',0, true,NLeaf,'Leaf N amount');
+  StateCreate('strNStem', 'g/mÂ²',0, true,strNStem,'Structural stem N amount');
+  StateCreate('poolNStem', 'g/mÂ²',0, true,poolNStem,'Stem N pool');
+  StateCreate('NStem', 'g/mÂ²',0, true,NStem,'Total stem N amount');
+  StateCreate('NGen','g/mÂ²',0,true,NGen,'Generative-organ N amount');
+  StateCreate('strNRoot', 'g/mÂ²',0, true,strNRoot,'Structural root N amount');
+  StateCreate('poolNRoot', 'g/mÂ²',0, true,poolNRoot,'Root N pool');
+  StateCreate('NRoot', 'g/mÂ²',0, true,NRoot,'Total root N amount');
+  StateCreate('NDead', 'g/mÂ²',0, true,NDead,'N amount in dead leaves [g/mÂ²]');
+  StateCreate('NPlant', 'g/mÂ²',0, true,NPlant,'Total plant N amount [g/mÂ²]');
+  StateCreate('NSeed','g/mÂ²',0,true,NSeed,'Seed N amount [g/mÂ²]');
+  StateCreate('NPodWall','g/mÂ²',0,true,NPodWall,'Pod-wall N amount [g/mÂ²]');
+  StateCreate('NDeadW','g/mÂ²',0,true,NDeadW,'N amount lost through frost senescence');
+  StateCreate('NDeadSh','g/mÂ²',0,true,NDeadSh,'N amount lost through shading senescence');
+  StateCreate('NTransLeaf','g/mÂ²',0,true,NTransLeaf,'Translocatable N amount from leaves');
+  StateCreate('NTransStem','g/mÂ²',0,true,NTransStem,'Translocatable N amount from stems');
+  StateCreate('NTransGen','g/mÂ²',0,true,NTransGen,'Translocatable N amount from pods');
+  StateCreate('NTransRoot','g/mÂ²',0,true,NTransRoot,'Translocatable N amount from roots');
+  StateCreate('NTrans','g/mÂ²',0,true,NTrans,'Total translocatable N amount');
+  StateCreate('potNTrans','g/mÂ²',0,true,potNTrans,'Potentially translocatable N amount');
+  StateCreate('potNPool','g/mÂ²',0,true,potNPool,'Potential N-pool amount');
+  StateCreate('NUptake_pot', 'g/mÂ²',0, true,NUptake_pot,'Potential N uptake [g/mÂ²]');
+  StateCreate('NUptake_act', 'g/mÂ²',0, true,NUptake_act,'Actual N uptake [g/mÂ²]');
+  StateCreate('TempSum', '[Â°Cd]',0, true,TempSum,'Thermal time');
+  StateCreate('TempSumAussaat', '[Â°Cd]',0, true,TempSumAussaat,'Thermal time since sowing');
+  StateCreate('TempSumMinus', '[Â°Cd]',0, true,TempSumMinus,'Thermal time');
+  StateCreate('TempSumAuflauf','[Â°Cd]',0,true,TempSumAuflauf,'Thermal time since emergence (Tb = 0Â°C)');
+  StateCreate('TempSumPodGrowth','[Â°Cd]',0,true,TempSumPodGrowth,'Thermal time since BBCH 70');
+  StateCreate('TempSumSeed','[Â°Cd]',0,true,TempSumSeed,'Thermal time during seed maturation');
+  StateCreate('TempSumLeafLoss','[Â°Cd]',0,true,TempSumLeafLoss,'Thermal time since BBCH 51 controlling the decline in the leaf fraction of total plant growth');
+  StateCreate('TempSumRoots','[Â°Cd]',0,true,TempSumRoots,'Thermal time between day 30 and day 150 used to calculate fRoot');
+  StateCreate('LAIs', 'mÂ²/mÂ²',0, true,LAIs,'Area senesced by shading');
+  StateCreate('DMdead', 'g/mÂ²',0, true, DMdead,'Senescent dry matter');
+  StateCreate('DMDeadW', 'g/mÂ²',0, true, DMDeadW,'Dry matter lost through frost senescence');
+  StateCreate('DMDeadLeafW', 'g/mÂ²',0, true, DMDeadLeafW,'Leaf dry matter killed by frost senescence');
+  StateCreate('DMDeadStemW', 'g/mÂ²',0, true, DMDeadStemW,'Stem dry matter killed by frost senescence');
+  StateCreate('DMDeadRootW','g/mÂ²',0,true,DMDeadRootW,'Root dry matter lost over winter');
+  StateCreate('DMDeadSh', 'g/mÂ²',0, true, DMDeadSh,'Leaf dry matter lost through shading senescence');
+  StateCreate('DMDeadN', 'g/mÂ²', 0, true, DMDeadN,'Leaf dry matter senesced by N deficiency');
+  StateCreate('DM_N','g/mÂ²',0,true,DM_N,'Former live (green) dry matter of leaves senesced by N deficiency');
+  StateCreate('DMNTrans','g/mÂ²',0,true,DMNTrans,'Leaf dry matter translocated following N-deficiency senescence');
+  StateCreate('DMSh','g/mÂ²',0,true,DMSh,'Potential dry matter senesced and translocated from leaves through shading');
+  StateCreate('DMShTrans','g/mÂ²',0,true,DMShTrans,'Leaf dry matter translocated to pods following shading senescence');
+  StateCreate('DMTransStem','g/mÂ²',0,true,DMTransStem,'Translocated stem dry matter');
+  StateCreate('DMTransLeaf','g/mÂ²',0,true,DMTransLeaf,'Translocated leaf dry matter');
+  StateCreate('DMTrans','g/mÂ²',0,true,DMTrans,'Translocated dry matter');
+  StateCreate('LAIGen','mÂ²/mÂ²',0,true,LAIGen,'Pod area index');
+  StateCreate('C_Dead','kg/ha',0,true,C_Dead,'C amount in shed leaves');
+  StateCreate('N_Dead','kg/ha',0,true,N_Dead,'N amount in shed leaves');
 
-  StateCreate('Yield','dt/ha',0,true,Yield,'Samenertrag');
-  StateCreate('OilYield','dt/ha',0,true,OilYield,'Ölertrag');
-  StateCreate('Oilconc','%',0,true,Oilconc,'Ölkonzentration');
-  StateCreate('Protein','%',0,true,Protein,'Proteingehalt');
-  StateCreate('Ymax','dt/ha',0,true,Ymax,'max Ertrag');
+  StateCreate('Yield','dt/ha',0,true,Yield,'Seed yield');
+  StateCreate('OilYield','dt/ha',0,true,OilYield,'Oil yield');
+  StateCreate('Oilconc','%',0,true,Oilconc,'Oil concentration');
+  StateCreate('Protein','%',0,true,Protein,'Protein concentration');
+  StateCreate('Ymax','dt/ha',0,true,Ymax,'Maximum yield');
 
-  StateCreate('NPool','g/m²',0,true,NPool,'N-Pool in Stängel und Wurzeln für die aus den Blättern translozierte N-Menge bevor die generativen Organe als Senken zur Verügung stehen');
+  StateCreate('NPool','g/mÂ²',0,true,NPool,'N pool in stems and roots for N translocated from leaves before generative organs act as sinks');
 
-  StateCreate('DMDeadAge', 'g/m²',0, true,DMDeadAge,'Altersseneszenz nach EC80');
-  StateCreate('NDeadAge', 'g/m²',0, true,NDeadAge,'Altersseneszenz nach EC80');
+  StateCreate('DMDeadAge', 'g/mÂ²',0, true,DMDeadAge,'Age-related senescence after BBCH 80');
+  StateCreate('NDeadAge', 'g/mÂ²',0, true,NDeadAge,'Age-related senescence after BBCH 80');
 
-  StateCreate('FullFlower','',0,true,FullFlower,'Datum EC65');
-  StateCreate('SumKonversionVerlust','',0,true,SumKonversionVerlust,'Summe Konversionsverlust bei Ölbildung');
-  StateCreate('sumQ', '[MJ/m2]',0,true,sumQ,'Summe aufgenommene Strahlungsmenge  [MJ]');          // Summe aufgenommene Strahlungsmenge  [MJ]
-  StateCreate('sumQT', '[MJ/m2]',0,true,sumQT,'Summe temperaturkorrigierte aufgenommene Strahlungsmenge  [MJ]');          // Summe temperaturkorrigierte aufgenommene Strahlungsmenge  [MJ]
-  StateCreate('sumQLeaf', '[MJ/m2]',0,true, sumQLeaf,'Summe aufgenommene Strahlungsmenge Blätter');      // Summe aufgenommene Strahlungsmenge Blätter
-  StateCreate('sumQGen', '[MJ/m2]',0,true, sumQgen,'Summe aufgenommene Strahlungsmenge Schoten');       // Summe aufgenommene Strahlungsmenge Schoten
-  StateCreate('RadSum','[MJ/m²]',0,true, RadSum,'Strahlungssumme');
+  StateCreate('FullFlower','',0,true,FullFlower,'Date of BBCH 65');
+  StateCreate('SumKonversionVerlust','',0,true,SumConversionLoss,'Cumulative conversion loss during oil formation');
+  StateCreate('sumQ', '[MJ/m2]',0,true,sumQ,'Cumulative absorbed radiation  [MJ]');          // Cumulative absorbed radiation  [MJ]
+  StateCreate('sumQT', '[MJ/m2]',0,true,sumQT,'Cumulative temperature-corrected absorbed radiation  [MJ]');          // Cumulative temperature-corrected absorbed radiation  [MJ]
+  StateCreate('sumQLeaf', '[MJ/m2]',0,true, sumQLeaf,'Cumulative radiation absorbed by leaves');      // Cumulative radiation absorbed by leaves
+  StateCreate('sumQGen', '[MJ/m2]',0,true, sumQgen,'Cumulative radiation absorbed by pods');       // Cumulative radiation absorbed by pods
+  StateCreate('RadSum','[MJ/mÂ²]',0,true, RadSum,'Cumulative radiation');
 
   StateCreate('sumQT_TactTpot', '[MJ/m2]',0,true, sumQT_TactTpot,
-    'Summe Trockenstress/Temperatur korrigierte aufgenommene Strahlungsmenge  [MJ]');
+    'Cumulative drought- and temperature-corrected absorbed radiation  [MJ]');
 
-  StateCreate('NBalance','[g/m²]',0,true,NBalance);
-  StateCreate('NUptake_vW','',0,true,NUptake_vW,'N-Aufnahme vor Winter');
-  StateCreate('NUptake_aF','',0,true,NUptake_aF,'N-Aufnahme nach der Blüte');
+  StateCreate('NBalance','[g/mÂ²]',0,true,NBalance);
+  StateCreate('NUptake_vW','',0,true,NUptake_vW,'N uptake before winter');
+  StateCreate('NUptake_aF','',0,true,NUptake_aF,'N uptake after flowering');
 
 
 
     // Parameters
   ParCreate('pfW', '[-]', 1, pfW,
-    'parameter for none linear relation between Tansratio and SWDF (Ferreyra 2003)');
-  ParCreate('Tb', '°C', 3 , Tb,'Basistemperatur');
-  ParCreate('gh', '', 1.2539 , gh,'Steigungsparameter Allometrie im Herbst');
-  ParCreate('hh', '', -1.9765 , hh,'Interzeptparameter Allometrie im Herbst');
-  ParCreate('gf','',3.56389,gf,'Steigungsparameter Allometrie im Frühjahr');
-  ParCreate('hf','',-9.92018,hf,'Interzeptparameter Allometrie im Frühjahr');
-  ParCreate('a','',2.7226,a,'Parameter zur DM-Fraktionierung nach EC51');
-  ParCreate('b','',-4.9899,b,'Parameter zur DM-Fraktionierung nach EC51');
-  ParCreate('c','',4E-12,c,'Parameter zur DM-Fraktionierung nach EC51');
-  ParCreate('d','',-0.561,d,'Parameter zur DM-Fraktionierung nach EC51');
-  ParCreate('e','',70,e,'Parameter zur DM-Fraktionierung nach EC51');
-  ParCreate('root_exp','',-0.05,root_exp,'Parameter für Exponentialfunktion von DMRoot');
-  ParCreate('SPA_Exp','',-0.05,SPA_exp,'Parameter für Exponentialfunktion von SPA');
-  ParCreate('fPW_0','',100,fPW_0,'Parameter für Ertragsfunktion (fPW)');
-  ParCreate('fPW_exp','',-0.008,fPW_exp,'Parameter für Ertragsfunktion (fPW)');
-  ParCreate('pCnPod1','',8,pCnPod1,'Verdünnungsfuktion Schoten');
-  ParCreate('pCnPod2','',-0.8,pCnPod2,'Verdünnungsfunktion Schoten');
-  ParCreate('pCnstem1h', '', 0.0458 , pCnstem1h,'vor eulerscher Zahl Stängel-Verdünnung (Herbst)');
-  ParCreate('pCnstem2h', '', -0.0021 , pCnstem2h,'vor Variablen Stängel-Verdünnung (Herbst)');
-  ParCreate('pCnRoot1h', '',3.3127, pCnRoot1h,'vor eulerscher Zahl Wurzel-Verdünnung');
-  ParCreate('pCnRoot2h', '',-0.11, pCnRoot2h,'vor Variablen Wurzel-Verdünnung');
-  ParCreate('pCnRoot1f', '',3.9548, pCnRoot1f,'vor eulerscher Zahl Wurzel-Verdünnung');
-  ParCreate('pCnRoot2f', '',-0.0059, pCnRoot2f,'vor Variablen Wurzel-Verdünnung');
-  ParCreate('pCnleaf', '', 5.659 , pCnleaf,'Blatt N-Konzentration');
-  ParCreate('pCn1leaf', '', 6.707 , pCn1leaf,'vor DMleaf');
-  ParCreate('pCn2leaf', '', -0.01624 , pCn2leaf,'Steigung Verdünnung Blatt/Herbst');
-  ParCreate('pCnDead', '%', 2 , pCnDead,'N-Konzentration abgestorbener Blätter');
-  ParCreate('pCnRoot', '%', 4 , pCnRoot,'N-Konzentration Wurzeln');
-  ParCreate('pCnSeed','%',3,pCnSeed,'N-Konzentration Samen');
-  ParCreate('pCnTrans','',0.65,pCnTrans,'Anteil N-Menge, der aus seneszenten Blättern transloziert wird');
-  ParCreate('Ct1', '°C', 3 , Ct1,'Wachstumsgrenze unten');
-  ParCreate('Ct2', '°C', 10 , Ct2,'Optimumsgrenze unten');
-  ParCreate('Ct3', '°C', 20 , Ct3,'Optimumsgrenze oben');
-  ParCreate('Ct4', '°C', 35 , Ct4,'Wachstumsgrenze oben');
-  ParCreate('SLAhst', '', -0.2759 , SLAhst,'Steigungsparameter spez Blattfläche Herbst');
-  ParCreate('SLAhin', '', 396.52 , SLAhin,'Interzept spez. Blattfläche Herbst');
-  ParCreate('SLAmin', 'cm²/g', 100 , SLAmin,'minimale spez. Blattfläche Herbst');
-  ParCreate('SLAmax', 'cm²/g', 350 , SLAmax,'maximale spez. Blattfläche Herbst');
-  ParCreate('SLAnB','cm²/g',275,SLAnB,'Spezifische Blattfläche nach der Blüte');
-  ParCreate('SLADead', 'cm²/g', 500 , SLADead,'SLA seneszenter Blätter [cm²/g]');
-  ParCreate('fTminus', '°C', 20 , fTminus,'Temperaturschwellenwert Seneszenz Winter');
-  ParCreate('SSA', 'cm²/g', 20 , SSA,'Spezifische Stängelfläche');
-  ParCreate('SPAmax','cm²/g',60,SPAmax,'Maximale spezifische Schotenfläche');
-  ParCreate('k1', '', 0.02 , k1,'Wachstumsrate EC10-EC13');
-  ParCreate('DMcrit', 'g/m²', 5 , DMcrit,'DM-Grenzwert des expo. Wachstums');
-  ParCreate('rooti', '', 0.119184 , rooti,'Interzept der Wurzelanteilregression');
-  ParCreate('roots', '', -0.000029 , roots,'Steigung der Wurzelanteilregression');
-  ParCreate('exk', '', 0.8 , exk,'Extinktionskoeffizient');
-  ParCreate('exk_0', '', 0.9 , exk_0,'Extinktionskoeffizient bei LAI=0 für variablen Exk.');
-  ParCreate('LAIcrit_exk', 'm2/m2', 1.5 , LAIcrit_exk,'LAIcrit, bei dem Extinktionskoeffizient = exk');
-  ParCreate('LUELeaf', 'g/MJ', 4 , LUELeaf,'Lichtnutzungseffizienz');
-  ParCreate('LUE0', '', 3.196 , LUE0,'Interzept der LUE Gleichung VW');
-  ParCreate('LUEPod','',4,LUEPod,'LUE Schoten');
+    'Parameter for the nonlinear relation between TransRatio and SWDF (Ferreyra 2003)');
+  ParCreate('Tb', 'Â°C', 3 , Tb,'Base temperature');
+  ParCreate('gh', '', 1.2539 , gh,'Slope parameter of the autumn allometric relation');
+  ParCreate('hh', '', -1.9765 , hh,'Intercept parameter of the autumn allometric relation');
+  ParCreate('gf','',3.56389,gf,'Slope parameter of the spring allometric relation');
+  ParCreate('hf','',-9.92018,hf,'Intercept parameter of the spring allometric relation');
+  ParCreate('a','',2.7226,a,'Parameter for dry-matter partitioning after BBCH 51');
+  ParCreate('b','',-4.9899,b,'Parameter for dry-matter partitioning after BBCH 51');
+  ParCreate('c','',4E-12,c,'Parameter for dry-matter partitioning after BBCH 51');
+  ParCreate('d','',-0.561,d,'Parameter for dry-matter partitioning after BBCH 51');
+  ParCreate('e','',70,e,'Parameter for dry-matter partitioning after BBCH 51');
+  ParCreate('root_exp','',-0.05,root_exp,'Parameter of the DMRoot exponential function');
+  ParCreate('SPA_Exp','',-0.05,SPA_exp,'Parameter of the SPA exponential function');
+  ParCreate('fPW_0','',100,fPW_0,'Parameter of the yield function (fPW)');
+  ParCreate('fPW_exp','',-0.008,fPW_exp,'Parameter of the yield function (fPW)');
+  ParCreate('pCnPod1','',8,pCnPod1,'Pod N-dilution function');
+  ParCreate('pCnPod2','',-0.8,pCnPod2,'Pod N-dilution function');
+  ParCreate('pCnstem1h', '', 0.0458 , pCnstem1h,'Coefficient preceding the exponential term of the autumn stem N-dilution function');
+  ParCreate('pCnstem2h', '', -0.0021 , pCnstem2h,'Coefficient preceding the variable term of the autumn stem N-dilution function');
+  ParCreate('pCnRoot1h', '',3.3127, pCnRoot1h,'Coefficient preceding the exponential term of the root N-dilution function');
+  ParCreate('pCnRoot2h', '',-0.11, pCnRoot2h,'Coefficient preceding the variable term of the root N-dilution function');
+  ParCreate('pCnRoot1f', '',3.9548, pCnRoot1f,'Coefficient preceding the exponential term of the root N-dilution function');
+  ParCreate('pCnRoot2f', '',-0.0059, pCnRoot2f,'Coefficient preceding the variable term of the root N-dilution function');
+  ParCreate('pCnleaf', '', 5.659 , pCnleaf,'Leaf N concentration');
+  ParCreate('pCn1leaf', '', 6.707 , pCn1leaf,'Coefficient applied to DMLeaf');
+  ParCreate('pCn2leaf', '', -0.01624 , pCn2leaf,'Slope of the autumn leaf N-dilution function');
+  ParCreate('pCnDead', '%', 2 , pCnDead,'N concentration of dead leaves');
+  ParCreate('pCnRoot', '%', 4 , pCnRoot,'Root N concentration');
+  ParCreate('pCnSeed','%',3,pCnSeed,'Seed N concentration');
+  ParCreate('pCnTrans','',0.65,pCnTrans,'Fraction of N translocated from senescent leaves');
+  ParCreate('Ct1', 'Â°C', 3 , Ct1,'Lower cardinal temperature for growth');
+  ParCreate('Ct2', 'Â°C', 10 , Ct2,'Lower cardinal temperature of the optimum range');
+  ParCreate('Ct3', 'Â°C', 20 , Ct3,'Upper cardinal temperature of the optimum range');
+  ParCreate('Ct4', 'Â°C', 35 , Ct4,'Upper cardinal temperature for growth');
+  ParCreate('SLAhst', '', -0.2759 , SLAhst,'Slope parameter for autumn specific leaf area');
+  ParCreate('SLAhin', '', 396.52 , SLAhin,'Intercept parameter for autumn specific leaf area');
+  ParCreate('SLAmin', 'cmÂ²/g', 100 , SLAmin,'Minimum autumn specific leaf area');
+  ParCreate('SLAmax', 'cmÂ²/g', 350 , SLAmax,'Maximum autumn specific leaf area');
+  ParCreate('SLAnB','cmÂ²/g',275,SLAnB,'Specific leaf area after flowering');
+  ParCreate('SLADead', 'cmÂ²/g', 500 , SLADead,'SLA of senescent leaves [cmÂ²/g]');
+  ParCreate('fTminus', 'Â°C', 20 , fTminus,'Temperature threshold for winter senescence');
+  ParCreate('SSA', 'cmÂ²/g', 20 , SSA,'Specific stem area');
+  ParCreate('SPAmax','cmÂ²/g',60,SPAmax,'Maximum specific pod area');
+  ParCreate('k1', '', 0.02 , k1,'Growth rate from BBCH 10 to BBCH 13');
+  ParCreate('DMcrit', 'g/mÂ²', 5 , DMcrit,'Dry-matter threshold for exponential growth');
+  ParCreate('rooti', '', 0.119184 , rooti,'Intercept of the root-fraction regression');
+  ParCreate('roots', '', -0.000029 , roots,'Slope of the root-fraction regression');
+  ParCreate('exk', '', 0.8 , exk,'Extinction coefficient');
+  ParCreate('exk_0', '', 0.9 , exk_0,'Extinction coefficient at LAI = 0 for variable exk');
+  ParCreate('LAIcrit_exk', 'm2/m2', 1.5 , LAIcrit_exk,'Critical LAI at which the extinction coefficient equals exk');
+  ParCreate('LUELeaf', 'g/MJ', 4 , LUELeaf,'Radiation-use efficiency');
+  ParCreate('LUE0', '', 3.196 , LUE0,'Intercept of the pre-winter LUE equation');
+  ParCreate('LUEPod','',4,LUEPod,'Pod radiation-use efficiency');
   ParCreate('fCO2', '[-]',   0.086,  fCO2);
   ParCreate('fCO2_scale', '[-]',   0.723,  fCO2_scale);
   ParCreate('fCWSI', '[-]',   0.077,  fCWSI);
   ParCreate('CiCompensation', '[ppm]',   350,  CiCompensation);
-  ParCreate('PARmh', 'W/m²', 0.03456 , PARmh,'notwendige Erhaltungsstrahlungsmenge Herbst');
-  ParCreate('PARmf', 'W/m²', 0.03456 , PARmf,'notwendige Erhaltungsstrahlungsmenge Frühjahr');
-  ParCreate('pfTm_opt', '°C', 20, pfTm_opt,'Optimaltemperatur für fTm nach Arrhenius');
-  ParCreate('pfTm_Q10', '', 2, pfTm_Q10,'Q10-Wert für fTm nach Arrhenius');
-  ParCreate('pSen_sh', '', 3, pSen_sh,'Anzahl Tage, über die PARm gemittelt wird');
-  ParCreate('pSen_sh_w', '', 1, pSen_sh_w,'Exponent für Wirkung des Faktors fSen_sh');
-  ParCreate('fSws', '',0.005, fSws,'relative Abnahmerate Seneszenz Winter');
-  ParCreate('Plants', 'm-2',40, Plants,'Pflanzen pro m²');
-  ParCreate('pIniLAI', 'cm2/plant', 1, pIniLAI,'LAI nach Auflaufen bei InitOption LAIInit [cm²/Pflanze]');
-  ParCreate('pCncritLeaf','%',4.3,pCncritLeaf,'kritische Verdünnungsfunktion Blätter vor Schossbeginn');
-  ParCreate('pCncrit1Leaf','',5.8664,pCncrit1Leaf,'kritische Verdünnungsfunktion Blätter ab Schossbeginn');
-  ParCreate('pCncrit2Leaf','',-0.0187,pCncrit2Leaf,'kritische Verdünnungsfunktion Blätter ab Schossbeginn');
-  ParCreate('pCncritStem1h','',3.2894,pCncritStem1h,'kritische Verdünnungsfunktion Stängel vor Schossbeginn');
-  ParCreate('pCncritStem2h','',-0.013,pCncritStem2h,'kritische Verdünnungsfunktion Stängel vor Schossbeginn');
-  ParCreate('pCncritPod1','',7.5238,pCncritPod1,'kritische Verdünnungsfunktion Schoten');
-  ParCreate('pCncritPod2','',-0.872,pCncritPod2,'kritische Verdünnungsfunktion Schoten');
-  ParCreate('pCncritRoot1h','',2.9569,pCncritRoot1h,'kritische Verdünnungsfunktion Wurzeln vor Schossbeginn');
-  ParCreate('pCncritRoot2h','',-0.156,pCncritRoot2h,'kritische Verdünnungsfunktion Wurzeln vor Schossbeginn');
-  ParCreate('pCncritRoot1f','',3.9241,pCncritRoot1f,'kritische Verdünnungsfunktion Wurzeln ab Schossbeginn');
-  ParCreate('pCncritRoot2f','',-0.0097,pCncritRoot2f,'kritische Verdünnungsfunktion Wurzeln ab Schossbeginn');
-  ParCreate('pCnStem1f','',7.7107,pCnStem1f,'Verdünnungsfunktion Stängel ab Schossbeginn');
-  ParCreate('pCnStem2f','',-0.95,pCnStem2f,'Verdünnungsfunktion Stängel ab Schossbeginn');
-  ParCreate('pCncritStem1f','',5.6311,pCncritStem1f,'kritische Verdünnungsfunktion Stängel ab Schossbeginn');
-  ParCreate('pCncritStem2f','',-0.86,pCncritStem2f,'kritische Verdünnungsfunktion Stängel ab Schossbeginn');
+  ParCreate('PARmh', 'W/mÂ²', 0.03456 , PARmh,'Maintenance radiation required in autumn');
+  ParCreate('PARmf', 'W/mÂ²', 0.03456 , PARmf,'Maintenance radiation required in spring');
+  ParCreate('pfTm_opt', 'Â°C', 20, pfTm_opt,'Optimum temperature for the Arrhenius-type fTm response');
+  ParCreate('pfTm_Q10', '', 2, pfTm_Q10,'Q10 value for the Arrhenius-type fTm response');
+  ParCreate('pSen_sh', '', 3, pSen_sh,'Number of days over which PARm is averaged');
+  ParCreate('pSen_sh_w', '', 1, pSen_sh_w,'Exponent controlling the effect of fSen_sh');
+  ParCreate('fSws', '',0.005, fSws,'Relative winter-senescence rate');
+  ParCreate('Plants', 'm-2',40, Plants,'Plants per mÂ²');
+  ParCreate('pIniLAI', 'cm2/plant', 1, pIniLAI,'LAI after emergence with InitOption LAIInit [cmÂ²/plant]');
+  ParCreate('pCncritLeaf','%',4.3,pCncritLeaf,'Critical leaf N-dilution function before stem elongation');
+  ParCreate('pCncrit1Leaf','',5.8664,pCncrit1Leaf,'Critical leaf N-dilution function after the start of stem elongation');
+  ParCreate('pCncrit2Leaf','',-0.0187,pCncrit2Leaf,'Critical leaf N-dilution function after the start of stem elongation');
+  ParCreate('pCncritStem1h','',3.2894,pCncritStem1h,'Critical stem N-dilution function before stem elongation');
+  ParCreate('pCncritStem2h','',-0.013,pCncritStem2h,'Critical stem N-dilution function before stem elongation');
+  ParCreate('pCncritPod1','',7.5238,pCncritPod1,'Critical pod N-dilution function');
+  ParCreate('pCncritPod2','',-0.872,pCncritPod2,'Critical pod N-dilution function');
+  ParCreate('pCncritRoot1h','',2.9569,pCncritRoot1h,'Critical root N-dilution function before stem elongation');
+  ParCreate('pCncritRoot2h','',-0.156,pCncritRoot2h,'Critical root N-dilution function before stem elongation');
+  ParCreate('pCncritRoot1f','',3.9241,pCncritRoot1f,'Critical root N-dilution function after the start of stem elongation');
+  ParCreate('pCncritRoot2f','',-0.0097,pCncritRoot2f,'Critical root N-dilution function after the start of stem elongation');
+  ParCreate('pCnStem1f','',7.7107,pCnStem1f,'Stem N-dilution function after the start of stem elongation');
+  ParCreate('pCnStem2f','',-0.95,pCnStem2f,'Stem N-dilution function after the start of stem elongation');
+  ParCreate('pCncritStem1f','',5.6311,pCncritStem1f,'Critical stem N-dilution function after the start of stem elongation');
+  ParCreate('pCncritStem2f','',-0.86,pCncritStem2f,'Critical stem N-dilution function after the start of stem elongation');
 
-  ParCreate('y1','[-]',0.37,y1,'Parameter zur Ertragsberechnung (z.Zt. äquivalent zum Harvest-Index)');
-  ParCreate( 'LUEscaling', '[-]',1,LUEscaling,'for simulatanous scaling of LUEveg and LUEgen');
+  ParCreate('y1','[-]',0.37,y1,'Parameter used to calculate yield, currently equivalent to the harvest index');
+  ParCreate( 'LUEscaling', '[-]',1,LUEscaling,'Scaling factor applied simultaneously to vegetative and generative LUE');
 //  ParCreate( 'minNNI', '[-]',0.0, minNNI,'Minimum value for NNI');
 
-  ParCreate('SLAspring','',101.97,SLAspring,'Parameter für die SLA-Berechnung nach EC30 in Abhängigkeit vom GAI');
-  ParCreate('fSLAspring','',24.121,fSLAspring,'Parameter für die SLA-Berechnung nach EC30 in Abhängigkeit vom GAI');
+  ParCreate('SLAspring','',101.97,SLAspring,'Parameter for calculating SLA after BBCH 30 as a function of GAI');
+  ParCreate('fSLAspring','',24.121,fSLAspring,'Parameter for calculating SLA after BBCH 30 as a function of GAI');
 
-  ParCreate('Oila','',50,Oila,'Parameter zur Berechnung der Ölkonzentration in Abhängigkeit von der Dauer der Samenreifung');
-  ParCreate('Oilb','',240,Oilb,'Parameter zur Berechnung der Ölkonzentration in Abhängigkeit von der Dauer der Samenreifung');
-  ParCreate('Oilc','',-0.016,Oilc,'Parameter zur Berechnung der Ölkonzentration in Abhängigkeit von der N-Menge im Samen');
-  ParCreate('Oild','',-0.0226,Oild,'Parameter zur Berechnung der Ölkonzentration in Abhängigkeit von der N-Menge im Samen');
+  ParCreate('Oila','',50,Oila,'Parameter for calculating oil concentration as a function of seed-maturation duration');
+  ParCreate('Oilb','',240,Oilb,'Parameter for calculating oil concentration as a function of seed-maturation duration');
+  ParCreate('Oilc','',-0.016,Oilc,'Parameter for calculating oil concentration as a function of seed N amount');
+  ParCreate('Oild','',-0.0226,Oild,'Parameter for calculating oil concentration as a function of seed N amount');
 
   // External Variable
 
-  ExternVCreate('Rad_Int', 'W/m²',statefield, GRad,'Globalstrahlung');
-  ExternVCreate('TMPM', '°C',statefield, TMPM,'Tagesmitteltemperatur');
-  ExternVCreate('EC', '',statefield, EC,'Phänologiestadium');
-  ExternVCreate('DVS', '',ratefield, DVS_rate,'Phänologiestadium');
-  ExternVCreate('DVS','',statefield, DVS,'Development-Stage');
-  ExternVCreate('DayofYear', '',statefield, DayofYear,'Jahrestag');
-  ExternVCreate('LAI', 'm²/m²',statefield, LUE_LAI,'LAI für LUE');
-  ExternVCreate('DM', 'g.m-2.d-1',ratefield, DMGrowth_ex,'DMShoot-Zuwachs für Option ExternDM');
-  ExternVCreate('TransRatio','',statefield,TransRatio,'Verhältnis zwischen potentieller und aktueller Transpiration');
-  ExternVCreate('TransIntRatio','',statefield,TransIntRatio,'Verhältnis zwischen potentieller und aktueller Transpiration (berücksichtigt Interzeption)');
-//  ExternVCreate('CO2pp','[ppm]',statefield, CO2pp, 'external atmospheric CO2-concentration');
+  ExternVCreate('Rad_Int', 'W/mÂ²',statefield, GRad,'Global radiation');
+  ExternVCreate('TMPM', 'Â°C',statefield, TMPM,'Daily mean temperature');
+  ExternVCreate('EC', '',statefield, EC,'Phenological stage');
+  ExternVCreate('DVS', '',ratefield, DVS_rate,'Phenological stage');
+  ExternVCreate('DVS','',statefield, DVS,'Development stage');
+  ExternVCreate('DayofYear', '',statefield, DayofYear,'Day of year');
+  ExternVCreate('LAI', 'mÂ²/mÂ²',statefield, LUE_LAI,'LAI used for LUE calculation');
+  ExternVCreate('DM', 'g.m-2.d-1',ratefield, DMGrowth_ex,'DMShoot growth for option ExternDM');
+  ExternVCreate('TransRatio','',statefield,TransRatio,'Ratio of potential to actual transpiration');
+  ExternVCreate('TransIntRatio','',statefield,TransIntRatio,'Ratio of potential to actual transpiration, accounting for interception');
+//  ExternVCreate('CO2pp','[ppm]',statefield, CO2pp, 'External atmospheric CO2 concentration');
 
-//  ExternVCreate('TMeanEC71_79','°C',statefield,TMeanEC71_79,'durchschnittliche Tagesmitteltemperatur zwischen EC71 und EC79');
-//  ExternVCreate('DauerEC71_79','d',statefield,DauerEC71_79,'Anzahl Tage von EC71 bis EC79');
-//  ExternVCreate('DauerEC81_89','d',statefield,DauerEC81_89,'Anzahl Tage von EC81 bis EC89');
+//  ExternVCreate('TMeanEC71_79','Â°C',statefield,TMeanEC71_79,'Mean daily temperature between BBCH 71 and BBCH 79');
+//  ExternVCreate('DauerEC71_79','d',statefield,DauerEC71_79,'Number of days from BBCH 71 to BBCH 79');
+//  ExternVCreate('DauerEC81_89','d',statefield,DauerEC81_89,'Number of days from BBCH 81 to BBCH 89');
   StateCreate('DauerEC81_89', '',0, true, DauerEC81_89);
 
   // Options
 
-  OptCreate ('LAIOption', 'InternLAI', LAIOption,'intern berechneter LAI oder externe Variable');
+  OptCreate ('LAIOption', 'InternLAI', LAIOption,'Internally calculated LAI or external variable');
   LAIOption.Optionlist.Clear;
   LAIOption.Optionlist.add('InternLAI');
   LAIOption.Optionlist.add('ExternLAI');
   fLAIOption := InternLAI;
 
-  OptCreate ('DMGrowthOption', 'InternDM', DMGrowthOption, 'intern berechneter DM-Zuwachs oder externe Variable');
+  OptCreate ('DMGrowthOption', 'InternDM', DMGrowthOption, 'Internally calculated dry-matter growth or external variable');
   DMGrowthOption.Optionlist.Clear;
   DMGrowthOption.Optionlist.add('InternDM');
   DMGrowthOption.Optionlist.add('ExternDM');
   fDMGrowthOption := InternDM;
 
-  OptCreate('InitOption', 'DMCrit', InitOption, 'Initialisierung des Modells über DM (exponentiell) oder Anfangs-LAI');
+  OptCreate('InitOption', 'DMCrit', InitOption, 'Initialise the model from exponential dry-matter growth or initial LAI');
   InitOption.Optionlist.Clear;
   InitOption.Optionlist.add('DMCrit');
   InitOption.Optionlist.add('LAIInit');
@@ -899,13 +1183,13 @@ begin
 
 
 
-  OptCreate ('NSensOption', 'N_sensitiv', NSensOption, 'Wirkung von N-Mangel auf TM-Zuwachs');
+  OptCreate ('NSensOption', 'N_sensitiv', NSensOption, 'Effect of N deficiency on dry-matter growth');
   NSensOption.Optionlist.Clear;
   NSensOption.Optionlist.add('N_sensitiv');
   NSensOption.Optionlist.add('N_unlimited');
   fNSensOption := N_sensitiv;
 
-  OptCreate ('DroughtOption', 'DroughtImpact', DroughtOption, 'Wirkung von Trockenstress auf TM-Zuwachs');
+  OptCreate ('DroughtOption', 'DroughtImpact', DroughtOption, 'Effect of drought stress on dry-matter growth');
   DroughtOption.Optionlist.Clear;
   DroughtOption.Optionlist.add('DroughtImpact');
   DroughtOption.Optionlist.add('NoDroughtImpact');
@@ -927,7 +1211,7 @@ var
 
 begin
   inherited init(GlobMod);
-  // Initialisierungswerte, damit nicht durch 0 geteilt wird
+  // Initial values used to prevent division by zero
   if DMShoot.v <=0 then DMShoot.v := 0.1;
   if DMPlant.v =0 then DMPlant.v := 0.1;
   if DMShoot_vW.v = 0 then DMShoot_vW.v := 0.1;
@@ -973,68 +1257,25 @@ end;
 procedure TOSRGrowth.CalcRates;
 
 var
-  i,j : integer; //Zählvariable für Schattenseneszenz Schleife
-  LAIm_ave, // über pSen_sh Tage gemittelter LAI, für den die Strahlung zur Erhaltung ausreicht
-  CWSI,  // crop water stress index
-  CO2_factor_min,
-  CO2_ppm, // actual CO2 concentration [ppm]
-  TT: real;
+  /// <summary>Loop counters for shading senescence</summary>
+  i,j : integer;
+  /// <summary>LAI maintainable by radiation, averaged over pSen_sh days</summary>
+  LAIm_ave,
+  /// <summary>Crop water stress index</summary>
+  CWSI,
+  CO2_factor_min: real;
 begin
   inherited;
 
   if (Globtime.v >= SowingDate.v) and (GlobTime.v <= HarvestDate.v) then begin
 
+    // initialisation of several variables after emergence
+    InitAfterEmergence;
 
-  // Berechnung effektiver Temperatur und verschiedener Temperatursummen (Tb = Basistemperatur, Tb = 3°C bei Raps)
-    Teff.v := max(0,TMPM.v-Tb.v);
-    TempSum.c := Teff.v;
+    // calculation of several temperature sums governing some processes
+    CalcTempSums;
 
-    if Globtime.v >= SowingDate.v then
-      TempSumAussaat.c := Teff.v
-      else TempSumAussaat.c := 0;
-
-    if (EC.v >= 10) then
-      TempSumAuflauf.c := Teff.v
-    else TempSumAuflauf.c := 0;
-
-    if (EC.v >= 70) then
-      TempSumPodGrowth.c := Teff.v
-    else TempSumPodGrowth.c := 0;
-
-    if (EC.v <= 65) then
-      FullFlower.v := Globtime.v;
-
-    if (EC.v >= 80) then
-      TempSumSeed.c := Teff.v
-    else
-      TempSumSeed.c := 0;
-
-    if (EC.v > 51) then
-      TempSumLeafLoss.c := Teff.v
-    else TempSumLeafLoss.c := 0;
-
-    if ((DayofYear.v > 30) and (DayofYear.v < 150)) then
-      TempSumRoots.c := Teff.v
-    else TempSumRoots.c := 0;
-
-    // negative Temperatursumme (Frost-Seneszenz)
-    if Assigned(SnowModel) then begin
-      if SnowModel.Zs.v > CropHeight.v then Tminus.v := min(0, SnowModel.Tsf.v)
-      else if Cropheight.v > 0
-        then Tminus.v := min(0, (SnowModel.Tsf.v*SnowModel.Zs.v + TMPM.v*(CropHeight.v-SnowModel.Zs.v))/CropHeight.v)
-        else Tminus.v := 0;
-    end
-    else Tminus.v := min(0, TMPM.v);
-    if EC.v >= 10 then TempSumMinus.c := -Tminus.v;
-
-    // Korrekturfaktor Temperatur für die Berechnung der Trockenmasseproduktion
-    if TMPM.v < Ct1.v then fT.v := 0
-    else If TMPM.v <= Ct2.v then fT.v := (TMPM.v-Ct1.v)/(Ct2.v-Ct1.v)
-    else if TMPM.v <= Ct3.v then fT.v := 1
-    else if TMPM.v <= Ct4.v then fT.v := (Ct4.v-TMPM.V)/(Ct4.v-Ct3.v)
-    else fT.v := 0;
-
-  // Berechnung des maximalen GAI, maximalen SAI und maximalen PAI (SAI und PAI steigen bis EC 80)
+  // Calculate maximum GAI, SAI and PAI (SAI and PAI increase until BBCH 80)
     maxGAI.v := max(LAILeaf.v+LAIGen.v+LAIStem.v,maxGAI.v);
 
     if (EC.v < 80) then
@@ -1044,7 +1285,7 @@ begin
       maxLAIStem.v := LAIStem.v;
 
 
-  // Vegetationsbeginn aus Temperaturwerten ermitteln
+  // Determine the start of the growing season from temperature
    if ((DayofYear.v > 30) and (DayofYear.v < 90)) and  (Teff.v > 0) then
       inc(avs_day)
    else
@@ -1055,226 +1296,17 @@ begin
 
    if (EC.v >= 81) and (EC.v <= 89) then DauerEC81_89.c := 1 else DauerEC81_89.c := 0;
 
-
-  // Berechnung der photosynthetisch aktiven Strahlung und der Einstrahlungssummer
-    PARRad.v :=  GRad.v*0.5;
-    RadSum.c := PARRad.v;
-
-  // Reflektion durch das Blütendach (bis zu 30% der Einstrahlung werden durch das Blütendach reflektiert bzw. absorbiert)
-    if (EC.v >= 60) and (EC.v <=70) then
-      if (EC.v <=65) then
-        Transkoeff.v := min(1,((0.7-1)/(65-60))*(EC.v-60)+1)
-      else
-        Transkoeff.v := min(1,((1-0.7)/(70-65))*(EC.v-65)+0.7)
-    else
-      Transkoeff.v := 1;
-
-  // Extinktionskoeffizienten von Blättern und Schoten
-    If (EC.v > 51) then
-      act_k_Leaf.v := 0.8
-    else
-      act_k_Leaf.v := ExtCoeffPAR;  // vom LAI abhängiger Extinktionskoeffizient während der vegetativen Phase (Masterarbeit von K. Krause, 2010: Teilflächenspezifische Analyse des vegetativen Wachstums von Winterraps)
-
-    act_k_Gen.v := 0.6;             // Andersen et al. 1996: The effects of drought and nitrogen on light interception, growth and yield of winter oilseed rape. Acta Agriculturae Scandinavica Sect. B Soil and Plant Sciences 46, 55-67
-
-  // Auflaufen und Initialisierung LAI, DM, N
-    if EC.v >= 10 then begin
-      if (Auflauf.v = 0) and (LAILeaf.v = 0) then begin
-        Auflauf.v := Globtime.v;
-        if (fInitOption = LAIInit) then begin
-          LAILeaf.v := pIniLAI.v*plants.v/10000;
-          LAIShoot.v := LAILeaf.v;
-          DMLeaf.v := DMShoot.v;
-          DMStem.v := DMShoot.v * 0.1;
-          NcLeaf.v := pCn1Leaf.v;
-          NLeaf.v  := DMLeaf.v * NcLeaf.v/100;
-          NcStem.v := pCnStem1h.v;
-          NStem.v  := DMStem.v * NcStem.v;
-          NShoot.v := NLeaf.v;
-        end;
-      end;
-
-  // Berechnung von fInt (für vegetative Organe und Schoten einzeln)
-  // prozentualer Anteil der aufgenommenen Strahlung von der Gesamteinstrahlung (abhängig von Extinktionskoeffizienten und Flächen-Indices)
-    if fLAIOption = InternLAI then begin
-      fIntLeaf.v := max (0,1-exp(-act_k_Leaf.v*LAILeaf.v));
-      fIntGen.v := max(0,1-exp(-act_k_Gen.v*LAIGen.v));
-    end
-    else
-      fInt.v := max (0, 1-exp(-act_k.v*LUE_LAI.v));
-
-  // Trockenstressfaktor (nicht-linearer Einfluss)
-  // Ferreyra 2003: Nonlinear effects of water stress on peanut photosynthesis at crop and leaf scales. Ecological Modelling 168, 57-76
-    if (fDroughtOption = DroughtImpact) then
-    begin
-      fW.v := 1 - power((1 - TransIntRatio.v), pfW.v);
-    end else begin
-      fW.v := 1;
-      sumQT_TactTpot.c := 0.0
-    end;
-
-// see https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.13600
-
- if OptWithCO2.option = 'withco2effect' then begin
-      CO2_ppm := CO2_ppm_f(GlobTime.v);
-      TT := (163- self.Ex_TMPM.v)/(5-0.1*Ex_TMPM.v);
-      CO2_factor.v := ((CO2_ppm - TT)*(350+2*TT))/
-                      ((CO2_ppm+2*TT)*(350-TT));
-
-  end;
-  // Berechnung der aufgenommenen Strahlung für einzelne Organe
-      QGen.v :=  (fIntGen.v * PARRAD.v*86400/1000000);
-      sumQGen.c := QGen.v;
-    end;
-
-    if (QGen.v > 0) then begin
-      QLeaf.v := fIntLeaf.v * (PARRAD.v*86400/1000000-QGen.v)*Transkoeff.v
-    end
-    else begin
-      QLeaf.v := (fIntLeaf.v * PARRAD.v*86400/1000000)*Transkoeff.v;
-    end;
-    sumQLeaf.c := QLeaf.v;
-
-  // Berechnung der aufgenommenen Strahlung für den Gesamtbestand
-   if PARRAD.v >0.0 then
-    fInt.v := max(0,min(1,(QLeaf.v+QGen.v)/(PARRAD.v*86400/1000000)))
-   else fInt.v := 0.0;
-
-    Q.v := fInt.v * (PARRAD.v * 86400/1000000);
-    sumQ.c := Q.v;
-    QT.v := Q.v * fT.v;
-    sumQT.c := QT.v;
+   CalcRadiationUptake;
+   CalculateIntermediateVariables;
+   CalcLUE;
+   CalcRootFraction;
+   CalcShootRootGrowth;
 
 
-  // Zwischenrechnungen
-  // Spross-Trockenmasse zu Blühbeginn
-    if (EC.v <= 60) then
-      DMShoot_OF.c := DMShoot.c
-    else
-      DMShoot_OF.c := 0;
-
-  // Spross-Trockenmasse ab Blühbeginn
-    if (EC.v > 60) then begin
-      DMShoot_nB.c := DMShoot.c ;
-      DMShoot_nB_pot.c := DMShoot.c/fW.v;
-    end
-    else begin
-      DMShoot_nB.c := 0;
-    end;
-
-  // N-Aufnahme bis Ende des Kalenderjahres
-    if (DayofYear.v >= 217) and (DayofYear.v <= 365) then
-      NUptake_vW.c := NUptake_act.c
-    else
-      NUptake_vW.c := 0;
-
-  // N-Aufnahme nach der Blüte
-    if (EC.v >= 70) then
-      NUptake_aF.c := NUptake_act.c
-    else
-      NUptake_aF.c := 0;
-
-
-  // LUE der vegetativen und generativen Biomasse, Reduktion ab EC 70 wegen Seneszenz, Samenentwicklung und Ölbildung
-     {LUE-Parameter sind entsprechend hoch, weil sie die effektive LUE repräsentieren}
-
-    If (DayofYear.v <= 30) or ((DayofYear.v >= 217) and (EC.v < 30)) then
-      LUE.v := LUELeaf.v
-    else
-      if (DayofYear.v > 30) and (DayofYear.v <= 60) then
-        LUE.v := ((LUE0.v - LUELeaf.v)/(60-30))*(DayofYear.v - 30) + LUELeaf.v
-      else
-        if (EC.v > 70) then
-          LUE.v := min(LUE.v,max(0.1,((0.1-LUE0.v)/20)*(EC.v-70)+LUE0.v))
-        else
-          LUE.v := LUE0.v;
-
-    // LUE der generativen Biomasse
-      {Leterme 1985: Modélisation de la croissance et de la production des
-       siliques chez le colza d'hiver}
-
-    if (EC.v > 70) then
-      LUEGen.v := min(LUEGen.v,max(0.1,((0.1-LUEPod.v)/20)*(EC.v-70)+LUEPod.v))
-    {else
-      if (EC.v > 51) and (EC.v < 61)
-      LUEGen.v := min(LUEPod.v, max(0.1, ((LUEPod.v - 0.1)/10)*(EC.v-51)+0.1)) }
-    else
-      LUEGen.v := LUEPod.v;
-   // apply scaling factor
-     LUE.v := LUE.v * LUEscaling.v;
-     LUEGen.v := LUEGen.v * LUEscaling.v;
-
-
-  // Trockenmasseproduktion
-    DMShoot.c := 0;
-
-    if {(EC.v < 30)} (DayofYear.v < 30) then
-      maxfRoot.v := fRoot.v;
-
-    // Anteil des Wurzelwachstums am Gesamtwachstum (Dissertation W. Weymann, Chapter 4, Figure 2)
-    if ((DayofYear.v < 30) or (DayofYear.v > 217)) and (EC.v < 30) then
-        {fRoot.v := max(0,roots.v*TempSumAuflauf.v + rooti.v)}
-        fRoot.v := max(0, rooti.v * power(TempSumAuflauf.v, 2)+roots.v*TempSumAuflauf.v)
-    else
-      if (EC.v <= 69) then
-        fRoot.v := max(0.05, ((0.05-maxfRoot.v)/(100-0))*(TempSumRoots.v)+maxfRoot.v)
-        {fRoot.v := max(0.05,maxfRoot.v*exp(root_exp.v*TempSumAuflauf.v))}
-      else
-        fRoot.v := 0.05;
-
-    // Trockenmassebildung in abhängigkeit von aufgenommener Strahlungsmenge, LUE,
-    // N-Mangel, Wassermangel, Temperaturfaktor und Assimilat-TRanslokation
-    if fDMGrowthOption = InternDM then begin
-      If (fInitOption = DMCritInit) and (DMShoot.v<DMcrit.v) and (EC.v>=10) then begin  //Anfang: exponentielles Wachstum Temperaturlimitiert, ohne Strahlung
-        DMShoot.c :=   k1.v*DMShoot.v*Teff.v;
-        if (DMShoot.v+DMShoot.c) > DMcrit.v then DMShoot.c := DMcrit.v - DMShoot.v;
-        DMRoot.c := fRoot.v*(1+fRoot.v)*DMShoot.c;
-        DMPlant.c := DMShoot.c + DMRoot.c;
-      end;
-      If (fInitOption = LAIInit) or (DMShoot.v+DMShoot.c >= DMcrit.v) then begin   // Ab DMcrit LUE-basiertes Wachstum
-        if (fInitOption = DMCritInit) and (DMShoot.v < DMcrit.v)
-        then  {Trockenmasse übersteigt am aktuellen Tag DMcrit}
-          DMPlant.c := DMPlant.c + (Q.v*LUE.v*fT.v* CO2_factor.v)*(1-DMShoot.c/(k1.v*DMShoot.v*Teff.v))
-        else
-          if (QGen.v > 0) then begin
-//            LUEGen.v := LUE.v;
-            if (fDroughtOption =  DroughtImpact) then
-              DMPlant.c :=  (((QLeaf.v*LUE.v* CO2_factor.v*((LAILeaf.v*NNILeaf.v + LAIStem.v*NNIStem.v)/(LAILeaf.v+LAIStem.v))
-                               +QGen.v*LUEGen.v*CO2_factor.v*NNIGen.v)*fT.v )*fW.v)+ DMTrans.c
-            else
-              DMPlant.c :=  (((QLeaf.v*LUE.v* CO2_factor.v*((LAILeaf.v*NNILeaf.v + LAIStem.v*NNIStem.v)/(LAILeaf.v+LAIStem.v))
-                               +QGen.v*LUEGen.v*CO2_factor.v*NNIGen.v)*fT.v ))+ DMTrans.c;
-            {DMRoot.c := fRoot.v *  DMPlant.c;
-            DMShoot.c :=   DMPlant.c-DMRoot.c;}
-            DMShoot.c := DMPlant.c * (1-fRoot.v);
-          end
-          else
-            if (EC.v >=10) then begin
-              if (fDroughtOption = DroughtImpact) then
-                DMPlant.c :=  ((QLeaf.v*LUE.v* CO2_factor.v * ((LAILeaf.v*NNILeaf.v + LAIStem.v*NNIStem.v)/(LAILeaf.v+LAIStem.v))*fT.v)*fW.v)+ DMTrans.c
-              else
-                DMPlant.c :=  ((QLeaf.v*LUE.v* CO2_factor.v * ((LAILeaf.v*NNILeaf.v + LAIStem.v*NNIStem.v)/(LAILeaf.v+LAIStem.v))*fT.v))+ DMTrans.c;
-              {DMRoot.c := fRoot.v *  DMPlant.c;
-              DMShoot.c :=   DMPlant.c-DMRoot.c;}
-              DMShoot.c := DMPlant.c * (1-fRoot.v);
-          end
-          else begin
-            DMPlant.c := 0;
-            DMShoot.c := 0;
-          end;
-      end;
-    end
-    else begin  {ExternDM}
-      DMShoot.c := DMGrowth_ex.v;
-      DMRoot.c := fRoot.v *  DMShoot.c / (1-fRoot.v);
-      DMPlant.c := DMShoot.c+DMRoot.c;
-    end;
-
-
-  // Bestandeshöhenberechnung (Dissertation W. Weymann, Chapter 4, Figure 1)
+  // Calculate crop height (Dissertation W. Weymann, Chapter 4, Figure 1)
     CropHeight.v := min(1.8,0.0539*exp(0.0458* EC.v));
 
-  //Seneszenz über Winter anhand von DMshoot
+  // Calculate winter senescence from DMShoot
     If TempSumMinus.v >= fTminus.v
     then
       DMDeadW.c := min(DMShoot.v*TempSumMinus.c*fSws.v,DMShoot.c+DMLeaf.v)
@@ -1282,15 +1314,15 @@ begin
       DMDeadW.c := 0;
 
 
-  // Seneszenz aufgrund von Beschattung bzw. Strahlung für Erhaltungsatmung
+  // Senescence caused by shading or insufficient radiation for maintenance respiration
   { B. Gabrielle, P. Denoroy, G. Gosse, E. Justes, M.N. Andersen 1989:
     A model of leaf area development and senescence for winter oilseed rape
-    Field Crops Research 57, 209–222}
+    Field Crops Research 57, 209â€“222}
 
     if (EC.v <= 70) then
       LAILeaf_EC70.v := LAILeaf.v;
 
-  // über zehn Tage gemittelte Strahlungswerte
+  // Radiation averaged over ten days
     for i := MaxParDays downto 2 do
       Par_arr[i] := Par_arr[i-1];
     Par_arr[1] := PARRad.v;
@@ -1299,7 +1331,7 @@ begin
       Parav.v := Parav.v+par_arr[i];
     parav.v := parav.v/MaxParDays;
 
-   // Temperaturfunktion für Erhaltungsatmung
+   // Temperature response for maintenance respiration
     fTm.v := power(pfTm_Q10.v, (TMPM.v-pfTm_opt.v)/10);
 
     if (TMPM.v < 10) and (fT.v < fTm.v) then
@@ -1307,29 +1339,9 @@ begin
     else
       fTSen.v := fT.v;
 
-  // Berechnung des erhaltbaren LAI (LAIm)
-    if (EC.v < 30) then
-      if (PARav.v*fTSen.v >= PARmh.v*fTm.v) then
-        LAIm.v := 1/act_k_Leaf.v*log10((PARav.v*fTSen.v)/(PARmh.v*fTm.v))
-      else LAIm.v := 0
-    else
-      if (EC.v >= 60) then
-        if (PARav.v*Transkoeff.v*fTSen.v >= PARmf.v*fTm.v) then
-          LAIm.v := 1/act_k_Leaf.v*log10((PARav.v*Transkoeff.v*fTSen.v)/(PARmf.v*fTm.v))
-        else
-          LAIm.v := 0
-      else
-        if (PARav.v*fTSen.v >= PARmf.v*fTm.v) then
-          LAIm.v := 1/act_k_Leaf.v*log10((PARav.v*fTSen.v)/(PARmf.v*fTm.v))
-        else
-          LAIm.v := 0;
+    CalcMaintainableLAI(LAIm_ave);
 
-    for i:= 9 downto 1 do LAImarray[i+1]:= LAImarray[i];
-      LAImarray[1] := LAIm.v;
-
-    LAIm_ave := 0;
-
-  // Berechnung des Seneszenzfaktors
+  // Calculate the senescence factor
     fSen_sh.v := 0;
     if LAIShoot.v>0 then for i := 1 to round(pSen_sh.v) do begin
       LAIm_ave := LAImarray[1];
@@ -1337,33 +1349,33 @@ begin
       fSen_sh.v := fSen_sh.v + max(0,1-LAIm_ave/LAIShoot.v)/round(pSen_sh.v);
     end;
 
-  // Berechnung der Blatt-Seneszenz
+  // Calculate leaf senescence
     if (EC.v <= 70) then
       if (fT.v > 0) then begin
         LAIs.c := min(LAILeaf.v, LAIShoot.v*(Power(fSen_sh.v,pSen_sh_w.v)));
-        DMDeadSh.c := LAIs.c/SLADead.v*10000{cm²/m²};
+        DMDeadSh.c := LAIs.c/SLADead.v*10000{cmÂ²/mÂ²};
       end
       else begin
         LAIs.c := 0;
         DMDeadSh.c := 0;
       end
-    else  // Alterungs-Seneszenz ab EC 70, unabhängig von der Beschattung
+    else  // Age-related senescence from BBCH 70, independent of shading
       LAIs.c := -((((0 - LAILeaf_EC70.v)/(90-70))*(EC.v-70)+LAILeaf_EC70.v)-LAILeaf.v);
 
   // Change of Dead LAI
-    // SLA der seneszenten Blätter = 500 cm²/g
-      DMDeadSh.c := LAIs.c/SLADead.v*10000{cm²/m²};
+    // SLA of senescent leaves = 500 cmÂ²/g
+      DMDeadSh.c := LAIs.c/SLADead.v*10000{cmÂ²/mÂ²};
 
     if (avSLA.v > 0) and (fT.v > 0) then
       DMSh.c := LAIs.c/avSLA.v*10000  // non dead leaf mass
     else
       DMSh.c := 0;
 
-    DMShTrans.c := DMSh.c - DMDeadSh.c;  // translozierbare DM
+    DMShTrans.c := DMSh.c - DMDeadSh.c;  // Translocatable dry matter
 
 
-  // Fraktionierung der Trockenmasse
-    // Allometrische Funktionen
+  // Dry-matter partitioning
+    // Allometric functions
     {Dissertation W. Weymann, 2015: Organ-specific approaches describing crop development of winter oilseed rape under optimal and N-limited conditions (Chapter 3)}
     {Weymann et al. 2016: Organ-specific approaches describing crop growth of winter oilseed rape under optimal and N-limited conditions. European Journal of Agronomy)}
 
@@ -1418,10 +1430,10 @@ begin
     fRoot.v := fRoot.v;
 
 
-  //Anpassung des NNI und Reduktion des Wachstums;
-   { Reduktion hängt vom N-Mangel der Organe ab (NNIi);
-     der berechnete NNI entspricht nicht dem NNI von Justes et al. 1994 oder
-     Colnenne et al. 1998, sondern wird aus den Verdünnungfunktionen berechnet }
+  // Adjust NNI and reduce growth
+   { Reduction depends on the N deficiency of the organs (NNIi);
+     the calculated NNI differs from the NNI of Justes et al. (1994) and
+     Colnenne et al. (1998); it is calculated from the N-dilution functions }
     fNNILeaf.v := fBl.v * NNILeaf.v;
     fNNIStem.v := fSt.v * NNIStem.v;
     fNNIGen.v := fGen.v * NNIGen.v;
@@ -1440,78 +1452,26 @@ begin
       fGen.v := 1;
 
 
-  // Trockenmasse-Berechnung
+  // Calculate dry matter
     DMLeaf.c := fBl.v *  DMShoot.c;
     DMStem.c := fSt.v *  DMShoot.c;
     DMGen.c := fGen.v *  DMShoot.c;
     DMPodWall.c := fPW.v * DMGen.c;
     DMSeed.c := fSeedGen.v * DMGen.c;
 
-    // Konversionsverlust wegen Ölbildung
-    KonversionVerlust.v := (DMSeed.c {* (Oilconc.v/100)})*0.4;   // geändert 17.01.2019 UB
-    DMSeed.c := DMSeed.c - KonversionVerlust.v;
-    DMGen.c := DMGen.c - KonversionVerlust.v;
-    DMShoot.c := DMShoot.c - KonversionVerlust.v;
-    DMPlant.c := DMPlant.c - KonversionVerlust.v;
-    DMRoot.c := fRoot.v * DMPlant.c;
-
-    SumKonversionVerlust.c := KonversionVerlust.v;
-
-  // Trockenmassereduktion wegen Frost- und Beschattungsseneszenz
-    if (DMDeadSh.c>0) then begin
-      DMPlant.c := DMPlant.c - DMSh.c;
-      DMShoot.c := DMShoot.c - DMSh.c;
-      DMLeaf.c := max(-DMLeaf.v, DMLeaf.c - DMSh.c);
-    end;
-
-    if (DMDeadW.c>0) then begin
-      {DMPlant.c := DMPlant.c - DMDeadW.c;
-      DMShoot.c := DMShoot.c - ((DMDeadW.c)*(DMShoot.v/DMPlant.v));
-      DMLeaf.c := DMLeaf.c - ((DMDeadW.c)*(DMLeaf.v/DMPlant.v));
-      DMStem.c := DMStem.c - ((DMDeadW.c)*(DMStem.v/DMPlant.v));
-      DMRoot.c := DMRoot.c - ((DMDeadW.c)*(DMRoot.v/DMPlant.v));}
-      DMPlant.c := DMPlant.c - DMDeadW.c;
-      DMShoot.c := DMShoot.c - DMDeadW.c;
-      DMLeaf.c := DMLeaf.c - ((DMDeadW.c)*(DMLeaf.v/DMShoot.v));
-      DMStem.c := DMStem.c - ((DMDeadW.c)*(DMStem.v/DMShoot.v));
-    end;
-
-    {if (DMDeadN.c > 0) then begin
-      DMPlant.c := DMPlant.c - DM_N.c;
-      DMShoot.c := DMShoot.c - DM_N.c;
-      DMLeaf.c := max(-DMLeaf.v, DMLeaf.c - DM_N.c);
-    end;}
-
-    if (DMDeadW.c > 0) then begin
-      DMDeadLeafW.c := ((DMDeadW.c)*(DMLeaf.v/DMShoot.v));
-      DMDeadStemW.c := ((DMDeadW.c)*(DMStem.v/DMShoot.v));
-      end
-    else begin
-      DMDeadLeafW.c := 0;
-      DMDeadStemW.c := 0;
-    end;
-
-  // DM-Translokation auf Grund von Seneszenz durch Beschattung
-    if (DMDeadSh.c > 0) then
-      DMTransLeaf.c := DMShTrans.c {+ DMNTrans.c}
-    else
-      DMTransLeaf.c := 0;
-
-    DMTrans.c := DMTransLeaf.c + DMTransStem.c;
+    CalcConversionLosses;
+    CalcDMLossFrostShading;
 
 
-    DMDead.c := DMDeadW.c + DMDeadSh.c; {+ DMDeadAge.c + DMDeadN.c} // abgestorbene Trockenmasse
-    C_Dead.c := (DMDead.c * 10) * 0.45;
 
-
-  // Ölkonzentration (in Abhängigkeit der Dauer der Samenreifung und der N-Menge der Samen)
+  // Oil concentration as a function of seed-maturation duration and seed N amount
     if (NSeed.v > 0) then
       Oilconc.v := (Oila.v * DauerEC81_89.v + Oilb.v) * (Oilc.v * NSeed.v + Oild.v)
     else
       Oilconc.v := 0;
 
 
-  // Ertragsberechnung (mit Harvest-Index; y1.v)
+  // Calculate yield using harvest index y1.v
 {    if (EC.v >= 88) then begin
       Yield.v := (DMShoot.v / 10) * y1.v;
       Ymax.v := (DMShoot.v / 10) * y1.v;
@@ -1539,11 +1499,11 @@ begin
     end;
 
 
-  // N-Konzentration (Nc = optimum N concentration, Ncrit = critical N concentration; Dissertation W. Weymann, Chapter 4, Figure 4)
+  // N concentration (Nc = optimum N concentration, Ncrit = critical N concentration; Dissertation W. Weymann, Chapter 4, Figure 4)
   {Dissertation W. Weymann, 2015: Organ-specific approaches describing crop development of winter oilseed rape under optimal and N-limited conditions (Chapter 3)}
   {Weymann et al. 2016: Organ-specific approaches describing crop growth of winter oilseed rape under optimal and N-limited conditions. European Journal of Agronomy)}
 
-    // Blätter
+    // Leaves
     if DayofYear.v <= 30 then begin
       NcLeaf_VA.v := NcLeaf.v;
       NcritLeaf_VA.v := NcritLeaf.v;
@@ -1555,7 +1515,7 @@ begin
     end
     else begin
       If (DayofYear.v <=221) and (DayofYear.v >=60) then begin
-        if EC.v < 60 then  begin               // Frühjahr: konstante N-Konz. Blätter
+        if EC.v < 60 then  begin               // Spring: constant leaf N concentration
           NcLeaf.v := pCnleaf.v;
           NcritLeaf.v := pCncritLeaf.v;
           dNcLeaf.v := 0;
@@ -1574,18 +1534,18 @@ begin
         end
         else
             if (NcLeaf.v <= 0) then begin
-              NcLeaf.v := min(7,max(0,pCn2leaf.v*DMleaf.v+pCn1leaf.v+DMLeaf.v*pCn2leaf.v));      // Herbst: Verdünnungsfunktion
+              NcLeaf.v := min(7,max(0,pCn2leaf.v*DMleaf.v+pCn1leaf.v+DMLeaf.v*pCn2leaf.v));      // Autumn: N-dilution function
               NcritLeaf.v := min(7,max(0,pCncrit2Leaf.v*DMLeaf.v+pCncrit1Leaf.v+DMLeaf.v*pCncrit2Leaf.v));
               dNcLeaf.v := min(7,max(0,pCn2leaf.v*(DMleaf.v+DMLeaf.c)+pCn1leaf.v+(DMLeaf.v+DMLeaf.c)*pCn2leaf.v)-NcLeaf.v);
             end
             else begin
-              NcLeaf.v := min(NcLeaf.v,max(0,pCn2leaf.v*DMleaf.v+pCn1leaf.v+DMLeaf.v*pCn2leaf.v));      // Herbst: Verdünnungsfunktion
+              NcLeaf.v := min(NcLeaf.v,max(0,pCn2leaf.v*DMleaf.v+pCn1leaf.v+DMLeaf.v*pCn2leaf.v));      // Autumn: N-dilution function
               NcritLeaf.v := min(NcritLeaf.v,max(0,pCncrit2Leaf.v*DMLeaf.v+pCncrit1Leaf.v+DMLeaf.v*pCncrit2Leaf.v));
               dNcLeaf.v := min(NcLeaf.v,max(0,pCn2Leaf.v*(DMleaf.v+DMLeaf.c)+pCn1leaf.v+(DMLeaf.v+DMLeaf.c)*pCn2leaf.v))-NcLeaf.v;
             end
     end;
 
-    // Stängel
+    // Stems
     if DayofYear.v <= 30 then begin
       NcStem_VA.v := NcStem.v;
       NcritStem_VA.v := NcritStem.v;
@@ -1633,7 +1593,7 @@ begin
         NcritStem.v := 0;
       end;
 
-    // Schoten
+    // Pods
     if (DMGen.v + DMGen.c > 0) and (DMGen.v > 0) then begin
       NcGen.v := max(0,pCnPod2.v * ln(DMGen.v) + pCnPod1.v);
       NcritGen.v := max(0,pCncritPod2.v * ln(DMGen.v) + pCncritPod1.v);
@@ -1651,7 +1611,7 @@ begin
       end;
     end;
 
-    // Wurzeln
+    // Roots
     if DayofYear.v <= 30 then begin
       NcRoot_VA.v := NcRoot.v;
       NcritRoot_VA.v := NcritRoot.v;
@@ -1698,8 +1658,8 @@ begin
     end;
 
 
-  // NNIi-Berechnung aus der Differenz von optimaler und kritischer N-Konzentration
-    {NNIi ist nicht identisch mit dem NNI von Justes et al. 1994, beschreibt aber aus den Daten der Verdünnungsfunktionen bestmöglich den N-Status der einzelnen Organe}
+  // Calculate NNIi from the difference between optimal and critical N concentration
+    {NNIi is not identical to the NNI of Justes et al. (1994), but uses the dilution-curve data to represent the N status of each organ as closely as possible}
     if fNSensOption = N_unlimited then begin
       NNILeaf.v := 1;
       NNIStem.v := 1;
@@ -1741,13 +1701,13 @@ begin
     end;
 
 
-  // Berechnung von spezifischen Flächen und Flächen-Indices
+  // Calculate specific areas and area indices
 
   // SLA
     {if (EC.v <= 30) then
       SLAf.v := actSLA.v;}
 
-    if (EC.v < 30) then      // variables SLA im Herbst; lineare Abhängigkeit von der Temperatursumme nach Aussaat
+    if (EC.v < 30) then      // Variable autumn SLA; linear dependence on thermal time since sowing
       actSLA.v := max (SLAmin.v, min(SLAmax.v, SLAhst.v*TempsumAussaat.v+SLAhin.v))
     else
         if (EC.v <= 64) then // Dissertation W. Weymann, Chapter 4, Figure 3
@@ -1755,7 +1715,7 @@ begin
         else
         actSLA.v := actSLA.v;
 
-  //SPA (specific pod area)
+  // SPA (specific pod area)
     if (EC.v >= 51) and (EC.v <= 70) then
       if (EC.v <= 65) then
         actSPA.v := ((SPAmax.v-0)/(65-51))*(EC.v - 51) + 0
@@ -1786,152 +1746,14 @@ begin
       LAIGen.c := DMGen.c * actSPA.v / 10000
     else begin
       {LAIGen.c := max(-LAIGen.v,PAI.v * (maxLAIGen.v - (DMGen.c * actSPA.v / 10000)));}
-  //    LAIGen.c := Steigung von linearer Gleichung von abfallenden LAIGen mit der Temperatursumme von maxLAIGen bis 0 !
+  //    LAIGen.c := Slope of the linear decline in LAIGen with thermal time from maxLAIGen to zero
       PAI.v := (((-0.01)-0)/(90-80))*(EC.v-80)+0;
       LAIGen.c := max(-LAIGen.v, (PAI.v * TempSumSeed.v + maxLAIGen.v)-LAIGen.v);
     end;
 
-
-  // N-Mengen-Berechnung (aus Trockenmasse und N-Konzentration der einzelnen Organe)
-    //Blätter
-    if DMLeaf.v <= 0 then
-      NLeaf.c := 0
-    else
-      if DMLeaf.c > 0 then
-        NLeaf.c := max(0,(DMLeaf.c * (NcLeaf.v+DMLeaf.v*dNcLeaf.v/DMLeaf.c) / 100))
-      else if DMLeaf.c < 0 then
-        NLeaf.c := DMLeaf.c * NLeaf.v / DMLeaf.v
-      else
-        NLeaf.c := 0;
-
-    // N-Verlust durch Frost- und Beschattungsseneszenz
-    if DMDeadW.c > 0 then
-      NDeadW.c := (DMDeadLeafW.c * NcLeaf_act.v /100) + (DMDeadStemW.c * NcStem_act.v /100) + (DMDeadRootW.c * NcRoot_act.v/100) // Verlust von N-Mengen durch Frostseneszenz
-    else
-      NDeadW.c := 0;
-
-    if (NLeaf.c < 0) and (DMDeadW.c = 0) then
-      NDeadSh.c := -NLeaf.c * (1-pCnTrans.v)
-    else
-      NDeadSh.c := 0;
-
-    NDead.c := NDeadW.c + NDeadSh.c {+ NDeadAge.c};
-    N_Dead.c := NDead.c * 10;
-
-    //Stängel
-    if DMStem.c >= 0 then
-      NStem.c := (DMStem.c * NcStem.v+DMStem.v*dNcStem.v) / 100
-    else
-      if (DMStem.c < 0) then begin
-        if DMstem.v > 0 then
-        NStem.c := DMStem.c * NStem.v / DMStem.v;
-      end;
-    // Schoten
-    if DMGen.c > 0 then begin
-      NGen.c := max(0,(DMGen.c * (NcGen.v+DMGen.v*dNcGen.v/DMGen.c) / 100));
-      NSeed.v := (DMSeed.v * pCnSeed.v)/100;
-      NPodWall.v := max(0.2*NGen.v,NGen.v - NSeed.v);
-      NSeed.v := NGen.v - NPodWall.v;
-    end
-    else if (DMGen.c < 0) and (DMGen.v > 0) then begin
-      NGen.c := DMGen.c * NGen.v / DMGen.v;
-      NSeed.v := (DMSeed.v * pCnSeed.v)/100;
-      NPodWall.v := max(0.2*NGen.v,NGen.v - NSeed.v);
-      NSeed.v := NGen.v - NPodWall.v;
-    end
-    else begin
-      NGen.c := 0;
-      NSeed.v := 0;
-      NPodWall.v := 0;
-    end;
-
-    // Wurzeln
-    if DMRoot.v <= 0 then
-      NRoot.c := 0
-    else
-      if DMRoot.c > 0 then
-        NRoot.c := (DMRoot.c * (NcRoot.v+DMRoot.v*dNcRoot.v/DMRoot.c) / 100)
-      else if DMRoot.c < 0 then
-        NRoot.c := DMRoot.c * NRoot.v / DMRoot.v
-      else
-        NRoot.c := 0;
-
-
-  // N-Translokation
-  // (65% des aktuell in den Blättern vorhandenen Stickstoffs werden transloziert)
-
-     {Malagoli et al. 2005: Dynamics of Nitrogen Uptake and Mobilization in
-     Field-grown Winter Oilseed Rape (Brassics napus) from Stem Extension
-     to Harvest. I. Global N Flows between Vegetative and Reproductive Tissues
-     in Relation to Leaf Fall and their Residual N. Annals of Botany 95, 853-861.}
-
-    if (DMDeadW.c = 0) and (NLeaf.c < 0) then
-      NTransLeaf.c := min(NLeaf.v,-NLeaf.c) * pCnTrans.v
-    else
-      NTransLeaf.c := 0;
-
-    if (NStem.c < 0) and (DMDeadW.c = 0) then
-      NTransStem.c := min(NStem.v, -NStem.c)
-    else
-      NTransStem.c := 0;
-
-    if (NRoot.c < 0) and (DMDeadW.c = 0) then
-      NTransRoot.c := min(NRoot.v,-NRoot.c)
-    else
-      NTransRoot.c := 0;
-
-    potNTrans.c := NTransLeaf.c + NTransStem.c + NTransRoot.c;
-
-   // N-Pool und N-Translokation in die Schoten
-      if (NGen.c <= potNTrans.c) then
-        if (EC.v < 80) then begin
-          potNPool.c := potNTrans.c - NGen.c;       // Anlage eines N-Pools für N-Mengen, die vor der Entwicklung der Schoten transloziert werden --> Wo liegt dieser Pool?
-          NPool.c := max(0,min((((DMStem.v*6/100)-strNStem.v)+((DMRoot.v*5.5/100)-strNRoot.v))-NPool.v,potNPool.c));
-          NTrans.c := max(0,NGen.c);                  // in die Schoten translozierte N-Menge
-          NDead.c := NDead.c + (potNPool.c - NPool.c);
-        end
-        else begin
-          potNPool.c := 0;
-          NPool.c := 0;
-          NTrans.c := NGen.c;
-          NDead.c := potNTrans.c - NTrans.c;
-        end
-      else begin
-        potNPool.c := 0;
-        NTrans.c := potNTrans.c;
-        NPool.c := min(0,max(-NPool.v,-(NGen.c - NTrans.c)));   // Entleerung des N-Pools, wenn die N-Mengen in den Schoten stark zunehmen
-        NTrans.c := max(0,min(NGen.c,NTrans.c - NPool.c));      // in die Schoten translozierte N-Menge
-      end;
-
-  // N-Pool in Stängeln und Wurzeln
-    poolNStem.c := max(-poolNStem.v,min((DMStem.v * 6 / 100)-NStem.v, NPool.c));
-    poolNRoot.c := NPool.c - poolNStem.c;
-
-  // strkturelles N in Stängeln und Wurzeln
-    strNStem.c := max(-strNStem.v,NStem.c);
-    strNRoot.c := max(-strNRoot.v,NRoot.c);
-
-
-
-  // N-Bedarf, sowie Ausgleich von N-Mangel und N-Überschuss
-   { Erläuterungen: Ausgleich von N-Mangel und N-Überschuss.pdf}
-
-  // N-Bedarf fürs Wachstum (NDemandGrowth) und die Kompensation von N-Defiziten (NDemandDeficit)
-    NDemandGrowth.v := max(0,max(0,NLeaf.c) + max(0,NStem.c) + max(0,NRoot.c) + max(0,(NGen.c - NTrans.c)));
-    NDemandDeficit.v := (DMLeaf.v * NcLeaf.v/100 - NLeaf.v)
-                          + (DMGen.v * NcGen.v/100 - NGen.v)
-                          + (DMStem.v * NcStem.v/100 - strNStem.v)
-                          + (DMRoot.v * NcRoot.v/100 - strNRoot.v);
-
-    NDemandDeficitLeaf.v := (DMLeaf.v * NcLeaf.v/100 - NLeaf.v);
-    NDemandDeficitStem.v := (DMStem.v * NcStem.v/100 - strNStem.v);
-    NDemandDeficitRoot.v := (DMRoot.v * NcRoot.v/100 - strNRoot.v);
-    NDemandDeficitGen.v := (DMGen.v * NcGen.v/100 - NGen.v);
-
-  // potentielle N-Aufnahme
-    NUptakeRate_pot.v := max(0,NDemandGrowth.v + NDemandDeficit.v);
-
-    NUptake_pot.c := max(0,NUptakeRate_pot.v);
+    CalculateOrganNuptakerates;
+    CalculateNTranslocation;
+    CalculateNDemandNDeficiency;
   end
 
   else begin
@@ -1983,7 +1805,7 @@ begin
             NGen.c := NGen.c + min(0,DMGen.v * NcGen.v/100 - NGen.v) + max(0,(NGen.v - DMGen.v * NcGen.v/100))/NDemandDeficitNeg*(NSupply.v - (NPool.v + NPool.c) - NDemandGrowth.v - NDemandDeficitPos);
           end;
         end
-        else {Pool wird zum Ausgleich benötigt}
+        else {The pool is required for compensation}
           if (PoolNStem.v+PoolNRoot.v) > 0 then begin
             NPool.c := NPool.c + TSoilNitrogenUp(SoilNitrogenMod).ActNUptake.v/10 - NDemandGrowth.v - NDemandDeficit.v;
             PoolNStem.c := PoolNStem.c + (TSoilNitrogenUp(SoilNitrogenMod).ActNUptake.v/10 - NDemandGrowth.v - NDemandDeficit.v)*PoolNStem.v/(PoolNStem.v+PoolNRoot.v);
@@ -2034,7 +1856,7 @@ begin
  // if Yield.v > 0 then HI.v := Yield.v*10 / DMShoot.v;
 
 
-// N-Harvest-Index
+// N harvest index
   if (NSeed.v > 0) then
     NHI.v := NSeed.v / NShoot.v;
 
@@ -2048,7 +1870,7 @@ begin
   end;
 
 
-// Berechnung der actuellen N-Konzentration
+// Calculate current N concentration
   if (DMLeaf.v > 0) then
     NcLeaf_act.v := NLeaf.v/DMLeaf.v*100
   else
@@ -2072,7 +1894,7 @@ begin
 
   DMShoot_vW.c := DMLeaf.c + DMStem.c + DMGen.c;
 
-// N_Defizitfaktor berechnen (um Phasen mit N-Defizit zu erkennen)
+// Calculate the N-deficit factor to identify phases of N deficiency
   if (NDemandGrowth.v > 0) then
     N_Def.v := min(1,(TSoilNitrogenUp(SoilNitrogenMod).ActNUptake.v/10)/NDemandGrowth.v)
   else
@@ -2086,9 +1908,9 @@ begin
     DateHarvestWasSet := true;
   end;
 
-  //N_Residues.v := 0.21*NShoot.v;          // dneukam: auskommentiert am 26.10.21
+  //N_Residues.v := 0.21*NShoot.v;          // dneukam: commented out on 2021-10-26
   //C_Residues.v := N_Residues.v * 95;
-  N_Residues.v := NRoot.v + NStem.v + NLeaf.v+NPodWall.v;   // dneukam: ergänzt am 26.10.21
+  N_Residues.v := NRoot.v + NStem.v + NLeaf.v+NPodWall.v;   // dneukam: added on 2021-10-26
   C_Residues.v := (DMRoot.v + DMStem.v + DMLeaf.v + DMPodWall.v)*0.45 ;
 
 end;
@@ -2108,7 +1930,7 @@ begin
 end;
 
 
-function TOSRGrowth.getExtCoeffPAR: real;     // Funktion für die Berechnung des Extinktionskoeffizienten
+function TOSRGrowth.getExtCoeffPAR: real;     // Function that calculates the extinction coefficient
 begin
   if LAIShoot.v < LAIcrit_exk.v then
     result := exk.v + (exk_0.v-exk.v)*(LAIcrit_exk.v-LAIShoot.v)/LAIcrit_exk.v
@@ -2174,6 +1996,517 @@ procedure TOSRGrowth.SetSowingDate(NewSowingDate: real);
 
 begin
   inherited;
+end;
+
+procedure TOSRGrowth.CalcDMLossFrostShading;
+begin
+  // Dry-matter reduction caused by frost and shading senescence
+  if (DMDeadSh.c > 0) then
+  begin
+    DMPlant.c := DMPlant.c - DMSh.c;
+    DMShoot.c := DMShoot.c - DMSh.c;
+    DMLeaf.c := max(-DMLeaf.v, DMLeaf.c - DMSh.c);
+  end;
+  if (DMDeadW.c > 0) then
+  begin
+    {DMPlant.c := DMPlant.c - DMDeadW.c;
+      DMShoot.c := DMShoot.c - ((DMDeadW.c)*(DMShoot.v/DMPlant.v));
+      DMLeaf.c := DMLeaf.c - ((DMDeadW.c)*(DMLeaf.v/DMPlant.v));
+      DMStem.c := DMStem.c - ((DMDeadW.c)*(DMStem.v/DMPlant.v));
+      DMRoot.c := DMRoot.c - ((DMDeadW.c)*(DMRoot.v/DMPlant.v));}
+    DMPlant.c := DMPlant.c - DMDeadW.c;
+    DMShoot.c := DMShoot.c - DMDeadW.c;
+    DMLeaf.c := DMLeaf.c - ((DMDeadW.c) * (DMLeaf.v / DMShoot.v));
+    DMStem.c := DMStem.c - ((DMDeadW.c) * (DMStem.v / DMShoot.v));
+  end;
+  {if (DMDeadN.c > 0) then begin
+      DMPlant.c := DMPlant.c - DM_N.c;
+      DMShoot.c := DMShoot.c - DM_N.c;
+      DMLeaf.c := max(-DMLeaf.v, DMLeaf.c - DM_N.c);
+    end;}
+  if (DMDeadW.c > 0) then
+  begin
+    DMDeadLeafW.c := ((DMDeadW.c) * (DMLeaf.v / DMShoot.v));
+    DMDeadStemW.c := ((DMDeadW.c) * (DMStem.v / DMShoot.v));
+  end
+  else
+  begin
+    DMDeadLeafW.c := 0;
+    DMDeadStemW.c := 0;
+  end;
+    // Dry-matter translocation caused by shading senescence
+    if (DMDeadSh.c > 0) then
+      DMTransLeaf.c := DMShTrans.c {+ DMNTrans.c}
+    else
+      DMTransLeaf.c := 0;
+
+    DMTrans.c := DMTransLeaf.c + DMTransStem.c;
+
+
+    DMDead.c := DMDeadW.c + DMDeadSh.c; {+ DMDeadAge.c + DMDeadN.c} // Dead dry matter
+    C_Dead.c := (DMDead.c * 10) * 0.45;
+
+end;
+
+procedure TOSRGrowth.CalcConversionLosses;
+begin
+  // Conversion loss caused by oil formation
+  ConversionLoss.v := (DMSeed.c) * {* (Oilconc.v/100)} 0.4;
+  // changed 2019-01-17 UB
+  DMSeed.c := DMSeed.c - ConversionLoss.v;
+  DMGen.c := DMGen.c - ConversionLoss.v;
+  DMShoot.c := DMShoot.c - ConversionLoss.v;
+  DMPlant.c := DMPlant.c - ConversionLoss.v;
+  DMRoot.c := fRoot.v * DMPlant.c;
+  SumConversionLoss.c := ConversionLoss.v;
+end;
+
+procedure TOSRGrowth.CalculateIntermediateVariables;
+begin
+  // Intermediate calculations
+  // Shoot dry matter at the start of flowering
+  if (EC.v <= 60) then
+    DMShoot_OF.c := DMShoot.c
+  else
+    DMShoot_OF.c := 0;
+  // Shoot dry-matter accumulation since the start of flowering
+  if (EC.v > 60) then
+  begin
+    DMShoot_nB.c := DMShoot.c;
+    DMShoot_nB_pot.c := DMShoot.c / fW.v;
+  end
+  else
+  begin
+    DMShoot_nB.c := 0;
+  end;
+  // N uptake until the end of the calendar year
+  if (DayofYear.v >= 217) and (DayofYear.v <= 365) then
+    NUptake_vW.c := NUptake_act.c
+  else
+    NUptake_vW.c := 0;
+  // N uptake after flowering
+  if (EC.v >= 70) then
+    NUptake_aF.c := NUptake_act.c
+  else
+    NUptake_aF.c := 0;
+end;
+
+procedure TOSRGrowth.CalculateNDemandNDeficiency;
+begin
+  // N demand and compensation for N deficiency and surplus
+  { See: Compensation for N deficiency and surplus.pdf}
+  // N demand for growth (NDemandGrowth) and compensation for N deficits (NDemandDeficit)
+  NDemandGrowth.v := max(0, max(0, NLeaf.c) + max(0, NStem.c) + max(0, NRoot.c) + max(0, (NGen.c - NTrans.c)));
+  NDemandDeficit.v := (DMLeaf.v * NcLeaf.v / 100 - NLeaf.v) + (DMGen.v * NcGen.v / 100 - NGen.v) + (DMStem.v * NcStem.v / 100 - strNStem.v) + (DMRoot.v * NcRoot.v / 100 - strNRoot.v);
+  NDemandDeficitLeaf.v := (DMLeaf.v * NcLeaf.v / 100 - NLeaf.v);
+  NDemandDeficitStem.v := (DMStem.v * NcStem.v / 100 - strNStem.v);
+  NDemandDeficitRoot.v := (DMRoot.v * NcRoot.v / 100 - strNRoot.v);
+  NDemandDeficitGen.v := (DMGen.v * NcGen.v / 100 - NGen.v);
+  // Potential N uptake
+  NUptakeRate_pot.v := max(0, NDemandGrowth.v + NDemandDeficit.v);
+  NUptake_pot.c := max(0, NUptakeRate_pot.v);
+end;
+
+procedure TOSRGrowth.CalculateNTranslocation;
+begin
+  // N translocation
+  // (65% of the N currently present in leaves is translocated)
+  {Malagoli et al. 2005: Dynamics of Nitrogen Uptake and Mobilization in
+     Field-grown Winter Oilseed Rape (Brassics napus) from Stem Extension
+     to Harvest. I. Global N Flows between Vegetative and Reproductive Tissues
+     in Relation to Leaf Fall and their Residual N. Annals of Botany 95, 853-861.}
+  if (DMDeadW.c = 0) and (NLeaf.c < 0) then
+    NTransLeaf.c := min(NLeaf.v, -NLeaf.c) * pCnTrans.v
+  else
+    NTransLeaf.c := 0;
+  if (NStem.c < 0) and (DMDeadW.c = 0) then
+    NTransStem.c := min(NStem.v, -NStem.c)
+  else
+    NTransStem.c := 0;
+  if (NRoot.c < 0) and (DMDeadW.c = 0) then
+    NTransRoot.c := min(NRoot.v, -NRoot.c)
+  else
+    NTransRoot.c := 0;
+  potNTrans.c := NTransLeaf.c + NTransStem.c + NTransRoot.c;
+  // N pool and N translocation to pods
+  if (NGen.c <= potNTrans.c) then
+    if (EC.v < 80) then
+    begin
+      potNPool.c := potNTrans.c - NGen.c;
+      // Create an N pool for N translocated before pod development; location of this pool remains to be clarified
+      NPool.c := max(0, min((((DMStem.v * 6 / 100) - strNStem.v) + ((DMRoot.v * 5.5 / 100) - strNRoot.v)) - NPool.v, potNPool.c));
+      NTrans.c := max(0, NGen.c);
+      // N amount translocated to pods
+      NDead.c := NDead.c + (potNPool.c - NPool.c);
+    end
+    else
+    begin
+      potNPool.c := 0;
+      NPool.c := 0;
+      NTrans.c := NGen.c;
+      NDead.c := potNTrans.c - NTrans.c;
+    end
+  else
+  begin
+    potNPool.c := 0;
+    NTrans.c := potNTrans.c;
+    NPool.c := min(0, max(-NPool.v, -(NGen.c - NTrans.c)));
+    // Empty the N pool when pod N increases rapidly
+    NTrans.c := max(0, min(NGen.c, NTrans.c - NPool.c));
+  end;
+  // N pools in stems and roots
+  poolNStem.c := max(-poolNStem.v, min((DMStem.v * 6 / 100) - NStem.v, NPool.c));
+  poolNRoot.c := NPool.c - poolNStem.c;
+  // Structural N in stems and roots
+  strNStem.c := max(-strNStem.v, NStem.c);
+  strNRoot.c := max(-strNRoot.v, NRoot.c);
+end;
+
+procedure TOSRGrowth.CalculateOrganNuptakerates;
+begin
+  // Calculate organ N amounts from dry matter and N concentration
+  // Leaves
+  if DMLeaf.v <= 0 then
+    NLeaf.c := 0
+  else if DMLeaf.c > 0 then
+    NLeaf.c := max(0, (DMLeaf.c * (NcLeaf.v + DMLeaf.v * dNcLeaf.v / DMLeaf.c) / 100))
+  else if DMLeaf.c < 0 then
+    NLeaf.c := DMLeaf.c * NLeaf.v / DMLeaf.v
+  else
+    NLeaf.c := 0;
+  // N loss caused by frost and shading senescence
+  if DMDeadW.c > 0 then
+    NDeadW.c := (DMDeadLeafW.c * NcLeaf_act.v / 100) + (DMDeadStemW.c * NcStem_act.v / 100) + (DMDeadRootW.c * NcRoot_act.v / 100)
+  else
+    // N loss caused by frost senescence
+    NDeadW.c := 0;
+  if (NLeaf.c < 0) and (DMDeadW.c = 0) then
+    NDeadSh.c := -NLeaf.c * (1 - pCnTrans.v)
+  else
+    NDeadSh.c := 0;
+  NDead.c := NDeadW.c + NDeadSh.c;
+  N_Dead.c := NDead.c * 10;
+  // Stems
+  if DMStem.c >= 0 then
+    NStem.c := (DMStem.c * NcStem.v + DMStem.v * dNcStem.v) / 100
+  else if (DMStem.c < 0) then
+  begin
+    if DMstem.v > 0 then
+      NStem.c := DMStem.c * NStem.v / DMStem.v;
+  end;
+  // Pods
+  if DMGen.c > 0 then
+  begin
+    NGen.c := max(0, (DMGen.c * (NcGen.v + DMGen.v * dNcGen.v / DMGen.c) / 100));
+    NSeed.v := (DMSeed.v * pCnSeed.v) / 100;
+    NPodWall.v := max(0.2 * NGen.v, NGen.v - NSeed.v);
+    NSeed.v := NGen.v - NPodWall.v;
+  end
+  else if (DMGen.c < 0) and (DMGen.v > 0) then
+  begin
+    NGen.c := DMGen.c * NGen.v / DMGen.v;
+    NSeed.v := (DMSeed.v * pCnSeed.v) / 100;
+    NPodWall.v := max(0.2 * NGen.v, NGen.v - NSeed.v);
+    NSeed.v := NGen.v - NPodWall.v;
+  end
+  else
+  begin
+    NGen.c := 0;
+    NSeed.v := 0;
+    NPodWall.v := 0;
+  end;
+  // Roots
+  if DMRoot.v <= 0 then
+    NRoot.c := 0
+  else if DMRoot.c > 0 then
+    NRoot.c := (DMRoot.c * (NcRoot.v + DMRoot.v * dNcRoot.v / DMRoot.c) / 100)
+  else if DMRoot.c < 0 then
+    NRoot.c := DMRoot.c * NRoot.v / DMRoot.v
+  else
+    NRoot.c := 0;
+end;
+
+procedure TOSRGrowth.CalcMaintainableLAI(var LAIm_ave: Double);
+var
+  Local_i: Integer;
+begin
+  // Calculate maintainable LAI (LAIm)
+  if (EC.v < 30) then
+    if (PARav.v * fTSen.v >= PARmh.v * fTm.v) then
+      LAIm.v := 1 / act_k_Leaf.v * log10((PARav.v * fTSen.v) / (PARmh.v * fTm.v))
+    else
+      LAIm.v := 0
+  else if (EC.v >= 60) then
+    if (PARav.v * Transkoeff.v * fTSen.v >= PARmf.v * fTm.v) then
+      LAIm.v := 1 / act_k_Leaf.v * log10((PARav.v * Transkoeff.v * fTSen.v) / (PARmf.v * fTm.v))
+    else
+      LAIm.v := 0
+  else if (PARav.v * fTSen.v >= PARmf.v * fTm.v) then
+    LAIm.v := 1 / act_k_Leaf.v * log10((PARav.v * fTSen.v) / (PARmf.v * fTm.v))
+  else
+    LAIm.v := 0;
+  for Local_i := 9 downto 1 do
+    LAImarray[Local_i + 1] := LAImarray[Local_i];
+  LAImarray[1] := LAIm.v;
+  LAIm_ave := 0;
+end;
+
+procedure TOSRGrowth.CalcShootRootGrowth;
+begin
+  // Dry-matter production as a function of absorbed radiation and LUE,
+  // N deficiency, water deficit, temperature response and assimilate translocation
+  // Dry-matter production
+  DMShoot.c := 0;
+  if fDMGrowthOption = InternDM then
+  begin
+    if (fInitOption = DMCritInit) and (DMShoot.v < DMcrit.v) and (EC.v >= 10) then
+    begin
+      // Initial phase: temperature-limited exponential growth without radiation
+      DMShoot.c := k1.v * DMShoot.v * Teff.v;
+      if (DMShoot.v + DMShoot.c) > DMcrit.v then
+        DMShoot.c := DMcrit.v - DMShoot.v;
+      DMRoot.c := fRoot.v * (1 + fRoot.v) * DMShoot.c;
+      DMPlant.c := DMShoot.c + DMRoot.c;
+    end;
+    if (fInitOption = LAIInit) or (DMShoot.v + DMShoot.c >= DMcrit.v) then
+    begin
+      // LUE-based growth after DMcrit
+      if (fInitOption = DMCritInit) and (DMShoot.v < DMcrit.v) then
+        {Dry matter exceeds DMcrit on the current day}
+        DMPlant.c := DMPlant.c + (Q.v * LUE.v * fT.v * CO2_factor.v) * (1 - DMShoot.c / (k1.v * DMShoot.v * Teff.v))
+      else if (QGen.v > 0) then
+      begin
+        //            LUEGen.v := LUE.v;
+        if (fDroughtOption = DroughtImpact) then
+          DMPlant.c := (((QLeaf.v * LUE.v * CO2_factor.v * ((LAILeaf.v * NNILeaf.v + LAIStem.v * NNIStem.v) / (LAILeaf.v + LAIStem.v)) + QGen.v * LUEGen.v * CO2_factor.v * NNIGen.v) * fT.v) * fW.v) + DMTrans.c
+        else
+          DMPlant.c := (((QLeaf.v * LUE.v * CO2_factor.v * ((LAILeaf.v * NNILeaf.v + LAIStem.v * NNIStem.v) / (LAILeaf.v + LAIStem.v)) + QGen.v * LUEGen.v * CO2_factor.v * NNIGen.v) * fT.v)) + DMTrans.c;
+        {DMRoot.c := fRoot.v *  DMPlant.c;
+            DMShoot.c :=   DMPlant.c-DMRoot.c;}
+        DMShoot.c := DMPlant.c * (1 - fRoot.v);
+      end
+      else if (EC.v >= 10) then
+      begin
+        if (fDroughtOption = DroughtImpact) then
+          DMPlant.c := ((QLeaf.v * LUE.v * CO2_factor.v * ((LAILeaf.v * NNILeaf.v + LAIStem.v * NNIStem.v) / (LAILeaf.v + LAIStem.v)) * fT.v) * fW.v) + DMTrans.c
+        else
+          DMPlant.c := ((QLeaf.v * LUE.v * CO2_factor.v * ((LAILeaf.v * NNILeaf.v + LAIStem.v * NNIStem.v) / (LAILeaf.v + LAIStem.v)) * fT.v)) + DMTrans.c;
+        {DMRoot.c := fRoot.v *  DMPlant.c;
+              DMShoot.c :=   DMPlant.c-DMRoot.c;}
+        DMShoot.c := DMPlant.c * (1 - fRoot.v);
+      end
+      else
+      begin
+        DMPlant.c := 0;
+        DMShoot.c := 0;
+      end;
+    end;
+  end
+  else
+  begin
+    {ExternDM}
+    DMShoot.c := DMGrowth_ex.v;
+    DMRoot.c := fRoot.v * DMShoot.c / (1 - fRoot.v);
+    DMPlant.c := DMShoot.c + DMRoot.c;
+  end;
+end;
+
+procedure TOSRGrowth.CalcRootFraction;
+begin
+  if {(EC.v < 30)} (DayofYear.v < 30) then
+    maxfRoot.v := fRoot.v;
+  // Root growth as a fraction of total growth (Dissertation W. Weymann, Chapter 4, Figure 2)
+  if ((DayofYear.v < 30) or (DayofYear.v > 217)) and (EC.v < 30) then
+    {fRoot.v := max(0,roots.v*TempSumAuflauf.v + rooti.v)}
+    fRoot.v := max(0, rooti.v * power(TempSumAuflauf.v, 2) + roots.v * TempSumAuflauf.v)
+  else if (EC.v <= 69) then
+    fRoot.v := max(0.05, ((0.05 - maxfRoot.v) / (100 - 0)) * (TempSumRoots.v) + maxfRoot.v)
+  else
+    {fRoot.v := max(0.05,maxfRoot.v*exp(root_exp.v*TempSumAuflauf.v))}
+    fRoot.v := 0.05;
+end;
+
+procedure TOSRGrowth.CalcLUE;
+begin
+  // LUE of vegetative and generative biomass; reduced after BBCH 70 because of senescence, seed development and oil formation
+  {The LUE parameters are correspondingly high because they represent effective LUE}
+  if (DayofYear.v <= 30) or ((DayofYear.v >= 217) and (EC.v < 30)) then
+    LUE.v := LUELeaf.v
+  else if (DayofYear.v > 30) and (DayofYear.v <= 60) then
+    LUE.v := ((LUE0.v - LUELeaf.v) / (60 - 30)) * (DayofYear.v - 30) + LUELeaf.v
+  else if (EC.v > 70) then
+    LUE.v := min(LUE.v, max(0.1, ((0.1 - LUE0.v) / 20) * (EC.v - 70) + LUE0.v))
+  else
+    LUE.v := LUE0.v;
+  // LUE of generative biomass
+  {Leterme 1985: ModÃ©lisation de la croissance et de la production des
+       siliques chez le colza d'hiver}
+  if (EC.v > 70) then
+    LUEGen.v := min(LUEGen.v, max(0.1, ((0.1 - LUEPod.v) / 20) * (EC.v - 70) + LUEPod.v))
+  else
+    {else
+      if (EC.v > 51) and (EC.v < 61)
+      LUEGen.v := min(LUEPod.v, max(0.1, ((LUEPod.v - 0.1)/10)*(EC.v-51)+0.1)) }
+    LUEGen.v := LUEPod.v;
+  // apply scaling factor
+  LUE.v := LUE.v * LUEscaling.v;
+  LUEGen.v := LUEGen.v * LUEscaling.v;
+end;
+
+procedure TOSRGrowth.CalcRadiationUptake;
+begin
+  // Calculate photosynthetically active radiation and cumulative incident radiation
+  PARRad.v := GRad.v * 0.5;
+  RadSum.c := PARRad.v;
+  // Reflection by the flower layer (up to 30% of incident radiation is reflected or absorbed by the flower layer)
+  if (EC.v >= 60) and (EC.v <= 70) then
+    if (EC.v <= 65) then
+      Transkoeff.v := min(1, ((0.7 - 1) / (65 - 60)) * (EC.v - 60) + 1)
+    else
+      Transkoeff.v := min(1, ((1 - 0.7) / (70 - 65)) * (EC.v - 65) + 0.7)
+  else
+    Transkoeff.v := 1;
+  // Extinction coefficients of leaves and pods
+  if (EC.v > 51) then
+    act_k_Leaf.v := 0.8
+  else
+    act_k_Leaf.v := ExtCoeffPAR;
+  // LAI-dependent extinction coefficient during the vegetative phase (master's thesis by K. Krause, 2010: Site-specific analysis of vegetative winter oilseed rape growth)
+  act_k_Gen.v := 0.6;
+  if (QGen.v > 0) then
+  begin
+    QLeaf.v := fIntLeaf.v * (PARRAD.v * 86400 / 1000000 - QGen.v) * Transkoeff.v;
+  end
+  else
+  begin
+    QLeaf.v := (fIntLeaf.v * PARRAD.v * 86400 / 1000000) * Transkoeff.v;
+  end;
+  sumQLeaf.c := QLeaf.v;
+  // Calculate absorbed radiation for the entire canopy
+  if PARRAD.v > 0.0 then
+    fInt.v := max(0, min(1, (QLeaf.v + QGen.v) / (PARRAD.v * 86400 / 1000000)))
+  else
+    fInt.v := 0.0;
+  Q.v := fInt.v * (PARRAD.v * 86400 / 1000000);
+  sumQ.c := Q.v;
+  QT.v := Q.v * fT.v;
+  sumQT.c := QT.v;
+end;
+
+procedure TOSRGrowth.InitAfterEmergence;
+var
+  CO2_ppm: Double;
+  TT: Double;
+begin
+  // Andersen et al. 1996: The effects of drought and nitrogen on light interception, growth and yield of winter oilseed rape. Acta Agriculturae Scandinavica Sect. B Soil and Plant Sciences 46, 55-67
+  // Emergence and initialisation of LAI, dry matter and N
+  if EC.v >= 10 then
+  begin
+    if (Auflauf.v = 0) and (LAILeaf.v = 0) then
+    begin
+      Auflauf.v := Globtime.v;
+      if (fInitOption = LAIInit) then
+      begin
+        LAILeaf.v := pIniLAI.v * plants.v / 10000;
+        LAIShoot.v := LAILeaf.v;
+        DMLeaf.v := DMShoot.v;
+        DMStem.v := DMShoot.v * 0.1;
+        NcLeaf.v := pCn1Leaf.v;
+        NLeaf.v := DMLeaf.v * NcLeaf.v / 100;
+        NcStem.v := pCnStem1h.v;
+        NStem.v := DMStem.v * NcStem.v;
+        NShoot.v := NLeaf.v;
+      end;
+    end;
+    // Calculate fInt separately for vegetative organs and pods
+    // Fraction of total incident radiation absorbed, depending on extinction coefficients and area indices
+    if fLAIOption = InternLAI then
+    begin
+      fIntLeaf.v := max(0, 1 - exp(-act_k_Leaf.v * LAILeaf.v));
+      fIntGen.v := max(0, 1 - exp(-act_k_Gen.v * LAIGen.v));
+    end
+    else
+      fInt.v := max(0, 1 - exp(-act_k.v * LUE_LAI.v));
+    // Drought-stress factor (nonlinear response)
+    // Ferreyra 2003: Nonlinear effects of water stress on peanut photosynthesis at crop and leaf scales. Ecological Modelling 168, 57-76
+    if (fDroughtOption = DroughtImpact) then
+    begin
+      fW.v := 1 - power((1 - TransIntRatio.v), pfW.v);
+    end
+    else
+    begin
+      fW.v := 1;
+      sumQT_TactTpot.c := 0.0;
+    end;
+    // see https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.13600
+    if OptWithCO2.option = 'withco2effect' then
+    begin
+      CO2_ppm := CO2_ppm_f(GlobTime.v);
+      TT := (163 - self.Ex_TMPM.v) / (5 - 0.1 * Ex_TMPM.v);
+      CO2_factor.v := ((CO2_ppm - TT) * (350 + 2 * TT)) / ((CO2_ppm + 2 * TT) * (350 - TT));
+    end;
+    // Calculate absorbed radiation for individual organs
+    QGen.v := (fIntGen.v * PARRAD.v * 86400 / 1000000);
+    sumQGen.c := QGen.v;
+  end;
+end;
+
+procedure TOSRGrowth.CalcTempSums;
+begin
+  // Calculate effective temperature and thermal-time sums (Tb is the base temperature; Tb = 3Â°C for oilseed rape)
+  Teff.v := max(0, TMPM.v - Tb.v);
+  TempSum.c := Teff.v;
+  if Globtime.v >= SowingDate.v then
+    TempSumAussaat.c := Teff.v
+  else
+    TempSumAussaat.c := 0;
+  if (EC.v >= 10) then
+    TempSumAuflauf.c := Teff.v
+  else
+    TempSumAuflauf.c := 0;
+  if (EC.v >= 70) then
+    TempSumPodGrowth.c := Teff.v
+  else
+    TempSumPodGrowth.c := 0;
+  if (EC.v <= 65) then
+    FullFlower.v := Globtime.v;
+  if (EC.v >= 80) then
+    TempSumSeed.c := Teff.v
+  else
+    TempSumSeed.c := 0;
+  if (EC.v > 51) then
+    TempSumLeafLoss.c := Teff.v
+  else
+    TempSumLeafLoss.c := 0;
+  if ((DayofYear.v > 30) and (DayofYear.v < 150)) then
+    TempSumRoots.c := Teff.v
+  else
+    TempSumRoots.c := 0;
+  // Negative thermal time (frost senescence)
+  if Assigned(SnowModel) then
+  begin
+    if SnowModel.Zs.v > CropHeight.v then
+      Tminus.v := min(0, SnowModel.Tsf.v)
+    else if Cropheight.v > 0 then
+      Tminus.v := min(0, (SnowModel.Tsf.v * SnowModel.Zs.v + TMPM.v * (CropHeight.v - SnowModel.Zs.v)) / CropHeight.v)
+    else
+      Tminus.v := 0;
+  end
+  else
+    Tminus.v := min(0, TMPM.v);
+  if EC.v >= 10 then
+    TempSumMinus.c := -Tminus.v;
+  // Temperature correction factor for dry-matter production
+  if TMPM.v < Ct1.v then
+    fT.v := 0
+  else if TMPM.v <= Ct2.v then
+    fT.v := (TMPM.v - Ct1.v) / (Ct2.v - Ct1.v)
+  else if TMPM.v <= Ct3.v then
+    fT.v := 1
+  else if TMPM.v <= Ct4.v then
+    fT.v := (Ct4.v - TMPM.V) / (Ct4.v - Ct3.v)
+  else
+    fT.v := 0;
 end;
 
 procedure TOSRGrowth.setNextCrop(NextCrop:TAbstractplant);
