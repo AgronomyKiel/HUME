@@ -86,7 +86,7 @@ if (length(target_class) > 0) {
 #| include: false
 #fn <- "Q:/SimProject/project/PenMonteith1.csv"
 fn <- "csv_Hume_Docu/Development1.csv"
-df <- read.delim(fn, header = TRUE, sep = ";")
+df <- read.delim(fn, header = TRUE, sep = ";", fileEncoding = "UTF-8-BOM")
 df.state <- df %>% filter(SubModel == "Development1", EntityType == "State") %>% dplyr::select(EntityName, Units, Value, Comment)
 names(df.state) <- c("State variable", "Units", "InitialValue", "Description")
 ```
@@ -355,7 +355,7 @@ The GS change rate between GS 2 and 3 is calculated as the ratio of the daily te
 
 $$\frac{dGS}{dt}=\frac{\max (0,T-{{T}_{b}})}{fL\cdot Phyll+Ph39}$$ {#eq-dGS_dt_GS2}
 
-thereby the term fL denotes the leaves which have to appear after GS 2 is reached, calculated from the number of initiated leaves at GS 2 minus 2. The substraction of two leaf primordia was made in accordance to the assumption that at least the last two vegetative primordia may not produce visible leaves, they are therefore sometimes called labile primordia [@griffiths1985].
+thereby the term fL denotes the leaves which have to appear after GS 2 is reached, calculated from the number of initiated leaves at GS 2 minus 2. The subtraction of two leaf primordia was made in accordance to the assumption that at least the last two vegetative primordia may not produce visible leaves, they are therefore sometimes called labile primordia [@griffiths1985].
 
 In the CWm model we therefore calculated a rate of node emission and introduced a parameter we called ‘TSumInternode’ analogous to the phyllochron. The numerical value of this parameter is the inverse of the slope of the relation of node numbers to the temperature sum from BBCH 30. The rate of change of BBCH stages is calculated until BBCH 37 (final leaf begins to emerge) from the ratio of the effective day temperature and TSumInternode (@eq-dBBCH_dt_GS1).
 

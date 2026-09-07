@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Agronomy and Crop Science Group, Kiel University">
-<meta name="dcterms.date" content="2026-08-31">
+<meta name="dcterms.date" content="2026-09-07">
 
 <title>TOSRGrowth – Hume Documentation</title>
 <style>
@@ -4000,7 +4000,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../Components/Soil/Documentation/TSoilWaterModelR.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">TSoilWaterModR</span></a>
+ <span class="menu-text">TSoilWaterModelR</span></a>
   </div>
 </li>
       </ul>
@@ -4047,6 +4047,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="../../../Components/CERES Wheat/Documentation/THumeWheatLeafArea.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">THumeWheatLeafArea</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../Components/CERES Wheat/Documentation/THumeWheatDryMatter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">THumeWheatDryMatter</span></a>
   </div>
 </li>
       </ul>
@@ -4184,7 +4190,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 31, 2026</p>
+      <p class="date">September 7, 2026</p>
     </div>
   </div>
   
@@ -4442,8 +4448,8 @@ f_{gen}^{*}&amp;=
 \end{cases}
 \end{aligned} \tag{14}</span></span></p>
 <p>Here the asterisk denotes the provisional shoot fraction before root allocation and nitrogen adjustment. The source multiplies the three shoot fractions by <span class="math inline">(1-f_{root})</span>, reweights them with the organ-specific nitrogen indices, and then calculates organ growth:</p>
-<p><span class="math display">\frac{dDM_i}{dt}=f_i\frac{dDM_{shoot}}{dt},
-\qquad i\in\{leaf,stem,gen\}</span> {#eq-organ-growth}</p>
+<p><span id="eq-organ-growth"><span class="math display">\frac{dDM_i}{dt}=f_i\frac{dDM_{shoot}}{dt},
+\qquad i\in\{leaf,stem,gen\} \tag{15}</span></span></p>
 <p>The use of an allometric stem fraction during flowering is consistent with the crop-growth analysis of <span class="citation" data-cites="Weymann2017b">Weymann et al. (<a href="#ref-Weymann2017b" role="doc-biblioref">2017</a>)</span>. The HUME-OSR publication also relates reproductive allocation to the pod-formation literature <span class="citation" data-cites="Habekotte1993 Diepenbrock2000">(<a href="#ref-Diepenbrock2000" role="doc-biblioref">Diepenbrock, 2000</a>; <a href="#ref-Habekotte1993" role="doc-biblioref">Habekotte, 1993</a>)</span>.</p>
 </section>
 <section id="pod-walls-and-seeds" class="level3" data-number="3.6.2">
@@ -4453,11 +4459,11 @@ f_{gen}^{*}&amp;=
 \operatorname{clamp}_{0,1}\left[
 \frac{1}{1+fPW_0\exp\{(EC-50)fPW_{exp}\}}
 \right],
-\qquad f_{wall}=1-f_{seed} \tag{15}</span></span></p>
+\qquad f_{wall}=1-f_{seed} \tag{16}</span></span></p>
 <p>The corresponding rates are</p>
 <p><span id="eq-pod-seed-growth"><span class="math display">\frac{dDM_{seed}}{dt}=f_{seed}\frac{dDM_{gen}}{dt},
 \qquad
-\frac{dDM_{wall}}{dt}=f_{wall}\frac{dDM_{gen}}{dt} \tag{16}</span></span></p>
+\frac{dDM_{wall}}{dt}=f_{wall}\frac{dDM_{gen}}{dt} \tag{17}</span></span></p>
 <p>At BBCH 80 and later, <span class="math inline">f_{seed}=1</span> and <span class="math inline">f_{wall}=0</span>. During oil formation, <code>CalcConversionLosses</code> removes 40% of the seed dry-matter increment. The publication multiplies this conversion loss by oil concentration, but that factor is commented out in the current source <span class="citation" data-cites="Bottcher2020">(<a href="#ref-Bottcher2020" role="doc-biblioref">Böttcher et al., 2020</a>)</span>.</p>
 </section>
 </section>
@@ -4472,7 +4478,7 @@ f_{gen}^{*}&amp;=
 \min\left[500,\max\{SLA(t^-),SLA_{spring}+f_{SLA,spring}LAI_{shoot}\}\right],
   &amp; 30\le EC\le64,\\
 SLA(t^-), &amp; EC&gt;64.
-\end{cases} \tag{17}</span></span></p>
+\end{cases} \tag{18}</span></span></p>
 <p>For positive leaf growth, the code updates LAI toward the area implied by total leaf mass. For negative growth, it uses the average SLA of the existing canopy:</p>
 <p><span id="eq-leaf-area-growth"><span class="math display">\frac{dLAI}{dt}=
 \begin{cases}
@@ -4480,11 +4486,11 @@ SLA(t^-), &amp; EC&gt;64.
   &amp; dDM_{leaf}/dt\ge0,\\[6pt]
 \dfrac{dDM_{leaf}}{dt}\dfrac{\overline{SLA}}{10^4},
   &amp; dDM_{leaf}/dt&lt;0.
-\end{cases} \tag{18}</span></span></p>
+\end{cases} \tag{19}</span></span></p>
 <p>Before BBCH 80, stem and pod area increments follow</p>
 <p><span id="eq-stem-pod-area-growth"><span class="math display">\frac{dSAI}{dt}=\frac{SSA}{10^4}\frac{dDM_{stem}}{dt},
 \qquad
-\frac{dPAI}{dt}=\frac{SPA}{10^4}\frac{dDM_{gen}}{dt} \tag{19}</span></span></p>
+\frac{dPAI}{dt}=\frac{SPA}{10^4}\frac{dDM_{gen}}{dt} \tag{20}</span></span></p>
 <p>The active specific pod area is</p>
 <p><span id="eq-specific-pod-area"><span class="math display">SPA=
 \begin{cases}
@@ -4492,7 +4498,7 @@ SLA(t^-), &amp; EC&gt;64.
 SPA_{max}\dfrac{EC-51}{65-51}, &amp; 51\le EC\le65,\\
 \max\{0,SPA_{max}\exp(SPA_{exp}EC)\}, &amp; 65&lt;EC\le70,\\
 0, &amp; EC&gt;70.
-\end{cases} \tag{20}</span></span></p>
+\end{cases} \tag{21}</span></span></p>
 <p>The manuscript extends the last nonzero SPA branch to BBCH 80, whereas <code>CalcRates</code> stops it after BBCH 70. From BBCH 80, SAI and PAI decline from their recorded maxima with thermal time since the start of seed filling; the slope used by the source is <span class="math inline">-0.001</span> per degree-day.</p>
 </section>
 <section id="nitrogen-concentration-demand-and-distribution" class="level2" data-number="3.8">
@@ -4508,12 +4514,12 @@ SPA_{max}\dfrac{EC-51}{65-51}, &amp; 51\le EC\le65,\\
 <p>For organ <span class="math inline">i</span>, the optimal and critical nitrogen amounts are</p>
 <p><span id="eq-organ-n-targets"><span class="math display">N_{opt,i}=DM_i\frac{Nc_{opt,i}}{100},
 \qquad
-N_{crit,i}=DM_i\frac{Nc_{crit,i}}{100} \tag{21}</span></span></p>
+N_{crit,i}=DM_i\frac{Nc_{crit,i}}{100} \tag{22}</span></span></p>
 <p>Potential uptake combines nitrogen demand for new growth with the current deficit to optimal organ contents:</p>
 <p><span id="eq-potential-n-uptake"><span class="math display">NUptake_{pot}=
 \max\left[0,
 NDemand_{growth}+\sum_i(N_{opt,i}-N_i)
-\right] \tag{22}</span></span></p>
+\right] \tag{23}</span></span></p>
 <p>The organ-specific nitrogen nutrition index used for growth limitation is</p>
 <p><span id="eq-organ-nni"><span class="math display">NNI_i=
 \begin{cases}
@@ -4521,8 +4527,8 @@ NDemand_{growth}+\sum_i(N_{opt,i}-N_i)
 \operatorname{clamp}_{0,1}\left(
 \dfrac{N_i-N_{crit,i}}{N_{opt,i}-N_{crit,i}}
 \right), &amp; Nc_{opt,i}&gt;Nc_{crit,i}.
-\end{cases} \tag{23}</span></span></p>
-<p>When the concentration terms needed by <a href="#eq-organ-nni" class="quarto-xref">Eq. 23</a> are absent, the source generally assigns one; the generative index is applied only after BBCH 70. The <code>N_unlimited</code> option forces every organ index to one. The provisional allocation fractions in <a href="#eq-shoot-fractions" class="quarto-xref">Eq. 14</a> are multiplied by these indices and normalized before the growth rates in <strong>?@eq-organ-growth</strong> are calculated.</p>
+\end{cases} \tag{24}</span></span></p>
+<p>When the concentration terms needed by <a href="#eq-organ-nni" class="quarto-xref">Eq. 24</a> are absent, the source generally assigns one; the generative index is applied only after BBCH 70. The <code>N_unlimited</code> option forces every organ index to one. The provisional allocation fractions in <a href="#eq-shoot-fractions" class="quarto-xref">Eq. 14</a> are multiplied by these indices and normalized before the growth rates in <a href="#eq-organ-growth" class="quarto-xref">Eq. 15</a> are calculated.</p>
 <p>During <code>Integrate</code>, nitrogen supply consists of soil uptake, mobilizable organ surplus and the plant nitrogen pool. If supply is below growth demand, positive organ increments are scaled by the supply-to-demand ratio. If supply exceeds growth demand, the remainder compensates organ deficits and may replenish or deplete the stem/root pool. This allocation logic implements the conceptual distribution scheme described by <span class="citation" data-cites="Bottcher2020">Böttcher et al. (<a href="#ref-Bottcher2020" role="doc-biblioref">2020</a>)</span>.</p>
 </section>
 <section id="senescence-and-translocation" class="level2" data-number="3.9">
@@ -4535,23 +4541,23 @@ NDemand_{growth}+\sum_i(N_{opt,i}-N_i)
 \min\left(DM_{shoot}\,\Delta TS_{minus}\,f_{Sws},
           \Delta DM_{shoot}+DM_{leaf}\right), &amp; TS_{minus}\ge fT_{minus},\\
 0, &amp; TS_{minus}&lt;fT_{minus}.
-\end{cases} \tag{24}</span></span></p>
+\end{cases} \tag{25}</span></span></p>
 <p>Snow cover modifies the temperature used to accumulate <code>TempSumMinus</code>.</p>
 </section>
 <section id="self-shading-and-ageing" class="level3" data-number="3.9.2">
 <h3 data-number="3.9.2" class="anchored" data-anchor-id="self-shading-and-ageing"><span class="header-section-number">3.9.2</span> Self-shading and ageing</h3>
 <p>Shading-induced senescence follows the maintainable-leaf-area concept of <span class="citation" data-cites="Gabrielle1998">Gabrielle et al. (<a href="#ref-Gabrielle1998" role="doc-biblioref">1998</a>)</span>. The model averages PAR over ten days and calculates the maintenance temperature multiplier</p>
-<p><span id="eq-maintenance-temperature"><span class="math display">f_{Tm}=pfTm_{Q10}^{(T-pfTm_{opt})/10} \tag{25}</span></span></p>
+<p><span id="eq-maintenance-temperature"><span class="math display">f_{Tm}=pfTm_{Q10}^{(T-pfTm_{opt})/10} \tag{26}</span></span></p>
 <p>When available radiation exceeds the phase-specific maintenance threshold, maintainable LAI is</p>
 <p><span id="eq-maintainable-lai"><span class="math display">LAI_m=\frac{1}{k_{leaf}}\log_{10}
 \left(\frac{PAR_{av}\,f_{T,sen}\,f_{tr}}
-{PAR_m f_{Tm}}\right), \tag{26}</span></span></p>
-<p>where <span class="math inline">f_{tr}=1</span> before flowering and is the generative-layer transmission coefficient from BBCH 60 onward. Otherwise <span class="math inline">LAI_m=0</span>. The base-10 logarithm in <a href="#eq-maintainable-lai" class="quarto-xref">Eq. 26</a> matches <code>Log10</code> in <code>CalcMaintainableLAI</code>.</p>
+{PAR_m f_{Tm}}\right), \tag{27}</span></span></p>
+<p>where <span class="math inline">f_{tr}=1</span> before flowering and is the generative-layer transmission coefficient from BBCH 60 onward. Otherwise <span class="math inline">LAI_m=0</span>. The base-10 logarithm in <a href="#eq-maintainable-lai" class="quarto-xref">Eq. 27</a> matches <code>Log10</code> in <code>CalcMaintainableLAI</code>.</p>
 <p>Senescent leaf area is converted into dead and translocatable dry matter as</p>
 <p><span id="eq-shading-dm-loss"><span class="math display">DMDead_{sh}=\frac{10^4\,LAI_s}{SLA_{dead}},
 \qquad
 DMTrans_{sh}=10^4LAI_s
-\left(\frac{1}{\overline{SLA}}-\frac{1}{SLA_{dead}}\right) \tag{27}</span></span></p>
+\left(\frac{1}{\overline{SLA}}-\frac{1}{SLA_{dead}}\right) \tag{28}</span></span></p>
 <p>After BBCH 70, age-related senescence replaces the shading response and drives leaf area linearly from its value at BBCH 70 toward zero at BBCH 90.</p>
 </section>
 <section id="nitrogen-translocation-and-storage" class="level3" data-number="3.9.3">
@@ -4562,24 +4568,24 @@ DMTrans_{sh}=10^4LAI_s
 \min(N_{leaf},-\Delta N_{leaf})pCn_{trans},
   &amp; \Delta N_{leaf}&lt;0\ \text{and}\ DMDead_W=0,\\
 0, &amp; \text{otherwise}.
-\end{cases} \tag{28}</span></span></p>
+\end{cases} \tag{29}</span></span></p>
 <p>Stem and root losses are handled similarly but without the <code>pCnTrans</code> multiplier. Potentially translocated nitrogen first meets generative demand. Before BBCH 80, any remainder may enter a pool limited by maximum stem and root nitrogen contents; excess nitrogen is recorded as dead material. If generative demand exceeds current translocation, the existing pool is depleted.</p>
 </section>
 </section>
 <section id="crop-height-yield-and-oil-concentration" class="level2" data-number="3.10">
 <h2 data-number="3.10" class="anchored" data-anchor-id="crop-height-yield-and-oil-concentration"><span class="header-section-number">3.10</span> Crop height, yield and oil concentration</h2>
 <p>Crop height is capped at 1.8 m:</p>
-<p><span id="eq-crop-height"><span class="math display">H=\min\left[1.8,0.0539\exp(0.0458EC)\right] \tag{29}</span></span></p>
+<p><span id="eq-crop-height"><span class="math display">H=\min\left[1.8,0.0539\exp(0.0458EC)\right] \tag{30}</span></span></p>
 <p>These coefficients are hard-coded in <code>CalcRates</code>, although the manuscript presents them as fitted values. Actual seed yield is</p>
-<p><span id="eq-actual-yield"><span class="math display">Yield=\frac{DM_{seed}}{10} \tag{30}</span></span></p>
+<p><span id="eq-actual-yield"><span class="math display">Yield=\frac{DM_{seed}}{10} \tag{31}</span></span></p>
 <p>Potential yield uses a nitrogen-sensitive harvest index:</p>
 <p><span id="eq-potential-yield"><span class="math display">HI=y_1\left[1-0.8\left(1-
 \frac{DM_{shoot,nB}}{DM_{shoot,nB,pot}}\right)\right],
 \qquad
-Y_{max}=\frac{DM_{shoot}}{10}HI \tag{31}</span></span></p>
+Y_{max}=\frac{DM_{shoot}}{10}HI \tag{32}</span></span></p>
 <p>Oil concentration depends on the duration of BBCH 81–89 and seed nitrogen amount, following the formulation reported by <span class="citation" data-cites="Bottcher2020">Böttcher et al. (<a href="#ref-Bottcher2020" role="doc-biblioref">2020</a>)</span> and the general importance of seed-ripening duration discussed by <span class="citation" data-cites="Diepenbrock2000">Diepenbrock (<a href="#ref-Diepenbrock2000" role="doc-biblioref">2000</a>)</span>. The active formulation is:</p>
 <p><span id="eq-oil-concentration"><span class="math display">OilConc=(Oil_a\,Duration_{81:89}+Oil_b)
-        (Oil_cN_{seed}+Oil_d) \tag{32}</span></span></p>
+        (Oil_cN_{seed}+Oil_d) \tag{33}</span></span></p>
 <p><code>OilYield</code> is calculated from <span class="math inline">Y_{max}</span> rather than actual <code>Yield</code>; downstream analyses should therefore select the intended output.</p>
 </section>
 </section>

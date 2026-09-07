@@ -144,17 +144,17 @@ Also a simpler tipping bucket approach is implemented, which is based on the ass
 
 For the numerical solutions of the water and mass transport equations, the soil profile is divided into a number of layers (See @fig-soil-discretisation). The standard is a resolution in 20 layers S with a layer thickness of 10 cm each. In principle, other resolutions are also possible, provided that the code of all components using this concept correctly. With variable depth resolution, it is important to differentiate between the distance between the center points of the compartments and the thickness. The former determines the transport distances and thus the gradients for the transport of water and nutrients, the latter is part of the buffering, ie the change in water contents / concentrations due to the spatial divergence of the flows.
 
-![Scheme for discretisaion of a vertical soil profile](images/SoilDiscretisation.png){#fig-soil-discretisation}
+![Scheme for discretisation of a vertical soil profile](images/SoilDiscretisation.png){#fig-soil-discretisation}
 
 #### Discretisation of transport equations
 
 When converting to a finite difference approach, this results in:
 
-$$\frac{{{\theta }^{t+1}}-{{\theta }^{t+1}}}{\Delta t}=\frac{F{{w}_{\,in}}-F{{w}_{\,out}}}{\Delta z}-{{S}_{(z,t}}_{)}$$ {#eq-H2OContinuityfinDiff}
+$$\frac{{{\theta }^{t+1}}-{{\theta }^{t}}}{\Delta t}=\frac{F{{w}_{\,in}}-F{{w}_{\,out}}}{\Delta z}-S_{(z,t)}$$ {#eq-H2OContinuityfinDiff}
 
 or
 
-$${{\theta }^{t+1}}\Delta z={{\theta }^{t+1}}\Delta z+\left( F{{w}_{\,in}}-F{{w}_{\,out}} \right)\cdot \Delta t-{{S}_{(z,t)}}$$ {#eq-H2OContinuityfinDiff2}
+$${{\theta }^{t+1}}\Delta z={{\theta }^{t}}\Delta z+\left( F{{w}_{\,in}}-F{{w}_{\,out}} \right)\cdot \Delta t-{{S}_{(z,t)}}\cdot \Delta t$$ {#eq-H2OContinuityfinDiff2}
 
 Where $\theta \cdot \Delta z$ corresponds to the amount of water M in a compartment.
 
@@ -172,7 +172,7 @@ $$\theta {{_{n}^{t+1}}^{.}}z_{n}^{{}}=\theta {{_{n}^{t}}^{.}}z_{n}^{{}}+{{({{F}_
 
 The root water uptake is considered in the water balance equation as a sink term. The potential transpiration (Tpot) is calculated based on the Penman-Monteith equation, which considers the atmospheric demand for water and the resistance to water flow from the soil to the atmosphere through the plant. The actual transpiration (Tact) is then calculated by considering the reduction of water uptake due to low soil water content and root competition.
 
-The details are given in the documentation of the derived class [TSoilWaterModelR](https://agronomykiel.github.io/HUME/Components/Soil/Documentation/TSoilWaterModelR.html).
+The details are given in the documentation of the derived class [TSoilWaterModelR](TSoilWaterModelR.qmd).
 
 ## Soil evaporation
 

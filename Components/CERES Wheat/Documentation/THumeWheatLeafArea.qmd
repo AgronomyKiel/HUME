@@ -30,6 +30,12 @@ source("Rlib/DokuUtilFunctions.R")
 
 options("citation_format" = "pandoc")
 
+read_hume_delim <- function(...) {
+  data <- read.delim(...)
+  names(data) <- sub("^(X\\.\\.\\.|\\ufeff)", "", names(data))
+  data
+}
+
 ```
 
 ```{r}
@@ -185,7 +191,7 @@ $$CUMPH = \frac {\sum T_{eff}} {PHINT}$$ {#eq-CUMPH}
 
 $$LN = trunc( CUMPH + 1 )$$ {#eq-LN}
 
-where $T_{eff}$ is the effective temperature, $PHINT$ is the phyllochron interval, and $LN$ is the leaf number on the main stem. The value of $PHINT$ is set to 91.74 \[°Cd\] in the model (see #eq-dBBCH_dt_GS1 and @Johnen2012).
+where $T_{eff}$ is the effective temperature, $PHINT$ is the phyllochron interval, and $LN$ is the leaf number on the main stem. The value of $PHINT$ is set to 91.74 \[°Cd\] in the model (see @eq-dBBCH_dt_GS1 and @Johnen2012).
 
 ## Leaf growth
 
@@ -236,8 +242,8 @@ fn <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_
 fn2 <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_HumeWheatLeafArea1_No_EarlyAgeLeafSenescence_dat.csv")
 
 
-df <- read.delim(fn, comment.char = "[", sep=",")
-df2 <- read.delim(fn2, comment.char = "[", sep=",")
+df <- read_hume_delim(fn, comment.char = "[", sep=",")
+df2 <- read_hume_delim(fn2, comment.char = "[", sep=",")
 df$AgeSenescence <- "Early age leaf senescence"
 df2$AgeSenescence <- "No early age leaf senescence"
 
@@ -275,7 +281,7 @@ p
 
 ```
 
-From @fig-LAIsim it becomes obvious, that the huge decline of leaf area due to the CERES-Wheat 2.0 approach leads to too low simulated LAI values for the choosen example, mainly because the start value of leaf area index in spring is too low, which slows down growth rates and thereby also leaf area index development.
+From @fig-LAIsim it becomes obvious, that the huge decline of leaf area due to the CERES-Wheat 2.0 approach leads to too low simulated LAI values for the chosen example, mainly because the start value of leaf area index in spring is too low, which slows down growth rates and thereby also leaf area index development.
 
 ```{r}
 #| label: fig-LAIsim
@@ -291,8 +297,8 @@ fn <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_
 fn2 <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_HumeWheatLeafArea1_No_EarlyAgeLeafSenescence_dat.csv")
 
 
-df <- read.delim(fn, comment.char = "[", sep=",")
-df2 <- read.delim(fn2, comment.char = "[", sep=",")
+df <- read_hume_delim(fn, comment.char = "[", sep=",")
+df2 <- read_hume_delim(fn2, comment.char = "[", sep=",")
 df$AgeSenescence <- "Early age leaf senescence"
 df2$AgeSenescence <- "No early age leaf senescence"
 
@@ -305,7 +311,7 @@ dfw$Date <- as.POSIXct(as.numeric(as.character(dfw$Time))*86400, origin="1899-12
 dfw <- dfw %>% filter(Time >= 38610)
 
 fn.Data <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_SubLeafAreaSimple1.txt")
-df.data <-  read.delim(fn.Data, comment.char = "[", sep=" ")
+df.data <-  read_hume_delim(fn.Data, comment.char = "[", sep=" ")
 df.data$Date <- as.POSIXct(as.numeric(as.character(df.data$Time))*86400, origin="1899-12-30", tz="GMT")
 df.data <- df.data %>% filter (LAI>0.01)
 
@@ -336,7 +342,7 @@ p
 
 In later stages the leaf senescence is calculated as a fraction of the existing leaf area per plant, the effective day temperature and a stage specific parameter. (see https://nowlin.css.msu.edu/wheat_book/CHAPTER2.html)
 
-For ISTAGE 2 and 4 (BBCH 30-57, see #tbl-CWDevStages), the equation is:
+For ISTAGE 2 and 4 (BBCH 30-57, see @tbl-CWDevStages), the equation is:
 
 $$PLALR_a = PSENLeaf_1 \cdot T_{eff} \cdot GPLA$$ {#eq-PLALRa1}
 
@@ -346,7 +352,7 @@ $$PLALR_a = PSENLeaf_2 \cdot T_{eff} \cdot GPLA$$ {#eq-PLALRa2}
 
 where $PSENLeaf_1$ is a parameter of the regression equation.
 
-The parameters values *PSENLeaf_1* and *PSENLeaf_2* have defaults of 0.0003 and 0.0006 $cm^2 \cdot °Cd^{-1}$ in the model. From @fig-LAISens_PSEN1 it becomes obvious that the parameter PSENLeaf_1 is a sensitive parameter for the leaf area index simulation. It remains to be discussed if values \> 0 improve the predictive quality of the model.
+The parameter values *PSENLeaf_1* and *PSENLeaf_2* have defaults of 0.0003 and 0.0006 $cm^2 \cdot °Cd^{-1}$ in the model. From @fig-LAISens_PSEN1 it becomes obvious that the parameter PSENLeaf_1 is a sensitive parameter for the leaf area index simulation. It remains to be discussed if values \> 0 improve the predictive quality of the model.
 
 ```{r}
 #| label: fig-LAISens_PSEN1
@@ -360,7 +366,7 @@ The parameters values *PSENLeaf_1* and *PSENLeaf_2* have defaults of 0.0003 and 
 
 fn <- here("Components/CERES Wheat/Documentation/Data/PSEN1_LAIMatrix_sens.csv")
 
-df <- read.delim(fn, comment.char = "[", sep=",")
+df <- read_hume_delim(fn, comment.char = "[", sep=",")
 ParName <- "PSENLeaf1"
 ColNames <- names(df)[grep(ParName, names(df))]
 ColValues <- as.numeric(gsub(paste0(ParName, "_"), "", ColNames))
@@ -374,7 +380,7 @@ dfl$Date <- as.POSIXct(as.numeric(as.character(dfl$Time))*86400, origin="1899-12
 #dfl <- dfl %>% filter(Time >= 38660)
 
 fn.Data <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_SubLeafAreaSimple1.txt")
-df.data <-  read.delim(fn.Data, comment.char = "[", sep=" ")
+df.data <-  read_hume_delim(fn.Data, comment.char = "[", sep=" ")
 df.data$Date <- as.POSIXct(as.numeric(as.character(df.data$Time))*86400, origin="1899-12-30", tz="GMT")
 df.data <- df.data %>% filter (LAI>0.01)
 
@@ -409,7 +415,7 @@ p
 
 fn <- here("Components/CERES Wheat/Documentation/Data/PSEN2_LAIMatrix_sens.csv")
 
-df <- read.delim(fn, comment.char = "[", sep=",")
+df <- read_hume_delim(fn, comment.char = "[", sep=",")
 ParName <- "PSENLeaf2"
 ColNames <- names(df)[grep(ParName, names(df))]
 ColValues <- as.numeric(gsub(paste0(ParName, "_"), "", ColNames))
@@ -423,7 +429,7 @@ dfl$Date <- as.POSIXct(as.numeric(as.character(dfl$Time))*86400, origin="1899-12
 #dfl <- dfl %>% filter(Time >= 38660)
 
 fn.Data <- here("Components/CERES Wheat/Documentation/Data/HEAT_95_06_BehandlungN240_SubLeafAreaSimple1.txt")
-df.data <-  read.delim(fn.Data, comment.char = "[", sep=" ")
+df.data <-  read_hume_delim(fn.Data, comment.char = "[", sep=" ")
 df.data$Date <- as.POSIXct(as.numeric(as.character(df.data$Time))*86400, origin="1899-12-30", tz="GMT")
 df.data <- df.data %>% filter (LAI>0.01)
 
@@ -480,13 +486,13 @@ where $LAI_{max}$ is the maximum leaf area index, $PLALR_{max}$ is the maximum l
 
 #### CERES-Wheat based late leaf area senescence
 
-Alternatively, the classical leaf senecescence calculation from the CERES-Wheat model can be used. With this algorithm, the leaf area decline during ripening is controlled by the accumulated temperaturs sum during ISTAGE 5:
+Alternatively, the classical leaf senescence calculation from the CERES-Wheat model can be used. With this algorithm, the leaf area decline during ripening is controlled by the accumulated temperature sum during ISTAGE 5:
 
 $$PLALR_n = GPLA \cdot 2 \cdot SUMDTT_5 \cdot \frac { T_{eff}}{TSum_{GF}^2} $$ {#eq-PLALRn_v2}
 
-where $GPLA$ is the leaf area per plant, $SUMDTT5$ is the accumulated temperature sum during ISTAGE 5, $T_{eff}$ is the temperature sum increment, and $TSum_{GF}^2$ is the value of unscaled parameter P5, giving the length of the grain filling period in degree days. The default value of $P5$ is set to 11.67 in the model. According to the equation #eq-TSumGF the equivalent value of $TSum_{GF}$ is `r 430+11.67*20` \[°Cd\].
+where $GPLA$ is the leaf area per plant, $SUMDTT5$ is the accumulated temperature sum during ISTAGE 5, $T_{eff}$ is the temperature sum increment, and $TSum_{GF}^2$ is the value of unscaled parameter P5, giving the length of the grain filling period in degree days. The default value of $P5$ is set to 11.67 in the model. According to the equation @eq-TSumGF the equivalent value of $TSum_{GF}$ is `r 430+11.67*20` \[°Cd\].
 
-The leaf area dynamics of the two algorithms are compared in @fig-LateSenescenceComparison. The CERES-Wheat based algorithm leads to a more smooth leaf area decline during ripeningbut remains at LAI values \> 0 at full ripening stage. The N concentration based algorithm, starts obviously later.
+The leaf area dynamics of the two algorithms are compared in @fig-LateSenescenceComparison. The CERES-Wheat based algorithm leads to a more smooth leaf area decline during ripening but remains at LAI values \> 0 at full ripening stage. The N-concentration-based algorithm starts obviously later.
 
 ```{r}
 #| label: fig-LateSenescenceComparison
@@ -502,8 +508,8 @@ fn <- here("Components/CERES Wheat/Documentation/Data/CWT3_LateSensescence_95_06
 fn2 <- here("Components/CERES Wheat/Documentation/Data/Nconc_LateSensescence_95_06_N240_HumeWheatLeafArea1_dat.csv")
 
 
-df <- read.delim(fn, comment.char = "[", sep=",")
-df2 <- read.delim(fn2, comment.char = "[", sep=",")
+df <- read_hume_delim(fn, comment.char = "[", sep=",")
+df2 <- read_hume_delim(fn2, comment.char = "[", sep=",")
 df$AgeSenescence <- "CWT3"
 df2$AgeSenescence <- "N Concentration dependent"
 
@@ -580,7 +586,7 @@ These algorithms were mainly inspired by @Bertheloot2008 and @Thornley1998.
 
 The modelled plant N uptake during vegetative growth is driven by C accumulation, considering the decrease of N concentration with increasing leaf and stem dry mass. This concept is not appropriate during reproductive phase, since N dynamics are dominated by sink-source relations (e.g.[@Bertheloot2008b]), while N translocation starts to rule LUE and leaf senescence. In many crop models like CERES-WHEAT the influence of sink N demand on photosynthesis is not explicitly modelled, but approximated by equations reducing the effective LUE as a function of thermal time and/or ratio of current and structural stem weight (see CERES-WHEAT CarboRed function, Ritchie and Godwin 1987). The empiric modelling of leaf senescence and N translocation to the grains as a function of thermal time and C translocation only requires a range of fit parameters, difficult to parameterize and with low physiological relevance.
 
-As an alternative, the N dynamics of the reproductive canopy is simulated as a function of sink (growing grains) and light environment according to the approach of @Bertheloot2008. This mechanistic model concept describes the N fluxes within a representative tiller, assuming four leaf layers. Necessary parameters are forced by experimental data. The concept supplies information about the potential root N uptake after anthesis and N mass per unit leaf area (SLN). The leaf parameter SLN, wich is functional related to canopy photosynthesis and leaf senescence was previously used for LUE and leaf senescence modelling during grain filling (e.g. @Meinke1998). The challenge was to link the plant N model with the process based concept of C assimilation and allocation used during previous vegetative phase. The following sub-sections gives a summary of the N model according to [@Bertheloot2008b] and will describe the interfaces needed for the implementation.
+As an alternative, the N dynamics of the reproductive canopy is simulated as a function of sink (growing grains) and light environment according to the approach of @Bertheloot2008. This mechanistic model concept describes the N fluxes within a representative tiller, assuming four leaf layers. Necessary parameters are forced by experimental data. The concept supplies information about the potential root N uptake after anthesis and N mass per unit leaf area (SLN). The leaf parameter SLN, which is functionally related to canopy photosynthesis and leaf senescence was previously used for LUE and leaf senescence modelling during grain filling (e.g. @Meinke1998). The challenge was to link the plant N model with the process based concept of C assimilation and allocation used during previous vegetative phase. The following subsections give a summary of the N model according to [@Bertheloot2008b] and will describe the interfaces needed for the implementation.
 
 ## Initial lamina distribution at anthesis
 
