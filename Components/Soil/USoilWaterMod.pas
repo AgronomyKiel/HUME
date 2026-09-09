@@ -1,12 +1,12 @@
 ﻿/// <summary>
 /// Implements different methods for vertical soil water transport either with different algorithms
 /// of the potential based water transport or as a simple tipping bucket approach.
-/// </summary>
 /// <remarks>
 /// <author>
 /// Henning Kage, Ulf Böttcher & Agronomy Group, University of Kiel
 /// </author>
 /// </remarks>
+/// </summary>
 
 unit USoilWaterMod;
 

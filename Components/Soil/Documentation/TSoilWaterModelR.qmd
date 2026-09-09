@@ -117,6 +117,35 @@ Basically there are empirical heuristic approaches and more mechanistic approach
 
 The empirical heuristic approaches define reduction functions for root water uptake based on the soil water potential in the different soil layers and optional the potential transpiration rate. The reduction functions are based on the work of [@feddes1978] and [@ehlers1991].
 
+## Options inherited from `TSoilWaterMod` {#sec-soil-water-base-options}
+
+`TSoilWaterModelR` inherits the general soil-water configuration registered by `TSoilWaterMod.CreateOptions` in `USoilWaterMod.pas`. The option names below are the exact keys used in the options INI file, including spaces and question marks. Defaults and accepted values are taken from the current implementation.
+
+| Option key | Default | Accepted values | Purpose |
+|---|---|---|---|
+| `FVGParsFromTexture` | `FromPar` | `FromPar`, `FromTexture` | Uses the horizon parameters `b_sat`, `b_rest`, `alpha`, `n_par`, and `l_par` directly, or derives them from the selected texture class. |
+| `FKsFromTexture` | `FromPar` | `FromPar`, `FromTexture` | Uses the horizon `Ks` parameter directly, or derives saturated hydraulic conductivity from texture. With the `RR` texture functions, the numerical bulk-density option `fLD1`--`fLD6` is also used. |
+| `act_Evaporation` | `red_f` | `red_f`, `inclExfiltration` | Selects actual-evaporation handling. Both modes apply the evaporation reduction factor; `inclExfiltration` additionally limits evaporation to the calculated exfiltration rate. |
+| `evaporation red_f` | `modifiedBeese` | `modifiedBeese`, `Beese1978` | Selects the function used to calculate the evaporation reduction factor from the matric potential in the uppermost soil layer; see [Soil evaporation](#soil-evaporation). |
+| `FTextureClass1`--`FTextureClass6` | `Sl3` | `TTextureClass` values | Selects the texture class for each of the six possible soil horizons. These selections affect parameter derivation when `FVGParsFromTexture` or `FKsFromTexture` is `FromTexture`. |
+| `FLDClass1`--`FLDClass6` | `LD3` | `LD1`, `LD2`, `LD3`, `LD4`, `LD5` | Selects a KA5 bulk-density class for each horizon. The current base implementation stores these classes through `SetLDPars`; hydraulic parameter derivation instead uses the numerical `fLD` options described below. |
+| `fLD1`--`fLD6` | `OldVersion` | `LD13`, `LD142`, `LD15`, `LD164`, `LD17`, `OldVersion` | Selects the numerical bulk-density category for each horizon. It is used when deriving `Ks` with the `RR` texture functions. |
+| `Untere_Randb` | `FreeFlow` | `ConstContent`, `NoFlux`, `Groundwater`, `FreeFlow` | Selects the lower boundary condition. `Groundwater` activates the external `Groundwaterdepth` input; `ConstContent` holds the state in the additional lower-boundary compartment constant. |
+| `IniMethod` | `Parameter` | `Watercontents`, `Potentials`, `Parameter` | Initializes the profile from layer water contents, layer matric potentials, or the `PsiStart1` parameter and its implemented depth adjustment, respectively. |
+| `CompMethod` | `Diffusion` | `Diffusion`, `Richards`, `Mixed`, `MixedHydrus`, `Capacity` | Selects the numerical water-transport solver. The source describes `Diffusion` as fast but approximate for layered soil and identifies `MixedHydrus` as the recommended mixed-form alternative; the remaining methods are retained as experimental or legacy alternatives. |
+| `WriteParsFromTexture?` | `false` | `false`, `true` | If enabled, writes the horizon water-retention parameters and `Ks` assigned during initialization back to the parameter INI file. It is intended for retaining parameters derived from texture. |
+| `Transfer water contents to next IniFile?` | `false` | `false`, `true` | If enabled, writes final simulated layer water contents to the next state INI file as initial values. |
+
+: Options registered by `TSoilWaterMod.CreateOptions`. {#tbl-soil-water-base-options}
+
+The accepted texture codes are `Ss`, `mS`, `mSgs`, `mSfs`, `fS`, `fSms`, `Sl2`, `Sl3`, `Sl4`, `Slu`, `St2`, `St3`, `Su2`, `Su3`, `Su4`, `Ls2`, `Ls3`, `Ls4`, `Lt2`, `Lt3`, `Lts`, `Lu`, `Uu`, `Uls`, `Us`, `Ut2`, `Ut3`, `Ut4`, `Tt`, `Tl`, `Ts2`, `Ts3`, `Ts4`, `Tu2`, `Tu3`, and `Tu4`. Their parameterization is described in [TSoilTexture](TSoilTexture.qmd).
+
+The pedotransfer-function family is selected by the inherited `Texture_version` option (`KA` by default; alternatively `RR`), which is registered by `TLayeredSoil` rather than by `TSoilWaterMod.CreateOptions`. A commented-out duplicate declaration in `CreateOptions` is therefore not an additional active option.
+
+### Soil evaporation {#soil-evaporation}
+
+The two evaporation options act at different stages. First, `evaporation red_f` selects either the `modifiedBeese` or `Beese1978` function for calculating `red_evap` from the matric potential of the first soil layer. The result is restricted to the interval from zero to one. Actual evaporation is then calculated as `PotEvap * red_evap`. If `act_Evaporation = inclExfiltration`, the result is additionally capped at the exfiltration rate calculated from the first layer; `red_f` leaves the reduced potential-evaporation value unchanged.
+
 ## Options and parameters to calculate the potential and actual transpiration (T~act~) and the sink term for the different soil layers
 
 ### Options
