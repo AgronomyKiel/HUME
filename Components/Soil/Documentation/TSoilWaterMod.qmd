@@ -252,7 +252,7 @@ The class `TSoilWaterModel` implements the following options shown in @tbl-soil-
 | `fLD1`--`fLD6` | `OldVersion` | `LD13`, `LD142`, `LD15`, `LD164`, `LD17`, `OldVersion` | Selects the numerical bulk-density category for each horizon. It is used when deriving `Ks` with the `RR` texture functions. |
 | `Untere_Randb` | `FreeFlow` | `ConstContent`, `NoFlux`, `Groundwater`, `FreeFlow` | Selects the lower boundary condition. `Groundwater` activates the external `Groundwaterdepth` input; `ConstContent` holds the state in the additional lower-boundary compartment constant. |
 | `IniMethod` | `Parameter` | `Watercontents`, `Potentials`, `Parameter` | Initializes the profile from layer water contents, layer matric potentials, or the `PsiStart1` parameter and its implemented depth adjustment, respectively. |
-| `CompMethod` | `Diffusion` | `Diffusion`, `Richards`, `Mixed`, `MixedHydrus`, `Capacity` | Selects the numerical water-transport solver. The source describes `Diffusion` as fast but approximate for layered soil and identifies `MixedHydrus` as the recommended mixed-form alternative; the remaining methods are retained as experimental or legacy alternatives. |
+| `CompMethod` | `Diffusion` | `Diffusion`, `Richards`, `Mixed`, `MixedHydrus`, `Capacity` | Selects the numerical water-transport solver. The source describes `Diffusion` as fast but approximate for layered soil and identifies `MixedHydrus` as the recommended mixed-form alternative. `Capacity` selects the legacy tipping-bucket scheme described in [Capacity-based bucket solution](#sec-capacity-solution). |
 | `WriteParsFromTexture?` | `false` | `false`, `true` | If enabled, writes the horizon water-retention parameters and `Ks` assigned during initialization back to the parameter INI file. It is intended for retaining parameters derived from texture. |
 | `Transfer water contents to next IniFile?` | `false` | `false`, `true` | If enabled, writes final simulated layer water contents to the next state INI file as initial values. |
 
@@ -268,6 +268,35 @@ The two evaporation options act at different stages. First, `evaporation red_f` 
 
 
 # Details of numerical solutions
+
+## Capacity-based bucket solution {#sec-capacity-solution}
+
+Setting `CompMethod = Capacity` selects `CapWatSolut`, a simple downward
+cascade or tipping-bucket model. It does not solve a hydraulic-gradient flow
+equation. Field capacity \(\theta_{FC}\) and permanent wilting point
+\(\theta_{PWP}\) are either taken from the horizon `FK` and `PWP` parameters
+when `nFKCalcMethod = Input`, or calculated from the water-retention function
+at pressure heads of \(10^{1.8}\) and \(10^{4.2}\) cm, respectively.
+
+For each global model step \(\Delta t\), the net surface flux is
+\(q_1=0.1(\mathit{NetRain}-\mathit{Act\_Evap})\) in cm d\(^{-1}\). The layers
+are processed from top to bottom. A layer first stores incoming water up to
+its available capacity \((\theta_{FC,i}-\theta_i)D_i\); any excess is passed
+to the layer below. Root-water uptake is then subtracted and is limited to
+the water stored above \(\theta_{PWP}\). Finally, matric potentials are
+recalculated from the updated water contents. This method uses the global
+time step and performs no internal iteration or adaptive time stepping.
+
+::: {.callout-warning title="Implementation limitations"}
+`Capacity` represents downward drainage only: it omits capillary rise and
+hydraulic redistribution, does not retain water above field capacity, and
+does not evaluate the selected lower-boundary condition. In addition,
+`CapWatSolut` subtracts the storage capacity in cm directly from an interface
+flux in cm d\(^{-1}\) when passing excess downward. That operation is
+dimensionally consistent only when \(\Delta t=1\) d, so this legacy method
+should not be used with other global time-step lengths without correcting the
+implementation.
+:::
 
 ## Water-content solution (Diffusion) {#sec-diffusion-solution}
 

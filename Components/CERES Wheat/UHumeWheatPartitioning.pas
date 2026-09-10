@@ -228,8 +228,10 @@ type
     maxNupTake: TPar;
 
 
-
+    /// <summary> initial leaf area per plant </summary>
     iniLA: TPar;
+    
+    /// <summary> N amount in roots per plant [g/plant] </summary>
     NRoot_pl: TState;
     /// <summary> N in senescent leaves [g/plant] </summary>
         NSen_pl: TState;
@@ -1051,7 +1053,7 @@ begin
   ParCreate('QHI_INC', '[-]', 0.196, QHI_INC, 'Slope of regression between QHI and HI for calculation of potHI');
   ParCreate('ECcritNcLeaf', '[-]', 27, ECcritNcLeaf, 'BBCH stage from which optimum leaf N concentration starts to decrease with leaf dry matter');
   ParCreate('iniGRNWT', '[mg/grain]', 3.5, iniGRNWT, 'initial grain weight (CW 3)');
-  ParCreate('iniLA', '[cm2]', 5, iniLA);
+  ParCreate('iniLA', '[cm2/pl]', 5, iniLA, 'initial leaf area per plant');
   //ParCreate('GPSM_EXP', '[-]', 2.6233, GPSM_EXP,
   //  'parameter for calculation of GPSM see Diss Ratjen');
   ParCreate('k1', '[kg/kg]', 0.0018, K1, 'Michaelis-Menten cons. to mobile N');
