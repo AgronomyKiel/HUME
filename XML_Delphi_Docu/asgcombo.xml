@@ -485,6 +485,8 @@
             </methodref>
             <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
             </methodref>
+            <methodref name="WMGetObject" visibility="private" procflags="message">
+            </methodref>
             <methodref name="CMChanged" visibility="private" procflags="message">
             </methodref>
             <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -691,6 +693,10 @@
             </methodref>
             <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
             </methodref>
+            <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="override">
+            </methodref>
             <methodref name="KeyDown" visibility="protected" procflags="dynamic">
             </methodref>
             <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -813,6 +819,8 @@
             </propertyref>
             <propertyref name="WindowHandle" visibility="protected">
             </propertyref>
+            <propertyref name="UIAutomationProvider" visibility="protected">
+            </propertyref>
             <eventref name="OnAlignInsertBefore" visibility="protected">
             </eventref>
             <eventref name="OnAlignPosition" visibility="protected">
@@ -848,6 +856,12 @@
             <methodref name="Broadcast" visibility="public">
             </methodref>
             <methodref name="CanFocus" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="ContainsControl" visibility="public">
             </methodref>
@@ -1228,6 +1242,8 @@
               </methodref>
               <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
               </methodref>
+              <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Changed" visibility="protected">
               </methodref>
               <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -1469,6 +1485,8 @@
               <methodref name="Destroy" visibility="public" procflags="destructor override">
               </methodref>
               <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
               </methodref>
               <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
               </methodref>
@@ -1716,6 +1734,8 @@
                 <methodref name="ReadDeltaStream" visibility="private">
                 </methodref>
                 <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="InitObservers" visibility="private">
                 </methodref>
                 <methodref name="FindSortedComponent" visibility="private">
                 </methodref>
@@ -1986,17 +2006,17 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="FAutoFocus" type="Boolean" visibility="private" size="1" offset="888" file="AsgCombo.pas" line="45" />
-      <field name="FFlat" type="Boolean" visibility="private" size="1" offset="889" file="AsgCombo.pas" line="46" />
-      <field name="FEtched" type="Boolean" visibility="private" size="1" offset="890" file="AsgCombo.pas" line="47" />
-      <field name="FOldColor" type="TColor" visibility="private" size="4" offset="892" file="AsgCombo.pas" line="48" />
-      <field name="FOldParentColor" type="Boolean" visibility="private" size="1" offset="896" file="AsgCombo.pas" line="49" />
-      <field name="FButtonWidth" type="Integer" visibility="private" size="4" offset="900" file="AsgCombo.pas" line="50" />
-      <field name="FFocusBorder" type="Boolean" visibility="private" size="1" offset="904" file="AsgCombo.pas" line="51" />
-      <field name="FMouseInControl" type="Boolean" visibility="private" size="1" offset="905" file="AsgCombo.pas" line="52" />
-      <field name="FDropWidth" type="Integer" visibility="private" size="4" offset="908" file="AsgCombo.pas" line="53" />
-      <field name="FIsWinXP" type="Boolean" visibility="private" size="1" offset="912" file="AsgCombo.pas" line="54" />
-      <field name="FIsVista" type="Boolean" visibility="private" size="1" offset="913" file="AsgCombo.pas" line="55" />
+      <field name="FAutoFocus" type="Boolean" visibility="private" size="1" offset="904" file="AsgCombo.pas" line="45" />
+      <field name="FFlat" type="Boolean" visibility="private" size="1" offset="905" file="AsgCombo.pas" line="46" />
+      <field name="FEtched" type="Boolean" visibility="private" size="1" offset="906" file="AsgCombo.pas" line="47" />
+      <field name="FOldColor" type="TColor" visibility="private" size="4" offset="908" file="AsgCombo.pas" line="48" />
+      <field name="FOldParentColor" type="Boolean" visibility="private" size="1" offset="912" file="AsgCombo.pas" line="49" />
+      <field name="FButtonWidth" type="Integer" visibility="private" size="4" offset="916" file="AsgCombo.pas" line="50" />
+      <field name="FFocusBorder" type="Boolean" visibility="private" size="1" offset="920" file="AsgCombo.pas" line="51" />
+      <field name="FMouseInControl" type="Boolean" visibility="private" size="1" offset="921" file="AsgCombo.pas" line="52" />
+      <field name="FDropWidth" type="Integer" visibility="private" size="4" offset="924" file="AsgCombo.pas" line="53" />
+      <field name="FIsWinXP" type="Boolean" visibility="private" size="1" offset="928" file="AsgCombo.pas" line="54" />
+      <field name="FIsVista" type="Boolean" visibility="private" size="1" offset="929" file="AsgCombo.pas" line="55" />
       <procedure name="SetEtched" visibility="private" file="AsgCombo.pas" line="56">
         <parameters>
           <parameter name="Value" type="Boolean" paramflags="const" />
@@ -2606,6 +2626,8 @@
               </methodref>
               <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
               </methodref>
+              <methodref name="WMGetObject" visibility="private" procflags="message">
+              </methodref>
               <methodref name="CMChanged" visibility="private" procflags="message">
               </methodref>
               <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -2812,6 +2834,10 @@
               </methodref>
               <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
               </methodref>
+              <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+              </methodref>
+              <methodref name="Loaded" visibility="protected" procflags="override">
+              </methodref>
               <methodref name="KeyDown" visibility="protected" procflags="dynamic">
               </methodref>
               <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -2934,6 +2960,8 @@
               </propertyref>
               <propertyref name="WindowHandle" visibility="protected">
               </propertyref>
+              <propertyref name="UIAutomationProvider" visibility="protected">
+              </propertyref>
               <eventref name="OnAlignInsertBefore" visibility="protected">
               </eventref>
               <eventref name="OnAlignPosition" visibility="protected">
@@ -2969,6 +2997,12 @@
               <methodref name="Broadcast" visibility="public">
               </methodref>
               <methodref name="CanFocus" visibility="public" procflags="dynamic">
+              </methodref>
+              <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+              </methodref>
+              <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
               </methodref>
               <methodref name="ContainsControl" visibility="public">
               </methodref>
@@ -3349,6 +3383,8 @@
                 </methodref>
                 <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
                 </methodref>
+                <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+                </methodref>
                 <methodref name="Changed" visibility="protected">
                 </methodref>
                 <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -3590,6 +3626,8 @@
                 <methodref name="Destroy" visibility="public" procflags="destructor override">
                 </methodref>
                 <methodref name="CheckNonMainThreadUsage" visibility="public">
+                </methodref>
+                <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
                 </methodref>
                 <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
                 </methodref>
@@ -3837,6 +3875,8 @@
                   <methodref name="ReadDeltaStream" visibility="private">
                   </methodref>
                   <methodref name="ReadDeltaState" visibility="private">
+                  </methodref>
+                  <methodref name="InitObservers" visibility="private">
                   </methodref>
                   <methodref name="FindSortedComponent" visibility="private">
                   </methodref>

@@ -273,6 +273,8 @@
       </methodref>
       <methodref name="ClearAndResetID" visibility="public">
       </methodref>
+      <methodref name="ResetID" visibility="public">
+      </methodref>
       <methodref name="Delete" visibility="public">
       </methodref>
       <methodref name="EndUpdate" visibility="public" procflags="virtual">
@@ -872,6 +874,8 @@
         </methodref>
         <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
         </methodref>
+        <methodref name="WMGetObject" visibility="private" procflags="message">
+        </methodref>
         <methodref name="CMChanged" visibility="private" procflags="message">
         </methodref>
         <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -1078,6 +1082,10 @@
         </methodref>
         <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
         </methodref>
+        <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="Loaded" visibility="protected" procflags="override">
+        </methodref>
         <methodref name="KeyDown" visibility="protected" procflags="dynamic">
         </methodref>
         <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -1200,6 +1208,8 @@
         </propertyref>
         <propertyref name="WindowHandle" visibility="protected">
         </propertyref>
+        <propertyref name="UIAutomationProvider" visibility="protected">
+        </propertyref>
         <eventref name="OnAlignInsertBefore" visibility="protected">
         </eventref>
         <eventref name="OnAlignPosition" visibility="protected">
@@ -1235,6 +1245,12 @@
         <methodref name="Broadcast" visibility="public">
         </methodref>
         <methodref name="CanFocus" visibility="public" procflags="dynamic">
+        </methodref>
+        <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
         </methodref>
         <methodref name="ContainsControl" visibility="public">
         </methodref>
@@ -1615,6 +1631,8 @@
           </methodref>
           <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
           </methodref>
+          <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+          </methodref>
           <methodref name="Changed" visibility="protected">
           </methodref>
           <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -1856,6 +1874,8 @@
           <methodref name="Destroy" visibility="public" procflags="destructor override">
           </methodref>
           <methodref name="CheckNonMainThreadUsage" visibility="public">
+          </methodref>
+          <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
           </methodref>
           <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
           </methodref>
@@ -2103,6 +2123,8 @@
             <methodref name="ReadDeltaStream" visibility="private">
             </methodref>
             <methodref name="ReadDeltaState" visibility="private">
+            </methodref>
+            <methodref name="InitObservers" visibility="private">
             </methodref>
             <methodref name="FindSortedComponent" visibility="private">
             </methodref>
@@ -2371,23 +2393,23 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="FButtons" type="TButtonItems" visibility="private" size="4" offset="720" file="AdvCalculatorDropDown.pas" line="180" />
-      <field name="FButtonLayout" type="TItemLayout" visibility="private" size="1" offset="724" file="AdvCalculatorDropDown.pas" line="181" />
-      <field name="FItemColorStyle" type="TSelectionColorStyle" visibility="private" size="1" offset="725" file="AdvCalculatorDropDown.pas" line="182" />
-      <field name="FButtonHot" type="Integer" visibility="private" size="4" offset="728" file="AdvCalculatorDropDown.pas" line="183" />
-      <field name="FOffSetX" type="Integer" visibility="private" size="4" offset="732" file="AdvCalculatorDropDown.pas" line="184" />
-      <field name="FOffSetY" type="Integer" visibility="private" size="4" offset="736" file="AdvCalculatorDropDown.pas" line="185" />
-      <field name="FButtonOffSetX" type="Integer" visibility="private" size="4" offset="740" file="AdvCalculatorDropDown.pas" line="186" />
-      <field name="FButtonOffSetY" type="Integer" visibility="private" size="4" offset="744" file="AdvCalculatorDropDown.pas" line="187" />
-      <field name="FImages" type="TCustomImageList" visibility="private" size="4" offset="748" file="AdvCalculatorDropDown.pas" line="188" />
-      <field name="FCaptionGap" type="Integer" visibility="private" size="4" offset="752" file="AdvCalculatorDropDown.pas" line="189" />
-      <field name="FEdit" type="TCustomEdit" visibility="private" size="4" offset="756" file="AdvCalculatorDropDown.pas" line="190" />
-      <field name="FButtonPanelType" type="TButtonPanelType" visibility="private" size="1" offset="760" file="AdvCalculatorDropDown.pas" line="191" />
-      <field name="FButtonAppearance" type="TButtonAppearance" visibility="private" size="4" offset="764" file="AdvCalculatorDropDown.pas" line="192" />
-      <field name="FButtonDown" type="Integer" visibility="private" size="4" offset="768" file="AdvCalculatorDropDown.pas" line="193" />
-      <field name="FAdvDropDown" type="TAdvCustomDropDown" visibility="private" size="4" offset="772" file="AdvCalculatorDropDown.pas" line="194" />
-      <field name="FOnButtonClick" type="TButtonClickEvent" visibility="private" size="8" offset="776" file="AdvCalculatorDropDown.pas" line="195" />
-      <field name="FIsWinXP" type="Boolean" visibility="private" size="1" offset="784" file="AdvCalculatorDropDown.pas" line="196" />
+      <field name="FButtons" type="TButtonItems" visibility="private" size="4" offset="736" file="AdvCalculatorDropDown.pas" line="180" />
+      <field name="FButtonLayout" type="TItemLayout" visibility="private" size="1" offset="740" file="AdvCalculatorDropDown.pas" line="181" />
+      <field name="FItemColorStyle" type="TSelectionColorStyle" visibility="private" size="1" offset="741" file="AdvCalculatorDropDown.pas" line="182" />
+      <field name="FButtonHot" type="Integer" visibility="private" size="4" offset="744" file="AdvCalculatorDropDown.pas" line="183" />
+      <field name="FOffSetX" type="Integer" visibility="private" size="4" offset="748" file="AdvCalculatorDropDown.pas" line="184" />
+      <field name="FOffSetY" type="Integer" visibility="private" size="4" offset="752" file="AdvCalculatorDropDown.pas" line="185" />
+      <field name="FButtonOffSetX" type="Integer" visibility="private" size="4" offset="756" file="AdvCalculatorDropDown.pas" line="186" />
+      <field name="FButtonOffSetY" type="Integer" visibility="private" size="4" offset="760" file="AdvCalculatorDropDown.pas" line="187" />
+      <field name="FImages" type="TCustomImageList" visibility="private" size="4" offset="764" file="AdvCalculatorDropDown.pas" line="188" />
+      <field name="FCaptionGap" type="Integer" visibility="private" size="4" offset="768" file="AdvCalculatorDropDown.pas" line="189" />
+      <field name="FEdit" type="TCustomEdit" visibility="private" size="4" offset="772" file="AdvCalculatorDropDown.pas" line="190" />
+      <field name="FButtonPanelType" type="TButtonPanelType" visibility="private" size="1" offset="776" file="AdvCalculatorDropDown.pas" line="191" />
+      <field name="FButtonAppearance" type="TButtonAppearance" visibility="private" size="4" offset="780" file="AdvCalculatorDropDown.pas" line="192" />
+      <field name="FButtonDown" type="Integer" visibility="private" size="4" offset="784" file="AdvCalculatorDropDown.pas" line="193" />
+      <field name="FAdvDropDown" type="TAdvCustomDropDown" visibility="private" size="4" offset="788" file="AdvCalculatorDropDown.pas" line="194" />
+      <field name="FOnButtonClick" type="TButtonClickEvent" visibility="private" size="8" offset="792" file="AdvCalculatorDropDown.pas" line="195" />
+      <field name="FIsWinXP" type="Boolean" visibility="private" size="1" offset="800" file="AdvCalculatorDropDown.pas" line="196" />
       <procedure name="WMSize" visibility="private" procflags="message" file="AdvCalculatorDropDown.pas" line="197">
         <parameters>
           <parameter name="Message" type="TWMSize" paramflags="var" />
@@ -2845,6 +2867,8 @@
           </methodref>
           <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
           </methodref>
+          <methodref name="WMGetObject" visibility="private" procflags="message">
+          </methodref>
           <methodref name="CMChanged" visibility="private" procflags="message">
           </methodref>
           <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -3051,6 +3075,10 @@
           </methodref>
           <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
           </methodref>
+          <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Loaded" visibility="protected" procflags="override">
+          </methodref>
           <methodref name="KeyDown" visibility="protected" procflags="dynamic">
           </methodref>
           <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -3173,6 +3201,8 @@
           </propertyref>
           <propertyref name="WindowHandle" visibility="protected">
           </propertyref>
+          <propertyref name="UIAutomationProvider" visibility="protected">
+          </propertyref>
           <eventref name="OnAlignInsertBefore" visibility="protected">
           </eventref>
           <eventref name="OnAlignPosition" visibility="protected">
@@ -3208,6 +3238,12 @@
           <methodref name="Broadcast" visibility="public">
           </methodref>
           <methodref name="CanFocus" visibility="public" procflags="dynamic">
+          </methodref>
+          <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
           </methodref>
           <methodref name="ContainsControl" visibility="public">
           </methodref>
@@ -3588,6 +3624,8 @@
             </methodref>
             <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
             </methodref>
+            <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+            </methodref>
             <methodref name="Changed" visibility="protected">
             </methodref>
             <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -3829,6 +3867,8 @@
             <methodref name="Destroy" visibility="public" procflags="destructor override">
             </methodref>
             <methodref name="CheckNonMainThreadUsage" visibility="public">
+            </methodref>
+            <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
             </methodref>
@@ -4076,6 +4116,8 @@
               <methodref name="ReadDeltaStream" visibility="private">
               </methodref>
               <methodref name="ReadDeltaState" visibility="private">
+              </methodref>
+              <methodref name="InitObservers" visibility="private">
               </methodref>
               <methodref name="FindSortedComponent" visibility="private">
               </methodref>
@@ -5027,6 +5069,8 @@
             </methodref>
             <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
             </methodref>
+            <methodref name="WMGetObject" visibility="private" procflags="message">
+            </methodref>
             <methodref name="CMChanged" visibility="private" procflags="message">
             </methodref>
             <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -5233,6 +5277,10 @@
             </methodref>
             <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
             </methodref>
+            <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="override">
+            </methodref>
             <methodref name="KeyDown" visibility="protected" procflags="dynamic">
             </methodref>
             <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -5355,6 +5403,8 @@
             </propertyref>
             <propertyref name="WindowHandle" visibility="protected">
             </propertyref>
+            <propertyref name="UIAutomationProvider" visibility="protected">
+            </propertyref>
             <eventref name="OnAlignInsertBefore" visibility="protected">
             </eventref>
             <eventref name="OnAlignPosition" visibility="protected">
@@ -5390,6 +5440,12 @@
             <methodref name="Broadcast" visibility="public">
             </methodref>
             <methodref name="CanFocus" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="ContainsControl" visibility="public">
             </methodref>
@@ -5770,6 +5826,8 @@
               </methodref>
               <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
               </methodref>
+              <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Changed" visibility="protected">
               </methodref>
               <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -6011,6 +6069,8 @@
               <methodref name="Destroy" visibility="public" procflags="destructor override">
               </methodref>
               <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
               </methodref>
               <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
               </methodref>
@@ -6258,6 +6318,8 @@
                 <methodref name="ReadDeltaStream" visibility="private">
                 </methodref>
                 <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="InitObservers" visibility="private">
                 </methodref>
                 <methodref name="FindSortedComponent" visibility="private">
                 </methodref>
@@ -6528,14 +6590,14 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="FAdvButtonPanel" type="TCustomButtonPanel" visibility="private" size="4" offset="1096" file="AdvCalculatorDropDown.pas" line="271" />
-      <field name="FDecim" type="Integer" visibility="private" size="4" offset="1100" file="AdvCalculatorDropDown.pas" line="272" />
-      <field name="FNewval" type="Boolean" visibility="private" size="1" offset="1104" file="AdvCalculatorDropDown.pas" line="273" />
-      <field name="FPrevval" type="Extended" visibility="private" size="10" offset="1112" file="AdvCalculatorDropDown.pas" line="274" />
-      <field name="FPrevop" type="Integer" visibility="private" size="4" offset="1124" file="AdvCalculatorDropDown.pas" line="275" />
-      <field name="FCalcClosed" type="Boolean" visibility="private" size="1" offset="1128" file="AdvCalculatorDropDown.pas" line="276" />
-      <field name="FCalcButtonAppearance" type="TButtonAppearance" visibility="private" size="4" offset="1132" file="AdvCalculatorDropDown.pas" line="277" />
-      <field name="FMVal" type="Extended" visibility="private" size="10" offset="1136" file="AdvCalculatorDropDown.pas" line="278" />
+      <field name="FAdvButtonPanel" type="TCustomButtonPanel" visibility="private" size="4" offset="1112" file="AdvCalculatorDropDown.pas" line="271" />
+      <field name="FDecim" type="Integer" visibility="private" size="4" offset="1116" file="AdvCalculatorDropDown.pas" line="272" />
+      <field name="FNewval" type="Boolean" visibility="private" size="1" offset="1120" file="AdvCalculatorDropDown.pas" line="273" />
+      <field name="FPrevval" type="Extended" visibility="private" size="10" offset="1128" file="AdvCalculatorDropDown.pas" line="274" />
+      <field name="FPrevop" type="Integer" visibility="private" size="4" offset="1140" file="AdvCalculatorDropDown.pas" line="275" />
+      <field name="FCalcClosed" type="Boolean" visibility="private" size="1" offset="1144" file="AdvCalculatorDropDown.pas" line="276" />
+      <field name="FCalcButtonAppearance" type="TButtonAppearance" visibility="private" size="4" offset="1148" file="AdvCalculatorDropDown.pas" line="277" />
+      <field name="FMVal" type="Extended" visibility="private" size="10" offset="1152" file="AdvCalculatorDropDown.pas" line="278" />
       <procedure name="OnAdvButtonClick" visibility="private" file="AdvCalculatorDropDown.pas" line="279">
         <parameters>
           <parameter name="Sender" type="TObject" />

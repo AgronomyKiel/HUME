@@ -1,5 +1,5 @@
 ---
-title: "TSoilWaterModR"
+title: "TSoilWaterModelR"
 author: "Agronomy and Crop Science Group, Kiel University"
 date: "`r Sys.Date()`"
 chunk_output_type: console
@@ -103,11 +103,11 @@ The TSoilWaterModelR module simulates add root water uptake to its ancestor comp
 
 Root water uptake is induced by the process of canopy transpiration in order to compensate plant water loss. But there exist physical limitations of the rate of total water uptake which can be seen by the sum of the maximum transport rates to the segments of the whole root system. These transport rates are governed by the maximum soil water potential difference between the root surface, the unsaturated hydraulic conductivity in the vicinity of the roots and the water uptake rate per unit of root length which can be approximated in a first step by the ratio of transpiration rate to total root length. However, root water uptake and transpiration are usually regulated down before this situation is reached due to stomata opening control in which physical signals like the leaf water potential, environmental signals like the saturation vapor deficit and the irradiation but also hormonal signalling mechanisms by absissic acid (ABA) are involved.
 
-The component TSoilWaterModelR implements some rather simple approaches for describing these complex processes but efforts have been started to include a more mechanistically approach for simulation of root water uptake. The development started with the implementation of a simple reduction factor for root water uptake based on the soil water potential in the different soil layers and the potential transpiration rate. This approach is similar to [@feddes1978] but with a more simple calculation of the reduction factor for root water uptake.
+The component TSoilWaterModelR implements some relatively simple approaches for describing these complex processes but efforts have been started to include a more mechanistic approach for simulation of root water uptake. The development started with the implementation of a simple reduction factor for root water uptake based on the soil water potential in the different soil layers and the potential transpiration rate. This approach is similar to [@feddes1978] but with a simpler calculation of the reduction factor for root water uptake.
 
 ## Implementation
 
-The root water uptake is considered in the water balance equation as a sink term (S). The potential transpiration (T~pot~) is by default calculated based on the Penman-Monteith equation in the component [TPenMonteith](https://agronomykiel.github.io/HUME/Components/Evapotranspiration/Documentation/TPenMonteith.html), which considers the atmospheric demand for water and the resistance to water flow from the soil to the atmosphere through the plant.
+The root water uptake is considered in the water balance equation as a sink term (S). The potential transpiration (T~pot~) is by default calculated based on the Penman-Monteith equation in the component [TPenMonteith](../../Evapotranspiration/Documentation/TPenMonteith.qmd), which considers the atmospheric demand for water and the resistance to water flow from the soil to the atmosphere through the plant.
 
 The actual transpiration (T~act~) is then calculated by considering the reduction of water uptake due to low soil water content / high water (absolute) tension and/or an estimation of soil water transport restrictions towards the roots.
 
@@ -116,6 +116,35 @@ The component implements a number of different options to calculate the actual t
 Basically there are empirical heuristic approaches and more mechanistic approaches implemented. The latter should allow to more specifically simulate the effects of different root architectures and root distributions on the water uptake by the plant roots. The mechanistic approaches try to estimate the limitation of water uptake due to the transport of water to the root surface, which is a function of root length in the different soil layers, the unsaturated hydraulic conductivity in the vicinity of the roots and the water uptake rate per unit of root length. The mechanistic approaches are still under development.
 
 The empirical heuristic approaches define reduction functions for root water uptake based on the soil water potential in the different soil layers and optional the potential transpiration rate. The reduction functions are based on the work of [@feddes1978] and [@ehlers1991].
+
+## Options inherited from `TSoilWaterMod` {#sec-soil-water-base-options}
+
+`TSoilWaterModelR` inherits the general soil-water configuration registered by `TSoilWaterMod.CreateOptions` in `USoilWaterMod.pas`. The option names below are the exact keys used in the options INI file, including spaces and question marks. Defaults and accepted values are taken from the current implementation.
+
+| Option key | Default | Accepted values | Purpose |
+|---|---|---|---|
+| `FVGParsFromTexture` | `FromPar` | `FromPar`, `FromTexture` | Uses the horizon parameters `b_sat`, `b_rest`, `alpha`, `n_par`, and `l_par` directly, or derives them from the selected texture class. |
+| `FKsFromTexture` | `FromPar` | `FromPar`, `FromTexture` | Uses the horizon `Ks` parameter directly, or derives saturated hydraulic conductivity from texture. With the `RR` texture functions, the numerical bulk-density option `fLD1`--`fLD6` is also used. |
+| `act_Evaporation` | `red_f` | `red_f`, `inclExfiltration` | Selects actual-evaporation handling. Both modes apply the evaporation reduction factor; `inclExfiltration` additionally limits evaporation to the calculated exfiltration rate. |
+| `evaporation red_f` | `modifiedBeese` | `modifiedBeese`, `Beese1978` | Selects the function used to calculate the evaporation reduction factor from the matric potential in the uppermost soil layer; see [Soil evaporation](#soil-evaporation). |
+| `FTextureClass1`--`FTextureClass6` | `Sl3` | `TTextureClass` values | Selects the texture class for each of the six possible soil horizons. These selections affect parameter derivation when `FVGParsFromTexture` or `FKsFromTexture` is `FromTexture`. |
+| `FLDClass1`--`FLDClass6` | `LD3` | `LD1`, `LD2`, `LD3`, `LD4`, `LD5` | Selects a KA5 bulk-density class for each horizon. The current base implementation stores these classes through `SetLDPars`; hydraulic parameter derivation instead uses the numerical `fLD` options described below. |
+| `fLD1`--`fLD6` | `OldVersion` | `LD13`, `LD142`, `LD15`, `LD164`, `LD17`, `OldVersion` | Selects the numerical bulk-density category for each horizon. It is used when deriving `Ks` with the `RR` texture functions. |
+| `Untere_Randb` | `FreeFlow` | `ConstContent`, `NoFlux`, `Groundwater`, `FreeFlow` | Selects the lower boundary condition. `Groundwater` activates the external `Groundwaterdepth` input; `ConstContent` holds the state in the additional lower-boundary compartment constant. |
+| `IniMethod` | `Parameter` | `Watercontents`, `Potentials`, `Parameter` | Initializes the profile from layer water contents, layer matric potentials, or the `PsiStart1` parameter and its implemented depth adjustment, respectively. |
+| `CompMethod` | `Diffusion` | `Diffusion`, `Richards`, `Mixed`, `MixedHydrus`, `Capacity` | Selects the numerical water-transport solver. The source describes `Diffusion` as fast but approximate for layered soil and identifies `MixedHydrus` as the recommended mixed-form alternative; the remaining methods are retained as experimental or legacy alternatives. |
+| `WriteParsFromTexture?` | `false` | `false`, `true` | If enabled, writes the horizon water-retention parameters and `Ks` assigned during initialization back to the parameter INI file. It is intended for retaining parameters derived from texture. |
+| `Transfer water contents to next IniFile?` | `false` | `false`, `true` | If enabled, writes final simulated layer water contents to the next state INI file as initial values. |
+
+: Options registered by `TSoilWaterMod.CreateOptions`. {#tbl-soil-water-base-options}
+
+The accepted texture codes are `Ss`, `mS`, `mSgs`, `mSfs`, `fS`, `fSms`, `Sl2`, `Sl3`, `Sl4`, `Slu`, `St2`, `St3`, `Su2`, `Su3`, `Su4`, `Ls2`, `Ls3`, `Ls4`, `Lt2`, `Lt3`, `Lts`, `Lu`, `Uu`, `Uls`, `Us`, `Ut2`, `Ut3`, `Ut4`, `Tt`, `Tl`, `Ts2`, `Ts3`, `Ts4`, `Tu2`, `Tu3`, and `Tu4`. Their parameterization is described in [TSoilTexture](TSoilTexture.qmd).
+
+The pedotransfer-function family is selected by the inherited `Texture_version` option (`KA` by default; alternatively `RR`), which is registered by `TLayeredSoil` rather than by `TSoilWaterMod.CreateOptions`. A commented-out duplicate declaration in `CreateOptions` is therefore not an additional active option.
+
+### Soil evaporation {#soil-evaporation}
+
+The two evaporation options act at different stages. First, `evaporation red_f` selects either the `modifiedBeese` or `Beese1978` function for calculating `red_evap` from the matric potential of the first soil layer. The result is restricted to the interval from zero to one. Actual evaporation is then calculated as `PotEvap * red_evap`. If `act_Evaporation = inclExfiltration`, the result is additionally capped at the exfiltration rate calculated from the first layer; `red_f` leaves the reduced potential-evaporation value unchanged.
 
 ## Options and parameters to calculate the potential and actual transpiration (T~act~) and the sink term for the different soil layers
 
@@ -135,7 +164,7 @@ The `SinkTermMethod` option selects the calculation of actual transpiration (T~a
 
 For `SinkTermMethod = MFP`, the following options apply:
 
-- `WithClasses`: If `false` (default), one mean root length density and soil water content are used per soil layer. If `true`, each layer is divided into ten root length density classes supplied by [TSimpleRootModDM](https://github.com/AgronomyKiel/HUME/blob/mainbranch/Components/Rootgrowth/Documentation/TSimpleRootModDM.html), and uptake is calculated separately for every class.
+- `WithClasses`: If `false` (default), one mean root length density and soil water content are used per soil layer. If `true`, each layer is divided into ten root length density classes supplied by [TSimpleRootModDM](../../Rootgrowth/Documentation/TSimpleRootModDM.qmd), and uptake is calculated separately for every class.
 
 - `MFPuptakedistribution`: With `empirical` (default), potential uptake is distributed using the root-length and competition-factor weighting also used by the empirical sink methods. With `MaximumFlow`, potential uptake is distributed according to each layer's or class's relative maximum MFP uptake rate.
 
@@ -165,7 +194,7 @@ There are two options available to distribute the potential transpiration (T~pot
 
 ### Without considering the reduction factor for root water uptake (f~sinkred~)
 
-The default option is to distribute the potential transpiration according to the fraction of root length in a soil layer. The root length in the different soil layers is calculated by the component [TRootGrowth](https://agronomykiel.github.io/HUME/Components/RootGrowth/Documentation/TRootGrowth.html) and is provided as an external value to the component TSoilWaterModelR.
+The default option is to distribute the potential transpiration according to the fraction of root length in a soil layer. The root length in the different soil layers is calculated by the component [TSimpleRootModDM](../../Rootgrowth/Documentation/TSimpleRootModDM.qmd) and is provided as an external value to the component TSoilWaterModelR.
 
 The potential water uptake / potential sink term is calculated from the root length in the layer cm cm^-2^ (RL~i~), an exponential factor for root competition \[-\] (CompF) divided by the sum of root length in all layers \[cm cm^-2^\] (RL~\[j\]~) and CompF (@fig-CompF). The factor 0.1 is the conversion from cm to mm which is used to convert with the units of mm for the evapotranspiration variables and the default unit of the soil processes which is cm.
 
@@ -238,7 +267,7 @@ The potential sink term is reduced by the reduction factor for root water uptake
 
 With the option "psi_logscale" = false, the reduction factor for root water uptake (f~sinkred~) based on the untransformed soil water potential in each soil layer (psi~i~), the soil water potential from which on water uptake is 0 (psi0) and a parameter for the soil water potential from which on water uptake decrease (psi~crit~) as shown in Eq. @eq-fsinkred2.
 
-$$f_{sinkred}=max \left( 0, min \left(1, \frac{psi-psi_3}{psi_2-psi_3}\right) \right)$$ {#eq-fsinkred
+$$f_{sinkred}=max \left( 0, min \left(1, \frac{psi-psi_3}{psi_2-psi_3}\right) \right)$$ {#eq-fsinkred}
 
 With the option "psi_logscale" = true the reduction factor is from log-scaled psi values:
 
@@ -258,7 +287,7 @@ $$\psi_{2,high} = max \left(\psi_2-\frac{\psi_{2,diff}}{2}, \psi_{FK} \right)$$ 
 
 $$\psi_{2,low} = max\left(\psi_2+\frac{\psi_{2,diff}}{2}, \psi_{PWP}\right)$$
 
-In between the value of $psi_2^{*}$ is calculated by linear interpolation ({#eq-psi2Feddes}).
+In between the value of $psi_2^{*}$ is calculated by linear interpolation (@eq-psi2Feddes).
 
 $$\psi_2^*=
 \begin{cases}
@@ -606,7 +635,7 @@ this yields:
 
 $$\theta_b-\theta_a=\frac{I_w}{2\pi D_w}\left[ \frac{x^2}{x^2-a^2}ln\left(ln\frac{x}{a} \right)-\frac{1}{2}\right] $$ {#eq-ThetaDiff}
 
-The solutions are therefore closely similar, but (for constant $\theta_b$) but the steady rate equation predicts a value of $\theta_a$ (for constant $\theta_b$) which is identical to that of e with the steady state equation at r = 1.65a. The equations are most useful in the relation to the mean water content $\overline\theta$, rather than $\theta_b$ and then give (@Passioura1968) a steady state and with approximation for for x \>\> a, which is valid for most cases:
+The solutions are therefore closely similar, but, for constant $\theta_b$, the steady rate equation predicts a value of $\theta_a$ (for constant $\theta_b$) which is identical to that of the steady-state equation at r = 1.65a. The equations are most useful in the relation to the mean water content $\overline\theta$, rather than $\theta_b$ and then give (@Passioura1968) a steady-state approximation for x \>\> a, which is valid for most cases:
 
 $$\overline{\theta}=\theta_a+\frac{I_w}{2\pi D_w}\left(\frac{x^2}{x^2-a^2}ln\frac{x}{a}-ln\frac{1}{2} \right) \approx \theta_a+\frac{I_w}{2\pi D_w}ln\frac{x}{1.65a}$$ {#eq-SteadyStatetheta}
 
@@ -620,7 +649,7 @@ $$I_w=2\pi k_u \cdot \frac{\psi_a-\overline{\psi}}{ln\frac{x}{1.65a}}$$ {#eq-Ste
 
 ### Steady rate solution
 
-The steady rate approximation (@Cowan1965) is rather more realistic, since it embodies the assumption that water is being supplied uniformly from within the soil cylinder to maintain the constant flow. The Steady rate solution and its approximation for for x \>\> a is (@Tinker1976):
+The steady rate approximation (@Cowan1965) is rather more realistic, since it embodies the assumption that water is being supplied uniformly from within the soil cylinder to maintain the constant flow. The steady-rate solution and its approximation for x \>\> a is (@Tinker1976):
 
 $$\overline{\theta}=\theta_a+\frac{I_w}{2\pi D_w\left( x^2-a^2\right)}\left[ \left(\frac{x^4}{x^2-a^2}ln\frac{x}{a}\right)-\left(\frac{3x^2-a^2}{4}\right) \right] \approx \theta_a+\frac{I_w}{2\pi D_w}ln\frac{x}{2.1a}$$ {#eq-SteadyRate}
 
@@ -785,7 +814,7 @@ The matric flux potential (M) is a mathematical integration of unsaturated hydra
 
 $$M=\int_{-h_w}^{h}K(h)dh=\int_{\theta{_w}}^{\theta}D(\theta)d(\theta)$$ {#eq-MFPdef}
 
-The Matric flux potential can be calculated numerically by integrating $k_u$ or $D_w$ from the permanent wilting point. @fig-MFluxPotCurves gives the curves for the matrix flux potential for three choosen soil textures (gS: coarse sand, Sl3: loamy sand, Ut2: clayey silt).
+The Matric flux potential can be calculated numerically by integrating $k_u$ or $D_w$ from the permanent wilting point. @fig-MFluxPotCurves gives the curves for the matrix flux potential for three chosen soil textures (gS: coarse sand, Sl3: loamy sand, Ut2: clayey silt).
 
 ```{r}
 #| warning: FALSE
@@ -840,7 +869,7 @@ m
 
 ## Single root model with matrix flux potential
 
-A solutions of @eq-DiffusionSingleRoot using the matrix flux potential approach have been derived by @de_Willigen1987 and were more recently used to derive sink term formulation of macroscopic soil water transport models by @vanLier2006, @Schroder2007 and @vanLier2008.
+Solutions of @eq-DiffusionSingleRoot using the matric flux potential approach were derived by @de_Willigen1987 and were more recently used to derive sink term formulation of macroscopic soil water transport models by @vanLier2006, @Schroder2007 and @vanLier2008.
 
 From mass conservation, and ignoring the root volume it follows that:
 
@@ -877,7 +906,7 @@ For this equation the following solution is found (@vanLier2006 eq. 39):
 
 $$M=\frac{-T_p}{4z}r^2+C_1ln(r)+C_2 $$ {#eq-MbaseIntegral}
 
-where $C_1$ and $C_2$ are integration constants. This solution is known as the steady-rate solution. We assume the continuum approach required to apply We assume the continuum approach required to apply Darcy's equation to hold for the geometry and the scales considered. @vanLier2006 and @Schroder2007 used the boundary condition
+where $C_1$ and $C_2$ are integration constants. This solution is known as the steady-rate solution. We assume the continuum approach required to apply Darcy's equation to hold for the geometry and the scales considered. @vanLier2006 and @Schroder2007 used the boundary condition
 
 $$M=0;\;\;\;\;r=a$$ {#eq-MFPinnerboundary1}
 
@@ -889,17 +918,17 @@ $$M=M_0;\;\;\;\;\;\;r=a $$ {#eq-MFPinnerboundary2}
 
 where $M_0\;[cm^2d^{−1}]$ is the matric flux potential at the root surface. The second inner boundary condition remains:
 
-$$\frac{dM}{dr}=T_p\frac{x^2}{2za};\;\;\;\;\;r=a $$ {#eq-dMdr} where x (cm) is the rhizosphere radius, which is equal to the half mean distance between roots and is related to the root length density $L_{rv}\;[cm\;cm^{−3}]$ by Eq.x.
+$$\frac{dM}{dr}=T_p\frac{x^2}{2za};\;\;\;\;\;r=a $$ {#eq-dMdr} where x (cm) is the rhizosphere radius, which is equal to the half mean distance between roots and is related to the root length density $L_{rv}\;[cm\;cm^{−3}]$ by $x=(\pi L_{rv})^{-1/2}$.
 
 Applying these boundary conditions (Eq. \[11\] and \[12\]) yields (@Schroder2007, @vanLier2008):
 
-$$C_1=\frac{T_p}{2z}(x^2+a^2) $$ {(#eq-C1)}
+$$C_1=\frac{T_p}{2z}(x^2+a^2) $$ {#eq-C1}
 
 and @vanLier2008:
 
 $$C_2=\frac{T_p}{2z}\left[\frac{a^2}{2}-(x^2+a^2)\:ln(a)\right]+M_0 $$ {#eq-C2} which combines to (@vanLier2008)
 
-$$M-M_0=\frac{T_p}{2z}\left[\frac{a^2-r^2}{2}+\left(x^2-a^2\right)\:ln\left(\frac{r}{a}\right)\right] $$ {#eq-MM0)}
+$$M-M_0=\frac{T_p}{2z}\left[\frac{a^2-r^2}{2}+\left(x^2-a^2\right)\:ln\left(\frac{r}{a}\right)\right] $$ {#eq-MM0}
 
 @Metselaar2007 showed by numerical analysis that M(r) under limiting hydraulic conditions has the same shape as under non-limiting conditions and may be described with an expression, with $T_p$ replaced by the actual transpiration rate $T_a$ and $M_0$ equal to the matric flux potential at the permanent wilting point ($M_w$), which by definition is equal to zero under limiting soil water conditions. Therefore, in the falling rate phase,
 
@@ -1046,4 +1075,4 @@ The log normal distribution has density
 
 $$f(x) = \frac{1}{\sqrt{2\pi}\sigma x} e^{-(\log(x) - \mu)^2/2 \sigma^2}$$ {#eq-lognormal}
 
-where $\mu$ and $\sigma$ are the mean and standard deviation of the logarithm. The mean is $E(X) = exp(\mu + 1/2 \sigma^2)$ , the median is $med(X) = exp(\mu)$, and the variance $Var(X) = exp(2\mu + \sigma^2)(exp(\sigma^2) - 1)$ and hence the coefficient of variation is $\sqrt{exp(\sigma^2) - 1}$ which is approximately $\sigma$ when that is small (e.g., $\sigma < 1/2$\$\\sigma \< 1/2\$).
+where $\mu$ and $\sigma$ are the mean and standard deviation of the logarithm. The mean is $E(X) = exp(\mu + 1/2 \sigma^2)$ , the median is $med(X) = exp(\mu)$, and the variance $Var(X) = exp(2\mu + \sigma^2)(exp(\sigma^2) - 1)$ and hence the coefficient of variation is $\sqrt{exp(\sigma^2) - 1}$ which is approximately $\sigma$ when that is small (e.g., $\sigma < 1/2$).

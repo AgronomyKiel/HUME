@@ -165,7 +165,7 @@ TAbstractPlant \|\_\_\_\_TSubmodel
 #| include: false
 #fn <- "Q:/SimProject/project/GrowthCurvePlant1.csv"
 fn <- "csv_Hume_Docu/GrowthCurvePlant1.csv"
-df <- read.delim(fn, header = TRUE, sep = ";")
+df <- read.delim(fn, header = TRUE, sep = ";", fileEncoding = "UTF-8-BOM")
 df.state <- df %>% filter(SubModel == "GrowthCurvePlant1", EntityType == "State") %>% dplyr::select(EntityName, Units, Value, Comment)
 names(df.state) <- c("State variable", "Units", "InitialValue", "Description")
 ```

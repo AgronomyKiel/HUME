@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Katja Holzhauser, Agronomy and Crop Science Group, Kiel University">
-<meta name="dcterms.date" content="2026-08-26">
+<meta name="dcterms.date" content="2026-09-07">
 
 <title>TDevelopment_Maize – Hume Documentation</title>
 <style>
@@ -4226,7 +4226,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../Components/Soil/Documentation/TSoilWaterModelR.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">TSoilWaterModR</span></a>
+ <span class="menu-text">TSoilWaterModelR</span></a>
   </div>
 </li>
       </ul>
@@ -4265,12 +4265,6 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../Components/CERES Wheat/Documentation/THumeWheatDryMatter.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">THumeWheatDryMatter</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../../../Components/CERES Wheat/Documentation/THumeWheatPartitioning.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">THumeWheatPartitioning</span></a>
   </div>
@@ -4279,6 +4273,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="../../../Components/CERES Wheat/Documentation/THumeWheatLeafArea.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">THumeWheatLeafArea</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../Components/CERES Wheat/Documentation/THumeWheatDryMatter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">THumeWheatDryMatter</span></a>
   </div>
 </li>
       </ul>
@@ -4294,8 +4294,14 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../Components/OilseedRape/Documentation/OSR_growth_model.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Plant Growth Model</span></a>
+  <a href="../../../Components/OilseedRape/Documentation/TDevelopmentOSR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TDevelopmentOSR</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../Components/OilseedRape/Documentation/TOSRGrowth.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TOSRGrowth</span></a>
   </div>
 </li>
       </ul>
@@ -4341,7 +4347,10 @@ window.Quarto = {
   <ul>
   <li><a href="#descendence" id="toc-descendence" class="nav-link" data-scroll-target="#descendence"><span class="header-section-number">1.1</span> Descendence</a></li>
   </ul></li>
-  <li><a href="#scientific-background" id="toc-scientific-background" class="nav-link" data-scroll-target="#scientific-background"><span class="header-section-number">2</span> Scientific Background</a></li>
+  <li><a href="#scientific-background" id="toc-scientific-background" class="nav-link" data-scroll-target="#scientific-background"><span class="header-section-number">2</span> Scientific Background</a>
+  <ul>
+  <li><a href="#calibration-and-evaluation-results" id="toc-calibration-and-evaluation-results" class="nav-link" data-scroll-target="#calibration-and-evaluation-results"><span class="header-section-number">2.1</span> Calibration and Evaluation results</a></li>
+  </ul></li>
   <li><a href="#submodel-objects" id="toc-submodel-objects" class="nav-link" data-scroll-target="#submodel-objects"><span class="header-section-number">3</span> Submodel objects</a>
   <ul>
   <li><a href="#state-variables" id="toc-state-variables" class="nav-link" data-scroll-target="#state-variables"><span class="header-section-number">3.1</span> State variables</a></li>
@@ -4379,7 +4388,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 26, 2026</p>
+      <p class="date">September 7, 2026</p>
     </div>
   </div>
   
@@ -4479,7 +4488,7 @@ System
 </section>
 <section id="scientific-background" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Scientific Background</h1>
-<p>Maize development is regulated by the effective temperature <span class="math inline">T_{eff}</span>, which is calculated as the positive difference between the daily mean temperature (TMPM) and a defined base temperature of 6 °C (Tbase6), following <span class="citation" data-cites="Pages1994">Pages and Pellerin (<a href="#ref-Pages1994" role="doc-biblioref">1994</a>)</span> and <span class="citation" data-cites="bonhomme1994">Bonhomme et al. (<a href="#ref-bonhomme1994" role="doc-biblioref">1994</a>)</span> (<strong>?@tbl-Paramters</strong>).</p>
+<p>Maize development is regulated by the effective temperature <span class="math inline">T_{eff}</span>, which is calculated as the positive difference between the daily mean temperature (TMPM) and a defined base temperature of 6 °C (Tbase6), following <span class="citation" data-cites="Pages1994">Pages and Pellerin (<a href="#ref-Pages1994" role="doc-biblioref">1994</a>)</span> and <span class="citation" data-cites="bonhomme1994">Bonhomme et al. (<a href="#ref-bonhomme1994" role="doc-biblioref">1994</a>)</span> (<a href="#tbl-Parameters" class="quarto-xref">Table 4</a>).</p>
 <p>The development process is divided into five stages, hereafter referred to as XStages, following the HYBRID-Maize framework and the approach of <span class="citation" data-cites="yang2016">Yang et al. (<a href="#ref-yang2016" role="doc-biblioref">2016</a>)</span>. These XStages represent the key phenological stages of maize development: emergence, tassel initiation, silking, effective grain filling, and maturity (<a href="#fig-XStages" class="quarto-xref">Fig. 1</a>).</p>
 <div id="fig-XStages" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -4504,7 +4513,8 @@ Figure 1: The XStages 1-5 represent the development stages emergence, tassel in
 <p><span id="eq-phy"><span class="math display">\mathrm{f}_{\mathrm{phy}}\mathrm{\mathrm{=}}0.66+0.068 * LeafNo \quad |\quad LeafNo &lt; 5 \\1 \quad |\quad LeafNo ≥ 5 \tag{7}</span></span></p>
 <p>During the early growth period, when the plant has fewer than five leaves (&lt; BBCH15), leaf appearance is assumed to occur at a higher rate. To account for this effect, a reduction factor (<span class="math inline">f_{phy}</span>) is applied to the phyllochron (<a href="#eq-phy" class="quarto-xref">Eq. 7</a>).</p>
 <p>In the field trials used for model evaluation, phenological stages were recorded according to the BBCH scale of <span class="citation" data-cites="lancashire1991a">LANCASHIRE et al. (<a href="#ref-lancashire1991a" role="doc-biblioref">1991</a>)</span>. These observations were subsequently converted into the corresponding XStages for comparison with the model simulations (<a href="#fig-XStages" class="quarto-xref">Fig. 1</a>).</p>
-<p>##Calibration and Evaluation results</p>
+<section id="calibration-and-evaluation-results" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="calibration-and-evaluation-results"><span class="header-section-number">2.1</span> Calibration and Evaluation results</h2>
 <p>Plant development describing XStages, translated to BBCH (<span class="citation" data-cites="lancashire1991a">LANCASHIRE et al. (<a href="#ref-lancashire1991a" role="doc-biblioref">1991</a>)</span>) was simulated sufficiently with R² of 0.93 and 0.98 in calibration and evaluation (<a href="#tbl-results" class="quarto-xref">Table 2</a>), respectively. Variations due to different sowing dates, geographical position and soil types were well estimated (<a href="#fig-ev" class="quarto-xref">Fig. 3</a>). Inaccuracies occurred during BBCH 50 and 65, as the period of tassel initiation to silking may be difficult to quantify in the field.</p>
 <div id="tbl-results" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -4569,6 +4579,7 @@ Figure 3: Model simulation of BBCH development stages (line) and measured BBCH 
 </figcaption>
 </figure>
 </div>
+</section>
 </section>
 <section id="submodel-objects" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Submodel objects</h1>

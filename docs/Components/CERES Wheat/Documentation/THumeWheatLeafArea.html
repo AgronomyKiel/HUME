@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Agronomy and Crop Science Group, Kiel University">
-<meta name="dcterms.date" content="2026-08-26">
+<meta name="dcterms.date" content="2026-09-07">
 
 <title>THumeWheatLeafArea – Hume Documentation</title>
 <style>
@@ -5499,7 +5499,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../Components/Soil/Documentation/TSoilWaterModelR.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">TSoilWaterModR</span></a>
+ <span class="menu-text">TSoilWaterModelR</span></a>
   </div>
 </li>
       </ul>
@@ -5538,12 +5538,6 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../Components/CERES Wheat/Documentation/THumeWheatDryMatter.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">THumeWheatDryMatter</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../../../Components/CERES Wheat/Documentation/THumeWheatPartitioning.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">THumeWheatPartitioning</span></a>
   </div>
@@ -5552,6 +5546,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="../../../Components/CERES Wheat/Documentation/THumeWheatLeafArea.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">THumeWheatLeafArea</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../Components/CERES Wheat/Documentation/THumeWheatDryMatter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">THumeWheatDryMatter</span></a>
   </div>
 </li>
       </ul>
@@ -5567,8 +5567,14 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../Components/OilseedRape/Documentation/OSR_growth_model.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Plant Growth Model</span></a>
+  <a href="../../../Components/OilseedRape/Documentation/TDevelopmentOSR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TDevelopmentOSR</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../Components/OilseedRape/Documentation/TOSRGrowth.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TOSRGrowth</span></a>
   </div>
 </li>
       </ul>
@@ -5687,7 +5693,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 26, 2026</p>
+      <p class="date">September 7, 2026</p>
     </div>
   </div>
   
@@ -5813,15 +5819,15 @@ Figure 2: Specific leaf area as a function of leaf area index
 <section id="leaf-number" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="leaf-number"><span class="header-section-number">2.2</span> Leaf number</h2>
 <p>The leaf number (LN) on the main stem is calculated from the cumulative phyllochrons (CUMPH) since emergence and the phyllochron interval (PHINT) according to the following equations:</p>
-<p><span class="math display">CUMPH = \frac {\sum T_{eff}} {PHINT}</span> {#eq-CUMPH}$$CUMPH = \frac {\sum T_{eff}} {PHINT}$$</p>
-<p><span id="eq-LN"><span class="math display">LN = trunc( CUMPH + 1 ) \tag{5}</span></span></p>
-<p>where <span class="math inline">T_{eff}</span> is the effective temperature, <span class="math inline">PHINT</span> is the phyllochron interval, and <span class="math inline">LN</span> is the leaf number on the main stem. The value of <span class="math inline">PHINT</span> is set to 91.74 [°Cd] in the model (see #eq-dBBCH_dt_GS1 and <span class="citation" data-cites="Johnen2012">Johnen et al. (<a href="#ref-Johnen2012" role="doc-biblioref">2012</a>)</span>).</p>
+<p><span id="eq-CUMPH"><span class="math display">CUMPH = \frac {\sum T_{eff}} {PHINT} \tag{5}</span></span></p>
+<p><span id="eq-LN"><span class="math display">LN = trunc( CUMPH + 1 ) \tag{6}</span></span></p>
+<p>where <span class="math inline">T_{eff}</span> is the effective temperature, <span class="math inline">PHINT</span> is the phyllochron interval, and <span class="math inline">LN</span> is the leaf number on the main stem. The value of <span class="math inline">PHINT</span> is set to 91.74 [°Cd] in the model (see <strong>?@eq-dBBCH_dt_GS1</strong> and <span class="citation" data-cites="Johnen2012">Johnen et al. (<a href="#ref-Johnen2012" role="doc-biblioref">2012</a>)</span>).</p>
 </section>
 <section id="leaf-growth" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="leaf-growth"><span class="header-section-number">2.3</span> Leaf growth</h2>
 <p>The leaf area is calculated on a leaf age class level, thereby the leaf number on the main stem is giving the age classes. This approach is basically from CERES-Wheat. Thereby only the youngest leaf age class is growing. This approach allows to implement a simple approach for leaf senescence, which is based on the leaf age. Our experience with experimental data in Germany, however, is that this approach tends to overestimate the leaf senescence over winter.</p>
 <p>The growth rate of the leaf area of the youngest leaf class (PLSCGR<sub>i</sub>) is calculated from the sum of the existing leaf dry matter of the leaf (LFWT<sub>pl</sub>) plus the daily dry matter growth rate of the leaf fraction of a single plant (GROLF, <strong>GRO</strong>wth Of <strong>L</strong>ea<strong>F</strong>) times the potential specific leaf area (SLA<sub>pot</sub>) minus the existing leaf area for that leaf age class (sumPSLC):</p>
-<p><span id="eq-PLSCGR"><span class="math display">\frac{dPLSC_i}{dt} = PLSCGR_i= (LFWT_{pl} + GROLF) \cdot SLA_{pot} - sumPLSC \tag{6}</span></span></p>
+<p><span id="eq-PLSCGR"><span class="math display">\frac{dPLSC_i}{dt} = PLSCGR_i= (LFWT_{pl} + GROLF) \cdot SLA_{pot} - sumPLSC \tag{7}</span></span></p>
 </section>
 <section id="senescence" class="level2" data-number="2.4">
 <h2 data-number="2.4" class="anchored" data-anchor-id="senescence"><span class="header-section-number">2.4</span> Senescence</h2>
@@ -5838,9 +5844,9 @@ Figure 2: Specific leaf area as a function of leaf area index
 <h4 data-number="2.4.1.1" class="anchored" data-anchor-id="ceres-algorithm-for-leaf-senescence-in-early-stages-bbch-10-30"><span class="header-section-number">2.4.1.1</span> CERES algorithm for leaf senescence in early stages (BBCH 10-30)</h4>
 <p>The model includes the option to simulate leaf senescence in the early stages of the crop according to the CERES-Wheat approach. This algorithm, however, was not evaluated for own data sets and the leaf area simulation may perform better if this option is set to false.</p>
 <p>The 5th oldest leaf fraction dies within one phyllochron interval. First the leaf area of the oldest leaf fraction is fixed as a potential senescence rate when four younger leaves are present:</p>
-<p><span id="eq-senratesLA"><span class="math display">senratesLA[trunc(LN)-4] = PLSC[trunc(LN)-4] \tag{7}</span></span></p>
+<p><span id="eq-senratesLA"><span class="math display">senratesLA[trunc(LN)-4] = PLSC[trunc(LN)-4] \tag{8}</span></span></p>
 <p>Then the leaf loss rate of that leaf age fraction is calculated from the leaf area of this fraction at the beginning of the senescence process and the fraction of the leaf fraction of the effective temperature (T<sub>eff</sub>) and the phyllochron interval (PHINT):</p>
-<p><span id="eq-PLALR"><span class="math display">PLALR_a = min(\frac { PLSC[trunc(LN) - 4]} {dt}, senratesLA[trunc(LN) - 4] * T_{eff} / (PHINT)) \tag{8}</span></span></p>
+<p><span id="eq-PLALR"><span class="math display">PLALR_a = min(\frac { PLSC[trunc(LN) - 4]} {dt}, senratesLA[trunc(LN) - 4] * T_{eff} / (PHINT)) \tag{9}</span></span></p>
 <p>where <span class="math inline">PLSC</span> is the leaf area of the leaf age class, <span class="math inline">T_{eff}</span> is the effective temperature, <span class="math inline">PHINT</span> is the phyllochron interval, and <span class="math inline">PLALR_a</span> is the leaf area loss rate due to age.</p>
 <p>An examination of the leaf senescence algorithms in HumeWheat showed that this approach is not suitable for the leaf area simulation in the early stages of the crop within the context of HumeWheat. The leaf area loss rate is too high and leads to a too low leaf area index in the early stages of the crop. Therefore, it is recommend to set the option <code>optUseAgeDependendLeafSenescene</code> to false, which is the default value in the model.</p>
 <div class="cell" data-layout-align="center">
@@ -5863,7 +5869,7 @@ Figure 3: Leaf area growth rate of different age classes according to the CERES
 </div>
 </div>
 </div>
-<p>From <a href="#fig-LAIsim" class="quarto-xref">Fig. 4</a> it becomes obvious, that the huge decline of leaf area due to the CERES-Wheat 2.0 approach leads to too low simulated LAI values for the choosen example, mainly because the start value of leaf area index in spring is too low, which slows down growth rates and thereby also leaf area index development.</p>
+<p>From <a href="#fig-LAIsim" class="quarto-xref">Fig. 4</a> it becomes obvious, that the huge decline of leaf area due to the CERES-Wheat 2.0 approach leads to too low simulated LAI values for the chosen example, mainly because the start value of leaf area index in spring is too low, which slows down growth rates and thereby also leaf area index development.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-LAIsim" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-pos="h" data-fig-align="center">
@@ -5882,12 +5888,12 @@ Figure 4: Simulated Leaf Area Index with and without early age leaf senescence.
 <section id="leaf-senescence-in-later-stages-bbch-31-71" class="level4" data-number="2.4.1.2">
 <h4 data-number="2.4.1.2" class="anchored" data-anchor-id="leaf-senescence-in-later-stages-bbch-31-71"><span class="header-section-number">2.4.1.2</span> Leaf senescence in later stages (BBCH 31-71)</h4>
 <p>In later stages the leaf senescence is calculated as a fraction of the existing leaf area per plant, the effective day temperature and a stage specific parameter. (see https://nowlin.css.msu.edu/wheat_book/CHAPTER2.html)</p>
-<p>For ISTAGE 2 and 4 (BBCH 30-57, see #tbl-CWDevStages), the equation is:</p>
-<p><span id="eq-PLALRa1"><span class="math display">PLALR_a = PSENLeaf_1 \cdot T_{eff} \cdot GPLA \tag{9}</span></span></p>
+<p>For ISTAGE 2 and 4 (BBCH 30-57, see <strong>?@tbl-CWDevStages</strong>), the equation is:</p>
+<p><span id="eq-PLALRa1"><span class="math display">PLALR_a = PSENLeaf_1 \cdot T_{eff} \cdot GPLA \tag{10}</span></span></p>
 <p>and similarly at ISTAGE 5 (BBCH 58-71):</p>
-<p><span id="eq-PLALRa2"><span class="math display">PLALR_a = PSENLeaf_2 \cdot T_{eff} \cdot GPLA \tag{10}</span></span></p>
+<p><span id="eq-PLALRa2"><span class="math display">PLALR_a = PSENLeaf_2 \cdot T_{eff} \cdot GPLA \tag{11}</span></span></p>
 <p>where <span class="math inline">PSENLeaf_1</span> is a parameter of the regression equation.</p>
-<p>The parameters values <em>PSENLeaf_1</em> and <em>PSENLeaf_2</em> have defaults of 0.0003 and 0.0006 <span class="math inline">cm^2 \cdot °Cd^{-1}</span> in the model. From <a href="#fig-LAISens_PSEN1" class="quarto-xref">Fig. 5</a> it becomes obvious that the parameter PSENLeaf_1 is a sensitive parameter for the leaf area index simulation. It remains to be discussed if values &gt; 0 improve the predictive quality of the model.</p>
+<p>The parameter values <em>PSENLeaf_1</em> and <em>PSENLeaf_2</em> have defaults of 0.0003 and 0.0006 <span class="math inline">cm^2 \cdot °Cd^{-1}</span> in the model. From <a href="#fig-LAISens_PSEN1" class="quarto-xref">Fig. 5</a> it becomes obvious that the parameter PSENLeaf_1 is a sensitive parameter for the leaf area index simulation. It remains to be discussed if values &gt; 0 improve the predictive quality of the model.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-LAISens_PSEN1" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-pos="h" data-fig-align="center">
@@ -5926,7 +5932,7 @@ Figure 6: Sensitivity analysis for effects of the parameter PSEN2 ond simulated
 <p>If this average ratio (TransIntRatio<sub>even</sub>) and the actual TransIntRatio are smaller than a threshold value (TR<sub>crit</sub>) drought stress induced leaf senescence is calculated. The threshold value <em>TR<sub>crit</sub></em> is set to 0.62 in the model and therefore lower than the value used by <span class="citation" data-cites="Meinke1998">Meinke et al. (<a href="#ref-Meinke1998" role="doc-biblioref">1998</a>)</span> which is 0.8. This means that drought stress induced leaf senescence occurs if the average <em>and</em> the actual ratio of actual to potential transpiration+interception is smaller than 0.62.</p>
 <p>In a next step a sustainable leaf area index (LAI<sub>s</sub>) is calculated which gives a ratio of the sum of actual transpiration + interception to the sum of potential transpiration to interception equals the value of TR<sub>crit</sub>.</p>
 <p>The daily senescence rate due to drought stress then is calculated from the difference of the actual LAI and the sustainable LAI multiplied with the TransIntRatio divided by 15 (days) times the TransIntRatio<sub>even</sub> and divided by the number of plants per m<sup>2</sup>, thereby the factor 1e4 converts m<sup>2</sup> to cm<sup>2</sup></p>
-<p><span id="eq-PLALRd"><span class="math display">PLALR_d = max\left( 0, \frac{LAI - LAIs} {15} \cdot TransIntRatio_{even} \cdot 1e4 \cdot \frac{1}{plants} \right) \tag{11}</span></span></p>
+<p><span id="eq-PLALRd"><span class="math display">PLALR_d = max\left( 0, \frac{LAI - LAIs} {15} \cdot TransIntRatio_{even} \cdot 1e4 \cdot \frac{1}{plants} \right) \tag{12}</span></span></p>
 <p>where <span class="math inline">LAI</span> is the leaf area index, <span class="math inline">LAIs</span> is the sustainable leaf area index, <span class="math inline">TransIntRatio_{even}</span> is the moving average of the relative transpiration interception ratio, and <span class="math inline">plants</span> is the number of plants per square meter.</p>
 <p>The sustainable leaf area index is derived from an iterative, numerical solution using the Newton method for solving non-linear equations.</p>
 </section>
@@ -5936,15 +5942,15 @@ Figure 6: Sensitivity analysis for effects of the parameter PSEN2 ond simulated
 <section id="nitrogen-induced-late-leaf-area-senescence" class="level4" data-number="2.4.3.1">
 <h4 data-number="2.4.3.1" class="anchored" data-anchor-id="nitrogen-induced-late-leaf-area-senescence"><span class="header-section-number">2.4.3.1</span> Nitrogen induced late leaf area senescence</h4>
 <p>The algorithm for nitrogen stress induced leaf senescence is based on the specific leaf nitrogen concentration (SLN) and the critical specific leaf nitrogen concentration (SLNtot<sub>crit</sub>). The daily senescence rate due to nitrogen stress PLALR<sub>n</sub> is calculated from the difference of the actual LAI and the sustainable LAI multiplied with the ratio of the specific leaf nitrogen concentration to the critical specific leaf nitrogen concentration:</p>
-<p><span id="eq-PLALRn"><span class="math display">PLALR_n = min\left( LAI_{max} \cdot \frac{PLALR_{max}} {100}, LAI \cdot \left( 1 - \frac{SLN} {SLNtot_{crit}} \right) \right) \cdot \frac{1e4}{plants} \tag{12}</span></span></p>
+<p><span id="eq-PLALRn"><span class="math display">PLALR_n = min\left( LAI_{max} \cdot \frac{PLALR_{max}} {100}, LAI \cdot \left( 1 - \frac{SLN} {SLNtot_{crit}} \right) \right) \cdot \frac{1e4}{plants} \tag{13}</span></span></p>
 <p>where <span class="math inline">LAI_{max}</span> is the maximum leaf area index, <span class="math inline">PLALR_{max}</span> is the maximum leaf area index loss rate [%], standard value is 5%, <span class="math inline">SLN</span> is the specific leaf nitrogen concentration [g/m<sup>2</sup> leaf], <span class="math inline">SLNtot_{crit}</span> is the critical specific leaf nitrogen concentration (default 0.8) , and <span class="math inline">plants</span> is the number of plants per square meter. The factor 1e4 converts m<sup>2</sup> to cm<sup>2</sup>. This algorithm also induces the leaf senescence during ripening.</p>
 </section>
 <section id="ceres-wheat-based-late-leaf-area-senescence" class="level4" data-number="2.4.3.2">
 <h4 data-number="2.4.3.2" class="anchored" data-anchor-id="ceres-wheat-based-late-leaf-area-senescence"><span class="header-section-number">2.4.3.2</span> CERES-Wheat based late leaf area senescence</h4>
-<p>Alternatively, the classical leaf senecescence calculation from the CERES-Wheat model can be used. With this algorithm, the leaf area decline during ripening is controlled by the accumulated temperaturs sum during ISTAGE 5:</p>
-<p><span id="eq-PLALRn_v2"><span class="math display">PLALR_n = GPLA \cdot 2 \cdot SUMDTT_5 \cdot \frac { T_{eff}}{TSum_{GF}^2}  \tag{13}</span></span></p>
-<p>where <span class="math inline">GPLA</span> is the leaf area per plant, <span class="math inline">SUMDTT5</span> is the accumulated temperature sum during ISTAGE 5, <span class="math inline">T_{eff}</span> is the temperature sum increment, and <span class="math inline">TSum_{GF}^2</span> is the value of unscaled parameter P5, giving the length of the grain filling period in degree days. The default value of <span class="math inline">P5</span> is set to 11.67 in the model. According to the equation #eq-TSumGF the equivalent value of <span class="math inline">TSum_{GF}</span> is 663.4 [°Cd].</p>
-<p>The leaf area dynamics of the two algorithms are compared in <a href="#fig-LateSenescenceComparison" class="quarto-xref">Fig. 7</a>. The CERES-Wheat based algorithm leads to a more smooth leaf area decline during ripeningbut remains at LAI values &gt; 0 at full ripening stage. The N concentration based algorithm, starts obviously later.</p>
+<p>Alternatively, the classical leaf senescence calculation from the CERES-Wheat model can be used. With this algorithm, the leaf area decline during ripening is controlled by the accumulated temperature sum during ISTAGE 5:</p>
+<p><span id="eq-PLALRn_v2"><span class="math display">PLALR_n = GPLA \cdot 2 \cdot SUMDTT_5 \cdot \frac { T_{eff}}{TSum_{GF}^2}  \tag{14}</span></span></p>
+<p>where <span class="math inline">GPLA</span> is the leaf area per plant, <span class="math inline">SUMDTT5</span> is the accumulated temperature sum during ISTAGE 5, <span class="math inline">T_{eff}</span> is the temperature sum increment, and <span class="math inline">TSum_{GF}^2</span> is the value of unscaled parameter P5, giving the length of the grain filling period in degree days. The default value of <span class="math inline">P5</span> is set to 11.67 in the model. According to the equation <strong>?@eq-TSumGF</strong> the equivalent value of <span class="math inline">TSum_{GF}</span> is 663.4 [°Cd].</p>
+<p>The leaf area dynamics of the two algorithms are compared in <a href="#fig-LateSenescenceComparison" class="quarto-xref">Fig. 7</a>. The CERES-Wheat based algorithm leads to a more smooth leaf area decline during ripening but remains at LAI values &gt; 0 at full ripening stage. The N-concentration-based algorithm starts obviously later.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-LateSenescenceComparison" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-pos="h" data-fig-align="center">
@@ -5967,10 +5973,10 @@ Figure 7: Comparison of leaf area index dynamics with the CERES-Wheat 2.0 Algor
 <p>Light dependent senescence only occurs between BBCH 31 and 39, the latter value is, however, a parameter describing the end of leaf growth (EClgend).</p>
 <p>The daily senescence rate due to light limitation is calculated from the difference of the actual LAI and the sustainable LAI multiplied with the radiation sum divided by 10 days and divided by the number of plants per m<sup>2</sup>, thereby the factor 1e4 converts m<sup>2</sup> to cm<sup>2</sup></p>
 <p>In a first step a sustainable leaf area index (LAI<sub>s</sub>) is calculated, which depends on the radiation sum and the critical radiation sum (I<sub>crit</sub>) according to the following equation:</p>
-<p><span id="eq-LAIs"><span class="math display">LAI_s =  ln \left( \frac{I_{crit}} {PAR_{av}} \right)  \cdot \frac {1} {-k_{PAR}} \tag{14}</span></span></p>
+<p><span id="eq-LAIs"><span class="math display">LAI_s =  ln \left( \frac{I_{crit}} {PAR_{av}} \right)  \cdot \frac {1} {-k_{PAR}} \tag{15}</span></span></p>
 <p>where <span class="math inline">Icrit</span> is the critical radiation sum, <span class="math inline">PAR_{av}</span> is the 10 day average of photosynthetic active radiation, and <span class="math inline">k_{PAR}</span> is the extinction coefficient for PAR radiation. The default value of <span class="math inline">kPAR</span> is set to 0.7 in the model.</p>
 <p>The daily senescence rate due to light limitation is calculated from the difference of the actual LAI and the sustainable LAI multiplied with the radiation sum divided by 20 days and divided by the number of plants per m<sup>2</sup>, thereby the factor 1e4 converts m<sup>2</sup> to cm<sup>2</sup></p>
-<p><span id="eq-PLALRl"><span class="math display">PLALR_l = max \left( 0, min \left( \left( \left( \frac{ LAI - LAI_s } { 20} \right) \cdot 1e4 \right) / plants, pla \right) \right) \tag{15}</span></span></p>
+<p><span id="eq-PLALRl"><span class="math display">PLALR_l = max \left( 0, min \left( \left( \left( \frac{ LAI - LAI_s } { 20} \right) \cdot 1e4 \right) / plants, pla \right) \right) \tag{16}</span></span></p>
 <p>where <span class="math inline">PLALR_l</span> is the leaf area loss rate due to light limitation, <span class="math inline">LAI</span> is the leaf area index, <span class="math inline">LAIs</span> is the sustainable leaf area index, and <span class="math inline">plants</span> is the number of plants per square meter.</p>
 </section>
 </section>
@@ -5985,69 +5991,69 @@ Figure 7: Comparison of leaf area index dynamics with the CERES-Wheat 2.0 Algor
 <section id="leaf-senescence-due-to-n-remobilization" class="level2" data-number="2.6">
 <h2 data-number="2.6" class="anchored" data-anchor-id="leaf-senescence-due-to-n-remobilization"><span class="header-section-number">2.6</span> Leaf senescence due to N remobilization</h2>
 <p>Growing grains represent a strong sink for nitrogen (N) and trigger N remobilization from the vegetative organs, which decreases canopy photosynthesis and accelerates leaf senescence. The N dynamics for specific leaf-layers, stem and grain during grain-filling is simulated according to the process based approach of <span class="citation" data-cites="Bertheloot2008b">(<a href="#ref-Bertheloot2008b" role="doc-biblioref">Bertheloot et al., 2008b</a>)</span>. According to <span class="citation" data-cites="Meinke1998">(<a href="#ref-Meinke1998" role="doc-biblioref">Meinke et al., 1998</a>)</span> a SLN threshold value SLNcrit [g N<sup>.</sup>m<sup>-2</sup>] is used for the calculation of leaf senescence due to N remobilization. The critical leaf N concentration of a specific leaf-layer cNcrit[i] [%] is calculated as follows:</p>
-<p><span id="eq-LA30"><span class="math display">c{{N}_{crit[i]}}=\text{ SL}{{\text{N}}_{\text{crit2}}}\cdot \text{SL}{{\text{A}}_{\text{ }\!\![\!\!\text{ i }\!\!]\!\!\text{ }}}\cdot {{10}^{-2}} \tag{16}</span></span></p>
+<p><span id="eq-LA30"><span class="math display">c{{N}_{crit[i]}}=\text{ SL}{{\text{N}}_{\text{crit2}}}\cdot \text{SL}{{\text{A}}_{\text{ }\!\![\!\!\text{ i }\!\!]\!\!\text{ }}}\cdot {{10}^{-2}} \tag{17}</span></span></p>
 <p>The sustainable leaf area of the layer Ls[i] [m<sup>2.</sup>m<sup>-2</sup>] is</p>
-<p><span id="eq-LA31"><span class="math display">{{L}_{s[i]}}=SL{{A}_{[i]}}\cdot \frac{W{{L}_{[i]}}\cdot c{{N}_{[i]}}}{c{{N}_{crit[i]}}}\cdot {{10}^{-4}} \tag{17}</span></span></p>
+<p><span id="eq-LA31"><span class="math display">{{L}_{s[i]}}=SL{{A}_{[i]}}\cdot \frac{W{{L}_{[i]}}\cdot c{{N}_{[i]}}}{c{{N}_{crit[i]}}}\cdot {{10}^{-4}} \tag{18}</span></span></p>
 <p>The senescence rate is the difference between the sum of Ls[i] and LAI:</p>
-<p><span id="eq-LA32"><span class="math display">\frac{dSe{{n}_{N\lim }}}{dt}=\text{ }\sum\limits_{\text{i}}{\text{L}{{\text{s}}_{\text{ }\!\![\!\!\text{ i }\!\!]\!\!\text{ }}}\text{(t)}-LAI(t)} \tag{18}</span></span></p>
+<p><span id="eq-LA32"><span class="math display">\frac{dSe{{n}_{N\lim }}}{dt}=\text{ }\sum\limits_{\text{i}}{\text{L}{{\text{s}}_{\text{ }\!\![\!\!\text{ i }\!\!]\!\!\text{ }}}\text{(t)}-LAI(t)} \tag{19}</span></span></p>
 </section>
 <section id="n-dynamics-during-grain-filling-period" class="level2" data-number="2.7">
 <h2 data-number="2.7" class="anchored" data-anchor-id="n-dynamics-during-grain-filling-period"><span class="header-section-number">2.7</span> N dynamics during grain filling period</h2>
 <p>These algorithms were mainly inspired by <span class="citation" data-cites="Bertheloot2008">Bertheloot et al. (<a href="#ref-Bertheloot2008" role="doc-biblioref">2008a</a>)</span> and <span class="citation" data-cites="Thornley1998">Thornley and THORNLEY (<a href="#ref-Thornley1998" role="doc-biblioref">1998</a>)</span>.</p>
 <p>The modelled plant N uptake during vegetative growth is driven by C accumulation, considering the decrease of N concentration with increasing leaf and stem dry mass. This concept is not appropriate during reproductive phase, since N dynamics are dominated by sink-source relations (e.g.<span class="citation" data-cites="Bertheloot2008b">(<a href="#ref-Bertheloot2008b" role="doc-biblioref">Bertheloot et al., 2008b</a>)</span>), while N translocation starts to rule LUE and leaf senescence. In many crop models like CERES-WHEAT the influence of sink N demand on photosynthesis is not explicitly modelled, but approximated by equations reducing the effective LUE as a function of thermal time and/or ratio of current and structural stem weight (see CERES-WHEAT CarboRed function, Ritchie and Godwin 1987). The empiric modelling of leaf senescence and N translocation to the grains as a function of thermal time and C translocation only requires a range of fit parameters, difficult to parameterize and with low physiological relevance.</p>
-<p>As an alternative, the N dynamics of the reproductive canopy is simulated as a function of sink (growing grains) and light environment according to the approach of <span class="citation" data-cites="Bertheloot2008">Bertheloot et al. (<a href="#ref-Bertheloot2008" role="doc-biblioref">2008a</a>)</span>. This mechanistic model concept describes the N fluxes within a representative tiller, assuming four leaf layers. Necessary parameters are forced by experimental data. The concept supplies information about the potential root N uptake after anthesis and N mass per unit leaf area (SLN). The leaf parameter SLN, wich is functional related to canopy photosynthesis and leaf senescence was previously used for LUE and leaf senescence modelling during grain filling (e.g. <span class="citation" data-cites="Meinke1998">Meinke et al. (<a href="#ref-Meinke1998" role="doc-biblioref">1998</a>)</span>). The challenge was to link the plant N model with the process based concept of C assimilation and allocation used during previous vegetative phase. The following sub-sections gives a summary of the N model according to <span class="citation" data-cites="Bertheloot2008b">(<a href="#ref-Bertheloot2008b" role="doc-biblioref">Bertheloot et al., 2008b</a>)</span> and will describe the interfaces needed for the implementation.</p>
+<p>As an alternative, the N dynamics of the reproductive canopy is simulated as a function of sink (growing grains) and light environment according to the approach of <span class="citation" data-cites="Bertheloot2008">Bertheloot et al. (<a href="#ref-Bertheloot2008" role="doc-biblioref">2008a</a>)</span>. This mechanistic model concept describes the N fluxes within a representative tiller, assuming four leaf layers. Necessary parameters are forced by experimental data. The concept supplies information about the potential root N uptake after anthesis and N mass per unit leaf area (SLN). The leaf parameter SLN, which is functionally related to canopy photosynthesis and leaf senescence was previously used for LUE and leaf senescence modelling during grain filling (e.g. <span class="citation" data-cites="Meinke1998">Meinke et al. (<a href="#ref-Meinke1998" role="doc-biblioref">1998</a>)</span>). The challenge was to link the plant N model with the process based concept of C assimilation and allocation used during previous vegetative phase. The following subsections give a summary of the N model according to <span class="citation" data-cites="Bertheloot2008b">(<a href="#ref-Bertheloot2008b" role="doc-biblioref">Bertheloot et al., 2008b</a>)</span> and will describe the interfaces needed for the implementation.</p>
 </section>
 <section id="initial-lamina-distribution-at-anthesis" class="level2" data-number="2.8">
 <h2 data-number="2.8" class="anchored" data-anchor-id="initial-lamina-distribution-at-anthesis"><span class="header-section-number">2.8</span> Initial lamina distribution at anthesis</h2>
 <p>The first necessary step for implementation of the N model is the description of leaf relative tissue distribution between layers, regarded as uniform during vegetative growth. Rain-out-shelter experiments (See Thesis Ratjen, Tab.2, Exp.6) were carried out to describe the lamina distribution among leaf layers at anthesis. The method used for leaf partition across layers is described more precisely in Thesis Ratjen Chapter 3. Since leaf distribution follows the light gradient within the canopy it is influenced by LAI. Therefore, the leaf distribution was investigated by plotting the fraction of leaf dry matter, N mass and area of the respective layer against LAI. In order to ensure a sufficient amount of variability in LAI at anthesis, both, water limited and well irrigated treatments were taken into account. The leaf N concentration needed for the calculation of the leaf N distribution was not measured, but estimated as a function of chlorophyll index (Minolta SPAD-502) and leaf size. The estimation function (Fig.I.1) was previously calibrated using data of Exp.4 (same cultivar). The leaf mass Wl[i] [g<sup>.</sup>m<sup>-2</sup>] and leaf area L[i] [m<sup>2.</sup>m<sup>-2</sup>] of the first three layers is calculated as a function of LAI:</p>
-<p><span id="eq-LA33"><span class="math display">Wl_{i}=W_{leaf}\cdot (r{{W}_{l}}{{\operatorname{int}}_{[i]}}+r{{W}_{l}}in{{c}_{i}}\cdot LAI) \tag{19}</span></span></p>
+<p><span id="eq-LA33"><span class="math display">Wl_{i}=W_{leaf}\cdot (r{{W}_{l}}{{\operatorname{int}}_{[i]}}+r{{W}_{l}}in{{c}_{i}}\cdot LAI) \tag{20}</span></span></p>
 <p>where rWlint[1-3] and rWlinc[1-3] are dimensionless fit parameters of the distribution.</p>
 <p>The calculation of the leaf area and N distribution is carried out analogously:</p>
-<p><span id="eq-LA34"><span class="math display">{{L}_{[i]}}=LAI\cdot (rL{{\operatorname{int}}_{[i]}}+rLin{{c}_{[i]}}\times LAI) \tag{20}</span></span></p>
-<p><span id="eq-LA35"><span class="math display">{{N}_{l}}_{[i]}={{N}_{leaf}}\cdot (r{{N}_{l}}{{\operatorname{int}}_{[i]}}+r{{N}_{l}}in{{c}_{[i]}}\times LAI) \tag{21}</span></span></p>
+<p><span id="eq-LA34"><span class="math display">{{L}_{[i]}}=LAI\cdot (rL{{\operatorname{int}}_{[i]}}+rLin{{c}_{[i]}}\times LAI) \tag{21}</span></span></p>
+<p><span id="eq-LA35"><span class="math display">{{N}_{l}}_{[i]}={{N}_{leaf}}\cdot (r{{N}_{l}}{{\operatorname{int}}_{[i]}}+r{{N}_{l}}in{{c}_{[i]}}\times LAI) \tag{22}</span></span></p>
 <p>respectively.</p>
 <p>The amount of leaf mass and area of the fourth layer is simply calculated as the difference between the respective total amount and sum of the first three layers.</p>
 <section id="decomposition-of-total-stem-and-lamina-n" class="level3" data-number="2.8.1">
 <h3 data-number="2.8.1" class="anchored" data-anchor-id="decomposition-of-total-stem-and-lamina-n"><span class="header-section-number">2.8.1</span> Decomposition of total stem and lamina N</h3>
 <p>The total amount of N in leaf layers and stem is divided into a structural fraction (strucNl[i], strucNs) and photosynthetic fraction (phNl[i], phNs). According to <span class="citation" data-cites="Bertheloot2008b">Bertheloot et al. (<a href="#ref-Bertheloot2008b" role="doc-biblioref">2008b</a>)</span>, the mobile N pool (mobNtot) is decomposed into a leaf and a stem fraction (mobN<sub>l</sub>, mobN<sub>s</sub>).</p>
 <p>The structural fraction is the product of dry mass and structural N concentration (Eq.I26). At beginning of grain filling period the photosynthetic fraction is initialized as the difference between total N and structural N:</p>
-<p><span id="eq-LA36"><span class="math display">{{N}^{ph}_{li}}={{N}_{li}}-{{W}_{li}}\cdot c{{N}_{struc}} \tag{22}</span></span></p>
+<p><span id="eq-LA36"><span class="math display">{{N}^{ph}_{li}}={{N}_{li}}-{{W}_{li}}\cdot c{{N}_{struc}} \tag{23}</span></span></p>
 <p>and</p>
-<p><span id="eq-LA37"><span class="math display">{{N}^{ph}_{s}}={{N}_{stem}}-{{W}_{stem}}\cdot c{{N}_{struc}} \tag{23}</span></span></p>
+<p><span id="eq-LA37"><span class="math display">{{N}^{ph}_{s}}={{N}_{stem}}-{{W}_{stem}}\cdot c{{N}_{struc}} \tag{24}</span></span></p>
 <p>At the begining of grain filling period the leaf and stem fraction of the common mobile N pool (mobN<sub>tot</sub>) is initialised according to the proportion of N<sub>stem</sub> and N<sub>leaf</sub>:</p>
-<p><span id="eq-LA38"><span class="math display">{{N}^{mob}_{s}}={{N}^{mob}_{tot}}\cdot \frac{{{N}_{stem}}}{{{N}_{stem}}+{{N}_{leaf}}} \tag{24}</span></span></p>
+<p><span id="eq-LA38"><span class="math display">{{N}^{mob}_{s}}={{N}^{mob}_{tot}}\cdot \frac{{{N}_{stem}}}{{{N}_{stem}}+{{N}_{leaf}}} \tag{25}</span></span></p>
 <p>respectively</p>
-<p><span id="eq-LA39"><span class="math display">{{N}^{mob}_{l}}={{N}^{mob}_{tot}}-{{N}^{mob}_{S}} \tag{25}</span></span></p>
+<p><span id="eq-LA39"><span class="math display">{{N}^{mob}_{l}}={{N}^{mob}_{tot}}-{{N}^{mob}_{S}} \tag{26}</span></span></p>
 </section>
 </section>
 <section id="dynamics-of-photosynthetic-n-during-grain-filling-period" class="level2" data-number="2.9">
 <h2 data-number="2.9" class="anchored" data-anchor-id="dynamics-of-photosynthetic-n-during-grain-filling-period"><span class="header-section-number">2.9</span> Dynamics of photosynthetic N during grain filling period</h2>
-<p>The physiological senescence rate during grain filling is driven by the N translocation from the vegetative tissue to the grains. Once leaf area is senescent, the difference between structural and current N content in senescent leaf tissue (transN[i]) is stored to the <span class="math inline">{}^{mob}{{N}_{l}}</span> pool, whereas the <span class="math inline">{{N}^{ph}_{l[i]}}</span>pool is reduced proportionally. Thus the concentration of photosynthetic N in the layer is not enhanced by senescence process. On this issue the implementation differs from the original approach, which assumes <span class="math inline">{N}^{ph}_{l[i]}</span> as being unaffected by senescence. As a consequence senescence increases leaf N concentration. Generally, the differences between the methods are small (not shown) since transN[i] enhances the mobile N pool and thereby the synthesis of photosynthetic leaf N (<a href="#eq-LA47" class="quarto-xref">Eq. 28</a>). According to <span class="citation" data-cites="Bertheloot2008">(<a href="#ref-Bertheloot2008" role="doc-biblioref">Bertheloot et al., 2008a</a>)</span> (their eq. 4) the dynamic of phNL[i] is modelled as the difference between a synthesis rate (phS[i] (t), [kg<sup>.</sup>°Cd<sup>-1</sup>]) and degeneration rate (phD[i] (t), [kg<sup>.</sup>°Cd<sup>-1</sup>]):</p>
-<p><span id="eq-LA45"><span class="math display">\frac{{{d}}{{N}^{ph}_{l[i]}}}{dt}={{S}^{ph}_{[i]}}(t){{-}}{{D}^{ph}_{[i]}}(t)]\times {{10}^{3}}-{{N}^{trans}_{[i]}}(t) \tag{26}</span></span></p>
+<p>The physiological senescence rate during grain filling is driven by the N translocation from the vegetative tissue to the grains. Once leaf area is senescent, the difference between structural and current N content in senescent leaf tissue (transN[i]) is stored to the <span class="math inline">{}^{mob}{{N}_{l}}</span> pool, whereas the <span class="math inline">{{N}^{ph}_{l[i]}}</span>pool is reduced proportionally. Thus the concentration of photosynthetic N in the layer is not enhanced by senescence process. On this issue the implementation differs from the original approach, which assumes <span class="math inline">{N}^{ph}_{l[i]}</span> as being unaffected by senescence. As a consequence senescence increases leaf N concentration. Generally, the differences between the methods are small (not shown) since transN[i] enhances the mobile N pool and thereby the synthesis of photosynthetic leaf N (<a href="#eq-LA47" class="quarto-xref">Eq. 29</a>). According to <span class="citation" data-cites="Bertheloot2008">(<a href="#ref-Bertheloot2008" role="doc-biblioref">Bertheloot et al., 2008a</a>)</span> (their eq. 4) the dynamic of phNL[i] is modelled as the difference between a synthesis rate (phS[i] (t), [kg<sup>.</sup>°Cd<sup>-1</sup>]) and degeneration rate (phD[i] (t), [kg<sup>.</sup>°Cd<sup>-1</sup>]):</p>
+<p><span id="eq-LA45"><span class="math display">\frac{{{d}}{{N}^{ph}_{l[i]}}}{dt}={{S}^{ph}_{[i]}}(t){{-}}{{D}^{ph}_{[i]}}(t)]\times {{10}^{3}}-{{N}^{trans}_{[i]}}(t) \tag{27}</span></span></p>
 <p>with the restriction that <span class="math inline">\text{d}{}^{\text{ph}}\text{N}{{l}_{\text{ }\!\![\!\!\text{ i }\!\!]\!\!\text{ }}}</span> can not fall below zero.</p>
 <p>The degeneration rate is modelled as a first order kinetic:</p>
-<p><span id="eq-LA46"><span class="math display">{{D}^{ph}_{i}}(t)=\delta \cdot {}{{N}^{ph}_{i}} \cdot {{10}^{-3}}, \tag{27}</span></span></p>
+<p><span id="eq-LA46"><span class="math display">{{D}^{ph}_{i}}(t)=\delta \cdot {}{{N}^{ph}_{i}} \cdot {{10}^{-3}}, \tag{28}</span></span></p>
 <p>where δ [°Cd<sup>-1</sup>] is the relative rate of <span class="math inline">N^{ph}_i</span> degeneration.</p>
 <p>The synthesis rate is modelled as a double Michaelis-Menten function:</p>
-<p><span id="eq-LA47"><span class="math display">{ph}{{S}_{[i]}}(t)=\sigma \cdot {{W}_{l}}_{[i]}(t)\times {{10}^{-3}}\cdot \frac{{}^{mob}{{N}_{c}}(t)}{{}^{mob}{{N}_{c}}(t)+k1}\cdot \frac{PAR}{PA{{R}_{[i]}}+k2}, \tag{28}</span></span></p>
+<p><span id="eq-LA47"><span class="math display">{ph}{{S}_{[i]}}(t)=\sigma \cdot {{W}_{l}}_{[i]}(t)\times {{10}^{-3}}\cdot \frac{{}^{mob}{{N}_{c}}(t)}{{}^{mob}{{N}_{c}}(t)+k1}\cdot \frac{PAR}{PA{{R}_{[i]}}+k2}, \tag{29}</span></span></p>
 <p>where σ [kg<sup>.</sup>kg<sup>-1</sup>°Cd<sup>-1</sup>] is the relative rate of photosynthetic N synthesis and k1 [kg<sup>.</sup>kg<sup>-1</sup>] is the Michaelis Menten constant associated to mobile N concentration, whereas k<sub>2</sub> [J<sup>.</sup>m<sup>-2</sup>s<sup>-1</sup>] is Michaelis Menten constant associated to the amount of PAR incident on surface of lamina i PAR[i] [MJ PAR.m-2]. The mobile N concentration mobNc(t) [g<sup>.</sup>g<sup>-1</sup>] is computed as the mean concentration of mobile N in green lamina plus stem tissue:</p>
-<p><span id="eq-LA48"><span class="math display">{{N}^{mob}_{c}}(t)=\frac{{{N}^{mob}_{l}}(t)+{{N}^{mob}_{s}}(t)}{{{W}_{leaf}}(t)+{{W}_{stem}}(t)} \tag{29}</span></span></p>
+<p><span id="eq-LA48"><span class="math display">{{N}^{mob}_{c}}(t)=\frac{{{N}^{mob}_{l}}(t)+{{N}^{mob}_{s}}(t)}{{{W}_{leaf}}(t)+{{W}_{stem}}(t)} \tag{30}</span></span></p>
 <p>According to <span class="citation" data-cites="Bertheloot2008">(<a href="#ref-Bertheloot2008" role="doc-biblioref">Bertheloot et al., 2008a</a>)</span>, the amount of intercepted PAR[i] was calculated as a function of cumulative leaf area index above the respective lamina F[i]:</p>
-<p><span id="eq-LA49"><span class="math display">PA{{R}_{[i]}}={{k}_{PAR}}\cdot PA{{R}_{0}}\cdot p_{Trans} \cdot \exp (-{{k}_{PAR}}\cdot {{F}_{[i]}}) \tag{30}</span></span></p>
+<p><span id="eq-LA49"><span class="math display">PA{{R}_{[i]}}={{k}_{PAR}}\cdot PA{{R}_{0}}\cdot p_{Trans} \cdot \exp (-{{k}_{PAR}}\cdot {{F}_{[i]}}) \tag{31}</span></span></p>
 <p>where p<sub>Trans</sub> is the dimensionless PAR transmission coefficient.</p>
 <p>The original model assumes a constant average PAR, whereas measured PAR is used in HumeWheat. In order to dampen any short-term, diurnal variations the net increase of phN[i] is limited to a maximum of 5%. The dynamic of phNs is calculated assuming that the ratio of mobile and photosynthetic N mass (r) is equal for all modules:</p>
-<p><span id="eq-LA50"><span class="math display">r=\frac{{{N}^{mob}_{l}}}{\sum\limits_{i}{{{N}^{ph}_{l[i]}}}} \tag{31}</span></span></p>
+<p><span id="eq-LA50"><span class="math display">r=\frac{{{N}^{mob}_{l}}}{\sum\limits_{i}{{{N}^{ph}_{l[i]}}}} \tag{32}</span></span></p>
 <p>the change rate of phNs therefore is</p>
-<p><span id="eq-LA51"><span class="math display">\frac{\text{d}{}{{N}^{ph}_{s}}}{dt}= min\left(0,N^{ph}_{s}(t) \cdot r(t) -{{N}^{mob}_{s}}(t) \right) \tag{32}</span></span></p>
-<p>In contrast to the original model, the transfer of mobile N to the grain N pool starts with stem fraction (mobN<sub>s</sub>). The change rate of mobN<sub>s</sub> is calculated as the difference between stem N release and grain N uptake (<a href="#eq-LA52" class="quarto-xref">Eq. 33</a>) as follows:</p>
-<p><span id="eq-LA52"><span class="math display">\frac{d{}{{N}^{mob}_{s}}}{dt} = max\left(-{{N}^{mob}_{s}}(t),- \frac{d{N^{ph}_s}}{dt}-\frac{dN_g}{dt}\right) \tag{33}</span></span></p>
-<p>Therefore, a larger amount of N remains at the mobN<sub>l</sub> pool (<a href="#eq-LA38" class="quarto-xref">Eq. 24</a>), compared to mobNs whenever the amount of mobile N exceeds the N demand of the grains:</p>
+<p><span id="eq-LA51"><span class="math display">\frac{\text{d}{}{{N}^{ph}_{s}}}{dt}= min\left(0,N^{ph}_{s}(t) \cdot r(t) -{{N}^{mob}_{s}}(t) \right) \tag{33}</span></span></p>
+<p>In contrast to the original model, the transfer of mobile N to the grain N pool starts with stem fraction (mobN<sub>s</sub>). The change rate of mobN<sub>s</sub> is calculated as the difference between stem N release and grain N uptake (<a href="#eq-LA52" class="quarto-xref">Eq. 34</a>) as follows:</p>
+<p><span id="eq-LA52"><span class="math display">\frac{d{}{{N}^{mob}_{s}}}{dt} = max\left(-{{N}^{mob}_{s}}(t),- \frac{d{N^{ph}_s}}{dt}-\frac{dN_g}{dt}\right) \tag{34}</span></span></p>
+<p>Therefore, a larger amount of N remains at the mobN<sub>l</sub> pool (<a href="#eq-LA38" class="quarto-xref">Eq. 25</a>), compared to mobNs whenever the amount of mobile N exceeds the N demand of the grains:</p>
 <p><span id="eq-LA53"><span class="math display">\frac{d{}{{N}^{mob}_{\text{l}}}}{\text{dt}}= \left\{ \begin{align}
   &amp; \max \left(-{{N}^{mob}_{l}}(t),-\sum\limits_{\text{i}}{\frac{\text{d}{}{{N}^{ph}_{l}}}{dt}}+\sum{{}{{N}^{trans}_{i}}(t)}\right) &amp;{{|}}{{N}^{mob}_{s}}(t)\ge (\frac{dN^{ph}_{s}}{dt}+\frac{d{{N}_{grain}}}{dt})\\
 &amp; \max \left(-{N^{mob}_{l}}(t),-\sum \limits_{i}{\frac{d{}{{N}^{ph}_{l}}}{dt}}-\left(\frac{d{}{{N}^{ph}_{s}}}{dt}+\frac{d{{N}_{grain}}}{dt}\right) \right)  
 &amp; {{|}}{{N}^{mob}_{s}}(t)&lt;(\frac{d{}^{ph}{{N}_{s}}}{dt}+\frac{d{{N}_{grain}}}{dt})\\
 &amp; \mathop{{}}^{{}}\mathop{{}}^{{}}+{}{{N}^{mob}_{s}}(t)+\sum{{N^{trans}_{i}}(t)}). \\
-\end{align} \right. \tag{34}</span></span></p>
+\end{align} \right. \tag{35}</span></span></p>
 </section>
 </section>
 <section id="submodel-objects" class="level1" data-number="3">

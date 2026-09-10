@@ -231,6 +231,8 @@
       </methodref>
       <methodref name="ClearAndResetID" visibility="public">
       </methodref>
+      <methodref name="ResetID" visibility="public">
+      </methodref>
       <methodref name="Delete" visibility="public">
       </methodref>
       <methodref name="EndUpdate" visibility="public" procflags="virtual">
@@ -1071,6 +1073,8 @@
             </methodref>
             <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
             </methodref>
+            <methodref name="WMGetObject" visibility="private" procflags="message">
+            </methodref>
             <methodref name="CMChanged" visibility="private" procflags="message">
             </methodref>
             <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -1277,6 +1281,10 @@
             </methodref>
             <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
             </methodref>
+            <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="override">
+            </methodref>
             <methodref name="KeyDown" visibility="protected" procflags="dynamic">
             </methodref>
             <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -1399,6 +1407,8 @@
             </propertyref>
             <propertyref name="WindowHandle" visibility="protected">
             </propertyref>
+            <propertyref name="UIAutomationProvider" visibility="protected">
+            </propertyref>
             <eventref name="OnAlignInsertBefore" visibility="protected">
             </eventref>
             <eventref name="OnAlignPosition" visibility="protected">
@@ -1434,6 +1444,12 @@
             <methodref name="Broadcast" visibility="public">
             </methodref>
             <methodref name="CanFocus" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="ContainsControl" visibility="public">
             </methodref>
@@ -1814,6 +1830,8 @@
               </methodref>
               <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
               </methodref>
+              <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Changed" visibility="protected">
               </methodref>
               <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -2055,6 +2073,8 @@
               <methodref name="Destroy" visibility="public" procflags="destructor override">
               </methodref>
               <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
               </methodref>
               <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
               </methodref>
@@ -2302,6 +2322,8 @@
                 <methodref name="ReadDeltaStream" visibility="private">
                 </methodref>
                 <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="InitObservers" visibility="private">
                 </methodref>
                 <methodref name="FindSortedComponent" visibility="private">
                 </methodref>
@@ -2575,27 +2597,27 @@
       <implements name="ITMSStyle" />
     </interfaces>
     <members>
-      <field name="FItemSelector" type="TAdvCustomItemSelector" visibility="private" size="4" offset="1096" file="AdvDetailDropDown.pas" line="80" />
-      <field name="FLayout" type="TItemLayout" visibility="private" size="1" offset="1100" file="AdvDetailDropDown.pas" line="81" />
-      <field name="FItems" type="TDetailItems" visibility="private" size="4" offset="1104" file="AdvDetailDropDown.pas" line="82" />
-      <field name="FItemIndex" type="Integer" visibility="private" size="4" offset="1108" file="AdvDetailDropDown.pas" line="83" />
-      <field name="FOnSelect" type="TNotifyEvent" visibility="private" size="8" offset="1112" file="AdvDetailDropDown.pas" line="84" />
-      <field name="FOnDrawSelectedImage" type="TOnDrawSelectedItem" visibility="private" size="8" offset="1120" file="AdvDetailDropDown.pas" line="85" />
-      <field name="FItemAppearance" type="TItemAppearance" visibility="private" size="4" offset="1128" file="AdvDetailDropDown.pas" line="86" />
-      <field name="FInternalCall" type="Boolean" visibility="private" size="1" offset="1132" file="AdvDetailDropDown.pas" line="87" />
-      <field name="FKeyTimer" type="TTimer" visibility="private" size="4" offset="1136" file="AdvDetailDropDown.pas" line="88" />
-      <field name="FCurSearch" type="string" visibility="private" size="4" offset="1140" file="AdvDetailDropDown.pas" line="89" />
-      <field name="FOldItemIndex" type="Integer" visibility="private" size="4" offset="1144" file="AdvDetailDropDown.pas" line="90" />
-      <field name="FItemHeight" type="Integer" visibility="private" size="4" offset="1148" file="AdvDetailDropDown.pas" line="91" />
-      <field name="FCaptionFont" type="TFont" visibility="private" size="4" offset="1152" file="AdvDetailDropDown.pas" line="92" />
-      <field name="FNotesFont" type="TFont" visibility="private" size="4" offset="1156" file="AdvDetailDropDown.pas" line="93" />
-      <field name="FWorkMode" type="Boolean" visibility="private" size="1" offset="1160" file="AdvDetailDropDown.pas" line="94" />
-      <field name="FItemChange" type="Boolean" visibility="private" size="1" offset="1161" file="AdvDetailDropDown.pas" line="95" />
-      <field name="FItemIdx" type="Integer" visibility="private" size="4" offset="1164" file="AdvDetailDropDown.pas" line="96" />
-      <field name="FItemSel" type="Integer" visibility="private" size="4" offset="1168" file="AdvDetailDropDown.pas" line="97" />
-      <field name="FOldValue" type="string" visibility="private" size="4" offset="1172" file="AdvDetailDropDown.pas" line="98" />
-      <field name="FMatchCase" type="Boolean" visibility="private" size="1" offset="1176" file="AdvDetailDropDown.pas" line="99" />
-      <field name="FMatchStart" type="Boolean" visibility="private" size="1" offset="1177" file="AdvDetailDropDown.pas" line="100" />
+      <field name="FItemSelector" type="TAdvCustomItemSelector" visibility="private" size="4" offset="1112" file="AdvDetailDropDown.pas" line="80" />
+      <field name="FLayout" type="TItemLayout" visibility="private" size="1" offset="1116" file="AdvDetailDropDown.pas" line="81" />
+      <field name="FItems" type="TDetailItems" visibility="private" size="4" offset="1120" file="AdvDetailDropDown.pas" line="82" />
+      <field name="FItemIndex" type="Integer" visibility="private" size="4" offset="1124" file="AdvDetailDropDown.pas" line="83" />
+      <field name="FOnSelect" type="TNotifyEvent" visibility="private" size="8" offset="1128" file="AdvDetailDropDown.pas" line="84" />
+      <field name="FOnDrawSelectedImage" type="TOnDrawSelectedItem" visibility="private" size="8" offset="1136" file="AdvDetailDropDown.pas" line="85" />
+      <field name="FItemAppearance" type="TItemAppearance" visibility="private" size="4" offset="1144" file="AdvDetailDropDown.pas" line="86" />
+      <field name="FInternalCall" type="Boolean" visibility="private" size="1" offset="1148" file="AdvDetailDropDown.pas" line="87" />
+      <field name="FKeyTimer" type="TTimer" visibility="private" size="4" offset="1152" file="AdvDetailDropDown.pas" line="88" />
+      <field name="FCurSearch" type="string" visibility="private" size="4" offset="1156" file="AdvDetailDropDown.pas" line="89" />
+      <field name="FOldItemIndex" type="Integer" visibility="private" size="4" offset="1160" file="AdvDetailDropDown.pas" line="90" />
+      <field name="FItemHeight" type="Integer" visibility="private" size="4" offset="1164" file="AdvDetailDropDown.pas" line="91" />
+      <field name="FCaptionFont" type="TFont" visibility="private" size="4" offset="1168" file="AdvDetailDropDown.pas" line="92" />
+      <field name="FNotesFont" type="TFont" visibility="private" size="4" offset="1172" file="AdvDetailDropDown.pas" line="93" />
+      <field name="FWorkMode" type="Boolean" visibility="private" size="1" offset="1176" file="AdvDetailDropDown.pas" line="94" />
+      <field name="FItemChange" type="Boolean" visibility="private" size="1" offset="1177" file="AdvDetailDropDown.pas" line="95" />
+      <field name="FItemIdx" type="Integer" visibility="private" size="4" offset="1180" file="AdvDetailDropDown.pas" line="96" />
+      <field name="FItemSel" type="Integer" visibility="private" size="4" offset="1184" file="AdvDetailDropDown.pas" line="97" />
+      <field name="FOldValue" type="string" visibility="private" size="4" offset="1188" file="AdvDetailDropDown.pas" line="98" />
+      <field name="FMatchCase" type="Boolean" visibility="private" size="1" offset="1192" file="AdvDetailDropDown.pas" line="99" />
+      <field name="FMatchStart" type="Boolean" visibility="private" size="1" offset="1193" file="AdvDetailDropDown.pas" line="100" />
       <procedure name="WMPaint" visibility="private" procflags="message" file="AdvDetailDropDown.pas" line="101">
         <parameters>
           <parameter name="Message" type="TWMPaint" paramflags="var" />

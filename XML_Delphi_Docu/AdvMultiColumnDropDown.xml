@@ -245,6 +245,8 @@
       </methodref>
       <methodref name="ClearAndResetID" visibility="public">
       </methodref>
+      <methodref name="ResetID" visibility="public">
+      </methodref>
       <methodref name="Delete" visibility="public">
       </methodref>
       <methodref name="EndUpdate" visibility="public" procflags="virtual">
@@ -613,6 +615,8 @@
       </methodref>
       <methodref name="ClearAndResetID" visibility="public">
       </methodref>
+      <methodref name="ResetID" visibility="public">
+      </methodref>
       <methodref name="Delete" visibility="public">
       </methodref>
       <methodref name="EndUpdate" visibility="public" procflags="virtual">
@@ -827,6 +831,8 @@
       <propertyref name="Objects" visibility="public">
       </propertyref>
       <propertyref name="Rows" visibility="public">
+      </propertyref>
+      <propertyref name="DefaultTextDrawing" visibility="published">
       </propertyref>
       <ancestor name="TDrawGrid" namespace="Vcl.Grids">
         <methodref name="Create@" visibility="class private" procflags="class constructor noself">
@@ -1493,6 +1499,8 @@
             </methodref>
             <propertyref name="IsUpdating" visibility="public">
             </propertyref>
+            <propertyref name="GridState" visibility="public">
+            </propertyref>
             <propertyref name="TabStop" visibility="published">
             </propertyref>
             <ancestor name="TCustomControl" namespace="Vcl.Controls">
@@ -1692,6 +1700,8 @@
                 <methodref name="WMGestureNotify" visibility="private" procflags="message">
                 </methodref>
                 <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
+                </methodref>
+                <methodref name="WMGetObject" visibility="private" procflags="message">
                 </methodref>
                 <methodref name="CMChanged" visibility="private" procflags="message">
                 </methodref>
@@ -1899,6 +1909,10 @@
                 </methodref>
                 <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
                 </methodref>
+                <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+                </methodref>
+                <methodref name="Loaded" visibility="protected" procflags="override">
+                </methodref>
                 <methodref name="KeyDown" visibility="protected" procflags="dynamic">
                 </methodref>
                 <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -2021,6 +2035,8 @@
                 </propertyref>
                 <propertyref name="WindowHandle" visibility="protected">
                 </propertyref>
+                <propertyref name="UIAutomationProvider" visibility="protected">
+                </propertyref>
                 <eventref name="OnAlignInsertBefore" visibility="protected">
                 </eventref>
                 <eventref name="OnAlignPosition" visibility="protected">
@@ -2056,6 +2072,12 @@
                 <methodref name="Broadcast" visibility="public">
                 </methodref>
                 <methodref name="CanFocus" visibility="public" procflags="dynamic">
+                </methodref>
+                <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+                </methodref>
+                <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
                 </methodref>
                 <methodref name="ContainsControl" visibility="public">
                 </methodref>
@@ -2436,6 +2458,8 @@
                   </methodref>
                   <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
                   </methodref>
+                  <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+                  </methodref>
                   <methodref name="Changed" visibility="protected">
                   </methodref>
                   <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -2677,6 +2701,8 @@
                   <methodref name="Destroy" visibility="public" procflags="destructor override">
                   </methodref>
                   <methodref name="CheckNonMainThreadUsage" visibility="public">
+                  </methodref>
+                  <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
                   </methodref>
                   <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
                   </methodref>
@@ -2924,6 +2950,8 @@
                     <methodref name="ReadDeltaStream" visibility="private">
                     </methodref>
                     <methodref name="ReadDeltaState" visibility="private">
+                    </methodref>
+                    <methodref name="InitObservers" visibility="private">
                     </methodref>
                     <methodref name="FindSortedComponent" visibility="private">
                     </methodref>
@@ -3196,23 +3224,23 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="FAdvDropDown" type="TAdvMultiColumnDropDown" visibility="private" size="4" offset="1016" file="AdvMultiColumnDropDown.pas" line="130" />
-      <field name="FColumns" type="TDropDownColumns" visibility="private" size="4" offset="1020" file="AdvMultiColumnDropDown.pas" line="131" />
-      <field name="FHeaderColor" type="TColor" visibility="private" size="4" offset="1024" file="AdvMultiColumnDropDown.pas" line="132" />
-      <field name="FHeaderColorTo" type="TColor" visibility="private" size="4" offset="1028" file="AdvMultiColumnDropDown.pas" line="133" />
-      <field name="FLineColor" type="TColor" visibility="private" size="4" offset="1032" file="AdvMultiColumnDropDown.pas" line="134" />
-      <field name="FImages" type="TCustomImageList" visibility="private" size="4" offset="1036" file="AdvMultiColumnDropDown.pas" line="135" />
-      <field name="FOnDrawCell" type="TDrawCellEvent" visibility="private" size="8" offset="1040" file="AdvMultiColumnDropDown.pas" line="136" />
-      <field name="FOnGetCellProp" type="TGetCellPropEvent" visibility="private" size="8" offset="1048" file="AdvMultiColumnDropDown.pas" line="137" />
-      <field name="FOnGetCellText" type="TGetCellTextEvent" visibility="private" size="8" offset="1056" file="AdvMultiColumnDropDown.pas" line="138" />
-      <field name="FHeaderHeight" type="Integer" visibility="private" size="4" offset="1064" file="AdvMultiColumnDropDown.pas" line="139" />
-      <field name="FHeaderFont" type="TFont" visibility="private" size="4" offset="1068" file="AdvMultiColumnDropDown.pas" line="140" />
-      <field name="FFixedLineColor" type="TColor" visibility="private" size="4" offset="1072" file="AdvMultiColumnDropDown.pas" line="141" />
-      <field name="FGridLineWidth" type="Integer" visibility="private" size="4" offset="1076" file="AdvMultiColumnDropDown.pas" line="142" />
-      <field name="FOnSelect" type="TNotifyEvent" visibility="private" size="8" offset="1080" file="AdvMultiColumnDropDown.pas" line="143" />
-      <field name="FOldRow" type="Integer" visibility="private" size="4" offset="1088" file="AdvMultiColumnDropDown.pas" line="144" />
-      <field name="FMouseWheelSelection" type="Boolean" visibility="private" size="1" offset="1092" file="AdvMultiColumnDropDown.pas" line="145" />
-      <field name="FConfirmSelection" type="Boolean" visibility="private" size="1" offset="1093" file="AdvMultiColumnDropDown.pas" line="146" />
+      <field name="FAdvDropDown" type="TAdvMultiColumnDropDown" visibility="private" size="4" offset="1032" file="AdvMultiColumnDropDown.pas" line="130" />
+      <field name="FColumns" type="TDropDownColumns" visibility="private" size="4" offset="1036" file="AdvMultiColumnDropDown.pas" line="131" />
+      <field name="FHeaderColor" type="TColor" visibility="private" size="4" offset="1040" file="AdvMultiColumnDropDown.pas" line="132" />
+      <field name="FHeaderColorTo" type="TColor" visibility="private" size="4" offset="1044" file="AdvMultiColumnDropDown.pas" line="133" />
+      <field name="FLineColor" type="TColor" visibility="private" size="4" offset="1048" file="AdvMultiColumnDropDown.pas" line="134" />
+      <field name="FImages" type="TCustomImageList" visibility="private" size="4" offset="1052" file="AdvMultiColumnDropDown.pas" line="135" />
+      <field name="FOnDrawCell" type="TDrawCellEvent" visibility="private" size="8" offset="1056" file="AdvMultiColumnDropDown.pas" line="136" />
+      <field name="FOnGetCellProp" type="TGetCellPropEvent" visibility="private" size="8" offset="1064" file="AdvMultiColumnDropDown.pas" line="137" />
+      <field name="FOnGetCellText" type="TGetCellTextEvent" visibility="private" size="8" offset="1072" file="AdvMultiColumnDropDown.pas" line="138" />
+      <field name="FHeaderHeight" type="Integer" visibility="private" size="4" offset="1080" file="AdvMultiColumnDropDown.pas" line="139" />
+      <field name="FHeaderFont" type="TFont" visibility="private" size="4" offset="1084" file="AdvMultiColumnDropDown.pas" line="140" />
+      <field name="FFixedLineColor" type="TColor" visibility="private" size="4" offset="1088" file="AdvMultiColumnDropDown.pas" line="141" />
+      <field name="FGridLineWidth" type="Integer" visibility="private" size="4" offset="1092" file="AdvMultiColumnDropDown.pas" line="142" />
+      <field name="FOnSelect" type="TNotifyEvent" visibility="private" size="8" offset="1096" file="AdvMultiColumnDropDown.pas" line="143" />
+      <field name="FOldRow" type="Integer" visibility="private" size="4" offset="1104" file="AdvMultiColumnDropDown.pas" line="144" />
+      <field name="FMouseWheelSelection" type="Boolean" visibility="private" size="1" offset="1108" file="AdvMultiColumnDropDown.pas" line="145" />
+      <field name="FConfirmSelection" type="Boolean" visibility="private" size="1" offset="1109" file="AdvMultiColumnDropDown.pas" line="146" />
       <procedure name="WMKeyDown" visibility="private" procflags="message" file="AdvMultiColumnDropDown.pas" line="147">
         <parameters>
           <parameter name="Msg" type="TWMKey" paramflags="var" />
@@ -4057,6 +4085,8 @@
             </methodref>
             <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
             </methodref>
+            <methodref name="WMGetObject" visibility="private" procflags="message">
+            </methodref>
             <methodref name="CMChanged" visibility="private" procflags="message">
             </methodref>
             <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -4263,6 +4293,10 @@
             </methodref>
             <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
             </methodref>
+            <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="override">
+            </methodref>
             <methodref name="KeyDown" visibility="protected" procflags="dynamic">
             </methodref>
             <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -4385,6 +4419,8 @@
             </propertyref>
             <propertyref name="WindowHandle" visibility="protected">
             </propertyref>
+            <propertyref name="UIAutomationProvider" visibility="protected">
+            </propertyref>
             <eventref name="OnAlignInsertBefore" visibility="protected">
             </eventref>
             <eventref name="OnAlignPosition" visibility="protected">
@@ -4420,6 +4456,12 @@
             <methodref name="Broadcast" visibility="public">
             </methodref>
             <methodref name="CanFocus" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="ContainsControl" visibility="public">
             </methodref>
@@ -4800,6 +4842,8 @@
               </methodref>
               <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
               </methodref>
+              <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Changed" visibility="protected">
               </methodref>
               <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -5041,6 +5085,8 @@
               <methodref name="Destroy" visibility="public" procflags="destructor override">
               </methodref>
               <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
               </methodref>
               <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
               </methodref>
@@ -5288,6 +5334,8 @@
                 <methodref name="ReadDeltaStream" visibility="private">
                 </methodref>
                 <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="InitObservers" visibility="private">
                 </methodref>
                 <methodref name="FindSortedComponent" visibility="private">
                 </methodref>
@@ -5558,37 +5606,37 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="FColumnSizing" type="Boolean" visibility="private" size="1" offset="1096" file="AdvMultiColumnDropDown.pas" line="204" />
-      <field name="FLookupColumn" type="Integer" visibility="private" size="4" offset="1100" file="AdvMultiColumnDropDown.pas" line="205" />
-      <field name="FHeaderColorTo" type="TColor" visibility="private" size="4" offset="1104" file="AdvMultiColumnDropDown.pas" line="206" />
-      <field name="FHeaderColor" type="TColor" visibility="private" size="4" offset="1108" file="AdvMultiColumnDropDown.pas" line="207" />
-      <field name="FLineColor" type="TColor" visibility="private" size="4" offset="1112" file="AdvMultiColumnDropDown.pas" line="208" />
-      <field name="FItems" type="TDropDownItems" visibility="private" size="4" offset="1116" file="AdvMultiColumnDropDown.pas" line="209" />
-      <field name="FColumns" type="TDropDownColumns" visibility="private" size="4" offset="1120" file="AdvMultiColumnDropDown.pas" line="210" />
-      <field name="FItemIndex" type="Integer" visibility="private" size="4" offset="1124" file="AdvMultiColumnDropDown.pas" line="211" />
-      <field name="FHeaderHeight" type="Integer" visibility="private" size="4" offset="1128" file="AdvMultiColumnDropDown.pas" line="212" />
-      <field name="FHeaderFont" type="TFont" visibility="private" size="4" offset="1132" file="AdvMultiColumnDropDown.pas" line="213" />
-      <field name="FAdvColGrid" type="TAdvColGrid" visibility="private" size="4" offset="1136" file="AdvMultiColumnDropDown.pas" line="214" />
-      <field name="FFixedLineColor" type="TColor" visibility="private" size="4" offset="1140" file="AdvMultiColumnDropDown.pas" line="215" />
-      <field name="workmode" type="Boolean" visibility="private" size="1" offset="1144" file="AdvMultiColumnDropDown.pas" line="216" />
-      <field name="FLookupStr" type="string" visibility="private" size="4" offset="1148" file="AdvMultiColumnDropDown.pas" line="217" />
-      <field name="FOldValue" type="string" visibility="private" size="4" offset="1152" file="AdvMultiColumnDropDown.pas" line="218" />
-      <field name="FReturnIsTab" type="Boolean" visibility="private" size="1" offset="1156" file="AdvMultiColumnDropDown.pas" line="219" />
-      <field name="FLookupItems" type="TStringList" visibility="private" size="4" offset="1160" file="AdvMultiColumnDropDown.pas" line="220" />
-      <field name="FMatchCase" type="Boolean" visibility="private" size="1" offset="1164" file="AdvMultiColumnDropDown.pas" line="221" />
-      <field name="FMatchStart" type="Boolean" visibility="private" size="1" offset="1165" file="AdvMultiColumnDropDown.pas" line="222" />
-      <field name="FItemChange" type="Boolean" visibility="private" size="1" offset="1166" file="AdvMultiColumnDropDown.pas" line="223" />
-      <field name="FItemIdx" type="Integer" visibility="private" size="4" offset="1168" file="AdvMultiColumnDropDown.pas" line="224" />
-      <field name="FItemSel" type="Integer" visibility="private" size="4" offset="1172" file="AdvMultiColumnDropDown.pas" line="225" />
-      <field name="FOnSelect" type="TNotifyEvent" visibility="private" size="8" offset="1176" file="AdvMultiColumnDropDown.pas" line="226" />
-      <field name="FOnDropDownDrawItem" type="TDrawCellEvent" visibility="private" size="8" offset="1184" file="AdvMultiColumnDropDown.pas" line="227" />
-      <field name="FOnDropDownGetItemProp" type="TGetCellPropEvent" visibility="private" size="8" offset="1192" file="AdvMultiColumnDropDown.pas" line="228" />
-      <field name="FOnDropDownGetItemText" type="TGetCellTextEvent" visibility="private" size="8" offset="1200" file="AdvMultiColumnDropDown.pas" line="229" />
-      <field name="FOldItemIndex" type="Integer" visibility="private" size="4" offset="1208" file="AdvMultiColumnDropDown.pas" line="230" />
-      <field name="FDropDownAutoWidth" type="Boolean" visibility="private" size="1" offset="1212" file="AdvMultiColumnDropDown.pas" line="231" />
-      <field name="FColumnSizeWithDropDown" type="Boolean" visibility="private" size="1" offset="1213" file="AdvMultiColumnDropDown.pas" line="232" />
-      <field name="FSelectionTextColor" type="TColor" visibility="private" size="4" offset="1216" file="AdvMultiColumnDropDown.pas" line="233" />
-      <field name="FDropDownRowHeight" type="Integer" visibility="private" size="4" offset="1220" file="AdvMultiColumnDropDown.pas" line="234" />
+      <field name="FColumnSizing" type="Boolean" visibility="private" size="1" offset="1112" file="AdvMultiColumnDropDown.pas" line="204" />
+      <field name="FLookupColumn" type="Integer" visibility="private" size="4" offset="1116" file="AdvMultiColumnDropDown.pas" line="205" />
+      <field name="FHeaderColorTo" type="TColor" visibility="private" size="4" offset="1120" file="AdvMultiColumnDropDown.pas" line="206" />
+      <field name="FHeaderColor" type="TColor" visibility="private" size="4" offset="1124" file="AdvMultiColumnDropDown.pas" line="207" />
+      <field name="FLineColor" type="TColor" visibility="private" size="4" offset="1128" file="AdvMultiColumnDropDown.pas" line="208" />
+      <field name="FItems" type="TDropDownItems" visibility="private" size="4" offset="1132" file="AdvMultiColumnDropDown.pas" line="209" />
+      <field name="FColumns" type="TDropDownColumns" visibility="private" size="4" offset="1136" file="AdvMultiColumnDropDown.pas" line="210" />
+      <field name="FItemIndex" type="Integer" visibility="private" size="4" offset="1140" file="AdvMultiColumnDropDown.pas" line="211" />
+      <field name="FHeaderHeight" type="Integer" visibility="private" size="4" offset="1144" file="AdvMultiColumnDropDown.pas" line="212" />
+      <field name="FHeaderFont" type="TFont" visibility="private" size="4" offset="1148" file="AdvMultiColumnDropDown.pas" line="213" />
+      <field name="FAdvColGrid" type="TAdvColGrid" visibility="private" size="4" offset="1152" file="AdvMultiColumnDropDown.pas" line="214" />
+      <field name="FFixedLineColor" type="TColor" visibility="private" size="4" offset="1156" file="AdvMultiColumnDropDown.pas" line="215" />
+      <field name="workmode" type="Boolean" visibility="private" size="1" offset="1160" file="AdvMultiColumnDropDown.pas" line="216" />
+      <field name="FLookupStr" type="string" visibility="private" size="4" offset="1164" file="AdvMultiColumnDropDown.pas" line="217" />
+      <field name="FOldValue" type="string" visibility="private" size="4" offset="1168" file="AdvMultiColumnDropDown.pas" line="218" />
+      <field name="FReturnIsTab" type="Boolean" visibility="private" size="1" offset="1172" file="AdvMultiColumnDropDown.pas" line="219" />
+      <field name="FLookupItems" type="TStringList" visibility="private" size="4" offset="1176" file="AdvMultiColumnDropDown.pas" line="220" />
+      <field name="FMatchCase" type="Boolean" visibility="private" size="1" offset="1180" file="AdvMultiColumnDropDown.pas" line="221" />
+      <field name="FMatchStart" type="Boolean" visibility="private" size="1" offset="1181" file="AdvMultiColumnDropDown.pas" line="222" />
+      <field name="FItemChange" type="Boolean" visibility="private" size="1" offset="1182" file="AdvMultiColumnDropDown.pas" line="223" />
+      <field name="FItemIdx" type="Integer" visibility="private" size="4" offset="1184" file="AdvMultiColumnDropDown.pas" line="224" />
+      <field name="FItemSel" type="Integer" visibility="private" size="4" offset="1188" file="AdvMultiColumnDropDown.pas" line="225" />
+      <field name="FOnSelect" type="TNotifyEvent" visibility="private" size="8" offset="1192" file="AdvMultiColumnDropDown.pas" line="226" />
+      <field name="FOnDropDownDrawItem" type="TDrawCellEvent" visibility="private" size="8" offset="1200" file="AdvMultiColumnDropDown.pas" line="227" />
+      <field name="FOnDropDownGetItemProp" type="TGetCellPropEvent" visibility="private" size="8" offset="1208" file="AdvMultiColumnDropDown.pas" line="228" />
+      <field name="FOnDropDownGetItemText" type="TGetCellTextEvent" visibility="private" size="8" offset="1216" file="AdvMultiColumnDropDown.pas" line="229" />
+      <field name="FOldItemIndex" type="Integer" visibility="private" size="4" offset="1224" file="AdvMultiColumnDropDown.pas" line="230" />
+      <field name="FDropDownAutoWidth" type="Boolean" visibility="private" size="1" offset="1228" file="AdvMultiColumnDropDown.pas" line="231" />
+      <field name="FColumnSizeWithDropDown" type="Boolean" visibility="private" size="1" offset="1229" file="AdvMultiColumnDropDown.pas" line="232" />
+      <field name="FSelectionTextColor" type="TColor" visibility="private" size="4" offset="1232" file="AdvMultiColumnDropDown.pas" line="233" />
+      <field name="FDropDownRowHeight" type="Integer" visibility="private" size="4" offset="1236" file="AdvMultiColumnDropDown.pas" line="234" />
       <procedure name="WMKeyDown" visibility="private" procflags="message" file="AdvMultiColumnDropDown.pas" line="235">
         <parameters>
           <parameter name="Msg" type="TWMKey" paramflags="var" />

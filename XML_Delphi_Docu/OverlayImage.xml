@@ -269,6 +269,8 @@
         </methodref>
         <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
         </methodref>
+        <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+        </methodref>
         <methodref name="Changed" visibility="protected">
         </methodref>
         <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -510,6 +512,8 @@
         <methodref name="Destroy" visibility="public" procflags="destructor override">
         </methodref>
         <methodref name="CheckNonMainThreadUsage" visibility="public">
+        </methodref>
+        <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
         </methodref>
         <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
         </methodref>
@@ -757,6 +761,8 @@
           <methodref name="ReadDeltaStream" visibility="private">
           </methodref>
           <methodref name="ReadDeltaState" visibility="private">
+          </methodref>
+          <methodref name="InitObservers" visibility="private">
           </methodref>
           <methodref name="FindSortedComponent" visibility="private">
           </methodref>
@@ -1024,28 +1030,28 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fBitmap" type="TBitmap" visibility="private" size="4" offset="480" file="OverlayImage.pas" line="33" />
-      <field name="fDrawWidth" type="Integer" visibility="private" size="4" offset="484" file="OverlayImage.pas" line="35" />
-      <field name="fDrawHeight" type="Integer" visibility="private" size="4" offset="488" file="OverlayImage.pas" line="35" />
-      <field name="fScreenBitmap" type="TBitmap" visibility="private" size="4" offset="492" file="OverlayImage.pas" line="36" />
-      <field name="fLockCount" type="Integer" visibility="private" size="4" offset="496" file="OverlayImage.pas" line="38" />
-      <field name="fDrawing" type="Boolean" visibility="private" size="1" offset="500" file="OverlayImage.pas" line="39" />
-      <field name="fTempDrawing" type="Boolean" visibility="private" size="1" offset="501" file="OverlayImage.pas" line="40" />
-      <field name="fOverlayed" type="Boolean" visibility="private" size="1" offset="502" file="OverlayImage.pas" line="41" />
-      <field name="fClipRect" type="TRect" visibility="private" size="16" offset="504" file="OverlayImage.pas" line="42" />
-      <field name="fTempRect" type="TRect" visibility="private" size="16" offset="520" file="OverlayImage.pas" line="44" />
-      <field name="fClipRgn" type="HRGN" visibility="private" size="4" offset="536" file="OverlayImage.pas" line="47" />
-      <field name="fOldRgn" type="HRGN" visibility="private" size="4" offset="540" file="OverlayImage.pas" line="49" />
-      <field name="fNewRgn" type="HRGN" visibility="private" size="4" offset="544" file="OverlayImage.pas" line="49" />
-      <field name="fxoff" type="Integer" visibility="private" size="4" offset="548" file="OverlayImage.pas" line="51" />
-      <field name="fyoff" type="Integer" visibility="private" size="4" offset="552" file="OverlayImage.pas" line="51" />
-      <field name="fOrgFontChanged" type="TNotifyEvent" visibility="private" size="8" offset="560" file="OverlayImage.pas" line="57" />
-      <field name="fOrgPenChanged" type="TNotifyEvent" visibility="private" size="8" offset="568" file="OverlayImage.pas" line="58" />
-      <field name="fOrgBrushChanged" type="TNotifyEvent" visibility="private" size="8" offset="576" file="OverlayImage.pas" line="59" />
-      <field name="fOrgPaint" type="TNotifyEvent" visibility="private" size="8" offset="584" file="OverlayImage.pas" line="60" />
-      <field name="fOnMouseLeave" type="TNotifyEvent" visibility="private" size="8" offset="592" file="OverlayImage.pas" line="61" />
-      <field name="fOnMouseEnter" type="TNotifyEvent" visibility="private" size="8" offset="600" file="OverlayImage.pas" line="62" />
-      <field name="fOnTempPaint" type="TNotifyEvent" visibility="private" size="8" offset="608" file="OverlayImage.pas" line="63" />
+      <field name="fBitmap" type="TBitmap" visibility="private" size="4" offset="488" file="OverlayImage.pas" line="33" />
+      <field name="fDrawWidth" type="Integer" visibility="private" size="4" offset="492" file="OverlayImage.pas" line="35" />
+      <field name="fDrawHeight" type="Integer" visibility="private" size="4" offset="496" file="OverlayImage.pas" line="35" />
+      <field name="fScreenBitmap" type="TBitmap" visibility="private" size="4" offset="500" file="OverlayImage.pas" line="36" />
+      <field name="fLockCount" type="Integer" visibility="private" size="4" offset="504" file="OverlayImage.pas" line="38" />
+      <field name="fDrawing" type="Boolean" visibility="private" size="1" offset="508" file="OverlayImage.pas" line="39" />
+      <field name="fTempDrawing" type="Boolean" visibility="private" size="1" offset="509" file="OverlayImage.pas" line="40" />
+      <field name="fOverlayed" type="Boolean" visibility="private" size="1" offset="510" file="OverlayImage.pas" line="41" />
+      <field name="fClipRect" type="TRect" visibility="private" size="16" offset="512" file="OverlayImage.pas" line="42" />
+      <field name="fTempRect" type="TRect" visibility="private" size="16" offset="528" file="OverlayImage.pas" line="44" />
+      <field name="fClipRgn" type="HRGN" visibility="private" size="4" offset="544" file="OverlayImage.pas" line="47" />
+      <field name="fOldRgn" type="HRGN" visibility="private" size="4" offset="548" file="OverlayImage.pas" line="49" />
+      <field name="fNewRgn" type="HRGN" visibility="private" size="4" offset="552" file="OverlayImage.pas" line="49" />
+      <field name="fxoff" type="Integer" visibility="private" size="4" offset="556" file="OverlayImage.pas" line="51" />
+      <field name="fyoff" type="Integer" visibility="private" size="4" offset="560" file="OverlayImage.pas" line="51" />
+      <field name="fOrgFontChanged" type="TNotifyEvent" visibility="private" size="8" offset="568" file="OverlayImage.pas" line="57" />
+      <field name="fOrgPenChanged" type="TNotifyEvent" visibility="private" size="8" offset="576" file="OverlayImage.pas" line="58" />
+      <field name="fOrgBrushChanged" type="TNotifyEvent" visibility="private" size="8" offset="584" file="OverlayImage.pas" line="59" />
+      <field name="fOrgPaint" type="TNotifyEvent" visibility="private" size="8" offset="592" file="OverlayImage.pas" line="60" />
+      <field name="fOnMouseLeave" type="TNotifyEvent" visibility="private" size="8" offset="600" file="OverlayImage.pas" line="61" />
+      <field name="fOnMouseEnter" type="TNotifyEvent" visibility="private" size="8" offset="608" file="OverlayImage.pas" line="62" />
+      <field name="fOnTempPaint" type="TNotifyEvent" visibility="private" size="8" offset="616" file="OverlayImage.pas" line="63" />
       <procedure name="fBitmapChanged" visibility="private" file="OverlayImage.pas" line="67">
         <parameters>
           <parameter name="Sender" type="TObject" />
@@ -1145,8 +1151,8 @@
       </procedure>
       <procedure name="fTempCanvasChanging" visibility="private" file="OverlayImage.pas" line="90">
       </procedure>
-      <field name="fMetaFileCanvas" type="TMetafileCanvas" visibility="protected" size="4" offset="616" file="OverlayImage.pas" line="94" />
-      <field name="fMetaFile" type="TMetafile" visibility="protected" size="4" offset="620" file="OverlayImage.pas" line="95" />
+      <field name="fMetaFileCanvas" type="TMetafileCanvas" visibility="protected" size="4" offset="624" file="OverlayImage.pas" line="94" />
+      <field name="fMetaFile" type="TMetafile" visibility="protected" size="4" offset="628" file="OverlayImage.pas" line="95" />
       <procedure name="Paint" visibility="protected" procflags="override" file="OverlayImage.pas" line="96">
       </procedure>
       <procedure name="Notification" visibility="protected" procflags="override" file="OverlayImage.pas" line="97">
@@ -1737,6 +1743,8 @@
           </methodref>
           <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
           </methodref>
+          <methodref name="WMGetObject" visibility="private" procflags="message">
+          </methodref>
           <methodref name="CMChanged" visibility="private" procflags="message">
           </methodref>
           <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -1943,6 +1951,10 @@
           </methodref>
           <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
           </methodref>
+          <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+          </methodref>
+          <methodref name="Loaded" visibility="protected" procflags="override">
+          </methodref>
           <methodref name="KeyDown" visibility="protected" procflags="dynamic">
           </methodref>
           <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -2065,6 +2077,8 @@
           </propertyref>
           <propertyref name="WindowHandle" visibility="protected">
           </propertyref>
+          <propertyref name="UIAutomationProvider" visibility="protected">
+          </propertyref>
           <eventref name="OnAlignInsertBefore" visibility="protected">
           </eventref>
           <eventref name="OnAlignPosition" visibility="protected">
@@ -2100,6 +2114,12 @@
           <methodref name="Broadcast" visibility="public">
           </methodref>
           <methodref name="CanFocus" visibility="public" procflags="dynamic">
+          </methodref>
+          <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+          </methodref>
+          <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
           </methodref>
           <methodref name="ContainsControl" visibility="public">
           </methodref>
@@ -2480,6 +2500,8 @@
             </methodref>
             <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
             </methodref>
+            <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+            </methodref>
             <methodref name="Changed" visibility="protected">
             </methodref>
             <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -2721,6 +2743,8 @@
             <methodref name="Destroy" visibility="public" procflags="destructor override">
             </methodref>
             <methodref name="CheckNonMainThreadUsage" visibility="public">
+            </methodref>
+            <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
             </methodref>
@@ -2968,6 +2992,8 @@
               <methodref name="ReadDeltaStream" visibility="private">
               </methodref>
               <methodref name="ReadDeltaState" visibility="private">
+              </methodref>
+              <methodref name="InitObservers" visibility="private">
               </methodref>
               <methodref name="FindSortedComponent" visibility="private">
               </methodref>
@@ -3237,7 +3263,7 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fOnScroll" type="TNotifyEvent" visibility="private" size="8" offset="752" file="OverlayImage.pas" line="307" />
+      <field name="fOnScroll" type="TNotifyEvent" visibility="private" size="8" offset="768" file="OverlayImage.pas" line="307" />
       <procedure name="WMHScroll" visibility="private" procflags="message" file="OverlayImage.pas" line="308">
         <parameters>
           <parameter name="Message" type="TWMScroll" paramflags="var" />

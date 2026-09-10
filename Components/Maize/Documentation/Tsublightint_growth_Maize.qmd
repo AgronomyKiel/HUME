@@ -114,7 +114,7 @@ kable(df)|>
 
 ## Modelling DM production
 
-Within season, daily dry matter production ($\frac{dDM_{tot}}{dt}$\$\\frac{dDM\_{tot}}{dt}\$ is driven by absorbed photosynthetic radiation (Q, MJ m^-2^ d^-1^) and potential light use efficiency (LUE, g MJ^-1^ PAR^-1^):
+Within the season, daily dry matter production ($\frac{dDM_{tot}}{dt}$) is driven by absorbed photosynthetically active radiation ($Q$, MJ m^-2^ d^-1^) and potential light-use efficiency (LUE, g MJ^-1^ PAR^-1^):
 
 $$\frac{{\mathrm{dDM}}_{\mathrm{total}}}{\mathrm{dt}}\mathrm{=Q*}LUE * Temp_{fact} * SWDF$$ {#eq-DMproduction}
 
@@ -136,9 +136,9 @@ with a constant extinction coefficient $k_{PAR}$ \[-\] (Par_ExtCoeffPAR, see Tsu
 
 $${\mathrm{LUE}}\mathrm{=}LUE_{max} - LUE_{steig}*PAR$$ {#eq-LUE}
 
-with $LUE_{\text{max}}$ \[-\] and $LUE_{\text{steig}}$ \[-\] as regression parameters, which were optimized by the model internal Levenberg-Marquard algorithm. In case of drought stress, LUE is reduced by the SWDF \[-\], originally proposed in a peanut growth model (@ferreyra2003), describing the effects of water stress as non-linear function. This formulation allows for a more gradual decline in LUE under moderate stress and a stronger limitation under severe drought conditions, which was not accounted in another maize model.
+with $LUE_{\text{max}}$ \[-\] and $LUE_{\text{steig}}$ \[-\] as regression parameters, which were optimized by the model internal Levenberg-Marquardt algorithm. In case of drought stress, LUE is reduced by the SWDF \[-\], originally proposed in a peanut growth model (@ferreyra2003), describing the effects of water stress as non-linear function. This formulation allows for a more gradual decline in LUE under moderate stress and a stronger limitation under severe drought conditions, which was not accounted in another maize model.
 
-$$SWDF\mathrm{=\ 1\ -\ }{\frac{\mathrm{Act}_{\mathrm{trans}}}{\mathrm{Pot}_{\mathrm{trans}}}}^{SWDF_{fact}}$$ {#eq-SWDF}
+$$SWDF = \min\left(1, 1 - \left(1 - \frac{Act_{trans}}{Pot_{trans}}\right)^{SWDF_{fact}}\right)$$ {#eq-SWDF}
 
 with the ratio between actual transpiration ($Act_{\text{trans}}$, mm d^-1^) and potential transpiration ($Pot_{\text{trans}}$ mm d^-1^) and a power value $SWDF_{\text{fact}}$ \[-\] describing the non-linear relation of SWDF. The parameter $SWDF_{\text{fact}}$ was set to 1.6 after model internal optimisation.
 
@@ -146,19 +146,17 @@ with the ratio between actual transpiration ($Act_{\text{trans}}$, mm d^-1^) and
 
 With the calibration dataset, a strong fit was achieved for whole-season $DM_{\text{shoot}}$ (R² = 0.97, @tbl-results) including measurement data of the whole season (n=83). The productivity on sandy loam sites was underestimated in 2008 and overestimated in 2007. However, predictions for the sandy site were accurate for both calibration years (@fig-DMShoot A). In the evaluation, prediction accuracy of $DM_{\text{shoot}}$ was still high with R² of 0.95 and a RMSE of 239.28 g m-2 (@tbl-results). In 2021, high yields harvested at both sandy loam and sandy sites were underestimated by the model. Due to severe drought stress at the sandy and sandy silt site in 2022, harvest was conducted one month earlier (2022/09/06 and 2022/09/02, respectively), explaining the low yields (@fig-DMShoot B).
 
-::: {#tbl-results}
 | Variable | Einheit | Steigung (Slope) | Achsenabschnitt (Intercept) | R² | n | RMSE |
 |-----------|-----------|-----------|-----------|-----------|-----------|-----------|
 | $\mathrm{DM}_{\mathrm{shoot}}$ | \[g m⁻²\] | 1.14 (1.08) | -102.91 (-73.91) | 0.95 (0.97) | 63 (83) | 239.28 (157.41) |
 
-: Results of model evaluation and calibration (in brackets) for aboveground dry matter production ($DM_{\text{shoot}}$). Performance was assessed with slope and intercept of the regression between measured and simulated data, R² and root mean square error (RMSE). n is the number of measurements.
-:::
+: Results of model evaluation and calibration (in brackets) for aboveground dry matter production ($DM_{\text{shoot}}$). Performance was assessed with slope and intercept of the regression between measured and simulated data, R² and root mean square error (RMSE). n is the number of measurements. {#tbl-results}
 
-![Dry matter estimation in calibration (grey) and evaluation (colourful) exhibit by simulated shoot dry matter g m^-2^ against measured data of the evaluation datasets (7-12). Dashed line is the 1:1 line. Solid line is the regression between measured and simulated shoot dry matter g m^-2^.](Plots/Figure_Cali_Ev_DMShoot.png){#fig-DMShoot}
+![Dry matter estimation in calibration (grey) and evaluation (colourful) exhibit by simulated shoot dry matter g m^-2^ against measured data of the evaluation datasets (7-12). Dashed line is the 1:1 line. Solid line is the regression between measured and simulated shoot dry matter g m^-2^.](Plots/Figure_Cali_Ev_DMshoot.png){#fig-DMShoot}
 
 ### Large scale evaluation
 
-The prediction of final yield with the baseline model and hybrid-specific parameters (see Tsubpartitioning_Maize_Roots_N) was evaluated using a large dataset (n: 287) comprising silage maize yield data of the two regarded hybrids. The dataset consists of 67 sites distributed all over Germany (@fig-Dtl), collected during a time span of 14-years (2006 to 2021). The data were sourced from national hybrid trials published by the agricultural chambers and institutions of the federal states of Germany on https://www.isip.de/versuchsberichte. Soil textures were derived from the German soil map (@buk200) from 0-200 cm, summarized in up to four different soil layers.
+The prediction of final yield with the baseline model and hybrid-specific parameters (see Tsubpartitioning_Maize_Roots_N) was evaluated using a large dataset (n: 287) comprising silage maize yield data of the two regarded hybrids. The dataset consists of 67 sites distributed all over Germany (@fig-Dtl), collected during a time span of 14-years (2006 to 2021). The data were sourced from national hybrid trials published by the agricultural chambers and institutions of the federal states of Germany in the [ISIP trial reports](https://www.isip.de/versuchsberichte). Soil textures were derived from the German soil map (@buk200) from 0-200 cm, summarized in up to four different soil layers.
 
 ![Trial sites (n=68) of calibration (triangles) and evaluation data (crosses). Colors indicate the two tested hybrids (blue: old hybrid; KWS Ronaldinio, red: new hybrid; KWS Gunnario).](Plots/Messpunkte_Deutschland.png){#fig-Dtl}
 

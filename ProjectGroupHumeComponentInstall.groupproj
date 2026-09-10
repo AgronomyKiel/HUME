@@ -12,9 +12,6 @@
         <Projects Include="Components\OilseedRape\OSR.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Components\Soil\SoilWaterPackageNew.dproj">
-            <Dependencies>Hume1.dproj</Dependencies>
-        </Projects>
         <Projects Include="Components\CERES Wheat\CeresSubModels.dproj">
             <Dependencies/>
         </Projects>
@@ -53,15 +50,6 @@
     <Target Name="OSR:Make">
         <MSBuild Projects="Components\OilseedRape\OSR.dproj" Targets="Make"/>
     </Target>
-    <Target Name="SoilWaterPackageNew" DependsOnTargets="Hume1">
-        <MSBuild Projects="Components\Soil\SoilWaterPackageNew.dproj"/>
-    </Target>
-    <Target Name="SoilWaterPackageNew:Clean" DependsOnTargets="Hume1:Clean">
-        <MSBuild Projects="Components\Soil\SoilWaterPackageNew.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="SoilWaterPackageNew:Make" DependsOnTargets="Hume1:Make">
-        <MSBuild Projects="Components\Soil\SoilWaterPackageNew.dproj" Targets="Make"/>
-    </Target>
     <Target Name="CeresSubModels">
         <MSBuild Projects="Components\CERES Wheat\CeresSubModels.dproj"/>
     </Target>
@@ -72,13 +60,13 @@
         <MSBuild Projects="Components\CERES Wheat\CeresSubModels.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="Hume1;ISIP_Components;OSR;SoilWaterPackageNew;CeresSubModels"/>
+        <CallTarget Targets="Hume1;ISIP_Components;OSR;CeresSubModels"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Hume1:Clean;ISIP_Components:Clean;OSR:Clean;SoilWaterPackageNew:Clean;CeresSubModels:Clean"/>
+        <CallTarget Targets="Hume1:Clean;ISIP_Components:Clean;OSR:Clean;CeresSubModels:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Hume1:Make;ISIP_Components:Make;OSR:Make;SoilWaterPackageNew:Make;CeresSubModels:Make"/>
+        <CallTarget Targets="Hume1:Make;ISIP_Components:Make;OSR:Make;CeresSubModels:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

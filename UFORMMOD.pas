@@ -3,13 +3,16 @@
 interface
 
 uses
-  Windows, Messages, SysUtils, System.IOUtils, vcl.Graphics, vcl.Controls, vcl.Forms, vcl.Dialogs,
-  vcl.ExtCtrls, vcl.Menus, vcl.StdCtrls, UFormGraph, vcl.ComCtrls, UMod, vcl.Grids, //vcl.DirOutln,
-  vcl.Buttons, vcl.ToolWin, IniFiles, BaseGrid, AdvGrid, VCLTee.TeeProcs, VCLTee.TeEngine,
+  Windows, Messages, SysUtils, System.IOUtils, vcl.Graphics, vcl.Controls,
+  vcl.Forms, vcl.Dialogs,
+  vcl.ExtCtrls, vcl.Menus, vcl.StdCtrls, UFormGraph, vcl.ComCtrls, UMod,
+  vcl.Grids, // vcl.DirOutln,
+  vcl.Buttons, vcl.ToolWin, IniFiles, BaseGrid, AdvGrid, VCLTee.TeeProcs,
+  VCLTee.TeEngine,
   VCLTee.Chart, VCLTee.Series,
   UTextFileH, UHumeShow, UFormOpt, UFormSelPar, ModLink, UFormChiSquareAnalysis,
-  VCLTee.TECanvas, System.UITypes, VclTee.TeeGDIPlus, System.ImageList,
-  Vcl.ImgList, Vcl.WinXCtrls, System.Classes; // , JvCsvData;
+  VCLTee.TECanvas, System.UITypes, VCLTee.TeeGDIPlus, System.ImageList,
+  vcl.ImgList, vcl.WinXCtrls, System.Classes; // , JvCsvData;
 
 const
   MaxSeries = 1000;
@@ -114,11 +117,13 @@ type
     LabelSubModelCombobox: TLabel;
     SpeedButtonRun: TSpeedButton;
     btnSaveasPNG: TSpeedButton;
+    SpeedButtonSaveToWMF: TSpeedButton;
     ToolBarExternals: TToolBar;
     btnAdvStatToClipBoardButton: TSpeedButton;
     btnSaveDataChanges: TSpeedButton;
     il1: TImageList;
     SpeedButtonIncFontSize: TSpeedButton;
+    SpeedButtonDecFontSize: TSpeedButton;
     TabSheetDocumentation: TTabSheet;
     ToolBarDocu: TToolBar;
     SpeedButtonCreateDocu: TSpeedButton;
@@ -127,7 +132,7 @@ type
     AdvStringGridModelSummary: TAdvStringGrid;
     SpeedButtonMergeData: TSpeedButton;
     btnCheckButton1: TSpeedButton;
- //   CheckBoxContOutput: TCheckBox;
+    // CheckBoxContOutput: TCheckBox;
     GroupBoxIniFileEdits: TGroupBox;
     GroupBoxControlFileName: TGroupBox;
     EditControlFile: TEdit;
@@ -299,7 +304,7 @@ type
     procedure SpeedButtonMergeDataClick(Sender: TObject);
     procedure SpeedButtonOutputDirectoryClick(Sender: TObject);
     procedure SpeedButtonNoContOutputClick(Sender: TObject);
-//    procedure CheckBoxContOutputClick(Sender: TObject);
+    // procedure CheckBoxContOutputClick(Sender: TObject);
     procedure ComboBoxContOutputChange(Sender: TObject);
     procedure SpeedButtonAllContOutputClick(Sender: TObject);
     procedure ToggleSwitchVarContOutputClick(Sender: TObject);
@@ -320,7 +325,7 @@ type
     function getLinkedModel(): TMod;
     procedure testSubModIndex(n: Integer);
     procedure updatePropIniFile(strList: TStringList; submodname: string);
-//    procedure setPropFromIniFile(strList: TStringList; submodname: string);
+    // procedure setPropFromIniFile(strList: TStringList; submodname: string);
     // procedure ConnectionPaint(Sender: TObject);
   public
     ModelWasRunning: Boolean;
@@ -341,13 +346,13 @@ type
 
 var
   FormMod: TFormMod;
-//  paintbox: TPaintBox;
+  // paintbox: TPaintBox;
 
 implementation
 
 uses
   UState, UFormShow1_1, UMeasValue, math, UFormShowFinalValues, FormSGA,
-  Vcl.Imaging.pngimage, System.TypInfo;
+  vcl.Imaging.pngimage, System.TypInfo;
 {$R *.DFM}
 
 function FileIsEmpty(const FileName: String): Boolean;
@@ -365,7 +370,7 @@ end;
 
 procedure TFormMod.SpeedButtonRunActIniClick(Sender: TObject);
 begin
-   RunActIni;
+  RunActIni;
 end;
 
 procedure TFormMod.SpeedButtonRunClick(Sender: TObject);
@@ -391,10 +396,12 @@ end;
 
 procedure TFormMod.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  Lmod.LinkedModel.FPropIniFile.WriteInteger('ComboBoxes', ComboBoxSubMod.Name, self.ComboBoxSubMod.ItemIndex);
-  Lmod.LinkedModel.FPropIniFile.WriteInteger('ComboBoxes', self.ComboBoxIniFile.Name, self.ComboBoxIniFile.ItemIndex);
-  Lmod.LinkedModel.FPropIniFile.UpdateFile;
-  Lmod.LinkedModel.FPropIniFile.Free;
+  LMod.LinkedModel.FPropIniFile.WriteInteger('ComboBoxes', ComboBoxSubMod.Name,
+    self.ComboBoxSubMod.ItemIndex);
+  LMod.LinkedModel.FPropIniFile.WriteInteger('ComboBoxes',
+    self.ComboBoxIniFile.Name, self.ComboBoxIniFile.ItemIndex);
+  LMod.LinkedModel.FPropIniFile.UpdateFile;
+  LMod.LinkedModel.FPropIniFile.Free;
   img_help.Free;
   img_savetoall.Free;
   // if LMod.LinkedModel <> nil then
@@ -404,112 +411,119 @@ end;
 procedure TFormMod.FormCreate(Sender: TObject);
 
 var
-  CtrlFileFN, fn, path, prop_path,
-  FirstIniFileFN, OutDir : string;
-  CtrlFile : TStreamReader;
-//  CtrlfileLine : string;
-//  CtrlFile : textfile;
+  CtrlFileFN, fn, path, prop_path, FirstIniFileFN, OutDir: string;
+  CtrlFile: TStreamReader;
+  // CtrlfileLine : string;
+  // CtrlFile : textfile;
 
   i: Integer;
   ActSubMod: TSubModel;
-  SelectionStr : string;
+  SelectionStr: string;
 
 begin
- inherited;
-  if ParamCount > 0 then begin
+  inherited;
+  if ParamCount > 0 then
+  begin
     // Execute HUME with ParameterStrings 1: FN-File and 2; Output-Directory
     // without showing the GUI   -  Ulf B�ttcher 25.8.2021
     CtrlFileFN := ParamStr(1);
     OutDir := ParamStr(2);
-    if Lmod.fModel <> nil then
+    if LMod.fModel <> nil then
     begin
       if OutDir <> '' then
       begin
-        Lmod.fModel.GM_OutPutPath := OutDir;
-        Lmod.fModel.ReadIniOutputpath := false;
+        LMod.fModel.GM_OutPutPath := OutDir;
+        LMod.fModel.ReadIniOutputpath := false;
       end;
       LMod.fModel.Set_ControlFileFN(CtrlFileFN);
-      Lmod.fModel.init(Lmod.fModel.actIniFile);
-      Lmod.fModel.InitAllSubMods;
+      LMod.fModel.init(LMod.fModel.actIniFile);
+      LMod.fModel.InitAllSubMods;
 
       // gespeicherte Properties aus *ini Datei einlesen
-      path :=  ExtractFilePath(ParamStr(0));
-      fn := path+ 'properties.ini';
-      Lmod.fModel.FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
-      for i := 0 to Lmod.fModel.SubModStrList.count - 1 do
+      path := ExtractFilePath(ParamStr(0));
+      fn := path + 'properties.ini';
+      LMod.fModel.FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
+      for i := 0 to LMod.fModel.SubModStrList.count - 1 do
       begin
-        ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[i]);
+        ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[i]);
         with ActSubMod do
         begin
-          Lmod.fModel.setPropFromIniFile(stateStrList, Name);
-          Lmod.fModel.setPropFromIniFile(VarStrList, Name);
-          Lmod.fModel.setPropFromIniFile(ExternVStrList, Name);
+          LMod.fModel.setPropFromIniFile(stateStrList, Name);
+          LMod.fModel.setPropFromIniFile(VarStrList, Name);
+          LMod.fModel.setPropFromIniFile(ExternVStrList, Name);
         end;
       end;
 
-      Lmod.fModel.run;
+      LMod.fModel.run;
     end;
-//    halt;
-    Application.Terminate;
-//    Application.ProcessMessages;
-//    Application.HandleException(self);
-//    If Application.Terminated then begin
-//     halt;
-//    end;
+    // halt;
+    application.terminate;
+    // Application.ProcessMessages;
+    // Application.HandleException(self);
+    // If Application.Terminated then begin
+    // halt;
+    // end;
   end;
 
-//  Lmod.fModel.Get_ControlFileFn;
-{  path :=  ExtractFilePath(ParamStr(0));
-  fn := path+ 'properties.ini';
-  if self.Lmod.fModel <> NIL then begin
+  // Lmod.fModel.Get_ControlFileFn;
+  { path :=  ExtractFilePath(ParamStr(0));
+    fn := path+ 'properties.ini';
+    if self.Lmod.fModel <> NIL then begin
     self.Lmod.fModel.FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
     CtrlFileFN := Lmod.fModel.FPropIniFile.ReadString('Files', 'ControlFile',CtrlFileFN);
-     Lmod.fModel.GM_ControlFile  := CtrlFileFN;
-     Lmod.fModel.FPropIniFile.UpdateFile;
-  end;
-  fn := self.Lmod.fModel.FPropIniFile.ReadString('Files', 'ControlFile', path+'Control.fn');
-  if fn <> (path+'Control.fn') then
-  CtrlFileFN := fn;      }
+    Lmod.fModel.GM_ControlFile  := CtrlFileFN;
+    Lmod.fModel.FPropIniFile.UpdateFile;
+    end;
+    fn := self.Lmod.fModel.FPropIniFile.ReadString('Files', 'ControlFile', path+'Control.fn');
+    if fn <> (path+'Control.fn') then
+    CtrlFileFN := fn; }
 
   ModelWasRunning := false;
   nFormGraph := 0;
-  if Lmod.fModel <> nil then
+  if LMod.fModel <> nil then
   begin
-    if (Lmod.fModel.title <> '') then
-      self.Caption := Lmod.fModel.title;
-    CtrlFileFN := Lmod.fModel.GM_ControlFile;
-    if fileexists(CtrlFileFN) then begin
-      CtrlFile := TStreamReader.Create(CtrlFileFN, TEncoding.UTF8, True);
-//      assignfile(CtrlFile, CtrlFileFN);
-//      reset(CtrlFile);
-      FirstIniFileFN := CtrlFile.Readline;
-//      readln(CtrlFile, FirstIniFileFN);
-//      closefile(CtrlFile);
-      If Lmod.fModel.ActIniFile = nil then
-        Lmod.fModel.ActIniFile := TMemIniFile.Create( FirstIniFileFN);
-      CtrlFile.free;
-      Lmod.fModel.init(Lmod.fModel.ActIniFile);
-      ComboBoxTimeAxisOption.ItemIndex := 0;
-      EditOutputDirectory.Text := Lmod.fModel.GM_OutPutPath;
-    end;
-  if Lmod.fModel <> nil then
-  begin
-    if Lmod.fModel.FPropIniFile = nil then
+    if (LMod.fModel.title <> '') then
+      self.Caption := LMod.fModel.title;
+    CtrlFileFN := LMod.fModel.GM_ControlFile;
+    if fileexists(CtrlFileFN) then
     begin
-      prop_path := ExtractFilePath(ParamStr(0));
-      fn := prop_path + 'properties.ini';
-      // fn := 'properties.ini';
-      Lmod.fModel.FPropIniFile := TMyIniFile.Create(fn, TEncoding.UTF8);
+      CtrlFile := TStreamReader.create(CtrlFileFN, TEncoding.UTF8, True);
+      // assignfile(CtrlFile, CtrlFileFN);
+      // reset(CtrlFile);
+      FirstIniFileFN := CtrlFile.Readline;
+      // readln(CtrlFile, FirstIniFileFN);
+      // closefile(CtrlFile);
+      If LMod.fModel.actIniFile = nil then
+        LMod.fModel.actIniFile := TMemIniFile.create(FirstIniFileFN);
+      CtrlFile.Free;
+      LMod.fModel.init(LMod.fModel.actIniFile);
+      ComboBoxTimeAxisOption.ItemIndex := 0;
+      EditOutputDirectory.Text := LMod.fModel.GM_OutPutPath;
     end;
-  end;
-  self.Lmod.fModel.FPropIniFile.ReadInteger('ComboBoxes', ComboBoxSubMod.Name,ComboBoxSubMod.ItemIndex);
-  self.Lmod.fModel.FPropIniFile.ReadInteger('ComboBoxes', ComboBoxIniFile.Name,ComboBoxIniFile.ItemIndex);
-  SelectionStr := Lmod.fModel.FPropIniFile.ReadString('ModelSettings', 'ContOutput', 'ContOutput');
-  Lmod.fModel.OptContOutput :=  TContOutput(GetEnumValue(System.TypeInfo(TContOutput), SelectionStr));
-  self.ComboBoxContOutput.ItemIndex := GetEnumValue(System.TypeInfo(TContOutput), SelectionStr);
-  // if PropIniFile has already content
-  if (ComboBoxSubMod.ItemIndex <>-1) and (ComboBoxIniFile.ItemIndex <> -1) then
-    ComboBoxSubMod.OnChange(nil);
+    if LMod.fModel <> nil then
+    begin
+      if LMod.fModel.FPropIniFile = nil then
+      begin
+        prop_path := ExtractFilePath(ParamStr(0));
+        fn := prop_path + 'properties.ini';
+        // fn := 'properties.ini';
+        LMod.fModel.FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
+      end;
+    end;
+    self.LMod.fModel.FPropIniFile.ReadInteger('ComboBoxes', ComboBoxSubMod.Name,
+      ComboBoxSubMod.ItemIndex);
+    self.LMod.fModel.FPropIniFile.ReadInteger('ComboBoxes',
+      ComboBoxIniFile.Name, ComboBoxIniFile.ItemIndex);
+    SelectionStr := LMod.fModel.FPropIniFile.ReadString('ModelSettings',
+      'ContOutput', 'ContOutput');
+    LMod.fModel.OptContOutput :=
+      TContOutput(GetEnumValue(System.TypeInfo(TContOutput), SelectionStr));
+    self.ComboBoxContOutput.ItemIndex :=
+      GetEnumValue(System.TypeInfo(TContOutput), SelectionStr);
+    // if PropIniFile has already content
+    if (ComboBoxSubMod.ItemIndex <> -1) and (ComboBoxIniFile.ItemIndex <> -1)
+    then
+      ComboBoxSubMod.OnChange(nil);
   end;
 
   // StatusBarMain.Panels[2].Style := psOwnerDraw;
@@ -523,16 +537,16 @@ begin
   img_savetoall := TBitmap.create();
   il1.GetBitmap(1, img_help);
   il1.GetBitmap(0, img_savetoall);
-  if self.Lmod.fModel <> nil then
+  if self.LMod.fModel <> nil then
   begin
-   CtrlFileFN := self.Lmod.fModel.FPropIniFile.ReadString('Files',
+    CtrlFileFN := self.LMod.fModel.FPropIniFile.ReadString('Files',
       'ControlFile', '');
     if CtrlFileFN = '' then
-      CtrlFileFN := Lmod.fModel.GM_ControlFile;
+      CtrlFileFN := LMod.fModel.GM_ControlFile;
     EditControlFile.Text := CtrlFileFN;
   end;
- // Lmod.fModel.Set_ControlFileFN(CtrlFileFN);
-//  Lmod.fModel.GM_ControlFile := CtrlFileFN;
+  // Lmod.fModel.Set_ControlFileFN(CtrlFileFN);
+  // Lmod.fModel.GM_ControlFile := CtrlFileFN;
   updateForm;
 end;
 
@@ -547,8 +561,8 @@ begin
   MenuView.Enabled := True;
   starttime := time;
 
-  if Lmod.fModel <> nil then
-    Lmod.fModel.run
+  if LMod.fModel <> nil then
+    LMod.fModel.run
   else
   begin
     showmessage('No Model linked!');
@@ -556,7 +570,7 @@ begin
   end;
   endtime := time;
   timelapsed := endtime - starttime;
-  update_StringGrid(Lmod.fModel.reg_fn); // TODO
+  update_StringGrid(LMod.fModel.reg_fn); // TODO
   Screen.cursor := CrDefault;
   StatusBarMain.Panels.Items[0].Text := ' Runtime: ' + TimeToStr(timelapsed);
   // if LMod.fModel.ReInitAfterRun then // TODO
@@ -571,8 +585,6 @@ begin
 
 end;
 
-
-
 procedure TFormMod.RunActIni;
 var
   starttime, endtime, timelapsed: real;
@@ -584,8 +596,8 @@ begin
   MenuView.Enabled := True;
   starttime := time;
 
-  if Lmod.fModel <> nil then
-    Lmod.fModel.runActIni
+  if LMod.fModel <> nil then
+    LMod.fModel.RunActIni
 
   else
   begin
@@ -594,7 +606,7 @@ begin
   end;
   endtime := time;
   timelapsed := endtime - starttime;
-  update_StringGrid(Lmod.fModel.reg_fn); // TODO
+  update_StringGrid(LMod.fModel.reg_fn); // TODO
   Screen.cursor := CrDefault;
   StatusBarMain.Panels.Items[0].Text := ' Runtime: ' + TimeToStr(timelapsed);
   // if LMod.fModel.ReInitAfterRun then // TODO
@@ -624,44 +636,47 @@ begin
   with AdvStringGridParam do
   begin
     BeginUpdate;
-    if Lmod.fModel.ParamInifile <> nil  then begin
-
-    EditParamFileName.Text := Lmod.fModel.ParamInifile.FileName;
-    Clear;
-    Rows[0].commatext := 'Name, Unit, Value, Save_to_all_Inis, Info, DocuLink';
-    RowCount := 2;
-    FixedRows := 1;
-
-    actSubModIndex := ComboBoxSubMod.ItemIndex;
-    if actSubModIndex <> -1 then
+    if LMod.fModel.ParamInifile <> nil then
     begin
-      SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
-      RowCount := SubModel.ParStrList.count + 1;
-      for i := 0 to SubModel.ParStrList.count - 1 do
+
+      EditParamFileName.Text := LMod.fModel.ParamInifile.FileName;
+      Clear;
+      Rows[0].commatext :=
+        'Name, Unit, Value, Save_to_all_Inis, Info, DocuLink';
+      RowCount := 2;
+      FixedRows := 1;
+
+      actSubModIndex := ComboBoxSubMod.ItemIndex;
+      if actSubModIndex <> -1 then
       begin
-        Param := TPar(SubModel.ParStrList.objects[i]);
-        with Param do
-//          line := name + ',' + u + ',' + floattoStrF(v, ffgeneral, 6, 3);
-        cells[0, i+1] := name;
-        cells[1, i+1] := Param.U;
-        cells[2, i+1] := floattoStrF(Param.v, ffgeneral, 6, 3);
+        SubModel := TSubModel(LMod.fModel.SubModStrList.objects
+          [actSubModIndex]);
+        RowCount := SubModel.ParStrList.count + 1;
+        for i := 0 to SubModel.ParStrList.count - 1 do
+        begin
+          Param := TPar(SubModel.ParStrList.objects[i]);
+          with Param do
+            // line := name + ',' + u + ',' + floattoStrF(v, ffgeneral, 6, 3);
+            cells[0, i + 1] := name;
+          cells[1, i + 1] := Param.U;
+          cells[2, i + 1] := floattoStrF(Param.v, ffgeneral, 6, 3);
 
+          // Rows[i + 1].commatext := line;
+          AddBitButton(3, i + 1, 20, 20, '', img_savetoall, haCenter, vaCenter);
+          if Param.Comment <> '' then
+            AddBitButton(4, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
+          if Param.DocuWebLink <> '' then
+          begin
+            LinkString := ' <A href="' + Param.DocuWebLink + '" title="' +
+              Param.DocuWebLink + '">Explanation</A>';
+            cells[5, i + 1] := LinkString;
 
-//        Rows[i + 1].commatext := line;
-        AddBitButton(3, i + 1, 20, 20, '', img_savetoall, haCenter, vaCenter);
-        if Param.Comment <> '' then
-          AddBitButton(4, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
-        if param.DocuWebLink <> '' then begin
-          LinkString := ' <A href="' + Param.DocuWebLink + '" title="' + Param.DocuWebLink + '">Explanation</A>';
-          cells[5, i+1] := LinkString;
+          end;
 
         end;
-
-
       end;
-    end;
-    EditParamFileName.hint := Lmod.fModel.ParamInifile.FileName;
-    AutoSizeColumns(True);
+      EditParamFileName.hint := LMod.fModel.ParamInifile.FileName;
+      AutoSizeColumns(True);
     end;
     Endupdate;
   end;
@@ -685,42 +700,44 @@ begin
     // Inifile := TMyIniFile(LMod.fModel.FiniFiles.objects[ActIniFileIndex]);
     // LMod.fModel.init(IniFile);
     // LMod.fModel.InitAllSubMods;
-    if LMod.fModel.StateIniFile <> nil then begin
-
-    EditStateFileName.Text := Lmod.fModel.StateIniFile.FileName;
-    Clear;
-    Rows[0].commatext :=
-      'Name, Unit, Ini.Value, SaveToAllInis, WriteToFile, Plot, WriteFinalValue, GlobalOutput, �nfo';
-    // Description';
-    RowCount := 2;
-    FixedRows := 1;
-    actSubModIndex := ComboBoxSubMod.ItemIndex;
-    if actSubModIndex >= 0 then
+    if LMod.fModel.StateIniFile <> nil then
     begin
-      SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
-      RowCount := SubModel.stateStrList.count + 1;
-      for i := 0 to SubModel.stateStrList.count - 1 do
-      begin
-        state := TState(SubModel.stateStrList.objects[i]);
-        with state do
-          line := name + ',' + u + ',' + floattoStrF(v, ffgeneral, 6, 3);
-        Rows[i + 1].commatext := line;
-        AddBitButton(3, i + 1, 20, 20, '', img_savetoall, haCenter, vaCenter);
-        AddCheckBox(4, i + 1, True, True);
-        SetCheckBoxState(4, i + 1, state.writeToFile);
-        AddCheckBox(5, i + 1, True, True);
-        SetCheckBoxState(5, i + 1, state.PlotToGraph);
-        AddCheckBox(6, i + 1, True, True);
-        SetCheckBoxState(6, i + 1, state.WriteFinalValue);
-        AddCheckBox(7, i + 1, True, True);
-        SetCheckBoxState(7, i + 1, state.GlobalOutput);
-        if state.Comment <> '' then
-          AddBitButton(8, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
-      end;
-    end;
-    EditStateFileName.hint := Lmod.fModel.StateIniFile.FileName;
 
-    AutoSizeColumns(True);
+      EditStateFileName.Text := LMod.fModel.StateIniFile.FileName;
+      Clear;
+      Rows[0].commatext :=
+        'Name, Unit, Ini.Value, SaveToAllInis, WriteToFile, Plot, WriteFinalValue, GlobalOutput, �nfo';
+      // Description';
+      RowCount := 2;
+      FixedRows := 1;
+      actSubModIndex := ComboBoxSubMod.ItemIndex;
+      if actSubModIndex >= 0 then
+      begin
+        SubModel := TSubModel(LMod.fModel.SubModStrList.objects
+          [actSubModIndex]);
+        RowCount := SubModel.stateStrList.count + 1;
+        for i := 0 to SubModel.stateStrList.count - 1 do
+        begin
+          state := TState(SubModel.stateStrList.objects[i]);
+          with state do
+            line := name + ',' + U + ',' + floattoStrF(v, ffgeneral, 6, 3);
+          Rows[i + 1].commatext := line;
+          AddBitButton(3, i + 1, 20, 20, '', img_savetoall, haCenter, vaCenter);
+          AddCheckBox(4, i + 1, True, True);
+          SetCheckBoxState(4, i + 1, state.writeToFile);
+          AddCheckBox(5, i + 1, True, True);
+          SetCheckBoxState(5, i + 1, state.PlotToGraph);
+          AddCheckBox(6, i + 1, True, True);
+          SetCheckBoxState(6, i + 1, state.WriteFinalValue);
+          AddCheckBox(7, i + 1, True, True);
+          SetCheckBoxState(7, i + 1, state.GlobalOutput);
+          if state.Comment <> '' then
+            AddBitButton(8, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
+        end;
+      end;
+      EditStateFileName.hint := LMod.fModel.StateIniFile.FileName;
+
+      AutoSizeColumns(True);
     end;
     Endupdate;
   end;
@@ -745,13 +762,13 @@ begin
     actSubModIndex := ComboBoxSubMod.ItemIndex;
     if actSubModIndex <> -1 then
     begin
-      SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
       RowCount := SubModel.ExternVStrList.count + 1;
       for i := 0 to SubModel.ExternVStrList.count - 1 do
       begin
         ExVar := TExternV(SubModel.ExternVStrList.objects[i]);
         with ExVar do
-          line := name + ',' + u + ',' + floattoStrF(C_f, ffgeneral, 6, 3) +
+          line := name + ',' + U + ',' + floattoStrF(C_f, ffgeneral, 6, 3) +
             ',' + Source;
         Rows[i + 1].commatext := line;
         AddCheckBox(4, i + 1, True, True);
@@ -780,50 +797,54 @@ begin
   begin
     BeginUpdate;
     AdvStringGridOptions.URLFull := false;
-    AdvStringGridOptions.URLShow  := true;
+    AdvStringGridOptions.URLShow := True;
 
     // TODO ActIniFileIndex := ComboBoxIniFile.ItemIndex;
     // TODO Inifile := TMyIniFile(LMod.fModel.FiniFiles.objects[ActIniFileIndex]);
     // TODO LMod.fModel.init(IniFile);
     // TODO LMod.fModel.InitAllSubMods;
-    if Lmod.fModel.OptionIniFile <> nil then begin
-
-    EditOptionsFileName.Text := Lmod.fModel.OptionIniFile.FileName;
-    Clear;
-    Rows[0].commatext := 'Name, Options, SaveToAllIni, Info, DocuLink';
-    RowCount := 2;
-    FixedRows := 1;
-    actSubModIndex := ComboBoxSubMod.ItemIndex;
-    if actSubModIndex <> -1 then
+    if LMod.fModel.OptionIniFile <> nil then
     begin
-      SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
-      RowCount := SubModel.OptionStrList.count + 1;
-      for i := 0 to SubModel.OptionStrList.count - 1 do
-      begin
-        Option := TOption(SubModel.OptionStrList.objects[i]);
-//        line := Option.name + ',' + Option.Option;
-        AdvStringGridOptions.cells[0, i+1] := Option.name;
-        AdvStringGridOptions.cells[1, i+1] := Option.Option;
 
-        if Option.DocuWebLink <> '' then begin
-          LinkString := ' <A href="' + Option.DocuWebLink + '"title="'+Option.DocuWebLink+'>Explanation</A>';
-//          LinkString := Option.DocuWebLink;
-  //        line := line + ','','',' + LinkString ;
- //       AdvStringGridOptions.cells[4, i+1] := Option.DocuWebLink;
-        AdvStringGridOptions.cells[4, i+1] := LinkString;
-//        AdvStringGridOptions.Hyperlinks.add(4, i+1, LinkString);
+      EditOptionsFileName.Text := LMod.fModel.OptionIniFile.FileName;
+      Clear;
+      Rows[0].commatext := 'Name, Options, SaveToAllIni, Info, DocuLink';
+      RowCount := 2;
+      FixedRows := 1;
+      actSubModIndex := ComboBoxSubMod.ItemIndex;
+      if actSubModIndex <> -1 then
+      begin
+        SubModel := TSubModel(LMod.fModel.SubModStrList.objects
+          [actSubModIndex]);
+        RowCount := SubModel.OptionStrList.count + 1;
+        for i := 0 to SubModel.OptionStrList.count - 1 do
+        begin
+          Option := TOption(SubModel.OptionStrList.objects[i]);
+          // line := Option.name + ',' + Option.Option;
+          AdvStringGridOptions.cells[0, i + 1] := Option.Name;
+          AdvStringGridOptions.cells[1, i + 1] := Option.Option;
+
+          if Option.DocuWebLink <> '' then
+          begin
+            LinkString := ' <A href="' + Option.DocuWebLink + '"title="' +
+              Option.DocuWebLink + '>Explanation</A>';
+            // LinkString := Option.DocuWebLink;
+            // line := line + ','','',' + LinkString ;
+            // AdvStringGridOptions.cells[4, i+1] := Option.DocuWebLink;
+            AdvStringGridOptions.cells[4, i + 1] := LinkString;
+            // AdvStringGridOptions.Hyperlinks.add(4, i+1, LinkString);
+
+          end;
+          // else
+          // line := line + ',' + Option.Option;
+          // Rows[i + 1].commatext := line;
+          AddBitButton(2, i + 1, 20, 20, '', img_savetoall, haCenter, vaCenter);
+          if Option.Comment <> '' then
+            AddBitButton(3, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
 
         end;
-//        else
-//          line := line + ',' + Option.Option;
-//        Rows[i + 1].commatext := line;
-        AddBitButton(2, i + 1, 20, 20, '', img_savetoall, haCenter, vaCenter);
-        if Option.Comment <> '' then
-          AddBitButton(3, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
-
       end;
-    end;
-    AutoSizeColumns(True);
+      AutoSizeColumns(True);
     end;
     Endupdate;
   end;
@@ -836,46 +857,48 @@ var
   Variable: TVar;
   line: string;
 begin
-  if LMod.fModel.StateIniFile <> nil then begin
-
-  EditStateFileName.Text := Lmod.fModel.StateIniFile.FileName;
-  with AdvStringGridVar do
+  if LMod.fModel.StateIniFile <> nil then
   begin
-    BeginUpdate;
-    Clear;
-    Rows[0].commatext := 'Name, Unit, WriteToFile,  Plot, WriteFinalValue,Globaloutput,Info';
-    // Description';
-    RowCount := 2;
-    FixedRows := 1;
-    actSubModIndex := ComboBoxSubMod.ItemIndex;
-    if actSubModIndex >= 0 then
-    begin
-      SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
-      RowCount := SubModel.VarStrList.count + 1;
-      for i := 0 to SubModel.VarStrList.count - 1 do
-      begin
-        Variable := TVar(SubModel.VarStrList.objects[i]);
-        line := Variable.name + ',' + Variable.u;
-        Rows[i + 1].commatext := line;
-        AddCheckBox(2, i + 1, True, True);
-        SetCheckBoxState(2, i + 1, Variable.writeToFile);
-        AddCheckBox(3, i + 1, True, True);
-        SetCheckBoxState(3, i + 1, Variable.PlotToGraph);
-        AddCheckBox(4, i + 1, True, True);
-        SetCheckBoxState(4, i + 1, Variable.WriteFinalValue);
-        AddCheckBox(5, i + 1, True, True);
-        SetCheckBoxState(5, i + 1, Variable.fGlobalOutput);
-        if Variable.Comment <> '' then
-          AddBitButton(6, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
-      end;
 
+    EditStateFileName.Text := LMod.fModel.StateIniFile.FileName;
+    with AdvStringGridVar do
+    begin
+      BeginUpdate;
+      Clear;
+      Rows[0].commatext :=
+        'Name, Unit, WriteToFile,  Plot, WriteFinalValue,Globaloutput,Info';
+      // Description';
+      RowCount := 2;
+      FixedRows := 1;
+      actSubModIndex := ComboBoxSubMod.ItemIndex;
+      if actSubModIndex >= 0 then
+      begin
+        SubModel := TSubModel(LMod.fModel.SubModStrList.objects
+          [actSubModIndex]);
+        RowCount := SubModel.VarStrList.count + 1;
+        for i := 0 to SubModel.VarStrList.count - 1 do
+        begin
+          Variable := TVar(SubModel.VarStrList.objects[i]);
+          line := Variable.Name + ',' + Variable.U;
+          Rows[i + 1].commatext := line;
+          AddCheckBox(2, i + 1, True, True);
+          SetCheckBoxState(2, i + 1, Variable.writeToFile);
+          AddCheckBox(3, i + 1, True, True);
+          SetCheckBoxState(3, i + 1, Variable.PlotToGraph);
+          AddCheckBox(4, i + 1, True, True);
+          SetCheckBoxState(4, i + 1, Variable.WriteFinalValue);
+          AddCheckBox(5, i + 1, True, True);
+          SetCheckBoxState(5, i + 1, Variable.fGlobalOutput);
+          if Variable.Comment <> '' then
+            AddBitButton(6, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
+        end;
+
+      end;
+      AutoSizeColumns(True);
+      Endupdate;
     end;
-    AutoSizeColumns(True);
-    Endupdate;
-  end;
   end;
 end;
-
 
 procedure TFormMod.UpdateStringGridConst;
 var
@@ -884,47 +907,48 @@ var
   Constant: TVar;
   line: string;
 begin
-  if LMod.fModel.StateIniFile <> nil then begin
-
-  EditStateFileName.Text := Lmod.fModel.StateIniFile.FileName;
-  with AdvStringGridConstants do
+  if LMod.fModel.StateIniFile <> nil then
   begin
-    BeginUpdate;
-    Clear;
-    Rows[0].commatext := 'Name, Unit, WriteToFile,  Plot, WriteFinalValue,Globaloutput,Info';
-    // Description';
-    RowCount := 2;
-    FixedRows := 1;
-    actSubModIndex := ComboBoxSubMod.ItemIndex;
-    if actSubModIndex >= 0 then
-    begin
-      SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
-      RowCount := SubModel.ConstStrList.count + 1;
-      for i := 0 to SubModel.ConstStrList.count - 1 do
-      begin
-        Constant := TVar(SubModel.ConstStrList.objects[i]);
-        line := Constant.name + ',' + Constant.u;
-        Rows[i + 1].commatext := line;
-        AddCheckBox(2, i + 1, True, True);
-        SetCheckBoxState(2, i + 1, Constant.writeToFile);
-        AddCheckBox(3, i + 1, True, True);
-        SetCheckBoxState(3, i + 1, Constant.PlotToGraph);
-        AddCheckBox(4, i + 1, True, True);
-        SetCheckBoxState(4, i + 1, Constant.WriteFinalValue);
-        AddCheckBox(5, i + 1, True, True);
-        SetCheckBoxState(5, i + 1, Constant.fGlobalOutput);
-        if Constant.Comment <> '' then
-          AddBitButton(6, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
-      end;
 
+    EditStateFileName.Text := LMod.fModel.StateIniFile.FileName;
+    with AdvStringGridConstants do
+    begin
+      BeginUpdate;
+      Clear;
+      Rows[0].commatext :=
+        'Name, Unit, WriteToFile,  Plot, WriteFinalValue,Globaloutput,Info';
+      // Description';
+      RowCount := 2;
+      FixedRows := 1;
+      actSubModIndex := ComboBoxSubMod.ItemIndex;
+      if actSubModIndex >= 0 then
+      begin
+        SubModel := TSubModel(LMod.fModel.SubModStrList.objects
+          [actSubModIndex]);
+        RowCount := SubModel.ConstStrList.count + 1;
+        for i := 0 to SubModel.ConstStrList.count - 1 do
+        begin
+          Constant := TVar(SubModel.ConstStrList.objects[i]);
+          line := Constant.Name + ',' + Constant.U;
+          Rows[i + 1].commatext := line;
+          AddCheckBox(2, i + 1, True, True);
+          SetCheckBoxState(2, i + 1, Constant.writeToFile);
+          AddCheckBox(3, i + 1, True, True);
+          SetCheckBoxState(3, i + 1, Constant.PlotToGraph);
+          AddCheckBox(4, i + 1, True, True);
+          SetCheckBoxState(4, i + 1, Constant.WriteFinalValue);
+          AddCheckBox(5, i + 1, True, True);
+          SetCheckBoxState(5, i + 1, Constant.fGlobalOutput);
+          if Constant.Comment <> '' then
+            AddBitButton(6, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
+        end;
+
+      end;
+      AutoSizeColumns(True);
+      Endupdate;
     end;
-    AutoSizeColumns(True);
-    Endupdate;
-  end;
   end;
 end;
-
-
 
 procedure TFormMod.UpdatePageResultTab;
 var
@@ -946,14 +970,14 @@ begin
     if (actSubModIndex <> -1) and (actInifileIndex <> -1) then
     begin
 
-      SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
-      IniFile := TMyIniFile(Lmod.fModel.FIniFiles.objects[actInifileIndex]);
-      fn := IniFile.ReadString('OutputFiles', SubModel.name, '');
+      SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
+      IniFile := TMyIniFile(LMod.fModel.FIniFiles.objects[actInifileIndex]);
+      fn := IniFile.ReadString('OutputFiles', SubModel.Name, '');
       if fn = '' then
         fn := SubModel.fn_state
       else
         fn := fn + '_dat.csv';
-      if FileExists(fn) = True then
+      if fileexists(fn) = True then
       begin
         ShowDataFile(fn);
         EditOutputdatafilename.Text := fn
@@ -974,7 +998,7 @@ var
   actSubModIndex, actInifileIndex: Integer;
   SubModel: TSubModel;
   IniFile: TMyIniFile;
-//  ActState: TState;
+  // ActState: TState;
   ActVar: TVar;
   fnMeas: string;
   X, Y: real;
@@ -982,13 +1006,13 @@ var
   ActPointSeries: TPointSeries;
   DataFileSim: TTextFileH;
   DataFileMeas: TTextFileH;
-  HasDataFilesim, HasDataFileMeas : boolean;
+  HasDataFilesim, HasDataFileMeas: Boolean;
   // nrs: array[0..MaxSeries - 1] of Integer;
 
   procedure drawSimGraph(strList: TStringList);
   var
     i, nr: Integer;
-    ActState : TState;
+    ActState: TState;
   begin
     for i := 0 to strList.count - 1 do
     begin
@@ -1001,11 +1025,11 @@ var
         with ActLineSeries do
         begin
           Xvalues.DateTime := (ComboBoxTimeAxisOption.Text = 'Date');
-          title := ActState.name + ' ' + ActState.u;
+          title := ActState.Name + ' ' + ActState.U;
           LinePen.Width := 2;
         end;
         ChartSimResults.AddSeries(ActLineSeries);
-        nr := DataFileSim.indexOf(ActState.name);
+        nr := DataFileSim.indexOf(ActState.Name);
         if nr <> -1 then
         begin
 
@@ -1038,12 +1062,12 @@ var
       if ActVar.PlotToGraph then
       begin
         inc(n_PointSeries);
-        if (DataFileMeas.containsName(ActVar.name)) then
+        if (DataFileMeas.containsName(ActVar.Name)) then
         begin
           ActPointSeries := TPointSeries.create(ChartSimResults);
           with ActPointSeries do
           begin
-            title := ActVar.name + ' ' + ActVar.u;
+            title := ActVar.Name + ' ' + ActVar.U;
             if (LineSeriesArr[n_PointSeries] <> nil) then
             begin
               SeriesColor := LineSeriesArr[n_PointSeries].SeriesColor;
@@ -1053,15 +1077,15 @@ var
 
           with DataFileMeas do
           begin
-            nr := indexOf(ActVar.name);
+            nr := indexOf(ActVar.Name);
             GoTop;
             while hasMoreLines() do
             begin
               FastNextLine;
               X := getIndexValue(0);
               Y := getIndexValue(nr);
-              if not isnan(X) and not isnan(Y) and (X >= Lmod.fModel.starttime)
-                and (X <= Lmod.fModel.endtime) then
+              if not isnan(X) and not isnan(Y) and (X >= LMod.fModel.starttime)
+                and (X <= LMod.fModel.endtime) then
                 if (LineSeriesArr[n_PointSeries] <> nil) then
                 begin
                   ActPointSeries.addxy(X, Y, '',
@@ -1091,10 +1115,10 @@ begin
   if (actSubModIndex <> -1) and (actInifileIndex <> -1) then
   begin
 
-    SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
-    IniFile := TMyIniFile(Lmod.fModel.FIniFiles.objects[actInifileIndex]);
+    SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
+    IniFile := TMyIniFile(LMod.fModel.FIniFiles.objects[actInifileIndex]);
 
-    fnMeas := IniFile.ReadString('MeasurementFiles', SubModel.name, '');
+    fnMeas := IniFile.ReadString('MeasurementFiles', SubModel.Name, '');
 
     with ChartSimResults do
     begin
@@ -1103,21 +1127,24 @@ begin
       Legend.LegendStyle := lsSeries;
     end;
 
-    if (SubModel.OptContOutput) or (Lmod.fModel.OptContOutput = AllContoutput) then begin
+    if (SubModel.OptContOutput) or (LMod.fModel.OptContOutput = AllContoutput)
+    then
+    begin
       DataFileSim := TTextFileH.create;
-      if fileexists(SubModel.fn_state) then begin
+      if fileexists(SubModel.fn_state) then
+      begin
         DataFileSim.init(SubModel.fn_state);
-        HasDataFileSim := true;
+        HasDataFilesim := True;
       end;
     end;
-    if fnMeas <> '' then begin
+    if fnMeas <> '' then
+    begin
       DataFileMeas := TTextFileH.create;
-      DataFileMeas.init (fnMeas);
-      HasDataFileMeas := true;
+      DataFileMeas.init(fnMeas);
+      HasDataFileMeas := True;
     end;
 
-
-    if FileExists(SubModel.fn_state) and (SubModel.OptContOutput) then
+    if fileexists(SubModel.fn_state) and (SubModel.OptContOutput) then
     begin
       n_lineSeries := -1;
       drawSimGraph(SubModel.stateStrList);
@@ -1125,24 +1152,24 @@ begin
       drawSimGraph(SubModel.ExternVStrList);
     end;
 
-    if FileExists(fnMeas) and SelectMeasDataCheckBox.Checked then
+    if fileexists(fnMeas) and SelectMeasDataCheckBox.Checked then
     begin
       n_PointSeries := -1;
       drawMeasGraph(SubModel.stateStrList);
       drawMeasGraph(SubModel.VarStrList);
     end;
 
-  //  if (DataFileSim.FName <> '') then
-//  if (DataFileMeas.FName <> '') then
+    // if (DataFileSim.FName <> '') then
+    // if (DataFileMeas.FName <> '') then
 
     ChartSimResults.AutoRepaint := True;
     ChartSimResults.Repaint;
   end;
   Screen.cursor := CrDefault;
-  if HasDataFileSim then
-     FreeAndNil(DataFileSim);
+  if HasDataFilesim then
+    FreeAndNil(DataFileSim);
   if HasDataFileMeas then
-      FreeAndNil(DataFileMeas);
+    FreeAndNil(DataFileMeas);
 end;
 
 procedure TFormMod.UpdateStringGridData;
@@ -1163,14 +1190,14 @@ begin
   if actSubModIndex <> -1 then
   begin
 
-    SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+    SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
 
-      if SubModel.SomethingMeasured then
+    if SubModel.SomethingMeasured then
     begin
       filedata := TStringList.create;
       try
         filedata.loadfromfile(SubModel.FMeasValues.FName);
-        AdvStringGridData.RowCount := Math.Max(filedata.count,
+        AdvStringGridData.RowCount := math.Max(filedata.count,
           AdvStringGridData.FixedRows + 1);
         linedata := TStringList.create;
         try
@@ -1219,24 +1246,24 @@ end;
 
 procedure TFormMod.UpdatePageIntegration;
 begin
-  EditTimeStep.Text := FloatToStr(Lmod.fModel.time.c);
-  EditStartTime.Text := FloatToStr(Lmod.fModel.time.v);
-  EditEndTime.Text := FloatToStr(Lmod.fModel.endtime);
+  EditTimeStep.Text := FloatToStr(LMod.fModel.time.c);
+  EditStartTime.Text := FloatToStr(LMod.fModel.time.v);
+  EditEndTime.Text := FloatToStr(LMod.fModel.endtime);
   // Treue
-  FWDLabel.Caption := IntToStr(Lmod.fModel.FirstWeatherData);
+  FWDLabel.Caption := IntToStr(LMod.fModel.FirstWeatherData);
   // FWDDateLabel.Caption := DateToStr(LMod.fModel.FirstWeatherData);
-  LWDLabel.Caption := IntToStr(Lmod.fModel.LastWeatherData);
+  LWDLabel.Caption := IntToStr(LMod.fModel.LastWeatherData);
   // LWDDateLabel.Caption := DateToStr(LMod.fModel.LastWeatherData);
   // Treue
-  if (Lmod.fModel.weatherfile <> nil) and
-    FileExists(Lmod.fModel.weatherfile.FName) then
-    EditWeatherfile.Text := Lmod.fModel.weatherfile.FName;
-  if Lmod.fModel.StateIniFile <> nil then
-    EditStateIniFileName.Text := Lmod.fModel.StateIniFile.FileName;
-  if Lmod.fModel.ParamIniFile <> nil then
-    EditParamIniFileName.Text := Lmod.fModel.ParamInifile.FileName;
-  if Lmod.fModel <> nil then
-   EditOutputDirectory.Text := Lmod.fModel.GM_OutPutPath;
+  if (LMod.fModel.weatherfile <> nil) and
+    fileexists(LMod.fModel.weatherfile.FName) then
+    EditWeatherfile.Text := LMod.fModel.weatherfile.FName;
+  if LMod.fModel.StateIniFile <> nil then
+    EditStateIniFileName.Text := LMod.fModel.StateIniFile.FileName;
+  if LMod.fModel.ParamInifile <> nil then
+    EditParamIniFileName.Text := LMod.fModel.ParamInifile.FileName;
+  if LMod.fModel <> nil then
+    EditOutputDirectory.Text := LMod.fModel.GM_OutPutPath;
 end;
 
 // ==============================================================================
@@ -1245,24 +1272,23 @@ end;
 
 procedure TFormMod.ComboBoxContOutputChange(Sender: TObject);
 
-{const
+{ const
   ContOutputstr : array of string = ['NoContOutput',
-                'AllContoutput',
-                'SubmodelSpecific'];    }
+  'AllContoutput',
+  'SubmodelSpecific']; }
 
 var
-  Selndx : integer;
-  SelectionStr : string;
-  Selection : TContoutput;
-  Model : TMod;
-
+  Selndx: Integer;
+  SelectionStr: string;
+  Selection: TContOutput;
+  Model: TMod;
 
 begin
   Selndx := self.ComboBoxContOutput.ItemIndex;
   SelectionStr := GetEnumName(System.TypeInfo(TContOutput), Selndx);
-  Model := Lmod.fModel;
+  Model := LMod.fModel;
   if Selndx <> -1 then
-    Model.FPropIniFile.WriteString('ModelSettings', 'ContOutput', SelectionStr) ;
+    Model.FPropIniFile.WriteString('ModelSettings', 'ContOutput', SelectionStr);
 end;
 
 procedure TFormMod.ComboBoxInifileChange(Sender: TObject);
@@ -1271,10 +1297,10 @@ var
 begin
   actInifileIndex := ComboBoxIniFile.ItemIndex;
   ComboBoxIniFile.hint := ComboBoxIniFile.Items[ComboBoxIniFile.ItemIndex];
-  Lmod.fModel.actIniFile :=
-    TMyIniFile(Lmod.fModel.FIniFiles.objects[actInifileIndex]);
-  Lmod.fModel.init(Lmod.fModel.actIniFile);
-  Lmod.fModel.InitAllSubMods;
+  LMod.fModel.actIniFile :=
+    TMyIniFile(LMod.fModel.FIniFiles.objects[actInifileIndex]);
+  LMod.fModel.init(LMod.fModel.actIniFile);
+  LMod.fModel.InitAllSubMods;
   UpdateStringGridData;
   UpdateStringGridParam;
   UpdateStringGridState;
@@ -1305,7 +1331,7 @@ end;
 
 procedure TFormMod.ComboBoxSubModChange(Sender: TObject);
 begin
-  Lmod.fModel.InitAllSubMods;
+  LMod.fModel.InitAllSubMods;
   UpdateStringGridParam;
   UpdateStringGridState;
   UpdateStringGridExternV;
@@ -1347,31 +1373,33 @@ var
   i: Integer;
   strList: TStringList;
 begin
-  if (AdvStringGridStat <> nil) then begin
+  if (AdvStringGridStat <> nil) then
+  begin
 
-    with AdvStringGridStat do begin
+    with AdvStringGridStat do
+    begin
       Clear;
-      if (Lmod.fModel <> nil) and FileExists(Lmod.fModel.reg_fn) then
+      if (LMod.fModel <> nil) and fileexists(LMod.fModel.reg_fn) then
       begin
         strList := TStringList.create;
-        strList.loadfromfile(Lmod.fModel.reg_fn);
+        strList.loadfromfile(LMod.fModel.reg_fn);
         if strList.count > 1 then
+        begin
+          BeginUpdate;
+          RowCount := strList.count;
+          FixedRows := 1;
+          ColCount := 12;
+          FixedCols := 2;
+          Rows[0].commatext := strList[0];
+          for i := 1 to strList.count - 1 do
           begin
-            BeginUpdate;
-            RowCount := strList.count;
-            FixedRows := 1;
-            ColCount := 12;
-            FixedCols := 2;
-            Rows[0].commatext := strList[0];
-            for i := 1 to strList.count - 1 do
-            begin
-              Rows[i].commatext := strList[i];
-              AddButton(11, i, 50, 20, '1 / 1', haBeforeText, vaCenter);
-            end;
-
-            AutoSizeColumns(True);
-            Endupdate;
+            Rows[i].commatext := strList[i];
+            AddButton(11, i, 50, 20, '1 / 1', haBeforeText, vaCenter);
           end;
+
+          AutoSizeColumns(True);
+          Endupdate;
+        end;
 
         strList.Free;
       end;
@@ -1389,7 +1417,7 @@ var
   i: Integer;
   ActSubMod: TSubModel;
 begin
-  with Lmod.fModel.actIniFile do
+  with LMod.fModel.actIniFile do
   begin
     UpdateFile;
     WriteFloat('TimeInit', 'Startzeit', strtofloat(EditStartTime.Text));
@@ -1398,19 +1426,19 @@ begin
     WriteString('FileNames', 'StateIniFN', EditStateIniFileName.Text);
     WriteString('FileNames', 'ParamIniFN', EditParamIniFileName.Text);
     WriteString('FileNames', 'WeatherFileFN', EditWeatherfile.Text);
-    for i := 0 to Lmod.fModel.SubModStrList.count - 1 do
+    for i := 0 to LMod.fModel.SubModStrList.count - 1 do
     begin
-      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[i]);
+      ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[i]);
       if ActSubMod.FMeasValues <> nil then
-        if FileExists(ActSubMod.FMeasValues.FName) then
+        if fileexists(ActSubMod.FMeasValues.FName) then
           with ActSubMod do
             WriteString('MeasurementFiles', Name, FMeasValues.FName)
     end;
-    for i := 0 to Lmod.fModel.SubModStrList.count - 1 do
+    for i := 0 to LMod.fModel.SubModStrList.count - 1 do
     begin
-      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[i]);
+      ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[i]);
       if ActSubMod.FMeasValues <> nil then
-        if FileExists(ActSubMod.FMeasValues.FName) then
+        if fileexists(ActSubMod.FMeasValues.FName) then
           with ActSubMod do
             WriteString('MeasurementFiles', Name, FMeasValues.FName)
     end;
@@ -1429,7 +1457,7 @@ begin
   actSubModIndex := ComboBoxSubMod.ItemIndex;
   if (actSubModIndex = -1) then
   begin
-    SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+    SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
     assignFile(f, SubModel.FMeasValues.FName);
     reset(f);
     for i := 1 to AdvStringGridData.RowCount do
@@ -1437,7 +1465,7 @@ begin
       line := AdvStringGridData.Rows[i].Text;
       writeln(f, line);
     end;
-    SubModel.init(Lmod.fModel);
+    SubModel.init(LMod.fModel);
     closeFile(f);
   end;
 end;
@@ -1450,19 +1478,21 @@ begin
   for i := 0 to strList.count - 1 do
   begin
     entity := THumeNumEntity(strList.objects[i]);
-    with self.Lmod.fModel.FPropIniFile  do
+    with self.LMod.fModel.FPropIniFile do
     begin
       WriteBool(submodname, entity.Name + '.PlotTograpH', entity.PlotToGraph);
-      WriteBool(submodname, entity.Name + '.WriteFinalValue', entity.WriteFinalValue);
-      WriteBool(submodname, entity.Name + '.GlobalOutput', entity.fGlobalOutput);
+      WriteBool(submodname, entity.Name + '.WriteFinalValue',
+        entity.WriteFinalValue);
+      WriteBool(submodname, entity.Name + '.GlobalOutput',
+        entity.fGlobalOutput);
       // if entity.PlotToGraph then
       // entity.WriteToFile := true;
       WriteBool(submodname, entity.Name + '.WriteToFile', entity.writeToFile);
-// hk 18.08.2025
-//      WriteBool(submodname, entity.Name + '.SelForSensOut', entity.SelForSensOut);
+      // hk 18.08.2025
+      // WriteBool(submodname, entity.Name + '.SelForSensOut', entity.SelForSensOut);
     end;
   end;
-  Lmod.fModel.FPropIniFile.UpdateFile;
+  LMod.fModel.FPropIniFile.UpdateFile;
 end;
 
 procedure TFormMod.SaveState;
@@ -1474,8 +1504,8 @@ var
   StateNdx: Integer;
 begin
   actSubModIndex := ComboBoxSubMod.ItemIndex;
-  StateIniFile := Lmod.fModel.StateIniFile;
-  SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+  StateIniFile := LMod.fModel.StateIniFile;
+  SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
 
   with AdvStringGridState do
   begin
@@ -1500,11 +1530,11 @@ begin
     end;
   end;
 
-  updatePropIniFile(SubModel.stateStrList, SubModel.name);
+  updatePropIniFile(SubModel.stateStrList, SubModel.Name);
   StateIniFile.UpdateFile;
   self.UpdateStringGridState;
-  Lmod.fModel.init(Lmod.fModel.actIniFile);
-  Lmod.fModel.InitAllSubMods;
+  LMod.fModel.init(LMod.fModel.actIniFile);
+  LMod.fModel.InitAllSubMods;
   // UpdateStringGridState;
 end;
 
@@ -1516,8 +1546,8 @@ var
   OptionString: string;
 begin
   actSubModIndex := ComboBoxSubMod.ItemIndex;
-  OptionIniFile := Lmod.fModel.OptionIniFile;
-  SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+  OptionIniFile := LMod.fModel.OptionIniFile;
+  SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
   with AdvStringGridOptions do
   begin
     if cells[1, 1] <> '' then
@@ -1534,8 +1564,8 @@ begin
   end;
 
   OptionIniFile.UpdateFile;
-  Lmod.fModel.init(Lmod.fModel.actIniFile);
-  Lmod.fModel.InitAllSubMods;
+  LMod.fModel.init(LMod.fModel.actIniFile);
+  LMod.fModel.InitAllSubMods;
   // UpdateStringGridOptions();
 end;
 
@@ -1548,8 +1578,8 @@ var
   index: Integer;
 begin
   actSubModIndex := ComboBoxSubMod.ItemIndex;
-  ParamInifile := Lmod.fModel.ParamInifile;
-  SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+  ParamInifile := LMod.fModel.ParamInifile;
+  SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
   with AdvStringGridParam do
   begin
     for i := 1 to RowCount - 1 do
@@ -1568,51 +1598,49 @@ begin
   end;
 
   ParamInifile.UpdateFile;
-  Lmod.fModel.init(Lmod.fModel.actIniFile);
-  Lmod.fModel.InitAllSubMods;
+  LMod.fModel.init(LMod.fModel.actIniFile);
+  LMod.fModel.InitAllSubMods;
   // UpdateStringGridParam;
 end;
 
- procedure TFormMod.SaveExterns;
+procedure TFormMod.SaveExterns;
 
- var
-   actSubModIndex, i: Integer;
-   SubModel: TSubModel;
-   ActExVar: TExternV;
-   index: Integer;
- begin
-   actSubModIndex := ComboBoxSubMod.ItemIndex;
-   SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
-   with self.AdvStringGridExternV do
-   begin
-     for i := 1 to RowCount - 1 do
-     begin
-       index := SubModel.ExternVStrList.indexOf(cells[0, i]);
-       if index >= 0 then
-       begin
-         ActExVar := TExternV(SubModel.ExternVStrList.objects[index]);
-         GetCheckBoxState(4, i, ActExVar.WriteToFile);
-         GetCheckBoxState(5, i, ActExVar.PlotToGraph);
-       end;
-     end;
-   end;
-  updatePropIniFile(SubModel.ExternVStrList, SubModel.name);
+var
+  actSubModIndex, i: Integer;
+  SubModel: TSubModel;
+  ActExVar: TExternV;
+  index: Integer;
+begin
+  actSubModIndex := ComboBoxSubMod.ItemIndex;
+  SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
+  with self.AdvStringGridExternV do
+  begin
+    for i := 1 to RowCount - 1 do
+    begin
+      index := SubModel.ExternVStrList.indexOf(cells[0, i]);
+      if index >= 0 then
+      begin
+        ActExVar := TExternV(SubModel.ExternVStrList.objects[index]);
+        GetCheckBoxState(4, i, ActExVar.writeToFile);
+        GetCheckBoxState(5, i, ActExVar.PlotToGraph);
+      end;
+    end;
+  end;
+  updatePropIniFile(SubModel.ExternVStrList, SubModel.Name);
   self.UpdateStringGridExternV;
-  Lmod.fModel.init(Lmod.fModel.actIniFile);
-  Lmod.fModel.InitAllSubMods;
+  LMod.fModel.init(LMod.fModel.actIniFile);
+  LMod.fModel.InitAllSubMods;
 
+end;
 
-
- end;
-
- procedure TFormMod.SaveVar();
+procedure TFormMod.SaveVar();
 var
   ActVar: TVar;
   i, actSubModIndex, VarNdx: Integer;
   SubModel: TSubModel;
 begin
   actSubModIndex := ComboBoxSubMod.ItemIndex;
-  SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+  SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
   with AdvStringGridVar do
   begin
     for i := 1 to RowCount - 1 do
@@ -1630,7 +1658,7 @@ begin
       end;
     end;
   end;
-  updatePropIniFile(SubModel.VarStrList, SubModel.name);
+  updatePropIniFile(SubModel.VarStrList, SubModel.Name);
   self.UpdateStringGridVar;
 end;
 
@@ -1653,15 +1681,15 @@ begin
   if SaveDialog1.Execute then
   begin
 
-    for i := 0 to Lmod.fModel.SubModStrList.count - 1 do
+    for i := 0 to LMod.fModel.SubModStrList.count - 1 do
     begin
-      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[i]);
-      if FileExists(ActSubMod.FMeasValues.FName) then
-        Lmod.fModel.actIniFile.WriteString('MeasurementFiles', ActSubMod.name,
+      ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[i]);
+      if fileexists(ActSubMod.FMeasValues.FName) then
+        LMod.fModel.actIniFile.WriteString('MeasurementFiles', ActSubMod.Name,
           ActSubMod.FMeasValues.FName)
     end;
 
-    Lmod.fModel.actIniFile.UpdateFile;
+    LMod.fModel.actIniFile.UpdateFile;
 
     NewInifile := TMyIniFile.create(SaveDialog1.FileName, TEncoding.UTF8);
     with NewInifile do
@@ -1674,25 +1702,26 @@ begin
       WriteString('FileNames', 'WeatherFileFN', EditWeatherfile.Text);
       UpdateFile;
     end;
-    Lmod.fModel.FIniFiles.append(NewInifile.FileName);
-    index := Lmod.fModel.FIniFiles.count - 1;
-    Lmod.fModel.FIniFiles.objects[index] := NewInifile;
+    LMod.fModel.FIniFiles.append(NewInifile.FileName);
+    index := LMod.fModel.FIniFiles.count - 1;
+    LMod.fModel.FIniFiles.objects[index] := NewInifile;
 
-    TempFile := TStreamWriter.Create(Lmod.fModel.Get_ControlFileFn, false, TEncoding.UTF8);
-  //  assignFile(TempFile, Lmod.fModel.Get_ControlFileFn);
-//    rewrite(TempFile);
-    for i := 0 to Lmod.fModel.FIniFiles.count - 1 do
+    TempFile := TStreamWriter.create(LMod.fModel.Get_ControlFileFn, false,
+      TEncoding.UTF8);
+    // assignFile(TempFile, Lmod.fModel.Get_ControlFileFn);
+    // rewrite(TempFile);
+    for i := 0 to LMod.fModel.FIniFiles.count - 1 do
     begin
-      IniFN := TMyIniFile(Lmod.fModel.FIniFiles.objects[i]).FileName;
+      IniFN := TMyIniFile(LMod.fModel.FIniFiles.objects[i]).FileName;
       TempFile.WriteLine(IniFN);
-//      writeln(TempFile, IniFN);
+      // writeln(TempFile, IniFN);
     end;
-//    closeFile(TempFile);
+    // closeFile(TempFile);
     TempFile.Free;
 
-    Lmod.fModel.actIniFile := TMyIniFile(Lmod.fModel.FIniFiles.objects[index]);
-    Lmod.fModel.init(Lmod.fModel.actIniFile);
-    Lmod.fModel.InitAllSubMods;
+    LMod.fModel.actIniFile := TMyIniFile(LMod.fModel.FIniFiles.objects[index]);
+    LMod.fModel.init(LMod.fModel.actIniFile);
+    LMod.fModel.InitAllSubMods;
     UpdateStringGridData;
     UpdateStringGridParam;
     UpdateStringGridState;
@@ -1713,7 +1742,7 @@ end;
 
 procedure TFormMod.ButtonSaveStateClick(Sender: TObject);
 begin
-  //self.AdvStringGridState.SaveColPositions;
+  // self.AdvStringGridState.SaveColPositions;
   SaveState
 end;
 
@@ -1755,7 +1784,7 @@ var
 
 begin
   ActWeather := TStringList.create;
-  Model := Lmod.fModel;
+  Model := LMod.fModel;
   fn := Model.GM_OutPutPath + '\' + 'AllWeather.dat';
   assignFile(AllData, fn);
   rewrite(AllData);
@@ -1824,7 +1853,7 @@ var
   Actpar: TPar;
   ParamIniFileFN: string;
 begin
-  Model := Lmod.fModel;
+  Model := LMod.fModel;
 
   actSubModIndex := self.ComboBoxSubMod.ItemIndex;
   if actSubModIndex < 0 then
@@ -1833,7 +1862,7 @@ begin
     exit;
   end;
 
-  SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+  SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
   index := SubModel.ParStrList.indexOf(AdvStringGridParam.cells[0, aRow]);
 
   if index >= 0 then
@@ -1878,7 +1907,7 @@ begin
   actSubModIndex := self.ComboBoxSubMod.ItemIndex;
   testSubModIndex(actSubModIndex);
 
-  SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+  SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
   index := SubModel.ParStrList.indexOf(AdvStringGridOptions.cells[0, aRow]);
   if index >= 0 then
   begin
@@ -1923,7 +1952,7 @@ begin
   actSubModIndex := self.ComboBoxSubMod.ItemIndex;
   testSubModIndex(actSubModIndex);
 
-  SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+  SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
   index := SubModel.stateStrList.indexOf(AdvStringGridState.cells[0, aRow]);
   if index >= 0 then
   begin
@@ -1952,7 +1981,7 @@ begin
       showmessage(ActState.Comment);
 
   end;
-//  ActStateIniFile.Free;
+  // ActStateIniFile.Free;
   // KLUSS UpdateStringGridState;
 end;
 
@@ -1969,19 +1998,19 @@ begin
   // Model := getLinkedModel();
   actSubModIndex := ComboBoxSubMod.ItemIndex;
   testSubModIndex(actSubModIndex);
-  SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+  SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
   index := SubModel.OptionStrList.indexOf(AdvStringGridOptions.cells[0, aRow]);
   if index >= 0 then
   begin
     ActOption := TOption(SubModel.OptionStrList.objects[index]);
     if ActOption.writeToIniFile then
     begin
-      for i := 0 to Lmod.fModel.FIniFiles.count - 1 do
+      for i := 0 to LMod.fModel.FIniFiles.count - 1 do
       begin
-        actIniFile := TMyIniFile(Lmod.fModel.FIniFiles.objects[i]);
+        actIniFile := TMyIniFile(LMod.fModel.FIniFiles.objects[i]);
         OptionIniFileFN := actIniFile.ReadString
-          (Lmod.fModel.Str_SectionName_FileNames,
-          Lmod.fModel.Str_SectionTopic_OptionIniFN, '');
+          (LMod.fModel.Str_SectionName_FileNames,
+          LMod.fModel.Str_SectionTopic_OptionIniFN, '');
         ActOptionIniFile := TMyIniFile.create(OptionIniFileFN, TEncoding.UTF8);
         with ActOptionIniFile, AdvStringGridOptions do
         begin
@@ -2008,7 +2037,7 @@ var
 begin
   actSubModIndex := self.ComboBoxSubMod.ItemIndex;
   testSubModIndex(actSubModIndex);
-  SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+  SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
   index := SubModel.VarStrList.indexOf(AdvStringGridVar.cells[0, aRow]);
   if index <> -1 then
   begin
@@ -2027,7 +2056,7 @@ begin
   actSubModIndex := ComboBoxSubMod.ItemIndex;
   if (actSubModIndex <> -1) then
   begin
-    SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+    SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
     // assignFile(f, SubModel.FMeasValues.FileName);
     // rewrite(f);
     AdvStringGridData.SaveToASCII(SubModel.FMeasValues.FName);
@@ -2037,33 +2066,34 @@ begin
       writeln(f)
       end;
       closeFile(f); }
-    SubModel.init(Lmod.fModel);
+    SubModel.init(LMod.fModel);
   end;
 end;
 
 procedure TFormMod.btn1Click(Sender: TObject);
 var
   SubModel: TSubModel;
-  i,j, actSubModIndex: Integer;
+  i, j, actSubModIndex: Integer;
   f: textFile;
   line: string;
 begin
   actSubModIndex := ComboBoxSubMod.ItemIndex;
   if (actSubModIndex <> -1) then
   begin
-    SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+    SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
     assignFile(f, SubModel.FMeasValues.FName);
-    //AdvStringGridData.SaveColPositionsFMeasValues.FName);
+    // AdvStringGridData.SaveColPositionsFMeasValues.FName);
     rewrite(f);
-    for i := 0 to AdvStringGridData.RowCount-1 do
+    for i := 0 to AdvStringGridData.RowCount - 1 do
     begin
-      for j := 0 to AdvStringGridData.ColCount-1 do begin
-        write(f, AdvStringGridData.Cells[j,i], ' ');
+      for j := 0 to AdvStringGridData.ColCount - 1 do
+      begin
+        write(f, AdvStringGridData.cells[j, i], ' ');
       end;
       writeln(f);
     end;
     closeFile(f);
-    SubModel.init(Lmod.fModel);
+    SubModel.init(LMod.fModel);
   end;
 end;
 
@@ -2086,7 +2116,7 @@ var
 begin
   actSubModIndex := self.ComboBoxSubMod.ItemIndex;
   testSubModIndex(actSubModIndex);
-  SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+  SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
   index := SubModel.ExternVStrList.indexOf(AdvStringGridExternV.cells[0, aRow]);
   if index <> -1 then
   begin
@@ -2107,7 +2137,7 @@ begin
   if aCol = 1 then
     aEditor := edComboList;
   actSubModIndex := ComboBoxSubMod.ItemIndex;
-  SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+  SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
   if self.AdvStringGridOptions.cells[aCol, aRow] <> '' then
   begin
     ActOption := TOption(SubModel.OptionStrList.objects[aRow - 1]);
@@ -2125,21 +2155,24 @@ const
 
 begin
   // if checkbox plot is true, checkbox WriteToFile has also be true
-  if aCol= ColPlot then begin
-     AdvStringGridState.GetCheckBoxState(ColPlot, aRow, state);
-     if state = true then
-       AdvStringGridState.SetCheckBoxState(ColWriteToFile, aRow, state);
+  if aCol = ColPlot then
+  begin
+    AdvStringGridState.GetCheckBoxState(ColPlot, aRow, state);
+    if state = True then
+      AdvStringGridState.SetCheckBoxState(ColWriteToFile, aRow, state);
   end;
 
   // if checkbox write to file is false, checkbox plot has also be false
-  if aCol= ColWriteToFile then begin
-     AdvStringGridState.GetCheckBoxState(ColWriteToFile,aRow, state);
-     if state = false then
-       AdvStringGridState.SetCheckBoxState(ColPlot, aRow, state);
+  if aCol = ColWriteToFile then
+  begin
+    AdvStringGridState.GetCheckBoxState(ColWriteToFile, aRow, state);
+    if state = false then
+      AdvStringGridState.SetCheckBoxState(ColPlot, aRow, state);
   end;
 
   ButtonSaveStateClick(Sender);
-  AdvStringGridState.GotoCell(aCol, min(aRow+1,  self.AdvStringGridState.RowCount-1));
+  AdvStringGridState.GotoCell(aCol,
+    min(aRow + 1, self.AdvStringGridState.RowCount - 1));
 end;
 
 procedure TFormMod.AdvStringGridVarCheckBoxClick(Sender: TObject;
@@ -2149,23 +2182,26 @@ const
   ColWriteToFile = 2;
   ColPlot = 3;
 
-  begin
+begin
   // if checkbox plot is true, checkbox WriteToFile has also be true
-  if aCol= ColPlot then begin
-     AdvStringGridVar.GetCheckBoxState(ColPlot, aRow, state);
-     if state = true then
-       AdvStringGridVar.SetCheckBoxState(ColWriteToFile, aRow, state);
+  if aCol = ColPlot then
+  begin
+    AdvStringGridVar.GetCheckBoxState(ColPlot, aRow, state);
+    if state = True then
+      AdvStringGridVar.SetCheckBoxState(ColWriteToFile, aRow, state);
   end;
 
   // if checkbox write to file is false, checkbox plot has also be false
-  if aCol= ColWriteToFile then begin
-     AdvStringGridVar.GetCheckBoxState(ColWriteToFile,aRow, state);
-     if state = false then
-       AdvStringGridVar.SetCheckBoxState(ColPlot, aRow, state);
+  if aCol = ColWriteToFile then
+  begin
+    AdvStringGridVar.GetCheckBoxState(ColWriteToFile, aRow, state);
+    if state = false then
+      AdvStringGridVar.SetCheckBoxState(ColPlot, aRow, state);
   end;
 
   self.SaveVar();
-  AdvStringGridVar.GotoCell(aCol, min(aRow+1,  self.AdvStringGridVar.RowCount-1));
+  AdvStringGridVar.GotoCell(aCol,
+    min(aRow + 1, self.AdvStringGridVar.RowCount - 1));
 end;
 
 procedure TFormMod.AdvStringGridStatButtonClick(Sender: TObject;
@@ -2182,13 +2218,12 @@ var
   actcolor: TColor;
   fn: string;
 const
-  colorset: array [0 .. 11] of TColor =
-  ($00A46744,$00379FF4,$00154DF2,$00A9974E,$006D412B,$00657D1D,$000C08B4,
-   $005EC3F3,$009FB75E,$00717171,$008FE9F3,$00B5B5B5) ;
+  colorset: array [0 .. 11] of TColor = ($00A46744, $00379FF4, $00154DF2,
+    $00A9974E, $006D412B, $00657D1D, $000C08B4, $005EC3F3, $009FB75E, $00717171,
+    $008FE9F3, $00B5B5B5);
 
-//   (clBlue, clGreen, clRed, clGray,
-//    clFuchsia, clTeal, clPurple, clNavy, clLime, clMaroon, clAqua, clOlive);
-
+  // (clBlue, clGreen, clRed, clGray,
+  // clFuchsia, clTeal, clPurple, clNavy, clLime, clMaroon, clAqua, clOlive);
 
 begin
 
@@ -2199,7 +2234,7 @@ begin
   with FormShow1_1 do
   begin
     try
-      Model := Lmod.LinkedModel;
+      Model := LMod.LinkedModel;
       idx := Model.SubModStrList.indexOf(AdvStringGridStat.cells[0, aRow]);
       ActSubMod := TSubModel(Model.SubModStrList.objects[idx]);
       idx := ActSubMod.DataList.indexOf(AdvStringGridStat.cells[1, aRow]);
@@ -2250,7 +2285,7 @@ begin
     AdvStringGridLegend.RowCount := 0;
 
     actcolor := colorset[0];
-    fn := Model.GM_OutPutPath + '\1_1\' + ActMeasList.name + '_1_1.csv';
+    fn := Model.GM_OutPutPath + '\1_1\' + ActMeasList.Name + '_1_1.csv';
     FormShow1_1.Edit_1_1_FileName.Text := fn;
     for i := 0 to ActMeasList.count - 1 do
     begin
@@ -2263,7 +2298,7 @@ begin
         with AdvStringGridLegend do
         begin
           RowCount := RowCount + 1;
-          //ColorPalettes.ApplyPalette( ChartSimResults, 5 );
+          // ColorPalettes.ApplyPalette( ChartSimResults, 5 );
           actcolor := colorset[RowCount mod Length(colorset)];
           richedit.plaintext := false;
           richedit.font.color := actcolor;
@@ -2390,18 +2425,18 @@ end;
 // CheckBoxen
 // ==============================================================================
 
-{procedure TFormMod.CheckBoxContOutputClick(Sender: TObject);
-var
+{ procedure TFormMod.CheckBoxContOutputClick(Sender: TObject);
+  var
   i : integer;
   actIniFile: TMemInifile;
   actIniFN, sec_str, topic_str : string;
 
-begin
+  begin
   if CheckBoxContOutput.Checked then begin
-    Lmod.fModel.ContOutput := True
+  Lmod.fModel.ContOutput := True
   end
   else begin
-    Lmod.fModel.ContOutput := false
+  Lmod.fModel.ContOutput := false
   end;
 
   Lmod.fModel.FPropIniFile.WriteBool('ModelSettings','ContOutput', Lmod.fModel.ContOutput);
@@ -2409,17 +2444,17 @@ begin
 
   for i := 0 to self.Lmod.fModel.FIniFiles.count - 1 do
   begin
-    actIniFile := TMyIniFile(Lmod.fModel.FIniFiles.objects[i]);
-    actIniFN := actIniFile.FileName;
-    sec_str := Lmod.fModel.Str_SectionName_SimOptions;
-    topic_str := Lmod.fModel.Str_SectionTopic_ContOutput;
-    actIniFile.WriteBool(sec_str, topic_str, Lmod.fModel.ContOutput);
-    actIniFile.UpdateFile;
+  actIniFile := TMyIniFile(Lmod.fModel.FIniFiles.objects[i]);
+  actIniFN := actIniFile.FileName;
+  sec_str := Lmod.fModel.Str_SectionName_SimOptions;
+  topic_str := Lmod.fModel.Str_SectionTopic_ContOutput;
+  actIniFile.WriteBool(sec_str, topic_str, Lmod.fModel.ContOutput);
+  actIniFile.UpdateFile;
   end;
-//  updateForm;
+  //  updateForm;
   Lmod.fModel.Init(Lmod.fModel.ActIniFile);
   UpdateStringGridOptions;
-end;}
+  end; }
 
 procedure TFormMod.CheckBoxDataDateFormatClick(Sender: TObject);
 var
@@ -2441,29 +2476,31 @@ end;
 procedure TFormMod.AdvStringGridExternVCheckBoxClick(Sender: TObject;
   aCol, aRow: Integer; state: Boolean);
 
-
 const
   ColWriteToFile = 4;
   ColPlot = 5;
 
-  begin
+begin
   // if checkbox plot is true, checkbox WriteToFile has also be true
-  if aCol= ColPlot then begin
-     AdvStringGridExternV.GetCheckBoxState(ColPlot, aRow, state);
-     if state = true then
-       AdvStringGridExternV.SetCheckBoxState(ColWriteToFile, aRow, state);
+  if aCol = ColPlot then
+  begin
+    AdvStringGridExternV.GetCheckBoxState(ColPlot, aRow, state);
+    if state = True then
+      AdvStringGridExternV.SetCheckBoxState(ColWriteToFile, aRow, state);
   end;
 
   // if checkbox write to file is false, checkbox plot has also be false
-  if aCol= ColWriteToFile then begin
-     AdvStringGridExternV.GetCheckBoxState(ColWriteToFile,aRow, state);
-     if state = false then
-       AdvStringGridExternV.SetCheckBoxState(ColPlot, aRow, state);
+  if aCol = ColWriteToFile then
+  begin
+    AdvStringGridExternV.GetCheckBoxState(ColWriteToFile, aRow, state);
+    if state = false then
+      AdvStringGridExternV.SetCheckBoxState(ColPlot, aRow, state);
   end;
 
   SaveExterns;
-//  self.ButtonSaveExVarClick(Sender);
-   AdvStringGridExternV.GotoCell(aCol, min(aRow+1,  self.AdvStringGridExternV.RowCount-1));
+  // self.ButtonSaveExVarClick(Sender);
+  AdvStringGridExternV.GotoCell(aCol,
+    min(aRow + 1, self.AdvStringGridExternV.RowCount - 1));
 
 end;
 
@@ -2502,13 +2539,13 @@ begin
   Model := getLinkedModel();
   actSubModIndex := self.ComboBoxSubMod.ItemIndex;
   testSubModIndex(actSubModIndex);
-  ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+  ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
 
   if ActSubMod <> nil then
   begin
-    if self.Lmod.fModel.GM_OutPutPath <> '' then
+    if self.LMod.fModel.GM_OutPutPath <> '' then
       FileName := ActSubMod.fn_finalstate;
-    if FileExists(FileName) then
+    if fileexists(FileName) then
     begin
       FormShowFinalValues.EditFinalValuesFileName.Text := FileName;
       assignFile(f, FileName);
@@ -2547,11 +2584,11 @@ var
   SubModel: TSubModel;
 begin
   actSubModIndex := ComboBoxSubMod.ItemIndex;
-  SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+  SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
   SubModel.ExternVStrList.sorted := false;
   for i := 0 to SubModel.ExternVStrList.count - 1 do
     SubModel.ExternVStrList[i] :=
-      TExternV(SubModel.ExternVStrList.objects[i]).name;
+      TExternV(SubModel.ExternVStrList.objects[i]).Name;
   SubModel.ExternVStrList.sort;
   SubModel.ExternVStrList.CaseSensitive := false;
   for i := 1 to AdvStringGridExternV.RowCount - 1 do
@@ -2568,19 +2605,21 @@ begin
     end;
   end;
   UpdateStringGridExternV;
-  updatePropIniFile(SubModel.ExternVStrList, SubModel.name);
+  updatePropIniFile(SubModel.ExternVStrList, SubModel.Name);
 end;
 
 procedure TFormMod.Button1Click(Sender: TObject);
 begin
-  if self.Lmod.LinkedModel <> nil then
-    Lmod.LinkedModel.InitAllExternV;
+  if self.LMod.LinkedModel <> nil then
+    LMod.LinkedModel.InitAllExternV;
 end;
 
 procedure TFormMod.SpeedButtonIncFontSizeClick(Sender: TObject);
 begin
-  ChartSimResults.BottomAxis.LabelsFont.Size := ChartSimResults.BottomAxis.LabelsFont.Size + 1;
-  ChartSimResults.LeftAxis.LabelsFont.Size := ChartSimResults.LeftAxis.LabelsFont.Size + 1;
+  ChartSimResults.BottomAxis.LabelsFont.Size :=
+    ChartSimResults.BottomAxis.LabelsFont.Size + 1;
+  ChartSimResults.LeftAxis.LabelsFont.Size :=
+    ChartSimResults.LeftAxis.LabelsFont.Size + 1;
   ChartSimResults.Legend.font.Size := ChartSimResults.Legend.font.Size + 1;
   ChartSimResults.Repaint;
 end;
@@ -2606,11 +2645,11 @@ var
 
 begin
   ActData := TStringList.create;
-  Model := Lmod.fModel;
+  Model := LMod.fModel;
   actSubModIndex := ComboBoxSubMod.ItemIndex;
   if actSubModIndex <> -1 then
-    SubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
-  fn := Model.GM_OutPutPath + '\' + SubMod.name + '_allData.dat';
+    SubMod := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
+  fn := Model.GM_OutPutPath + '\' + SubMod.Name + '_allData.dat';
   assignFile(AllData, fn);
   rewrite(AllData);
   rep := false;
@@ -2623,7 +2662,7 @@ begin
     Model.init(actIniFile);
     Model.actIniFile.UpdateFile;
     fn_meas := actIniFile.ReadString(Model.Str_SectionName_MeasurementFiles,
-      SubMod.name, '');
+      SubMod.Name, '');
     FMeasValues := TTextFileH.create;
     FMeasValues.init(fn_meas);
     FMeasValues.GoTop;
@@ -2785,7 +2824,7 @@ var
   res: Integer;
 begin
   Result := false;
-  with SaveDialog1, Lmod.fModel do
+  with SaveDialog1, LMod.fModel do
   begin
     title := title;
     DefaultExt := 'ini';
@@ -2794,16 +2833,16 @@ begin
     if Execute then
     begin
       NewIniFName := ChangeFileExt(FileName, '.ini');
-      if FileExists(NewIniFName) then
+      if fileexists(NewIniFName) then
       begin
         res := application.MessageBox('Overwrite?', '', MB_OKCANCEL);
-        if (res = IDOK) or (not FileExists(NewIniFName)) then
+        if (res = IDOK) or (not fileexists(NewIniFName)) then
         begin
           EditFileName.Text := NewIniFName;
           EditIniFileName.Text := NewIniFName;
           actIniFile.WriteString('FileNames', keyname, NewIniFName);
           actIniFile.UpdateFile;
-          init(Lmod.fModel.actIniFile);
+          init(LMod.fModel.actIniFile);
           InitAllSubMods;
           Result := True;
         end;
@@ -2843,7 +2882,7 @@ procedure TFormMod.changeIni(titlestr, keyname: string;
 var
   NewIniFName: string;
 begin
-  with SaveDialog1, Lmod.fModel.actIniFile do
+  with SaveDialog1, LMod.fModel.actIniFile do
   begin
     title := titlestr;
     DefaultExt := 'ini';
@@ -2863,8 +2902,10 @@ end;
 
 procedure TFormMod.SpeedButtonDecFontSizeClick(Sender: TObject);
 begin
-  ChartSimResults.BottomAxis.LabelsFont.Size := ChartSimResults.BottomAxis.LabelsFont.Size - 1;
-  ChartSimResults.LeftAxis.LabelsFont.Size := ChartSimResults.LeftAxis.LabelsFont.Size - 1;
+  ChartSimResults.BottomAxis.LabelsFont.Size :=
+    ChartSimResults.BottomAxis.LabelsFont.Size - 1;
+  ChartSimResults.LeftAxis.LabelsFont.Size :=
+    ChartSimResults.LeftAxis.LabelsFont.Size - 1;
   ChartSimResults.Legend.font.Size := ChartSimResults.Legend.font.Size - 1;
   ChartSimResults.Repaint;
 end;
@@ -2893,8 +2934,6 @@ begin
   end;
 end;
 
-
-
 procedure SetToOutput(var strList: TStringList);
 
 var
@@ -2906,8 +2945,8 @@ begin
     entity := THumeNumEntity(strList.objects[i]);
     with entity do
     begin
-      writeToFile := true;
-      PlotToGraph := true;
+      writeToFile := True;
+      PlotToGraph := True;
     end;
   end;
 end;
@@ -2919,25 +2958,25 @@ var
   ActSubMod: TSubModel;
 
 begin
-  for i := 0 to Lmod.fModel.SubModStrList.count - 1 do
+  for i := 0 to LMod.fModel.SubModStrList.count - 1 do
   begin
-    ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[i]);
+    ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[i]);
     with ActSubMod do
     begin
       ActSubMod.OptContOutput := false;
-//      ActSubMod.OptionIniF.WriteString(ActSubMod, 'ContOutput', 'false');
+      // ActSubMod.OptionIniF.WriteString(ActSubMod, 'ContOutput', 'false');
       SetToNoOutput(stateStrList);
-      updatePropIniFile(stateStrList, ActSubMod.name);
+      updatePropIniFile(stateStrList, ActSubMod.Name);
       SetToNoOutput(VarStrList);
-      updatePropIniFile(VarStrList, ActSubMod.name);
+      updatePropIniFile(VarStrList, ActSubMod.Name);
       SetToNoOutput(ExternVStrList);
-      updatePropIniFile(ExternVStrList, ActSubMod.name);
+      updatePropIniFile(ExternVStrList, ActSubMod.Name);
       // SetToNoOutput(ParStrList);
       // updatePropIniFile(ParStrList, ActSubMod.Name);
     end;
   end;
-  self.Lmod.fModel.init(Lmod.fModel.ActIniFile);
-  self.Lmod.fModel.FPropIniFile.UpdateFile;
+  self.LMod.fModel.init(LMod.fModel.actIniFile);
+  self.LMod.fModel.FPropIniFile.UpdateFile;
   self.UpdateStringGridOptions;
 end;
 
@@ -2948,24 +2987,24 @@ var
   ActSubMod: TSubModel;
 
 begin
-  for i := 0 to Lmod.fModel.SubModStrList.count - 1 do
+  for i := 0 to LMod.fModel.SubModStrList.count - 1 do
   begin
-    ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[i]);
+    ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[i]);
     with ActSubMod do
     begin
-      ActSubMod.OptContOutput := true;
+      ActSubMod.OptContOutput := True;
       SetToOutput(stateStrList);
-      updatePropIniFile(stateStrList, ActSubMod.name);
+      updatePropIniFile(stateStrList, ActSubMod.Name);
       SetToOutput(VarStrList);
-      updatePropIniFile(VarStrList, ActSubMod.name);
+      updatePropIniFile(VarStrList, ActSubMod.Name);
       SetToOutput(ExternVStrList);
-      updatePropIniFile(ExternVStrList, ActSubMod.name);
+      updatePropIniFile(ExternVStrList, ActSubMod.Name);
       // SetToNoOutput(ParStrList);
       // updatePropIniFile(ParStrList, ActSubMod.Name);
     end;
   end;
-  self.Lmod.fModel.init(Lmod.fModel.ActIniFile);
-  self.Lmod.fModel.FPropIniFile.UpdateFile;
+  self.LMod.fModel.init(LMod.fModel.actIniFile);
+  self.LMod.fModel.FPropIniFile.UpdateFile;
   self.UpdateStringGridOptions;
 end;
 
@@ -2985,7 +3024,7 @@ procedure TFormMod.SpeedButtonChangeWeatherFileClick(Sender: TObject);
 var
   NewWeatherFName: string;
 begin
-  with SaveDialog1, Lmod.fModel.actIniFile do
+  with SaveDialog1, LMod.fModel.actIniFile do
   begin
     title := 'New WeatherFile';
     Filter := 'All Files (*.*)|*.*';
@@ -3003,10 +3042,10 @@ end;
 
 procedure TFormMod.SpeedButtonCreateDocuClick(Sender: TObject);
 begin
-  self.Lmod.fModel.write_documentation;
-  self.EditDokuFilename.Text := Lmod.fModel.Docu_fn2;
-  self.MemoModelDocu.lines.loadfromfile(Lmod.fModel.Docu_fn);
-  AdvStringGridModelSummary.LoadFromCSV(Lmod.fModel.Docu_fn2);
+  self.LMod.fModel.write_documentation;
+  self.EditDokuFilename.Text := LMod.fModel.Docu_fn2;
+  self.MemoModelDocu.lines.loadfromfile(LMod.fModel.Docu_fn);
+  AdvStringGridModelSummary.LoadFromCSV(LMod.fModel.Docu_fn2);
   // .LoadFromFile();
 end;
 
@@ -3031,7 +3070,7 @@ end;
 
 procedure TFormMod.EditOutputDirectoryChange(Sender: TObject);
 begin
-  if self.Lmod.LinkedModel <> nil then
+  if self.LMod.LinkedModel <> nil then
     LMod.LinkedModel.GM_OutPutPath := self.EditOutputDirectory.Text;
 end;
 
@@ -3078,8 +3117,6 @@ end;
 // Sonstiges
 // ==============================================================================
 
-
-
 procedure TFormMod.updateForm();
 var
   i: Integer;
@@ -3087,43 +3124,42 @@ var
 
 begin
 
-  if Lmod.fModel <> NIL then
+  if LMod.fModel <> NIL then
   begin
 
-    Lmod.fModel.InitAllSubMods; // TODO ???
+    LMod.fModel.InitAllSubMods; // TODO ???
 
-
-    Lmod.fModel.Get_ControlFileFn;
+    LMod.fModel.Get_ControlFileFn;
 
     ComboBoxIniFile.Clear;
 
-    for i := 0 to Lmod.fModel.FIniFiles.count - 1 do
+    for i := 0 to LMod.fModel.FIniFiles.count - 1 do
     begin
-      ComboBoxIniFile.Items.Add(Lmod.fModel.FIniFiles.Strings[i]);
+      ComboBoxIniFile.Items.Add(LMod.fModel.FIniFiles.Strings[i]);
     end;
     ComboBoxIniFile.ItemIndex := 0;
     ComboBoxSubMod.Clear;
 
-    for i := 0 to Lmod.fModel.SubModStrList.count - 1 do
+    for i := 0 to LMod.fModel.SubModStrList.count - 1 do
     begin
-      ComboBoxSubMod.Items.Add(Lmod.fModel.SubModStrList.Strings[i]);
+      ComboBoxSubMod.Items.Add(LMod.fModel.SubModStrList.Strings[i]);
     end;
 
+    ComboBoxSubMod.ItemIndex := self.LMod.fModel.FPropIniFile.ReadInteger
+      ('ComboBoxes', ComboBoxSubMod.Name, 1);
 
-   ComboBoxSubMod.ItemIndex := self.Lmod.fModel.FPropInifile.ReadInteger('ComboBoxes', ComboBoxSubMod.Name, 1);
-
-    if Lmod.fModel.weatherfile <> nil then
-      EditWeatherfile.Text := Lmod.fModel.weatherfile.FName
+    if LMod.fModel.weatherfile <> nil then
+      EditWeatherfile.Text := LMod.fModel.weatherfile.FName
     else
       EditWeatherfile.Text := 'File not specified';
 
     // gespeicherte Properties aus *ini Datei einlesen
-    for i := 0 to Lmod.fModel.SubModStrList.count - 1 do
+    for i := 0 to LMod.fModel.SubModStrList.count - 1 do
     begin
-      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[i]);
-      Lmod.fModel.setPropFromIniFile(ActSubMod.stateStrList, ActSubMod.Name);
-      Lmod.fModel.setPropFromIniFile(ActSubMod.VarStrList, ActSubMod.Name);
-      Lmod.fModel.setPropFromIniFile(ActSubMod.ExternVStrList, ActSubMod.Name);
+      ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[i]);
+      LMod.fModel.setPropFromIniFile(ActSubMod.stateStrList, ActSubMod.Name);
+      LMod.fModel.setPropFromIniFile(ActSubMod.VarStrList, ActSubMod.Name);
+      LMod.fModel.setPropFromIniFile(ActSubMod.ExternVStrList, ActSubMod.Name);
     end;
 
     UpdateStringGridParam;
@@ -3135,13 +3171,13 @@ begin
     UpdateStringGridData;
     UpdatePageIntegration;
 
-    if FileExists(Lmod.fModel.reg_fn) then
-      update_StringGrid(Lmod.fModel.reg_fn);
+    if fileexists(LMod.fModel.reg_fn) then
+      update_StringGrid(LMod.fModel.reg_fn);
 
     UpdatePageResultTab;
     UpdatePageGraphResult;
     ComboBoxIniFile.hint := ComboBoxIniFile.Items[ComboBoxIniFile.ItemIndex];
- //   SpeedButtonFinalvalues.visible := Lmod.fModel.FinalOutput;
+    // SpeedButtonFinalvalues.visible := Lmod.fModel.FinalOutput;
   end
   else
   begin
@@ -3201,9 +3237,9 @@ begin
 
   // TabSheetModelDiagram
 
-//  paintbox := TPaintBox.create(self);
-//  paintbox.Parent := self.TabSheetModelDiagram;
-//  paintbox.align := alClient;
+  // paintbox := TPaintBox.create(self);
+  // paintbox.Parent := self.TabSheetModelDiagram;
+  // paintbox.align := alClient;
   // paintbox.OnPaint := ConnectionPaint;
   // paintbox.Visible := True;
   // paintbox.Show;
@@ -3261,8 +3297,8 @@ procedure TFormMod.SensitivityAnalysisClick(Sender: TObject);
 begin
   if FormSensOpt = nil then
     application.CreateForm(TFormSensOpt, FormSensOpt);
-  FormSensOpt.Model := Lmod.fModel;
-  FormSensOpt.FPropIniFile := self.Lmod.fModel.FPropIniFile;
+  FormSensOpt.Model := LMod.fModel;
+  FormSensOpt.FPropIniFile := self.LMod.fModel.FPropIniFile;
   FormSensOpt.FormActivate;
   FormSensOpt.showmodal;
 end;
@@ -3270,7 +3306,7 @@ end;
 procedure TFormMod.EditStartTimeChange(Sender: TObject);
 begin
   inherited;
-  if DateTimePickerStart.date < Lmod.fModel.FirstWeatherData then
+  if DateTimePickerStart.date < LMod.fModel.FirstWeatherData then
     EditStartTime.font.color := clRed
   else
     EditStartTime.font.color := clBlack;
@@ -3280,15 +3316,15 @@ end;
 
 procedure TFormMod.EditControlFileChange(Sender: TObject);
 begin
-  if FileExists(EditControlFile.Text) then
-    if self.Lmod.LinkedModel <> nil then
-    self.LMod.LinkedModel.GM_ControlFile := self.EditControlFile.Text;
+  if fileexists(EditControlFile.Text) then
+    if self.LMod.LinkedModel <> nil then
+      self.LMod.LinkedModel.GM_ControlFile := self.EditControlFile.Text;
 end;
 
 procedure TFormMod.EditEndTimeChange(Sender: TObject);
 begin
   inherited;
-  if StrToINt(EditEndTime.Text) > Lmod.fModel.LastWeatherData then
+  if StrToINt(EditEndTime.Text) > LMod.fModel.LastWeatherData then
     EditEndTime.font.color := clRed
   else
     EditEndTime.font.color := clBlack;
@@ -3356,12 +3392,12 @@ begin
       EditDataFileName.Text := NewDataFName;
       actInifileIndex := ComboBoxIniFile.ItemIndex;
       actSubModIndex := ComboBoxSubMod.ItemIndex;
-      IniFile := TMyIniFile(Lmod.fModel.FIniFiles.objects[actInifileIndex]);
-      SubModel := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
-      IniFile.WriteString('MeasurementFiles', SubModel.name, NewDataFName);
+      IniFile := TMyIniFile(LMod.fModel.FIniFiles.objects[actInifileIndex]);
+      SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
+      IniFile.WriteString('MeasurementFiles', SubModel.Name, NewDataFName);
       IniFile.UpdateFile;
-      Lmod.fModel.init(Lmod.fModel.actIniFile);
-      Lmod.fModel.InitAllSubMods;
+      LMod.fModel.init(LMod.fModel.actIniFile);
+      LMod.fModel.InitAllSubMods;
       UpdateStringGridData;
     end;
   end;
@@ -3387,13 +3423,13 @@ begin
 
   showmessage(SelectedFolder);
   EditOutputDirectory.Text := SelectedFolder;
-  Lmod.LinkedModel.GM_OutPutPath := SelectedFolder;
-  for i := 0 to Lmod.LinkedModel.IniFileNames.count - 1 do
+  LMod.LinkedModel.GM_OutPutPath := SelectedFolder;
+  for i := 0 to LMod.LinkedModel.IniFileNames.count - 1 do
   begin
-    fn := Lmod.LinkedModel.IniFileNames.Strings[i];
+    fn := LMod.LinkedModel.IniFileNames.Strings[i];
     actIni := TMyIniFile.create(fn, TEncoding.UTF8);
-    SectionName := Lmod.LinkedModel.Str_SectionName_FileNames;
-    SectionTopic := Lmod.LinkedModel.Str_SectionTopic_OutputDir;
+    SectionName := LMod.LinkedModel.Str_SectionName_FileNames;
+    SectionTopic := LMod.LinkedModel.Str_SectionTopic_OutputDir;
     actIni.WriteString(SectionName, SectionTopic, SelectedFolder);
     actIni.UpdateFile;
   end;
@@ -3453,7 +3489,7 @@ procedure TFormMod.ChisquareAnalysisClick(Sender: TObject);
 begin
   if FormChiSqOpt = nil then
     application.CreateForm(TFormChiSqOpt, FormChiSqOpt);
-  FormChiSqOpt.Model := Lmod.fModel;
+  FormChiSqOpt.Model := LMod.fModel;
   FormChiSqOpt.FormActivate;
   FormChiSqOpt.showmodal;
 end;
@@ -3462,7 +3498,7 @@ procedure TFormMod.GAOptClic(Sender: TObject);
 begin
   if FormGAopt = nil then
     application.CreateForm(TFormGAOpt, FormGAopt);
-  FormGAopt.sga.Model := Lmod.fModel;
+  FormGAopt.sga.Model := LMod.fModel;
   // FormGAOpt.sga.set_model(LMod.fModel);
 
   FormGAopt.FormGAActivate;
@@ -3491,8 +3527,8 @@ procedure TFormMod.OptimizeClick(Sender: TObject);
 begin
   if FormOpt = nil then
     application.CreateForm(TFormOpt, FormOpt);
-  Lmod.fModel.InitAllDataSeries;
-  FormOpt.Model := Lmod.fModel;
+  LMod.fModel.InitAllDataSeries;
+  FormOpt.Model := LMod.fModel;
   FormOpt.FormActivate;
   FormOpt.Update;
   StatusBarMain.Panels.Items[0].Text := 'Optimizing';
@@ -3506,8 +3542,8 @@ end;
 function TFormMod.getLinkedModel(): TMod;
 begin
   Result := nil;
-  if Lmod.LinkedModel <> nil then
-    Result := Lmod.LinkedModel
+  if LMod.LinkedModel <> nil then
+    Result := LMod.LinkedModel
   else
   begin
     showmessage('LMod.LinkedModel darf nicht undefiniert sein!');
@@ -3524,23 +3560,21 @@ begin
   end;
 end;
 
-
-
 procedure TFormMod.ToggleSwitchExternContOutputClick(Sender: TObject);
 
 var
-  onState : boolean;
+  onState: Boolean;
   i, actSubModIndex: Integer;
   ActSubMod: TSubModel;
 
 begin
- if ToggleSwitchExternContOutput.state = tssOn then
+  if ToggleSwitchExternContOutput.state = tssOn then
   begin
     ToggleSwitchExternContOutput.ThumbColor := $008000; // clYellowgreen;
     actSubModIndex := ComboBoxSubMod.ItemIndex;
     if actSubModIndex <> -1 then
     begin
-      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
       with ActSubMod do
       begin
         SetToOutput(ExternVStrList);
@@ -3555,7 +3589,7 @@ begin
     actSubModIndex := ComboBoxSubMod.ItemIndex;
     if actSubModIndex <> -1 then
     begin
-      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
       with ActSubMod do
       begin
         SetToNoOutput(ExternVStrList);
@@ -3563,8 +3597,8 @@ begin
         updatePropIniFile(ExternVStrList, ActSubMod.Name);
       end;
     end;
-    self.Lmod.fModel.init(Lmod.fModel.actIniFile);
-    self.Lmod.fModel.FPropIniFile.UpdateFile;
+    self.LMod.fModel.init(LMod.fModel.actIniFile);
+    self.LMod.fModel.FPropIniFile.UpdateFile;
   end;
 
 end;
@@ -3572,23 +3606,23 @@ end;
 procedure TFormMod.ToggleSwitchStateContOutputClick(Sender: TObject);
 
 var
-  onState : boolean;
+  onState: Boolean;
   i, actSubModIndex: Integer;
   ActSubMod: TSubModel;
 
 begin
- if ToggleSwitchStateContOutput.state = tssOn then
+  if ToggleSwitchStateContOutput.state = tssOn then
   begin
     ToggleSwitchStateContOutput.ThumbColor := $008000; // clYellowgreen;
     actSubModIndex := ComboBoxSubMod.ItemIndex;
     if actSubModIndex <> -1 then
     begin
-      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
       with ActSubMod do
       begin
-        SetToOutput(StateStrList);
+        SetToOutput(stateStrList);
         UpdateStringGridState;
-        updatePropIniFile(StateStrList, ActSubMod.Name);
+        updatePropIniFile(stateStrList, ActSubMod.Name);
       end;
     end;
   end
@@ -3598,36 +3632,34 @@ begin
     actSubModIndex := ComboBoxSubMod.ItemIndex;
     if actSubModIndex <> -1 then
     begin
-      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
       with ActSubMod do
       begin
-        SetToNoOutput(StateStrList);
+        SetToNoOutput(stateStrList);
         UpdateStringGridState;
-        updatePropIniFile(StateStrList, ActSubMod.Name);
+        updatePropIniFile(stateStrList, ActSubMod.Name);
       end;
     end;
-    self.Lmod.fModel.init(Lmod.fModel.actIniFile);
-    self.Lmod.fModel.FPropIniFile.UpdateFile;
+    self.LMod.fModel.init(LMod.fModel.actIniFile);
+    self.LMod.fModel.FPropIniFile.UpdateFile;
   end;
 end;
-
-
 
 procedure TFormMod.ToggleSwitchVarContOutputClick(Sender: TObject);
 
 var
-  onState : boolean;
+  onState: Boolean;
   i, actSubModIndex: Integer;
   ActSubMod: TSubModel;
 
 begin
- if ToggleSwitchVarContOutput.state = tssOn then
+  if ToggleSwitchVarContOutput.state = tssOn then
   begin
     ToggleSwitchVarContOutput.ThumbColor := $008000; // clYellowgreen;
     actSubModIndex := ComboBoxSubMod.ItemIndex;
     if actSubModIndex <> -1 then
     begin
-      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
       with ActSubMod do
       begin
         SetToOutput(VarStrList);
@@ -3642,7 +3674,7 @@ begin
     actSubModIndex := ComboBoxSubMod.ItemIndex;
     if actSubModIndex <> -1 then
     begin
-      ActSubMod := TSubModel(Lmod.fModel.SubModStrList.objects[actSubModIndex]);
+      ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
       with ActSubMod do
       begin
         SetToNoOutput(VarStrList);
@@ -3650,8 +3682,8 @@ begin
         updatePropIniFile(VarStrList, ActSubMod.Name);
       end;
     end;
-    self.Lmod.fModel.init(Lmod.fModel.actIniFile);
-    self.Lmod.fModel.FPropIniFile.UpdateFile;
+    self.LMod.fModel.init(LMod.fModel.actIniFile);
+    self.LMod.fModel.FPropIniFile.UpdateFile;
   end;
 end;
 
@@ -3664,7 +3696,7 @@ var
   IniFile: TMyIniFile;
 begin
   idx := ComboBoxIniFile.ItemIndex;
-  IniFile := TMyIniFile(Lmod.fModel.FIniFiles.objects[idx]);
+  IniFile := TMyIniFile(LMod.fModel.FIniFiles.objects[idx]);
 
   saveDialog := TSaveDialog.create(self);
   with saveDialog do
@@ -3715,12 +3747,12 @@ var
   actInifileIndex: Integer;
 begin
   actInifileIndex := ComboBoxIniFile.ItemIndex;
-  IniFile := TMyIniFile(Lmod.fModel.FIniFiles.objects[actInifileIndex]);
-  Lmod.fModel.init(IniFile);
-  Lmod.fModel.InitAllSubMods;
+  IniFile := TMyIniFile(LMod.fModel.FIniFiles.objects[actInifileIndex]);
+  LMod.fModel.init(IniFile);
+  LMod.fModel.InitAllSubMods;
 
-  if self.Lmod.LinkedModel <> nil then
-    Lmod.LinkedModel.InitAllExternV;
+  if self.LMod.LinkedModel <> nil then
+    LMod.LinkedModel.InitAllExternV;
 
   showmessage('No problems found');
 

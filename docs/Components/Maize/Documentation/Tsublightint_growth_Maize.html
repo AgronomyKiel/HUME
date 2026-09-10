@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Katja Holzhauser, Agronomy and Crop Science Group, Kiel University">
-<meta name="dcterms.date" content="2026-08-26">
+<meta name="dcterms.date" content="2026-09-07">
 
 <title>Tsublightint_growth_Maize – Hume Documentation</title>
 <style>
@@ -4226,7 +4226,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../Components/Soil/Documentation/TSoilWaterModelR.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">TSoilWaterModR</span></a>
+ <span class="menu-text">TSoilWaterModelR</span></a>
   </div>
 </li>
       </ul>
@@ -4265,12 +4265,6 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../Components/CERES Wheat/Documentation/THumeWheatDryMatter.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">THumeWheatDryMatter</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../../../Components/CERES Wheat/Documentation/THumeWheatPartitioning.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">THumeWheatPartitioning</span></a>
   </div>
@@ -4279,6 +4273,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="../../../Components/CERES Wheat/Documentation/THumeWheatLeafArea.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">THumeWheatLeafArea</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../Components/CERES Wheat/Documentation/THumeWheatDryMatter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">THumeWheatDryMatter</span></a>
   </div>
 </li>
       </ul>
@@ -4294,8 +4294,14 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../Components/OilseedRape/Documentation/OSR_growth_model.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Plant Growth Model</span></a>
+  <a href="../../../Components/OilseedRape/Documentation/TDevelopmentOSR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TDevelopmentOSR</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../Components/OilseedRape/Documentation/TOSRGrowth.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TOSRGrowth</span></a>
   </div>
 </li>
       </ul>
@@ -4381,7 +4387,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 26, 2026</p>
+      <p class="date">September 7, 2026</p>
     </div>
   </div>
   
@@ -4480,9 +4486,9 @@ System
 <h1 data-number="2"><span class="header-section-number">2</span> Scientific Background</h1>
 <section id="modelling-dm-production" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="modelling-dm-production"><span class="header-section-number">2.1</span> Modelling DM production</h2>
-<p>Within season, daily dry matter production (<span class="math inline">\frac{dDM_{tot}}{dt}</span>$\frac{dDM_{tot}}{dt}$ is driven by absorbed photosynthetic radiation (Q, MJ m<sup>-2</sup> d<sup>-1</sup>) and potential light use efficiency (LUE, g MJ<sup>-1</sup> PAR<sup>-1</sup>):</p>
+<p>Within the season, daily dry matter production (<span class="math inline">\frac{dDM_{tot}}{dt}</span>) is driven by absorbed photosynthetically active radiation (<span class="math inline">Q</span>, MJ m<sup>-2</sup> d<sup>-1</sup>) and potential light-use efficiency (LUE, g MJ<sup>-1</sup> PAR<sup>-1</sup>):</p>
 <p><span id="eq-DMproduction"><span class="math display">\frac{{\mathrm{dDM}}_{\mathrm{total}}}{\mathrm{dt}}\mathrm{=Q*}LUE * Temp_{fact} * SWDF \tag{1}</span></span></p>
-<p>With <span class="math inline">Temp_{\text{fact}}</span>, a temperature weight factor for photosynthetic activity [-], ranging between 0 to 1 and calculated with a trapezoidal function (<span class="citation" data-cites="Marshall1996">(<a href="#ref-Marshall1996" role="doc-biblioref"><strong>Marshall1996?</strong></a>)</span>; <span class="citation" data-cites="Porter1999">Porter et al. (<a href="#ref-Porter1999" role="doc-biblioref">1999</a>)</span>) and the soil water deficit factor (SWDF).</p>
+<p>With <span class="math inline">Temp_{\text{fact}}</span>, a temperature weight factor for photosynthetic activity [-], ranging between 0 to 1 and calculated with a trapezoidal function (<span class="citation" data-cites="Marshall1996">Marshall and Squire (<a href="#ref-Marshall1996" role="doc-biblioref">1996</a>)</span>; <span class="citation" data-cites="Porter1999">Porter et al. (<a href="#ref-Porter1999" role="doc-biblioref">1999</a>)</span>) and the soil water deficit factor (SWDF).</p>
 <p><span id="eq-trapez"><span class="math display">Temp_{fact} = \begin{cases}
 0 &amp; \text{if  } TMPM &lt; C_1 \\
 \frac{TMPM - C_1}{C_2 - C_1} &amp; \text{if  } C_1 \leq TMPM \leq C_2 \\
@@ -4494,8 +4500,8 @@ System
 <p><span id="eq-Q"><span class="math display">\mathrm{Q\ =\ PAR*}\left(\mathrm{1-}\mathrm{e}^{{\mathrm{-k}}_{\mathrm{PAR}}\mathrm{*GAI} }\right) \tag{3}</span></span></p>
 <p>with a constant extinction coefficient <span class="math inline">k_{PAR}</span> [-] (Par_ExtCoeffPAR, see Tsubpartitioning_Maize_Roots1), which is set to 0.654 (<span class="citation" data-cites="Rose2023">Rose et al. (<a href="#ref-Rose2023" role="doc-biblioref">2023</a>)</span>). The GAI [m<sup>2</sup> m<sup>-2</sup>] is an external value provided by the dry matter partitioning component. The LUE decreases linearly with increasing Q , describing the effect of light saturation of the single leaf photosynthesis with higher irradiance at the canopy level (<span class="citation" data-cites="Kage2001d">Kage et al. (<a href="#ref-Kage2001d" role="doc-biblioref">2001a</a>)</span>; <span class="citation" data-cites="Kage2001e">Kage et al. (<a href="#ref-Kage2001e" role="doc-biblioref">2001b</a>)</span>). In contrast to many crop growth models, where radiation use efficiency is assumed to be constant or only indirectly affected by environmental stress factors, this approach explicitly accounts for the decline in efficiency at high radiation levels.</p>
 <p><span id="eq-LUE"><span class="math display">{\mathrm{LUE}}\mathrm{=}LUE_{max} - LUE_{steig}*PAR \tag{4}</span></span></p>
-<p>with <span class="math inline">LUE_{\text{max}}</span> [-] and <span class="math inline">LUE_{\text{steig}}</span> [-] as regression parameters, which were optimized by the model internal Levenberg-Marquard algorithm. In case of drought stress, LUE is reduced by the SWDF [-], originally proposed in a peanut growth model (<span class="citation" data-cites="ferreyra2003">Ferreyra et al. (<a href="#ref-ferreyra2003" role="doc-biblioref">2003</a>)</span>), describing the effects of water stress as non-linear function. This formulation allows for a more gradual decline in LUE under moderate stress and a stronger limitation under severe drought conditions, which was not accounted in another maize model.</p>
-<p><span id="eq-SWDF"><span class="math display">SWDF\mathrm{=\ 1\ -\ }{\frac{\mathrm{Act}_{\mathrm{trans}}}{\mathrm{Pot}_{\mathrm{trans}}}}^{SWDF_{fact}} \tag{5}</span></span></p>
+<p>with <span class="math inline">LUE_{\text{max}}</span> [-] and <span class="math inline">LUE_{\text{steig}}</span> [-] as regression parameters, which were optimized by the model internal Levenberg-Marquardt algorithm. In case of drought stress, LUE is reduced by the SWDF [-], originally proposed in a peanut growth model (<span class="citation" data-cites="ferreyra2003">Ferreyra et al. (<a href="#ref-ferreyra2003" role="doc-biblioref">2003</a>)</span>), describing the effects of water stress as non-linear function. This formulation allows for a more gradual decline in LUE under moderate stress and a stronger limitation under severe drought conditions, which was not accounted in another maize model.</p>
+<p><span id="eq-SWDF"><span class="math display">SWDF = \min\left(1, 1 - \left(1 - \frac{Act_{trans}}{Pot_{trans}}\right)^{SWDF_{fact}}\right) \tag{5}</span></span></p>
 <p>with the ratio between actual transpiration (<span class="math inline">Act_{\text{trans}}</span>, mm d<sup>-1</sup>) and potential transpiration (<span class="math inline">Pot_{\text{trans}}</span> mm d<sup>-1</sup>) and a power value <span class="math inline">SWDF_{\text{fact}}</span> [-] describing the non-linear relation of SWDF. The parameter <span class="math inline">SWDF_{\text{fact}}</span> was set to 1.6 after model internal optimisation.</p>
 </section>
 <section id="results-of-calibration-and-evaluations" class="level2" data-number="2.2">
@@ -4508,7 +4514,6 @@ Table 2: Results of model evaluation and calibration (in brackets) for abovegro
 </figcaption>
 <div aria-describedby="tbl-results-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
-<caption>Results of model evaluation and calibration (in brackets) for aboveground dry matter production (<span class="math inline">DM_{\text{shoot}}</span>). Performance was assessed with slope and intercept of the regression between measured and simulated data, R² and root mean square error (RMSE). n is the number of measurements.</caption>
 <colgroup>
 <col style="width: 14%">
 <col style="width: 14%">
@@ -4556,7 +4561,7 @@ Figure 1: Dry matter estimation in calibration (grey) and evaluation (colourful
 </div>
 <section id="large-scale-evaluation" class="level3" data-number="2.2.1">
 <h3 data-number="2.2.1" class="anchored" data-anchor-id="large-scale-evaluation"><span class="header-section-number">2.2.1</span> Large scale evaluation</h3>
-<p>The prediction of final yield with the baseline model and hybrid-specific parameters (see Tsubpartitioning_Maize_Roots_N) was evaluated using a large dataset (n: 287) comprising silage maize yield data of the two regarded hybrids. The dataset consists of 67 sites distributed all over Germany (<a href="#fig-Dtl" class="quarto-xref">Fig. 2</a>), collected during a time span of 14-years (2006 to 2021). The data were sourced from national hybrid trials published by the agricultural chambers and institutions of the federal states of Germany on https://www.isip.de/versuchsberichte. Soil textures were derived from the German soil map (<span class="citation" data-cites="buk200">(<a href="#ref-buk200" role="doc-biblioref"><strong>buk200?</strong></a>)</span>) from 0-200 cm, summarized in up to four different soil layers.</p>
+<p>The prediction of final yield with the baseline model and hybrid-specific parameters (see Tsubpartitioning_Maize_Roots_N) was evaluated using a large dataset (n: 287) comprising silage maize yield data of the two regarded hybrids. The dataset consists of 67 sites distributed all over Germany (<a href="#fig-Dtl" class="quarto-xref">Fig. 2</a>), collected during a time span of 14-years (2006 to 2021). The data were sourced from national hybrid trials published by the agricultural chambers and institutions of the federal states of Germany in the <a href="https://www.isip.de/versuchsberichte">ISIP trial reports</a>. Soil textures were derived from the German soil map (<span class="citation" data-cites="buk200">Bundesanstalt für Geowissenschaften und Rohstoffe (<a href="#ref-buk200" role="doc-biblioref">2025</a>)</span>) from 0-200 cm, summarized in up to four different soil layers.</p>
 <div id="fig-Dtl" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-Dtl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -5381,6 +5386,9 @@ Drought impact by activating SWDF
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-buk200" class="csl-entry" role="listitem">
+Bundesanstalt für Geowissenschaften und Rohstoffe, 2025. <a href="https://geoportal.bgr.de/mapapps/resources/apps/geoportal/index.html?lang=de#/geoviewer?metadataId=0f71e68f-8c83-4371-8842-1a26abed1854">Bodenübersichtskarte (BÜK200)</a>.
+</div>
 <div id="ref-ferreyra2003" class="csl-entry" role="listitem">
 Ferreyra, R.A., Dardanelli, J.L., Pachepsky, L.B., Collino, D.J., Faustinelli, P.C., Giambastiani, G., Reddy, V.R., Jones, J.W., 2003. Nonlinear effects of water stress on peanut photosynthesis at crop and leaf scales. Ecological Modelling 168, 57–76. <a href="https://doi.org/10.1016/s0304-3800(03)00195-9">https://doi.org/10.1016/s0304-3800(03)00195-9</a>
 </div>
@@ -5389,6 +5397,9 @@ Kage, H., Alt, C., Stützel, H., 2001a. Predicting dry matter production of caul
 </div>
 <div id="ref-Kage2001e" class="csl-entry" role="listitem">
 Kage, H., Stutzel, H., Alt, C., 2001b. Predicting dry matter production of cauliflower (brassica oleracea l. Botrytis) under unstressed conditions - part II. Comparison of light use efficiency and photosynthesis-respiration based modules. Scientia Horticulturae 87, 171–190. <a href="https://doi.org/10.1016/s0304-4238(00)00180-1">https://doi.org/10.1016/s0304-4238(00)00180-1</a>
+</div>
+<div id="ref-Marshall1996" class="csl-entry" role="listitem">
+Marshall, B., Squire, G.R., 1996. Non-linearity in rate-temperature relations of germination in oilseed rape. Journal of Experimental Botany 47, 1369–1375. <a href="https://doi.org/10.1093/jxb/47.9.1369">https://doi.org/10.1093/jxb/47.9.1369</a>
 </div>
 <div id="ref-Monsi1953" class="csl-entry" role="listitem">
 Monsi, M., Saeki, T., 1953. <span>Ü</span>ber den lichtfaktor in den pflanzengesellschaften und seine bedeutung f<span>ü</span>r die stoffproduktion. Japan.J.Bot. 14, 22–52.

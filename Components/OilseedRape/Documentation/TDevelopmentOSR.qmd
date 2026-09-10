@@ -1,0 +1,631 @@
+---
+title: "TDevelopmentOSR"
+author: "Agronomy and Crop Science Group, Kiel University"
+date: "`r Sys.Date()`"
+---
+
+```{r}
+#| label: SetupLibraries
+#| include: false
+
+knitr::opts_chunk$set(
+  echo = FALSE, warning = FALSE, message = FALSE,
+  fig.align = "center", fig.width = 10, fig.height = 5
+)
+library(knitr)
+library(xml2)
+library(dplyr)
+library(ggplot2)
+library(here)
+source(here("ExtractInformationFromXML.R"))
+source(here("Rlib/DokuUtilFunctions.R"))
+```
+
+```{r}
+#| label: ReadDocumentationSources
+#| include: false
+
+fn_source <- here("Components/OilseedRape/DevelopmentOSR.pas")
+fn_xml_docu <- here("XML_Delphi_Docu/DevelopmentOSR.xml")
+fn_csv <- here("csv_Hume_Docu/OSRDevelopment.csv")
+stopifnot(file.exists(fn_source), file.exists(fn_xml_docu), file.exists(fn_csv))
+
+output <- ExtractXMLDocuInformation(fn_xml_docu, ClassName = "TDevelopmentOSR")
+doc <- read_xml(fn_xml_docu)
+source_lines <- readLines(fn_source, encoding = "latin1", warn = FALSE)
+
+# Read this export directly: it uses ExternalValue rather than the ExtVar
+# label expected by the shared CSV helper. Keep configured options as well.
+entities <- read.delim(
+  fn_csv, sep = ";", encoding = "UTF-8",
+  colClasses = "character", na.strings = c("NA", ""),
+  check.names = FALSE
+)
+names(entities) <- sub("^\ufeff", "", names(entities))
+stopifnot(length(unique(entities$Submodel)) == 1L)
+
+# Constructor defaults must not be confused with values loaded from an INI.
+par_lines <- grep("^\\s*ParCreate\\(", source_lines, value = TRUE)
+par_matches <- regmatches(
+  par_lines,
+  regexec("^\\s*ParCreate\\('([^']+)',\\s*'[^']*',\\s*([^,]+),", par_lines)
+)
+stopifnot(all(lengths(par_matches) == 3L))
+source_defaults <- setNames(
+  vapply(par_matches, function(x) as.numeric(trimws(x[3])), numeric(1)),
+  vapply(par_matches, function(x) x[2], character(1))
+)
+csv_parameters <- entities[entities$EntityType == "Parameter", ]
+configured <- setNames(as.numeric(csv_parameters$Value), csv_parameters$EntityName)
+stopifnot(setequal(names(source_defaults), names(configured)))
+
+# These descriptions follow the current executable code. Some export
+# comments retain older EC-stage assignments.
+descriptions <- c(
+  DVS = "Continuous development stage; integrated from the active DVR.",
+  Blattanzahl = "Number of unfolded true leaves after cotyledon unfolding.",
+  NumExtInternodes = "Number of extended internodes during stem elongation.",
+  Fv = "Accumulated vernalisation, normally between zero and one.",
+  TS = "Effective temperature sum, including time before sowing.",
+  TS11 = "Effective temperature sum after emergence (DVS = 1).",
+  DVR1 = "Potential development rate before emergence.",
+  DVR2 = "Potential development rate from emergence to DVSInflor; includes photoperiod and vernalisation.",
+  DVR2a = "Potential development rate from DVSInflor to onset of flowering.",
+  DVR2b = "Created but not assigned or used by CalcRates.",
+  DVR3 = "Potential development rate during flowering.",
+  DVR4 = "Potential development rate after flowering.",
+  Teff = "Daily mean temperature above Tb, bounded below by zero.",
+  Fp = "Photoperiod response before sensitivity adjustment.",
+  Fp_eff = "Photoperiod multiplier after sensitivity adjustment.",
+  Fv_eff = "Vernalisation multiplier after sensitivity adjustment.",
+  BBCH = "BBCH stage converted from the legacy EC scale.",
+  EC = "Legacy Schuette EC stage calculated after integration.",
+  BBCH30 = "DVS / DVS30; zero if the denominator is zero.",
+  BBCH50 = "DVS / DVSInflor; zero if the denominator is zero.",
+  DOY51 = "First day of year with EC >= 51: inflorescence emergence, not flowering.",
+  DOY90 = "First day of year with EC >= 90; not the DVS = 4 maturity threshold.",
+  aT1 = "Temperature coefficient before emergence.",
+  aT2 = "Temperature coefficient from emergence to DVSInflor.",
+  aT2a = "Temperature coefficient from DVSInflor to DVS = 2.",
+  aT3 = "Temperature coefficient during flowering (DVS 2 to 3).",
+  aT4 = "Temperature coefficient after flowering (DVS >= 3).",
+  Dlpmin = "Day length below which the raw photoperiod response is zero.",
+  Dlpopt = "Day length at which the raw photoperiod response reaches one.",
+  DVS13 = "Legacy parameter; not read by CalcRates or Integrate.",
+  DVS30 = "DVS threshold for the onset of stem elongation.",
+  DVSInflor = "DVS threshold for the onset of inflorescence emergence; DVS50 in the manuscript.",
+  fp_sens = "Photoperiod sensitivity: zero disables the response, one gives the full response.",
+  fv_sens = "Vernalisation sensitivity: zero disables the response, one gives the full response.",
+  Phyllochron = "Effective thermal time per unfolded true leaf.",
+  Rvmax = "Maximum daily increase in the vernalisation state.",
+  ScaleDevGen = "Multiplier of DVR3 and DVR4.",
+  ScaleDevVeg = "Multiplier of DVR1, DVR2 and DVR2a.",
+  SowingDate = "Sowing date as a Delphi date serial, in the same time coordinate as GlobTime.",
+  Tb = "Common base temperature for development, leaf appearance and internode extension.",
+  TSumCotEm = "Effective thermal time from emergence to complete cotyledon unfolding.",
+  TSumInternode = "Effective thermal time per extended internode.",
+  Tvmin = "Lower temperature limit for vernalisation.",
+  Tvopt1 = "Lower optimum temperature for vernalisation.",
+  Tvopt2 = "Upper optimum temperature for vernalisation.",
+  Tvmax = "Upper temperature limit for vernalisation.",
+  DayLengthP = "Daily photoperiod supplied by another submodel.",
+  TMPM = "Daily mean air temperature supplied externally."
+)
+unit_overrides <- c(
+  aT1 = "[1/(degree C d)]", aT2 = "[1/(degree C d)]",
+  aT2a = "[1/(degree C d)]", aT3 = "[1/(degree C d)]",
+  aT4 = "[1/(degree C d)]", Phyllochron = "[degree C d]",
+  TSumCotEm = "[degree C d]", TSumInternode = "[degree C d]",
+  Tb = "[degree C]", Tvmin = "[degree C]", Tvopt1 = "[degree C]",
+  Tvopt2 = "[degree C]", Tvmax = "[degree C]",
+  TS = "[degree C d]", TS11 = "[degree C d]", Teff = "[degree C]",
+  DVR1 = "[1/d]", DVR2 = "[1/d]", DVR2a = "[1/d]",
+  DVR2b = "[1/d]", DVR3 = "[1/d]", DVR4 = "[1/d]",
+  Rvmax = "[1/d]", fp_sens = "[-]", DayLengthP = "[h]",
+  TMPM = "[degree C]", SowingDate = "[date serial]",
+  DOY51 = "[day of year]", DOY90 = "[day of year]"
+)
+entity_table <- function(type) {
+  x <- entities[entities$EntityType == type, , drop = FALSE]
+  x$Comment <- ifelse(
+    x$EntityName %in% names(descriptions),
+    descriptions[x$EntityName], x$Comment
+  )
+  idx <- x$EntityName %in% names(unit_overrides)
+  x$Units[idx] <- unit_overrides[x$EntityName[idx]]
+  x
+}
+number_text <- function(x) {
+  vapply(x, function(value) {
+    format(value, scientific = FALSE, trim = TRUE, digits = 8)
+  }, character(1), USE.NAMES = FALSE)
+}
+table_print <- function(x) {
+  x[] <- lapply(x, function(v) {
+    v <- as.character(v)
+    v[is.na(v)] <- ""
+    v
+  })
+  kable(x, row.names = FALSE)
+}
+```
+
+# Summary
+
+`TDevelopmentOSR`, implemented in `DevelopmentOSR.pas`, simulates the phenological development of winter oilseed rape (*Brassica napus* L.). Daily mean temperature and photoperiod drive a continuous development state (`DVS`). Additional states describe vernalisation, unfolded leaves, extended internodes and thermal time. After integration, the model converts these states first to a legacy EC scale and then to BBCH.
+
+The scientific concept is the BBCH extension of BRASNAP-PH described by @Bottcher2016, based on @Habekotte1997. Six phases are represented: emergence, leaf development, stem elongation, inflorescence emergence, flowering, and pod development to maturity. Biomass growth, nitrogen uptake, soil water and branching are outside this class.
+
+This page follows the organisation of the [THumeWheatLeafArea documentation](../../CERES%20Wheat/Documentation/THumeWheatLeafArea.qmd). Its sources are the [Pascal unit](../DevelopmentOSR.pas), [XML export](../../../XML_Delphi_Docu/DevelopmentOSR.xml), [CSV export](../../../csv_Hume_Docu/OSRDevelopment.csv), and supplied [publication manuscript](A%20Phenological%20Model%20of%20Winter%20Oilseed%20Rape%20According%20to%20the%20BBCH%20Scale.docx). For the wider crop model, see [OSR growth model](OSR_growth_model.qmd).
+
+::: callout-note
+## Source code, configured values and manuscript
+
+Equations below describe the current Pascal implementation unless explicitly identified as manuscript equations. The CSV is an export for `DevelopmentOSR1` from `Rosenthal_Patron_150_2002.ini`; its parameter values are **configured values**, not constructor defaults. Tables show both where relevant. XML supplies the class structure but contains no descriptive `devnotes` for this unit, so explanations are derived from the source and manuscript.
+:::
+
+## Descendence
+
+The ancestor classes of `TDevelopmentOSR` in the supplied Win32 XML export are shown in @tbl-OSRAncestorClasses.
+
+```{r}
+#| label: tbl-OSRAncestorClasses
+#| tbl-cap: "Ancestor classes of TDevelopmentOSR in the supplied XML export."
+
+table_print(GetAncestorClasses(fn_xml_docu, "TDevelopmentOSR"))
+```
+
+`TSubmodel` supplies the object lists, initialisation from configuration files, external variable connections and state integration. The VCL ancestors shown here belong to the visual build.
+
+# Scientific Background
+
+## Model concept and developmental phases
+
+The manuscript describes winter oilseed rape phenology as a response to temperature, vernalisation and photoperiod. Extending BRASNAP-PH with leaf and internode counters permits a more detailed morphological description than predicting emergence, flowering and maturity alone. The photoperiod and vernalisation effects on `DVS` end at inflorescence emergence, earlier than in the original BRASNAP-PH formulation. This is the main reason for introducing `DVSInflor` and `aT2a`.
+
+The six model phases and their rate equations are summarised in @tbl-OSRPhases. The ranges indicate the intended morphological phases; the exact numerical boundary behaviour of the implementation is described below.
+
+::: {#tbl-OSRPhases}
+| Phase | Intended BBCH range | Development interval | Active rate in normal operation |
+|------------------|------------------|------------------|------------------|
+| Sowing to emergence | 00–09 | $0 \le DVS < 1$ | `DVR1` |
+| Cotyledon unfolding and leaf development | 09–19 | $1 \le DVS < DVS30$ | `DVR2` |
+| Stem elongation | 30–39 | $DVS30 \le DVS < DVSInflor$ | `DVR2` |
+| Inflorescence emergence | 50–59, approaching 60 | $DVSInflor \le DVS < 2$ | `DVR2a` |
+| Flowering | 60–69 | $2 \le DVS < 3$ | `DVR3` |
+| Pod development and maturity | 70–89 | $3 \le DVS \le 4$ | `DVR4` |
+
+: Developmental phases represented by TDevelopmentOSR.
+:::
+
+The manuscript calls `DVSInflor` $DVS50$ and fixes it at 1.5 during calibration. The constructor instead supplies 1.327; the provided CSV contains 1.5. The model does not simulate a separate BBCH 20–29 branching phase. In the manuscript, side shoot development is treated as overlapping with stem elongation and inflorescence emergence.
+
+## Effective temperature and thermal time
+
+The effective temperature is the non-negative difference between the external daily mean temperature $T$ (`TMPM`) and the base temperature $T_b$ (`Tb`):
+
+$$T_{\mathrm{eff}} = \max(0,T-T_b).$$ {#eq-OSRTeff}
+
+The source default and CSV value for $T_b$ are both $3\,^\circ\mathrm{C}$. The manuscript used a common base temperature because estimating separate base temperatures for the developmental phases produced uncertain and correlated parameter estimates. Temperature here has no upper optimum or maximum for development; the upper limit introduced below applies only to vernalisation.
+
+The total effective temperature sum obeys
+
+$$\frac{dTS}{dt}=T_{\mathrm{eff}}.$$ {#eq-OSRTS}
+
+`TS` accumulates even before sowing; it is not the same as thermal time since emergence. `TS11` accumulates effective temperature after $DVS=1$. On a step crossing emergence, the code assigns
+
+$$\Delta TS11 = T_{\mathrm{eff}}-\frac{1-DVS}{aT1}.$$ {#eq-OSRTS11Crossing}
+
+This crossing expression assumes a daily step and does not include `ScaleDevVeg`. Once $DVS\ge1$, `TS11.c` equals `Teff.v`. These sums have the physical unit $^\circ\mathrm{C}\,\mathrm{d}$, although the source registers them as dimensionless.
+
+## Vernalisation
+
+The local function `dFv_dt(T)` returns a **dimensionless temperature response**, denoted $f_{v,T}$ here. It is not yet the daily change of `Fv`:
+
+$$f_{v,T}(T)=
+\begin{cases}
+0, & T\le T_{v,\min}\ \mathrm{or}\ T\ge T_{v,\max},\\
+\dfrac{T-T_{v,\min}}{T_{v,\mathrm{opt1}}-T_{v,\min}},
+ & T_{v,\min}<T<T_{v,\mathrm{opt1}},\\
+1, & T_{v,\mathrm{opt1}}\le T\le T_{v,\mathrm{opt2}},\\
+\dfrac{T_{v,\max}-T}{T_{v,\max}-T_{v,\mathrm{opt2}}},
+ & T_{v,\mathrm{opt2}}<T<T_{v,\max}.
+\end{cases}$$ {#eq-OSRVernalisationTemperature}
+
+For a daily step, the change assigned to `Fv.c` is
+
+$$\frac{dF_v}{dt}=
+\begin{cases}
+\min(R_{v,\max}f_{v,T}(T),\,1-F_v), & DVS\ge1\ \mathrm{and}\ F_v<1,\\
+0, & \mathrm{otherwise}.
+\end{cases}$$ {#eq-OSRFv}
+
+The state starts at zero and is capped at one for daily integration. `Rvmax` therefore has an effective unit of $\mathrm{d}^{-1}$ in this implementation, despite the empty unit string in the constructor and different notation in the manuscript table. The code does not stop accumulation at flowering: it continues until full vernalisation or the final EC stop condition. Only the `DVR2` development rate uses this state.
+
+```{r}
+#| label: fig-OSRVernalisation
+#| fig-cap: "Daily vernalisation response using the configured CSV values and constructor defaults. This is an illustration of the response function, not a crop simulation."
+
+vernalisation_response <- function(T, p) {
+  pmax(0, pmin(
+    1, (T - p["Tvmin"]) / (p["Tvopt1"] - p["Tvmin"]),
+    (p["Tvmax"] - T) / (p["Tvmax"] - p["Tvopt2"])
+  ))
+}
+temperature <- seq(-8, 22, length.out = 301)
+fv_plot <- bind_rows(
+  data.frame(T = temperature, Rate = configured["Rvmax"] *
+    vernalisation_response(temperature, configured), Values = "CSV configuration"),
+  data.frame(T = temperature, Rate = source_defaults["Rvmax"] *
+    vernalisation_response(temperature, source_defaults), Values = "Source defaults")
+)
+ggplot(fv_plot, aes(T, Rate, colour = Values, linetype = Values)) +
+  geom_line(linewidth = 1.1) +
+  labs(x = "Daily mean temperature [degree C]",
+       y = "Vernalisation rate [1/d]", colour = NULL, linetype = NULL) +
+  theme_bw(base_size = 14) + theme(legend.position = "bottom")
+```
+
+## Photoperiod and sensitivity
+
+For the external day length $L$ (`DayLengthP`), the local function `Fphoto` calculates
+
+$$F_p(L)=
+\begin{cases}
+0, & L<L_{\min},\\
+\dfrac{L-L_{\min}}{L_{\mathrm{opt}}-L_{\min}},
+ & L_{\min}\le L<L_{\mathrm{opt}},\\
+1, & L\ge L_{\mathrm{opt}}.
+\end{cases}$$ {#eq-OSRFp}
+
+`Dlpmin` and `Dlpopt` correspond to the manuscript's basic and saturating photoperiod, respectively. The CSV contains 5.74 and 14.59 h; the constructor uses 5.7 and 14.8 h. Latitude is not an input to this class: an external day length component must perform the astronomical calculation.
+
+The code adds sensitivity parameters $s_p$ (`fp_sens`) and $s_v$ (`fv_sens`):
+
+$$F_{p,\mathrm{eff}}=\operatorname{clip}_{[0,1]}
+ \left(F_p+(1-s_p)(1-F_p)\right),
+\qquad
+F_{v,\mathrm{eff}}=\operatorname{clip}_{[0,1]}
+ \left(F_v+(1-s_v)(1-F_v)\right).$$ {#eq-OSRSensitivity}
+
+Here $\operatorname{clip}_{[0,1]}(x)=\max(0,\min(1,x))$. A sensitivity of one gives the full response; zero makes the corresponding effective multiplier one. Both defaults are one. The documented sensitivity range is zero to one.
+
+```{r}
+#| label: fig-OSRPhotoperiod
+#| fig-cap: "Effect of photoperiod sensitivity on the effective photoperiod multiplier, using the CSV day length thresholds."
+
+photo_response <- function(L, p) {
+  pmax(0, pmin(1, (L - p["Dlpmin"]) / (p["Dlpopt"] - p["Dlpmin"])))
+}
+photo_plot <- expand.grid(DayLength = seq(0, 20, by = 0.1),
+                          Sensitivity = c(0, 0.5, 1))
+photo_plot$Fp <- photo_response(photo_plot$DayLength, configured)
+photo_plot$Effective <- with(
+  photo_plot, pmax(0, pmin(1, Fp + (1 - Sensitivity) * (1 - Fp)))
+)
+ggplot(photo_plot, aes(DayLength, Effective,
+                      colour = factor(Sensitivity))) +
+  geom_line(linewidth = 1.1) +
+  labs(x = "Day length [h]", y = "Effective photoperiod multiplier [-]",
+       colour = "fp_sens") +
+  theme_bw(base_size = 14) + theme(legend.position = "bottom")
+```
+
+## Development rates
+
+With $S_{\mathrm{veg}}$ denoting `ScaleDevVeg` and $S_{\mathrm{gen}}$ denoting `ScaleDevGen`, the five calculated potential rates are
+
+$$\begin{aligned}
+DVR1 &= S_{\mathrm{veg}}\,T_{\mathrm{eff}}\,aT1,\\
+DVR2 &= S_{\mathrm{veg}}\,T_{\mathrm{eff}}\,aT2
+        \,F_{p,\mathrm{eff}}\,F_{v,\mathrm{eff}},\\
+DVR2a &= S_{\mathrm{veg}}\,T_{\mathrm{eff}}\,aT2a,\\
+DVR3 &= S_{\mathrm{gen}}\,T_{\mathrm{eff}}\,aT3,\\
+DVR4 &= S_{\mathrm{gen}}\,T_{\mathrm{eff}}\,aT4.
+\end{aligned}$$ {#eq-OSRDevelopmentRates}
+
+The coefficients $aT_i$ have units $(^\circ\mathrm{C}\,\mathrm{d})^{-1}$, so development rates have units $\mathrm{d}^{-1}$. `DVR2b` is declared and registered, but is neither calculated nor used. `ScaleDevVeg` also scales inflorescence emergence through `DVR2a`; it does not scale leaf appearance, internode extension or vernalisation.
+
+With `OptimizeOption = All`, the active rate is selected according to @tbl-OSRPhases, once `GlobTime >= SowingDate` and while `EC < 100`. All five potential rates are calculated each time `CalcRates` runs, irrespective of the active phase.
+
+### Crossing a development boundary
+
+For a daily step crossing a threshold $D_b$, the implementation replaces the old rate by the increment
+
+$$\Delta DVS=(D_b-DVS)+r_{\mathrm{next}}
+ \left(1-\frac{D_b-DVS}{r_{\mathrm{current}}}\right).$$ {#eq-OSRBoundary}
+
+The first term completes the current phase; the remaining fraction of the day uses the next phase's rate. Separate checks occur at 1, `DVSInflor`, 2 and 3, with additional conditions for optimisation modes.
+
+The inherited `TSubmodel.Integrate` updates each state as $X_{\mathrm{new}}=X+X.c\,\Delta t$. However, the boundary checks use `DVS + DVS.c` without multiplying by $\Delta t$, and the vernalisation cap also assumes one day. **A one-day integration step is therefore required to reproduce the intended calculations.** These expressions are not a general variable-step event solver.
+
+## Cotyledon unfolding and leaf appearance
+
+Cotyledon unfolding is tracked with `TS11`. Once `TS11 >= TSumCotEm` and while `DVS < DVS30`, the leaf state `Blattanzahl`, denoted $N_L$, increases as
+
+$$\frac{dN_L}{dt}=
+\begin{cases}
+T_{\mathrm{eff}}/\mathrm{Phyllochron},
+ & TS11\ge TSumCotEm\ \mathrm{and}\ DVS<DVS30,\\
+0, & \mathrm{otherwise}.
+\end{cases}$$ {#eq-OSRLeafNumber}
+
+The manuscript estimates `TSumCotEm` at 19.97 $^\circ\mathrm{C}\,\mathrm{d}$ and the phyllochron at 64.05 $^\circ\mathrm{C}\,\mathrm{d}$, matching the CSV. The source defaults are 60 and 59.2, respectively. Leaf number remains a continuous state, rather than an integer counter. Its rate has no explicit photoperiod or vernalisation multiplier, although these factors affect the duration of the leaf development phase through `DVS`.
+
+The manuscript's direct conversion is $BBCH=10+\min(N_L,9)$. The current source instead computes leaf EC using
+
+$$EC_{\mathrm{leaf}}=
+\begin{cases}
+13+2N_L, & N_L\le4,\\
+21+(N_L-4), & 4<N_L\le9,\\
+26+(N_L-9)/3, & 9<N_L\le12,\\
+27, & N_L>12,
+\end{cases}$$ {#eq-OSRLeafEC}
+
+then converts EC to BBCH. Within this leaf branch, the composed conversion agrees with the manuscript's capped relationship: $BBCH=10+N_L$ up to nine leaves, then BBCH remains 19. For example, $N_L=5$ gives EC 22 and BBCH 15, while $N_L=9$ gives EC 26 and BBCH 19.
+
+## Internode extension
+
+The state `NumExtInternodes`, denoted $N_I$, increases according to
+
+$$\frac{dN_I}{dt}=
+\begin{cases}
+T_{\mathrm{eff}}/TSumInternode,
+ & DVS\ge DVS30\ \mathrm{and}\
+   (DVS<DVSInflor\ \mathrm{or}\ fOptimizeOpt=OOEC39),\\
+0, & \mathrm{otherwise}.
+\end{cases}$$ {#eq-OSRInternodes}
+
+During the stem elongation conversion branch, $EC=30+\min(N_I,9)$ and BBCH equals EC. The CSV value of `TSumInternode` is 17.06 $^\circ\mathrm{C}\,\mathrm{d}$; the source default is 25. As in leaf appearance, the state itself is not capped at nine; the stage conversion is capped. The manuscript's estimate of this thermal interval used only 12 observations, which limits its precision.
+
+## Conversion from DVS to EC and BBCH
+
+`Integrate` first advances the states and then selects the first matching EC branch in @tbl-OSRECConversion. This order matters: cotyledon unfolding is tested before the `DVS30` threshold, and the comparisons use `<=` whereas rate selection uses `<`.
+
+::: {#tbl-OSRECConversion}
+| Condition, in source order (`All` mode) | EC calculation |
+|----|----|
+| $DVS\le1$ | $1+10DVS$ |
+| $TS11\le TSumCotEm$ | $11+2TS11/TSumCotEm$ |
+| $DVS\le DVS30$ | Leaf conversion in @eq-OSRLeafEC |
+| $DVS\le DVSInflor$ | $30+\min(N_I,9)$ |
+| $DVS\le2$ | $51+10(DVS-DVSInflor)/(2-DVSInflor)$ |
+| $DVS\le3$ | $61+9(DVS-2)$ |
+| Otherwise | $70+19(DVS-3)$ |
+
+: EC conversion after state integration, excluding the optimisation overrides.
+:::
+
+The final transformation is a piecewise mapping of EC to BBCH. Important landmarks include EC 11 → BBCH 9 (emergence), EC 13 → BBCH 10 (cotyledons unfolded), EC 51 → BBCH 50 (inflorescence emergence), EC 61 → BBCH 60 (onset of flowering), and EC 89 → BBCH 89 (maturity).
+
+::: callout-important
+## Differences from the manuscript's direct BBCH equations
+
+Before emergence, the manuscript uses $BBCH=9DVS$, whereas the source applies the nonlinear EC-to-BBCH mapping to $EC=1+10DVS$. During inflorescence emergence and flowering, the source also uses a piecewise mapping instead of a single linear interpolation in BBCH. At exactly $DVS=3$, the source yields EC 70 and BBCH 70, while the manuscript labels this boundary as end of flowering, BBCH 69. At exactly $DVSInflor$, the earlier stem elongation branch still applies if reached.
+
+The source continues past $DVS=4$: its final rate stop is `EC >= 100`, not BBCH 89. For $89<EC<90$ none of the BBCH assignments applies, so the preceding BBCH value is retained. At $EC\ge90$, BBCH is set equal to EC. These are implementation details, not additional validated phenological phases.
+:::
+
+The exact conversion can be inspected in the following source excerpt.
+
+```{r}
+#| label: OSRBBCHSource
+#| results: asis
+#| code-fold: true
+
+bbch_start <- grep("^\\s*if EC\\.v<=3 then", source_lines)
+bbch_end <- grep("^\\s*if EC\\.v >= 90 then", source_lines)
+stopifnot(length(bbch_start) == 1L, length(bbch_end) == 1L)
+cat("\n```pascal\n",
+    paste(source_lines[bbch_start:bbch_end], collapse = "\n"),
+    "\n```\n", sep = "")
+```
+
+### Diagnostic variables and dates
+
+`BBCH30` and `BBCH50` are ratios, not BBCH codes:
+
+$$BBCH30=\frac{DVS}{DVS30},\qquad
+BBCH50=\frac{DVS}{DVSInflor}.$$
+ {#eq-OSRDiagnosticRatios}
+
+The source returns zero if the respective denominator is zero. The ratios reach one at the configured DVS thresholds and can be used when estimating these thresholds.
+
+`DOY51` records the first integrated step with `EC >= 51`, corresponding to BBCH 50. Its source/CSV description says “flowering start”, but the implemented event is **inflorescence emergence**. Flowering starts at EC 61 / BBCH 60. `DOY90` records the first step with `EC >= 90`, later than the maturity point $DVS=4$, EC 89. Both are day-of-year numbers and do not retain a year. They are recorded only once after `Init`.
+
+## Calibration, validation and scope
+
+The supplied manuscript reports observations from Germany (839), Italy (577) and France (144). For the BBCH model, 659 observations were used for calibration and 658 for cross-calibration. Another 243 German observations, unsuitable for the boundary-based calibration procedure, were included in validation. The corresponding validation and cross-validation totals were 901 and 902.
+
+The manuscript's pooled results are given in @tbl-OSRValidation. They describe the study's model and parameterisation; they are **not a fresh validation of the current Pascal file or of the supplied INI configuration**.
+
+::: {#tbl-OSRValidation}
+| Evaluation       | Observations | RMSE in BBCH stages | RMSE in days |
+|------------------|-------------:|--------------------:|-------------:|
+| Validation       |          901 |                2.84 |        21.19 |
+| Cross-validation |          902 |                3.21 |        26.42 |
+
+: Reported BBCH-model performance from manuscript Table 6.
+:::
+
+Errors measured in BBCH stages and in calendar days should not be interchanged. During slow winter development, a small stage error can correspond to many days. In manuscript Table 7, leaf development had an RMSE of 2.40 BBCH stages but 23.33 days, while inflorescence emergence had an RMSE of 4.14 BBCH stages and 8.00 days.
+
+The manuscript's emergence calculation assumes suitable seedbed conditions, sowing depth and water supply. Those effects are not model inputs here. Other limitations are the lack of explicit genotype-specific responses in the study's calibration, uncertain estimates of some photoperiod/vernalisation parameters, and overlapping morphological events during stem elongation and inflorescence emergence. The supplied parameter set should not be assumed suitable for all cultivars or environments without evaluation.
+
+# Submodel objects
+
+Following the HUME dynamic-system structure, states are integrated, parameters configure the process equations, variables store calculated quantities, and external variables provide driving data. The following inventories are generated from the CSV. Descriptions are reconciled with the current source, and physical units are supplied where the export has missing, dimensionless or incorrectly encoded labels. The input files themselves are not modified.
+
+## State variables
+
+The CSV contains `r sum(entities$EntityType == "State")` state variables.
+
+```{r}
+#| label: tbl-OSRStates
+#| tbl-cap: "State variables and initial values in the supplied CSV."
+
+x <- entity_table("State")
+table_print(data.frame(
+  State = x$EntityName, Units = x$Units,
+  "CSV initial value" = x$Value, Description = x$Comment,
+  check.names = FALSE
+))
+```
+
+All six constructor state defaults are zero. After inherited initialisation, `Init` explicitly resets `Blattanzahl`, `Fv` and `TS` to zero; `DVS`, `TS11` and `NumExtInternodes` retain the values supplied by inherited initialisation. This distinction matters when attempting to restart a simulation from an intermediate stage.
+
+## Parameters
+
+The CSV contains `r nrow(csv_parameters)` parameters. @tbl-OSRParameters compares the constructor defaults extracted from `ParCreate` calls with the supplied configuration. Several coefficients differ substantially, especially `aT2` and `aT2a`; do not mix values from the two columns to reproduce the manuscript.
+
+```{r}
+#| label: tbl-OSRParameters
+#| tbl-cap: "Parameters: constructor defaults versus the supplied CSV configuration."
+
+x <- entity_table("Parameter")
+table_print(data.frame(
+  Parameter = x$EntityName, Units = x$Units,
+  "Source default" = number_text(source_defaults[x$EntityName]),
+  "CSV value" = x$Value, Description = x$Comment,
+  check.names = FALSE
+))
+```
+
+`SowingDate` is a Delphi serial date, not a day of year. The exported value corresponds to `r format(as.Date(configured["SowingDate"], origin = "1899-12-30"), "%Y-%m-%d")`. The filename of the original INI does not itself establish the sowing year; the configured date must agree with the simulation's time axis.
+
+For meaningful normal operation, the equations require positive `Phyllochron`, `TSumInternode` and `TSumCotEm`, ordered cardinal temperatures, `Dlpopt > Dlpmin`, and thresholds $1<DVS30<DVSInflor<2$. The source does not systematically validate these conditions.
+
+## Variables
+
+The CSV contains `r sum(entities$EntityType == "Variable")` variables.
+
+```{r}
+#| label: tbl-OSRVariables
+#| tbl-cap: "Calculated and diagnostic variables, with descriptions following the current source."
+
+x <- entity_table("Variable")
+table_print(data.frame(Variable = x$EntityName, Units = x$Units,
+                       Description = x$Comment))
+```
+
+## External variables
+
+The CSV contains `r sum(entities$EntityType %in% c("ExternalValue", "ExtVar"))` external variables. The present export labels these `ExternalValue`. Its connection names are configuration metadata, not portable paths or constructor defaults.
+
+```{r}
+#| label: tbl-OSRExternalVariables
+#| tbl-cap: "External driving variables and connection names from the CSV."
+
+x <- entity_table("ExternalValue")
+connection <- basename(gsub("\\\\", "/", x$Option))
+table_print(data.frame(
+  Variable = x$EntityName, Units = x$Units,
+  Description = x$Comment, "CSV connection (basename)" = connection,
+  check.names = FALSE
+))
+```
+
+The weather series and day length component must supply daily values for the same simulation dates. No weather or crop observations are embedded in the CSV; the figures above illustrate the equations only.
+
+## Options
+
+The CSV contains `r sum(entities$EntityType == "Option")` options, including inherited output controls.
+
+```{r}
+#| label: tbl-OSROptions
+#| tbl-cap: "Configured options in the supplied CSV."
+
+x <- entities[entities$EntityType == "Option", ]
+table_print(data.frame(Option = x$EntityName, "CSV setting" = x$Option,
+                       Description = x$Comment, check.names = FALSE))
+```
+
+`OptimizeOption` is stored in the field `OptimizeOpt`. `Init` interprets its value without regard to case. The recognised values and their enum mapping are shown in @tbl-OSROptimiseModes.
+
+::: {#tbl-OSROptimiseModes}
+| Option string | Enum | Effect on phase handling |
+|------------------------|------------------------|------------------------|
+| `All` | `OOAll` | Normal sequence through all development phases. |
+| `Until_EC11_BBCH09` | `OOEC11` | Continues the emergence rate and emergence EC conversion. |
+| `Until_EC13_BBCH10` | `OOEC13` | Extends the cotyledon EC branch after emergence. |
+| `Until_EC27_BBCH19` | `OOEC27` | Extends the leaf EC branch after cotyledon unfolding. |
+| `Until_EC39_BBCH39` | `OOEC39` | Extends stem EC conversion and internode accumulation. |
+| `Until_EC51_BBCH50` | `OOEC51` | Extends selection of `DVR2`; the inflorescence crossing correction remains enabled. |
+| `Until_EC61_BBCH60` | `OOEC61` | Extends selection of `DVR2a` after earlier phases. |
+| `Until_EC69_BBCH69` | `OOEC69` | Extends selection of `DVR3` after earlier phases. |
+
+: Optimisation option strings and internal enum values.
+:::
+
+These are phase-specific fitting modes, **not stop-at-stage controls**. They alter rate selection, selected crossing corrections and some EC branches; this class does not itself filter observations. Normal simulations should use `All`. Unrecognised strings have no explicit rejection or fallback in `Init`, so use a recognised value.
+
+# Further source code documentation
+
+## Enumerations
+
+The XML contains `r nrow(output$enum_df)` enumeration type.
+
+```{r}
+#| label: tbl-OSREnumerations
+#| tbl-cap: "Enumeration declared in DevelopmentOSR."
+
+table_print(output$enum_df[c("name", "elements")])
+```
+
+The ordinal order is significant: `CalcRates` compares `Ord(fOptimizeOpt)` with enum values to select rates and enable boundary corrections. The order of strings in `OptimizeOpt.OptionList` is different (`All` is first), but `Init` maps strings explicitly rather than using list positions.
+
+## Constants
+
+After excluding enumeration members, the XML contains `r nrow(output$const_df)` standalone constants. The eight `OO...` identifiers listed as `const` nodes by the exporter are the members of `TOptimizeOpt`, not additional numeric model parameters.
+
+## Functions
+
+The XML contains `r nrow(output$fun_df)` class-level functions. The two local functions nested inside `CalcRates` are not included in that inventory:
+
+::: {#tbl-OSRLocalFunctions}
+| Local function | Input | Result |
+|------------------------|------------------------|------------------------|
+| `dFv_dt(T: real): real` | Daily mean temperature | Dimensionless trapezoidal vernalisation response (@eq-OSRVernalisationTemperature). |
+| `Fphoto(Dl: real): real` | Day length | Dimensionless photoperiod response (@eq-OSRFp). |
+:::
+## Procedures
+
+The four class procedures declared in the XML are listed in @tbl-OSRProcedures. Their explanations are supplied here from the Pascal bodies because the XML summaries are empty.
+
+```{r}
+#| label: tbl-OSRProcedures
+#| tbl-cap: "Procedures of TDevelopmentOSR, with source-derived responsibilities."
+
+responsibilities <- c(
+  CreateAll = "Calls inherited CreateAll; creates states, variables, parameters, external inputs and the optimisation option.",
+  Init = "Calls inherited Init; resets selected states and diagnostics; maps the optimisation string to its enum.",
+  CalcRates = "Calculates environmental responses, potential and active development rates, thermal-time rates, leaf appearance and internode extension.",
+  Integrate = "Calls inherited state integration; converts states to EC and BBCH; updates threshold ratios and first-occurrence dates."
+)
+x <- output$proc_df
+x$parameters[x$name == "Init"] <- "var GlobMod: TMod"
+table_print(data.frame(
+  Procedure = x$name, Visibility = x$visibility,
+  Parameters = x$parameters, Responsibility = unname(responsibilities[x$name])
+))
+```
+
+The unit-level `Register` procedure registers `TDevelopmentOSR` on the `Simulation` component palette unless `NONVISUAL` is defined.
+
+## Execution order and implementation cautions
+
+1.  `CreateAll` establishes the objects and constructor defaults.
+2.  `Init` invokes the inherited configuration and connection setup, then resets selected states and maps the optimisation option.
+3.  `CalcRates` uses the current state and external drivers. The effective vernalisation multiplier uses the current `Fv`; newly accumulated vernalisation enters after integration.
+4.  `Integrate` advances states and updates the stage outputs. Repeat the rate and integration steps daily.
+
+Only assignment of the `DVS` rate is gated explicitly by the sowing date. Other rates, particularly `TS.c`, can be calculated before sowing. `DVS.c` has no explicit zero assignment in the pre-sowing branch, and `TS11.c` is not explicitly reset in every branch below emergence. Standard initialisation sets state rates to zero, but arbitrary restarts or manual state changes need care.
+
+When the previously calculated `EC` reaches 100, the end of `CalcRates` sets **all** state change rates to zero. The documentation does not correct these behaviours, the unused `DVS13` parameter, or the unused `DVR2b` variable; the source remains unchanged.
+
+# References
+
+Scientific background and reported evaluation results were drawn from the supplied manuscript, identified in the repository bibliography as @Bottcher2016. @Habekotte1997 is the underlying BRASNAP-PH model cited by that manuscript. The Pascal implementation is authoritative for the equations and execution details documented here.
+
+::: {#refs}
+:::

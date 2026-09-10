@@ -423,6 +423,8 @@
           </methodref>
           <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
           </methodref>
+          <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+          </methodref>
           <methodref name="Changed" visibility="protected">
           </methodref>
           <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -664,6 +666,8 @@
           <methodref name="Destroy" visibility="public" procflags="destructor override">
           </methodref>
           <methodref name="CheckNonMainThreadUsage" visibility="public">
+          </methodref>
+          <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
           </methodref>
           <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
           </methodref>
@@ -911,6 +915,8 @@
             <methodref name="ReadDeltaStream" visibility="private">
             </methodref>
             <methodref name="ReadDeltaState" visibility="private">
+            </methodref>
+            <methodref name="InitObservers" visibility="private">
             </methodref>
             <methodref name="FindSortedComponent" visibility="private">
             </methodref>
@@ -1179,184 +1185,184 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fGrowthCurveModel" type="TAbstractPlant" visibility="private" size="4" offset="656" file="USubDevelopment_Maize.pas" line="14" />
-      <field name="DevRateS0" type="TVar" visibility="public" size="4" offset="660" file="USubDevelopment_Maize.pas" line="20" />
-      <field name="DevRateS1" type="TVar" visibility="public" size="4" offset="664" file="USubDevelopment_Maize.pas" line="21">
+      <field name="fGrowthCurveModel" type="TAbstractPlant" visibility="private" size="4" offset="664" file="USubDevelopment_Maize.pas" line="14" />
+      <field name="DevRateS0" type="TVar" visibility="public" size="4" offset="668" file="USubDevelopment_Maize.pas" line="20" />
+      <field name="DevRateS1" type="TVar" visibility="public" size="4" offset="672" file="USubDevelopment_Maize.pas" line="21">
         <devnotes>
            Development rate during IStage 0 (from sowing to emergence, 0 to 1)
         </devnotes>
       </field>
-      <field name="DevRateS2" type="TVar" visibility="public" size="4" offset="668" file="USubDevelopment_Maize.pas" line="22">
+      <field name="DevRateS2" type="TVar" visibility="public" size="4" offset="676" file="USubDevelopment_Maize.pas" line="22">
         <devnotes>
            development rate during IStage 1 (from emergence to tassel initiation, 1-2)
         </devnotes>
       </field>
-      <field name="DevRateS3" type="TVar" visibility="public" size="4" offset="672" file="USubDevelopment_Maize.pas" line="23">
+      <field name="DevRateS3" type="TVar" visibility="public" size="4" offset="680" file="USubDevelopment_Maize.pas" line="23">
         <devnotes>
            Development rate during ISTAGE 2 (from tassel initiation to silking, 2-3)
         </devnotes>
       </field>
-      <field name="DevRateS4" type="TVar" visibility="public" size="4" offset="676" file="USubDevelopment_Maize.pas" line="24">
+      <field name="DevRateS4" type="TVar" visibility="public" size="4" offset="684" file="USubDevelopment_Maize.pas" line="24">
         <devnotes>
            Development rate during ISTAGE 3 (from silking to effective grain filling, 3-4)
         </devnotes>
       </field>
-      <field name="integerXN" type="TVar" visibility="public" size="4" offset="680" file="USubDevelopment_Maize.pas" line="25">
+      <field name="integerXN" type="TVar" visibility="public" size="4" offset="688" file="USubDevelopment_Maize.pas" line="25">
         <devnotes>
            Development rate during ISTAGE 4 (from effective grain filling to physiological maturity, 4-5)
         </devnotes>
       </field>
-      <field name="ISTAGE" type="TVar" visibility="public" size="4" offset="684" file="USubDevelopment_Maize.pas" line="26">
+      <field name="ISTAGE" type="TVar" visibility="public" size="4" offset="692" file="USubDevelopment_Maize.pas" line="26">
         <devnotes>
            leaf nummber of the oldest expending leaf; integer from CumPh
         </devnotes>
       </field>
-      <field name="PC" type="TVar" visibility="public" size="4" offset="688" file="USubDevelopment_Maize.pas" line="27">
+      <field name="PC" type="TVar" visibility="public" size="4" offset="696" file="USubDevelopment_Maize.pas" line="27">
         <devnotes>
            Integer growth stage indicator ranging from zero to five [0..5]
         </devnotes>
       </field>
-      <field name="Teff6" type="TVar" visibility="public" size="4" offset="692" file="USubDevelopment_Maize.pas" line="28">
+      <field name="Teff6" type="TVar" visibility="public" size="4" offset="700" file="USubDevelopment_Maize.pas" line="28">
         <devnotes>
            Intermediate variable
         </devnotes>
       </field>
-      <field name="Teff8" type="TVar" visibility="public" size="4" offset="696" file="USubDevelopment_Maize.pas" line="29">
+      <field name="Teff8" type="TVar" visibility="public" size="4" offset="704" file="USubDevelopment_Maize.pas" line="29">
         <devnotes>
            effective daily air temperature
         </devnotes>
       </field>
-      <field name="TI" type="TVar" visibility="public" size="4" offset="700" file="USubDevelopment_Maize.pas" line="30">
+      <field name="TI" type="TVar" visibility="public" size="4" offset="708" file="USubDevelopment_Maize.pas" line="30">
         <devnotes>
            Just for Information, not for calculation.
         </devnotes>
       </field>
-      <field name="Sen_fact" type="TVar" visibility="public" size="4" offset="704" file="USubDevelopment_Maize.pas" line="31">
+      <field name="Sen_fact" type="TVar" visibility="public" size="4" offset="712" file="USubDevelopment_Maize.pas" line="31">
         <devnotes>
            Daily increase in leaf number
         </devnotes>
       </field>
-      <field name="BBCH" type="TVar" visibility="public" size="4" offset="708" file="USubDevelopment_Maize.pas" line="32">
+      <field name="BBCH" type="TVar" visibility="public" size="4" offset="716" file="USubDevelopment_Maize.pas" line="32">
         <devnotes>
           Seneszenzfaktor
         </devnotes>
       </field>
-      <field name="CumPH" type="TState" visibility="public" size="4" offset="712" file="USubDevelopment_Maize.pas" line="36">
+      <field name="CumPH" type="TState" visibility="public" size="4" offset="720" file="USubDevelopment_Maize.pas" line="36">
         <devnotes>
            BBCH stage
         </devnotes>
       </field>
-      <field name="CumPH_Booting" type="TState" visibility="public" size="4" offset="716" file="USubDevelopment_Maize.pas" line="37">
+      <field name="CumPH_Booting" type="TState" visibility="public" size="4" offset="724" file="USubDevelopment_Maize.pas" line="37">
         <devnotes>
            number of fully expanded leaves
         </devnotes>
       </field>
-      <field name="GDD6" type="TState" visibility="public" size="4" offset="720" file="USubDevelopment_Maize.pas" line="38">
+      <field name="GDD6" type="TState" visibility="public" size="4" offset="728" file="USubDevelopment_Maize.pas" line="38">
         <devnotes>
            number of fully expanded leaves
         </devnotes>
       </field>
-      <field name="GDD6_from_emergence" type="TState" visibility="public" size="4" offset="724" file="USubDevelopment_Maize.pas" line="39">
+      <field name="GDD6_from_emergence" type="TState" visibility="public" size="4" offset="732" file="USubDevelopment_Maize.pas" line="39">
         <devnotes>
             Growing degree days from sowing
         </devnotes>
       </field>
-      <field name="GDD8" type="TState" visibility="public" size="4" offset="728" file="USubDevelopment_Maize.pas" line="40">
+      <field name="GDD8" type="TState" visibility="public" size="4" offset="736" file="USubDevelopment_Maize.pas" line="40">
         <devnotes>
            Growing degree days from emergence
         </devnotes>
       </field>
-      <field name="TLNO" type="TState" visibility="public" size="4" offset="732" file="USubDevelopment_Maize.pas" line="41">
+      <field name="TLNO" type="TState" visibility="public" size="4" offset="740" file="USubDevelopment_Maize.pas" line="41">
         <devnotes>
            Just for Information, not for calculation.
         </devnotes>
       </field>
-      <field name="TSum_leafLagphase" type="TState" visibility="public" size="4" offset="736" file="USubDevelopment_Maize.pas" line="42">
+      <field name="TSum_leafLagphase" type="TState" visibility="public" size="4" offset="744" file="USubDevelopment_Maize.pas" line="42">
         <devnotes>
            TLNO is the total number of leaves that will eventually appear
         </devnotes>
       </field>
-      <field name="XSTAGE" type="TState" visibility="public" size="4" offset="740" file="USubDevelopment_Maize.pas" line="43">
+      <field name="XSTAGE" type="TState" visibility="public" size="4" offset="748" file="USubDevelopment_Maize.pas" line="43">
         <devnotes>
            TSum needed to
         </devnotes>
       </field>
-      <field name="DS" type="TState" visibility="public" size="4" offset="744" file="USubDevelopment_Maize.pas" line="44">
+      <field name="DS" type="TState" visibility="public" size="4" offset="752" file="USubDevelopment_Maize.pas" line="44">
         <devnotes>
            Phenological stage, non integer values
         </devnotes>
       </field>
-      <field name="XSTAGE_till_tassel_emergence" type="TState" visibility="public" size="4" offset="748" file="USubDevelopment_Maize.pas" line="45">
+      <field name="XSTAGE_till_tassel_emergence" type="TState" visibility="public" size="4" offset="756" file="USubDevelopment_Maize.pas" line="45">
         <devnotes>
            Development stage for calculating root drymatter (See Hybrid-Maize)
         </devnotes>
       </field>
-      <field name="GDD6Emergence" type="TPar" visibility="public" size="4" offset="752" file="USubDevelopment_Maize.pas" line="49">
+      <field name="GDD6Emergence" type="TPar" visibility="public" size="4" offset="760" file="USubDevelopment_Maize.pas" line="49">
         <devnotes>
             XSTAGE_till_tassel_emergence
         </devnotes>
       </field>
-      <field name="GDD6Silking" type="TPar" visibility="public" size="4" offset="756" file="USubDevelopment_Maize.pas" line="50">
+      <field name="GDD6Silking" type="TPar" visibility="public" size="4" offset="764" file="USubDevelopment_Maize.pas" line="50">
         <devnotes>
            Temperature sum sowing to emergence
         </devnotes>
       </field>
-      <field name="GDD6Stage3" type="TPar" visibility="public" size="4" offset="760" file="USubDevelopment_Maize.pas" line="51">
+      <field name="GDD6Stage3" type="TPar" visibility="public" size="4" offset="768" file="USubDevelopment_Maize.pas" line="51">
         <devnotes>
            Temperature sum silking
         </devnotes>
       </field>
-      <field name="GDD6total" type="TPar" visibility="public" size="4" offset="764" file="USubDevelopment_Maize.pas" line="52">
+      <field name="GDD6total" type="TPar" visibility="public" size="4" offset="772" file="USubDevelopment_Maize.pas" line="52">
         <devnotes>
             Temperature sum stage 3 : from silking till grain filling
         </devnotes>
       </field>
-      <field name="GDD6tasini" type="TPar" visibility="public" size="4" offset="768" file="USubDevelopment_Maize.pas" line="53">
+      <field name="GDD6tasini" type="TPar" visibility="public" size="4" offset="776" file="USubDevelopment_Maize.pas" line="53">
         <devnotes>
             Temperature sum  from sowing till maturity
         </devnotes>
       </field>
-      <field name="GDD6Stage2" type="TPar" visibility="public" size="4" offset="772" file="USubDevelopment_Maize.pas" line="54">
+      <field name="GDD6Stage2" type="TPar" visibility="public" size="4" offset="780" file="USubDevelopment_Maize.pas" line="54">
         <devnotes>
           Temperature sum from emergence till tassel initiation
         </devnotes>
       </field>
-      <field name="Phyllochron" type="TPar" visibility="public" size="4" offset="776" file="USubDevelopment_Maize.pas" line="55">
+      <field name="Phyllochron" type="TPar" visibility="public" size="4" offset="784" file="USubDevelopment_Maize.pas" line="55">
         <devnotes>
           Temperature sum from tassel initiation till silking
         </devnotes>
       </field>
-      <field name="Plastochron" type="TPar" visibility="public" size="4" offset="780" file="USubDevelopment_Maize.pas" line="56">
+      <field name="Plastochron" type="TPar" visibility="public" size="4" offset="788" file="USubDevelopment_Maize.pas" line="56">
         <devnotes>
            Phyllochron
         </devnotes>
       </field>
-      <field name="SowingDate" type="TPar" visibility="public" size="4" offset="784" file="USubDevelopment_Maize.pas" line="57">
+      <field name="SowingDate" type="TPar" visibility="public" size="4" offset="792" file="USubDevelopment_Maize.pas" line="57">
         <devnotes>
            Plastochron
         </devnotes>
       </field>
-      <field name="Tbase6" type="TPar" visibility="public" size="4" offset="788" file="USubDevelopment_Maize.pas" line="58">
+      <field name="Tbase6" type="TPar" visibility="public" size="4" offset="796" file="USubDevelopment_Maize.pas" line="58">
         <devnotes>
            Date of sowing (days from 1.1.1990)
         </devnotes>
       </field>
-      <field name="sen_par" type="TPar" visibility="public" size="4" offset="792" file="USubDevelopment_Maize.pas" line="59">
+      <field name="sen_par" type="TPar" visibility="public" size="4" offset="800" file="USubDevelopment_Maize.pas" line="59">
         <devnotes>
             Base temperature
         </devnotes>
       </field>
-      <field name="sen_parexp" type="TPar" visibility="public" size="4" offset="796" file="USubDevelopment_Maize.pas" line="60">
+      <field name="sen_parexp" type="TPar" visibility="public" size="4" offset="804" file="USubDevelopment_Maize.pas" line="60">
         <devnotes>
            Sen_fact wird als potenz Funktion angenommen, sen_par ist der Krümmungsfaktor dieser
         </devnotes>
       </field>
-      <field name="Temp" type="TExternV" visibility="public" size="4" offset="800" file="USubDevelopment_Maize.pas" line="64">
+      <field name="Temp" type="TExternV" visibility="public" size="4" offset="808" file="USubDevelopment_Maize.pas" line="64">
         <devnotes>
            Sen_fact wird als potenz Funktion angenommen, sen_parexp ist der Exponent dieser
         </devnotes>
       </field>
-      <field name="DidLastLeafAppear" type="Boolean" visibility="public" size="1" offset="804" file="USubDevelopment_Maize.pas" line="65">
+      <field name="DidLastLeafAppear" type="Boolean" visibility="public" size="1" offset="812" file="USubDevelopment_Maize.pas" line="65">
         <devnotes>
           
         </devnotes>

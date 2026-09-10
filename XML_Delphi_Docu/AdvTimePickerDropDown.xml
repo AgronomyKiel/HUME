@@ -842,6 +842,8 @@
         </methodref>
         <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
         </methodref>
+        <methodref name="WMGetObject" visibility="private" procflags="message">
+        </methodref>
         <methodref name="CMChanged" visibility="private" procflags="message">
         </methodref>
         <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -1048,6 +1050,10 @@
         </methodref>
         <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
         </methodref>
+        <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+        </methodref>
+        <methodref name="Loaded" visibility="protected" procflags="override">
+        </methodref>
         <methodref name="KeyDown" visibility="protected" procflags="dynamic">
         </methodref>
         <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -1170,6 +1176,8 @@
         </propertyref>
         <propertyref name="WindowHandle" visibility="protected">
         </propertyref>
+        <propertyref name="UIAutomationProvider" visibility="protected">
+        </propertyref>
         <eventref name="OnAlignInsertBefore" visibility="protected">
         </eventref>
         <eventref name="OnAlignPosition" visibility="protected">
@@ -1205,6 +1213,12 @@
         <methodref name="Broadcast" visibility="public">
         </methodref>
         <methodref name="CanFocus" visibility="public" procflags="dynamic">
+        </methodref>
+        <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
         </methodref>
         <methodref name="ContainsControl" visibility="public">
         </methodref>
@@ -1585,6 +1599,8 @@
           </methodref>
           <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
           </methodref>
+          <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+          </methodref>
           <methodref name="Changed" visibility="protected">
           </methodref>
           <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -1826,6 +1842,8 @@
           <methodref name="Destroy" visibility="public" procflags="destructor override">
           </methodref>
           <methodref name="CheckNonMainThreadUsage" visibility="public">
+          </methodref>
+          <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
           </methodref>
           <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
           </methodref>
@@ -2073,6 +2091,8 @@
             <methodref name="ReadDeltaStream" visibility="private">
             </methodref>
             <methodref name="ReadDeltaState" visibility="private">
+            </methodref>
+            <methodref name="InitObservers" visibility="private">
             </methodref>
             <methodref name="FindSortedComponent" visibility="private">
             </methodref>
@@ -2344,27 +2364,27 @@
       <implements name="ITMSStyle" />
     </interfaces>
     <members>
-      <field name="FAppearance" type="TWatchAppearance" visibility="private" size="4" offset="720" file="AdvTimePickerDropDown.pas" line="211" />
-      <field name="FSettings" type="TWatchSettings" visibility="private" size="4" offset="724" file="AdvTimePickerDropDown.pas" line="212" />
-      <field name="FTime" type="TDateTime" visibility="private" size="8" offset="728" file="AdvTimePickerDropDown.pas" line="213" />
-      <field name="FBKGCache" type="TBitmap" visibility="private" size="4" offset="736" file="AdvTimePickerDropDown.pas" line="214" />
-      <field name="FOldHour" type="Word" visibility="private" size="2" offset="740" file="AdvTimePickerDropDown.pas" line="215" />
-      <field name="FOldMinute" type="Word" visibility="private" size="2" offset="742" file="AdvTimePickerDropDown.pas" line="216" />
-      <field name="FOldSecond" type="Word" visibility="private" size="2" offset="744" file="AdvTimePickerDropDown.pas" line="217" />
-      <field name="FWatchTimer" type="TTimer" visibility="private" size="4" offset="748" file="AdvTimePickerDropDown.pas" line="218" />
-      <field name="FAnimation" type="Boolean" visibility="private" size="1" offset="752" file="AdvTimePickerDropDown.pas" line="219" />
-      <field name="FAnimationFactor" type="Integer" visibility="private" size="4" offset="756" file="AdvTimePickerDropDown.pas" line="220" />
-      <field name="FAnimationTimer" type="TTimer" visibility="private" size="4" offset="760" file="AdvTimePickerDropDown.pas" line="221" />
-      <field name="FCurrentHourTo" type="Byte" visibility="private" size="1" offset="764" file="AdvTimePickerDropDown.pas" line="222" />
-      <field name="FCurrentMinuteTo" type="Byte" visibility="private" size="1" offset="765" file="AdvTimePickerDropDown.pas" line="223" />
-      <field name="FMinuteFrom" type="Byte" visibility="private" size="1" offset="766" file="AdvTimePickerDropDown.pas" line="224" />
-      <field name="FHourAnimating" type="Boolean" visibility="private" size="1" offset="767" file="AdvTimePickerDropDown.pas" line="225" />
-      <field name="FInternalCall" type="Boolean" visibility="private" size="1" offset="768" file="AdvTimePickerDropDown.pas" line="226" />
-      <field name="FAM" type="Boolean" visibility="private" size="1" offset="769" file="AdvTimePickerDropDown.pas" line="227" />
-      <field name="FShowAMPM" type="Boolean" visibility="private" size="1" offset="770" file="AdvTimePickerDropDown.pas" line="228" />
-      <field name="FShowNumbers" type="Boolean" visibility="private" size="1" offset="771" file="AdvTimePickerDropDown.pas" line="229" />
-      <field name="FOnChange" type="TNotifyEvent" visibility="private" size="8" offset="776" file="AdvTimePickerDropDown.pas" line="230" />
-      <field name="FInternalSet" type="Boolean" visibility="private" size="1" offset="784" file="AdvTimePickerDropDown.pas" line="231" />
+      <field name="FAppearance" type="TWatchAppearance" visibility="private" size="4" offset="736" file="AdvTimePickerDropDown.pas" line="211" />
+      <field name="FSettings" type="TWatchSettings" visibility="private" size="4" offset="740" file="AdvTimePickerDropDown.pas" line="212" />
+      <field name="FTime" type="TDateTime" visibility="private" size="8" offset="744" file="AdvTimePickerDropDown.pas" line="213" />
+      <field name="FBKGCache" type="TBitmap" visibility="private" size="4" offset="752" file="AdvTimePickerDropDown.pas" line="214" />
+      <field name="FOldHour" type="Word" visibility="private" size="2" offset="756" file="AdvTimePickerDropDown.pas" line="215" />
+      <field name="FOldMinute" type="Word" visibility="private" size="2" offset="758" file="AdvTimePickerDropDown.pas" line="216" />
+      <field name="FOldSecond" type="Word" visibility="private" size="2" offset="760" file="AdvTimePickerDropDown.pas" line="217" />
+      <field name="FWatchTimer" type="TTimer" visibility="private" size="4" offset="764" file="AdvTimePickerDropDown.pas" line="218" />
+      <field name="FAnimation" type="Boolean" visibility="private" size="1" offset="768" file="AdvTimePickerDropDown.pas" line="219" />
+      <field name="FAnimationFactor" type="Integer" visibility="private" size="4" offset="772" file="AdvTimePickerDropDown.pas" line="220" />
+      <field name="FAnimationTimer" type="TTimer" visibility="private" size="4" offset="776" file="AdvTimePickerDropDown.pas" line="221" />
+      <field name="FCurrentHourTo" type="Byte" visibility="private" size="1" offset="780" file="AdvTimePickerDropDown.pas" line="222" />
+      <field name="FCurrentMinuteTo" type="Byte" visibility="private" size="1" offset="781" file="AdvTimePickerDropDown.pas" line="223" />
+      <field name="FMinuteFrom" type="Byte" visibility="private" size="1" offset="782" file="AdvTimePickerDropDown.pas" line="224" />
+      <field name="FHourAnimating" type="Boolean" visibility="private" size="1" offset="783" file="AdvTimePickerDropDown.pas" line="225" />
+      <field name="FInternalCall" type="Boolean" visibility="private" size="1" offset="784" file="AdvTimePickerDropDown.pas" line="226" />
+      <field name="FAM" type="Boolean" visibility="private" size="1" offset="785" file="AdvTimePickerDropDown.pas" line="227" />
+      <field name="FShowAMPM" type="Boolean" visibility="private" size="1" offset="786" file="AdvTimePickerDropDown.pas" line="228" />
+      <field name="FShowNumbers" type="Boolean" visibility="private" size="1" offset="787" file="AdvTimePickerDropDown.pas" line="229" />
+      <field name="FOnChange" type="TNotifyEvent" visibility="private" size="8" offset="792" file="AdvTimePickerDropDown.pas" line="230" />
+      <field name="FInternalSet" type="Boolean" visibility="private" size="1" offset="800" file="AdvTimePickerDropDown.pas" line="231" />
       <procedure name="WMTimer" visibility="private" procflags="message" file="AdvTimePickerDropDown.pas" line="232">
         <parameters>
           <parameter name="Message" type="TWMTimer" paramflags="var" />
@@ -3308,6 +3328,8 @@
             </methodref>
             <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
             </methodref>
+            <methodref name="WMGetObject" visibility="private" procflags="message">
+            </methodref>
             <methodref name="CMChanged" visibility="private" procflags="message">
             </methodref>
             <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -3514,6 +3536,10 @@
             </methodref>
             <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
             </methodref>
+            <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="override">
+            </methodref>
             <methodref name="KeyDown" visibility="protected" procflags="dynamic">
             </methodref>
             <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -3636,6 +3662,8 @@
             </propertyref>
             <propertyref name="WindowHandle" visibility="protected">
             </propertyref>
+            <propertyref name="UIAutomationProvider" visibility="protected">
+            </propertyref>
             <eventref name="OnAlignInsertBefore" visibility="protected">
             </eventref>
             <eventref name="OnAlignPosition" visibility="protected">
@@ -3671,6 +3699,12 @@
             <methodref name="Broadcast" visibility="public">
             </methodref>
             <methodref name="CanFocus" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="ContainsControl" visibility="public">
             </methodref>
@@ -4051,6 +4085,8 @@
               </methodref>
               <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
               </methodref>
+              <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Changed" visibility="protected">
               </methodref>
               <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -4292,6 +4328,8 @@
               <methodref name="Destroy" visibility="public" procflags="destructor override">
               </methodref>
               <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
               </methodref>
               <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
               </methodref>
@@ -4539,6 +4577,8 @@
                 <methodref name="ReadDeltaStream" visibility="private">
                 </methodref>
                 <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="InitObservers" visibility="private">
                 </methodref>
                 <methodref name="FindSortedComponent" visibility="private">
                 </methodref>
@@ -4809,20 +4849,20 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="FShowTimePicker" type="Boolean" visibility="private" size="1" offset="1096" file="AdvTimePickerDropDown.pas" line="328" />
-      <field name="FAdvWatch" type="TAdvWatch" visibility="private" size="4" offset="1100" file="AdvTimePickerDropDown.pas" line="329" />
-      <field name="FDateTimePicker" type="TDateTimePicker" visibility="private" size="4" offset="1104" file="AdvTimePickerDropDown.pas" line="330" />
-      <field name="FPanelCtrl" type="TPanel" visibility="private" size="4" offset="1108" file="AdvTimePickerDropDown.pas" line="331" />
-      <field name="FWatchAppearance" type="TWatchAppearance" visibility="private" size="4" offset="1112" file="AdvTimePickerDropDown.pas" line="332" />
-      <field name="FShowWatchAMPM" type="Boolean" visibility="private" size="1" offset="1116" file="AdvTimePickerDropDown.pas" line="333" />
-      <field name="FShowWatchNumbers" type="Boolean" visibility="private" size="1" offset="1117" file="AdvTimePickerDropDown.pas" line="334" />
-      <field name="FAnimation" type="Boolean" visibility="private" size="1" offset="1118" file="AdvTimePickerDropDown.pas" line="335" />
-      <field name="FAnimationFactor" type="Integer" visibility="private" size="4" offset="1120" file="AdvTimePickerDropDown.pas" line="336" />
-      <field name="FTime" type="TDateTime" visibility="private" size="8" offset="1128" file="AdvTimePickerDropDown.pas" line="337" />
-      <field name="FWatchSettings" type="TWatchSettings" visibility="private" size="4" offset="1136" file="AdvTimePickerDropDown.pas" line="338" />
-      <field name="FOnTimeChange" type="TNotifyEvent" visibility="private" size="8" offset="1144" file="AdvTimePickerDropDown.pas" line="339" />
-      <field name="FInternalCall" type="Boolean" visibility="private" size="1" offset="1152" file="AdvTimePickerDropDown.pas" line="340" />
-      <field name="FShowSeconds" type="Boolean" visibility="private" size="1" offset="1153" file="AdvTimePickerDropDown.pas" line="341" />
+      <field name="FShowTimePicker" type="Boolean" visibility="private" size="1" offset="1112" file="AdvTimePickerDropDown.pas" line="328" />
+      <field name="FAdvWatch" type="TAdvWatch" visibility="private" size="4" offset="1116" file="AdvTimePickerDropDown.pas" line="329" />
+      <field name="FDateTimePicker" type="TDateTimePicker" visibility="private" size="4" offset="1120" file="AdvTimePickerDropDown.pas" line="330" />
+      <field name="FPanelCtrl" type="TPanel" visibility="private" size="4" offset="1124" file="AdvTimePickerDropDown.pas" line="331" />
+      <field name="FWatchAppearance" type="TWatchAppearance" visibility="private" size="4" offset="1128" file="AdvTimePickerDropDown.pas" line="332" />
+      <field name="FShowWatchAMPM" type="Boolean" visibility="private" size="1" offset="1132" file="AdvTimePickerDropDown.pas" line="333" />
+      <field name="FShowWatchNumbers" type="Boolean" visibility="private" size="1" offset="1133" file="AdvTimePickerDropDown.pas" line="334" />
+      <field name="FAnimation" type="Boolean" visibility="private" size="1" offset="1134" file="AdvTimePickerDropDown.pas" line="335" />
+      <field name="FAnimationFactor" type="Integer" visibility="private" size="4" offset="1136" file="AdvTimePickerDropDown.pas" line="336" />
+      <field name="FTime" type="TDateTime" visibility="private" size="8" offset="1144" file="AdvTimePickerDropDown.pas" line="337" />
+      <field name="FWatchSettings" type="TWatchSettings" visibility="private" size="4" offset="1152" file="AdvTimePickerDropDown.pas" line="338" />
+      <field name="FOnTimeChange" type="TNotifyEvent" visibility="private" size="8" offset="1160" file="AdvTimePickerDropDown.pas" line="339" />
+      <field name="FInternalCall" type="Boolean" visibility="private" size="1" offset="1168" file="AdvTimePickerDropDown.pas" line="340" />
+      <field name="FShowSeconds" type="Boolean" visibility="private" size="1" offset="1169" file="AdvTimePickerDropDown.pas" line="341" />
       <procedure name="OnWatchAppearanceChange" visibility="private" file="AdvTimePickerDropDown.pas" line="342">
         <parameters>
           <parameter name="Sender" type="TObject" />

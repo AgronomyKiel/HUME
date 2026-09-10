@@ -92,8 +92,6 @@ df <- GetAncestorClasses(fn_xml_docu,"TSoilWaterMod")
 
 kable(df)
 
-
-
 ```
 
 # Scientific Background
@@ -106,7 +104,7 @@ The module TSoilWaterModelR simulates the vertical transport of water in the soi
 
 $$\frac{d\theta }{dt}=\frac{dFw}{dz}-{{S}_{(z,t)}}$$ {#eq-H2OContinuity}
 
-The water flow F~w~ in the soil follows the potential gradients, whereby only the matrix potential ($\psi_m$) and the gravitational potential ($\psi_z$) have to be taken into account in agricultural soils in temperate climates:
+The water flow F~w~ in the soil follows the potential gradients, whereby only the matrix potential ($\psi_m$) and the gravitational potential ($\psi_z$) have to be taken into account in agricultural soils in temperate climates (no saline soils):
 
 $$Fw(z,t)=-Ku(\theta )\cdot \frac{d{{\psi }_{h}}}{dz}=-\left( Ku(\theta )\frac{d{{\psi }_{m}}}{dz}+Ku(\theta )\frac{d{{\psi }_{z}}}{dz} \right)=-Ku(\theta )\left( \frac{d{{\psi }_{m}}}{dz}+1 \right)$$ {#eq-potentialtransport}
 
@@ -122,15 +120,16 @@ $$C\left( {{\psi }_{m}} \right)=\frac{d\theta }{d{{\psi }_{m}}}$$ {#eq-specificw
 
 $${{D}_{w}}\left( \theta  \right)\equiv \frac{{{k}_{u}}\left( \theta  \right)}{C\left( \theta  \right)}$$ {#eq-diffusivity2}
 
-The continuity equation can now be represented in different ways. In a combination of water content change on the left and water potential gradients on the right ( mixed):
+The continuity equation can now be represented in different ways. In a combination of water content change on the left and water potential gradients on the right (mixed):
 
-$$\frac{d\theta }{dt}=\frac{dFw}{dz}=\frac{d}{dz}\left( ku\left( \theta  \right)\cdot \left( \frac{d{{\psi }_{m}}}{dz}+1 \right) \right)$$ {#eq-mixedSoilWater}
+$$\frac{d\theta }{dt}=\frac{dFw}{dz}=\frac{d}{dz}\left( ku\left( \theta  \right)\cdot \left( \frac{d{{\psi }_{m}}}{dz}+1 \right) \right)$$
+ {#eq-mixedSoilWater}
 
-The purely tension-based equation ist often used for a numerical solution:
+The purely tension-based version of the condinuity equation, however, is often used for a numerical solution:
 
 $$C\left( {{\psi }_{m}} \right)\frac{d{{\psi }_{m}}}{dt}=\frac{d}{dz}\left( ku\left( \theta  \right)\cdot \left( \frac{d{{\psi }_{m}}}{dz}+1 \right) \right)$$ {#eq-psisoilwater}
 
-Using a finite difference approach, this equation can be solved iteratively, and more important using a so called ***implicit*** approach. This is explained in more detail in a later chapter.
+Using a finite difference approach, this equation can be solved iteratively. Because of the comparable large changes of soil water content and even more soil water tension a so called ***implicit*** approaches have to be used in order to solve the equation systems. This is explained in more detail in a later chapter.
 
 Using the water diffusivity leads to an equation in which only water contents are included as a variable on the left and driving force on the right side of the equation. This has advantages in terms of the mass balance during iterative solution of the equation and a higher numerical stability.
 
@@ -144,17 +143,17 @@ Also a simpler tipping bucket approach is implemented, which is based on the ass
 
 For the numerical solutions of the water and mass transport equations, the soil profile is divided into a number of layers (See @fig-soil-discretisation). The standard is a resolution in 20 layers S with a layer thickness of 10 cm each. In principle, other resolutions are also possible, provided that the code of all components using this concept correctly. With variable depth resolution, it is important to differentiate between the distance between the center points of the compartments and the thickness. The former determines the transport distances and thus the gradients for the transport of water and nutrients, the latter is part of the buffering, ie the change in water contents / concentrations due to the spatial divergence of the flows.
 
-![Scheme for discretisaion of a vertical soil profile](images/SoilDiscretisation.png){#fig-soil-discretisation}
+![Scheme for discretisation of a vertical soil profile](images/SoilDiscretisation.png){#fig-soil-discretisation}
 
 #### Discretisation of transport equations
 
 When converting to a finite difference approach, this results in:
 
-$$\frac{{{\theta }^{t+1}}-{{\theta }^{t+1}}}{\Delta t}=\frac{F{{w}_{\,in}}-F{{w}_{\,out}}}{\Delta z}-{{S}_{(z,t}}_{)}$$ {#eq-H2OContinuityfinDiff}
+$$\frac{{{\theta }^{t+1}}-{{\theta }^{t}}}{\Delta t}=\frac{F{{w}_{\,in}}-F{{w}_{\,out}}}{\Delta z}-S_{(z,t)}$$ {#eq-H2OContinuityfinDiff}
 
 or
 
-$${{\theta }^{t+1}}\Delta z={{\theta }^{t+1}}\Delta z+\left( F{{w}_{\,in}}-F{{w}_{\,out}} \right)\cdot \Delta t-{{S}_{(z,t)}}$$ {#eq-H2OContinuityfinDiff2}
+$${{\theta }^{t+1}}\Delta z={{\theta }^{t}}\Delta z+\left( F{{w}_{\,in}}-F{{w}_{\,out}} \right)\cdot \Delta t-{{S}_{(z,t)}}\cdot \Delta t$$ {#eq-H2OContinuityfinDiff2}
 
 Where $\theta \cdot \Delta z$ corresponds to the amount of water M in a compartment.
 
@@ -170,9 +169,9 @@ $$\theta {{_{n}^{t+1}}^{.}}z_{n}^{{}}=\theta {{_{n}^{t}}^{.}}z_{n}^{{}}+{{({{F}_
 
 ## Root water uptake
 
-The root water uptake is considered in the water balance equation as a sink term. The potential transpiration (Tpot) is calculated based on the Penman-Monteith equation, which considers the atmospheric demand for water and the resistance to water flow from the soil to the atmosphere through the plant. The actual transpiration (Tact) is then calculated by considering the reduction of water uptake due to low soil water content and root competition.
+The root water uptake is considered in the water balance equation as a sink term. The potential transpiration (T~pot~) is calculated using the approach of the Penman-Monteith equation, which considers the atmospheric demand for water and the resistance to water flow from the soil to the atmosphere through the plant. The actual transpiration (T~act~) is then calculated by considering the reduction of water uptake due to low soil water content and root competition.
 
-The details are given in the documentation of the derived class [TSoilWaterModelR](https://agronomykiel.github.io/HUME/Components/Soil/Documentation/TSoilWaterModelR.html).
+The details are given in the documentation of the derived class [TSoilWaterModelR](TSoilWaterModelR.qmd).
 
 ## Soil evaporation
 
@@ -238,226 +237,622 @@ There is also an option for a fixed water table, which means that the soil water
 
 Furthermore a no flow boundary condition is available, which means that water cannot flow out of the last soil compartment. This can be used to simulate situations where the groundwater level is very deep and does not influence the soil water dynamics.
 
+## Options
+
+The class `TSoilWaterModel` implements the following options shown in @tbl-soil-water-base-options.
+
+| Option key | Default | Accepted values | Purpose |
+|---|---|---|---|
+| `FVGParsFromTexture` | `FromPar` | `FromPar`, `FromTexture` | Uses the horizon parameters `b_sat`, `b_rest`, `alpha`, `n_par`, and `l_par` directly, or derives them from the selected texture class. |
+| `FKsFromTexture` | `FromPar` | `FromPar`, `FromTexture` | Uses the horizon `Ks` parameter directly, or derives saturated hydraulic conductivity from texture. With the `RR` texture functions, the numerical bulk-density option `fLD1`--`fLD6` is also used. |
+| `act_Evaporation` | `red_f` | `red_f`, `inclExfiltration` | Selects actual-evaporation handling. Both modes apply the evaporation reduction factor; `inclExfiltration` additionally limits evaporation to the calculated exfiltration rate. |
+| `evaporation red_f` | `modifiedBeese` | `modifiedBeese`, `Beese1978` | Selects the function used to calculate the evaporation reduction factor from the matric potential in the uppermost soil layer; see [Soil evaporation](#soil-evaporation). |
+| `FTextureClass1`--`FTextureClass6` | `Sl3` | `TTextureClass` values | Selects the texture class for each of the six possible soil horizons. These selections affect parameter derivation when `FVGParsFromTexture` or `FKsFromTexture` is `FromTexture`. |
+| `FLDClass1`--`FLDClass6` | `LD3` | `LD1`, `LD2`, `LD3`, `LD4`, `LD5` | Selects a KA5 bulk-density class for each horizon. The current base implementation stores these classes through `SetLDPars`; hydraulic parameter derivation instead uses the numerical `fLD` options described below. |
+| `fLD1`--`fLD6` | `OldVersion` | `LD13`, `LD142`, `LD15`, `LD164`, `LD17`, `OldVersion` | Selects the numerical bulk-density category for each horizon. It is used when deriving `Ks` with the `RR` texture functions. |
+| `Untere_Randb` | `FreeFlow` | `ConstContent`, `NoFlux`, `Groundwater`, `FreeFlow` | Selects the lower boundary condition. `Groundwater` activates the external `Groundwaterdepth` input; `ConstContent` holds the state in the additional lower-boundary compartment constant. |
+| `IniMethod` | `Parameter` | `Watercontents`, `Potentials`, `Parameter` | Initializes the profile from layer water contents, layer matric potentials, or the `PsiStart1` parameter and its implemented depth adjustment, respectively. |
+| `CompMethod` | `Diffusion` | `Diffusion`, `Richards`, `Mixed`, `MixedHydrus`, `Capacity` | Selects the numerical water-transport solver. The source describes `Diffusion` as fast but approximate for layered soil and identifies `MixedHydrus` as the recommended mixed-form alternative. `Capacity` selects the legacy tipping-bucket scheme described in [Capacity-based bucket solution](#sec-capacity-solution). |
+| `WriteParsFromTexture?` | `false` | `false`, `true` | If enabled, writes the horizon water-retention parameters and `Ks` assigned during initialization back to the parameter INI file. It is intended for retaining parameters derived from texture. |
+| `Transfer water contents to next IniFile?` | `false` | `false`, `true` | If enabled, writes final simulated layer water contents to the next state INI file as initial values. |
+
+: Options registered by `TSoilWaterMod.CreateOptions`. {#tbl-soil-water-base-options}
+
+The accepted texture codes are `Ss`, `mS`, `mSgs`, `mSfs`, `fS`, `fSms`, `Sl2`, `Sl3`, `Sl4`, `Slu`, `St2`, `St3`, `Su2`, `Su3`, `Su4`, `Ls2`, `Ls3`, `Ls4`, `Lt2`, `Lt3`, `Lts`, `Lu`, `Uu`, `Uls`, `Us`, `Ut2`, `Ut3`, `Ut4`, `Tt`, `Tl`, `Ts2`, `Ts3`, `Ts4`, `Tu2`, `Tu3`, and `Tu4`. Their parameterization is described in [TSoilTexture](TSoilTexture.qmd).
+
+The pedotransfer-function family is selected by the inherited `Texture_version` option (`KA` by default; alternatively `RR`), which is registered by `TLayeredSoil` rather than by `TSoilWaterMod.CreateOptions`. A commented-out duplicate declaration in `CreateOptions` is therefore not an additional active option.
+
+### Evaporation option interaction {#soil-evaporation-options}
+
+The two evaporation options act at different stages. First, `evaporation red_f` selects either the `modifiedBeese` or `Beese1978` function for calculating `red_evap` from the matric potential of the first soil layer. The result is restricted to the interval from zero to one. Actual evaporation is then calculated as `PotEvap * red_evap`. If `act_Evaporation = inclExfiltration`, the result is additionally capped at the exfiltration rate calculated from the first layer; `red_f` leaves the reduced potential-evaporation value unchanged.
+
+
 # Details of numerical solutions
 
-Starting with the mass balance i.e. the amount of water \[cm\] within a compartment n at the time t $M_{n}^{t}$, the change in the amount of water can be calculated as the difference between the influx $F_{w_{n}}$ and the efflux $F_{w_{n+1}}$ and the sink term $S_{n}$ (Eq. 15). The amount of water can also be expressed as the product of the water content $\theta$ and the thickness of the compartment D (Eq. 16).
+## Capacity-based bucket solution {#sec-capacity-solution}
 
-$$M_{n}^{t+1}=M_{n}^{t}+{{({{F}_{w}}_{n}^{t+1}-{{F}_{w}}_{n+1}^{t+1}-{{S}_{n}})}^{.}}\Delta t$$ {#eq-Massbalanceequation3}
+Setting `CompMethod = Capacity` selects `CapWatSolut`, a simple downward
+cascade or tipping-bucket model. It does not solve a hydraulic-gradient flow
+equation. Field capacity \(\theta_{FC}\) and permanent wilting point
+\(\theta_{PWP}\) are either taken from the horizon `FK` and `PWP` parameters
+when `nFKCalcMethod = Input`, or calculated from the water-retention function
+at pressure heads of \(10^{1.8}\) and \(10^{4.2}\) cm, respectively.
 
-$$\theta {{_{n}^{t+1}}^{.}}D_{n}^{{}}=\theta {{_{n}^{t}}^{.}}D_{n}^{{}}+{{({{F}_{w}}_{n}^{t+1}-{{F}_{w}}_{n+1}^{t+1}-{{S}_{n}})}^{.}}\Delta t$$ {#eq-Massbalanceequation4}
+For each global model step \(\Delta t\), the net surface flux is
+\(q_1=0.1(\mathit{NetRain}-\mathit{Act\_Evap})\) in cm d\(^{-1}\). The layers
+are processed from top to bottom. A layer first stores incoming water up to
+its available capacity \((\theta_{FC,i}-\theta_i)D_i\); any excess is passed
+to the layer below. Root-water uptake is then subtracted and is limited to
+the water stored above \(\theta_{PWP}\). Finally, matric potentials are
+recalculated from the updated water contents. This method uses the global
+time step and performs no internal iteration or adaptive time stepping.
 
-The change of the amount of water is equal to the change in soil water suction times the specific water storage capacity C. This results in:
+::: {.callout-warning title="Implementation limitations"}
+`Capacity` represents downward drainage only: it omits capillary rise and
+hydraulic redistribution, does not retain water above field capacity, and
+does not evaluate the selected lower-boundary condition. In addition,
+`CapWatSolut` subtracts the storage capacity in cm directly from an interface
+flux in cm d\(^{-1}\) when passing excess downward. That operation is
+dimensionally consistent only when \(\Delta t=1\) d, so this legacy method
+should not be used with other global time-step lengths without correcting the
+implementation.
+:::
 
-$$\frac{\partial \theta }{\partial t}=C\left( h \right)\frac{\partial h}{\partial t}\approx C\left( h \right)\frac{h_{n}^{t+1}-h_{n}^{t}}{\Delta t}$$ {#eq-StorageChange}
+## Water-content solution (Diffusion) {#sec-diffusion-solution}
 
-For a numerical solution of the water balance equation using the soil water suction h, the balance equation can be written in analogy to the above equations as follows:
+This section documents the water-content formulation implemented by
+`Diffwater_solut`. It uses volumetric water content \(\theta\) as the unknown
+and expresses matric-potential-driven flow through the soil-water diffusivity
+\(D_w(\theta)\). The finite-volume reasoning is analogous to a radial
+compartment solution, but the vertical model has a constant horizontal area;
+therefore, the cylindrical surface-area and volume factors do not occur.
 
-$$\begin{align}
-  & h_{n}^{t+1}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}=h_{n}^{t}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}+{{\left[ ku{{_{n-{}^{1}/{}_{2}}^{t+1}}^{.}}\left( \frac{h_{n}^{t+1}-h_{n-1}^{t+1}}{z_{n-1}^{{}}}+1 \right)-ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}\left( \frac{h_{n+1}^{t+1}-h_{n}^{t+1}}{z_{n}^{{}}}+1 \right)-{{S}_{n}} \right]}^{.}}\Delta t \\ 
- &  \\ 
-\end{align}$$
+For compartment \(i\):
 
-Removing the brackets for the flows:
+- \(D_i\) is the compartment thickness;
+- \(d_{i+1/2}\) is the distance between the centres of compartments \(i\) and
+  \(i+1\);
+- \(\overline D_{w,i+1/2}^{k}\) and \(\overline K_{i+1/2}^{k}\) are the
+  interface diffusivity and unsaturated hydraulic conductivity evaluated in
+  Picard iteration \(k\); and
+- \(S_i\) is the compartment sink rate.
 
-$$h_{n}^{t+1}\cdot C_{n}^{t+1}\cdot D_{n}^{{}} = h_{n}^{t} \cdot C_{n}^{t+1} \cdot D_{n}+ku{{_{n-{}^{1}/{}_{2}}^{t+1}}^{.}} \frac{h_{n}^{t+1}-h_{n-1}^{t+1}}{z_{n-1}^{{}}}\cdot \Delta t+ku_{n-{}^{1}/{}_{2}}^{t+1}\cdot \Delta t-ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}} \frac{h_{n+1}^{t+1} -h_{n}^{t+1}}{z_{n}^{{}}}\cdot \Delta t-\\ku_{n+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t-{{S}_{n}}\Delta t$$ {#eq-Massbalanceequation5}
+### Flux and water balance
 
-Multiplying the flow terms out:
+With downward-positive flow, the diffusion-form flux across the lower
+interface of compartment \(i\) is
 
-$$\begin{align}
-  & h_{n}^{t+1}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}=h_{n}^{t}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}+ \\ 
- & h_{n}^{t+1}{{\cdot }^{.}}\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}}{z_{n-1}^{{}}}\cdot \Delta t-h_{n-1}^{t+1}{{\cdot }^{.}}\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}}{z_{n-1}^{{}}}\cdot \Delta t+ku_{n-{}^{1}/{}_{2}}^{t+1}\cdot \Delta t \\ 
- & -h_{n+1}^{t+1}\frac{ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{n}^{{}}}\cdot \Delta t-h_{n}^{t+1}\frac{ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{n}^{{}}}\cdot \Delta t-ku_{n+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t \\ 
- & -{{S}_{n}}\cdot \Delta t \\ 
- &  \\ 
-\end{align}$$
+$$
+q_{i+1/2}^{t+1,k+1}
+=
+\overline D_{w,i+1/2}^{k}
+\frac{\theta_i^{t+1,k+1}-\theta_{i+1}^{t+1,k+1}}
+     {d_{i+1/2}}
++\overline K_{i+1/2}^{k}.
+$$ {#eq-diffusion-interface-flow}
 
-Division by Cn\*Dn:
+The compartment water balance over an internal time step \(\Delta t\) is
 
-$$\begin{align}
-  & h_{n}^{t+1}=h_{n}^{t}+ \\ 
- & h_{n}^{t+1}{{\cdot }^{.}}\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}}{z_{n-1}^{{}}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}}\cdot \Delta t-h_{n-1}^{t+1}{{\cdot }^{.}}\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}}{z_{n-1}^{{}}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}}\cdot \Delta t+\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}} \\ 
- & -h_{n+1}^{t+1}\frac{ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{n}^{{}}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}}\cdot \Delta t-h_{n}^{t+1}\frac{ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{n}^{{}}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}}\cdot \Delta t-\frac{ku_{n+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}} \\ 
- & -\frac{{{S}_{n}}\Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}} \\ 
-\end{align}$$
+$$
+\left(\theta_i^{t+1,k+1}-\theta_i^t\right)D_i
+=
+\left(
+q_{i-1/2}^{t+1,k+1}
+-q_{i+1/2}^{t+1,k+1}
+-S_i
+\right)\Delta t.
+$$ {#eq-diffusion-water-balance}
 
-Removing the brackets for the tensions:
+The nonlinear hydraulic coefficients are held constant while the linear
+system is solved. They are then recalculated from the resulting water
+contents for the next Picard iteration [@Remson1971]. Between adjacent soil
+compartments, the implementation uses geometric means:
 
-$$\begin{align}
-  & h_{n}^{t+1}=h_{n}^{t}+\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}}-\frac{ku_{n+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}}-\frac{{{S}_{n}}\Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}} \\ 
- & -h_{n-1}^{t+1}{{\cdot }^{.}}\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}}{z_{n-1}^{{}}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}}\cdot \Delta t \\ 
- & h_{n}^{t+1}{{\cdot }^{.}}\left( \frac{ku_{n-{}^{1}/{}_{2}}^{t+1}}{z_{n-1}^{{}}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}}\cdot \Delta t-\frac{ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{n}^{{}}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}}\cdot \Delta t \right) \\ 
- & -h_{n+1}^{t+1}\frac{ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{n}^{{}}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}}\cdot \Delta t \\ 
-\end{align}$$
+$$
+\begin{aligned}
+\overline D_{w,i+1/2}^{k}
+  &=\sqrt{D_w(\theta_i^k)D_w(\theta_{i+1}^k)},\\
+\overline K_{i+1/2}^{k}
+  &=\sqrt{K(\theta_i^k)K(\theta_{i+1}^k)}.
+\end{aligned}
+$$ {#eq-diffusion-interface-means}
 
-$$\begin{align}
-  & mit \\ 
- & P_{n}^{t+1}=\frac{\Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}}\,\,und\,\,Kf_{n}^{t+1}=\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}}{z_{n-1}^{{}}} \\ 
-\end{align}$$$$\begin{align}  & mit \\  & P_{n}^{t+1}=\frac{\Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}}\,\,und\,\,Kf_{n}^{t+1}=\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}}{z_{n-1}^{{}}} \\ \end{align}$$
+For compactness, define the dimensionless diffusion coefficients
 
-Following simplification:
+$$
+A_{i-1/2}^{k}
+=\frac{\overline D_{w,i-1/2}^{k}\Delta t}{D_i d_{i-1/2}},
+\qquad
+A_{i+1/2}^{k}
+=\frac{\overline D_{w,i+1/2}^{k}\Delta t}{D_i d_{i+1/2}}.
+$$ {#eq-diffusion-coefficients}
 
-$$\begin{align}
-  &  \\ 
- & h_{n}^{t+1}=h_{n}^{t}+\left( ku_{n-{}^{1}/{}_{2}}^{t+1}-ku_{n+{}^{1}/{}_{2}}^{t+1} \right)\cdot P_{n}^{t+1}-{{S}_{n}}\cdot P_{n}^{t+1} \\ 
- & -h_{n-1}^{t+1}{{\cdot }^{.}}Kf_{n-{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1} \\ 
- & h_{n}^{t+1}{{\cdot }^{.}}\left( Kf_{n-{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1}-Kf_{n+{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1} \right) \\ 
- & -h_{n+1}^{t+1}{{\cdot }^{.}}Kf_{n+{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1} \\ 
- &  \\ 
-\end{align}$$
+### Interior compartments
 
-$$\begin{array}{*{35}{l}}
-   h_{n}^{t}+\left( ku_{n-{}^{1}/{}_{2}}^{t+1}-ku_{n+{}^{1}/{}_{2}}^{t+1} \right)\cdot P_{n}^{t+1}-{{S}_{n}}\cdot P_{n}^{t+1}= & B\_Vektor  \\
-   h_{n-1}^{t+1}{{\cdot }^{.}}Kf_{n-{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1} & Lower  \\
-   h_{n}^{t+1}{{\cdot }^{.}}\left( -Kf_{n-{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1}-Kf_{n+{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1}+1 \right) & Diag  \\
-   h_{n+1}^{t+1}{{\cdot }^{.}}Kf_{n+{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1} & Upper  \\
-\end{array}$$
+Substitution of @eq-diffusion-interface-flow into
+@eq-diffusion-water-balance gives the tridiagonal equation
 
-##### Lower boundary condition
+$$
+\begin{aligned}
+&-A_{i-1/2}^{k}\theta_{i-1}^{t+1,k+1}
++\left(1+A_{i-1/2}^{k}+A_{i+1/2}^{k}\right)
+ \theta_i^{t+1,k+1}\\
+&\qquad
+-A_{i+1/2}^{k}\theta_{i+1}^{t+1,k+1}
+=
+\theta_i^t
++\frac{\Delta t}{D_i}
+ \left(
+   \overline K_{i-1/2}^{k}
+   -\overline K_{i+1/2}^{k}
+   -S_i
+ \right).
+\end{aligned}
+$$ {#eq-diffusion-interior-system}
 
-For the lower boundary condition, in principle, 4 options are implemented:
+The terms correspond directly to the arrays assembled in `Diffwater_solut`:
 
-- A constant water content / a constant water tension ("ConstContent"), i.e. the water content / water tension in compartment n_comp + 1 remains at the initialized value,
-- a free flow ("FreeFlow") at the lower compartment end, i.e. the water a free flow ("FreeFlow") at the lower compartment end, i.e. the water tension in n_comp+1 is set to a lower value corresponding to the distance from the compartment center, as it would be in hydraulic equilibrium,
-- No flow at the lower boundary ("NoFlow")
-- A variable groundwater level specified via the weather input file ("Groundwater")
+| Pascal array | Coefficient or right-hand side for compartment \(i\) |
+|---|---|
+| `lower` | \(-A_{i-1/2}^{k}\) |
+| `diag` | \(1+A_{i-1/2}^{k}+A_{i+1/2}^{k}\) |
+| `upper` | \(-A_{i+1/2}^{k}\) |
+| `B_vektor` | \(\theta_i^t+\frac{\Delta t}{D_i}(\overline K_{i-1/2}^{k}-\overline K_{i+1/2}^{k}-S_i)\) |
 
-For the variants ConstContent, FreeFlow and Groundwater, the water tension / water content for compartment n_comp+1 is known and therefore does not need to be determined by solving the system of equations.
+: Coefficients assembled by `Diffwater_solut`. {#tbl-diffusion-coefficients}
 
-$$\begin{align}
-  & h_{n\_comp}^{t+1}\cdot C_{n\_comp}^{t+1}\cdot D_{n\_comp}^{{}}= \\ 
-  h_{n\_comp}^{t}\cdot C_{n\_comp}^{t+1}\cdot D_{n\_comp}^{{}} \\ 
- & \,\,\,\,\,\,\,\,\,\,\,\,\,\\,\,\,\,\,\,\,\,\,\,\,\,\,+{{\left[ ku{{_{n\_comp-{}^{1}/{}_{2}}^{t+1}}^{.}}\left( \frac{h_{n\_comp}^{t+1}-h_{n\_comp-1}^{t+1}}{z_{n\_comp-1}^{{}}}+1 \right)-ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}\left( \frac{h_{n\_comp+1}^{t}-h_{n\_comp}^{t+1}}{z_{n\_comp}^{{}}}+1 \right)-{{S}_{n\_comp}} \right]}^{.}}\Delta t \\ 
- &  \\ 
-\end{align}$$
+The tridiagonal system is solved for all new compartment water contents at
+once. This implicit treatment is more stable than calculating each new water
+content explicitly from values at the old time level [@Fluhler1990;
+@Richter1986]. HUME uses the `trdiag` solver for this system
+[@EngelnMullges1987].
 
-Das bedeutet, dass der Term mit hn_comp+1 in den Term mit den bekannten Werten wandert und es somit keinen Term für den „upper“-Vektor gibt:
+### Upper boundary
 
-$$\begin{array}{*{35}{l}}
-   h_{n}^{t}+\left( ku_{n-{}^{1}/{}_{2}}^{t+1}-ku_{n+{}^{1}/{}_{2}}^{t+1} \right)\cdot P_{n}^{t+1}-{{S}_{n}}\cdot P_{n}^{t+1}-h_{n+1}^{t+1}{{\cdot }^{.}}Kf_{n+{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1}= & B\_Vektor  \\
-   h_{n-1}^{t+1}{{\cdot }^{.}}Kf_{n-{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1} & Lower  \\
-   h_{n}^{t+1}{{\cdot }^{.}}\left( -Kf_{n-{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1}-Kf_{n+{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1}+1 \right) & Diag  \\
-   {} & {}  \\
-\end{array}$$
+Under the normal flux boundary, the net surface flow \(q_s\) consists of net
+rain minus actual evaporation and any water released from surface storage.
+The first matrix row is
 
-Am oberen Rand kann die Situation von Wassersättigung bzw. sehr starker Austrocknung eintreten. In diesem Fall wechselt die Fluss- zu einer Gehaltsrandbedingung und das erste gerechnete Kompartiment ist das zweite, für das nun eine bekannte Wasserspannung im 1. Kompartiment als Randbedingung vorliegt:
+$$
+\left(1+A_{3/2}^{k}\right)\theta_1^{t+1,k+1}
+-A_{3/2}^{k}\theta_2^{t+1,k+1}
+=
+\theta_1^t
++\frac{\Delta t}{D_1}
+ \left(q_s-\overline K_{3/2}^{k}-S_1\right).
+$$ {#eq-diffusion-upper-flux}
 
-$$\begin{align}
-  & h_{2}^{t+1}=h_{2}^{t+1}+\frac{ku_{2-{}^{1}/{}_{2}}^{t}\cdot \Delta t}{C_{2}^{t+1}\cdot D_{2}^{{}}}-\frac{ku_{2+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{C_{2}^{t+1}\cdot D_{2}^{{}}}-\frac{{{S}_{2}}\Delta t}{C_{2}^{t+1}\cdot D_{2}^{{}}} \\ 
- & -h_{1}^{t}{{\cdot }^{.}}\frac{ku_{2-{}^{1}/{}_{2}}^{t+1}}{z_{1}^{{}}\cdot C_{2}^{t+1}\cdot D_{2}^{{}}}\cdot \Delta t \\ 
- & h_{2}^{t+1}{{\cdot }^{.}}\left( \frac{ku_{2-{}^{1}/{}_{2}}^{t+1}}{z_{1}^{{}}\cdot C_{2}^{t+1}\cdot D_{2}^{{}}}\cdot \Delta t-\frac{ku{{_{2+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{2}^{{}}\cdot C_{2}^{t+1}\cdot D_{2}^{{}}}\cdot \Delta t \right) \\ 
- & -h_{3}^{t+1}\frac{ku{{_{2+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{2}^{{}}\cdot C_{2}^{t+1}\cdot D_{2}^{{}}}\cdot \Delta t \\ 
-\end{align}$$
+Before assembling the row, the implementation estimates the maximum
+infiltration rate from the surface pressure gradient and surface hydraulic
+conductivity. If the available surface flow exceeds that rate, the boundary
+is marked as wet. A dry-boundary flag is set when the upper water content
+falls below the residual water content while the surface flow is outward.
+For either flag, `UpperBoundaryCondition` changes to a prescribed-content row:
 
-Im SWAP-Modell wird die obere Randbedingung alternativ berechnet indem der Influx in die oberste Schicht mit einer angenommenen Wasserspannung an der Oberfläche (h0) berechnet wird:
+$$
+\begin{aligned}
+&\left(1+A_s^k+A_{3/2}^{k}\right)\theta_1^{t+1,k+1}
+-A_{3/2}^{k}\theta_2^{t+1,k+1}\\
+&\qquad =
+\theta_1^t+A_s^k\theta_{s,1}
++\frac{\Delta t}{D_1}
+ \left(\overline K_s^k-\overline K_{3/2}^{k}-S_1\right),
+\end{aligned}
+$$ {#eq-diffusion-upper-content}
 
-$$\begin{align}
-  & h_{1}^{t+1}\cdot C_{1}^{t+1}\cdot D_{1}^{{}}=h_{1}^{t}\cdot C_{1}^{t+1}\cdot D_{1}^{{}}+{{\left[ ku{{_{1}^{t+1}}^{.}}\left( \frac{h_{n}^{t+1}-h_{0}^{t}}{{}^{z_{1}^{{}}}/{}_{2}}+1 \right)-ku{{_{1+{}^{1}/{}_{2}}^{t+1}}^{.}}\left( \frac{h_{2}^{t+1}-h_{1}^{t+1}}{{{z}_{2}}}+1 \right)-{{S}_{1}} \right]}^{.}}\Delta t \\ 
- &  \\ 
-\end{align}$$
+where \(A_s^k=\overline D_{w,s}^k\Delta t/(D_1d_s)\) and
+\(\theta_{s,1}\) is the saturated water content of the upper compartment.
 
-Zur Berechnung des tensionsinduzierten Influx (der Infiltration) wird die halbe Dicke des ersten Kompartiments genutzt.
+### Lower boundary
 
-$$\begin{align}
-  & h_{1}^{t+1}\cdot C_{1}^{t+1}\cdot D_{1}^{{}}=h_{1}^{t}\cdot C_{1}^{t+1}\cdot D_{1}^{{}} \\ 
- & +\frac{h_{1}^{t+1}\cdot ku_{1}^{t+1}\cdot 2\cdot \Delta t}{{{z}_{1}}} \\ 
- & -\frac{-h_{0}^{t}\cdot ku_{1}^{t+1}\cdot 2\cdot \Delta t}{z_{1}^{{}}} \\ 
- & +ku_{1}^{t+1}\cdot \Delta t \\ 
- & {{-}^{.}}\frac{h_{2}^{t+1}\cdot ku_{1+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{{{z}_{2}}} \\ 
- & +\frac{h_{1}^{t+1}\cdot ku_{1+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{{{z}_{2}}} \\ 
- & -ku_{1+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t \\ 
- & -{{S}_{1}}\cdot \Delta t \\ 
- &  \\ 
-\end{align}$$
+For `ConstContent`, `Groundwater`, and `FreeFlow`, the water content of the
+additional boundary compartment is known. Let \(N\) denote the last active
+compartment. The implementation-specific final row is
 
-Ausklammern der Wasserspannungen
+$$
+\begin{aligned}
+&-A_N^-\theta_{N-1}^{t+1,k+1}
++\left(1+A_N^-+A_N^+\right)\theta_N^{t+1,k+1}\\
+&\qquad =
+\theta_N^t+A_N^+\theta_{N+1}
++\Delta t\left(
+  \frac{\overline K_{N-1/2}^k-S_N}{D_N}
+  -\frac{\overline K_{N+1/2}^k}{D_{N+1}}
+ \right),
+\end{aligned}
+$$ {#eq-diffusion-lower-fixed}
 
-$$\begin{align}
-  & h_{1}^{t+1}=h_{1}^{t} \\ 
- & +\frac{h_{1}^{t+1}\cdot ku_{1}^{t+1}\cdot 2\cdot \Delta t}{{{z}_{1}}\cdot C_{1}^{t+1}\cdot D_{1}^{{}}} \\ 
- & -\frac{-h_{0}^{t}\cdot ku_{1}^{t+1}\cdot 2\cdot \Delta t}{z_{1}^{{}}\cdot C_{1}^{t+1}\cdot D_{1}^{{}}} \\ 
- & +\frac{ku_{1}^{t+1}\cdot \Delta t}{C_{1}^{t+1}\cdot D_{1}^{{}}} \\ 
- & {{-}^{.}}\frac{h_{2}^{t+1}\cdot ku_{1+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{{{z}_{2}}\cdot C_{1}^{t+1}\cdot D_{1}^{{}}} \\ 
- & +\frac{h_{1}^{t+1}\cdot ku_{1+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{{{z}_{2}}\cdot C_{1}^{t+1}\cdot D_{1}^{{}}} \\ 
- & -\frac{ku_{1+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{C_{1}^{t+1}\cdot D_{1}^{{}}} \\ 
- & -\frac{{{S}_{1}}\cdot \Delta t}{C_{1}^{t+1}\cdot \Delta t} \\ 
- &  \\ 
-\end{align}$$
+with
 
-Division durch C1.D1 Ausklammern und unbekannte ht+1 Terme nach links:
+$$
+A_N^-=
+\frac{\overline D_{w,N-1/2}^k\Delta t}{D_Nd_{N-1/2}},
+\qquad
+A_N^+=
+\frac{\overline D_{w,N+1/2}^k\Delta t}{D_{N+1}d_{N+1/2}}.
+$$ {#eq-diffusion-lower-coefficients}
 
-$$\begin{align}
-  & h_{1}^{t+1}\cdot \left( -\frac{ku_{1}^{t+1}\cdot 2\cdot \Delta t}{{{z}_{1}}\cdot C_{1}^{t+1}\cdot D_{1}^{{}}}-\frac{ku_{1+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{{{z}_{2}}\cdot C_{1}^{t+1}\cdot D_{1}^{{}}}+1 \right)+ \\ 
- & h_{2}^{t+1}\cdot \left( \frac{ku_{1+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{{{z}_{2}}\cdot C_{1}^{t+1}\cdot D_{1}^{{}}} \right) \\ 
- & =h_{1}^{t}-\frac{-h_{0}^{t}\cdot ku_{1}^{t+1}\cdot 2\cdot \Delta t}{z_{1}^{{}}\cdot C_{1}^{t+1}\cdot D_{1}^{{}}}+\frac{ku_{1}^{t+1}\cdot \Delta t}{C_{1}^{t+1}\cdot D_{1}^{{}}}-\frac{ku_{1+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{C_{1}^{t+1}\cdot D_{1}^{{}}}-\frac{{{S}_{1}}\cdot \Delta t}{C_{1}^{t+1}\cdot \Delta t} \\ 
- &  \\ 
-\end{align}$$
+The use of \(D_{N+1}\) in the lower-interface terms follows the current
+Pascal implementation. It is equivalent to the usual control-volume form
+when the last active and boundary compartments have equal thickness.
 
-$$\begin{align}
-  & h_{1}^{t+1}=h_{1}^{t+1}+\frac{ku_{1-{}^{1}/{}_{2}}^{t}\cdot \Delta t}{C_{1}^{t+1}\cdot D_{1}^{{}}}-\frac{ku_{1+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{C_{1}^{t+1}\cdot D_{1}^{{}}}-\frac{{{S}_{1}}\Delta t}{C_{1}^{t+1}\cdot D_{1}^{{}}} \\ 
- & -h_{0}^{t}{{\cdot }^{.}}\frac{ku_{1}^{t+1}}{{z_{1}^{{}}}/{2}\;\cdot C_{1}^{t+1}\cdot D_{1}^{{}}}\cdot \Delta t \\ 
- & h_{1}^{t+1}{{\cdot }^{.}}\left( \frac{ku_{1}^{t+1}}{{z_{1}^{{}}}/{2}\;\cdot C_{2}^{t+1}\cdot D_{2}^{{}}}\cdot \Delta t-\frac{ku{{_{1+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{2}^{{}}\cdot C_{2}^{t+1}\cdot D_{2}^{{}}}\cdot \Delta t \right) \\ 
- & -h_{3}^{t+1}\frac{ku{{_{2+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{2}^{{}}\cdot C_{2}^{t+1}\cdot D_{2}^{{}}}\cdot \Delta t \\ 
-\end{align}$$
+The boundary alternatives are applied as follows:
 
-Wenn in einem Kompartiment die Wasserspannungen unter einen kritischen Wert fallen, z.B. 1 cm, dann kann es sinnvoll sein, die tensionsinduzierten Flüsse aus der Lösung für dieses Kompartiment herauszulassen: d.h.
+- `ConstContent` retains the initialized water content of compartment
+  \(N+1\).
+- `Groundwater` shortens the actively solved profile according to the
+  external `Groundwaterdepth` input and saturates the deeper compartments.
+- `FreeFlow` mirrors the last active water content in the boundary
+  compartment, giving gravity-driven drainage.
+- `NoFlux` supplies zero flow at the lower boundary.
 
-$$\begin{align}
-  & h_{n}^{t+1}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}=h_{n}^{t}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}+{{\left[ ku{{_{n-{}^{1}/{}_{2}}^{t+1}}^{.}}\left( \frac{h_{n}^{t+1}-h_{n-1}^{t+1}}{z_{n-1}^{{}}}+1 \right)-ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}\left( \frac{h_{n+1}^{t+1}-h_{n}^{t+1}}{z_{n}^{{}}}+1 \right)-{{S}_{n}} \right]}^{.}}\Delta t \\ 
- &  \\ 
-\end{align}$$
+### Temperature correction and Picard iteration
 
-$$\begin{align}
-  & h_{n}^{t+1}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}=h_{n}^{t}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}+{{\left[ ku{{_{n-{}^{1}/{}_{2}}^{t+1}}^{.}}\left( 0+1 \right)-ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}\left( \frac{h_{n+1}^{t+1}-h_{n}^{t+1}}{z_{n}^{{}}}+1 \right)-{{S}_{n}} \right]}^{.}}\Delta t \\ 
- &  \\ 
-\end{align}$$
+If a soil-temperature model is linked, `CalcTempFactor` multiplies the
+diffusivity and conductivity terms by
 
-Ausmultiplizieren der Flussterme
+$$
+f_T=
+\max\left(0,\min\left(1,\frac{T+1}{2}\right)\right)
+\qquad\text{for }T\le 1\,^{\circ}\mathrm C.
+$$ {#eq-diffusion-temperature-factor}
 
-$$\begin{align}
-  & h_{n}^{t+1}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}=h_{n}^{t}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}+ \\ 
- & +ku_{n-{}^{1}/{}_{2}}^{t+1}\cdot \Delta t \\ 
- & -h_{n+1}^{t+1}\frac{ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{n}^{{}}}\cdot \Delta t-h_{n}^{t+1}\frac{ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{n}^{{}}}\cdot \Delta t-ku_{n+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t \\ 
- & -{{S}_{n}}\cdot \Delta t \\ 
- &  \\ 
-\end{align}$$
+Thus, transport is unchanged above \(1\,^{\circ}\mathrm C\), decreases
+linearly between \(1\,^{\circ}\mathrm C\) and \(-1\,^{\circ}\mathrm C\),
+and is suppressed at and below \(-1\,^{\circ}\mathrm C\).
 
-Division durch Cn\*Dn:
+Each Picard iteration recalculates diffusivities and conductivities, applies
+the boundary rows, solves the tridiagonal system, and stores the solution as
+the next estimate of \(\theta^{t+1}\). Convergence is reached when the largest
+change in water content between successive iterations is below
+`Max_IterError`; at least two iterations are performed. If `IterMax` is
+exceeded, the old state is restored and the internal time step is reduced.
+After an accepted solution, the interface flows are recalculated, excess
+water is redistributed toward the surface, and the water-balance diagnostics
+and state variables are updated.
 
-$$\begin{align}
-  & h_{n}^{t+1}=h_{n}^{t}+ \\ 
- & +\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}} \\ 
- & -h_{n+1}^{t+1}\frac{ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{n}^{{}}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}}\cdot \Delta t-h_{n}^{t+1}\frac{ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{n}^{{}}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}}\cdot \Delta t-\frac{ku_{n+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}} \\ 
- & -\frac{{{S}_{n}}\Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}} \\ 
-\end{align}$$
+## Pressure-head solution (Richards) {#sec-richards-solution}
 
-Ausklammern der Tensionen:
+This section documents the pressure-head formulation implemented by
+**Richardswater_solut**. HUME represents matric pressure as a positive
+soil-water tension \(h\) in centimetres and defines water flow as positive
+downward.
 
-$$\begin{align}
-  & h_{n}^{t+1}=h_{n}^{t}+\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}}-\frac{ku_{n+{}^{1}/{}_{2}}^{t+1}\cdot \Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}}-\frac{{{S}_{n}}\Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}} \\ 
- & -h_{n-1}^{t+1}{{\cdot }^{.}}0 \\ 
- & h_{n}^{t+1}{{\cdot }^{.}}\left( -\frac{ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{n}^{{}}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}}\cdot \Delta t \right) \\ 
- & -h_{n+1}^{t+1}\frac{ku{{_{n+{}^{1}/{}_{2}}^{t+1}}^{.}}}{z_{n}^{{}}\cdot C_{n}^{t+1}\cdot D_{n}^{{}}}\cdot \Delta t \\ 
-\end{align}$$
+For compartment \(i\):
 
-$$\begin{align}
-  & mit \\ 
- & P_{n}^{t+1}=\frac{\Delta t}{C_{n}^{t+1}\cdot D_{n}^{{}}}\,\,und\,\,Kf_{n}^{t+1}=\frac{ku_{n-{}^{1}/{}_{2}}^{t+1}}{z_{n-1}^{{}}} \\ 
-\end{align}$$
+- \(D_i\) is the compartment thickness;
+- \(d_{i+1/2}\) is the distance between the centres of compartments \(i\) and
+  \(i+1\);
+- \(K_{i+1/2}^{k}\) is the interface hydraulic conductivity evaluated during
+  iteration \(k\);
+- \(S_i\) is the compartment sink rate; and
+- \(C_i^k=\partial\theta_i/\partial h_i\) is the specific water capacity.
 
-Folgende Vereinfachung:
+Because HUME uses positive tension, water content normally decreases as \(h\)
+increases and \(C_i^k\) is therefore negative.
 
-$$\begin{align}
-  &  \\ 
- & h_{n}^{t+1}=h_{n}^{t}+\left( ku_{n-{}^{1}/{}_{2}}^{t+1}-ku_{n+{}^{1}/{}_{2}}^{t+1} \right)\cdot P_{n}^{t+1}-{{S}_{n}}\cdot P_{n}^{t+1} \\ 
- & -h_{n-1}^{t+1}{{\cdot }^{.}}0 \\ 
- & h_{n}^{t+1}{{\cdot }^{.}}\left( -Kf_{n+{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1} \right) \\ 
- & -h_{n+1}^{t+1}{{\cdot }^{.}}Kf_{n+{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1} \\ 
- &  \\ 
-\end{align}$$
+### Discrete water balance
 
-$$\begin{array}{*{35}{l}}
-   h_{n}^{t}+\left( ku_{n-{}^{1}/{}_{2}}^{t+1}-ku_{n+{}^{1}/{}_{2}}^{t+1} \right)\cdot P_{n}^{t+1}-{{S}_{n}}\cdot P_{n}^{t+1}= & B\_Vektor  \\
-   h_{n-1}^{t+1}{{\cdot }^{.}}Kf_{n-{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1} & Lower  \\
-   h_{n}^{t+1}{{\cdot }^{.}}\left( -Kf_{n-{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1}-Kf_{n+{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1}+1 \right) & Diag  \\
-   h_{n+1}^{t+1}{{\cdot }^{.}}Kf_{n+{}^{1}/{}_{2}}^{t+1}\cdot P_{n}^{t+1} & Upper  \\
-\end{array}$$
+The amount of water in a compartment is \(M_i=\theta_iD_i\). Over an internal
+time step \(\Delta t\), its balance is
+
+$$
+\left(\theta_i^{t+1}-\theta_i^t\right)D_i
+=
+\left(q_{i-1/2}^{t+1}-q_{i+1/2}^{t+1}-S_i\right)\Delta t.
+$$ {#eq-richards-water-balance}
+
+The downward-positive flow across the lower interface of compartment \(i\) is
+
+$$
+q_{i+1/2}^{t+1}
+=
+K_{i+1/2}^{k}
+\left(
+  \frac{h_{i+1}^{t+1}-h_i^{t+1}}{d_{i+1/2}}+1
+\right).
+$$ {#eq-richards-interface-flow}
+
+The pressure-head solver linearizes the storage change as
+
+$$
+\theta_i^{t+1}-\theta_i^t
+\approx
+C_i^k\left(h_i^{t+1}-h_i^t\right).
+$$ {#eq-richards-storage-linearisation}
+
+For compactness, define
+
+$$
+P_i^k=\frac{\Delta t}{C_i^kD_i},
+\qquad
+Kf_{i+1/2}^k=\frac{K_{i+1/2}^k}{d_{i+1/2}}.
+$$ {#eq-richards-coefficients}
+
+In the Pascal implementation, \(P_i^k\) is set to zero if the calculated
+capacity is non-negative. For the Richards method, adjacent compartment
+conductivities are combined using the arithmetic mean.
+
+### Interior compartments
+
+Substitution of @eq-richards-interface-flow and
+@eq-richards-storage-linearisation into @eq-richards-water-balance gives the
+tridiagonal equation
+
+$$
+\begin{aligned}
+&P_i^kKf_{i-1/2}^k h_{i-1}^{t+1}
++\left[
+  1-P_i^k\left(Kf_{i-1/2}^k+Kf_{i+1/2}^k\right)
+ \right]h_i^{t+1} \\
+&\qquad
++P_i^kKf_{i+1/2}^k h_{i+1}^{t+1}
+=
+h_i^t
++P_i^k\left(K_{i-1/2}^k-K_{i+1/2}^k-S_i\right).
+\end{aligned}
+$$ {#eq-richards-interior-system}
+
+The terms are stored as follows:
+
+| Pascal array | Coefficient for compartment \(i\) |
+|---|---|
+| **lower** | \(P_i^kKf_{i-1/2}^k\) |
+| **diag** | \(1-P_i^k(Kf_{i-1/2}^k+Kf_{i+1/2}^k)\) |
+| **upper** | \(P_i^kKf_{i+1/2}^k\) |
+| **B_vektor** | \(h_i^t+P_i^k(K_{i-1/2}^k-K_{i+1/2}^k-S_i)\) |
+
+: Coefficients assembled by **Richardswater_solut**. {#tbl-richards-coefficients}
+
+### Upper boundary
+
+The ordinary upper boundary is an imposed net surface flux \(q_s\). It
+contains net rain minus actual evaporation and may also include water already
+ponded at the surface. The first matrix row is
+
+$$
+\left(1-P_1^kKf_{3/2}^k\right)h_1^{t+1}
++P_1^kKf_{3/2}^k h_2^{t+1}
+=
+h_1^t+P_1^k\left(q_s-K_{3/2}^k-S_1\right).
+$$ {#eq-richards-upper-flux}
+
+Before assembling this row, the implementation compares the available surface
+flux with the attainable infiltration rate. If the infiltration capacity is
+exceeded, or if the upper compartment becomes drier than
+\(h_\mathrm{air}=20\,000\ \mathrm{cm}\), the solver changes to a prescribed
+surface-head boundary. Water that cannot infiltrate is stored as
+**PondedWater** up to **PondMax**; additional water contributes to
+**CumRunoff**.
+
+### Lower boundary
+
+For **ConstContent**, **Groundwater**, and **FreeFlow**, the pressure head in
+the additional boundary compartment \(N+1\) is known. Its contribution is
+moved to the right-hand side:
+
+$$
+\begin{aligned}
+&P_N^kKf_{N-1/2}^k h_{N-1}^{t+1}
++\left[
+  1-P_N^k\left(Kf_{N-1/2}^k+Kf_{N+1/2}^k\right)
+ \right]h_N^{t+1} \\
+&\qquad =
+h_N^t
++P_N^k\left(
+  K_{N-1/2}^k-K_{N+1/2}^k-S_N
+  -Kf_{N+1/2}^k h_{N+1}
+\right).
+\end{aligned}
+$$ {#eq-richards-lower-fixed}
+
+The boundary alternatives have the following meanings:
+
+- **ConstContent** retains the initialized state of compartment \(N+1\).
+- **Groundwater** derives the active profile depth from the external
+  **Groundwaterdepth** input and treats deeper compartments as saturated.
+- **FreeFlow** mirrors the matric pressure of the final calculated compartment
+  in compartment \(N+1\), producing a zero matric-pressure gradient and
+  gravity-driven drainage.
+- **NoFlux** sets the flow through the lower boundary to zero.
+
+### Iteration and time-step control
+
+During each iteration, the solver recalculates hydraulic conductivities and
+capacities, assembles the tridiagonal system, solves for the new pressure
+heads, and updates water contents using the linearized storage relation.
+Pressure heads are restricted to non-negative values.
+
+Convergence is determined from the largest change in water content between
+successive iterations. At least two iterations are performed. If the number
+of iterations exceeds **IterMax**, the previous state is restored and the
+internal time step is reduced. After an accepted solution, overflow is
+redistributed upward, interface flows and water-balance diagnostics are
+calculated, and the new state variables are stored.
+
+## Mixed-form Picard solutions {#sec-mixed-form-solutions}
+
+In addition to the pressure-head- and water-content-based solutions, `TSoilWaterMod` implements two mixed-form solutions. The mixed form retains the water-content change in the storage term while expressing the fluxes in terms of pressure head. This generally improves mass conservation. Both implementations use Picard iteration and solve a tridiagonal system until the water-balance and convergence criteria are met.
+
+The notation in this section follows the implementation:
+
+- $t$ and $t+1$ denote the old and new time levels;
+- $k$ and $k+1$ denote consecutive Picard iterations;
+- $D_i$ is the thickness of compartment $i$ and $d_{i+1/2}$ is the distance between the centers of compartments $i$ and $i+1$;
+- $K_{i+1/2}^{k}$ is the mean unsaturated hydraulic conductivity at the interface between compartments $i$ and $i+1$;
+- $C_i^k=\partial\theta_i/\partial h_i$ is the specific water capacity evaluated at the current iterate; and
+- $S_i$ is the sink rate in compartment $i$.
+
+The equations follow HUME's convention of positive soil-water tension and downward-positive water flow.
+
+### Picard correction formulation (`Mixed`) {#sec-mixed-correction}
+
+The change in water content over the time step is linearized around the current Picard iterate:
+
+$$
+\frac{\theta_i^{t+1,k+1}-\theta_i^t}{\Delta t}
+\approx
+C_i^{t+1,k}\frac{h_i^{t+1,k+1}-h_i^{t+1,k}}{\Delta t}
++\frac{\theta_i^{t+1,k}-\theta_i^t}{\Delta t}.
+$$ {#eq-mixed-storage-linearisation}
+
+The unknown correction in iteration $k+1$ is
+
+$$
+\delta_i^{k+1}=h_i^{t+1,k+1}-h_i^{t+1,k}.
+$$ {#eq-mixed-head-correction}
+
+For an interior compartment, the residual of the discretized water-balance equation at the current iterate is
+
+$$
+\begin{aligned}
+R_i^k={}&
+ \frac{K_{i-1/2}^k}{D_i d_{i-1/2}}
+ \left(h_i^{t+1,k}-h_{i-1}^{t+1,k}\right)
+-\frac{K_{i+1/2}^k}{D_i d_{i+1/2}}
+ \left(h_{i+1}^{t+1,k}-h_i^{t+1,k}\right) \\
+&+\frac{K_{i-1/2}^k-K_{i+1/2}^k}{D_i}
+-\frac{\theta_i^{t+1,k}-\theta_i^t}{\Delta t}
+-\frac{S_i}{D_i}.
+\end{aligned}
+$$ {#eq-mixed-residual}
+
+The correction is obtained from the tridiagonal equation
+
+$$
+\begin{aligned}
+&-\frac{K_{i-1/2}^k}{D_i d_{i-1/2}}\delta_{i-1}^{k+1}
++\left(
+  \frac{C_i^{t+1,k}}{\Delta t}
+  +\frac{K_{i-1/2}^k}{D_i d_{i-1/2}}
+  +\frac{K_{i+1/2}^k}{D_i d_{i+1/2}}
+ \right)\delta_i^{k+1} \\
+&\qquad
+-\frac{K_{i+1/2}^k}{D_i d_{i+1/2}}\delta_{i+1}^{k+1}
+=R_i^k.
+\end{aligned}
+$$ {#eq-mixed-correction-system}
+
+After solving the system, the implementation updates $h_i^{t+1,k+1}=h_i^{t+1,k}+\delta_i^{k+1}$ and recalculates $\theta_i^{t+1,k+1}$ from the retention function.
+
+#### Upper flux boundary
+
+At the upper boundary, the net surface flux $q_1$ is known from precipitation or irrigation minus evaporation. The first-compartment residual is
+
+$$
+\begin{aligned}
+R_1^k={}&\frac{q_1}{D_1}
+-\frac{K_{3/2}^k}{D_1d_{3/2}}
+ \left(h_2^{t+1,k}-h_1^{t+1,k}\right)
+-\frac{K_{3/2}^k}{D_1} \\
+&-\frac{\theta_1^{t+1,k}-\theta_1^t}{\Delta t}
+-\frac{S_1}{D_1},
+\end{aligned}
+$$ {#eq-mixed-upper-residual}
+
+and the first row of the tridiagonal system becomes
+
+$$
+\left(
+ \frac{C_1^{t+1,k}}{\Delta t}
+ +\frac{K_{3/2}^k}{D_1d_{3/2}}
+\right)\delta_1^{k+1}
+-\frac{K_{3/2}^k}{D_1d_{3/2}}\delta_2^{k+1}
+=R_1^k.
+$$ {#eq-mixed-upper-system}
+
+#### Lower boundary
+
+For `ConstContent`, `Groundwater`, and `FreeFlow`, the pressure head in the additional compartment $N+1$ is prescribed. Consequently, its correction is zero and the upper-diagonal coefficient in the final matrix row is set to zero. The residual is still calculated with both interface fluxes by using the known $h_{N+1}$ in @eq-mixed-residual.
+
+For `NoFlux`, the lower-interface flow is omitted. The final residual and matrix row reduce to
+
+$$
+\begin{aligned}
+R_N^k={}&
+ \frac{K_{N-1/2}^k}{D_Nd_{N-1/2}}
+ \left(h_N^{t+1,k}-h_{N-1}^{t+1,k}\right)
+ +\frac{K_{N-1/2}^k}{D_N} \\
+&-\frac{\theta_N^{t+1,k}-\theta_N^t}{\Delta t}
+ -\frac{S_N}{D_N}, \\
+&-\frac{K_{N-1/2}^k}{D_Nd_{N-1/2}}\delta_{N-1}^{k+1}
+ +\left(
+   \frac{C_N^{t+1,k}}{\Delta t}
+   +\frac{K_{N-1/2}^k}{D_Nd_{N-1/2}}
+  \right)\delta_N^{k+1}
+ =R_N^k.
+\end{aligned}
+$$ {#eq-mixed-noflux-system}
+
+### Direct pressure-head formulation (`MixedHydrus`) {#sec-mixed-hydrus}
+
+The `MixedHydrus` implementation uses the same mixed storage approximation but solves directly for $h^{t+1,k+1}$ rather than for a correction. Define
+
+$$
+P_i^k=\frac{C_i^{t+1,k}D_i}{\Delta t},
+\qquad
+Kf_{i+1/2}^k=\frac{K_{i+1/2}^k}{d_{i+1/2}}.
+$$ {#eq-mixed-hydrus-coefficients}
+
+For an interior compartment, the resulting tridiagonal equation is
+
+$$
+\begin{aligned}
+&Kf_{i-1/2}^k h_{i-1}^{t+1,k+1}
++\left(P_i^k-Kf_{i-1/2}^k-Kf_{i+1/2}^k\right)h_i^{t+1,k+1}
++Kf_{i+1/2}^k h_{i+1}^{t+1,k+1} \\
+&\qquad={}
+P_i^k h_i^{t+1,k}
++K_{i-1/2}^k-K_{i+1/2}^k
+-\frac{\left(\theta_i^{t+1,k}-\theta_i^t\right)D_i}{\Delta t}
+-S_i.
+\end{aligned}
+$$ {#eq-mixed-hydrus-interior}
+
+The three coefficients on the left are stored in the Pascal arrays `alpha`, `beta`, and `gamma`; the right-hand side is stored in `Res`. After the tridiagonal solve, `Res` contains the new pressure heads.
+
+#### Upper boundary
+
+With an imposed surface flux $q_1$, the first row is
+
+$$
+\begin{aligned}
+\left(P_1^k-Kf_{3/2}^k\right)h_1^{t+1,k+1}
++Kf_{3/2}^k h_2^{t+1,k+1}
+={}&P_1^k h_1^{t+1,k}+q_1-K_{3/2}^k \\
+&-\frac{\left(\theta_1^{t+1,k}-\theta_1^t\right)D_1}{\Delta t}-S_1.
+\end{aligned}
+$$ {#eq-mixed-hydrus-upper-flux}
+
+`MixedHydrus` also checks the attainable infiltration rate and air-dry pressure head. If the surface becomes saturated or excessively dry, it changes from the imposed-flux case to a prescribed surface head $h_0$. Ponded water contributes to the maximum available surface flux, and excess water is retained as ponded water up to `PondMax` before becoming runoff.
+
+#### Lower boundary
+
+For `ConstContent`, `Groundwater`, and `FreeFlow`, $h_{N+1}$ is known and its contribution is moved to the right-hand side:
+
+$$
+\begin{aligned}
+&Kf_{N-1/2}^k h_{N-1}^{t+1,k+1}
++\left(P_N^k-Kf_{N-1/2}^k-Kf_{N+1/2}^k\right)h_N^{t+1,k+1} \\
+&\qquad={}
+P_N^k h_N^{t+1,k}
++K_{N-1/2}^k-K_{N+1/2}^k
+-Kf_{N+1/2}^k h_{N+1}^{t+1} \\
+&\qquad\quad
+-\frac{\left(\theta_N^{t+1,k}-\theta_N^t\right)D_N}{\Delta t}
+-S_N.
+\end{aligned}
+$$ {#eq-mixed-hydrus-lower-fixed}
+
+For `NoFlux`, all lower-interface terms are removed:
+
+$$
+\begin{aligned}
+Kf_{N-1/2}^k h_{N-1}^{t+1,k+1}
++\left(P_N^k-Kf_{N-1/2}^k\right)h_N^{t+1,k+1}
+={}&P_N^k h_N^{t+1,k}+K_{N-1/2}^k \\
+&-\frac{\left(\theta_N^{t+1,k}-\theta_N^t\right)D_N}{\Delta t}-S_N.
+\end{aligned}
+$$ {#eq-mixed-hydrus-lower-noflux}
+
+In both mixed-form methods, conductivities and capacities are recalculated from the current iterate before the matrix is assembled. The iteration continues with an adjusted internal time step until convergence; interface flows and the profile water balance are then calculated from the accepted solution.

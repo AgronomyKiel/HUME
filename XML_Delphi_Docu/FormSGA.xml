@@ -1393,6 +1393,8 @@
             </methodref>
             <methodref name="WMTabletQuerySystemGestureStatus" visibility="private" procflags="message">
             </methodref>
+            <methodref name="WMGetObject" visibility="private" procflags="message">
+            </methodref>
             <methodref name="CMChanged" visibility="private" procflags="message">
             </methodref>
             <methodref name="CMChildKey" visibility="private" procflags="message">
@@ -1599,6 +1601,10 @@
             </methodref>
             <methodref name="IsQualifyingSite" visibility="protected" procflags="dynamic">
             </methodref>
+            <methodref name="InitUIAutomationProvider" visibility="protected" procflags="virtual">
+            </methodref>
+            <methodref name="Loaded" visibility="protected" procflags="override">
+            </methodref>
             <methodref name="KeyDown" visibility="protected" procflags="dynamic">
             </methodref>
             <methodref name="KeyUp" visibility="protected" procflags="dynamic">
@@ -1721,6 +1727,8 @@
             </propertyref>
             <propertyref name="WindowHandle" visibility="protected">
             </propertyref>
+            <propertyref name="UIAutomationProvider" visibility="protected">
+            </propertyref>
             <eventref name="OnAlignInsertBefore" visibility="protected">
             </eventref>
             <eventref name="OnAlignPosition" visibility="protected">
@@ -1756,6 +1764,12 @@
             <methodref name="Broadcast" visibility="public">
             </methodref>
             <methodref name="CanFocus" visibility="public" procflags="dynamic">
+            </methodref>
+            <methodref name="CanRequestAutoSize" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestDwmBufferedPaint" visibility="public" procflags="virtual">
+            </methodref>
+            <methodref name="CanRequestPaintBackground" visibility="public" procflags="virtual">
             </methodref>
             <methodref name="ContainsControl" visibility="public">
             </methodref>
@@ -2136,6 +2150,8 @@
               </methodref>
               <methodref name="CanAutoSize" visibility="protected" procflags="virtual">
               </methodref>
+              <methodref name="CanUseAcceleratorChar" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Changed" visibility="protected">
               </methodref>
               <methodref name="ChangeScale" visibility="protected" procflags="overload dynamic">
@@ -2377,6 +2393,8 @@
               <methodref name="Destroy" visibility="public" procflags="destructor override">
               </methodref>
               <methodref name="CheckNonMainThreadUsage" visibility="public">
+              </methodref>
+              <methodref name="CanUseDwmBufferedPaint" visibility="public" procflags="virtual">
               </methodref>
               <methodref name="IsCustomStyleActive" visibility="public" procflags="virtual">
               </methodref>
@@ -2624,6 +2642,8 @@
                 <methodref name="ReadDeltaStream" visibility="private">
                 </methodref>
                 <methodref name="ReadDeltaState" visibility="private">
+                </methodref>
+                <methodref name="InitObservers" visibility="private">
                 </methodref>
                 <methodref name="FindSortedComponent" visibility="private">
                 </methodref>
@@ -2894,51 +2914,51 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="Button1" type="TButton" visibility="published" size="4" offset="1080" file="FormSGA.pas" line="151" />
-      <field name="PageControl1" type="TPageControl" visibility="published" size="4" offset="1084" file="FormSGA.pas" line="152" />
-      <field name="TabSheetTextOutput" type="TTabSheet" visibility="published" size="4" offset="1088" file="FormSGA.pas" line="153" />
-      <field name="Memo1" type="TMemo" visibility="published" size="4" offset="1092" file="FormSGA.pas" line="154" />
-      <field name="TabSheetOptparams" type="TTabSheet" visibility="published" size="4" offset="1096" file="FormSGA.pas" line="155" />
-      <field name="Labelpopulationsize" type="TLabel" visibility="published" size="4" offset="1100" file="FormSGA.pas" line="156" />
-      <field name="Labelchromosomelength" type="TLabel" visibility="published" size="4" offset="1104" file="FormSGA.pas" line="157" />
-      <field name="Labelmaxgenerations" type="TLabel" visibility="published" size="4" offset="1108" file="FormSGA.pas" line="158" />
-      <field name="Labelcrossoverprobability" type="TLabel" visibility="published" size="4" offset="1112" file="FormSGA.pas" line="159" />
-      <field name="Labelmutationprobability" type="TLabel" visibility="published" size="4" offset="1116" file="FormSGA.pas" line="160" />
-      <field name="IntEditPopSize" type="TIntEdit" visibility="published" size="4" offset="1120" file="FormSGA.pas" line="161" />
-      <field name="IntEditChromLength" type="TIntEdit" visibility="published" size="4" offset="1124" file="FormSGA.pas" line="162" />
-      <field name="IntEditMaxGen" type="TIntEdit" visibility="published" size="4" offset="1128" file="FormSGA.pas" line="163" />
-      <field name="FloatEditCrossProb" type="TFloatEdit" visibility="published" size="4" offset="1132" file="FormSGA.pas" line="164" />
-      <field name="FloatEditMutProb" type="TFloatEdit" visibility="published" size="4" offset="1136" file="FormSGA.pas" line="165" />
-      <field name="TabsheetFitness" type="TTabSheet" visibility="published" size="4" offset="1140" file="FormSGA.pas" line="166" />
-      <field name="Chart1" type="TChart" visibility="published" size="4" offset="1144" file="FormSGA.pas" line="167" />
-      <field name="TabSheetParameter" type="TTabSheet" visibility="published" size="4" offset="1148" file="FormSGA.pas" line="168" />
-      <field name="ChartParms" type="TChart" visibility="published" size="4" offset="1152" file="FormSGA.pas" line="169" />
-      <field name="TabSheet3DOut" type="TTabSheet" visibility="published" size="4" offset="1156" file="FormSGA.pas" line="170" />
-      <field name="AdvStringGridParams" type="TAdvStringGrid" visibility="published" size="4" offset="1160" file="FormSGA.pas" line="171" />
-      <field name="TabSheet3" type="TTabSheet" visibility="published" size="4" offset="1164" file="FormSGA.pas" line="172" />
-      <field name="SrcLabel" type="TLabel" visibility="published" size="4" offset="1168" file="FormSGA.pas" line="173" />
-      <field name="DstLabel" type="TLabel" visibility="published" size="4" offset="1172" file="FormSGA.pas" line="174" />
-      <field name="IncludeBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1176" file="FormSGA.pas" line="175" />
-      <field name="IncAllBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1180" file="FormSGA.pas" line="176" />
-      <field name="ExcludeBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1184" file="FormSGA.pas" line="177" />
-      <field name="ExAllBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1188" file="FormSGA.pas" line="178" />
-      <field name="Label1" type="TLabel" visibility="published" size="4" offset="1192" file="FormSGA.pas" line="179" />
-      <field name="Label2" type="TLabel" visibility="published" size="4" offset="1196" file="FormSGA.pas" line="180" />
-      <field name="IncludeBtnData" type="TSpeedButton" visibility="published" size="4" offset="1200" file="FormSGA.pas" line="181" />
-      <field name="IncAllBtnData" type="TSpeedButton" visibility="published" size="4" offset="1204" file="FormSGA.pas" line="182" />
-      <field name="ExcludeBtnData" type="TSpeedButton" visibility="published" size="4" offset="1208" file="FormSGA.pas" line="183" />
-      <field name="ExAllBtnData" type="TSpeedButton" visibility="published" size="4" offset="1212" file="FormSGA.pas" line="184" />
-      <field name="Label3" type="TLabel" visibility="published" size="4" offset="1216" file="FormSGA.pas" line="185" />
-      <field name="Label4" type="TLabel" visibility="published" size="4" offset="1220" file="FormSGA.pas" line="186" />
-      <field name="SrcListPar" type="TListBox" visibility="published" size="4" offset="1224" file="FormSGA.pas" line="187" />
-      <field name="DstListPar" type="TListBox" visibility="published" size="4" offset="1228" file="FormSGA.pas" line="188" />
-      <field name="SrcListData" type="TListBox" visibility="published" size="4" offset="1232" file="FormSGA.pas" line="189" />
-      <field name="DstListData" type="TListBox" visibility="published" size="4" offset="1236" file="FormSGA.pas" line="190" />
-      <field name="LabelWeightOption" type="TLabel" visibility="published" size="4" offset="1240" file="FormSGA.pas" line="191" />
-      <field name="Label5" type="TLabel" visibility="published" size="4" offset="1244" file="FormSGA.pas" line="192" />
-      <field name="ComboBoxWeightOption" type="TComboBox" visibility="published" size="4" offset="1248" file="FormSGA.pas" line="193" />
-      <field name="StatusBar1" type="TStatusBar" visibility="published" size="4" offset="1252" file="FormSGA.pas" line="194" />
-      <field name="MathImage1" type="TMathImage" visibility="published" size="4" offset="1256" file="FormSGA.pas" line="195" />
+      <field name="Button1" type="TButton" visibility="published" size="4" offset="1096" file="FormSGA.pas" line="151" />
+      <field name="PageControl1" type="TPageControl" visibility="published" size="4" offset="1100" file="FormSGA.pas" line="152" />
+      <field name="TabSheetTextOutput" type="TTabSheet" visibility="published" size="4" offset="1104" file="FormSGA.pas" line="153" />
+      <field name="Memo1" type="TMemo" visibility="published" size="4" offset="1108" file="FormSGA.pas" line="154" />
+      <field name="TabSheetOptparams" type="TTabSheet" visibility="published" size="4" offset="1112" file="FormSGA.pas" line="155" />
+      <field name="Labelpopulationsize" type="TLabel" visibility="published" size="4" offset="1116" file="FormSGA.pas" line="156" />
+      <field name="Labelchromosomelength" type="TLabel" visibility="published" size="4" offset="1120" file="FormSGA.pas" line="157" />
+      <field name="Labelmaxgenerations" type="TLabel" visibility="published" size="4" offset="1124" file="FormSGA.pas" line="158" />
+      <field name="Labelcrossoverprobability" type="TLabel" visibility="published" size="4" offset="1128" file="FormSGA.pas" line="159" />
+      <field name="Labelmutationprobability" type="TLabel" visibility="published" size="4" offset="1132" file="FormSGA.pas" line="160" />
+      <field name="IntEditPopSize" type="TIntEdit" visibility="published" size="4" offset="1136" file="FormSGA.pas" line="161" />
+      <field name="IntEditChromLength" type="TIntEdit" visibility="published" size="4" offset="1140" file="FormSGA.pas" line="162" />
+      <field name="IntEditMaxGen" type="TIntEdit" visibility="published" size="4" offset="1144" file="FormSGA.pas" line="163" />
+      <field name="FloatEditCrossProb" type="TFloatEdit" visibility="published" size="4" offset="1148" file="FormSGA.pas" line="164" />
+      <field name="FloatEditMutProb" type="TFloatEdit" visibility="published" size="4" offset="1152" file="FormSGA.pas" line="165" />
+      <field name="TabsheetFitness" type="TTabSheet" visibility="published" size="4" offset="1156" file="FormSGA.pas" line="166" />
+      <field name="Chart1" type="TChart" visibility="published" size="4" offset="1160" file="FormSGA.pas" line="167" />
+      <field name="TabSheetParameter" type="TTabSheet" visibility="published" size="4" offset="1164" file="FormSGA.pas" line="168" />
+      <field name="ChartParms" type="TChart" visibility="published" size="4" offset="1168" file="FormSGA.pas" line="169" />
+      <field name="TabSheet3DOut" type="TTabSheet" visibility="published" size="4" offset="1172" file="FormSGA.pas" line="170" />
+      <field name="AdvStringGridParams" type="TAdvStringGrid" visibility="published" size="4" offset="1176" file="FormSGA.pas" line="171" />
+      <field name="TabSheet3" type="TTabSheet" visibility="published" size="4" offset="1180" file="FormSGA.pas" line="172" />
+      <field name="SrcLabel" type="TLabel" visibility="published" size="4" offset="1184" file="FormSGA.pas" line="173" />
+      <field name="DstLabel" type="TLabel" visibility="published" size="4" offset="1188" file="FormSGA.pas" line="174" />
+      <field name="IncludeBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1192" file="FormSGA.pas" line="175" />
+      <field name="IncAllBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1196" file="FormSGA.pas" line="176" />
+      <field name="ExcludeBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1200" file="FormSGA.pas" line="177" />
+      <field name="ExAllBtnPar" type="TSpeedButton" visibility="published" size="4" offset="1204" file="FormSGA.pas" line="178" />
+      <field name="Label1" type="TLabel" visibility="published" size="4" offset="1208" file="FormSGA.pas" line="179" />
+      <field name="Label2" type="TLabel" visibility="published" size="4" offset="1212" file="FormSGA.pas" line="180" />
+      <field name="IncludeBtnData" type="TSpeedButton" visibility="published" size="4" offset="1216" file="FormSGA.pas" line="181" />
+      <field name="IncAllBtnData" type="TSpeedButton" visibility="published" size="4" offset="1220" file="FormSGA.pas" line="182" />
+      <field name="ExcludeBtnData" type="TSpeedButton" visibility="published" size="4" offset="1224" file="FormSGA.pas" line="183" />
+      <field name="ExAllBtnData" type="TSpeedButton" visibility="published" size="4" offset="1228" file="FormSGA.pas" line="184" />
+      <field name="Label3" type="TLabel" visibility="published" size="4" offset="1232" file="FormSGA.pas" line="185" />
+      <field name="Label4" type="TLabel" visibility="published" size="4" offset="1236" file="FormSGA.pas" line="186" />
+      <field name="SrcListPar" type="TListBox" visibility="published" size="4" offset="1240" file="FormSGA.pas" line="187" />
+      <field name="DstListPar" type="TListBox" visibility="published" size="4" offset="1244" file="FormSGA.pas" line="188" />
+      <field name="SrcListData" type="TListBox" visibility="published" size="4" offset="1248" file="FormSGA.pas" line="189" />
+      <field name="DstListData" type="TListBox" visibility="published" size="4" offset="1252" file="FormSGA.pas" line="190" />
+      <field name="LabelWeightOption" type="TLabel" visibility="published" size="4" offset="1256" file="FormSGA.pas" line="191" />
+      <field name="Label5" type="TLabel" visibility="published" size="4" offset="1260" file="FormSGA.pas" line="192" />
+      <field name="ComboBoxWeightOption" type="TComboBox" visibility="published" size="4" offset="1264" file="FormSGA.pas" line="193" />
+      <field name="StatusBar1" type="TStatusBar" visibility="published" size="4" offset="1268" file="FormSGA.pas" line="194" />
+      <field name="MathImage1" type="TMathImage" visibility="published" size="4" offset="1272" file="FormSGA.pas" line="195" />
       <procedure name="Button1Click" visibility="published" file="FormSGA.pas" line="197">
         <parameters>
           <parameter name="Sender" type="TObject" />
@@ -3035,7 +3055,7 @@
       </procedure>
       <procedure name="FormGAActivate" visibility="published" file="FormSGA.pas" line="218">
       </procedure>
-      <field name="SGA" type="TSGA" visibility="public" size="4" offset="1260" file="FormSGA.pas" line="223" />
+      <field name="SGA" type="TSGA" visibility="public" size="4" offset="1276" file="FormSGA.pas" line="223" />
     </members>
   </class>
   <variable name="FormGAOpt" type="TFormGAOpt" file="FormSGA.pas" line="229" />

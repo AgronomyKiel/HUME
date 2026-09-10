@@ -28,14 +28,13 @@ type
   TSimpleRootModDM = class(TPlantRelatedSubMod)
 
   private
-
     /// <summary>Prefix for variable names.</summary>
     fName_WL: string;
 
     /// <summary>Coupled soil water model.</summary>
     fRootedSoilWatermodel: TSoilWaterModelR;
 
-    /// <summary>List of texture effects initialized at component creation.</summary>
+    /// <summary>List of texture effects initialized at component creation </summary>
     fTextureEffectList: TStringlist;
 
     /// <summary>True if root growth starts only after emergence.</summary>
