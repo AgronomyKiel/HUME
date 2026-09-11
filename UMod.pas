@@ -1352,7 +1352,7 @@ begin
     for i := 0 to SubModStrList.Count - 1 do
     begin
       Writeln(F,
-        SubModel[i].ClassName,
+        SubModel[i].name,' (', SubModel[i].ClassName,') ',
         ': ',
         FormatFloat('0.000',
           SubModel[i].CalcTimeTicks * 1000.0 / TStopwatch.Frequency),
@@ -1636,8 +1636,15 @@ begin
     ModelEnd := false;
     SortSubMods;
   end
-  else
+  else begin
+    {$IFDEF NONVISUAL}
     writeln('No ActIniFile');
+    {$ELSE}
+    showmessage( 'No ActIniFile');
+    {$ENDIF}
+    halt;
+  end;
+
 end;
 
 /// <summary> Call initialization methods of sub-models </summary>
