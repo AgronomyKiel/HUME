@@ -3340,7 +3340,7 @@ var
   var
     i: integer;
   begin
-    for i := start + 1 to n_comp - 1 do
+    for i := start + 1 to act_n_comp - 1 do
     begin
       B_vektor[i] := StorageCorrectedPsi(i) + P[i] *
         (avg_Ku[i - 1] - avg_Ku[i]) - Sink_arr[i].v * P[i];
@@ -3367,25 +3367,40 @@ var
 
   procedure LowerBoundary;
 
+  var
+    BoundaryLayer: integer;
+    BoundaryPsi: real;
+
   { In diesem Fall ist ein vorgegebener unterer Wassergehalt,
     bzw. eine 0-Gradienten Randbedingung vorgegeben }
- begin
+  begin
+    BoundaryLayer := act_n_comp;
+    if LowerBoundaryCondition = Groundwatertable then
+    begin
+      BoundaryPsi := 0.0;
+      psi_neu[BoundaryLayer + 1] := BoundaryPsi;
+      theta_new[BoundaryLayer + 1] := WPar[BoundaryLayer + 1].b_sat;
+    end
+    else
+      BoundaryPsi := psi_arr[BoundaryLayer + 1].v;
+
     if (LowerBoundaryCondition = ConstContent) or
       (LowerBoundaryCondition = Groundwatertable) or
       (LowerBoundaryCondition = FreeFlow) then
     begin
       { Gehalts-Randbedingungen }
-      B_vektor[n_comp] := StorageCorrectedPsi(n_comp) + P[n_comp] *
-        (avg_Ku[n_comp - 1] - avg_Ku[n_comp]) - wf[n_comp] * psi_arr[n_comp + 1]
-        .v * kf[n_comp] * P[n_comp] - Sink_arr[n_comp].v * P[n_comp];
+      B_vektor[BoundaryLayer] := StorageCorrectedPsi(BoundaryLayer) +
+        P[BoundaryLayer] * (avg_Ku[BoundaryLayer - 1] -
+        avg_Ku[BoundaryLayer]) - wf[BoundaryLayer] * BoundaryPsi *
+        kf[BoundaryLayer] * P[BoundaryLayer] -
+        Sink_arr[BoundaryLayer].v * P[BoundaryLayer];
     end
-    else if (LowerBoundaryCondition = NoFlow) then
+    else if LowerBoundaryCondition = NoFlow then
     begin
       { no-flow flux boundary condition }
-
-      B_vektor[n_comp] := StorageCorrectedPsi(n_comp) + P[n_comp] *
-        avg_Ku[n_comp - 1] - Sink_arr[n_comp].v * P[n_comp];
-
+      B_vektor[BoundaryLayer] := StorageCorrectedPsi(BoundaryLayer) +
+        P[BoundaryLayer] * avg_Ku[BoundaryLayer - 1] -
+        Sink_arr[BoundaryLayer].v * P[BoundaryLayer];
     end
     else if ShowWarnings then
 
@@ -3394,15 +3409,12 @@ var
 {$ELSE}
       writeln('Lower Boundary not defined!');
 {$ENDIF}
-    lower[n_comp] := wf[n_comp] * kf[n_comp - 1] * P[n_comp];
-    diag[n_comp] := -wf[n_comp] * P[n_comp] * kf[n_comp - 1] - wf[n_comp] *
-      P[n_comp] * kf[n_comp] + 1;
-
-    { B_vektor[n_comp] := psi_arr[n_comp].v + P[n_comp] *
-      (avg_Ku[n_comp - 1] - avg_Ku[n_comp]) - psi_arr[n_comp + 1].v * kf
-      [n_comp] * P[n_comp] - Sink_arr[n_comp].v * P[n_comp];
-      lower[n_comp] := kf[n_comp - 1] * P[n_comp];
-      diag[n_comp] := -P[n_comp] * kf[n_comp - 1] - P[n_comp] * kf[n_comp] + 1; }
+    lower[BoundaryLayer] := wf[BoundaryLayer] * kf[BoundaryLayer - 1] *
+      P[BoundaryLayer];
+    diag[BoundaryLayer] := -wf[BoundaryLayer] * P[BoundaryLayer] *
+      kf[BoundaryLayer - 1] - wf[BoundaryLayer] * P[BoundaryLayer] *
+      kf[BoundaryLayer] + 1;
+    upper[BoundaryLayer] := 0.0;
   end;
 
   procedure SolvingEquationSystem;
@@ -3452,6 +3464,7 @@ var
   procedure Find_flows;
   var
     i: byte;
+    GW_inflow: TSoilArray;
     Overflow,
     // inflow,
     infilbalance: real;
@@ -3492,11 +3505,29 @@ var
 
     if LowerBoundaryCondition = NoFlow then
       WflowInt_arr[n_comp + 1].v := 0.0;
+
+    if LowerBoundaryCondition = Groundwatertable then
+    begin
+      for i := act_n_comp + 1 to n_comp do
+      begin
+        GW_inflow[i + 1] := (theta_new[i] - WPar[i].b_sat) * Thick[i] / dt.v;
+        theta_new[i] := WPar[i].b_sat;
+        psi_neu[i] := 0.0;
+      end;
+
+      for i := act_n_comp + 2 to n_comp + 1 do
+        WflowInt_arr[i].v := WflowInt_arr[i - 1].v + GW_inflow[i];
+    end;
   end;
 
 begin { procedure Richardswater_solut }
   BeginIterativeTransport;
   repeat
+    if LowerBoundaryCondition = Groundwatertable then
+    begin
+      psi_neu[act_n_comp + 1] := 0.0;
+      theta_new[act_n_comp + 1] := WPar[act_n_comp + 1].b_sat;
+    end;
     CalcConductivities(ccRichardsMixed, true, false);
     UpperBoundary;
     MainLoop;
@@ -3583,7 +3614,7 @@ var
   var
     i: integer;
   begin
-    for i := start + 1 to n_comp - 1 do
+    for i := start + 1 to act_n_comp - 1 do
     begin
       Res[i] := avg_Ku[i - 1] / (Thick[i] * Dist[i - 1]) *
         (psi_neu[i] - psi_neu[i - 1]) // inflow from upper layer
@@ -3600,39 +3631,47 @@ var
   end;
 
   procedure LowerBoundary;
+  var
+    BoundaryLayer: integer;
   begin
+    BoundaryLayer := act_n_comp;
+    if LowerBoundaryCondition = Groundwatertable then
+    begin
+      psi_neu[BoundaryLayer + 1] := 0.0;
+      theta_new[BoundaryLayer + 1] := WPar[BoundaryLayer + 1].b_sat;
+    end;
     if (LowerBoundaryCondition = ConstContent) or
       (LowerBoundaryCondition = Groundwatertable) or
       (LowerBoundaryCondition = FreeFlow) then
     begin
       // Prescribed pressure head in the additional boundary compartment.
-      Res[n_comp] := avg_Ku[n_comp - 1] /
-        (Thick[n_comp] * Dist[n_comp - 1]) *
-        (psi_neu[n_comp] - psi_neu[n_comp - 1])
-        - avg_Ku[n_comp] / (Thick[n_comp] * Dist[n_comp]) *
-          (psi_neu[n_comp + 1] - psi_neu[n_comp])
-        + (avg_Ku[n_comp - 1] - avg_Ku[n_comp]) / Thick[n_comp]
-        - (theta_new[n_comp] - theta_arr[n_comp].v) / dt.v
-        - Sink_arr[n_comp].v / Thick[n_comp];
-      alpha[n_comp] := avg_Ku[n_comp - 1] /
-        (Dist[n_comp - 1] * Thick[n_comp]);
-      beta[n_comp] := c_arr[n_comp] / dt.v - avg_Ku[n_comp - 1] /
-        (Dist[n_comp - 1] * Thick[n_comp]) - avg_Ku[n_comp] /
-        (Dist[n_comp] * Thick[n_comp]);
+      Res[BoundaryLayer] := avg_Ku[BoundaryLayer - 1] /
+        (Thick[BoundaryLayer] * Dist[BoundaryLayer - 1]) *
+        (psi_neu[BoundaryLayer] - psi_neu[BoundaryLayer - 1])
+        - avg_Ku[BoundaryLayer] / (Thick[BoundaryLayer] * Dist[BoundaryLayer]) *
+          (psi_neu[BoundaryLayer + 1] - psi_neu[BoundaryLayer])
+        + (avg_Ku[BoundaryLayer - 1] - avg_Ku[BoundaryLayer]) / Thick[BoundaryLayer]
+        - (theta_new[BoundaryLayer] - theta_arr[BoundaryLayer].v) / dt.v
+        - Sink_arr[BoundaryLayer].v / Thick[BoundaryLayer];
+      alpha[BoundaryLayer] := avg_Ku[BoundaryLayer - 1] /
+        (Dist[BoundaryLayer - 1] * Thick[BoundaryLayer]);
+      beta[BoundaryLayer] := c_arr[BoundaryLayer] / dt.v - avg_Ku[BoundaryLayer - 1] /
+        (Dist[BoundaryLayer - 1] * Thick[BoundaryLayer]) - avg_Ku[BoundaryLayer] /
+        (Dist[BoundaryLayer] * Thick[BoundaryLayer]);
     end
     else if LowerBoundaryCondition = NoFlow then
     begin
       // Zero lower-boundary flux.
-      Res[n_comp] := avg_Ku[n_comp - 1] /
-        (Thick[n_comp] * Dist[n_comp - 1]) *
-        (psi_neu[n_comp] - psi_neu[n_comp - 1])
-        + avg_Ku[n_comp - 1] / Thick[n_comp]
-        - (theta_new[n_comp] - theta_arr[n_comp].v) / dt.v
-        - Sink_arr[n_comp].v / Thick[n_comp];
-      alpha[n_comp] := avg_Ku[n_comp - 1] /
-        (Dist[n_comp - 1] * Thick[n_comp]);
-      beta[n_comp] := c_arr[n_comp] / dt.v - avg_Ku[n_comp - 1] /
-        (Dist[n_comp - 1] * Thick[n_comp]);
+      Res[BoundaryLayer] := avg_Ku[BoundaryLayer - 1] /
+        (Thick[BoundaryLayer] * Dist[BoundaryLayer - 1]) *
+        (psi_neu[BoundaryLayer] - psi_neu[BoundaryLayer - 1])
+        + avg_Ku[BoundaryLayer - 1] / Thick[BoundaryLayer]
+        - (theta_new[BoundaryLayer] - theta_arr[BoundaryLayer].v) / dt.v
+        - Sink_arr[BoundaryLayer].v / Thick[BoundaryLayer];
+      alpha[BoundaryLayer] := avg_Ku[BoundaryLayer - 1] /
+        (Dist[BoundaryLayer - 1] * Thick[BoundaryLayer]);
+      beta[BoundaryLayer] := c_arr[BoundaryLayer] / dt.v - avg_Ku[BoundaryLayer - 1] /
+        (Dist[BoundaryLayer - 1] * Thick[BoundaryLayer]);
     end
     else if ShowWarnings then
 
@@ -3641,7 +3680,7 @@ var
 {$ELSE}
       writeln('Lower Boundary not defined!');
 {$ENDIF}
-    gamma[n_comp] := 0.0;
+    gamma[BoundaryLayer] := 0.0;
   end;
 
   procedure SolveEquationSystem;
@@ -3745,6 +3784,11 @@ var
 begin { procedure Mixedwater_solut }
   BeginIterativeTransport;
   repeat
+    if LowerBoundaryCondition = Groundwatertable then
+    begin
+      psi_neu[act_n_comp + 1] := 0.0;
+      theta_new[act_n_comp + 1] := WPar[act_n_comp + 1].b_sat;
+    end;
     CalcConductivities(ccRichardsMixed, false, true);
     UpperBoundary;
     MainLoop;
@@ -3832,7 +3876,7 @@ var
 
 //    TParallel.For(start + 1, n_comp - 1,
 //      procedure(i: Int64)
-    for I := start + 1 to n_comp - 1 do
+    for I := start + 1 to act_n_comp - 1 do
       begin
         Res[i] := psi_neu[i] * P[i] + avg_Ku[i - 1] - avg_Ku[i]
         // gravitational flows
@@ -3848,36 +3892,45 @@ var
   end;
 
   procedure CalcLowerBoundary;
+  var
+    BoundaryLayer: integer;
+
   { In diesem Fall ist ein vorgegebener unterer Wassergehalt,
     bzw. eine 0-Gradienten Randbedingung vorgegeben }
 
   begin
+    BoundaryLayer := act_n_comp;
+    if LowerBoundaryCondition = Groundwatertable then
+    begin
+      psi_neu[BoundaryLayer + 1] := 0.0;
+      theta_new[BoundaryLayer + 1] := WPar[BoundaryLayer + 1].b_sat;
+    end;
     if (LowerBoundaryCondition = ConstContent) or
       (LowerBoundaryCondition = Groundwatertable) or
       (LowerBoundaryCondition = FreeFlow) then
     begin
       { Gehalts-Randbedingungen }
-      Res[n_comp] := psi_neu[n_comp] * P[n_comp] + avg_Ku[n_comp - 1]
+      Res[BoundaryLayer] := psi_neu[BoundaryLayer] * P[BoundaryLayer] + avg_Ku[BoundaryLayer - 1]
       // gravitational inflow
-        - avg_Ku[n_comp] // gravitational outflow
-        - kf[n_comp] * psi_neu[n_comp + 1]
+        - avg_Ku[BoundaryLayer] // gravitational outflow
+        - kf[BoundaryLayer] * psi_neu[BoundaryLayer + 1]
       // tension induce flow to bottom layer
-        - (theta_new[n_comp] - theta_arr[n_comp].v) * Thick[n_comp] / dt.v
+        - (theta_new[BoundaryLayer] - theta_arr[BoundaryLayer].v) * Thick[BoundaryLayer] / dt.v
       // water balance term
-        - Sink_arr[n_comp].v;
+        - Sink_arr[BoundaryLayer].v;
 
-      beta[n_comp] := P[n_comp] - kf[n_comp - 1]
+      beta[BoundaryLayer] := P[BoundaryLayer] - kf[BoundaryLayer - 1]
       // tension induced inflow from upper layer
-        - kf[n_comp]; // tension induce i
+        - kf[BoundaryLayer]; // tension induce i
 
     end
     else if (LowerBoundaryCondition = NoFlow) then
     begin
       // no-flow flux boundary condition }
-      Res[n_comp] := psi_neu[n_comp] * P[n_comp] + avg_Ku[n_comp - 1] -
-        (theta_new[n_comp] - theta_arr[n_comp].v) * Thick[n_comp] / dt.v -
-        Sink_arr[n_comp].v;
-      beta[n_comp] := P[n_comp] - kf[n_comp - 1];
+      Res[BoundaryLayer] := psi_neu[BoundaryLayer] * P[BoundaryLayer] + avg_Ku[BoundaryLayer - 1] -
+        (theta_new[BoundaryLayer] - theta_arr[BoundaryLayer].v) * Thick[BoundaryLayer] / dt.v -
+        Sink_arr[BoundaryLayer].v;
+      beta[BoundaryLayer] := P[BoundaryLayer] - kf[BoundaryLayer - 1];
 
     end
     else if ShowWarnings then
@@ -3888,14 +3941,14 @@ var
 {$ELSE}
       writeln('Lower Boundary not defined!');
 {$ENDIF}
-    alpha[n_comp] := kf[n_comp - 1];
-    gamma[n_comp] := 0.0;
+    alpha[BoundaryLayer] := kf[BoundaryLayer - 1];
+    gamma[BoundaryLayer] := 0.0;
 
-    { B_vektor[n_comp] := psi_arr[n_comp].v + P[n_comp] *
-      (avg_Ku[n_comp - 1] - avg_Ku[n_comp]) - psi_arr[n_comp + 1].v * kf
-      [n_comp] * P[n_comp] - Sink_arr[n_comp].v * P[n_comp];
-      lower[n_comp] := kf[n_comp - 1] * P[n_comp];
-      diag[n_comp] := -P[n_comp] * kf[n_comp - 1] - P[n_comp] * kf[n_comp] + 1; }
+    { B_vektor[BoundaryLayer] := psi_arr[BoundaryLayer].v + P[BoundaryLayer] *
+      (avg_Ku[BoundaryLayer - 1] - avg_Ku[BoundaryLayer]) - psi_arr[BoundaryLayer + 1].v * kf
+      [BoundaryLayer] * P[BoundaryLayer] - Sink_arr[BoundaryLayer].v * P[BoundaryLayer];
+      lower[BoundaryLayer] := kf[BoundaryLayer - 1] * P[BoundaryLayer];
+      diag[BoundaryLayer] := -P[BoundaryLayer] * kf[BoundaryLayer - 1] - P[BoundaryLayer] * kf[BoundaryLayer] + 1; }
   end;
 
   procedure SolveEquationSystem;
@@ -3996,6 +4049,7 @@ var
       begin
         GW_inflow[i + 1] := (theta_new[i] - WPar[i].b_sat) * Thick[i] / dt.v;
         theta_new[i] := WPar[i].b_sat;
+        psi_neu[i] := 0.0;
       end;
 
       for i := act_n_comp + 2 to n_comp + 1 do
@@ -4008,6 +4062,11 @@ var
 begin { procedure MixedHydruswater_solut }
   BeginIterativeTransport;
   repeat
+    if LowerBoundaryCondition = Groundwatertable then
+    begin
+      psi_neu[act_n_comp + 1] := 0.0;
+      theta_new[act_n_comp + 1] := WPar[act_n_comp + 1].b_sat;
+    end;
     CalcConductivities(ccMixedHydrus, true, true);
     CalcUpperBoundary;
     CalcMainLayers;
