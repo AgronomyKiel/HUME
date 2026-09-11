@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Agronomy and Crop Science Group, Kiel University">
-<meta name="dcterms.date" content="2026-09-08">
+<meta name="dcterms.date" content="2026-09-10">
 
 <title>TSoilWaterModelR – Hume Documentation</title>
 <style>
@@ -4074,6 +4074,12 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../../Components/CERES Wheat/Documentation/THumeWheatDryMatter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">THumeWheatDryMatter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../../Components/CERES Wheat/Documentation/THumeWheatPartitioning.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">THumeWheatPartitioning</span></a>
   </div>
@@ -4159,46 +4165,42 @@ window.Quarto = {
   <li><a href="#scientific-background" id="toc-scientific-background" class="nav-link" data-scroll-target="#scientific-background"><span class="header-section-number">2</span> Scientific Background</a>
   <ul>
   <li><a href="#implementation" id="toc-implementation" class="nav-link" data-scroll-target="#implementation"><span class="header-section-number">2.1</span> Implementation</a></li>
-  <li><a href="#sec-soil-water-base-options" id="toc-sec-soil-water-base-options" class="nav-link" data-scroll-target="#sec-soil-water-base-options"><span class="header-section-number">2.2</span> Options inherited from <code>TSoilWaterMod</code></a>
+  <li><a href="#options-and-parameters-to-calculate-the-potential-and-actual-transpiration-tact-and-the-sink-term-for-the-different-soil-layers" id="toc-options-and-parameters-to-calculate-the-potential-and-actual-transpiration-tact-and-the-sink-term-for-the-different-soil-layers" class="nav-link" data-scroll-target="#options-and-parameters-to-calculate-the-potential-and-actual-transpiration-tact-and-the-sink-term-for-the-different-soil-layers"><span class="header-section-number">2.2</span> Options and parameters to calculate the potential and actual transpiration (T<sub>act</sub>) and the sink term for the different soil layers</a>
   <ul class="collapse">
-  <li><a href="#soil-evaporation" id="toc-soil-evaporation" class="nav-link" data-scroll-target="#soil-evaporation"><span class="header-section-number">2.2.1</span> Soil evaporation</a></li>
+  <li><a href="#options" id="toc-options" class="nav-link" data-scroll-target="#options"><span class="header-section-number">2.2.1</span> Options</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters"><span class="header-section-number">2.2.2</span> Parameters</a></li>
   </ul></li>
-  <li><a href="#options-and-parameters-to-calculate-the-potential-and-actual-transpiration-tact-and-the-sink-term-for-the-different-soil-layers" id="toc-options-and-parameters-to-calculate-the-potential-and-actual-transpiration-tact-and-the-sink-term-for-the-different-soil-layers" class="nav-link" data-scroll-target="#options-and-parameters-to-calculate-the-potential-and-actual-transpiration-tact-and-the-sink-term-for-the-different-soil-layers"><span class="header-section-number">2.3</span> Options and parameters to calculate the potential and actual transpiration (T<sub>act</sub>) and the sink term for the different soil layers</a>
+  <li><a href="#distribution-of-potential-water-uptake-between-soil-layers" id="toc-distribution-of-potential-water-uptake-between-soil-layers" class="nav-link" data-scroll-target="#distribution-of-potential-water-uptake-between-soil-layers"><span class="header-section-number">2.3</span> Distribution of potential water uptake between soil layers</a>
   <ul class="collapse">
-  <li><a href="#options" id="toc-options" class="nav-link" data-scroll-target="#options"><span class="header-section-number">2.3.1</span> Options</a></li>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters"><span class="header-section-number">2.3.2</span> Parameters</a></li>
+  <li><a href="#without-considering-the-reduction-factor-for-root-water-uptake-fsinkred" id="toc-without-considering-the-reduction-factor-for-root-water-uptake-fsinkred" class="nav-link" data-scroll-target="#without-considering-the-reduction-factor-for-root-water-uptake-fsinkred"><span class="header-section-number">2.3.1</span> Without considering the reduction factor for root water uptake (f<sub>sinkred</sub>)</a></li>
+  <li><a href="#considering-the-reduction-factor-for-root-water-uptake-fsinkred" id="toc-considering-the-reduction-factor-for-root-water-uptake-fsinkred" class="nav-link" data-scroll-target="#considering-the-reduction-factor-for-root-water-uptake-fsinkred"><span class="header-section-number">2.3.2</span> Considering the reduction factor for root water uptake (f<sub>sinkred</sub>)</a></li>
   </ul></li>
-  <li><a href="#distribution-of-potential-water-uptake-between-soil-layers" id="toc-distribution-of-potential-water-uptake-between-soil-layers" class="nav-link" data-scroll-target="#distribution-of-potential-water-uptake-between-soil-layers"><span class="header-section-number">2.4</span> Distribution of potential water uptake between soil layers</a>
+  <li><a href="#reduction-of-potential-water-uptake-by-soil-water-potential-soil-water-content" id="toc-reduction-of-potential-water-uptake-by-soil-water-potential-soil-water-content" class="nav-link" data-scroll-target="#reduction-of-potential-water-uptake-by-soil-water-potential-soil-water-content"><span class="header-section-number">2.4</span> Reduction of potential water uptake by soil water potential / soil water content</a></li>
+  <li><a href="#more-mechanistic-approaches-to-calculate-the-reduction-factor-for-root-water-uptake-fsinkred" id="toc-more-mechanistic-approaches-to-calculate-the-reduction-factor-for-root-water-uptake-fsinkred" class="nav-link" data-scroll-target="#more-mechanistic-approaches-to-calculate-the-reduction-factor-for-root-water-uptake-fsinkred"><span class="header-section-number">2.5</span> More mechanistic approaches to calculate the reduction factor for root water uptake (f<sub>sinkred</sub>)</a>
   <ul class="collapse">
-  <li><a href="#without-considering-the-reduction-factor-for-root-water-uptake-fsinkred" id="toc-without-considering-the-reduction-factor-for-root-water-uptake-fsinkred" class="nav-link" data-scroll-target="#without-considering-the-reduction-factor-for-root-water-uptake-fsinkred"><span class="header-section-number">2.4.1</span> Without considering the reduction factor for root water uptake (f<sub>sinkred</sub>)</a></li>
-  <li><a href="#considering-the-reduction-factor-for-root-water-uptake-fsinkred" id="toc-considering-the-reduction-factor-for-root-water-uptake-fsinkred" class="nav-link" data-scroll-target="#considering-the-reduction-factor-for-root-water-uptake-fsinkred"><span class="header-section-number">2.4.2</span> Considering the reduction factor for root water uptake (f<sub>sinkred</sub>)</a></li>
+  <li><a href="#theoretical-background" id="toc-theoretical-background" class="nav-link" data-scroll-target="#theoretical-background"><span class="header-section-number">2.5.1</span> Theoretical background</a></li>
   </ul></li>
-  <li><a href="#reduction-of-potential-water-uptake-by-soil-water-potential-soil-water-content" id="toc-reduction-of-potential-water-uptake-by-soil-water-potential-soil-water-content" class="nav-link" data-scroll-target="#reduction-of-potential-water-uptake-by-soil-water-potential-soil-water-content"><span class="header-section-number">2.5</span> Reduction of potential water uptake by soil water potential / soil water content</a></li>
-  <li><a href="#more-mechanistic-approaches-to-calculate-the-reduction-factor-for-root-water-uptake-fsinkred" id="toc-more-mechanistic-approaches-to-calculate-the-reduction-factor-for-root-water-uptake-fsinkred" class="nav-link" data-scroll-target="#more-mechanistic-approaches-to-calculate-the-reduction-factor-for-root-water-uptake-fsinkred"><span class="header-section-number">2.6</span> More mechanistic approaches to calculate the reduction factor for root water uptake (f<sub>sinkred</sub>)</a>
+  <li><a href="#calculation-of-water-transport-towards-roots" id="toc-calculation-of-water-transport-towards-roots" class="nav-link" data-scroll-target="#calculation-of-water-transport-towards-roots"><span class="header-section-number">2.6</span> Calculation of water transport towards roots</a></li>
+  <li><a href="#analytical-solutions-of-the-radial-water-transport-problem" id="toc-analytical-solutions-of-the-radial-water-transport-problem" class="nav-link" data-scroll-target="#analytical-solutions-of-the-radial-water-transport-problem"><span class="header-section-number">2.7</span> Analytical solutions of the radial water transport problem</a></li>
+  <li><a href="#steady-state-and-steady-rate-solutions-for-finite-soil-volumes" id="toc-steady-state-and-steady-rate-solutions-for-finite-soil-volumes" class="nav-link" data-scroll-target="#steady-state-and-steady-rate-solutions-for-finite-soil-volumes"><span class="header-section-number">2.8</span> Steady state and steady rate solutions for finite soil volumes</a>
   <ul class="collapse">
-  <li><a href="#theoretical-background" id="toc-theoretical-background" class="nav-link" data-scroll-target="#theoretical-background"><span class="header-section-number">2.6.1</span> Theoretical background</a></li>
-  </ul></li>
-  <li><a href="#calculation-of-water-transport-towards-roots" id="toc-calculation-of-water-transport-towards-roots" class="nav-link" data-scroll-target="#calculation-of-water-transport-towards-roots"><span class="header-section-number">2.7</span> Calculation of water transport towards roots</a></li>
-  <li><a href="#analytical-solutions-of-the-radial-water-transport-problem" id="toc-analytical-solutions-of-the-radial-water-transport-problem" class="nav-link" data-scroll-target="#analytical-solutions-of-the-radial-water-transport-problem"><span class="header-section-number">2.8</span> Analytical solutions of the radial water transport problem</a></li>
-  <li><a href="#steady-state-and-steady-rate-solutions-for-finite-soil-volumes" id="toc-steady-state-and-steady-rate-solutions-for-finite-soil-volumes" class="nav-link" data-scroll-target="#steady-state-and-steady-rate-solutions-for-finite-soil-volumes"><span class="header-section-number">2.9</span> Steady state and steady rate solutions for finite soil volumes</a>
+  <li><a href="#boundary-conditions" id="toc-boundary-conditions" class="nav-link" data-scroll-target="#boundary-conditions"><span class="header-section-number">2.8.1</span> Boundary conditions</a>
   <ul class="collapse">
-  <li><a href="#boundary-conditions" id="toc-boundary-conditions" class="nav-link" data-scroll-target="#boundary-conditions"><span class="header-section-number">2.9.1</span> Boundary conditions</a>
+  <li><a href="#outer-boundary-condition" id="toc-outer-boundary-condition" class="nav-link" data-scroll-target="#outer-boundary-condition"><span class="header-section-number">2.8.1.1</span> outer boundary condition</a></li>
+  </ul></li>
+  <li><a href="#steady-state-solution" id="toc-steady-state-solution" class="nav-link" data-scroll-target="#steady-state-solution"><span class="header-section-number">2.8.2</span> Steady state solution:</a></li>
+  <li><a href="#steady-rate-solution" id="toc-steady-rate-solution" class="nav-link" data-scroll-target="#steady-rate-solution"><span class="header-section-number">2.8.3</span> Steady rate solution</a></li>
+  </ul></li>
+  <li><a href="#water-content-distribution-around-roots" id="toc-water-content-distribution-around-roots" class="nav-link" data-scroll-target="#water-content-distribution-around-roots"><span class="header-section-number">2.9</span> Water content distribution around roots</a>
   <ul class="collapse">
-  <li><a href="#outer-boundary-condition" id="toc-outer-boundary-condition" class="nav-link" data-scroll-target="#outer-boundary-condition"><span class="header-section-number">2.9.1.1</span> outer boundary condition</a></li>
+  <li><a href="#definition-of-matric-flux-potential" id="toc-definition-of-matric-flux-potential" class="nav-link" data-scroll-target="#definition-of-matric-flux-potential"><span class="header-section-number">2.9.1</span> Definition of matric flux potential</a></li>
   </ul></li>
-  <li><a href="#steady-state-solution" id="toc-steady-state-solution" class="nav-link" data-scroll-target="#steady-state-solution"><span class="header-section-number">2.9.2</span> Steady state solution:</a></li>
-  <li><a href="#steady-rate-solution" id="toc-steady-rate-solution" class="nav-link" data-scroll-target="#steady-rate-solution"><span class="header-section-number">2.9.3</span> Steady rate solution</a></li>
-  </ul></li>
-  <li><a href="#water-content-distribution-around-roots" id="toc-water-content-distribution-around-roots" class="nav-link" data-scroll-target="#water-content-distribution-around-roots"><span class="header-section-number">2.10</span> Water content distribution around roots</a>
+  <li><a href="#single-root-model-with-matrix-flux-potential" id="toc-single-root-model-with-matrix-flux-potential" class="nav-link" data-scroll-target="#single-root-model-with-matrix-flux-potential"><span class="header-section-number">2.10</span> Single root model with matrix flux potential</a>
   <ul class="collapse">
-  <li><a href="#definition-of-matric-flux-potential" id="toc-definition-of-matric-flux-potential" class="nav-link" data-scroll-target="#definition-of-matric-flux-potential"><span class="header-section-number">2.10.1</span> Definition of matric flux potential</a></li>
+  <li><a href="#comparison-of-the-steady-rate-and-matric-flux-potential-approach" id="toc-comparison-of-the-steady-rate-and-matric-flux-potential-approach" class="nav-link" data-scroll-target="#comparison-of-the-steady-rate-and-matric-flux-potential-approach"><span class="header-section-number">2.10.1</span> Comparison of the steady rate and matric flux potential approach</a></li>
+  <li><a href="#implementation-of-the-matric-flux-potential-approach-in-the-tsoilwatermodelr" id="toc-implementation-of-the-matric-flux-potential-approach-in-the-tsoilwatermodelr" class="nav-link" data-scroll-target="#implementation-of-the-matric-flux-potential-approach-in-the-tsoilwatermodelr"><span class="header-section-number">2.10.2</span> Implementation of the matric flux potential approach in the TSoilWaterModelR</a></li>
   </ul></li>
-  <li><a href="#single-root-model-with-matrix-flux-potential" id="toc-single-root-model-with-matrix-flux-potential" class="nav-link" data-scroll-target="#single-root-model-with-matrix-flux-potential"><span class="header-section-number">2.11</span> Single root model with matrix flux potential</a>
-  <ul class="collapse">
-  <li><a href="#comparison-of-the-steady-rate-and-matric-flux-potential-approach" id="toc-comparison-of-the-steady-rate-and-matric-flux-potential-approach" class="nav-link" data-scroll-target="#comparison-of-the-steady-rate-and-matric-flux-potential-approach"><span class="header-section-number">2.11.1</span> Comparison of the steady rate and matric flux potential approach</a></li>
-  <li><a href="#implementation-of-the-matric-flux-potential-approach-in-the-tsoilwatermodelr" id="toc-implementation-of-the-matric-flux-potential-approach-in-the-tsoilwatermodelr" class="nav-link" data-scroll-target="#implementation-of-the-matric-flux-potential-approach-in-the-tsoilwatermodelr"><span class="header-section-number">2.11.2</span> Implementation of the matric flux potential approach in the TSoilWaterModelR</a></li>
-  </ul></li>
-  <li><a href="#approach-for-non-uniformly-distributed-roots" id="toc-approach-for-non-uniformly-distributed-roots" class="nav-link" data-scroll-target="#approach-for-non-uniformly-distributed-roots"><span class="header-section-number">2.12</span> Approach for non-uniformly distributed roots</a></li>
+  <li><a href="#approach-for-non-uniformly-distributed-roots" id="toc-approach-for-non-uniformly-distributed-roots" class="nav-link" data-scroll-target="#approach-for-non-uniformly-distributed-roots"><span class="header-section-number">2.11</span> Approach for non-uniformly distributed roots</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -4229,7 +4231,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 8, 2026</p>
+      <p class="date">September 10, 2026</p>
     </div>
   </div>
   
@@ -4324,113 +4326,10 @@ Table 1: Ancestor classes of TSoilWaterModelR.
 <p>Basically there are empirical heuristic approaches and more mechanistic approaches implemented. The latter should allow to more specifically simulate the effects of different root architectures and root distributions on the water uptake by the plant roots. The mechanistic approaches try to estimate the limitation of water uptake due to the transport of water to the root surface, which is a function of root length in the different soil layers, the unsaturated hydraulic conductivity in the vicinity of the roots and the water uptake rate per unit of root length. The mechanistic approaches are still under development.</p>
 <p>The empirical heuristic approaches define reduction functions for root water uptake based on the soil water potential in the different soil layers and optional the potential transpiration rate. The reduction functions are based on the work of <span class="citation" data-cites="feddes1978">(<a href="#ref-feddes1978" role="doc-biblioref">Feddes et al., 1978</a>)</span> and <span class="citation" data-cites="ehlers1991">(<a href="#ref-ehlers1991" role="doc-biblioref">Ehlers et al., 1991</a>)</span>.</p>
 </section>
-<section id="sec-soil-water-base-options" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="sec-soil-water-base-options"><span class="header-section-number">2.2</span> Options inherited from <code>TSoilWaterMod</code></h2>
-<p><code>TSoilWaterModelR</code> inherits the general soil-water configuration registered by <code>TSoilWaterMod.CreateOptions</code> in <code>USoilWaterMod.pas</code>. The option names below are the exact keys used in the options INI file, including spaces and question marks. Defaults and accepted values are taken from the current implementation.</p>
-<div id="tbl-soil-water-base-options" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-soil-water-base-options-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 2: Options registered by <code>TSoilWaterMod.CreateOptions</code>.
-</figcaption>
-<div aria-describedby="tbl-soil-water-base-options-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Option key</th>
-<th>Default</th>
-<th>Accepted values</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>FVGParsFromTexture</code></td>
-<td><code>FromPar</code></td>
-<td><code>FromPar</code>, <code>FromTexture</code></td>
-<td>Uses the horizon parameters <code>b_sat</code>, <code>b_rest</code>, <code>alpha</code>, <code>n_par</code>, and <code>l_par</code> directly, or derives them from the selected texture class.</td>
-</tr>
-<tr class="even">
-<td><code>FKsFromTexture</code></td>
-<td><code>FromPar</code></td>
-<td><code>FromPar</code>, <code>FromTexture</code></td>
-<td>Uses the horizon <code>Ks</code> parameter directly, or derives saturated hydraulic conductivity from texture. With the <code>RR</code> texture functions, the numerical bulk-density option <code>fLD1</code>–<code>fLD6</code> is also used.</td>
-</tr>
-<tr class="odd">
-<td><code>act_Evaporation</code></td>
-<td><code>red_f</code></td>
-<td><code>red_f</code>, <code>inclExfiltration</code></td>
-<td>Selects actual-evaporation handling. Both modes apply the evaporation reduction factor; <code>inclExfiltration</code> additionally limits evaporation to the calculated exfiltration rate.</td>
-</tr>
-<tr class="even">
-<td><code>evaporation red_f</code></td>
-<td><code>modifiedBeese</code></td>
-<td><code>modifiedBeese</code>, <code>Beese1978</code></td>
-<td>Selects the function used to calculate the evaporation reduction factor from the matric potential in the uppermost soil layer; see <a href="#soil-evaporation">Soil evaporation</a>.</td>
-</tr>
-<tr class="odd">
-<td><code>FTextureClass1</code>–<code>FTextureClass6</code></td>
-<td><code>Sl3</code></td>
-<td><code>TTextureClass</code> values</td>
-<td>Selects the texture class for each of the six possible soil horizons. These selections affect parameter derivation when <code>FVGParsFromTexture</code> or <code>FKsFromTexture</code> is <code>FromTexture</code>.</td>
-</tr>
-<tr class="even">
-<td><code>FLDClass1</code>–<code>FLDClass6</code></td>
-<td><code>LD3</code></td>
-<td><code>LD1</code>, <code>LD2</code>, <code>LD3</code>, <code>LD4</code>, <code>LD5</code></td>
-<td>Selects a KA5 bulk-density class for each horizon. The current base implementation stores these classes through <code>SetLDPars</code>; hydraulic parameter derivation instead uses the numerical <code>fLD</code> options described below.</td>
-</tr>
-<tr class="odd">
-<td><code>fLD1</code>–<code>fLD6</code></td>
-<td><code>OldVersion</code></td>
-<td><code>LD13</code>, <code>LD142</code>, <code>LD15</code>, <code>LD164</code>, <code>LD17</code>, <code>OldVersion</code></td>
-<td>Selects the numerical bulk-density category for each horizon. It is used when deriving <code>Ks</code> with the <code>RR</code> texture functions.</td>
-</tr>
-<tr class="even">
-<td><code>Untere_Randb</code></td>
-<td><code>FreeFlow</code></td>
-<td><code>ConstContent</code>, <code>NoFlux</code>, <code>Groundwater</code>, <code>FreeFlow</code></td>
-<td>Selects the lower boundary condition. <code>Groundwater</code> activates the external <code>Groundwaterdepth</code> input; <code>ConstContent</code> holds the state in the additional lower-boundary compartment constant.</td>
-</tr>
-<tr class="odd">
-<td><code>IniMethod</code></td>
-<td><code>Parameter</code></td>
-<td><code>Watercontents</code>, <code>Potentials</code>, <code>Parameter</code></td>
-<td>Initializes the profile from layer water contents, layer matric potentials, or the <code>PsiStart1</code> parameter and its implemented depth adjustment, respectively.</td>
-</tr>
-<tr class="even">
-<td><code>CompMethod</code></td>
-<td><code>Diffusion</code></td>
-<td><code>Diffusion</code>, <code>Richards</code>, <code>Mixed</code>, <code>MixedHydrus</code>, <code>Capacity</code></td>
-<td>Selects the numerical water-transport solver. The source describes <code>Diffusion</code> as fast but approximate for layered soil and identifies <code>MixedHydrus</code> as the recommended mixed-form alternative; the remaining methods are retained as experimental or legacy alternatives.</td>
-</tr>
-<tr class="odd">
-<td><code>WriteParsFromTexture?</code></td>
-<td><code>false</code></td>
-<td><code>false</code>, <code>true</code></td>
-<td>If enabled, writes the horizon water-retention parameters and <code>Ks</code> assigned during initialization back to the parameter INI file. It is intended for retaining parameters derived from texture.</td>
-</tr>
-<tr class="even">
-<td><code>Transfer water contents to next IniFile?</code></td>
-<td><code>false</code></td>
-<td><code>false</code>, <code>true</code></td>
-<td>If enabled, writes final simulated layer water contents to the next state INI file as initial values.</td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-</div>
-<p>The accepted texture codes are <code>Ss</code>, <code>mS</code>, <code>mSgs</code>, <code>mSfs</code>, <code>fS</code>, <code>fSms</code>, <code>Sl2</code>, <code>Sl3</code>, <code>Sl4</code>, <code>Slu</code>, <code>St2</code>, <code>St3</code>, <code>Su2</code>, <code>Su3</code>, <code>Su4</code>, <code>Ls2</code>, <code>Ls3</code>, <code>Ls4</code>, <code>Lt2</code>, <code>Lt3</code>, <code>Lts</code>, <code>Lu</code>, <code>Uu</code>, <code>Uls</code>, <code>Us</code>, <code>Ut2</code>, <code>Ut3</code>, <code>Ut4</code>, <code>Tt</code>, <code>Tl</code>, <code>Ts2</code>, <code>Ts3</code>, <code>Ts4</code>, <code>Tu2</code>, <code>Tu3</code>, and <code>Tu4</code>. Their parameterization is described in <a href="../../../Components/Soil/Documentation/TSoilTexture.html">TSoilTexture</a>.</p>
-<p>The pedotransfer-function family is selected by the inherited <code>Texture_version</code> option (<code>KA</code> by default; alternatively <code>RR</code>), which is registered by <code>TLayeredSoil</code> rather than by <code>TSoilWaterMod.CreateOptions</code>. A commented-out duplicate declaration in <code>CreateOptions</code> is therefore not an additional active option.</p>
-<section id="soil-evaporation" class="level3" data-number="2.2.1">
-<h3 data-number="2.2.1" class="anchored" data-anchor-id="soil-evaporation"><span class="header-section-number">2.2.1</span> Soil evaporation</h3>
-<p>The two evaporation options act at different stages. First, <code>evaporation red_f</code> selects either the <code>modifiedBeese</code> or <code>Beese1978</code> function for calculating <code>red_evap</code> from the matric potential of the first soil layer. The result is restricted to the interval from zero to one. Actual evaporation is then calculated as <code>PotEvap * red_evap</code>. If <code>act_Evaporation = inclExfiltration</code>, the result is additionally capped at the exfiltration rate calculated from the first layer; <code>red_f</code> leaves the reduced potential-evaporation value unchanged.</p>
-</section>
-</section>
-<section id="options-and-parameters-to-calculate-the-potential-and-actual-transpiration-tact-and-the-sink-term-for-the-different-soil-layers" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="options-and-parameters-to-calculate-the-potential-and-actual-transpiration-tact-and-the-sink-term-for-the-different-soil-layers"><span class="header-section-number">2.3</span> Options and parameters to calculate the potential and actual transpiration (T<sub>act</sub>) and the sink term for the different soil layers</h2>
-<section id="options" class="level3" data-number="2.3.1">
-<h3 data-number="2.3.1" class="anchored" data-anchor-id="options"><span class="header-section-number">2.3.1</span> Options</h3>
+<section id="options-and-parameters-to-calculate-the-potential-and-actual-transpiration-tact-and-the-sink-term-for-the-different-soil-layers" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="options-and-parameters-to-calculate-the-potential-and-actual-transpiration-tact-and-the-sink-term-for-the-different-soil-layers"><span class="header-section-number">2.2</span> Options and parameters to calculate the potential and actual transpiration (T<sub>act</sub>) and the sink term for the different soil layers</h2>
+<section id="options" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="options"><span class="header-section-number">2.2.1</span> Options</h3>
 <p>The <code>SinkTermMethod</code> option selects the calculation of actual transpiration (T<sub>act</sub>) and the sink term for the different soil layers:</p>
 <ul>
 <li><p>psicrit: The reduction factor for root water uptake (f<sub>sinkred</sub>) is calculated based on the soil water potential in each soil layer (psi<sub>i</sub>) but independently on the actual transpiration rate.</p></li>
@@ -4450,8 +4349,8 @@ Table 2: Options registered by <code>TSoilWaterMod.CreateOptions</code>.
 <li><p>psi_logscale: The option <em>psi_logscale</em> is an option to consider the soil water potential in log scale for the calculation of the reduction factor for root water uptake (f<sub>sinkred</sub>) (see <a href="#eq-fsinkred1" class="quarto-xref">Eq. 9</a>, <a href="#eq-fsinkred2" class="quarto-xref">Eq. 10</a> and <a href="#eq-psi2Feddes" class="quarto-xref">Eq. 7</a>).</p></li>
 </ul>
 </section>
-<section id="parameters" class="level3" data-number="2.3.2">
-<h3 data-number="2.3.2" class="anchored" data-anchor-id="parameters"><span class="header-section-number">2.3.2</span> Parameters</h3>
+<section id="parameters" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="parameters"><span class="header-section-number">2.2.2</span> Parameters</h3>
 <ul>
 <li><p>CompFactor: The distribution of the potential water uptake rates can be modified by the parameter <em>CompFaktor</em> (CompF) which is a factor for root competition. The lower the value of the competition factor is, the more the potential sink term is distributed to the deeper soil layers with lower root length densities. Analysis of experimental data has, however, indicated that a value of compF lower than 1 may be more realistic for simulating root water uptake <span class="citation" data-cites="ehlers1991">(<a href="#ref-ehlers1991" role="doc-biblioref">Ehlers et al., 1991</a>)</span>.</p></li>
 <li><p>psi_2: The parameters psi_2 soil water potential and soil water content from which on water uptake decrease.</p></li>
@@ -4459,16 +4358,16 @@ Table 2: Options registered by <code>TSoilWaterMod.CreateOptions</code>.
 </ul>
 </section>
 </section>
-<section id="distribution-of-potential-water-uptake-between-soil-layers" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="distribution-of-potential-water-uptake-between-soil-layers"><span class="header-section-number">2.4</span> Distribution of potential water uptake between soil layers</h2>
+<section id="distribution-of-potential-water-uptake-between-soil-layers" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="distribution-of-potential-water-uptake-between-soil-layers"><span class="header-section-number">2.3</span> Distribution of potential water uptake between soil layers</h2>
 <p>The potential transpiration (T<sub>pot</sub>) is distributed to the different soil layers according to the root length in the different soil layers.</p>
 <p>There are two options available to distribute the potential transpiration (T<sub>pot</sub>) to the different soil layers:</p>
 <ul>
 <li><p>without considering the soil water availability in a certain layer on the distribution of potential water uptake</p></li>
 <li><p>with considering the soil water availability in a certain layer on the distribution of potential water uptake</p></li>
 </ul>
-<section id="without-considering-the-reduction-factor-for-root-water-uptake-fsinkred" class="level3" data-number="2.4.1">
-<h3 data-number="2.4.1" class="anchored" data-anchor-id="without-considering-the-reduction-factor-for-root-water-uptake-fsinkred"><span class="header-section-number">2.4.1</span> Without considering the reduction factor for root water uptake (f<sub>sinkred</sub>)</h3>
+<section id="without-considering-the-reduction-factor-for-root-water-uptake-fsinkred" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="without-considering-the-reduction-factor-for-root-water-uptake-fsinkred"><span class="header-section-number">2.3.1</span> Without considering the reduction factor for root water uptake (f<sub>sinkred</sub>)</h3>
 <p>The default option is to distribute the potential transpiration according to the fraction of root length in a soil layer. The root length in the different soil layers is calculated by the component <a href="../../../Components/Rootgrowth/Documentation/TSimpleRootModDM.html">TSimpleRootModDM</a> and is provided as an external value to the component TSoilWaterModelR.</p>
 <p>The potential water uptake / potential sink term is calculated from the root length in the layer cm cm<sup>-2</sup> (RL<sub>i</sub>), an exponential factor for root competition [-] (CompF) divided by the sum of root length in all layers [cm cm<sup>-2</sup>] (RL<sub>[j]</sub>) and CompF (<a href="#fig-CompF" class="quarto-xref">Figure 1</a>). The factor 0.1 is the conversion from cm to mm which is used to convert with the units of mm for the evapotranspiration variables and the default unit of the soil processes which is cm.</p>
 <p><span id="eq-SinkTerm"><span class="math display">S[i]_{pot}=0.1\cdot {{T}_{pot}}\cdot \frac{RL{{[i]}^{CompF}}}{\sum\limits_{j}{RL{{[i]}^{CompF}}}}\cdot {{f}_{sinkred}} \tag{1}</span></span></p>
@@ -4476,8 +4375,8 @@ Table 2: Options registered by <code>TSoilWaterMod.CreateOptions</code>.
 <p>It has been argued that this type of distribution of potential water uptake may not be realistic because it does not consider the soil water availability in the different soil layers and drought stress may occur if there is a water shortage in the upper soil layers even if there is still water available in the deeper soil layers.</p>
 <p>On the other hand, it is well known from split root experiments that if parts of a root system are exposed to dry soil, absicic acid (ABA) is produced in the roots and transported to the leaves where it induces stomata closure. This reduces the transpiration rate and thus the water uptake from the soil. In this case, it is not possible to compensate for a water shortage in one part of the root system by increasing water uptake from another part of the root system <span class="citation" data-cites="holbrook2002">(<a href="#ref-holbrook2002" role="doc-biblioref">Holbrook, 2002</a>)</span>.</p>
 </section>
-<section id="considering-the-reduction-factor-for-root-water-uptake-fsinkred" class="level3" data-number="2.4.2">
-<h3 data-number="2.4.2" class="anchored" data-anchor-id="considering-the-reduction-factor-for-root-water-uptake-fsinkred"><span class="header-section-number">2.4.2</span> Considering the reduction factor for root water uptake (f<sub>sinkred</sub>)</h3>
+<section id="considering-the-reduction-factor-for-root-water-uptake-fsinkred" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="considering-the-reduction-factor-for-root-water-uptake-fsinkred"><span class="header-section-number">2.3.2</span> Considering the reduction factor for root water uptake (f<sub>sinkred</sub>)</h3>
 <p><span class="citation" data-cites="jarvis1989">(<a href="#ref-jarvis1989" role="doc-biblioref">Jarvis, 1989</a>)</span> suggested that also the soil water availability would affect distribution of potential soil water uptake. In analogy to his approach we implemented the option to weight potential soil water uptake distribution by the sink reduction factor as well:</p>
 <p><span id="eq-SinkTerm2"><span class="math display">S[i]_{pot}=0.1\cdot {{T}_{pot}}\cdot \frac{f_{sinkred} \cdot RL{{[i]}^{CompF}}}{\sum\limits_{j}{f_{sinkred} \cdot RL{{[i]}^{CompF}}}}\cdot {{f}_{sinkred}} \tag{2}</span></span></p>
 <p>This function is used if the option <em>Sqrwl_funct</em> is set to <em>ReductionFactor</em>. In practice this distributes the potential soil water uptake more towards soil layers with higher water contents and in total drought stress is reduced for the moment.</p>
@@ -4497,8 +4396,8 @@ Figure 1: Example for an distribution of root length density within the soil pr
 </div>
 </section>
 </section>
-<section id="reduction-of-potential-water-uptake-by-soil-water-potential-soil-water-content" class="level2" data-number="2.5">
-<h2 data-number="2.5" class="anchored" data-anchor-id="reduction-of-potential-water-uptake-by-soil-water-potential-soil-water-content"><span class="header-section-number">2.5</span> Reduction of potential water uptake by soil water potential / soil water content</h2>
+<section id="reduction-of-potential-water-uptake-by-soil-water-potential-soil-water-content" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="reduction-of-potential-water-uptake-by-soil-water-potential-soil-water-content"><span class="header-section-number">2.4</span> Reduction of potential water uptake by soil water potential / soil water content</h2>
 <p>The potential sink term is reduced by the reduction factor for root water uptake (f<sub>sinkred</sub>). The reduction of potential water uptake by soil water potential / soil water content, f<sub>sinkred</sub>, is calculated by the soil water potential in each soil layer psi<sub>i</sub> [hPa], the soil water potential [hPa] psi<sub>0</sub> from which on water uptake is 0 and psi<sub>crit</sub> [hPa], a parameter for the soil water potential from which on water uptake decrease. For historical reasons this parameter psi<sub>crit</sub> is named psi2 in the code of the component TSoilWaterModelR.</p>
 <p>With the option “psi_logscale” = false, the reduction factor for root water uptake (f<sub>sinkred</sub>) based on the untransformed soil water potential in each soil layer (psi<sub>i</sub>), the soil water potential from which on water uptake is 0 (psi0) and a parameter for the soil water potential from which on water uptake decrease (psi<sub>crit</sub>) as shown in Eq. <a href="#eq-fsinkred2" class="quarto-xref">Eq. 10</a>.</p>
 <p><span id="eq-fsinkred"><span class="math display">f_{sinkred}=max \left( 0, min \left(1, \frac{psi-psi_3}{psi_2-psi_3}\right) \right) \tag{3}</span></span></p>
@@ -4538,12 +4437,12 @@ Figure 2: Example for the calculation potential sink term together with soil wa
 </div>
 </div>
 </div>
-<p>For the scenario shown in <a href="#fig-SinkTerm" class="quarto-xref">Figure 2</a>, the actual transpiration rate (T<sub>act</sub>) is reduced by 24% if the reduction factor for root water uptake (f<sub>sinkred</sub>) is not considered in the distribution of the potential sink term. If the reduction factor for root water uptake (f<sub>sinkred</sub>) is considered in the distribution of the potential sink term, the actual transpiration rate (T<sub>act</sub>) is only reduced by 11% compared to the potential transpiration rate (T<sub>pot</sub>) (<a href="#tbl-RelTransRedFactor" class="quarto-xref">Table 3</a>).</p>
+<p>For the scenario shown in <a href="#fig-SinkTerm" class="quarto-xref">Figure 2</a>, the actual transpiration rate (T<sub>act</sub>) is reduced by 24% if the reduction factor for root water uptake (f<sub>sinkred</sub>) is not considered in the distribution of the potential sink term. If the reduction factor for root water uptake (f<sub>sinkred</sub>) is considered in the distribution of the potential sink term, the actual transpiration rate (T<sub>act</sub>) is only reduced by 11% compared to the potential transpiration rate (T<sub>pot</sub>) (<a href="#tbl-RelTransRedFactor" class="quarto-xref">Table 2</a>).</p>
 <div class="cell" data-layout-align="center">
 <div id="tbl-RelTransRedFactor" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-RelTransRedFactor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 3: Relative transpiration and reduction factor for root water uptake (f<sub>sinkred</sub>) for the two options to distribute the potential sink term.
+Table 2: Relative transpiration and reduction factor for root water uptake (f<sub>sinkred</sub>) for the two options to distribute the potential sink term.
 </figcaption>
 <div aria-describedby="tbl-RelTransRedFactor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -4604,11 +4503,11 @@ Figure 3: Example for the calculation of the reduction factor for root water up
 <p><span id="eq-SumSinkTerm"><span class="math display">{{T}_{act}}=\sum\limits_{j}{S[j]} \tag{11}</span></span></p>
 <p>The reduction factor for root water uptake (f<sub>sinkred</sub>) is calculated based on the soil water potential in each soil layer (psi<sub>i</sub>), the soil water potential from which on water uptake is 0 (psi0) and a parameter for the soil water potential from which on water uptake decrease (psi<sub>crit</sub>). There are different options available to calculate the reduction factor for root water uptake (f<sub>sinkred</sub>) as shown in <a href="#eq-fsinkred2" class="quarto-xref">Eq. 10</a>, i.e. the version with logarithms of soil water tension as the independent variable.</p>
 </section>
-<section id="more-mechanistic-approaches-to-calculate-the-reduction-factor-for-root-water-uptake-fsinkred" class="level2" data-number="2.6">
-<h2 data-number="2.6" class="anchored" data-anchor-id="more-mechanistic-approaches-to-calculate-the-reduction-factor-for-root-water-uptake-fsinkred"><span class="header-section-number">2.6</span> More mechanistic approaches to calculate the reduction factor for root water uptake (f<sub>sinkred</sub>)</h2>
+<section id="more-mechanistic-approaches-to-calculate-the-reduction-factor-for-root-water-uptake-fsinkred" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="more-mechanistic-approaches-to-calculate-the-reduction-factor-for-root-water-uptake-fsinkred"><span class="header-section-number">2.5</span> More mechanistic approaches to calculate the reduction factor for root water uptake (f<sub>sinkred</sub>)</h2>
 <p>The above shown appproaches do not take into account the physical limitations of the rate of total water uptake which can be seen by the sum of the maximum transport rates to the segments of the whole root system.</p>
-<section id="theoretical-background" class="level3" data-number="2.6.1">
-<h3 data-number="2.6.1" class="anchored" data-anchor-id="theoretical-background"><span class="header-section-number">2.6.1</span> Theoretical background</h3>
+<section id="theoretical-background" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="theoretical-background"><span class="header-section-number">2.5.1</span> Theoretical background</h3>
 <p>The theoretical background of the more mechanistic approaches is based on the calculation of water transport towards roots, for which the single root approximation (<a href="#fig-SingleRootCylinder1" class="quarto-xref">Figure 4</a>) is the most used geometrical simplification, reducing the complex system of a real branched root system taking up water from a layered soil into the calculation of the one dimension transport in radial coordiates (<span class="citation" data-cites="Gardner1960">Gardner (<a href="#ref-Gardner1960" role="doc-biblioref">1960</a>)</span>, <span class="citation" data-cites="Philip1957">Philip (<a href="#ref-Philip1957" role="doc-biblioref">1957</a>)</span>, <span class="citation" data-cites="Carslaw1946">Carslaw and J.C. Jaeger (<a href="#ref-Carslaw1946" role="doc-biblioref">1946</a>)</span>, <span class="citation" data-cites="vanLier2006">van Lier et al. (<a href="#ref-vanLier2006" role="doc-biblioref">2006</a>)</span>, <span class="citation" data-cites="Metselaar2011">Metselaar and van Jong Lier (<a href="#ref-Metselaar2011" role="doc-biblioref">2011</a>)</span> and <span class="citation" data-cites="vanLier2013">van Lier et al. (<a href="#ref-vanLier2013" role="doc-biblioref">2013</a>)</span>).</p>
 <p>The single root or ‘equivalent’ cylinder assumes the roots in one layer are organized in equally spaced parallel array. There are no analytical solutions of the diffusion equation sufficiently simple to be of general use for this case (see <span class="citation" data-cites="Youngs1963">Youngs and Gardner (<a href="#ref-Youngs1963" role="doc-biblioref">1963</a>)</span>), and numerical solutions or approximations have to be employed. The latter are most useful for discussing the general features of the system. <span class="citation" data-cites="Passioura1968">Passioura and Cowan (<a href="#ref-Passioura1968" role="doc-biblioref">1968</a>)</span> have discussed the two usual methods, the ‘steady state’ and ‘steady rate’ approximations.</p>
 <div id="fig-SingleRootCylinder1" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -4623,8 +4522,8 @@ Figure 4: Single root cylinder
 </div>
 </section>
 </section>
-<section id="calculation-of-water-transport-towards-roots" class="level2" data-number="2.7">
-<h2 data-number="2.7" class="anchored" data-anchor-id="calculation-of-water-transport-towards-roots"><span class="header-section-number">2.7</span> Calculation of water transport towards roots</h2>
+<section id="calculation-of-water-transport-towards-roots" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="calculation-of-water-transport-towards-roots"><span class="header-section-number">2.6</span> Calculation of water transport towards roots</h2>
 <p>The continuity equation for soil water (<span class="math inline">\theta</span>) in radial coordinates is:</p>
 <p><span id="eq-ContinuityEquation"><span class="math display">\frac{\partial \theta }{\partial t}=-\frac{\partial q }{\partial r}  \tag{12}</span></span></p>
 <p>where q is the flux density <span class="math inline">[cm^3 \cdot cm^{-2} \cdot d^{-1}]</span> of water towards the root surface and r is the distance from the root surface. The combination of the continuity equation with the Richards equation for radial coordinates yields:</p>
@@ -4638,8 +4537,8 @@ Figure 4: Single root cylinder
 <p><span id="eq-DiffusionSingleRoot"><span class="math display">\frac{\partial \theta }{\partial t}=\frac{1}{r}\cdot \frac{\partial }{\partial r}\left( r\cdot {{D}_{w}}\left( \theta  \right)\cdot \frac{\partial \theta }{\partial r} \right) \tag{17}</span></span></p>
 <p>For this partial differential equation analytic solutions exists, but only for special cases of the boundary conditions and for specific forms of the soil specific relationship for <span class="math inline">D_w(\theta)</span>.</p>
 </section>
-<section id="analytical-solutions-of-the-radial-water-transport-problem" class="level2" data-number="2.8">
-<h2 data-number="2.8" class="anchored" data-anchor-id="analytical-solutions-of-the-radial-water-transport-problem"><span class="header-section-number">2.8</span> Analytical solutions of the radial water transport problem</h2>
+<section id="analytical-solutions-of-the-radial-water-transport-problem" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="analytical-solutions-of-the-radial-water-transport-problem"><span class="header-section-number">2.7</span> Analytical solutions of the radial water transport problem</h2>
 <p><span class="citation" data-cites="Gardner1960">Gardner (<a href="#ref-Gardner1960" role="doc-biblioref">1960</a>)</span> and <span class="citation" data-cites="Philip1957">Philip (<a href="#ref-Philip1957" role="doc-biblioref">1957</a>)</span> first gave analytic solutions for boundary conditions given by (a) a constant rate (I<sub>w</sub>) of water uptake per unit root length <span class="math inline">[cm^3cm^{-1}d^{-1}]</span> where the inner boundary condition is given by:</p>
 <p><span id="eq-Iw"><span class="math display">I_w = -2\pi aK \frac{d\psi}{dr}  \tag{18}</span></span> This can also be written in terms of soil water diffusivity and with a flux density <span class="math inline">[d^{-1}]</span> on the left hand side as the term <span class="math inline">2\pi a</span> is the root surface area per unit root length <span class="math inline">[cm^2]</span>:</p>
 <p><span id="eq-Iw2pia"><span class="math display">\frac{I_w}{2\pi a}  = -D_w \frac{d\theta}{dr}=q  \tag{19}</span></span></p>
@@ -4654,24 +4553,24 @@ Figure 4: Single root cylinder
 \frac{{{I}_{w}}}{\pi {{x}^{2}}}=\frac{{{T}_{p}}}{z} \\ </span></p>
 <p>The solution of the equation <a href="#eq-QuirindeJong2006" class="quarto-xref">Eq. 21</a> needs values for the soil water diffusivity and the unsaturated hydraulic conductivity as a function of volumetric soil water content or matrix potential, respectively.</p>
 </section>
-<section id="steady-state-and-steady-rate-solutions-for-finite-soil-volumes" class="level2" data-number="2.9">
-<h2 data-number="2.9" class="anchored" data-anchor-id="steady-state-and-steady-rate-solutions-for-finite-soil-volumes"><span class="header-section-number">2.9</span> Steady state and steady rate solutions for finite soil volumes</h2>
+<section id="steady-state-and-steady-rate-solutions-for-finite-soil-volumes" class="level2" data-number="2.8">
+<h2 data-number="2.8" class="anchored" data-anchor-id="steady-state-and-steady-rate-solutions-for-finite-soil-volumes"><span class="header-section-number">2.8</span> Steady state and steady rate solutions for finite soil volumes</h2>
 <p>The above equation assumes that each root absorbs water from an infinite amount of soil, and that there is always more soil, at a steadily increasing distance, which can be drawn upon. In real root-soil systems this is not correct, since roots compete, and each root can be assumed to have a limited amount of soil for its sole exploitation. The root surface water potential will therefore fall faster than predicted above, and the mean water content and potential of the soil volume will decrease steadily.</p>
-<section id="boundary-conditions" class="level3" data-number="2.9.1">
-<h3 data-number="2.9.1" class="anchored" data-anchor-id="boundary-conditions"><span class="header-section-number">2.9.1</span> Boundary conditions</h3>
+<section id="boundary-conditions" class="level3" data-number="2.8.1">
+<h3 data-number="2.8.1" class="anchored" data-anchor-id="boundary-conditions"><span class="header-section-number">2.8.1</span> Boundary conditions</h3>
 <p>For t &gt; 0 and at the root surface, i.e. the inner boundary condition, the water influx rate per unis root length <span class="math inline">I_w</span> is derived from the daily crop transpiration rate <span class="math inline">\overline{T_w}</span> <span class="math inline">[cm^.d^{-1}]</span> and the total root length <span class="math inline">L_r</span> <span class="math inline">[cm^.cm^{-2}]</span>. The most simple assumption is that the water uptake rate is equal for the whole root system:</p>
 <p><span id="eq-BoundarySR"><span class="math display">t&gt;0, \; r=a, \; 2\pi rD_w \left( \theta  \right) \frac{\partial \theta }{\partial r} = \overline{I_w} \frac{\left( x^2-r^2 \right)}{\left( x^2-a^2 \right)} = \frac{\overline{Tr}}{2\pi a L_r} = -\frac{\overline{I_w}}{2\pi a}  \tag{22}</span></span></p>
 <p>A bit more realistic is the assumption of a diurnal variation of transpiration rate and water influx rate following the radiation intensity:</p>
 <p><span id="eq-Iwt"><span class="math display">I_w\left( t \right)=\frac{Tr\left( t \right)}{L_r}=\frac{{{\overline{{{T}_{r}}}}\cdot}{{\frac{5}{3}}\cdot}\left[ 0.5+sin\left( {{\pi }^{.}}\frac{t}{12}+1.5 \right) \right]}{{{L}_{r}}}  \tag{23}</span></span></p>
 <p>It was further assumed that the water potential at the root surface can not be lower than the permanent wilting point, defined as a water potential of 1.5 MPa.</p>
-<section id="outer-boundary-condition" class="level4" data-number="2.9.1.1">
-<h4 data-number="2.9.1.1" class="anchored" data-anchor-id="outer-boundary-condition"><span class="header-section-number">2.9.1.1</span> outer boundary condition</h4>
+<section id="outer-boundary-condition" class="level4" data-number="2.8.1.1">
+<h4 data-number="2.8.1.1" class="anchored" data-anchor-id="outer-boundary-condition"><span class="header-section-number">2.8.1.1</span> outer boundary condition</h4>
 <p>It was assumed that there is a watershed between two neighboring roots. At this line the flow rate is zero:</p>
 <p><span id="eq-OuterBoundary"><span class="math display">t&gt;0, \; r=x \;\;\;2\cdot{\pi }\cdot x \cdot D_w \cdot \frac{\partial\theta }{\partial r}=0  \tag{24}</span></span></p>
 </section>
 </section>
-<section id="steady-state-solution" class="level3" data-number="2.9.2">
-<h3 data-number="2.9.2" class="anchored" data-anchor-id="steady-state-solution"><span class="header-section-number">2.9.2</span> Steady state solution:</h3>
+<section id="steady-state-solution" class="level3" data-number="2.8.2">
+<h3 data-number="2.8.2" class="anchored" data-anchor-id="steady-state-solution"><span class="header-section-number">2.8.2</span> Steady state solution:</h3>
 <p>For a steady state, it is assumed that all the water is injected into the system at the periphery of the equivalent cylinder, and the appropriate equation is for the steady state flow in a cylinder:</p>
 <p><span id="eq-SRSteadyState"><span class="math display">\psi_x-\psi_a=\frac{I_w}{2\pi K}ln\left( \frac{x}{a}\right)  \tag{25}</span></span></p>
 <p>or with water content differences and diffusivity:</p>
@@ -4691,16 +4590,16 @@ Figure 4: Single root cylinder
 <p>Rearranging for I<sub>w</sub> gives:</p>
 <p><span id="eq-SteadyStatepsi2"><span class="math display">I_w=2\pi k_u \cdot \frac{\psi_a-\overline{\psi}}{ln\frac{x}{1.65a}} \tag{32}</span></span></p>
 </section>
-<section id="steady-rate-solution" class="level3" data-number="2.9.3">
-<h3 data-number="2.9.3" class="anchored" data-anchor-id="steady-rate-solution"><span class="header-section-number">2.9.3</span> Steady rate solution</h3>
+<section id="steady-rate-solution" class="level3" data-number="2.8.3">
+<h3 data-number="2.8.3" class="anchored" data-anchor-id="steady-rate-solution"><span class="header-section-number">2.8.3</span> Steady rate solution</h3>
 <p>The steady rate approximation (<span class="citation" data-cites="Cowan1965">Cowan (<a href="#ref-Cowan1965" role="doc-biblioref">1965</a>)</span>) is rather more realistic, since it embodies the assumption that water is being supplied uniformly from within the soil cylinder to maintain the constant flow. The steady-rate solution and its approximation for x &gt;&gt; a is (<span class="citation" data-cites="Tinker1976">Tinker (<a href="#ref-Tinker1976" role="doc-biblioref">1976</a>)</span>):</p>
 <p><span id="eq-SteadyRate"><span class="math display">\overline{\theta}=\theta_a+\frac{I_w}{2\pi D_w\left( x^2-a^2\right)}\left[ \left(\frac{x^4}{x^2-a^2}ln\frac{x}{a}\right)-\left(\frac{3x^2-a^2}{4}\right) \right] \approx \theta_a+\frac{I_w}{2\pi D_w}ln\frac{x}{2.1a} \tag{33}</span></span></p>
 <p>If one rearranges equation <a href="#eq-SteadyRate" class="quarto-xref">Eq. 33</a> for <span class="math inline">I_w</span> and assumes that <span class="math inline">\theta_a</span> is equal to <span class="math inline">\theta_{PWP}</span> (water content at the permanent wilting point) one gets the maximum possible water uptake rate under the given conditions <span class="math inline">Iw_{max}</span>:</p>
 <p><span id="eq-SteadyRateIwmax"><span class="math display">Iw_{max}=2\pi {{D}_{w}}\cdot \frac{{{\left( \overline{\theta }-{{\theta }_{PWP}} \right)}}}{ln\left( \frac{x}{2.1a} \right)} \tag{34}</span></span></p>
 </section>
 </section>
-<section id="water-content-distribution-around-roots" class="level2" data-number="2.10">
-<h2 data-number="2.10" class="anchored" data-anchor-id="water-content-distribution-around-roots"><span class="header-section-number">2.10</span> Water content distribution around roots</h2>
+<section id="water-content-distribution-around-roots" class="level2" data-number="2.9">
+<h2 data-number="2.9" class="anchored" data-anchor-id="water-content-distribution-around-roots"><span class="header-section-number">2.9</span> Water content distribution around roots</h2>
 <p>The water content <span class="math inline">\theta_r</span> in any distance r from the root center then is given by:</p>
 <p><span id="eq-thetar"><span class="math display">\theta_{r}=\theta_a\left( 1+{\frac{I_w}{2\pi Dw}}ln\left( \frac{r}{a} \right) \right)  \tag{35}</span></span></p>
 <p>In <a href="#fig-WcontProfilesQ" class="quarto-xref">Figure 5</a> the water content distribution around roots is shown for different values of the water uptake rate per unit root length (I<sub>w</sub>) and for different values of the soil water diffusivity (D<sub>w</sub>), as affected by texture and volumetric soil water content, which decreases during the simulated extraction of water from an isolated single root cylnder. The water content at the root surface is lower than in the bulk soil, and the difference increases with increasing water uptake rate per unit root length (I<sub>w</sub>) and decreasing soil water diffusivity (D<sub>w</sub>). The silty soil (Ut2) with the higher soil water diffusivity (D<sub>w</sub>) shows a smaller difference between the water content at the root surface and in the bulk soil than the sandy soils (Sl3 and especially gS) with the lower soil water diffusivity (D<sub>w</sub>).</p>
@@ -4719,8 +4618,8 @@ Figure 5: Water content distribution around roots at different soil water poten
 </div>
 </div>
 <p>The accuracy of the above shown approaches is, however, limited, as the assumption of a constant soil water diffusivity with respect to the radial distance to the root surface is obviously not correct. As the soil water content decreases near the root surface, the soil water diffusivity decreases as well, leading to a self reinforcing effect.</p>
-<section id="definition-of-matric-flux-potential" class="level3" data-number="2.10.1">
-<h3 data-number="2.10.1" class="anchored" data-anchor-id="definition-of-matric-flux-potential"><span class="header-section-number">2.10.1</span> Definition of matric flux potential</h3>
+<section id="definition-of-matric-flux-potential" class="level3" data-number="2.9.1">
+<h3 data-number="2.9.1" class="anchored" data-anchor-id="definition-of-matric-flux-potential"><span class="header-section-number">2.9.1</span> Definition of matric flux potential</h3>
 <p>The matric flux potential (M) is a mathematical integration of unsaturated hydraulic conductivity over soil matric potential. It simplifies the non-linear governing equations of unsaturated soil water transport (such as Richards’ equation) by combining conductivity and tension into a single scalar potential variable.</p>
 <p><span class="citation" data-cites="vanLier2006">van Lier et al. (<a href="#ref-vanLier2006" role="doc-biblioref">2006</a>)</span> with correction by <span class="citation" data-cites="Schroder2007">Schröder et al. (<a href="#ref-Schroder2007" role="doc-biblioref">2007</a>)</span> derived an expression to describe M as a function of the radial distance from the root surface r [cm], based on the continuity equation for one‐dimensional axisymmetric flow Matric flux potential <span class="math inline">(M) \left[ {cm^{2} d^{−1}} \right]</span> is defined as the integral of unsaturated hydraulic conductivity, <span class="math inline">K(h) [cm^.d^{−1}]</span>, over pressure head, or equivalently, as the integral of diffusivity, <span class="math inline">D(θ) \left[cm^2d^{−1}\right]</span>, over volumetric water content <span class="math inline">(\theta) \left[cm^{3}cm^{−3}\right]</span>. For convenience, the permanent wilting point in terms of pressure head <span class="math inline">(h_w) \left[cm\right]</span> or water content <span class="math inline">\theta{_w} \left[cm^{3}cm^{−3}\right]</span> is chosen as the lower bound of the integral:</p>
 <p><span id="eq-MFPdef"><span class="math display">M=\int_{-h_w}^{h}K(h)dh=\int_{\theta{_w}}^{\theta}D(\theta)d(\theta) \tag{36}</span></span></p>
@@ -4741,8 +4640,8 @@ Figure 6: Matrix flux potential vs. soil water tension for three different soi
 </div>
 </section>
 </section>
-<section id="single-root-model-with-matrix-flux-potential" class="level2" data-number="2.11">
-<h2 data-number="2.11" class="anchored" data-anchor-id="single-root-model-with-matrix-flux-potential"><span class="header-section-number">2.11</span> Single root model with matrix flux potential</h2>
+<section id="single-root-model-with-matrix-flux-potential" class="level2" data-number="2.10">
+<h2 data-number="2.10" class="anchored" data-anchor-id="single-root-model-with-matrix-flux-potential"><span class="header-section-number">2.10</span> Single root model with matrix flux potential</h2>
 <p>Solutions of <a href="#eq-DiffusionSingleRoot" class="quarto-xref">Eq. 17</a> using the matric flux potential approach were derived by <span class="citation" data-cites="de_Willigen1987">de_Willigen and Van_Noordwijk (<a href="#ref-de_Willigen1987" role="doc-biblioref">1987</a>)</span> and were more recently used to derive sink term formulation of macroscopic soil water transport models by <span class="citation" data-cites="vanLier2006">van Lier et al. (<a href="#ref-vanLier2006" role="doc-biblioref">2006</a>)</span>, <span class="citation" data-cites="Schroder2007">Schröder et al. (<a href="#ref-Schroder2007" role="doc-biblioref">2007</a>)</span> and <span class="citation" data-cites="vanLier2008">de Jong van Lier, Q. de et al. (<a href="#ref-vanLier2008" role="doc-biblioref">2008</a>)</span>.</p>
 <p>From mass conservation, and ignoring the root volume it follows that:</p>
 <p><span id="eq-Tpz1"><span class="math display">\frac{\partial\overline{\theta}}{\partial t}=-\frac{T_p}{z} \tag{37}</span></span></p>
@@ -4818,8 +4717,8 @@ Figure 6: Matrix flux potential vs. soil water tension for three different soi
 <p><span id="eq-Szfrac"><span class="math display">S_{z}=\frac{4\left(\overline{M_z}-M_{0,z}\right)}{a_z^2-0.56^2x_z^2+2(x_z^2-a_z^2)\;ln\frac{0.56\:x_z}{a_z}}  \tag{55}</span></span></p>
 <p>Because <span class="math inline">\overline{M_{0,z}}</span> is zero for limiting soil water conditions, i.e. the falling phase of root water uptake in a layer at the maximum water uptake rate per soil layer is:</p>
 <p><span id="eq-Szmax"><span class="math display">S_{z,max}=\frac{4\overline{M_z}}{a_z^2-0.56^2x_z^2+2(x_z^2-a_z^2)\;ln\frac{0.56\;x_z}{a_z}}  \tag{56}</span></span></p>
-<section id="comparison-of-the-steady-rate-and-matric-flux-potential-approach" class="level3" data-number="2.11.1">
-<h3 data-number="2.11.1" class="anchored" data-anchor-id="comparison-of-the-steady-rate-and-matric-flux-potential-approach"><span class="header-section-number">2.11.1</span> Comparison of the steady rate and matric flux potential approach</h3>
+<section id="comparison-of-the-steady-rate-and-matric-flux-potential-approach" class="level3" data-number="2.10.1">
+<h3 data-number="2.10.1" class="anchored" data-anchor-id="comparison-of-the-steady-rate-and-matric-flux-potential-approach"><span class="header-section-number">2.10.1</span> Comparison of the steady rate and matric flux potential approach</h3>
 <p>In <a href="#fig-SingleRootSimulation1" class="quarto-xref">Figure 7</a> the water content distribution around a single root cylinder is shown for the steady rate and matric flux potential approach during a simulated water extraction period as an animated gif. As during the simulated water extraction period the soil water content decreases, the difference between the water content at the root surface and in the bulk soil increases. The difference is larger for the steady rate approach than for the matric flux potential approach, which is more realistic as it accounts for the decrease of soil water diffusivity with decreasing soil water content.</p>
 <div id="fig-SingleRootSimulation1" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -4832,8 +4731,8 @@ Figure 7: Simulation of water uptake from a single root cylinder
 </figure>
 </div>
 </section>
-<section id="implementation-of-the-matric-flux-potential-approach-in-the-tsoilwatermodelr" class="level3" data-number="2.11.2">
-<h3 data-number="2.11.2" class="anchored" data-anchor-id="implementation-of-the-matric-flux-potential-approach-in-the-tsoilwatermodelr"><span class="header-section-number">2.11.2</span> Implementation of the matric flux potential approach in the TSoilWaterModelR</h3>
+<section id="implementation-of-the-matric-flux-potential-approach-in-the-tsoilwatermodelr" class="level3" data-number="2.10.2">
+<h3 data-number="2.10.2" class="anchored" data-anchor-id="implementation-of-the-matric-flux-potential-approach-in-the-tsoilwatermodelr"><span class="header-section-number">2.10.2</span> Implementation of the matric flux potential approach in the TSoilWaterModelR</h3>
 <p>The root length density used by the <code>MFP</code> sink method is the hydraulically active fraction of the available root length density:</p>
 <p><span id="eq-active-rld"><span class="math display">L_{rv,act}=f_{act}L_{rv} \tag{57}</span></span></p>
 <p>Here, <span class="math inline">f_{act}</span> is the parameter <code>FracActRoots</code> [-], with a default value of 0.3. The active root length density determines both the mean distance between active roots and the maximum uptake rate. With classes enabled, the factor is applied separately to every root length density class. Other water sink methods are unaffected, and the factor is not yet applied to nitrate uptake.</p>
@@ -4884,8 +4783,8 @@ Figure 7: Simulation of water uptake from a single root cylinder
 </table>
 </section>
 </section>
-<section id="approach-for-non-uniformly-distributed-roots" class="level2" data-number="2.12">
-<h2 data-number="2.12" class="anchored" data-anchor-id="approach-for-non-uniformly-distributed-roots"><span class="header-section-number">2.12</span> Approach for non-uniformly distributed roots</h2>
+<section id="approach-for-non-uniformly-distributed-roots" class="level2" data-number="2.11">
+<h2 data-number="2.11" class="anchored" data-anchor-id="approach-for-non-uniformly-distributed-roots"><span class="header-section-number">2.11</span> Approach for non-uniformly distributed roots</h2>
 <p>The log normal distribution has density</p>
 <p><span id="eq-lognormal"><span class="math display">f(x) = \frac{1}{\sqrt{2\pi}\sigma x} e^{-(\log(x) - \mu)^2/2 \sigma^2} \tag{59}</span></span></p>
 <p>where <span class="math inline">\mu</span> and <span class="math inline">\sigma</span> are the mean and standard deviation of the logarithm. The mean is <span class="math inline">E(X) = exp(\mu + 1/2 \sigma^2)</span> , the median is <span class="math inline">med(X) = exp(\mu)</span>, and the variance <span class="math inline">Var(X) = exp(2\mu + \sigma^2)(exp(\sigma^2) - 1)</span> and hence the coefficient of variation is <span class="math inline">\sqrt{exp(\sigma^2) - 1}</span> which is approximately <span class="math inline">\sigma</span> when that is small (e.g., <span class="math inline">\sigma &lt; 1/2</span>).</p>

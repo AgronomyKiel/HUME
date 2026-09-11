@@ -672,7 +672,7 @@ calculated, and the new state variables are stored.
 
 ## Mixed-form Picard solutions {#sec-mixed-form-solutions}
 
-In addition to the pressure-head- and water-content-based solutions, `TSoilWaterMod` implements two mixed-form solutions. The mixed form retains the water-content change in the storage term while expressing the fluxes in terms of pressure head. This generally improves mass conservation. Both implementations use Picard iteration and solve a tridiagonal system until the water-balance and convergence criteria are met.
+In addition to the pressure-head- and water-content-based solutions, `TSoilWaterMod` implements two mixed-form solutions. The mixed form retains the water-content change in the storage term while expressing the fluxes in terms of pressure head. This generally improves mass conservation and follows the modified Picard approach of @Celia1990. Both implementations recalculate the nonlinear coefficients and solve a tridiagonal system until the water-content iteration tolerance is met. The water balance is evaluated after a solution has been accepted.
 
 The notation in this section follows the implementation:
 
@@ -721,14 +721,14 @@ The correction is obtained from the tridiagonal equation
 
 $$
 \begin{aligned}
-&-\frac{K_{i-1/2}^k}{D_i d_{i-1/2}}\delta_{i-1}^{k+1}
+&\frac{K_{i-1/2}^k}{D_i d_{i-1/2}}\delta_{i-1}^{k+1}
 +\left(
   \frac{C_i^{t+1,k}}{\Delta t}
-  +\frac{K_{i-1/2}^k}{D_i d_{i-1/2}}
-  +\frac{K_{i+1/2}^k}{D_i d_{i+1/2}}
+  -\frac{K_{i-1/2}^k}{D_i d_{i-1/2}}
+  -\frac{K_{i+1/2}^k}{D_i d_{i+1/2}}
  \right)\delta_i^{k+1} \\
 &\qquad
--\frac{K_{i+1/2}^k}{D_i d_{i+1/2}}\delta_{i+1}^{k+1}
++\frac{K_{i+1/2}^k}{D_i d_{i+1/2}}\delta_{i+1}^{k+1}
 =R_i^k.
 \end{aligned}
 $$ {#eq-mixed-correction-system}
@@ -755,15 +755,24 @@ and the first row of the tridiagonal system becomes
 $$
 \left(
  \frac{C_1^{t+1,k}}{\Delta t}
- +\frac{K_{3/2}^k}{D_1d_{3/2}}
+ -\frac{K_{3/2}^k}{D_1d_{3/2}}
 \right)\delta_1^{k+1}
--\frac{K_{3/2}^k}{D_1d_{3/2}}\delta_2^{k+1}
++\frac{K_{3/2}^k}{D_1d_{3/2}}\delta_2^{k+1}
 =R_1^k.
 $$ {#eq-mixed-upper-system}
+
+The `Mixed` solver applies the same atmospheric boundary switching as
+`MixedHydrus`. Ponded water is included in the available surface flux. If
+that flux exceeds `MaxInfil`, the upper boundary changes from an imposed flux
+to a prescribed ponding head; if the surface reaches `PsiAirDryness`, the
+air-dry pressure head is prescribed instead. Ponded-water storage and runoff
+are updated from the accepted infiltration rate.
 
 #### Lower boundary
 
 For `ConstContent`, `Groundwater`, and `FreeFlow`, the pressure head in the additional compartment $N+1$ is prescribed. Consequently, its correction is zero and the upper-diagonal coefficient in the final matrix row is set to zero. The residual is still calculated with both interface fluxes by using the known $h_{N+1}$ in @eq-mixed-residual.
+
+With `Groundwater`, $N$ is the last actively solved compartment determined from `Groundwaterdepth`. After convergence, `Mixed` saturates compartments $N+1$ through the bottom of the profile and sets their pressure heads to zero. The water needed to saturate each compartment is converted to a groundwater-induced interface flow and accumulated downwards from the flow at the lower edge of the active profile. This is the same groundwater-flow accounting used by `MixedHydrus` and keeps the subsequent compartment water-balance calculation consistent with the imposed water table.
 
 For `NoFlux`, the lower-interface flow is omitted. The final residual and matrix row reduce to
 
@@ -775,10 +784,10 @@ R_N^k={}&
  +\frac{K_{N-1/2}^k}{D_N} \\
 &-\frac{\theta_N^{t+1,k}-\theta_N^t}{\Delta t}
  -\frac{S_N}{D_N}, \\
-&-\frac{K_{N-1/2}^k}{D_Nd_{N-1/2}}\delta_{N-1}^{k+1}
+&\frac{K_{N-1/2}^k}{D_Nd_{N-1/2}}\delta_{N-1}^{k+1}
  +\left(
    \frac{C_N^{t+1,k}}{\Delta t}
-   +\frac{K_{N-1/2}^k}{D_Nd_{N-1/2}}
+   -\frac{K_{N-1/2}^k}{D_Nd_{N-1/2}}
   \right)\delta_N^{k+1}
  =R_N^k.
 \end{aligned}
@@ -826,6 +835,26 @@ $$ {#eq-mixed-hydrus-upper-flux}
 
 `MixedHydrus` also checks the attainable infiltration rate and air-dry pressure head. If the surface becomes saturated or excessively dry, it changes from the imposed-flux case to a prescribed surface head $h_0$. Ponded water contributes to the maximum available surface flux, and excess water is retained as ponded water up to `PondMax` before becoming runoff.
 
+For the prescribed-head case, the surface conductance belongs to the diagonal of the first matrix row because the tridiagonal solver has no lower-diagonal entry in that row:
+
+$$
+\begin{aligned}
+\left(P_1^k-Kf_{1/2}^k-Kf_{3/2}^k\right)h_1^{t+1,k+1}
++Kf_{3/2}^k h_2^{t+1,k+1}
+={}&P_1^k h_1^{t+1,k}+K_{1/2}^k-K_{3/2}^k
++Kf_{1/2}^k h_0 \\
+&-\frac{\left(\theta_1^{t+1,k}-\theta_1^t\right)D_1}{\Delta t}-S_1.
+\end{aligned}
+$$ {#eq-mixed-hydrus-upper-head}
+
+When a soil-heat model is linked, `MixedHydrus` reduces the hydraulic conductance at cold interfaces using
+
+$$
+f_T=\max\!\left(0,\min\!\left(1,\frac{T+1}{2}\right)\right).
+$$ {#eq-mixed-hydrus-freezing-factor}
+
+The factor multiplies both the mean hydraulic conductivity and $Kf$ at the surface and internal interfaces. The surface uses the temperature of compartment 1; interface $i+1/2$ uses the temperature of compartment $i$. The storage coefficient $P=C D/\Delta t$ is not temperature-scaled.
+
 #### Lower boundary
 
 For `ConstContent`, `Groundwater`, and `FreeFlow`, $h_{N+1}$ is known and its contribution is moved to the right-hand side:
@@ -856,3 +885,426 @@ Kf_{N-1/2}^k h_{N-1}^{t+1,k+1}
 $$ {#eq-mixed-hydrus-lower-noflux}
 
 In both mixed-form methods, conductivities and capacities are recalculated from the current iterate before the matrix is assembled. The iteration continues with an adjusted internal time step until convergence; interface flows and the profile water balance are then calculated from the accepted solution.
+
+# Layered-soil infiltration evaluation {#sec-constant-infiltration-comparison}
+
+This evaluation compares all five `TSoilWaterMod` computation methods in a
+layered soil under constant infiltration. Each method was run once with
+geometric and once with arithmetic `TransportAveraging`. The archived result
+configuration confirms the averaging option used for each run, so the
+comparison does not depend on the subsequently edited working `Options.ini`.
+
+## Scenario
+
+| Setting | Value |
+|---|---|
+| Simulation period | The output contains the initial state and 199 completed daily intervals, corresponding to 995 mm applied water. |
+| Upper boundary | Constant `NetRain = 5 mm d^-1`; potential evaporation, transpiration, runoff, and plant-water uptake are zero. |
+| Lower boundary | Free drainage (`Untere_Randb = freeflow`). |
+| Discretization | A 200-cm profile with uniform 10-cm layers. `bil_nr = 18` defines the water-balance control volume from layers 1--18 (0--180 cm). |
+| Retention parameters | van Genuchten parameters are obtained from the KA texture classes (`FVGParsFromTexture = fromtexture`). |
+| Conductivity | `Ks = 50 cm d^-1` is supplied for every horizon (`FKsFromTexture = frompar`). |
+| Initial matric potential | `PsiStart1 = 5000 cm`; the gravitationally equilibrated initial profile decreases by 10 cm per layer, reaching 4830 cm in layer 18 and 4810 cm in layer 20. |
+| Iteration controls | `Max_dt = 1 d`, `Min_dt = 0.0001 d`, `Max_aenderWG = 0.001 cm^3 cm^-3`, `Max_IterError = 0.0001 cm^3 cm^-3`, and `Itermax = 7`. |
+
+The four soil horizons are:
+
+| Horizon | Layers | Depth interval | Texture class | Field capacity | Permanent wilting point |
+|---:|---:|---:|---|---:|---:|
+| 1 | 1--3 | 0--30 cm | `Sl3` | 0.273830 | 0.084452 |
+| 2 | 4--6 | 30--60 cm | `Slu` | 0.334413 | 0.103963 |
+| 3 | 7--10 | 60--100 cm | `Ls3` | 0.312920 | 0.170848 |
+| 4 | 11--20 | 100--200 cm | `Sl2` | 0.242269 | 0.057754 |
+
+The evaluation data are stored below `scenariodata/layered`. Each averaging
+directory contains the five state files, the measured runtimes, and the result
+configuration written by the test application.
+
+```{r}
+#| label: setup-infiltration-comparison
+#| include: false
+
+scenario_methods <- c(
+  "Richards", "Diffusion", "Mixed", "MixedHydrus", "Capacity"
+)
+scenario_averaging <- c("Geometric", "Arithmetic")
+
+scenario_data_dir <- file.path(
+  dirname(knitr::current_input(dir = TRUE)),
+  "scenariodata",
+  "layered"
+)
+
+scenario_files <- expand.grid(
+  Averaging = scenario_averaging,
+  Method = scenario_methods,
+  stringsAsFactors = FALSE
+) |>
+  mutate(
+    File = file.path(
+      scenario_data_dir,
+      Averaging,
+      "state",
+      paste0("SoilWaterModTest_", Method, "_dat.csv")
+    )
+  )
+
+stopifnot(all(file.exists(scenario_files$File)))
+
+read_scenario_state <- function(file_name, method_name, averaging_name) {
+  state <- read.csv(
+    file_name,
+    check.names = FALSE,
+    stringsAsFactors = FALSE,
+    fileEncoding = "UTF-8-BOM"
+  )
+
+  # The first data row contains units rather than an observation.
+  state <- state[-1, , drop = FALSE]
+  state[] <- lapply(state, type.convert, as.is = TRUE)
+  state$Method <- method_name
+  state$Averaging <- averaging_name
+  state
+}
+
+scenario_state <- bind_rows(Map(
+  read_scenario_state,
+  scenario_files$File,
+  scenario_files$Method,
+  scenario_files$Averaging
+)) |>
+  mutate(
+    Method = factor(Method, levels = scenario_methods),
+    Averaging = factor(Averaging, levels = scenario_averaging)
+  )
+
+# bil_nr = 18: these columns form the documented balance control volume.
+wg_columns <- c(paste0("WG_", 1:9), paste0("WG", 10:18))
+wm_columns <- c(paste0("WMenge_", 1:9), paste0("WMenge", 10:18))
+```
+
+## Soil-water response
+
+```{r}
+#| label: fig-infiltration-method-comparison
+#| fig-cap: "Volumetric water content at representative texture boundaries and at the lower edge of the water-balance control volume."
+#| fig-width: 11
+#| fig-height: 9
+
+plot_layers <- c(3, 7, 11, 18)
+layer_labels <- c(
+  "Layer 3 (Sl3)", "Layer 7 (Ls3)",
+  "Layer 11 (Sl2)", "Layer 18 (Sl2)"
+)
+
+water_content_long <- scenario_state |>
+  select(Time, Averaging, Method, all_of(wg_columns)) |>
+  pivot_longer(
+    cols = all_of(wg_columns),
+    names_to = "LayerColumn",
+    values_to = "WaterContent"
+  ) |>
+  mutate(LayerNumber = match(LayerColumn, wg_columns)) |>
+  filter(LayerNumber %in% plot_layers) |>
+  mutate(
+    Layer = factor(
+      LayerNumber,
+      levels = plot_layers,
+      labels = layer_labels
+    )
+  )
+
+ggplot(
+  water_content_long,
+  aes(x = Time, y = WaterContent, colour = Method)
+) +
+  geom_line(linewidth = 0.6) +
+  facet_grid(Layer ~ Averaging) +
+  scale_colour_brewer(palette = "Dark2") +
+  labs(
+    x = "Simulation time (d)",
+    y = expression(theta ~ "(" * cm^3 ~ cm^-3 * ")"),
+    colour = "Method"
+  ) +
+  theme_minimal(base_size = 10.5) +
+  theme(legend.position = "bottom")
+```
+
+Richards and Mixed produce identical water-content trajectories in both
+averaging runs. MixedHydrus agrees in the upper profile but develops a small
+difference toward the lower boundary. Diffusion follows a distinctly different
+redistribution path across the texture discontinuities. Capacity is a
+field-capacity cascade and is therefore not expected to reproduce the
+transport-equation solutions.
+
+```{r}
+#| label: tbl-infiltration-method-agreement
+#| echo: false
+#| tbl-cap: "Maximum water-content differences from Richards within layers 1--18."
+
+solver_long <- scenario_state |>
+  filter(Method %in% c("Richards", "Diffusion", "Mixed", "MixedHydrus")) |>
+  select(Time, Averaging, Method, all_of(wg_columns)) |>
+  pivot_longer(
+    cols = all_of(wg_columns),
+    names_to = "LayerColumn",
+    values_to = "WaterContent"
+  ) |>
+  mutate(Layer = match(LayerColumn, wg_columns))
+
+richards_reference <- solver_long |>
+  filter(Method == "Richards") |>
+  select(Time, Averaging, Layer, RichardsWaterContent = WaterContent)
+
+solver_difference <- solver_long |>
+  filter(Method != "Richards") |>
+  left_join(
+    richards_reference,
+    by = c("Time", "Averaging", "Layer")
+  ) |>
+  mutate(AbsoluteDifference = abs(WaterContent - RichardsWaterContent))
+
+maximum_difference <- solver_difference |>
+  group_by(Averaging, Method) |>
+  slice_max(AbsoluteDifference, n = 1, with_ties = FALSE) |>
+  transmute(
+    Averaging,
+    Method,
+    `Maximum difference` = AbsoluteDifference,
+    `Day of maximum` = Time,
+    Layer
+  )
+
+final_difference <- solver_difference |>
+  group_by(Averaging, Method) |>
+  filter(Time == max(Time)) |>
+  summarise(
+    `Maximum final difference` = max(AbsoluteDifference),
+    .groups = "drop"
+  )
+
+method_agreement <- maximum_difference |>
+  left_join(final_difference, by = c("Averaging", "Method")) |>
+  arrange(Averaging, Method)
+
+knitr::kable(
+  method_agreement,
+  digits = c(NA, NA, 6, 0, 0, 6)
+)
+```
+
+The largest transient Richards--Diffusion difference is 0.052228
+cm^3 cm^-3 with geometric averaging and 0.049213 cm^3 cm^-3 with arithmetic
+averaging, in both cases near the third-horizon wetting front. At the end of
+the run the respective maximum differences are 0.033557 and 0.037106
+cm^3 cm^-3. The MixedHydrus difference remains much smaller: within the
+balance domain its final maximum is 0.000610 with geometric averaging and
+0.000789 cm^3 cm^-3 with arithmetic averaging, both in layer 18.
+
+## Effect of transport averaging
+
+Geometric averaging produces overshoot-and-rebound behaviour when the wetting
+front enters a new material. Arithmetic averaging removes this behaviour from
+Richards, Mixed, and MixedHydrus. The early decreases in the arithmetic
+Diffusion solution occur monotonically before the wetting front arrives and
+represent redistribution across the initial texture discontinuity rather than
+repeated numerical oscillation.
+
+```{r}
+#| label: tbl-infiltration-daily-decrease
+#| echo: false
+#| tbl-cap: "Largest one-day decrease in water content within layers 1--18."
+
+daily_change <- scenario_state |>
+  select(Time, Averaging, Method, all_of(wg_columns)) |>
+  pivot_longer(
+    cols = all_of(wg_columns),
+    names_to = "LayerColumn",
+    values_to = "WaterContent"
+  ) |>
+  mutate(Layer = match(LayerColumn, wg_columns)) |>
+  group_by(Averaging, Method, Layer) |>
+  arrange(Time, .by_group = TRUE) |>
+  mutate(DailyChange = WaterContent - lag(WaterContent)) |>
+  ungroup() |>
+  filter(!is.na(DailyChange)) |>
+  group_by(Averaging, Method) |>
+  slice_min(DailyChange, n = 1, with_ties = FALSE) |>
+  transmute(
+    Averaging,
+    Method,
+    `Largest daily decrease` = pmin(DailyChange, 0),
+    Day = Time,
+    Layer
+  ) |>
+  arrange(Averaging, Method)
+
+knitr::kable(daily_change, digits = c(NA, NA, 6, 0, 0))
+```
+
+The largest geometric decreases are -0.008857 cm^3 cm^-3 for the three
+pressure-based trajectories at layer 11 around day 45 and -0.019342
+cm^3 cm^-3 for Diffusion at layer 13 around day 54. With arithmetic averaging,
+Richards, Mixed, and MixedHydrus remain monotonic. The maximum difference
+between the geometric and arithmetic pressure-based trajectories is 0.048154
+cm^3 cm^-3 at layer 3 on day 8; their maximum final difference is only
+0.003880 cm^3 cm^-3.
+
+At the end of both runs, `WFlow` is 0.5 cm d^-1 at every interface in the
+balance domain. This equals the imposed 5 mm d^-1 infiltration and supports
+the implementation of the gravitational term and free-drainage steady state.
+
+## Water balance
+
+The signed global residual is
+
+$$
+R = P - Q_{runoff} - Q_{drain} - T - E
+    - \left(S + S_{pond} - S_0\right),
+$$
+
+where positive values denote applied water not represented by storage or
+outflow. `CumWaterBalance` uses the opposite sign convention. The storage
+reported by `SumSoilWater` is independently reproduced by summing
+`WMenge_1`--`WMenge18`; remaining sub-micrometre differences arise from the
+decimal precision of the CSV output.
+
+```{r}
+#| label: tbl-infiltration-water-balance
+#| echo: false
+#| tbl-cap: "Water balance for the layered constant-infiltration evaluation."
+
+balance_data <- scenario_state |>
+  group_by(Averaging, Method) |>
+  arrange(Time, .by_group = TRUE) |>
+  mutate(
+    InitialStorage = first(SumSoilWater + PondedWater),
+    IndependentResidual = CumNetRain - CumRunoff - CumDrainage -
+      CumTrans - CumEvap -
+      (SumSoilWater + PondedWater - InitialStorage)
+  ) |>
+  ungroup()
+
+# The independent reconstruction is limited by the exported decimal precision.
+stopifnot(max(abs(
+  balance_data$CumGlobalWaterBalance - balance_data$IndependentResidual
+)) < 0.002)
+
+mass_balance <- balance_data |>
+  group_by(Averaging, Method) |>
+  summarise(
+    `Applied water (mm)` = last(CumNetRain),
+    `Storage change (mm)` =
+      last(SumSoilWater + PondedWater) - first(InitialStorage),
+    `Drainage (mm)` = last(CumDrainage),
+    `Final residual (mm)` = last(CumGlobalWaterBalance),
+    `Maximum absolute residual (mm)` =
+      max(abs(CumGlobalWaterBalance)),
+    .groups = "drop"
+  ) |>
+  mutate(
+    `Final residual (ppm of input)` =
+      1e6 * abs(`Final residual (mm)`) / `Applied water (mm)`
+  ) |>
+  arrange(Averaging, Method)
+
+knitr::kable(
+  mass_balance,
+  digits = c(NA, NA, 1, 3, 3, 6, 6, 3)
+)
+```
+
+Diffusion and Capacity close the balance to numerical round-off. Richards and
+Mixed have identical final residuals: -0.001627 mm with geometric averaging
+and -0.000256 mm with arithmetic averaging. MixedHydrus gives nearly the same
+residuals. These correspond to approximately 1.64 and 0.26 parts per million
+of applied water, respectively. Arithmetic averaging therefore improves the
+pressure-solver closure by a factor of about 6.3.
+
+MixedHydrus drains 0.084 mm more than Richards in the geometric run and
+0.109 mm more in the arithmetic run, with a corresponding reduction in
+profile storage. The difference grows toward the lower boundary and is a
+small but reproducible formulation or boundary-treatment difference rather
+than a mass-balance error.
+
+```{r}
+#| label: fig-infiltration-water-balance
+#| fig-cap: "Cumulative signed global water-balance residual for both transport-averaging options."
+#| fig-width: 10
+#| fig-height: 6.5
+
+ggplot(
+  scenario_state,
+  aes(x = Time, y = CumGlobalWaterBalance, colour = Method)
+) +
+  geom_hline(yintercept = 0, colour = "grey55", linewidth = 0.4) +
+  geom_line(linewidth = 0.65) +
+  facet_wrap(~Averaging, ncol = 1) +
+  scale_colour_brewer(palette = "Dark2") +
+  labs(
+    x = "Simulation time (d)",
+    y = "Global water-balance residual (mm)",
+    colour = "Method"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "bottom")
+```
+
+## Runtime
+
+The runtime values are single executions of the test application. They show
+the relative cost in this scenario but should not be interpreted as a
+replicated performance benchmark.
+
+```{r}
+#| label: tbl-infiltration-runtime
+#| echo: false
+#| tbl-cap: "Measured runtime with geometric and arithmetic transport averaging."
+
+read_runtime <- function(averaging_name) {
+  runtime_lines <- readLines(
+    file.path(scenario_data_dir, averaging_name, "CalcTimes.txt")
+  )
+
+  data.frame(
+    Averaging = averaging_name,
+    Method = sub(" \\(TSoilWaterMod\\).*", "", runtime_lines),
+    Runtime_ms = as.numeric(
+      sub(".*: ([0-9.]+) ms", "\\1", runtime_lines)
+    )
+  )
+}
+
+runtime <- bind_rows(Map(read_runtime, scenario_averaging)) |>
+  mutate(Method = factor(Method, levels = scenario_methods)) |>
+  select(Method, Averaging, Runtime_ms) |>
+  pivot_wider(names_from = Averaging, values_from = Runtime_ms) |>
+  mutate(
+    `Arithmetic change (%)` = 100 * (Arithmetic / Geometric - 1)
+  ) |>
+  arrange(Method)
+
+knitr::kable(runtime, digits = c(NA, 3, 3, 1))
+```
+
+Arithmetic averaging is 2--7% faster for the four transport-equation
+solutions in this run; Capacity is unchanged. Diffusion is the fastest
+transport solver, while Capacity remains about two orders of magnitude faster
+because it does not solve the transport equation iteratively.
+
+## Evaluation conclusion
+
+For this layered infiltration case, arithmetic averaging gives the more robust
+overall result. It eliminates the geometric-averaging oscillations in the
+pressure-based methods, improves their mass-balance closure, and slightly
+reduces runtime. Geometric averaging yields marginally closer final agreement
+between Diffusion and Richards, but this does not compensate for the pronounced
+wetting-front oscillations.
+
+Richards and Mixed can be regarded as numerically equivalent in this test.
+MixedHydrus remains close but its increasing deviation near the lower boundary
+should be considered when selecting it for deep-profile simulations. Diffusion
+is conservative and fast, but its treatment of transport across discontinuous
+retention properties produces a materially different transient and final
+profile. Capacity is useful as a fast conceptual reference, not as a numerical
+reference for the transport-equation solvers.

@@ -396,12 +396,14 @@ end;
 
 procedure TFormMod.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  LMod.LinkedModel.FPropIniFile.WriteInteger('ComboBoxes', ComboBoxSubMod.Name,
-    self.ComboBoxSubMod.ItemIndex);
-  LMod.LinkedModel.FPropIniFile.WriteInteger('ComboBoxes',
-    self.ComboBoxIniFile.Name, self.ComboBoxIniFile.ItemIndex);
-  LMod.LinkedModel.FPropIniFile.UpdateFile;
-  LMod.LinkedModel.FPropIniFile.Free;
+  If LMod.LinkedModel <> NIL then begin
+    LMod.LinkedModel.FPropIniFile.WriteInteger('ComboBoxes', ComboBoxSubMod.Name,
+      self.ComboBoxSubMod.ItemIndex);
+    LMod.LinkedModel.FPropIniFile.WriteInteger('ComboBoxes',
+      self.ComboBoxIniFile.Name, self.ComboBoxIniFile.ItemIndex);
+    LMod.LinkedModel.FPropIniFile.UpdateFile;
+    LMod.LinkedModel.FPropIniFile.Free;
+  end;
   img_help.Free;
   img_savetoall.Free;
   // if LMod.LinkedModel <> nil then

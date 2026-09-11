@@ -15,80 +15,138 @@ uses
     UState;
 
 Type
+/// <summary>Selects the final phenological stage included during calibration or optimization.</summary>
 TOptimizeOpt = (OOEC11, OOEC13, OOEC27, OOEC39, OOEC51, OOEC61, OOEC69, OOAll);
 
+/// <summary>
+/// Calculates phenological development of winter oilseed rape, including temperature, photoperiod, and vernalisation effects.
+/// </summary>
 TDevelopmentOSR = class(TSubmodel)
 
 private
+  /// <summary>Internal representation of the selected optimization range.</summary>
   fOptimizeOpt: TOptimizeOpt;
 
 protected
 
 public
-  DVR1  : TVar;   // Entwicklungsrate bis Auflauf
-  DVR2  : TVar;   // Entwicklungsrate bis EC27
-  DVR2a : TVar;   // Entwicklungsrate von EC27 bis EC39
-  DVR2b : TVar;   // Entwicklungsrate von EC39 bis Blühbeginn
-  DVR3  : TVar;   // Entwicklungsrate bis Blühende
-  DVR4  : TVar;   // Entwicklungsrate bis Reife
-  Teff  : TVar;   // Effektive Tagestemperatur  Tday-Tb
-  Fp    : TVar;   // photoperiodischer Faktor
-  Fp_eff : TVar;  // effect of photoperiod on development rate
-  FV_eff : TVar;  // effect of vernalisation on development rate
+  /// <summary>Development rate from sowing to emergence.</summary>
+  DVR1  : TVar;
+  /// <summary>Development rate from emergence to EC 27.</summary>
+  DVR2  : TVar;
+  /// <summary>Development rate from EC 27 to EC 39.</summary>
+  DVR2a : TVar;
+  /// <summary>Development rate from EC 39 to the beginning of flowering.</summary>
+  DVR2b : TVar;
+  /// <summary>Development rate until the end of flowering.</summary>
+  DVR3  : TVar;
+  /// <summary>Development rate until maturity.</summary>
+  DVR4  : TVar;
+  /// <summary>Effective daily temperature, calculated as daily mean temperature minus base temperature.</summary>
+  Teff  : TVar;
+  /// <summary>Photoperiod factor.</summary>
+  Fp    : TVar;
+  /// <summary>Effective influence of photoperiod on the development rate.</summary>
+  Fp_eff : TVar;
+  /// <summary>Effective influence of vernalisation on the development rate.</summary>
+  FV_eff : TVar;
 
-  BBCH  : TVar;   // Entwicklungsstadium nach BBCH
-  EC    : TVar;   // EC-Stadium nach Schütte aus DVS
-  BBCH30: TVar;   // Variable for estimating DVS30
-  BBCH50: TVar;   // Variable for estimating DVSInflor
-  DOY51 : TVar;   // Variable for DOY flowering start
-  DOY90 : TVar;   // Variable for DOY full ripening stage
+  /// <summary>Phenological stage on the BBCH scale.</summary>
+  BBCH  : TVar;
+  /// <summary>Phenological stage on the Schuette EC scale, derived from DVS.</summary>
+  EC    : TVar;
+  /// <summary>Auxiliary variable used to estimate DVS at BBCH 30.</summary>
+  BBCH30: TVar;
+  /// <summary>Auxiliary variable used to estimate DVS at inflorescence emergence.</summary>
+  BBCH50: TVar;
+  /// <summary>Day of year on which flowering starts.</summary>
+  DOY51 : TVar;
+  /// <summary>Day of year on which full ripening is reached.</summary>
+  DOY90 : TVar;
 
-  // Constant Variables
-  DVS : TState;  // Entwicklungsstadium
-  Blattanzahl : TState;   //
-  NumExtInternodes: TState;  // Number of extended internodes (BBCH stages 30 to 39)
-  Fv : TState;   //
-  TS : TState;   // Temperatur Summe
-  TS11: TState;  // TSum from DVS=1/BBCH=9/EC=11
+  // State variables
+  /// <summary>Continuous development stage.</summary>
+  DVS : TState;
+  /// <summary>Number of leaves.</summary>
+  Blattanzahl : TState;
+  /// <summary>Number of extended internodes between BBCH stages 30 and 39.</summary>
+  NumExtInternodes: TState;
+  /// <summary>Accumulated vernalisation factor.</summary>
+  Fv : TState;
+  /// <summary>Accumulated effective temperature sum.</summary>
+  TS : TState;
+  /// <summary>Temperature sum accumulated after DVS 1 (BBCH 9 / EC 11).</summary>
+  TS11: TState;
 
              // Parameters
-  aT1 : TPar;   // Parameter für Entwicklungsrate bis EC11
-  aT2 : TPar;   // Parameter für Entwicklungsrate EC11 bis EC39
-  aT2a : TPar;   // Parameter für Entwicklungsrate EC39 bis EC61
-  aT3 : TPar;   // Parameter für Entwicklungsrate EC61 bis EC69
-  aT4 : TPar;   // Parameter für Entwicklungsrate EC69 bis EC89
-  fv_sens : TPar; // Parameter for vernalisation sensitivity
-  fp_sens : TPar; // Parameter for photoperiod sensitivity
+  /// <summary>Temperature response coefficient for development up to EC 11.</summary>
+  aT1 : TPar;
+  /// <summary>Temperature response coefficient for development from EC 11 to EC 39.</summary>
+  aT2 : TPar;
+  /// <summary>Temperature response coefficient for development from EC 39 to EC 61.</summary>
+  aT2a : TPar;
+  /// <summary>Temperature response coefficient for development from EC 61 to EC 69.</summary>
+  aT3 : TPar;
+  /// <summary>Temperature response coefficient for development from EC 69 to EC 89.</summary>
+  aT4 : TPar;
+  /// <summary>Sensitivity of development to vernalisation.</summary>
+  fv_sens : TPar;
+  /// <summary>Sensitivity of development to photoperiod.</summary>
+  fp_sens : TPar;
 
-  Phyllochron : TPar;   //
+  /// <summary>Thermal time required for the appearance of one leaf.</summary>
+  Phyllochron : TPar;
+  /// <summary>Thermal time required to extend one internode.</summary>
   TSumInternode: TPar;
-  Rvmax : TPar;   // Maximale Vernalisationsrate
-  Tb : TPar;   // Basis-Temperatur
-  Tvmin : TPar; // Minimaltemperatur für Vernalisation
-  Tvopt1 : TPar; // Untere optimale Vernalisationstemperatur
-  Tvopt2 : TPar; // Obere optimale Vernalisationstemperatur
-  Tvmax : TPar; // Maximaltemperatur für Vernalisation
-  Dlpmin : TPar; //Minimale Tageslänge für Photoperiodischen Faktor
-  Dlpopt : TPar; //Optimale Tageslänge für Photoperiodischen Faktor
-  DVS30 : TPar; // Geschätze DVS bei EC 30
-  DVS13 : TPar; // Geschätze DVS bei EC 13
-  DVSInflor: TPar; // DVS at beginning of inflorescence emergence (BBCH=50 / EC=51)
-  TSumCotEm: TPar; // Temperature Sum from first appearance of Cotyledons to complete unfolding (DVS=1/BBCH=9 to BBCH=10)
-  SowingDate : TPar; // Aussaattermin
-  ScaleDevVeg : TPar; // scaling factor for vegetative development rate
-  ScaleDevGen : TPar; // scaling factor for generative development rate
+  /// <summary>Maximum vernalisation rate.</summary>
+  Rvmax : TPar;
+  /// <summary>Base temperature for development.</summary>
+  Tb : TPar;
+  /// <summary>Minimum temperature for vernalisation.</summary>
+  Tvmin : TPar;
+  /// <summary>Lower optimum temperature for vernalisation.</summary>
+  Tvopt1 : TPar;
+  /// <summary>Upper optimum temperature for vernalisation.</summary>
+  Tvopt2 : TPar;
+  /// <summary>Maximum temperature for vernalisation.</summary>
+  Tvmax : TPar;
+  /// <summary>Minimum day length used by the photoperiod response.</summary>
+  Dlpmin : TPar;
+  /// <summary>Optimum day length used by the photoperiod response.</summary>
+  Dlpopt : TPar;
+  /// <summary>Estimated DVS at EC 30.</summary>
+  DVS30 : TPar;
+  /// <summary>Estimated DVS at EC 13.</summary>
+  DVS13 : TPar;
+  /// <summary>DVS at the beginning of inflorescence emergence (BBCH 50 / EC 51).</summary>
+  DVSInflor: TPar;
+  /// <summary>Temperature sum from first cotyledon appearance to complete unfolding (DVS 1 / BBCH 9 to BBCH 10).</summary>
+  TSumCotEm: TPar;
+  /// <summary>Sowing date represented as simulation time.</summary>
+  SowingDate : TPar;
+  /// <summary>Scaling factor for the vegetative development rate.</summary>
+  ScaleDevVeg : TPar;
+  /// <summary>Scaling factor for the generative development rate.</summary>
+  ScaleDevGen : TPar;
 
 
+  /// <summary>Defines the final EC stage considered in development calculations.</summary>
   OptimizeOpt : TOption;
 
-             // External Variables
-  DayLengthP : TExternV;   //
-  Tmpm       : TExternV;   //
+             // External variables
+  /// <summary>External day length.</summary>
+  DayLengthP : TExternV;
+  /// <summary>External daily mean temperature.</summary>
+  Tmpm       : TExternV;
 
 
+  /// <summary>Creates and registers all variables, state variables, parameters, external variables, and options.</summary>
   procedure CreateAll; override;
+  /// <summary>Initializes state variables and resolves the selected optimization option.</summary>
   procedure Init(var GlobMod: TMod); override;
+  /// <summary>Calculates daily development, leaf appearance, internode extension, and vernalisation rates.</summary>
   procedure CalcRates; override;
+  /// <summary>Integrates state variables and maps DVS to EC and BBCH stages.</summary>
   procedure Integrate; override;
 
 
@@ -133,12 +191,12 @@ published
 
 
 
-         // Properties External Variables
+         // Published external-variable properties
   Property Ex_DayLengthP : TExternV read DayLengthP write DayLengthP;
   Property Ex_Tmpm : TExternV read Tmpm write Tmpm;
 
 
-end;  // SubmodelName
+end;
 
 procedure Register;
 
@@ -151,62 +209,62 @@ procedure TDevelopmentOSR.createAll;
 
 begin
   inherited createAll;
-  VarCreate('DVR1', '[-]',0, true, DVR1);
-  VarCreate('DVR2', '[-]',0, true, DVR2);
-  VarCreate('DVR2a', '[-]',0, true, DVR2a);
-  VarCreate('DVR2b', '[-]',0, true, DVR2b);
-  VarCreate('DVR3', '[-]',0, true, DVR3);
-  VarCreate('DVR4', '[-]',0, true, DVR4);
-  VarCreate('Teff', '[°C]',0, true, Teff);
-  VarCreate('Fp', '[-]',0, true, Fp);
+  VarCreate('DVR1', '[-]',0, true, DVR1, 'Development rate from sowing to emergence');
+  VarCreate('DVR2', '[-]',0, true, DVR2, 'Development rate from emergence to end of vegetative growth');
+  VarCreate('DVR2a', '[-]',0, true, DVR2a, 'Development rate from emergence to end of vegetative growth (alternative calculation)');
+  VarCreate('DVR2b', '[-]',0, true, DVR2b, 'Development rate from emergence to end of vegetative growth (another alternative calculation)');
+  VarCreate('DVR3', '[-]',0, true, DVR3, 'Development rate from end of vegetative growth to flowering');
+  VarCreate('DVR4', '[-]',0, true, DVR4, 'Development rate from flowering to full ripening');
+  VarCreate('Teff', '[ï¿½C]',0, true, Teff,'Effective daily temperature, calculated as daily mean temperature minus base temperature');
+  VarCreate('Fp', '[-]',0, true, Fp, 'Photoperiod factor');
   VarCreate('Fp_eff', '[-]',0, true, Fp_eff, 'effect of photoperiod on development rate');
   VarCreate('Fv_eff', '[-]',0, true, Fv_eff, 'effect of vernalisation on development rate');
-  VarCreate('BBCH', '[-]',0, true, BBCH,'Entwicklungsstadium nach BBCH');
-  VarCreate('EC', '[-]',0, true,EC,'Entwicklungsstadium nach Schütte');
+  VarCreate('BBCH', '[-]',0, true, BBCH,'Phenological stage on the BBCH scale');
+  VarCreate('EC', '[-]',0, true,EC,'Phenological stage on the Schuette EC scale');
   VarCreate('BBCH30', '[-]',0, true, BBCH30,'Variable for estimating DVS30');
   VarCreate('BBCH50', '[-]',0, true, BBCH50,'Variable for estimating DVSInflor');
   VarCreate('DOY51', '[-]',0, true, DOY51,'DOY of flowering start');
   VarCreate('DOY90', '[-]',0, true, DOY90,'DOY of full ripening stage');
 
 
-  StateCreate('DVS', '[-]',0, true,DVS);
-  StateCreate('Blattanzahl', '[n]',0, true,Blattanzahl);
+  StateCreate('DVS', '[-]',0, true, DVS, 'Continuous development stage');
+  StateCreate('Blattanzahl', '[n]',0, true,Blattanzahl, 'Number of leaves');
   StateCreate('NumExtInternodes', '[n]', 0, true, NumExtInternodes, 'Number of extended internodes (BBCH stages 30 to 39)');
-  StateCreate('Fv', '[-]',0, true,Fv);
-  StateCreate('TS', '[-]',0, true,TS);
-  StateCreate('TS11', '[-]',0, true,TS11);
+  StateCreate('Fv', '[-]',0, true,Fv, 'Accumulated vernalisation factor');
+  StateCreate('TS', '[-]',0, true,TS, 'Accumulated effective temperature sum');
+  StateCreate('TS11', '[-]',0, true,TS11, 'Temperature sum accumulated after DVS 1 (BBCH 9 / EC 11)');
 
   // Parameters
-  ParCreate('aT1', '[1/(°C*d)]',0.0077212,aT1);
-  ParCreate('aT2', '[1/(°C*d)]',0.0296873,aT2);
-  ParCreate('aT2a', '[1/(°C*d)]',0.0296873,aT2a);
-  ParCreate('aT3', '[1/(°C*d)]',0.0051036,aT3);
-  ParCreate('aT4', '[1/(°C*d)]',0.0014651,aT4);
+  ParCreate('aT1', '[1/(ï¿½C*d)]',0.0077212,aT1, 'Temperature response coefficient for development up to EC 11');
+  ParCreate('aT2', '[1/(ï¿½C*d)]',0.0296873,aT2, 'Temperature response coefficient for development from EC 11 to EC 27');
+  ParCreate('aT2a', '[1/(C*d)]',0.0296873,aT2a, 'Temperature response coefficient for development from EC 11 to EC 27 (alternative calculation)');
+  ParCreate('aT3', '[1/(C*d)]',0.0051036,aT3, 'Temperature response coefficient for development from EC 27 to EC 51');
+  ParCreate('aT4', '[1/(C*d)]',0.0014651,aT4, 'Temperature response coefficient for development from EC 51 to EC 69');
   ParCreate('fv_sens', '[-]', 1, fv_sens, 'vernalisaton sensitivity [0..1]');
   ParCreate('fp_sens', '[]', 1, fp_sens, 'photoperiod sensitivity [0..1]');
-  ParCreate('Phyllochron', '[°Cd]',59.2,Phyllochron);
-  ParCreate('TSumInternode', '[°Cd]',25,TSumInternode);
-  ParCreate('Rvmax', '',0.014553,Rvmax);
-  ParCreate('Tb', '[°C]',3,Tb);
-  ParCreate('Tvmin', '[°C]',-3.7182,Tvmin);
-  ParCreate('Tvopt1', '[°C]',0.7260,Tvopt1);
-  ParCreate('Tvopt2', '[°C]',5.3770,Tvopt2);
-  ParCreate('Tvmax', '[°C]',17.2022,Tvmax);
-  ParCreate('Dlpmin', '[h]',5.7,Dlpmin);
-  ParCreate('Dlpopt', '[h]',14.8,Dlpopt);
-  ParCreate('DVS30', '[-]',1.3,DVS30);
-  ParCreate('DVS13', '[-]',1.00072,DVS13);
+  ParCreate('Phyllochron', '[ï¿½Cd]',59.2,Phyllochron, 'Phyllochron interval');
+  ParCreate('TSumInternode', '[Cd]',25,TSumInternode, 'Temperature sum for internode extension');
+  ParCreate('Rvmax', '',0.014553,Rvmax, 'Maximum development rate');
+  ParCreate('Tb', '[C]',3,Tb, 'Base temperature');
+  ParCreate('Tvmin', '[C]',-3.7182,Tvmin, 'Minimum temperature for development');
+  ParCreate('Tvopt1', '[C]',0.7260,Tvopt1, 'Optimum temperature for development');
+  ParCreate('Tvopt2', '[ï¿½C]',5.3770,Tvopt2, 'Optimum temperature for development');
+  ParCreate('Tvmax', '[C]',17.2022,Tvmax, 'Maximum temperature for development');
+  ParCreate('Dlpmin', '[h]',5.7,Dlpmin, 'Minimum day length for development');
+  ParCreate('Dlpopt', '[h]',14.8,Dlpopt, 'Optimum day length for development');
+  ParCreate('DVS30', '[-]',1.3,DVS30, 'DVS at EC 30');
+  ParCreate('DVS13', '[-]',1.00072,DVS13, 'DVS at EC 13');
   ParCreate('DVSInflor','[-]',1.327,DVSInflor,'DVS at beginning of inflorescence emergence (BBCH=50 / EC=51)');
-  ParCreate('SowingDate', '[-]',1,SowingDate);
-  ParCreate('TSumCotEm','[°C d]',60,TSumCotEm,'Temperature Sum from first appearance of Cotyledons to complete unfolding (DVS=1/BBCH=9 to BBCH=10)');
+  ParCreate('SowingDate', '[-]',1,SowingDate, 'Sowing date');
+  ParCreate('TSumCotEm','[C d]',60,TSumCotEm,'Temperature Sum from first appearance of Cotyledons to complete unfolding (DVS=1/BBCH=9 to BBCH=10)');
 
   ParCreate('ScaleDevVeg','[-]',1 ,ScaleDevVeg,'Scaling factor for vegetative development rate');
   ParCreate('ScaleDevGen','[-]',1 ,ScaleDevGen,'Scaling factor for generative development rate');
 
 
-         // External Variable
-  ExternVCreate('DayLengthP', '',statefield, DayLengthP);
-  ExternVCreate('TMPM', '',statefield, Tmpm);
+  // External Variables
+  ExternVCreate('DayLengthP', '',statefield, DayLengthP, 'External day length');
+  ExternVCreate('TMPM', '',statefield, Tmpm, 'External daily mean temperature');
 
   OptCreate('OptimizeOption', 'All', OptimizeOpt,
     'Specifies until which EC stage data and development rates are considered');

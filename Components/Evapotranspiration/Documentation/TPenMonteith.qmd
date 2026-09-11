@@ -258,13 +258,11 @@ The net energy flux leaving the earth's surface is, however, less than that emit
 
 The equation for estimating net radiation in the FAO Penman-Monteith method (daily time resolution"), $R_{nrefcrop}$, is expressed as:
 
-$$
-\begin{aligned}
+$$\begin{aligned}
 & R_{nrefcrop}=R_{ns}+R_{nl}=R_s\downarrow \left(1-\alpha \right )+R_{nl}=R_{ns}+R_{nl}
 \\
 & =R_s\downarrow \left(1-\alpha \right )+\left( {R}_{l\downarrow 0}-{R}_{l\uparrow}\right)
-\end{aligned}
-$$ {#eq-Rnrefcrop}
+\end{aligned}$$ {#eq-Rnrefcrop}
 
 The FAO-56 method suggests a semi empirical approach for the calculation of the net radiation for a reference crop surface:
 
@@ -525,9 +523,9 @@ $$r_a = \frac{4.72 \ln \left(\frac{2-0.12}{0.123 \cdot 0.12}\right)^2}{1+0.54 \c
 
 ### Canopy resistance
 
-The second resistance considered in the Penman-Monteith equation is the canopy resistance. The canopy resistance $r_c$ is in principle the value of the stomatal resistance $r_s$ divided by the "active" leaf area index, assuming that the leaves act independently as emitters of water vapour:
+The second resistance considered in the Penman-Monteith equation is the canopy resistance. The canopy resistance $r_c$ is in principle the value of the stomatal resistance $r_s$ divided by the "active" leaf area index, assuming that the leaves act independently as emitters of water vapour which is only true for small values of LAI (<1):
 
-$${{r}_{c}}\approx \frac{r_s}{LAI};\,LAI<<$$ {#eq-rc}
+$${{r}_{c}}\approx \frac{r_s}{LAI}$$ {#eq-rc}
 
 For higher values of leaf area index, however, additional leaves do not decrease the canopy resistance as the first leaves do, i.e. local increase of the vapour pressure of the air by existing leaves reduces the additional transpiration rate of additional leaves.
 
@@ -535,15 +533,13 @@ The canopy resistance is then calculated as:
 
 We use an equation proposed by Stockle (personal communication) for the canopy resistance:
 
-$$
-rc =
+$$rc =
 \begin{cases} 
     rc_0, & \text{if } LAI < 1.0 \\[8pt]
     \frac{rc_0}{LAI}, & \text{if } 1.0 \leq LAI < 2.0 \\[8pt]
     \frac{rc_0}{2} - \left(\frac{rc_0}{2} - \frac{rc_0}{3}\right) \cdot \frac{LAI - 2}{4}, & \text{if } 2.0 \leq LAI < 6.0 \\[8pt]
     \frac{rc_0}{3}, & \text{if } rc \text{ remains undefined} \\[8pt]
-\end{cases}
-$$ {#eq-rc2}
+\end{cases}$$ {#eq-rc2}
 
 For a well watered crop the value of $r_s$ is at around 50 $[s.m^{-1}]$. The resulting values of $r_c$ plotted against LAI look like shown in @fig-rc_f.
 
