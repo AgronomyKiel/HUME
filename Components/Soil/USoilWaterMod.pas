@@ -42,6 +42,8 @@ type
 
   /// <summary>type for specifying computation method</summary>
   TCompMethod = (Capacity, Diffusion, Richards, Mixed, MixedHydrus);
+  /// <summary>type for averaging transport coefficients at layer interfaces</summary>
+  TTransportAveraging = (Arithmetic, Geometric);
   /// <summary>type for specifying conductivity calculation context</summary>
   TConductivityContext = (ccDiffusion, ccRichardsMixed, ccMixedHydrus);
 
@@ -108,6 +110,8 @@ type
 
     /// <summary>Enumeration type variable for computation method</summary>
     fCompMethod: TCompMethod;
+    /// <summary>Method used to average transport coefficients at interfaces</summary>
+    fTransportAveraging: TTransportAveraging;
     /// <summary>Switch for put Warnings on and off</summary>
     fShowWarnings: boolean;
     /// <summary>Option to take Van-Genuchten-Parameters from texture estimates</summary>
@@ -171,7 +175,10 @@ type
     procedure CalcTempFactor;
     /// <summary>Calculation of conductivities</summary>
     procedure CalcConductivities(const context: TConductivityContext;
-      const useGeometricMean, includeCoefficients, applyFreezing: Boolean);
+      const includeCoefficients, applyFreezing: Boolean);
+    /// <summary>Returns the configured interface average of two transport coefficients</summary>
+    function AverageTransportCoefficient(const FirstValue,
+      SecondValue: real): real;
     /// <summary>caculation of water transport according to diffusivity approach</summary>
     procedure CapWatSolut;
     procedure get_water_contents;
@@ -225,6 +232,8 @@ type
     procedure InitGenuchtenPars;
     /// summary> set the computation method </summary>
     procedure SetCompMethod;
+    /// <summary>set the conductivity averaging method</summary>
+    procedure SetTransportAveraging;
     /// <summary> initialisation of vectors and arrays </summary>
     procedure InitVectors;
     procedure SetGenuchtenPars;
@@ -312,7 +321,7 @@ type
     SumBalanceError: real;
 
     /// <summary>sum of soil and ponded water [mm]</summary>
-    SWCStart, global_WaterBalance, old_global_WaterBalance: real;
+    SWCStart, global_WaterBalance: real;
 
     /// <summary>water content vector [cm3/cm3]</summary>
     theta_arr: TSoilvarArray;
@@ -369,6 +378,8 @@ type
     OptIniMethod: TOption;
     /// <summary>Option for choosing the computation method</summary>
     OptCompMethod: TOption;
+    /// <summary>Option for choosing the conductivity averaging method</summary>
+    OptTransportAveraging: TOption;
     /// <summary>Option for writing VG-Pars from Texture estimates into Param-Ini-file</summary>
     /// <summary></summary>
     OptWriteParsFromTexture: TOption;
@@ -639,6 +650,8 @@ type
     property ShowWarnings: boolean read fShowWarnings write fShowWarnings;
     property m_model: Tm_model read fm_model write fm_model;
     property Opt_CompMethod: TCompMethod read fCompMethod write fCompMethod;
+    property Opt_TransportAveraging: TTransportAveraging
+      read fTransportAveraging write fTransportAveraging;
     property Opt_red_f: Tred_f read fred_f write fred_f;
     property Opt_maxWGchange: TPar read max_aenderWG write max_aenderWG;
     property Opt_IterError: TPar read max_IterError write max_IterError;
@@ -1042,20 +1055,17 @@ end;
 procedure TSoilWaterMod.CalcGlobalWaterBalance;
 begin
   // Rain-W_loss-Trans-Evap-SW_diff
-  old_global_WaterBalance := global_WaterBalance;
   global_WaterBalance := CumNetRain.v - (CumRunoff.v + CumDrainage.v) -
     CumTrans.v - CumEvap.v - (SumSoilWater.v + PondedWater.v - SWCStart);
-  CumGlobalWaterBalance.c := abs(global_WaterBalance - old_global_WaterBalance);
+  CumGlobalWaterBalance.v := global_WaterBalance;
+  CumGlobalWaterBalance.c := 0.0;
 end;
 
 /// <summary>calculation of soil water balance for the soil profile</summary>
 procedure TSoilWaterMod.CalcProfileWaterBalance(OldSumSoilwater: Extended);
 begin
-  if GlobTime.v > GlobMod.Starttime then
-  begin
-    CumWaterBalance.c := (SumSoilWater.v - OldSumSoilwater) +
-      (-Wflow_arr[1].v * 10 + CumDrainage.c) * GlobTime.c;
-  end;
+  CumWaterBalance.c := (SumSoilWater.v - OldSumSoilwater) +
+    (-Wflow_arr[1].v * 10 + CumDrainage.c) * GlobTime.c;
   // [mm]
 end;
 
@@ -1515,6 +1525,15 @@ begin
     fCompMethod := MixedHydrus;
 end;
 
+/// <summary>set option for averaging transport coefficients</summary>
+procedure TSoilWaterMod.SetTransportAveraging;
+begin
+  if uppercase(OptTransportAveraging.Option) = 'ARITHMETIC' then
+    fTransportAveraging := Arithmetic;
+  if uppercase(OptTransportAveraging.Option) = 'GEOMETRIC' then
+    fTransportAveraging := Geometric;
+end;
+
 procedure TSoilWaterMod.InitGenuchtenPars;
 var
   i: integer;
@@ -1705,7 +1724,8 @@ procedure TSoilWaterMod.CreateStates;
 var
   i: integer;
 begin
-  StateCreate('CumGlobalWaterBalance', '[mm]', 0, true, CumGlobalWaterBalance);
+  StateCreate('CumGlobalWaterBalance', '[mm]', 0, true, CumGlobalWaterBalance,
+    'signed cumulative-input water-balance residual');
   StateCreate('CumEvap', '[mm]', 0, true, CumEvap, 'Cumulative evaporation');
   StateCreate('CumDrainage', '[mm]', 0, true, CumDrainage,
     'cumulative water loss at layer xx');
@@ -1850,6 +1870,13 @@ begin
   OptCompMethod.OptionList.Add('Mixed');
   OptCompMethod.OptionList.Add('MixedHydrus');
   OptCompMethod.OptionList.Add('Capacity');
+
+  fTransportAveraging := Geometric;
+  OptCreate('TransportAveraging', 'Geometric', OptTransportAveraging,
+    'Method for averaging hydraulic conductivity and soil water diffusivity at layer interfaces');
+  OptTransportAveraging.OptionList.Clear;
+  OptTransportAveraging.OptionList.Add('Arithmetic');
+  OptTransportAveraging.OptionList.Add('Geometric');
 
   // OptWriteParsFromTexture
   OptCreate('WriteParsFromTexture?', 'false', OptWriteParsFromTexture,
@@ -2126,7 +2153,7 @@ begin
   SetLDPars; // Init LDs
   SetLDnumbers; // Init numerical LD classes
 
-  self.max_IterErrorsave := self.max_aenderWG.v;
+  self.max_IterErrorsave := self.max_IterError.v;
   Iter_save := trunc(IterMax.v);
   MaxActChangeSWC := 0.0; // hp & ar 07.01.2010  !
   SumBalanceError := 0.0;
@@ -2141,7 +2168,8 @@ begin
   last_iter := 0;
   SWCStart := 0;
   global_WaterBalance := 0;
-  old_global_WaterBalance := 0;
+  CumGlobalWaterBalance.v := 0.0;
+  CumGlobalWaterBalance.c := 0.0;
   psiWP := power(10, 4.2);
   psiFK := power(10, 1.8);
   for i := 1 to n_comp do
@@ -2255,6 +2283,7 @@ begin
 
   SetNewPsi_and_Theta_Values;
   SetCompMethod;
+  SetTransportAveraging;
   CheckForHoriIndexInitialisation;
 
   if Opt_nFKCalcMethod = FromParameter then
@@ -2266,6 +2295,8 @@ begin
   for i := 1 to n_comp do
     Sink_arr[i].v := 0.0;
   theta_airdryness := WPar[1].b_psi_f(PsiAirDryness);
+  CalcTotalWaterAmounts;
+  SWCStart := SumSoilWater.v + PondedWater.v;
 
 end;
 
@@ -2342,11 +2373,25 @@ begin
   CalcProfileWaterBalance(OldSumSoilwater);
 end;
 
+function TSoilWaterMod.AverageTransportCoefficient(const FirstValue,
+  SecondValue: real): real;
+begin
+  case fTransportAveraging of
+    Arithmetic:
+      result := (FirstValue + SecondValue) / 2.0;
+    Geometric:
+      result := sqrt(max(0.0, FirstValue * SecondValue));
+  else
+    result := sqrt(max(0.0, FirstValue * SecondValue));
+  end;
+end;
+
 procedure TSoilWaterMod.CalcConductivities(const context: TConductivityContext;
-  const useGeometricMean, includeCoefficients, applyFreezing: Boolean);
+  const includeCoefficients, applyFreezing: Boolean);
 
 var
   i: byte;
+  TempFactor: real;
 
 begin
   case context of
@@ -2362,12 +2407,14 @@ begin
           end;
         for i := 2 to n_comp + 1 do
         begin
-          avg_Dw[i] := sqrt(Dw_arr[i - 1] * Dw_arr[i]); // cm2/d
-          avg_Ku[i] := sqrt(Ku_arr[i - 1] * Ku_arr[i]); // cm/d
+          avg_Dw[i] := AverageTransportCoefficient(Dw_arr[i - 1],
+            Dw_arr[i]); // cm2/d
+          avg_Ku[i] := AverageTransportCoefficient(Ku_arr[i - 1],
+            Ku_arr[i]); // cm/d
         end;
 
-        avg_Ku[0] := (WPar[1].Ks + Ku_arr[1]) / 2; // aritmethic mean
-        avg_Ku[1] := (WPar[1].Ks + Ku_arr[1]) / 2; // aritmethic mean
+        avg_Ku[0] := AverageTransportCoefficient(WPar[1].Ks, Ku_arr[1]);
+        avg_Ku[1] := avg_Ku[0];
         avg_Dw[1] := (WPar[1].Dw_f((WPar[1].b_sat + theta_new[1]) / 2));
 
         for i := 1 to n_comp + 1 do
@@ -2389,16 +2436,11 @@ begin
         end;
 
         for i := 1 to n_comp do
-        begin
-          if useGeometricMean then
-            avg_Ku[i] := sqrt(Ku_arr[i] * Ku_arr[i + 1])
-          else
-            avg_Ku[i] := (Ku_arr[i] + Ku_arr[i + 1]) / 2;
-        end;
+          avg_Ku[i] := AverageTransportCoefficient(Ku_arr[i], Ku_arr[i + 1]);
 
         if includeCoefficients then
         begin
-          avg_Ku[0] := (WPar[1].Ks + Ku_arr[1]) / 2; // aritmethic mean
+          avg_Ku[0] := AverageTransportCoefficient(WPar[1].Ks, Ku_arr[1]);
 
           for i := 1 to n_comp do
           begin
@@ -2437,17 +2479,38 @@ begin
             Ku_arr[i] := WPar[i].Ku_psi_f(psi_neu[i]);
 //          end);
           end;
-        avg_Ku[0] := (WPar[1].Ks + Ku_arr[1]) / 2; // aritmethic mean
+        avg_Ku[0] := AverageTransportCoefficient(WPar[1].Ks, Ku_arr[1]);
 
-        TParallel.For(1, n_comp,
-          procedure(i: Int64)
+ //       TParallel.For(1, n_comp,
+ //         procedure(i: Int64)
+        for I := 1 to n_comp do
           begin
-            avg_Ku[i] := sqrt(Ku_arr[i] * Ku_arr[i + 1]);
+            avg_Ku[i] := AverageTransportCoefficient(Ku_arr[i],
+              Ku_arr[i + 1]);
             kf[i] := avg_Ku[i] / Dist[i];
             P[i] := (c_arr[i] * Thick[i]) / dt.v;
-          end);
+ //         end);
+          end;
 
         kf[0] := 2 * avg_Ku[0] / Dist[1];
+
+        if applyFreezing and (FSoilHeatModel <> nil) then
+        begin
+          { Apply the temperature reduction to hydraulic conductivities only.
+            P contains the storage coefficient C*D/dt and must not be scaled. }
+          TempFactor := max(0.0, min(1.0,
+            (FSoilHeatModel.Temp[1].v + 1.0) / 2.0));
+          avg_Ku[0] := avg_Ku[0] * TempFactor;
+          kf[0] := kf[0] * TempFactor;
+
+          for i := 1 to n_comp do
+          begin
+            TempFactor := max(0.0, min(1.0,
+              (FSoilHeatModel.Temp[i].v + 1.0) / 2.0));
+            avg_Ku[i] := avg_Ku[i] * TempFactor;
+            kf[i] := kf[i] * TempFactor;
+          end;
+        end;
 
         for i := 0 to n_comp + 1 do
           wf[i] := 1;
@@ -2484,10 +2547,8 @@ begin
   CalcProfile_and_HorizonSums;
   if Opt_TransferWGsToNextINI and (GlobTime.v = GlobMod.Endtime) then
     TransferWGsToNextINI;
-  If ((GlobTime.v > GlobMod.Starttime) and (SWCStart > 0)) then
+  if GlobTime.v > GlobMod.Starttime then
     CalcGlobalWaterBalance;
-  if ((SWCStart = 0) and (SumSoilWater.v > 0)) then
-    SWCStart := SumSoilWater.v + PondedWater.v;
 end;
 
 procedure TSoilWaterMod.GetWaterBalance;
@@ -2617,7 +2678,7 @@ begin
   global_iter.v := global_iter.v + total_iter;
   total_iter := 0;
   if max(MaxActChangeSWC, NetRain.v * dt.v / (Thick[1] * 10)) <> 0.0 then
-    dt_neu := (max_aenderWG.v / max(MaxActChangeSWC,
+    dt_neu := (dt.v*max_aenderWG.v / max(MaxActChangeSWC,
       NetRain.v * dt.v / (Thick[1] * 10)));
   dt_neu_flow := 1E5 * max_flow_ratio;
   if dt_neu > dt_neu_flow then
@@ -2743,6 +2804,7 @@ begin
             if Overflow > maxstorage then
             begin // everything fits in this layer ?
               theta_new[layer] := WPar[layer].b_sat;
+              psi_neu[layer] := 0.0;
               WflowInt_arr[layer].v := WflowInt_arr[layer].v -
                 maxstorage / dt.v;
               Overflow := Overflow - maxstorage;
@@ -2750,6 +2812,7 @@ begin
             else // all fits into this layer
             begin
               theta_new[layer] := theta_new[layer] + Overflow / Thick[layer];
+              psi_neu[layer] := WPar[layer].psi_b_f(theta_new[layer]);
               // increase water content
               Overflow := 0.0;
             end;
@@ -2902,9 +2965,6 @@ begin
     self.theta_old[i] := theta_arr[i].v;
   end;
 
-  for i := 1 to n_comp + 1 do
-    Wflow_arr[i].v := WflowInt_arr[i].v;
-
 {$IFNDEF NONVISUAL}
   if (DebugForm <> NIL) and Debugmodus then
     DebugForm.update;
@@ -3027,15 +3087,16 @@ var
     i: integer;
   begin
 
-    TParallel.For(start + 1, n_comp - 1,
-      procedure(i: Int64)
+ //   TParallel.For(start + 1, n_comp - 1,
+ //     procedure(i: Int64)
+    for i := start + 1 to n_comp - 1 do
       begin
         B_vektor[i] := theta_arr[i].v - Ku_fact[i + 1] / Thick[i] + Ku_fact[i] /
           Thick[i] - Sink_arr[i].v * dt.v / Thick[i];
         lower[i] := -Dw_fact[i] / Thick[i];
         diag[i] := Dw_fact[i] / Thick[i] + Dw_fact[i + 1] / Thick[i] + 1.0;
         upper[i] := -Dw_fact[i + 1] / Thick[i];
-      end);
+      end;
 
 
   end;
@@ -3185,7 +3246,7 @@ var
 begin { procedure Diffwater_solut }
   BeginIterativeTransport;
   repeat
-    CalcConductivities(ccDiffusion, true, true, true);
+    CalcConductivities(ccDiffusion, true, true);
     UpperBoundaryCondition;
     MainLoop;
     LowerBoundary;
@@ -3202,6 +3263,15 @@ procedure TSoilWaterMod.Richardswater_solut;
 var
   result: byte;
   psi_top, MaxFlow1: real;
+
+  /// <summary>Returns the modified-Picard pressure base including the nonlinear storage correction.</summary>
+  function StorageCorrectedPsi(const LayerIndex: integer): real;
+  begin
+    result := psi_neu[LayerIndex];
+    if c_arr[LayerIndex] < 0.0 then
+      result := result + (theta_arr[LayerIndex].v - theta_new[LayerIndex]) /
+        c_arr[LayerIndex];
+  end;
 
   procedure UpperBoundary;
 
@@ -3242,7 +3312,7 @@ var
     if not(wet or dry) then // Wassergehalte im erlaubten Rahmen
     begin
       start := 1;
-      B_vektor[1] := psi_arr[1].v + MaxFlow1 * P[1] // known Influx
+      B_vektor[1] := StorageCorrectedPsi(1) + MaxFlow1 * P[1] // known Influx
         - avg_Ku[1] * P[1] // drainage to second layer
         - Sink_arr[1].v * P[1]; // water uptake by plants
       diag[1] := -wf[1] * kf[1] * P[1] + 1; // tension flow to second layer
@@ -3252,7 +3322,7 @@ var
     end
     else
     begin // fixed tension on soil surface
-      B_vektor[1] := psi_neu[1] + psi_top * kf[0] * P[1] * 2
+      B_vektor[1] := StorageCorrectedPsi(1) + psi_top * kf[0] * P[1] * 2
       // tension infiltration rate
         + avg_Ku[0] * P[1] // gravitational infiltration
         - avg_Ku[1] * P[1] // gravitation flow to second layer
@@ -3272,8 +3342,8 @@ var
   begin
     for i := start + 1 to n_comp - 1 do
     begin
-      B_vektor[i] := psi_arr[i].v + P[i] * (avg_Ku[i - 1] - avg_Ku[i]) -
-        Sink_arr[i].v * P[i];
+      B_vektor[i] := StorageCorrectedPsi(i) + P[i] *
+        (avg_Ku[i - 1] - avg_Ku[i]) - Sink_arr[i].v * P[i];
       if wf[i] >= 1 then
       begin
         lower[i] := kf[i - 1] * P[i];
@@ -3305,7 +3375,7 @@ var
       (LowerBoundaryCondition = FreeFlow) then
     begin
       { Gehalts-Randbedingungen }
-      B_vektor[n_comp] := psi_arr[n_comp].v + P[n_comp] *
+      B_vektor[n_comp] := StorageCorrectedPsi(n_comp) + P[n_comp] *
         (avg_Ku[n_comp - 1] - avg_Ku[n_comp]) - wf[n_comp] * psi_arr[n_comp + 1]
         .v * kf[n_comp] * P[n_comp] - Sink_arr[n_comp].v * P[n_comp];
     end
@@ -3313,8 +3383,8 @@ var
     begin
       { no-flow flux boundary condition }
 
-      B_vektor[n_comp] := psi_arr[n_comp].v + P[n_comp] * (avg_Ku[n_comp - 1]) -
-        Sink_arr[n_comp].v * P[n_comp];
+      B_vektor[n_comp] := StorageCorrectedPsi(n_comp) + P[n_comp] *
+        avg_Ku[n_comp - 1] - Sink_arr[n_comp].v * P[n_comp];
 
     end
     else if ShowWarnings then
@@ -3338,7 +3408,6 @@ var
   procedure SolvingEquationSystem;
   var
     i: byte;
-    c: real; // specific soil water capacity [1/cm])
   begin
     result := trdiag(false, act_n_comp, start, lower, diag, upper, B_vektor);
     if result <> 0 then
@@ -3360,8 +3429,7 @@ var
     begin
       last_iter_theta[i] := theta_new[i];
       psi_neu[i] := max(0, B_vektor[i]);
-      c := WPar[i].C_psi_f(psi_neu[i]);
-      theta_new[i] := theta_arr[i].v + c * (psi_neu[i] - psi_arr[i].v);
+      theta_new[i] := WPar[i].b_psi_f(psi_neu[i]);
       if ShowWarnings then
       begin
         if theta_new[i] < 1E-20 then
@@ -3429,7 +3497,7 @@ var
 begin { procedure Richardswater_solut }
   BeginIterativeTransport;
   repeat
-    CalcConductivities(ccRichardsMixed, false, true, false);
+    CalcConductivities(ccRichardsMixed, true, false);
     UpperBoundary;
     MainLoop;
     LowerBoundary;
@@ -3446,27 +3514,69 @@ procedure TSoilWaterMod.Mixedwater_solut;
 
 var
   result: byte;
-  i: integer;
+  psi_top, MaxFlow1: real;
 
   procedure UpperBoundary;
 
-    { To prevent invalid function calls, first check whether a decline of the
-      water content below the residual water content b_rest or a rise above the
-      saturation water content b_sat is expected. The result of this check is
-      stored in the variables "Wet" and "Dry". }
+  var
+    SurfaceKf: real;
+
+    { Switch between an imposed atmospheric flux and a prescribed surface
+      pressure head when infiltration is limited or the surface becomes dry. }
   begin
-    { Wasserspannungen im erlaubten Rahmen ? }
-    dry := false;
     start := 1;
-    Res[1] := WflowInt_arr[1].v / Thick[1] // Fluxcondition, known
-      - avg_Ku[1] / (Thick[1] * Dist[1]) * (psi_arr[2].v - psi_arr[1].v)
-    // pressure induced flow to second layer
-      - (avg_Ku[1]) / Thick[1] // gravitational flow induced to second layer
-      - (theta_new[1] - theta_arr[1].v) / dt.v // soil water change
-      - Sink_arr[1].v / (Thick[1]); // sink
-    alpha[1] := 0.0;
-    beta[1] := c_arr[1] / dt.v + (avg_Ku[1]) / (Dist[1] * Thick[1]);
-    gamma[1] := -avg_Ku[1] / (Dist[1] * Thick[1]);
+    dry := false;
+    wet := false;
+
+    avg_Ku[0] := AverageTransportCoefficient(WPar[1].Ks, Ku_arr[1]);
+    SurfaceKf := 2.0 * avg_Ku[0] / Thick[1];
+    MaxFlow1 := DayFlow1 + 0.1 * PondedWater.v / dt.v;
+
+    if MaxFlow1 > 0.0 then
+    begin
+      psi_top := -PondedWater.v / 10.0;
+      MaxInfil := SurfaceKf * (psi_neu[1] - psi_top) + avg_Ku[0];
+      if MaxFlow1 > MaxInfil then
+      begin
+        wet := true;
+        WflowInt_arr[1].v := MaxInfil;
+      end;
+    end;
+
+    if psi_neu[1] > PsiAirDryness then
+    begin
+      dry := true;
+      psi_top := PsiAirDryness;
+    end;
+
+    if not(wet or dry) then
+    begin
+      Res[1] := MaxFlow1 / Thick[1]
+        - avg_Ku[1] / (Thick[1] * Dist[1]) *
+          (psi_neu[2] - psi_neu[1])
+        - avg_Ku[1] / Thick[1]
+        - (theta_new[1] - theta_arr[1].v) / dt.v
+        - Sink_arr[1].v / Thick[1];
+      alpha[1] := 0.0;
+      beta[1] := c_arr[1] / dt.v - avg_Ku[1] /
+        (Dist[1] * Thick[1]);
+      gamma[1] := avg_Ku[1] / (Dist[1] * Thick[1]);
+      WflowInt_arr[1].v := MaxFlow1;
+    end
+    else
+    begin
+      Res[1] := SurfaceKf / Thick[1] * (psi_neu[1] - psi_top)
+        + avg_Ku[0] / Thick[1]
+        - avg_Ku[1] / (Thick[1] * Dist[1]) *
+          (psi_neu[2] - psi_neu[1])
+        - avg_Ku[1] / Thick[1]
+        - (theta_new[1] - theta_arr[1].v) / dt.v
+        - Sink_arr[1].v / Thick[1];
+      alpha[1] := 0.0;
+      beta[1] := c_arr[1] / dt.v - SurfaceKf / Thick[1]
+        - avg_Ku[1] / (Dist[1] * Thick[1]);
+      gamma[1] := avg_Ku[1] / (Dist[1] * Thick[1]);
+    end;
   end;
 
   procedure MainLoop;
@@ -3475,49 +3585,54 @@ var
   begin
     for i := start + 1 to n_comp - 1 do
     begin
-      Res[i] := avg_Ku[i - 1] / (Thick[i] * Dist[i]) *
-        (psi_arr[i].v - psi_arr[i - 1].v) // inflow from upper layer
-        - avg_Ku[i] / (Thick[i] * Dist[i]) * (psi_arr[i + 1].v - psi_arr[i].v)
-      // outflow to lower layer
+      Res[i] := avg_Ku[i - 1] / (Thick[i] * Dist[i - 1]) *
+        (psi_neu[i] - psi_neu[i - 1]) // inflow from upper layer
+        - avg_Ku[i] / (Thick[i] * Dist[i]) *
+          (psi_neu[i + 1] - psi_neu[i]) // outflow to lower layer
         + (avg_Ku[i - 1] - avg_Ku[i]) / Thick[i] // gravitational flows
         - (theta_new[i] - theta_arr[i].v) / dt.v // soil water change
-        - Sink_arr[i].v / (Thick[i]); // sink term
-      alpha[i] := -avg_Ku[i - 1] / (Dist[i] * Thick[i]);
-      beta[i] := c_arr[i] / dt.v + (avg_Ku[i - 1] + avg_Ku[i]) /
-        (Dist[i] * Thick[i]);
-      gamma[i] := -avg_Ku[i] / (Dist[i] * Thick[i]);
+        - Sink_arr[i].v / Thick[i]; // sink term
+      alpha[i] := avg_Ku[i - 1] / (Dist[i - 1] * Thick[i]);
+      beta[i] := c_arr[i] / dt.v - avg_Ku[i - 1] /
+        (Dist[i - 1] * Thick[i]) - avg_Ku[i] / (Dist[i] * Thick[i]);
+      gamma[i] := avg_Ku[i] / (Dist[i] * Thick[i]);
     end;
   end;
 
   procedure LowerBoundary;
-  { In diesem Fall ist ein vorgegebener unterer Wassergehalt,
-    bzw. eine 0-Gradienten Randbedingung vorgegeben }
-
   begin
     if (LowerBoundaryCondition = ConstContent) or
       (LowerBoundaryCondition = Groundwatertable) or
       (LowerBoundaryCondition = FreeFlow) then
     begin
-      { Gehalts-Randbedingungen }
-      Res[n_comp] := avg_Ku[n_comp - 1] / (Thick[n_comp] * Dist[n_comp]) *
-        (psi_arr[n_comp].v - psi_arr[n_comp - 1].v) - avg_Ku[n_comp] /
-        (Thick[n_comp] * Dist[n_comp + 1]) *
-        (psi_arr[n_comp + 1].v - psi_arr[n_comp].v) +
-        (avg_Ku[n_comp - 1] - avg_Ku[n_comp]) / Thick[n_comp] -
-        (theta_new[n_comp] - theta_arr[n_comp].v) / dt.v - Sink_arr[n_comp].v /
-        (Thick[n_comp]);
+      // Prescribed pressure head in the additional boundary compartment.
+      Res[n_comp] := avg_Ku[n_comp - 1] /
+        (Thick[n_comp] * Dist[n_comp - 1]) *
+        (psi_neu[n_comp] - psi_neu[n_comp - 1])
+        - avg_Ku[n_comp] / (Thick[n_comp] * Dist[n_comp]) *
+          (psi_neu[n_comp + 1] - psi_neu[n_comp])
+        + (avg_Ku[n_comp - 1] - avg_Ku[n_comp]) / Thick[n_comp]
+        - (theta_new[n_comp] - theta_arr[n_comp].v) / dt.v
+        - Sink_arr[n_comp].v / Thick[n_comp];
+      alpha[n_comp] := avg_Ku[n_comp - 1] /
+        (Dist[n_comp - 1] * Thick[n_comp]);
+      beta[n_comp] := c_arr[n_comp] / dt.v - avg_Ku[n_comp - 1] /
+        (Dist[n_comp - 1] * Thick[n_comp]) - avg_Ku[n_comp] /
+        (Dist[n_comp] * Thick[n_comp]);
     end
-    else if (LowerBoundaryCondition = NoFlow) then
+    else if LowerBoundaryCondition = NoFlow then
     begin
-      // no-flow flux boundary condition }
-
-      Res[n_comp] := avg_Ku[n_comp - 1] / (Thick[n_comp] * Dist[n_comp]) *
-        (psi_arr[n_comp].v - psi_arr[n_comp - 1].v) // inflow from upper layer
-        + (avg_Ku[n_comp - 1]) / Thick[n_comp]
-      // gravitational flow into the layer
-        - (theta_new[n_comp] - theta_arr[n_comp].v) / dt.v // soil water change
-        - Sink_arr[n_comp].v / (Thick[n_comp]);
-
+      // Zero lower-boundary flux.
+      Res[n_comp] := avg_Ku[n_comp - 1] /
+        (Thick[n_comp] * Dist[n_comp - 1]) *
+        (psi_neu[n_comp] - psi_neu[n_comp - 1])
+        + avg_Ku[n_comp - 1] / Thick[n_comp]
+        - (theta_new[n_comp] - theta_arr[n_comp].v) / dt.v
+        - Sink_arr[n_comp].v / Thick[n_comp];
+      alpha[n_comp] := avg_Ku[n_comp - 1] /
+        (Dist[n_comp - 1] * Thick[n_comp]);
+      beta[n_comp] := c_arr[n_comp] / dt.v - avg_Ku[n_comp - 1] /
+        (Dist[n_comp - 1] * Thick[n_comp]);
     end
     else if ShowWarnings then
 
@@ -3526,22 +3641,12 @@ var
 {$ELSE}
       writeln('Lower Boundary not defined!');
 {$ENDIF}
-    alpha[n_comp] := -avg_Ku[n_comp - 1] / (Dist[n_comp] * Thick[n_comp]);
-    beta[n_comp] := c_arr[n_comp] / dt.v + (avg_Ku[n_comp - 1] + avg_Ku[n_comp])
-      / (Dist[n_comp] * Thick[n_comp]);
     gamma[n_comp] := 0.0;
-
-    { B_vektor[n_comp] := psi_arr[n_comp].v + P[n_comp] *
-      (avg_Ku[n_comp - 1] - avg_Ku[n_comp]) - psi_arr[n_comp + 1].v * kf
-      [n_comp] * P[n_comp] - Sink_arr[n_comp].v * P[n_comp];
-      lower[n_comp] := kf[n_comp - 1] * P[n_comp];
-      diag[n_comp] := -P[n_comp] * kf[n_comp - 1] - P[n_comp] * kf[n_comp] + 1; }
   end;
 
-  procedure Loesung_Gleichungssystem;
+  procedure SolveEquationSystem;
   var
     i: byte;
-    c: real; // specific soil water capacity [1/cm])
   begin
     result := trdiag(false, act_n_comp, start, alpha, beta, gamma, Res);
     if result <> 0 then
@@ -3552,33 +3657,24 @@ var
 {$ELSE}
         writeln('Error solving equation system');
 {$ENDIF}
-    if (LowerBoundaryCondition = Groundwatertable) then
+    if LowerBoundaryCondition = Groundwatertable then
       for i := n_comp downto act_n_comp + 1 do
-      begin
         last_iter_theta[i] := theta_new[i];
-      end;
+
     for i := act_n_comp downto start do
     begin
       last_iter_theta[i] := theta_new[i];
-      { Umsetzen der berechneten Spannungen }
       psi_neu[i] := max(0, psi_neu[i] + Res[i]);
-      // Neue Wassergehalte aus Ableitung
       theta_new[i] := WPar[i].b_psi_f(psi_neu[i]);
-      if ShowWarnings then
+      if ShowWarnings and (theta_new[i] < 1E-20) then
       begin
-        if theta_new[i] < 1E-20 then
-        begin
-
 {$IFNDEF NONVISUAL}
-          showmessage('Fehler: WMenge_' + IntTostr(i) + ' = 0');
-          showmessage('Datum: ' + floattostr(GlobTime.v));
-
+        showmessage('Fehler: WMenge_' + IntTostr(i) + ' = 0');
+        showmessage('Datum: ' + floattostr(GlobTime.v));
 {$ELSE}
-          writeln('Fehler: WMenge_' + IntTostr(i) + ' = 0');
-          writeln('Datum: ' + floattostr(GlobTime.v));
-
+        writeln('Fehler: WMenge_' + IntTostr(i) + ' = 0');
+        writeln('Datum: ' + floattostr(GlobTime.v));
 {$ENDIF}
-        end;
       end;
     end;
   end;
@@ -3586,33 +3682,76 @@ var
   procedure Find_flows;
   var
     i: byte;
+    GW_inflow: TSoilArray; // flows induced by a rising groundwater table
+    Overflow, infilbalance: real;
+    PondCapa, PondDischargeRate: real;
   begin
     for i := 2 to n_comp + 1 do
       WflowInt_arr[i].v := avg_Ku[i - 1] *
         ((psi_neu[i] - psi_neu[i - 1]) / Dist[i - 1] + 1);
-    if start = 2 then
-      WflowInt_arr[1].v := WflowInt_arr[2].v;
-    if (dry and (WflowInt_arr[1].v < WflowInt_arr[2].v)) or
-      (wet and (WflowInt_arr[1].v > WflowInt_arr[2].v)) then
+
+    if wet then
+      WflowInt_arr[1].v := MaxInfil
+    else if dry then
+      WflowInt_arr[1].v := 2.0 * avg_Ku[0] / Thick[1] *
+        (psi_neu[1] - psi_top) + avg_Ku[0]
+    else
+      WflowInt_arr[1].v := MaxFlow1;
+
+    if wet then
     begin
-      WflowInt_arr[1].v := WflowInt_arr[2].v;
-      Wflow_old[1] := Wflow_old[2];
+      infilbalance := (DayFlow1 - MaxInfil) * 10.0 * dt.v;
+      if infilbalance < 0.0 then
+        PondedWater.v := PondedWater.v + infilbalance
+      else
+      begin
+        PondCapa := PondMax.v - PondedWater.v;
+        if infilbalance > PondCapa then
+        begin
+          Overflow := infilbalance - PondCapa;
+          PondedWater.v := PondMax.v;
+          CumRunoff.c := CumRunoff.c + Overflow;
+        end
+        else
+          PondedWater.v := PondedWater.v + infilbalance;
+      end;
     end;
+
+    if not(wet) and (PondedWater.v > 0.0) then
+    begin
+      PondDischargeRate := MaxFlow1 - DayFlow1;
+      PondedWater.v := max(0.0, PondedWater.v -
+        10.0 * PondDischargeRate * dt.v);
+    end;
+
     if LowerBoundaryCondition = NoFlow then
       WflowInt_arr[n_comp + 1].v := 0.0;
 
+    if LowerBoundaryCondition = Groundwatertable then
+    begin
+      for i := act_n_comp + 1 to n_comp do
+      begin
+        GW_inflow[i + 1] := (theta_new[i] - WPar[i].b_sat) *
+          Thick[i] / dt.v;
+        theta_new[i] := WPar[i].b_sat;
+        psi_neu[i] := 0.0;
+      end;
+
+      for i := act_n_comp + 2 to n_comp + 1 do
+        WflowInt_arr[i].v := WflowInt_arr[i - 1].v + GW_inflow[i];
+    end;
   end;
 
 begin { procedure Mixedwater_solut }
   BeginIterativeTransport;
   repeat
-    CalcConductivities(ccRichardsMixed, true, false, true);
+    CalcConductivities(ccRichardsMixed, false, true);
     UpperBoundary;
     MainLoop;
     LowerBoundary;
-    Loesung_Gleichungssystem;
+    SolveEquationSystem;
     FinishIteration;
-  until (success);
+  until success;
   Find_flows;
   FinishIterativeTransport(true);
 end;
@@ -3680,8 +3819,8 @@ var
         + psi_top * kf[0] - (theta_new[1] - theta_arr[1].v) * Thick[1] / dt.v
       // soil water change
         - Sink_arr[1].v; // sink term
-      alpha[1] := kf[1 - 1];
-      beta[1] := P[1] - kf[1];
+      alpha[1] := 0.0;
+      beta[1] := P[1] - kf[0] - kf[1];
       gamma[1] := kf[1];
     end;
   end;
@@ -3691,8 +3830,9 @@ var
     i: integer;
   begin
 
-    TParallel.For(start + 1, n_comp - 1,
-      procedure(i: Int64)
+//    TParallel.For(start + 1, n_comp - 1,
+//      procedure(i: Int64)
+    for I := start + 1 to n_comp - 1 do
       begin
         Res[i] := psi_neu[i] * P[i] + avg_Ku[i - 1] - avg_Ku[i]
         // gravitational flows
@@ -3702,7 +3842,7 @@ var
         alpha[i] := kf[i - 1];
         beta[i] := P[i] - kf[i - 1] - kf[i];
         gamma[i] := kf[i];
-      end);
+      end;
 
 
   end;
@@ -3868,7 +4008,7 @@ var
 begin { procedure MixedHydruswater_solut }
   BeginIterativeTransport;
   repeat
-    CalcConductivities(ccMixedHydrus, true, true, false);
+    CalcConductivities(ccMixedHydrus, true, true);
     CalcUpperBoundary;
     CalcMainLayers;
     CalcLowerBoundary;
