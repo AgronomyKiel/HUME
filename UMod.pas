@@ -1597,8 +1597,18 @@ var
 begin
   // change to application directory
 
+  if ActIniFile = nil then
+  begin
+{$IFDEF NONVISUAL}
+    writeln('No ActIniFile');
+{$ELSE}
+    ShowMessage('No ActIniFile');
+{$ENDIF}
+    halt;
+  end;
+
   Inifn := ExpandFileName(ActIniFile.FileName);
-  if (ActIniFile <> nil) and fileexists(Inifn) then
+  if fileexists(Inifn) then
   begin
 
     if (FApplicationPath <> '') and DirectoryExists(FApplicationPath) then
