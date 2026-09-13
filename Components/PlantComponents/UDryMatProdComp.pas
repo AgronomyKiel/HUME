@@ -79,6 +79,7 @@ procedure TDrymatterProduction.createAll;
 
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TDrymatterProduction);
 
   ParCreate('k', '[-]', 0.65, k);
   ParCreate('Q10', '[-]', 1.8, Q10);

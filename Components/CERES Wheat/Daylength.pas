@@ -50,6 +50,7 @@ procedure TDayLength.Createall;
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TDayLength);
   Varcreate('Daylength', '[h]', 0, true, daylength);
   Varcreate('Daylengthp', '[h]', 0, true, daylengthp);
   Parcreate('Latitude', '[�]', 51, Latitude);

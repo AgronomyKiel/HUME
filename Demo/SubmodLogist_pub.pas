@@ -42,6 +42,7 @@ procedure TLogistGrowth.createAll;
 
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TLogistGrowth);
   StateCreate('Educt',   '[g]', 100.0, true, Educt, 'Educt');
   StateCreate('Product', '[g]',   0.1, true, product);
   ParCreate('gr',        '[d-1]', 0.02, gr, 'Growth rate parameter');

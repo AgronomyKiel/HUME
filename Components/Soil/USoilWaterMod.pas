@@ -939,6 +939,7 @@ var
 begin
   fShowWarnings := true;
   inherited CreateAll; // call TLayeredSoil.CreateAll
+  SetEntityDeclarationClass(TSoilWaterMod);
   m_model := Mualem; // set Genuchten model option to Mualem model
   CreateParameters; // Wrapper for parameter creation
   CreateOptions;

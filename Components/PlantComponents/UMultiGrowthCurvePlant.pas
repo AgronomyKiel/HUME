@@ -83,6 +83,7 @@ var
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TMultiGrowthCurvePlant);
 
   ExternVcreate('SoilNUptakeGrowth', '[]', RateField, SoilNUptakeGrowthRate);
   StateCreate('SumSoilNUptakeGrowth', '[]', 0.0, false, SumSoilNUptakeGrowth);

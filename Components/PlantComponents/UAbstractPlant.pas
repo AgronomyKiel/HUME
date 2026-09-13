@@ -28,6 +28,7 @@ type
   /// <summary>Source of extinction coefficient / rc0 / Psi2 / Weff</summary>
   TSource = (fromParameter, fromPlantModel);
 
+  /// <summary>Rooting depth increase function type</summary>
   TRootingDepthIncrease = (linear, monomolecular);
 
   /// <summary>abstract base type for plant submodel</summary>
@@ -87,33 +88,68 @@ type
     fSetNewDates: boolean;
     /// <summary>pointer to soil water & nitrogen module</summary>
     fSoilNitrogenMod: TPlantRelatedSubmod;
+    /// <summary>pointer to soil mineralisation module</summary>
     fSoilMinMod: TPlantRelatedSubmod;
+    /// <summary>pointer to soil layer module</summary>
     fSoilLayerMod: TPlantRelatedSubmod;
+    /// <summary>pointer to evapotranspiration module</summary>
     fEvapModel: TPlantRelatedSubmod;
+    /// <summary>pointer to dry matter production module</summary>
     fDMprodModel: TPlantRelatedSubmod;
 
   protected
+    /// <summary>flag to indicate if the plant has roots</summary>
     fwithRoots: boolean;  // moved to protected hk 2025/03/20
-
+    
+    /// <summary>sets the next crop in the rotation</summary>
     procedure setNextCrop(NextCrop: TAbstractplant); virtual;
+    
+    /// <summary>getter for total leaf area index</summary>
     function  GetLAI: THumeNumEntity; virtual; abstract;
+    /// <summary>setter for total leaf area index</summary>
     procedure SetLai(NewLAI:THumeNumEntity); virtual; abstract;
+    /// <summary>getter for crop height</summary>
     function  GetCropHeight: THumeNumEntity; virtual; abstract;
+    /// <summary>setter for crop height</summary>
     procedure SetCropHeight(NewCropHeight:THumeNumEntity); virtual; abstract;
+    /// <summary>getter for nitrogen uptake rate</summary>
     function  GetNUptakeRate: THumeNumEntity; virtual; abstract;
+    /// <summary>setter for nitrogen uptake rate</summary>
     procedure SetNUptakeRate(NewNUptakeRate:THumeNumEntity); virtual; abstract;
+
+    /// <summary>getter for root length density in a specific soil layer</summary>
     function  GetWLD(Index: Integer): THumeNumEntity; virtual; abstract;
+    /// <summary>getter for total root length</summary>
     function  GetSumRootLength: THumeNumEntity; virtual; abstract;
+
+    /// <summary>getter for effective root length</summary>
     function  GetSumRootLength_eff: THumeNumEntity; virtual; abstract;
+
+    /// <summary>setter for root length density in a specific soil layer</summary>
     procedure SetWLD(Index:Integer; NewWLD:THumeNumEntity); virtual; abstract;
+    /// <summary>getter for extinction coefficient for PAR</summary>
     function  getExtCoeffPAR: real; virtual;
+    /// <summary>getter for extinction coefficient for global radiation</summary>
     function  getExtCoeffGlobRad: real; virtual;
+    /// <summary>getter for canopy resistance at potential transpiration</summary>
     function  getrc0: real; virtual;
+    
+    /// <summary>getter for water potential at which water uptake by the plant starts to decrease</summary>
     function  getPsi2: real; virtual;
+    
+    /// <summary>getter for effective rooting depth</summary>
     function  getWeff: real; virtual;
-    function  getDM_c: real; virtual;
+    
+    /// <summary>getter for dry matter change rate</summary>
+    function  getDM_c: real; virtual; 
+    
+    /// <summary>setter for dry matter change rate</summary>
     procedure setDM_c (DM_c:real); virtual; abstract;
+
+    /// <summary>setter for the dry matter production submodel</summary>
     procedure SetDMprodModel(DMProdmodel: TPlantRelatedSubMod); virtual;
+
+    /// <summary>setter for the soil nitrogen submodel</summary> 
     procedure setSoilNitrogenMod(AModel: TPlantRelatedSubmod); virtual;
 
 
@@ -159,11 +195,19 @@ type
 
     /// <summary>Option added HK 2025/03/20</summary>
     OptWithRoots : TOption;
+
+    /// <summary>Setter for sowing date</summary>
     procedure SetSowingDate(NewSowingDate: real); virtual;
 
+    /// <summary>Integrate the plant model</summary>
     procedure Integrate; override;
+    /// <summary>Calculate rates for the plant model</summary>
     procedure CalcRates; override;
+
+    /// <summary>Instantiate the plant model objects</summary>
     procedure CreateAll; override;
+
+    /// <summary>Initialize the plant model  parameters</summary>
     procedure Init(var GlobMod: Tmod); override;
 
 //    Property St_TotalDrymatter : TState read TotalDryMatter write TotalDryMatter;
@@ -224,8 +268,13 @@ type
 /// <summary>property for soil nitrogen sub model linked to the plant</summary>    
     Property SoilNitrogenMod: TPlantRelatedSubmod read fSoilNitrogenMod write setSoilNitrogenMod;
 
+/// <summary>property for sowing date parameter</summary>
     property Par_SowingDate: TPar read SowingDate write SowingDate;
+
+    /// <summary>property for harvest date parameter</summary>
     property Par_HarvestDate: TPar read HarvestDate write HarvestDate;
+
+    /// 
     property NextCrop: TAbstractPlant read fNextCrop write SetNextCrop;
     property Rotationlength: byte read frotationlength write fRotationLength;
     property St_C_Residues: TState read C_Residues write C_Residues;
@@ -252,9 +301,10 @@ procedure TAbstractPlant.CreateAll;
 begin
 
   inherited createAll;
+  SetEntityDeclarationClass(TAbstractPlant);
  // fSetNewDates:= false;
   ParCreate('SowingDate', '[]', 0.0, SowingDate, 'Day of sowing');
-  ParCreate('HarvestDate', '[]', 1e6, HarvestDate);
+  ParCreate('HarvestDate', '[]', 1e6, HarvestDate, 'Day of harvest');
   StateCreate('C_Residues', '[g C/m2]', 0, true, C_Residues, 'Amount of carbon in crop residues');
   StateCreate('N_Residues', '[g N/m2]', 0, true, N_Residues, 'Amount of nitrogen in crop residues');
   StateCreate('DMtotal', '[g.m-2]', 0, true, DMtotal, 'Total aboveground dry matter in crop');
@@ -269,7 +319,6 @@ begin
   OptCreate('WithRoots', 'true', OptWithRoots, 'Option to flag that root growth is calculated within the component');
   OptWithRoots.OptionList.add('true');
   OptWithRoots.OptionList.add('false');
-
 
 end;
 

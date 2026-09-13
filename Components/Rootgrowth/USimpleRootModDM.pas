@@ -494,6 +494,7 @@ var
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TSimpleRootModDM);
 
   ParCreate('BaseTempRoots', '[°C]', 0, TempSumRootBaseTemp,'Base temperature for root growth');
 

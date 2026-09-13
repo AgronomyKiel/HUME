@@ -279,6 +279,7 @@ procedure TSucrosTotDry.createAll;
 
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TSucrosTotDry);
   ParCreate('alpha', '[g CO2.J-1]', 1E-5, alpha);
   ParCreate('Pmax', '[g CO2.m-2.s-1]', 1E-3, Pmax);
   ParCreate('CVE', '[g CH2O.gCO2-1]', 0.7, CVE);

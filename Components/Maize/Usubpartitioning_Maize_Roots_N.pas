@@ -160,6 +160,7 @@ procedure Tsubpartitioning_Maize_Roots_N.CreateAll;
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(Tsubpartitioning_Maize_Roots_N);
   // Variables
 
 VarCreate('NDemand', 'g/m²·d', 0, true, NDemand,

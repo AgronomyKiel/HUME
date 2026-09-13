@@ -51,6 +51,7 @@ procedure TLUETotDry.CreateAll;
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TLUETotDry);
   ParCreate('LUE0', '[-]', 5, LUE0);
   ParCreate('LUE_dec', '[-]', 0.2, LUE_dec);
   VarCreate('Cluster_f', '[-]', 1.0, false, cluster_f);

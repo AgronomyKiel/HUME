@@ -246,6 +246,7 @@ var
   i : integer;
 
 begin
+  SetEntityDeclarationClass(TSimpleRootModDM_2);
 
   ParCreate('BaseTempRoots', '[°C]',0,TempSumRootBaseTemp);
 

@@ -255,6 +255,7 @@ var
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TSoilNitrogenUp);
   ParCreate('Cmin', '[kg N/cm]', 0.0, Cmin,
     'minimum nitrate concentration roots can deplete to');
   ParCreate('Not_av_N', '[kg N/10 cm]', 1.5, not_av_N,

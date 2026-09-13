@@ -746,6 +746,7 @@ procedure THumeWheatPartitioning.createAll;
 
 begin
   inherited createAll;
+  SetEntityDeclarationClass(THumeWheatPartitioning);
   CreateAllVars;
   CreateAllStates;
   CreateAllExternV;

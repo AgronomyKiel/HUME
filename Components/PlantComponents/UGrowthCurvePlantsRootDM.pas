@@ -38,6 +38,7 @@ procedure TGrowthCurvePlantRootDM.createAll;
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TGrowthCurvePlantRootDM);
   VarCreate('fFineRoot', '[-]', 0.4, false, fFineroot);
   ParCreate('fFineRoot0', '[-]', 0.4, fFineroot0);
   ParCreate('fFineRootDec', '[-]', 0.0002, fFinerootdec);

@@ -70,6 +70,7 @@ var
   layer: integer;
 begin
   inherited Createall;
+  SetEntityDeclarationClass(TAbstractSoilMin);
   ParCreate('NOrgLayers', '[]',MAxNorgLayers, NOrgLayers);
   for layer := 1 to trunc(NOrgLayers.v) do begin
     StateCreate('BBf'+ndx_str(layer), '[]', 1, true, BBf[layer]);

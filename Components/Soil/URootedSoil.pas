@@ -686,6 +686,7 @@ var
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TSoilWaterModelR);
 {$IFNDEF NONVISUAL}
   if DebugForm <> NIL then
     DebugForm.MyCreate;

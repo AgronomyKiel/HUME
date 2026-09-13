@@ -160,6 +160,7 @@ end;
 procedure Tsublightint_growth_Maize.createAll;
 begin
   inherited createAll;
+  SetEntityDeclarationClass(Tsublightint_growth_Maize);
 // Variables
 VarCreate('fInt', '[unitless]', 0, true, fInt, 'Fraction of intercepted photosynthetically active radiation (PAR) (not used in model)');
 VarCreate('IntPar', '[MJ/m²/d]', 0, true, IntPar, 'Intercepted PAR (daily total)');

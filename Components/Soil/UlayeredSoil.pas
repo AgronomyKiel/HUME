@@ -145,6 +145,7 @@ var
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TLayeredSoil);
   n_comp := 20;
   ParCreate('MaxDepth', '[cm]', 200.0, MaxProfileDepth,
     'maximum depth of calculated profile');

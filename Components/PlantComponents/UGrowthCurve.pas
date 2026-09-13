@@ -145,6 +145,7 @@ procedure TGrowthCurve.CreateAll;
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TGrowthCurve);
   Parcreate('SowingDate', '[d]', 34335, SowingDate);
   Parcreate('HarvestDate', '[d]', 34669, HarvestDate);
   Parcreate('Capacity', '[-]', 100, Capacity);

@@ -188,6 +188,7 @@ var
   i: Integer;
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TGrowthCurvePlantRoots);
   ParCreate('zr_0', '[cm]', 10, zr_0, 'planting/sowing depth');
   ParCreate('zr_max', '[cm]', 120, zr_max, 'maximum rooting depth');
   ParCreate('WL_0', '[cmcm2]', 1, WL_0, 'root length at begin of root growth');

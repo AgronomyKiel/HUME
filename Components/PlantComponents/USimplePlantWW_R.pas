@@ -78,6 +78,7 @@ procedure TSimplePlantWW_R.createAll;
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TSimplePlantWW_R);
   VarCreate('fFineRoot', '[-]', 0.4, false, fFineroot);
   VarCreate('STMWT', '[g/plant]', 0.0, false, DMStem_pl);
 

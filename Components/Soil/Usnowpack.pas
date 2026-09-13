@@ -149,6 +149,7 @@ procedure TSnowPack.CreateAll;
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TSnowPack);
   VarCreate('Es', '', 0, true, Es);
   VarCreate('EsS', '', 0, true, EsS);
   VarCreate('Evap_pot', '[mm]', 0, true, Evap_pot);

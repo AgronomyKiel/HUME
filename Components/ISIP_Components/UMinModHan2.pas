@@ -206,6 +206,7 @@ procedure TMinModHan.createAll;
     i :integer;
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TMinModHan);
   for i := 1 to 9 do
   begin
      ExternVCreate('Nmin_' + IntToStr(i), '[kg N/ha]', statefield, Nmin[i]);

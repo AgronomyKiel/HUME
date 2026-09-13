@@ -62,6 +62,7 @@ procedure TLogGrowth.createAll;
 
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TLogGrowth);
   VarCreate('dW_dt', '',0, true, dW_dt, '');  
   VarCreate('rgr', '',0, true, rgr, '');  
 

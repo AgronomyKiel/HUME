@@ -81,6 +81,7 @@ var
   i: integer;
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TGrass_growth_quality);
 
   for i := 0 to growth_count do begin
     ParCreate('w0_' + IntToStr(i), '[-]', 1.25, w0_arr[i]);

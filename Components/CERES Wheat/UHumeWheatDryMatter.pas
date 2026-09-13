@@ -278,6 +278,7 @@ end;
 procedure THumeWheatDryMatter.createAll;
 begin
   inherited createAll;
+  SetEntityDeclarationClass(THumeWheatDryMatter);
   StateCreate('CumPAR', '[MJ/m2]', 0, true, CumPAR, 'cumulative PAR uptake');
   StateCreate('CumCarbo', '[g/m2]', 0, true, CumCarbo, 'cumulative assimilated production ');
   ParCreate('pSWDF', '[-]', 1, pSWDF,

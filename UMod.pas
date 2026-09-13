@@ -768,6 +768,8 @@ type
     fWriteFinallyToFile: boolean;
 
     FCalcTimeTicks: Int64;
+    /// <summary>Static class whose CreateAll method is currently declaring entities.</summary>
+    FEntityDeclarationClass: TClass;
 
 
 {$IFNDEF NONVISUAL}
@@ -820,6 +822,8 @@ type
     function Get_GlobMod: TMod;
     procedure Set_GlobMod(Model: TMod); virtual;
     function UpdateValue(n: string): real;
+    /// <summary>Sets the declaring class before a CreateAll method registers entities.</summary>
+    procedure SetEntityDeclarationClass(AClass: TClass);
 {$IFNDEF NONVISUAL}
     /// new Paint procedure
     procedure Paint; override;
@@ -4298,6 +4302,7 @@ begin
   // FMeasValues := NIL;
   // globalmod wird erst nach create gesetzt!
 
+  FEntityDeclarationClass := ClassType;
   CreateAll;
 
 end;
@@ -4614,17 +4619,31 @@ begin
   RegistrateStateVar(State);
 end;
 
-/// <summary>Records the concrete registration class, unit, and source file.</summary>
+/// <summary>Sets the static class whose CreateAll method declares subsequent entities.</summary>
+procedure TSubmodel.SetEntityDeclarationClass(AClass: TClass);
+begin
+  if AClass <> nil then
+    FEntityDeclarationClass := AClass
+  else
+    FEntityDeclarationClass := ClassType;
+end;
+
+/// <summary>Records the active declaration class, unit, and source file.</summary>
 procedure TSubmodel.RecordEntityProvenance(Entity: THumeEntity);
 var
+  DeclarationClass: TClass;
   TypeData: PTypeData;
 begin
   if Entity = nil then
     Exit;
 
+  DeclarationClass := FEntityDeclarationClass;
+  if DeclarationClass = nil then
+    DeclarationClass := ClassType;
+
   Entity.SubModName := Name;
-  Entity.DeclarationClassName := ClassName;
-  TypeData := GetTypeData(ClassInfo);
+  Entity.DeclarationClassName := DeclarationClass.ClassName;
+  TypeData := GetTypeData(DeclarationClass.ClassInfo);
   if TypeData <> nil then
     Entity.DeclarationUnitName := string(TypeData^.UnitName)
   else
@@ -4740,6 +4759,7 @@ var
   dir: string;
 
 begin
+  SetEntityDeclarationClass(TSubmodel);
   OptCreate('ContOutput', 'true', fOptContOutput, 'Output every time step?');
   fOptContOutput.Optionlist.Clear;
   fOptContOutput.Optionlist.add('true');

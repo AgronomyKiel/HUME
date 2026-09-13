@@ -660,6 +660,7 @@ var
   i: integer;
 begin
   inherited createAll;
+  SetEntityDeclarationClass(THumeWheatLeafArea);
   // -------------------------------------------------------
   VarCreate('LAImax', '[]', 0, true, LAImax, ' maximum LAI simulated');
   VarCreate('GAI', '[]', 0, true, GAI);

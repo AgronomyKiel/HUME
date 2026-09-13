@@ -204,6 +204,7 @@ end;
 procedure TDuengMixed.CreateAll;
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TDuengMixed);
 
   ExternVCreate('NH4_Arr_1', '[kg N/ha]', StateField, FSoilAmmonium,
     'external target for ammonium fertilizer in the top soil layer');

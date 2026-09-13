@@ -290,6 +290,7 @@ var
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TGrowthCurvePlant);
   StateCreate('TSum', '[°Cd]', 0.0, false, TSum,
     'Temperature sum for growth, starting at sowing date corrected for base temperature');
   StateCreate('TSum_DM', '[°Cd]', 0.0, false, TSum_DM,

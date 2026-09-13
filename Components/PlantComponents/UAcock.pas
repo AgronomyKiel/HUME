@@ -50,6 +50,7 @@ procedure TAcockTotDry.CreateAll;
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TAcockTotDry);
   ParCreate( 'alpha','[µg CO2.J-1]', 25, alpha);
   ParCreate( 'Pmax','[µg CO2.m-2.s-1]', 1000, Pmax);
   PARcreate('LAT', '[°]', 52, Latitude);

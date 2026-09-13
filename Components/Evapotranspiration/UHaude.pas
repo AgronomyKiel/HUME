@@ -104,6 +104,7 @@ procedure THaude.createAll;
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(THaude);
   ParCreate('Elev', '[m]', 50.0, Elev, 'Höhe über NN [m]'); // Höhe über NN [m]
   ParCreate('rc0', '[s.m-1]', 50, rc0, 'Stomatawiderstand bei guter Wasserversorgung'); // Stomatawiderstand bei
                                            // "guter Wasserversorgung"

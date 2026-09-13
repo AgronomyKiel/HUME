@@ -208,6 +208,7 @@ var
   i : integer;
 begin
   inherited;
+  SetEntityDeclarationClass(TSubmodRootDiff1DSolo);
   self.RootList := TStringlist.Create;
   // Create and initialize TVar
   VarCreate('Area_mean', '[cm^2]', 0, false, Area_mean,

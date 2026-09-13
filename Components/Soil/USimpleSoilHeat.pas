@@ -111,6 +111,7 @@ var
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TSimpleSoilHeat);
   ParCreate('Dichte', '[g/cm3]', 1.5, SpecWeight);
   { Trockenraum-Dichte [g/cm3] }
   ParCreate('Tongehalt', '[-]', 0.1, ClayContent); { Tongehalt [-] }

@@ -52,6 +52,7 @@ var
 
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TAbstractSoilHeat);
 
   for I := 0 to n_comp+1 do
           StateCreate('SoilTemp_'+ndx_str(i),'[°C]', 8, true, Temp[i])

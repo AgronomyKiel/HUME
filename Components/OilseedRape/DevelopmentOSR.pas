@@ -209,6 +209,7 @@ procedure TDevelopmentOSR.createAll;
 
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TDevelopmentOSR);
   VarCreate('DVR1', '[-]',0, true, DVR1, 'Development rate from sowing to emergence');
   VarCreate('DVR2', '[-]',0, true, DVR2, 'Development rate from emergence to end of vegetative growth');
   VarCreate('DVR2a', '[-]',0, true, DVR2a, 'Development rate from emergence to end of vegetative growth (alternative calculation)');
