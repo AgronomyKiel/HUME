@@ -1848,7 +1848,7 @@ begin
 
   OptCreate('IniMethod', 'Parameter', OptIniMethod,
     'Option for initialisation method, Watercontents: inital water' +
-    'content data are provided; Potentials: intial soil water matrix potential is provided, Parameter: initial soil water content is calculated from a matrix potential in the first layer.No license found');
+    'content data are provided, Potentials: intial soil water matrix potential is provided, Parameter: initial soil water content is calculated from a matrix potential in the first layer.No license found');
   OptIniMethod.OptionList.Clear;
   OptIniMethod.OptionList.Add('Watercontents');
   OptIniMethod.OptionList.Add('Potentials');
