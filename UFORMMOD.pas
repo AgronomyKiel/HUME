@@ -102,6 +102,7 @@ type
     CheckBoxDateFormat: TCheckBox;
     CheckBoxDataDateFormat: TCheckBox;
     SpeedButtonFinalvalues: TSpeedButton;
+    SpeedButtonCalcTimes: TSpeedButton;
     TabSheetExternalValues: TTabSheet;
     AdvStringGridExternV: TAdvStringGrid;
     ViewVariables1: TMenuItem;
@@ -257,6 +258,7 @@ type
       aCol, aRow: Integer);
     procedure CheckBoxDataDateFormatClick(Sender: TObject);
     procedure SpeedButtonFinalvaluesClick(Sender: TObject);
+    procedure SpeedButtonCalcTimesClick(Sender: TObject);
     // procedure SpeedButtonInitExternVClick(Sender: TObject);
     procedure AdvStringGridVarButtonClick(Sender: TObject; aCol, aRow: Integer);
     procedure AdvStringGridExternVButtonClick(Sender: TObject;
@@ -352,7 +354,7 @@ implementation
 
 uses
   UState, UFormShow1_1, UMeasValue, math, UFormShowFinalValues, FormSGA,
-  vcl.Imaging.pngimage, System.TypInfo;
+  UFormCalcTimes, vcl.Imaging.pngimage, System.TypInfo;
 {$R *.DFM}
 
 function FileIsEmpty(const FileName: String): Boolean;
@@ -2567,6 +2569,34 @@ begin
     end;
   end;
   FormShowFinalValues.show;
+end;
+
+procedure TFormMod.SpeedButtonCalcTimesClick(Sender: TObject);
+var
+  CalcTimesFileName: string;
+  CalcTimesForm: TFormCalcTimes;
+  Model: TMod;
+begin
+  Model := getLinkedModel;
+  if Model = nil then
+    Exit;
+
+  CalcTimesFileName := TPath.Combine(Model.GM_OutPutPath, 'CalcTimes.txt');
+  if not FileExists(CalcTimesFileName) then
+  begin
+    MessageDlg('The calculation-times file was not found:' + sLineBreak +
+      CalcTimesFileName + sLineBreak + sLineBreak +
+      'Run the model first to create it.', mtInformation, [mbOK], 0);
+    Exit;
+  end;
+
+  CalcTimesForm := TFormCalcTimes.Create(Self);
+  try
+    CalcTimesForm.LoadResults(CalcTimesFileName);
+    CalcTimesForm.ShowModal;
+  finally
+    CalcTimesForm.Free;
+  end;
 end;
 
 procedure TFormMod.ButtonSaveExVarClick(Sender: TObject);

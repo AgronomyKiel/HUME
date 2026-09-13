@@ -2906,6 +2906,19 @@ object FormMod: TFormMod
           Layout = blGlyphRight
           OnClick = SpeedButtonFinalvaluesClick
         end
+        object SpeedButtonCalcTimes: TSpeedButton
+          AlignWithMargins = True
+          Left = 783
+          Top = 0
+          Width = 82
+          Height = 22
+          Hint = 'Show calculation times for the last model run'
+          Anchors = [akTop, akRight]
+          Caption = 'Calc times'
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = SpeedButtonCalcTimesClick
+        end
       end
     end
     object TabSheetGraphResult: TTabSheet
