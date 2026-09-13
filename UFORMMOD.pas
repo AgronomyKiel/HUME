@@ -3037,6 +3037,7 @@ begin
   self.EditDokuFilename.Text := LMod.fModel.Docu_fn2;
   self.MemoModelDocu.lines.loadfromfile(LMod.fModel.Docu_fn);
   AdvStringGridModelSummary.LoadFromCSV(LMod.fModel.Docu_fn2);
+  AdvStringGridModelSummary.AutoSizeColumns(True);
   // .LoadFromFile();
 end;
 

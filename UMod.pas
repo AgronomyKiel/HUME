@@ -774,6 +774,8 @@ type
     /// Pointer to abstract Form for debugging
     fDebugForm: TFormDebugAbstract;
 {$ENDIF}
+    /// <summary>Records durable class and unit provenance for a model entity.</summary>
+    procedure RecordEntityProvenance(Entity: THumeEntity);
     /// Registrate a parameter
     procedure RegistrateParameter(Par: TPar); virtual;
     /// Registrate an option
@@ -3424,6 +3426,24 @@ var
   k, l, m: Integer;
   line, act_inifile_fn: string;
 
+  function ClassUnitName(AClass: TClass): string;
+  var
+    TypeData: PTypeData;
+  begin
+    Result := '';
+    if AClass = nil then
+      Exit;
+    TypeData := GetTypeData(AClass.ClassInfo);
+    if TypeData <> nil then
+      Result := string(TypeData^.UnitName);
+  end;
+
+  function EntityProvenanceColumns(AEntity: THumeEntity): string;
+  begin
+    Result := ';' + AEntity.DeclarationClassName + ';' +
+      AEntity.DeclarationUnitName + ';' + AEntity.DeclarationSourceFile;
+  end;
+
 begin
   InitAllExternV;
 
@@ -3520,7 +3540,8 @@ begin
 
   // write csv file with all modell entities ...
   f2.WriteLine
-    ('IniFile;Submodel;EntityType;EntityName;Units;Value;Option;Comment');
+    ('IniFile;Submodel;SubmodelClass;SubmodelUnit;EntityType;EntityName;' +
+      'Units;Value;Option;Comment;DeclarationClass;DeclarationUnit;SourceFile');
   for h := 0 to self.IniFileNames.count - 1 do
   begin
 
@@ -3538,51 +3559,62 @@ begin
       for j := 0 to ActSubMod.StateStrList.count - 1 do
       begin
         actState := TState(ActSubMod.StateStrList.Objects[j]);
-        line := self.IniFileNames[h] + ';' + SubModel[i].Name + ';';
+        line := self.IniFileNames[h] + ';' + ActSubMod.Name + ';' +
+          ActSubMod.ClassName + ';' + ClassUnitName(ActSubMod.ClassType) + ';';
         line := line + 'State' + ';' + actState.Name + ';' + actState.U + ';' +
-          floatToStr(actState.v) + ';' + 'NA' + ';' + actState.Comment;
+          floatToStr(actState.v) + ';' + 'NA' + ';' + actState.Comment +
+          EntityProvenanceColumns(actState);
         f2.WriteLine(line);
       end;
       for j := 0 to ActSubMod.VarStrList.count - 1 do
       begin
         ActVar := TVar(ActSubMod.VarStrList.Objects[j]);
-        line := self.IniFileNames[h] + ';' + SubModel[i].Name + ';';
+        line := self.IniFileNames[h] + ';' + ActSubMod.Name + ';' +
+          ActSubMod.ClassName + ';' + ClassUnitName(ActSubMod.ClassType) + ';';
         line := line + 'Variable' + ';' + ActVar.Name + ';' + ActVar.U + ';' +
-          floatToStr(ActVar.v) + ';' + 'NA' + ';' + ActVar.Comment;
+          floatToStr(ActVar.v) + ';' + 'NA' + ';' + ActVar.Comment +
+          EntityProvenanceColumns(ActVar);
         f2.WriteLine(line);
       end;
       for j := 0 to ActSubMod.ConstStrList.count - 1 do
       begin
         ActConst := TVar(ActSubMod.ConstStrList.Objects[j]);
-        line := self.IniFileNames[h] + ';' + SubModel[i].Name + ';';
+        line := self.IniFileNames[h] + ';' + ActSubMod.Name + ';' +
+          ActSubMod.ClassName + ';' + ClassUnitName(ActSubMod.ClassType) + ';';
         line := line + 'Constant' + ';' + ActConst.Name + ';' + ActConst.U + ';' +
-          floatToStr(ActConst.v) + ';' + 'NA' + ';' + ActConst.Comment;
+          floatToStr(ActConst.v) + ';' + 'NA' + ';' + ActConst.Comment +
+          EntityProvenanceColumns(ActConst);
         f2.WriteLine(line);
       end;
 
       for k := 0 to ActSubMod.ParStrList.count - 1 do
       begin
         ActPar := TPar(ActSubMod.ParStrList.Objects[k]);
-        line := self.IniFileNames[h] + ';' + SubModel[i].Name + ';';
+        line := self.IniFileNames[h] + ';' + ActSubMod.Name + ';' +
+          ActSubMod.ClassName + ';' + ClassUnitName(ActSubMod.ClassType) + ';';
         line := line + 'Parameter' + ';' + ActPar.Name + ';' + ActPar.U + ';' +
-          floatToStr(ActPar.v) + ';' + 'NA' + ';' + ActPar.Comment;
+          floatToStr(ActPar.v) + ';' + 'NA' + ';' + ActPar.Comment +
+          EntityProvenanceColumns(ActPar);
         f2.WriteLine(line);
       end;
       for m := 0 to ActSubMod.ExternVStrList.count - 1 do
       begin
         actExtern := TExternV(ActSubMod.ExternVStrList.Objects[m]);
-        line := self.IniFileNames[h] + ';' + SubModel[i].Name + ';';
+        line := self.IniFileNames[h] + ';' + ActSubMod.Name + ';' +
+          ActSubMod.ClassName + ';' + ClassUnitName(ActSubMod.ClassType) + ';';
         line := line + 'ExternalValue' + ';' + actExtern.Name + ';' +
           actExtern.U + ';' + 'NA' + ';' + actExtern.Source + ';' +
-          actExtern.Comment;
+          actExtern.Comment + EntityProvenanceColumns(actExtern);
         f2.WriteLine(line);
       end;
       for l := 0 to ActSubMod.OptionStrList.count - 1 do
       begin
         actOption := TOption(ActSubMod.OptionStrList.Objects[l]);
-        line := self.IniFileNames[h] + ';' + SubModel[i].Name + ';';
+        line := self.IniFileNames[h] + ';' + ActSubMod.Name + ';' +
+          ActSubMod.ClassName + ';' + ClassUnitName(ActSubMod.ClassType) + ';';
         line := line + 'Option' + ';' + actOption.Name + ';' + ' NA;' + 'NA' +
-          ';' + actOption.Option + ';' + actOption.Comment;
+          ';' + actOption.Option + ';' + actOption.Comment +
+          EntityProvenanceColumns(actOption);
         f2.WriteLine(line);
       end;
     end;
@@ -4582,6 +4614,28 @@ begin
   RegistrateStateVar(State);
 end;
 
+/// <summary>Records the concrete registration class, unit, and source file.</summary>
+procedure TSubmodel.RecordEntityProvenance(Entity: THumeEntity);
+var
+  TypeData: PTypeData;
+begin
+  if Entity = nil then
+    Exit;
+
+  Entity.SubModName := Name;
+  Entity.DeclarationClassName := ClassName;
+  TypeData := GetTypeData(ClassInfo);
+  if TypeData <> nil then
+    Entity.DeclarationUnitName := string(TypeData^.UnitName)
+  else
+    Entity.DeclarationUnitName := '';
+
+  if Entity.DeclarationUnitName <> '' then
+    Entity.DeclarationSourceFile := Entity.DeclarationUnitName + '.pas'
+  else
+    Entity.DeclarationSourceFile := '';
+end;
+
 /// <summary> Registers Option (TOption instance) in option list of submodel </summary>
 /// <param name="Par"> TOption </param>
 
@@ -4589,6 +4643,7 @@ procedure TSubmodel.RegistrateOption(Option: TOption);
 var
   idx: Integer;
 begin
+  RecordEntityProvenance(Option);
   with OptionStrList do
   begin
     CaseSensitive := false;
@@ -4611,6 +4666,7 @@ procedure TSubmodel.RegistrateParameter(Par: TPar);
 var
   idx: Integer;
 begin
+  RecordEntityProvenance(Par);
   with ParStrList do
   begin
     CaseSensitive := false;
@@ -4629,6 +4685,7 @@ procedure TSubmodel.RegistrateVariable(Variable: TVar);
 var
   idx: Integer;
 begin
+  RecordEntityProvenance(Variable);
   with VarStrList do
   begin
     CaseSensitive := false;
@@ -4647,6 +4704,7 @@ procedure TSubmodel.RegistrateConstant(Constant: TVar);
 var
   idx: Integer;
 begin
+  RecordEntityProvenance(Constant);
   with ConstStrList do
   begin
     CaseSensitive := false;
@@ -4665,6 +4723,7 @@ procedure TSubmodel.RegistrateStateVar(State: TState);
 var
   idx: Integer;
 begin
+  RecordEntityProvenance(State);
   with StateStrList do
   begin
     CaseSensitive := false;
@@ -5482,6 +5541,7 @@ begin
     ExternVStrList.Sorted := true; // ??
     ExternVStrList.Sort;
   end;
+  RecordEntityProvenance(ExternV);
 end;
 
 /// <summary> Setting pointers of external variables </summary>
