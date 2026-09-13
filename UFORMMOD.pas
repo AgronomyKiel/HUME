@@ -396,13 +396,14 @@ end;
 
 procedure TFormMod.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  If LMod.LinkedModel <> NIL then begin
-    LMod.LinkedModel.FPropIniFile.WriteInteger('ComboBoxes', ComboBoxSubMod.Name,
-      self.ComboBoxSubMod.ItemIndex);
+  if (LMod.LinkedModel <> nil) and
+    (LMod.LinkedModel.FPropIniFile <> nil) then
+  begin
+    LMod.LinkedModel.FPropIniFile.WriteInteger('ComboBoxes',
+      ComboBoxSubMod.Name, self.ComboBoxSubMod.ItemIndex);
     LMod.LinkedModel.FPropIniFile.WriteInteger('ComboBoxes',
       self.ComboBoxIniFile.Name, self.ComboBoxIniFile.ItemIndex);
-    LMod.LinkedModel.FPropIniFile.UpdateFile;
-    LMod.LinkedModel.FPropIniFile.Free;
+    UpdateIniFileWithRetry(LMod.LinkedModel.FPropIniFile);
   end;
   img_help.Free;
   img_savetoall.Free;
@@ -413,10 +414,7 @@ end;
 procedure TFormMod.FormCreate(Sender: TObject);
 
 var
-  CtrlFileFN, fn, path, prop_path, FirstIniFileFN, OutDir: string;
-  CtrlFile: TStreamReader;
-  // CtrlfileLine : string;
-  // CtrlFile : textfile;
+  CtrlFileFN, fn, path, prop_path, OutDir: string;
 
   i: Integer;
   ActSubMod: TSubModel;
@@ -429,7 +427,9 @@ begin
     // Execute HUME with ParameterStrings 1: FN-File and 2; Output-Directory
     // without showing the GUI   -  Ulf B�ttcher 25.8.2021
     CtrlFileFN := ParamStr(1);
-    OutDir := ParamStr(2);
+    OutDir := '';
+    if ParamCount > 1 then
+      OutDir := ParamStr(2);
     if LMod.fModel <> nil then
     begin
       if OutDir <> '' then
@@ -437,14 +437,18 @@ begin
         LMod.fModel.GM_OutPutPath := OutDir;
         LMod.fModel.ReadIniOutputpath := false;
       end;
-      LMod.fModel.Set_ControlFileFN(CtrlFileFN);
-      LMod.fModel.init(LMod.fModel.actIniFile);
-      LMod.fModel.InitAllSubMods;
+      if not LMod.fModel.LoadControlFile(CtrlFileFN, false) then
+      begin
+        Application.Terminate;
+        Exit;
+      end;
 
-      // gespeicherte Properties aus *ini Datei einlesen
+      // Read the persisted visual preferences without changing the
+      // command-line control-file selection.
       path := ExtractFilePath(ParamStr(0));
       fn := path + 'properties.ini';
-      LMod.fModel.FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
+      if LMod.fModel.FPropIniFile = nil then
+        LMod.fModel.FPropIniFile := TMyIniFile.Create(fn, TEncoding.UTF8);
       for i := 0 to LMod.fModel.SubModStrList.count - 1 do
       begin
         ActSubMod := TSubModel(LMod.fModel.SubModStrList.objects[i]);
@@ -458,13 +462,8 @@ begin
 
       LMod.fModel.run;
     end;
-    // halt;
-    application.terminate;
-    // Application.ProcessMessages;
-    // Application.HandleException(self);
-    // If Application.Terminated then begin
-    // halt;
-    // end;
+    Application.Terminate;
+    Exit;
   end;
 
   // Lmod.fModel.Get_ControlFileFn;
@@ -486,22 +485,15 @@ begin
   begin
     if (LMod.fModel.title <> '') then
       self.Caption := LMod.fModel.title;
-    CtrlFileFN := LMod.fModel.GM_ControlFile;
-    if fileexists(CtrlFileFN) then
+    if not LMod.fModel.LoadControlFile then
     begin
-      CtrlFile := TStreamReader.create(CtrlFileFN, TEncoding.UTF8, True);
-      // assignfile(CtrlFile, CtrlFileFN);
-      // reset(CtrlFile);
-      FirstIniFileFN := CtrlFile.Readline;
-      // readln(CtrlFile, FirstIniFileFN);
-      // closefile(CtrlFile);
-      If LMod.fModel.actIniFile = nil then
-        LMod.fModel.actIniFile := TMemIniFile.create(FirstIniFileFN);
-      CtrlFile.Free;
-      LMod.fModel.init(LMod.fModel.actIniFile);
-      ComboBoxTimeAxisOption.ItemIndex := 0;
-      EditOutputDirectory.Text := LMod.fModel.GM_OutPutPath;
+      Application.Terminate;
+      Exit;
     end;
+    CtrlFileFN := LMod.fModel.GM_ControlFile;
+    LMod.fModel.Init(LMod.fModel.ActIniFile);
+    ComboBoxTimeAxisOption.ItemIndex := 0;
+    EditOutputDirectory.Text := LMod.fModel.GM_OutPutPath;
     if LMod.fModel <> nil then
     begin
       if LMod.fModel.FPropIniFile = nil then
@@ -2743,63 +2735,30 @@ end;
 
 procedure TFormMod.btnButtonChangeControlFileClick(Sender: TObject);
 var
-  act_IniFn, NewCtrlFN: string;
-  NewInifile: TMyIniFile;
-  ControlFile: TStreamReader;
-  ApplicationDirectory: string;
+  NewCtrlFN: string;
 
 begin
+  if LMod.fModel = nil then
+    Exit;
+
   with OpenDialog1 do
   begin
-    title := 'Open Control File';
+    Title := 'Open HUME Control File';
     DefaultExt := 'fn';
-    Filter := 'Conrolfiles (*.fn)|*.fn';
-    Options := Options + [ofShowHelp, ofPathMustExist, ofFileMustExist];
+    Filter := 'HUME control files (*.fn)|*.fn|All files (*.*)|*.*';
+    Options := Options + [ofPathMustExist, ofFileMustExist];
     if not DirectoryExists(InitialDir) then
       InitialDir := ExtractFileDir(LMod.fModel.Get_ControlFileFn);
 
     if Execute then
     begin
       NewCtrlFN := FileName;
-      LMod.fModel.Set_ControlFileFN(NewCtrlFN);
-      self.EditControlFile.Text := NewCtrlFN;
-      LMod.fModel.FPropIniFile.WriteString('Files', 'ControlFile', NewCtrlFN);
-      LMod.fModel.FPropIniFile.UpdateFile;
-      ControlFile := TStreamReader.create(NewCtrlFN, TEncoding.UTF8);
-      LMod.fModel.FIniFiles := TStringList.create;
-
-      ApplicationDirectory := ExtractFileDir(application.EXEName);
-
-      while not ControlFile.EndOfStream do
+      if LMod.fModel.LoadControlFile(NewCtrlFN) then
       begin
-        act_IniFn := trim(ControlFile.Readline);
-
-        if act_IniFn = '' then
-          Continue;
-
-        if act_IniFn[1] = '#' then
-          Continue;
-
-        if not System.IOUtils.TPath.IsPathRooted(act_IniFn) then
-          act_IniFn := System.IOUtils.TPath.Combine(ApplicationDirectory,
-            act_IniFn);
-
-        act_IniFn := System.IOUtils.TPath.GetFullPath(act_IniFn);
-
-        if fileexists(act_IniFn) then
-        begin
-          NewInifile := TMyIniFile.create(act_IniFn, TEncoding.UTF8);
-          NewInifile.UpdateFile;
-          LMod.fModel.FIniFiles.AddObject(NewInifile.FileName, NewInifile);
-        end
-        else
-          MessageDlg('IniFile "' + act_IniFn + '" does not exist!',
-            mtInformation, [mbOK], 0);
+        EditControlFile.Text := LMod.fModel.Get_ControlFileFn;
+        LMod.fModel.Init(LMod.fModel.ActIniFile);
+        UpdateForm;
       end;
-      LMod.fModel.actIniFile := TMyIniFile(LMod.fModel.FIniFiles.objects[0]);
-      LMod.fModel.init(LMod.fModel.actIniFile);
-      self.updateForm;
-      ControlFile.Free;
     end;
   end;
 end;
@@ -3131,8 +3090,6 @@ begin
 
     LMod.fModel.InitAllSubMods; // TODO ???
 
-    LMod.fModel.Get_ControlFileFn;
-
     ComboBoxIniFile.Clear;
 
     for i := 0 to LMod.fModel.FIniFiles.count - 1 do
@@ -3318,9 +3275,10 @@ end;
 
 procedure TFormMod.EditControlFileChange(Sender: TObject);
 begin
-  if fileexists(EditControlFile.Text) then
-    if self.LMod.LinkedModel <> nil then
-      self.LMod.LinkedModel.GM_ControlFile := self.EditControlFile.Text;
+  if FileExists(EditControlFile.Text) then
+    EditControlFile.Font.Color := clWindowText
+  else
+    EditControlFile.Font.Color := clRed;
 end;
 
 procedure TFormMod.EditEndTimeChange(Sender: TObject);

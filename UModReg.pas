@@ -221,6 +221,9 @@ begin
           TSubModel(Tmod(component).SubModStrList.objects[i + 1]).CompIndex then
           Tmod(component).SubModStrList.Exchange(i, i + 1);
 
+    if Designer <> nil then
+      Designer.Modified;
+
     { for i := 0 to TMod(Component).SubModStrList.count - 1 do begin
       Name := TMod(Component).SubModStrList.strings[i];
       TMod(Component).SubModStrList.sort;
@@ -527,17 +530,19 @@ end;
 
 /// <summary>
 /// Property editor for the <c>TMod</c> class. Displays a file open dialog for
-/// the name of the control file (all <c>TMyFileName</c> properties).
+/// the name of the HUME control file.
 /// </summary>
 procedure TGMFilenameProperty.Edit;
 var
   MPFileOpen: TOpenDialog;
 begin
-  MPFileOpen := TOpenDialog.create(Application);
-  MPFileOpen.Filename := GetValue;
-  { MPFileOpen.Filter := 'ControlFile (*.fn) | *.fn'; }
-  { MPFileOpen.HelpContext := hcDMediaPlayerOpen; }
-  MPFileOpen.Options := MPFileOpen.Options + [ofShowHelp, ofPathMustExist,
+  MPFileOpen := TOpenDialog.Create(nil);
+  MPFileOpen.FileName := GetValue;
+  MPFileOpen.Filter :=
+    'HUME control files (*.fn)|*.fn|All files (*.*)|*.*';
+  MPFileOpen.Title := 'Select HUME Control File';
+  MPFileOpen.DefaultExt := 'fn';
+  MPFileOpen.Options := MPFileOpen.Options + [ofPathMustExist,
     ofFileMustExist];
   try
     if MPFileOpen.Execute then
@@ -582,9 +587,16 @@ begin
   // Registers PropertyEditors for use in Object inspector
 {$IFNDEF NONVISUAL}
 
-  RegisterPropertyEditor(TypeInfo(TMyFileName), nil, '', TGMFilenameProperty);
-  RegisterPropertyEditor(TypeInfo(TPath), Tmod, '', TGMPathProperty);
-  RegisterPropertyEditor(TypeInfo(TMyFileName), TTextFileH, '', TGMFilenameProperty);
+  RegisterPropertyEditor(TypeInfo(string), TMod, 'GM_ControlFile',
+    TGMFilenameProperty);
+  RegisterPropertyEditor(TypeInfo(string), TMod, 'ApplicationPath',
+    TGMPathProperty);
+  RegisterPropertyEditor(TypeInfo(string), TMod, 'GM_OutPutPath',
+    TGMPathProperty);
+  RegisterPropertyEditor(TypeInfo(string), TMod, 'GM_InPutPath',
+    TGMPathProperty);
+  RegisterPropertyEditor(TypeInfo(string), TTextFileH, 'FName',
+    TGMFilenameProperty);
 
   // Registers designtime Editors for TMod and TSubModel
   RegisterComponentEditor(Tmod, TModEditor);

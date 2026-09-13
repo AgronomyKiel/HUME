@@ -271,6 +271,8 @@ type
 {$ENDIF}
     /// <PrivateField> Name of controlfile </PrivateField>
     fControlFileFn: string; // TMyFileName; /// Name for controlfile
+    /// <PrivateField> Successfully loaded control-file name </PrivateField>
+    FLoadedControlFileFn: string;
 
     /// <PrivateField> Name of file where regression results are stored </PrivateField>
     FReg_FN: string;
@@ -405,14 +407,15 @@ type
     function ResolveReferencedFileName(const FileName,
       PrimaryDirectory: string): string;
 
-    /// <summary> Method for reading or creating the ini files </summary>
-    procedure ReadOrCreateInifiles;
+    /// <summary>Read the INI-file list without replacing a valid list on failure.</summary>
+    function ReadOrCreateInifiles(const ControlFileName: string;
+      out ErrorMessage: string): Boolean;
 
     /// <summary> Method for initialisation of the weather data file </summary>
     procedure InitWeatherFile(WeatherFilefn: string);
 {$IFNDEF NONVISUAL}
     procedure Check_GM_OutputPath;
-    procedure LookForControlfile(var ControlFileFN: string);
+    function LookForControlfile(var ControlFileFN: string): Boolean;
 
     /// <summary> Method for updating the status bar on the GUI at every timestep </summary>
     procedure UpdateStatusbar;
@@ -523,6 +526,9 @@ type
 
     /// <summary> method for retrieving the control file name </summary>
     function Get_ControlFileFn: string;
+    /// <summary>Resolve and load a control file for runtime use.</summary>
+    function LoadControlFile(const RequestedFileName: string = '';
+      const SaveAsDefault: Boolean = true): Boolean;
     procedure setPropFromIniFile(strList: TStringList; submodname: string);
 
     /// <summary> Method retrieving a parameter adress by its name </summary>
@@ -1402,108 +1408,113 @@ end;
 /// <summary> Gets name of Control file (published for use in object inspector) </summary>
 /// <returns> TMyFileName </returns>
 
-function TMod.Get_ControlFileFn: string; // TMyFileName;
-
-var
-  // FPropIniFile: TMyIniFile;
-  fn, NewCtrlFileFN, prop_path: string;
-
-  procedure GetControlFN_from_properties_ini(var ControlFileFN: string);
-
-  begin
-    // extract path of application
-    prop_path := ExtractFilePath(ParamStr(0));
-
-    // construct path of properties.ini
-    fn := prop_path + FNModProperties;
-    // fn :=  FNModProperties;
-    // fn := self.FPropIniFile.FileName;
-
-    // check if properties.ini exists
-    if fileexists(fn) then
-    // if yes, read control file name from properties.ini
-    begin
-      if FPropIniFile = nil then
-        FPropIniFile := CreateIniFileWithRetry(fn);
-      // if FPropIniFile.FileName = '' then
-      // FPropIniFile := TMyIniFile.create(fn, TEncoding.UTF8);
-      NewCtrlFileFN := FPropIniFile.ReadString('Files', 'ControlFile', '');
-    end;
-    // if control file exists, return control file name
-    if fileexists(NewCtrlFileFN) then
-      ControlFileFN := NewCtrlFileFN
-    else
-      ControlFileFN := '';
-  end;
-
-// procedure for retrieving control file name from user dialog
-  procedure GetControlFN_from_Dialog(var ControlFileFN: string);
-
-  begin
-    NewCtrlFileFN := '';
-{$IFNDEF NONVISUAL}
-    LookForControlfile(NewCtrlFileFN);
-{$ENDIF}
-    if fileexists(NewCtrlFileFN) then
-    begin
-      // ensure properties.ini path is initialized before creating FPropIniFile
-      prop_path := ExtractFilePath(ParamStr(0));
-      fn := prop_path + FNModProperties;
-      if FPropIniFile = nil then
-        FPropIniFile := CreateIniFileWithRetry(fn);
-      FPropIniFile.WriteString('Files', 'ControlFile', NewCtrlFileFN);
-      UpdateIniFileWithRetry(FPropIniFile);
-    end;
-    if fileexists(NewCtrlFileFN) then
-      ControlFileFN := NewCtrlFileFN
-    else
-      ControlFileFN := '';
-  end;
-
+function TMod.Get_ControlFileFn: string;
 begin
-  if not IsDesignTime then
-  begin
-    NewCtrlFileFN := ParamStr(1);
-    if fileexists(NewCtrlFileFN) then
-      fControlFileFn := NewCtrlFileFN
-    else // No control file name from command line strings, then look in properties.ini
-    begin
-      GetControlFN_from_properties_ini(NewCtrlFileFN);
-{$IFNDEF NONVISUAL}
-      if not fileexists(NewCtrlFileFN) then
-        GetControlFN_from_Dialog(NewCtrlFileFN);
-{$ELSE}
-      writeln('Control file does not exist!');
-      exit;
-{$ENDIF}
-    end;
-    Result := NewCtrlFileFN;
-  end
-  else
-    Result := '';
-  if Result <> '' then
-  begin
-    self.fControlFileFn := NewCtrlFileFN;
-    ReadOrCreateInifiles;
-  end;
+  Result := fControlFileFn;
 end;
 
-/// <summary> Sets name of control Ini file (published for use in object inspector) and reads or creates Ini files </summary>
-/// <param name="newFN"> Name of control Ini file </param>
-/// <remarks> If no control files are existing they will be created </remarks>
-procedure TMod.Set_ControlFileFN(NewFN: string);
-
+/// <summary>Resolve and load the runtime control file.</summary>
+function TMod.LoadControlFile(const RequestedFileName: string;
+  const SaveAsDefault: Boolean): Boolean;
 var
-  FPropIniFile: TMyIniFile;
-  fn, NewCtrlFileFN, prop_path: string;
+  Candidate, DfmCandidate, ErrorMessage, PropertiesFileName: string;
+  Loaded: Boolean;
+
+{$IFNDEF NONVISUAL}
+  procedure EnsurePropertiesIniFile;
+  begin
+    PropertiesFileName := ExtractFilePath(ParamStr(0)) + FNModProperties;
+    if FPropIniFile = nil then
+      FPropIniFile := CreateIniFileWithRetry(PropertiesFileName);
+  end;
+{$ENDIF}
+
+  function TryCandidate(const FileName: string): Boolean;
+  begin
+    Result := false;
+    if Trim(FileName) = '' then
+      Exit;
+    Result := ReadOrCreateInifiles(FileName, ErrorMessage);
+  end;
 
 begin
-  fControlFileFn := NewFN;
-  if FIniFiles = NIL then
-    FIniFiles := TStringList.create;
-  ReadOrCreateInifiles;
-  ActIniFile := TMyIniFile(FIniFiles.Objects[0]);
-  Init(ActIniFile);
+  Result := false;
+  Candidate := Trim(RequestedFileName);
+  DfmCandidate := Trim(fControlFileFn);
+  ErrorMessage := '';
+
+{$IFDEF NONVISUAL}
+  if Candidate = '' then
+    Candidate := Trim(ParamStr(1));
+  if Candidate = '' then
+  begin
+    Writeln('No control file was specified as the first command-line parameter.');
+    Exit;
+  end;
+
+  Result := TryCandidate(Candidate);
+  if not Result then
+    Writeln(ErrorMessage);
+{$ELSE}
+  if (csDesigning in ComponentState) or (csLoading in ComponentState) then
+    Exit;
+
+  Loaded := false;
+  if Candidate <> '' then
+    Loaded := TryCandidate(Candidate)
+  else
+  begin
+    PropertiesFileName := ExtractFilePath(ParamStr(0)) + FNModProperties;
+    if FileExists(PropertiesFileName) then
+      try
+        EnsurePropertiesIniFile;
+        Candidate := Trim(FPropIniFile.ReadString('Files', 'ControlFile', ''));
+        Loaded := TryCandidate(Candidate);
+      except
+        on E: Exception do
+          ErrorMessage := Format('Cannot read "%s": %s',
+            [PropertiesFileName, E.Message]);
+      end;
+
+    if (not Loaded) and (DfmCandidate <> '') and
+      (not SameText(Candidate, DfmCandidate)) then
+      Loaded := TryCandidate(DfmCandidate);
+  end;
+
+  if not Loaded then
+  begin
+    if ErrorMessage <> '' then
+      MessageDlg(ErrorMessage + sLineBreak +
+        'Please select a valid HUME control file.', mtWarning, [mbOK], 0);
+    Candidate := DfmCandidate;
+    if LookForControlfile(Candidate) then
+    begin
+      Loaded := TryCandidate(Candidate);
+      if not Loaded then
+        MessageDlg(ErrorMessage, mtError, [mbOK], 0);
+    end;
+  end;
+
+  if Loaded and SaveAsDefault then
+    try
+      EnsurePropertiesIniFile;
+      FPropIniFile.WriteString('Files', 'ControlFile', fControlFileFn);
+      UpdateIniFileWithRetry(FPropIniFile);
+    except
+      on E: Exception do
+        MessageDlg(Format('The control file was loaded, but "%s" could ' +
+          'not be updated: %s', [PropertiesFileName, E.Message]),
+          mtWarning, [mbOK], 0);
+    end;
+  Result := Loaded;
+{$ENDIF}
+end;
+/// <summary>Store the control-file name without performing runtime I/O.</summary>
+/// <param name="NewFN">Name persisted in the component's DFM resource.</param>
+procedure TMod.Set_ControlFileFN(NewFN: string);
+begin
+  if NewFN <> fControlFileFn then
+    fControlFileFn := Trim(NewFN);
 end;
 
 /// <summary> Set the plot and output properties from Ini file for entities in a stringlist of a submodel </summary>
@@ -1514,15 +1525,14 @@ procedure TMod.setPropFromIniFile(strList: TStringList; submodname: string);
 var
   i: Integer;
   entity: THumeNumEntity;
-  path, fn: string;
+  fn: string;
 
 begin
-   //path :=  ExtractFilePath(ParamStr(0));
-   //fn := path+ FNModProperties;
-   //fn := FNModProperties;
-   fn := self.FPropIniFile.FileName;
-   if (FPropIniFile = nil) then
-     FPropIniFile := CreateIniFileWithRetry(fn);
+  if FPropIniFile = nil then
+  begin
+    fn := ExtractFilePath(ParamStr(0)) + FNModProperties;
+    FPropIniFile := CreateIniFileWithRetry(fn);
+  end;
 //  FPropIniFile.UpdateFile;
   for i := 0 to strList.count - 1 do
   begin
@@ -1604,7 +1614,7 @@ begin
 {$ELSE}
     ShowMessage('No ActIniFile');
 {$ENDIF}
-    halt;
+    Exit;
   end;
 
   Inifn := ExpandFileName(ActIniFile.FileName);
@@ -1647,12 +1657,12 @@ begin
     SortSubMods;
   end
   else begin
-    {$IFDEF NONVISUAL}
-    writeln('No ActIniFile');
-    {$ELSE}
-    showmessage( 'No ActIniFile');
-    {$ENDIF}
-    halt;
+{$IFDEF NONVISUAL}
+    Writeln('ActIniFile "' + Inifn + '" does not exist');
+{$ELSE}
+    ShowMessage('ActIniFile "' + Inifn + '" does not exist');
+{$ENDIF}
+    Exit;
   end;
 
 end;
@@ -1698,7 +1708,10 @@ begin
   // SubModStrList.OwnsObjects := true;
   SubModStrList.Sorted := false;
   if FIniFiles = NIL then // maybe already created
+  begin
     FIniFiles := TStringList.create;
+    FIniFiles.OwnsObjects := true;
+  end;
   AllMeasVal := TMeasList.create('All', '[-]');
   SelMeasVal := TMeasList.create('Sel', '[-]');
   SelParList := TStringList.create;
@@ -1793,13 +1806,10 @@ end;
 procedure TMod.free;
 
 var
-  subMod, entity, IniFile: Integer;
+  subMod, entity: Integer;
   Element: TModelElements;
 
 begin
-  for IniFile := 0 to FIniFiles.count - 1 do
-    FIniFiles.Objects[IniFile].free;
-
   FreeAndNil(FIniFiles);
   FreeAndNil(AllMeasVal);
   FreeAndNil(SelMeasVal);
@@ -2195,7 +2205,14 @@ var
   Selndx: Integer;
 
 begin
-  Get_ControlFileFn();
+  if (FIniFiles = nil) or (FIniFiles.Count = 0) then
+  begin
+    if not LoadControlFile then
+      Exit;
+  end
+  else if not SameText(FLoadedControlFileFn, fControlFileFn) then
+    if not LoadControlFile(fControlFileFn) then
+      Exit;
   if FPropIniFile = nil then
     FPropIniFile := CreateIniFileWithRetry(
       ExtractFilePath(ParamStr(0)) + FNModProperties);
@@ -3665,107 +3682,146 @@ begin
     result := PrimaryCandidate;
 end;
 
-procedure TMod.ReadOrCreateInifiles;
+function TMod.ReadOrCreateInifiles(const ControlFileName: string;
+  out ErrorMessage: string): Boolean;
 var
-  NewFile: boolean;
-  act_IniFn: string;
-  NewInifile: TMyIniFile;
-  gFile: TStreamReader;
-  ControlFileName, ApplicationDirectory, IniFileDirectory: string;
+  NewFile: Boolean;
+  ActIniFn, ResolvedControlFileName: string;
+  NewIniFile: TMyIniFile;
+  ControlFile: TStreamReader;
+  NewIniFiles, OldIniFiles: TStringList;
+  ApplicationDirectory, IniFileDirectory: string;
 
 begin
-  // Control-file entries are relative to the application directory. This is
-  // important when the control file itself is stored in a subdirectory and an
-  // entry starts with e.g. '.\SimIni\'.
-  ApplicationDirectory := System.IOUtils.TPath.GetDirectoryName(
-    System.IOUtils.TPath.GetFullPath(ParamStr(0)));
-  ControlFileName := Trim(fControlFileFn);
-  if ControlFileName <> '' then
-    ControlFileName := System.IOUtils.TPath.GetFullPath(ControlFileName);
-
-  if FileExists(ControlFileName) then
+  Result := false;
+  ErrorMessage := '';
+  NewIniFiles := nil;
+  if Trim(ControlFileName) = '' then
   begin
-    gFile := TStreamReader.Create(ControlFileName, TEncoding.UTF8, true);
+    ErrorMessage := 'No control file was specified.';
+    Exit;
+  end;
+
+  try
+    ApplicationDirectory := System.IOUtils.TPath.GetDirectoryName(
+      System.IOUtils.TPath.GetFullPath(ParamStr(0)));
+    ResolvedControlFileName := ResolveReferencedFileName(
+      Trim(ControlFileName), ApplicationDirectory);
+    if not FileExists(ResolvedControlFileName) then
+    begin
+      ErrorMessage := Format('Control file "%s" does not exist.',
+        [ResolvedControlFileName]);
+      Exit;
+    end;
+
+    NewIniFiles := TStringList.Create;
+    NewIniFiles.OwnsObjects := true;
+    ControlFile := TStreamReader.Create(ResolvedControlFileName,
+      TEncoding.UTF8, true);
     try
-      FIniFiles.Clear;
-      while not gFile.EndOfStream do
+      while not ControlFile.EndOfStream do
       begin
-        act_IniFn := Trim(gFile.ReadLine);
-        if act_IniFn = '' then
-          continue;
-        if act_IniFn[1] = '#' then
-          continue;
+        ActIniFn := Trim(ControlFile.ReadLine);
+        if ActIniFn = '' then
+          Continue;
+        if ActIniFn[1] = '#' then
+          Continue;
 
-        act_IniFn := ResolveReferencedFileName(act_IniFn, ApplicationDirectory);
+        ActIniFn := ResolveReferencedFileName(ActIniFn,
+          ApplicationDirectory);
+        if NewIniFiles.IndexOf(ActIniFn) >= 0 then
+          Continue;
 
-        // Use the normalized absolute path for lookup, creation and storage.
-        if FIniFiles.IndexOf(act_IniFn) < 0 then
-        begin
-          NewFile := not FileExists(act_IniFn);
-          NewInifile := CreateIniFileWithRetry(act_IniFn);
-          NewInifile.CaseSensitive := false;
-          FIniFiles.AddObject(act_IniFn, NewInifile);
-
+        NewFile := not FileExists(ActIniFn);
+        NewIniFile := nil;
+        try
+          NewIniFile := CreateIniFileWithRetry(ActIniFn);
+          NewIniFile.CaseSensitive := false;
           if NewFile then
           begin
-            IniFileDirectory := System.IOUtils.TPath.GetDirectoryName(act_IniFn);
-            NewInifile.WriteFloat(Str_SectionName_TimeInit,
+            IniFileDirectory := System.IOUtils.TPath.GetDirectoryName(
+              ActIniFn);
+            NewIniFile.WriteFloat(Str_SectionName_TimeInit,
               Str_SectionTopic_SimStart, 0);
-            NewInifile.WriteFloat(Str_SectionName_TimeInit,
+            NewIniFile.WriteFloat(Str_SectionName_TimeInit,
               Str_SectionTopic_SimEnd, 100);
-            NewInifile.WriteFloat(Str_SectionName_TimeInit,
+            NewIniFile.WriteFloat(Str_SectionName_TimeInit,
               Str_SectionTopic_TimeStep, 1);
-            NewInifile.WriteString(Str_SectionName_FileNames,
+            NewIniFile.WriteString(Str_SectionName_FileNames,
               Str_SectionTopic_StateIniFN,
               System.IOUtils.TPath.Combine(IniFileDirectory, FNStateIni));
-            NewInifile.WriteString(Str_SectionName_FileNames,
+            NewIniFile.WriteString(Str_SectionName_FileNames,
               Str_SectionTopic_ParamIniFN,
-              System.IOUtils.TPath.Combine(IniFileDirectory, FNParametersXIni));
-            UpdateIniFileWithRetry(NewInifile);
+              System.IOUtils.TPath.Combine(IniFileDirectory,
+                FNParametersXIni));
+            UpdateIniFileWithRetry(NewIniFile);
           end;
+          NewIniFiles.AddObject(ActIniFn, NewIniFile);
+          NewIniFile := nil;
+        finally
+          NewIniFile.Free;
         end;
       end;
     finally
-      gFile.Free;
+      ControlFile.Free;
     end;
-  end
-  else
-  begin
-{$IFNDEF NONVISUAL}
-    ShowMessage('No ControlFile specified');
-    // Application.Terminate;
-    halt;
-{$ELSE}
-    writeln('No ControlFile specified');
-    // Application.Terminate;
-{$ENDIF}
+
+    if NewIniFiles.Count = 0 then
+      ErrorMessage := Format(
+        'Control file "%s" contains no usable INI-file entries.',
+        [ResolvedControlFileName])
+    else
+    begin
+      ActIniFile := nil;
+      OldIniFiles := FIniFiles;
+      FIniFiles := NewIniFiles;
+      NewIniFiles := nil;
+      FIniFiles.OwnsObjects := true;
+      ActIniFile := TMyIniFile(FIniFiles.Objects[0]);
+      fControlFileFn := ResolvedControlFileName;
+      FLoadedControlFileFn := ResolvedControlFileName;
+      OldIniFiles.Free;
+      Result := true;
+    end;
+  except
+    on E: Exception do
+      ErrorMessage := Format('Cannot load control file "%s": %s',
+        [ControlFileName, E.Message]);
   end;
+  NewIniFiles.Free;
 end;
-
 {$IFNDEF NONVISUAL}
 
-procedure TMod.LookForControlfile(var ControlFileFN: string);
+function TMod.LookForControlfile(var ControlFileFN: string): Boolean;
 var
   DlgFileOpen: TOpenDialog;
+  InitialDirectory: string;
 
 begin
-  begin
-    DlgFileOpen := TOpenDialog.create(Application);
-    with DlgFileOpen do
+  Result := false;
+  DlgFileOpen := TOpenDialog.Create(nil);
+  try
+    DlgFileOpen.Filter := 'HUME control files (*.fn)|*.fn|All files (*.*)|*.*';
+    DlgFileOpen.Title := 'Open HUME Control File';
+    DlgFileOpen.DefaultExt := 'fn';
+    DlgFileOpen.Options := DlgFileOpen.Options + [ofPathMustExist,
+      ofFileMustExist];
+    if FileExists(ControlFileFN) then
+      DlgFileOpen.FileName := ControlFileFN
+    else
     begin
-      Filter := 'Controlfiles {*.fn)|*.fn';
-      Title := 'Open Control File';
-      DefaultExt := 'fn';
-      Options := Options + [ofShowHelp, ofPathMustExist, ofFileMustExist];
-      if Execute then
-      begin
-        if fileexists(FileName) then
-          ControlFileFN := FileName
-        else
-          ControlFileFN := '';
-        DlgFileOpen.free;
-      end;
+      InitialDirectory := ExtractFileDir(ControlFileFN);
+      if DirectoryExists(InitialDirectory) then
+        DlgFileOpen.InitialDir := InitialDirectory;
     end;
+
+    if DlgFileOpen.Execute then
+    begin
+      ControlFileFN := DlgFileOpen.FileName;
+      Result := FileExists(ControlFileFN);
+    end;
+  finally
+    DlgFileOpen.Free;
   end;
 end;
 {$ENDIF}
