@@ -2311,6 +2311,8 @@
   </class>
   <class name="TSubmodRootStrucNew" file="SubmodRootStructureNew.pas" line="380">
     <ancestor name="TSubmodel" namespace="UMod">
+      <methodref name="RecordEntityProvenance" visibility="private">
+      </methodref>
       <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
       </methodref>
       <methodref name="RegistrateOption" visibility="private" procflags="virtual">
@@ -2368,6 +2370,8 @@
       <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
       </methodref>
       <methodref name="UpdateValue" visibility="protected">
+      </methodref>
+      <methodref name="SetEntityDeclarationClass" visibility="protected">
       </methodref>
       <methodref name="Paint" visibility="protected" procflags="override">
       </methodref>
@@ -2445,6 +2449,8 @@
       </propertyref>
       <methodref name="DblClick" visibility="public" procflags="override">
       </methodref>
+      <propertyref name="CalcTimeTicks" visibility="public">
+      </propertyref>
       <propertyref name="SM_GlobMod" visibility="published">
       </propertyref>
       <propertyref name="SM_ExternVStrList" visibility="published">
@@ -3507,80 +3513,80 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="ADummySeg" type="TSegment" visibility="private" size="4" offset="648" file="SubmodRootStructureNew.pas" line="383" />
-      <field name="ADummyForPseudoSeg" type="TSegment" visibility="private" size="4" offset="652" file="SubmodRootStructureNew.pas" line="383" />
-      <field name="ContainerCenter" type="r2" visibility="private" size="8" offset="656" file="SubmodRootStructureNew.pas" line="384" />
-      <field name="NumberTotalEmission" type="Integer" visibility="private" size="4" offset="664" file="SubmodRootStructureNew.pas" line="392" />
-      <field name="NumEPredict" type="Integer" visibility="private" size="4" offset="668" file="SubmodRootStructureNew.pas" line="394" />
-      <field name="SimTime" type="Integer" visibility="private" size="4" offset="672" file="SubmodRootStructureNew.pas" line="396" />
-      <field name="numbMeris" type="Integer" visibility="private" size="4" offset="676" file="SubmodRootStructureNew.pas" line="399" />
-      <field name="newStart" type="Boolean" visibility="private" size="1" offset="680" file="SubmodRootStructureNew.pas" line="402" />
-      <field name="GaugeArr" type=":TSubmodRootStrucNew.:1" visibility="private" size="4" offset="684" file="SubmodRootStructureNew.pas" line="404" />
-      <field name="arrAggrRootArrayLayer" type="zweiDArr_type" visibility="private" size="4" offset="688" file="SubmodRootStructureNew.pas" line="407" />
-      <field name="WLDArr" type="TStateArray" visibility="private" size="48" offset="692" file="SubmodRootStructureNew.pas" line="409" />
-      <field name="WLStateArray" type="TStateArray" visibility="private" size="48" offset="740" file="SubmodRootStructureNew.pas" line="415" />
-      <field name="VCNumbVarArrray" type="TVarArray" visibility="private" size="48" offset="788" file="SubmodRootStructureNew.pas" line="417" />
-      <field name="PercentCellsArray" type="TVarArray" visibility="private" size="48" offset="836" file="SubmodRootStructureNew.pas" line="417" />
-      <field name="Par_EmissArr" type="TParArray" visibility="private" size="40" offset="884" file="SubmodRootStructureNew.pas" line="420" />
-      <field name="Par_OrigPrArr" type="TParArray2D" visibility="private" size="160" offset="924" file="SubmodRootStructureNew.pas" line="422" />
-      <field name="SoilTempArray" type="TExtArray" visibility="private" size="48" offset="1084" file="SubmodRootStructureNew.pas" line="427" />
-      <field name="plane" type="kindPlane" visibility="private" size="1" offset="1132" file="SubmodRootStructureNew.pas" line="434" />
-      <field name="aktplane" type="planeVector" visibility="private" size="36" offset="1136" file="SubmodRootStructureNew.pas" line="436" />
-      <field name="depthplane" type="Double" visibility="private" size="8" offset="1176" file="SubmodRootStructureNew.pas" line="437" />
-      <field name="RSList" type="TList" visibility="private" size="4" offset="1184" file="SubmodRootStructureNew.pas" line="439" />
-      <field name="RSListCopy" type="TList" visibility="private" size="4" offset="1188" file="SubmodRootStructureNew.pas" line="441" />
-      <field name="SRPList" type="TList" visibility="private" size="4" offset="1192" file="SubmodRootStructureNew.pas" line="444" />
-      <field name="SRPLightList" type="TList" visibility="private" size="4" offset="1196" file="SubmodRootStructureNew.pas" line="444" />
-      <field name="SegListIntersect" type="TList" visibility="private" size="4" offset="1200" file="SubmodRootStructureNew.pas" line="449" />
-      <field name="PseudoSegListIntersect" type="TList" visibility="private" size="4" offset="1204" file="SubmodRootStructureNew.pas" line="450" />
-      <field name="gridWidth_" type="Double" visibility="private" size="8" offset="1208" file="SubmodRootStructureNew.pas" line="452" />
-      <field name="SegListWS" type="TList" visibility="private" size="4" offset="1216" file="SubmodRootStructureNew.pas" line="454" />
-      <field name="PotSegListTot" type="TList" visibility="private" size="4" offset="1220" file="SubmodRootStructureNew.pas" line="457" />
-      <field name="BranchDensPrimRoots" type="TList" visibility="private" size="4" offset="1224" file="SubmodRootStructureNew.pas" line="460" />
-      <field name="posRelOrigin" type="Double" visibility="private" size="8" offset="1232" file="SubmodRootStructureNew.pas" line="462" />
-      <field name="matrix" visibility="private" size="120" offset="1240" file="SubmodRootStructureNew.pas" line="466">
+      <field name="ADummySeg" type="TSegment" visibility="private" size="4" offset="664" file="SubmodRootStructureNew.pas" line="383" />
+      <field name="ADummyForPseudoSeg" type="TSegment" visibility="private" size="4" offset="668" file="SubmodRootStructureNew.pas" line="383" />
+      <field name="ContainerCenter" type="r2" visibility="private" size="8" offset="672" file="SubmodRootStructureNew.pas" line="384" />
+      <field name="NumberTotalEmission" type="Integer" visibility="private" size="4" offset="680" file="SubmodRootStructureNew.pas" line="392" />
+      <field name="NumEPredict" type="Integer" visibility="private" size="4" offset="684" file="SubmodRootStructureNew.pas" line="394" />
+      <field name="SimTime" type="Integer" visibility="private" size="4" offset="688" file="SubmodRootStructureNew.pas" line="396" />
+      <field name="numbMeris" type="Integer" visibility="private" size="4" offset="692" file="SubmodRootStructureNew.pas" line="399" />
+      <field name="newStart" type="Boolean" visibility="private" size="1" offset="696" file="SubmodRootStructureNew.pas" line="402" />
+      <field name="GaugeArr" type=":TSubmodRootStrucNew.:1" visibility="private" size="4" offset="700" file="SubmodRootStructureNew.pas" line="404" />
+      <field name="arrAggrRootArrayLayer" type="zweiDArr_type" visibility="private" size="4" offset="704" file="SubmodRootStructureNew.pas" line="407" />
+      <field name="WLDArr" type="TStateArray" visibility="private" size="48" offset="708" file="SubmodRootStructureNew.pas" line="409" />
+      <field name="WLStateArray" type="TStateArray" visibility="private" size="48" offset="756" file="SubmodRootStructureNew.pas" line="415" />
+      <field name="VCNumbVarArrray" type="TVarArray" visibility="private" size="48" offset="804" file="SubmodRootStructureNew.pas" line="417" />
+      <field name="PercentCellsArray" type="TVarArray" visibility="private" size="48" offset="852" file="SubmodRootStructureNew.pas" line="417" />
+      <field name="Par_EmissArr" type="TParArray" visibility="private" size="40" offset="900" file="SubmodRootStructureNew.pas" line="420" />
+      <field name="Par_OrigPrArr" type="TParArray2D" visibility="private" size="160" offset="940" file="SubmodRootStructureNew.pas" line="422" />
+      <field name="SoilTempArray" type="TExtArray" visibility="private" size="48" offset="1100" file="SubmodRootStructureNew.pas" line="427" />
+      <field name="plane" type="kindPlane" visibility="private" size="1" offset="1148" file="SubmodRootStructureNew.pas" line="434" />
+      <field name="aktplane" type="planeVector" visibility="private" size="36" offset="1152" file="SubmodRootStructureNew.pas" line="436" />
+      <field name="depthplane" type="Double" visibility="private" size="8" offset="1192" file="SubmodRootStructureNew.pas" line="437" />
+      <field name="RSList" type="TList" visibility="private" size="4" offset="1200" file="SubmodRootStructureNew.pas" line="439" />
+      <field name="RSListCopy" type="TList" visibility="private" size="4" offset="1204" file="SubmodRootStructureNew.pas" line="441" />
+      <field name="SRPList" type="TList" visibility="private" size="4" offset="1208" file="SubmodRootStructureNew.pas" line="444" />
+      <field name="SRPLightList" type="TList" visibility="private" size="4" offset="1212" file="SubmodRootStructureNew.pas" line="444" />
+      <field name="SegListIntersect" type="TList" visibility="private" size="4" offset="1216" file="SubmodRootStructureNew.pas" line="449" />
+      <field name="PseudoSegListIntersect" type="TList" visibility="private" size="4" offset="1220" file="SubmodRootStructureNew.pas" line="450" />
+      <field name="gridWidth_" type="Double" visibility="private" size="8" offset="1224" file="SubmodRootStructureNew.pas" line="452" />
+      <field name="SegListWS" type="TList" visibility="private" size="4" offset="1232" file="SubmodRootStructureNew.pas" line="454" />
+      <field name="PotSegListTot" type="TList" visibility="private" size="4" offset="1236" file="SubmodRootStructureNew.pas" line="457" />
+      <field name="BranchDensPrimRoots" type="TList" visibility="private" size="4" offset="1240" file="SubmodRootStructureNew.pas" line="460" />
+      <field name="posRelOrigin" type="Double" visibility="private" size="8" offset="1248" file="SubmodRootStructureNew.pas" line="462" />
+      <field name="matrix" visibility="private" size="120" offset="1256" file="SubmodRootStructureNew.pas" line="466">
         <array name="matrix" visibility="private" low="0" high="4" file="SubmodRootStructureNew.pas" line="466">
           <array name="matrix" visibility="private" low="0" high="2" file="SubmodRootStructureNew.pas" line="466">
             <element type="Double" />
           </array>
         </array>
       </field>
-      <field name="Par_Duration" type="Integer" visibility="private" size="4" offset="1360" file="SubmodRootStructureNew.pas" line="468" />
-      <field name="Par_Emiss" type="r2" visibility="private" size="8" offset="1364" file="SubmodRootStructureNew.pas" line="469" />
-      <field name="Par_NumberPrE" visibility="private" size="40" offset="1372" file="SubmodRootStructureNew.pas" line="470">
+      <field name="Par_Duration" type="Integer" visibility="private" size="4" offset="1376" file="SubmodRootStructureNew.pas" line="468" />
+      <field name="Par_Emiss" type="r2" visibility="private" size="8" offset="1380" file="SubmodRootStructureNew.pas" line="469" />
+      <field name="Par_NumberPrE" visibility="private" size="40" offset="1388" file="SubmodRootStructureNew.pas" line="470">
         <array name="Par_NumberPrE" visibility="private" low="0" high="9" file="SubmodRootStructureNew.pas" line="470">
           <element type="Integer" />
         </array>
       </field>
-      <field name="Par_AngIAver" visibility="private" size="320" offset="1416" file="SubmodRootStructureNew.pas" line="473">
+      <field name="Par_AngIAver" visibility="private" size="320" offset="1432" file="SubmodRootStructureNew.pas" line="473">
         <array name="Par_AngIAver" visibility="private" low="0" high="3" file="SubmodRootStructureNew.pas" line="473">
           <array name="Par_AngIAver" visibility="private" low="0" high="9" file="SubmodRootStructureNew.pas" line="473">
             <element type="Double" />
           </array>
         </array>
       </field>
-      <field name="Par_AngIDeviat" visibility="private" size="320" offset="1736" file="SubmodRootStructureNew.pas" line="476">
+      <field name="Par_AngIDeviat" visibility="private" size="320" offset="1752" file="SubmodRootStructureNew.pas" line="476">
         <array name="Par_AngIDeviat" visibility="private" low="0" high="3" file="SubmodRootStructureNew.pas" line="476">
           <array name="Par_AngIDeviat" visibility="private" low="0" high="9" file="SubmodRootStructureNew.pas" line="476">
             <element type="Double" />
           </array>
         </array>
       </field>
-      <field name="Par_NumberGen" visibility="private" size="220" offset="2056" file="SubmodRootStructureNew.pas" line="478">
+      <field name="Par_NumberGen" visibility="private" size="220" offset="2072" file="SubmodRootStructureNew.pas" line="478">
         <array name="Par_NumberGen" visibility="private" low="0" high="4" file="SubmodRootStructureNew.pas" line="478">
           <array name="Par_NumberGen" visibility="private" low="0" high="10" file="SubmodRootStructureNew.pas" line="478">
             <element type="Integer" />
           </array>
         </array>
       </field>
-      <field name="Par_DurDevPrim" visibility="private" size="320" offset="2280" file="SubmodRootStructureNew.pas" line="479">
+      <field name="Par_DurDevPrim" visibility="private" size="320" offset="2296" file="SubmodRootStructureNew.pas" line="479">
         <array name="Par_DurDevPrim" visibility="private" low="0" high="3" file="SubmodRootStructureNew.pas" line="479">
           <array name="Par_DurDevPrim" visibility="private" low="0" high="9" file="SubmodRootStructureNew.pas" line="479">
             <element type="Double" />
           </array>
         </array>
       </field>
-      <field name="Par_GrowthAver" visibility="private" size="960" offset="2600" file="SubmodRootStructureNew.pas" line="482">
+      <field name="Par_GrowthAver" visibility="private" size="960" offset="2616" file="SubmodRootStructureNew.pas" line="482">
         <array name="Par_GrowthAver" visibility="private" low="0" high="2" file="SubmodRootStructureNew.pas" line="482">
           <array name="Par_GrowthAver" visibility="private" low="0" high="3" file="SubmodRootStructureNew.pas" line="482">
             <array name="Par_GrowthAver" visibility="private" low="0" high="9" file="SubmodRootStructureNew.pas" line="482">
@@ -3589,7 +3595,7 @@
           </array>
         </array>
       </field>
-      <field name="Par_GrowthDeviat" visibility="private" size="960" offset="3560" file="SubmodRootStructureNew.pas" line="484">
+      <field name="Par_GrowthDeviat" visibility="private" size="960" offset="3576" file="SubmodRootStructureNew.pas" line="484">
         <array name="Par_GrowthDeviat" visibility="private" low="0" high="2" file="SubmodRootStructureNew.pas" line="484">
           <array name="Par_GrowthDeviat" visibility="private" low="0" high="3" file="SubmodRootStructureNew.pas" line="484">
             <array name="Par_GrowthDeviat" visibility="private" low="0" high="9" file="SubmodRootStructureNew.pas" line="484">
@@ -3598,43 +3604,43 @@
           </array>
         </array>
       </field>
-      <field name="Par_RamifAver" visibility="private" size="320" offset="4520" file="SubmodRootStructureNew.pas" line="487">
+      <field name="Par_RamifAver" visibility="private" size="320" offset="4536" file="SubmodRootStructureNew.pas" line="487">
         <array name="Par_RamifAver" visibility="private" low="0" high="3" file="SubmodRootStructureNew.pas" line="487">
           <array name="Par_RamifAver" visibility="private" low="0" high="9" file="SubmodRootStructureNew.pas" line="487">
             <element type="Double" />
           </array>
         </array>
       </field>
-      <field name="Par_RamifDeviat" visibility="private" size="320" offset="4840" file="SubmodRootStructureNew.pas" line="489">
+      <field name="Par_RamifDeviat" visibility="private" size="320" offset="4856" file="SubmodRootStructureNew.pas" line="489">
         <array name="Par_RamifDeviat" visibility="private" low="0" high="3" file="SubmodRootStructureNew.pas" line="489">
           <array name="Par_RamifDeviat" visibility="private" low="0" high="9" file="SubmodRootStructureNew.pas" line="489">
             <element type="Double" />
           </array>
         </array>
       </field>
-      <field name="Par_Geo" visibility="private" size="320" offset="5160" file="SubmodRootStructureNew.pas" line="493">
+      <field name="Par_Geo" visibility="private" size="320" offset="5176" file="SubmodRootStructureNew.pas" line="493">
         <array name="Par_Geo" visibility="private" low="0" high="3" file="SubmodRootStructureNew.pas" line="493">
           <array name="Par_Geo" visibility="private" low="0" high="9" file="SubmodRootStructureNew.pas" line="493">
             <element type="Double" />
           </array>
         </array>
       </field>
-      <field name="Par_CMechanic" visibility="private" size="320" offset="5480" file="SubmodRootStructureNew.pas" line="496">
+      <field name="Par_CMechanic" visibility="private" size="320" offset="5496" file="SubmodRootStructureNew.pas" line="496">
         <array name="Par_CMechanic" visibility="private" low="0" high="3" file="SubmodRootStructureNew.pas" line="496">
           <array name="Par_CMechanic" visibility="private" low="0" high="9" file="SubmodRootStructureNew.pas" line="496">
             <element type="Double" />
           </array>
         </array>
       </field>
-      <field name="potTM_RSdt" type="Double" visibility="private" size="8" offset="5800" file="SubmodRootStructureNew.pas" line="500" />
-      <field name="aktTM_RSdt" type="Double" visibility="private" size="8" offset="5808" file="SubmodRootStructureNew.pas" line="501" />
-      <field name="potWL_RSdt" type="Double" visibility="private" size="8" offset="5816" file="SubmodRootStructureNew.pas" line="502" />
-      <field name="aktWL_RSdt" type="Double" visibility="private" size="8" offset="5824" file="SubmodRootStructureNew.pas" line="503" />
-      <field name="PaintList" type="TList" visibility="private" size="4" offset="5832" file="SubmodRootStructureNew.pas" line="507" />
-      <field name="fCheckBoxVor" type="TCheckBox" visibility="private" size="4" offset="5836" file="SubmodRootStructureNew.pas" line="508" />
-      <field name="fCheckBoxTriang" type="TCheckBox" visibility="private" size="4" offset="5840" file="SubmodRootStructureNew.pas" line="508" />
-      <field name="fPaintBox" type="TMyPaintBox" visibility="private" size="4" offset="5844" file="SubmodRootStructureNew.pas" line="509" />
-      <field name="fForm" type="TFormMod" visibility="private" size="4" offset="5848" file="SubmodRootStructureNew.pas" line="510" />
+      <field name="potTM_RSdt" type="Double" visibility="private" size="8" offset="5816" file="SubmodRootStructureNew.pas" line="500" />
+      <field name="aktTM_RSdt" type="Double" visibility="private" size="8" offset="5824" file="SubmodRootStructureNew.pas" line="501" />
+      <field name="potWL_RSdt" type="Double" visibility="private" size="8" offset="5832" file="SubmodRootStructureNew.pas" line="502" />
+      <field name="aktWL_RSdt" type="Double" visibility="private" size="8" offset="5840" file="SubmodRootStructureNew.pas" line="503" />
+      <field name="PaintList" type="TList" visibility="private" size="4" offset="5848" file="SubmodRootStructureNew.pas" line="507" />
+      <field name="fCheckBoxVor" type="TCheckBox" visibility="private" size="4" offset="5852" file="SubmodRootStructureNew.pas" line="508" />
+      <field name="fCheckBoxTriang" type="TCheckBox" visibility="private" size="4" offset="5856" file="SubmodRootStructureNew.pas" line="508" />
+      <field name="fPaintBox" type="TMyPaintBox" visibility="private" size="4" offset="5860" file="SubmodRootStructureNew.pas" line="509" />
+      <field name="fForm" type="TFormMod" visibility="private" size="4" offset="5864" file="SubmodRootStructureNew.pas" line="510" />
       <function name="transfFloatToInteger" visibility="private" file="SubmodRootStructureNew.pas" line="511">
         <parameters>
           <parameter name="x" type="Double" />
@@ -4154,239 +4160,239 @@
           <retval type="TList" />
         </parameters>
       </function>
-      <field name="mRLD" type="TState" visibility="published" size="4" offset="5852" file="SubmodRootStructureNew.pas" line="687" />
-      <field name="VC" type="TState" visibility="published" size="4" offset="5856" file="SubmodRootStructureNew.pas" line="688" />
-      <field name="RLD_1" type="TState" visibility="published" size="4" offset="5860" file="SubmodRootStructureNew.pas" line="693" />
-      <field name="RLD_2" type="TState" visibility="published" size="4" offset="5864" file="SubmodRootStructureNew.pas" line="693" />
-      <field name="RLD_3" type="TState" visibility="published" size="4" offset="5868" file="SubmodRootStructureNew.pas" line="693" />
-      <field name="RLD_4" type="TState" visibility="published" size="4" offset="5872" file="SubmodRootStructureNew.pas" line="693" />
-      <field name="RLD_5" type="TState" visibility="published" size="4" offset="5876" file="SubmodRootStructureNew.pas" line="693" />
-      <field name="RLD_6" type="TState" visibility="published" size="4" offset="5880" file="SubmodRootStructureNew.pas" line="693" />
-      <field name="RLD_7" type="TState" visibility="published" size="4" offset="5884" file="SubmodRootStructureNew.pas" line="693" />
-      <field name="RLD_8" type="TState" visibility="published" size="4" offset="5888" file="SubmodRootStructureNew.pas" line="693" />
-      <field name="RLD_9" type="TState" visibility="published" size="4" offset="5892" file="SubmodRootStructureNew.pas" line="693" />
-      <field name="RLD_10" type="TState" visibility="published" size="4" offset="5896" file="SubmodRootStructureNew.pas" line="693" />
-      <field name="VC_1" type="TState" visibility="published" size="4" offset="5900" file="SubmodRootStructureNew.pas" line="693" />
-      <field name="VC_2" type="TState" visibility="published" size="4" offset="5904" file="SubmodRootStructureNew.pas" line="694" />
-      <field name="VC_3" type="TState" visibility="published" size="4" offset="5908" file="SubmodRootStructureNew.pas" line="694" />
-      <field name="VC_4" type="TState" visibility="published" size="4" offset="5912" file="SubmodRootStructureNew.pas" line="694" />
-      <field name="VC_5" type="TState" visibility="published" size="4" offset="5916" file="SubmodRootStructureNew.pas" line="694" />
-      <field name="VC_6" type="TState" visibility="published" size="4" offset="5920" file="SubmodRootStructureNew.pas" line="694" />
-      <field name="VC_7" type="TState" visibility="published" size="4" offset="5924" file="SubmodRootStructureNew.pas" line="694" />
-      <field name="VC_8" type="TState" visibility="published" size="4" offset="5928" file="SubmodRootStructureNew.pas" line="694" />
-      <field name="VC_9" type="TState" visibility="published" size="4" offset="5932" file="SubmodRootStructureNew.pas" line="694" />
-      <field name="VC_10" type="TState" visibility="published" size="4" offset="5936" file="SubmodRootStructureNew.pas" line="694" />
-      <field name="depth" type="TState" visibility="published" size="4" offset="5940" file="SubmodRootStructureNew.pas" line="694" />
-      <field name="DeepestIntersection" type="TState" visibility="published" size="4" offset="5944" file="SubmodRootStructureNew.pas" line="696" />
-      <field name="numbRoots" type="TState" visibility="published" size="4" offset="5948" file="SubmodRootStructureNew.pas" line="697" />
-      <field name="WL_0_30" type="TState" visibility="published" size="4" offset="5952" file="SubmodRootStructureNew.pas" line="701" />
-      <field name="WL_30_60" type="TState" visibility="published" size="4" offset="5956" file="SubmodRootStructureNew.pas" line="702" />
-      <field name="WL_60_90" type="TState" visibility="published" size="4" offset="5960" file="SubmodRootStructureNew.pas" line="703" />
-      <field name="WL_30_100" type="TState" visibility="published" size="4" offset="5964" file="SubmodRootStructureNew.pas" line="704" />
-      <field name="BranchDens" type="TState" visibility="published" size="4" offset="5968" file="SubmodRootStructureNew.pas" line="705" />
-      <field name="BranchDensStDev" type="TState" visibility="published" size="4" offset="5972" file="SubmodRootStructureNew.pas" line="706" />
-      <field name="ZahlSegPW" type="TState" visibility="published" size="4" offset="5976" file="SubmodRootStructureNew.pas" line="712" />
-      <field name="ZahlSegE1" type="TState" visibility="published" size="4" offset="5980" file="SubmodRootStructureNew.pas" line="713" />
-      <field name="ZahlSegE2" type="TState" visibility="published" size="4" offset="5984" file="SubmodRootStructureNew.pas" line="714" />
-      <field name="ZahlSegE3" type="TState" visibility="published" size="4" offset="5988" file="SubmodRootStructureNew.pas" line="715" />
-      <field name="numberEmission" type="TVar" visibility="published" size="4" offset="5992" file="SubmodRootStructureNew.pas" line="719" />
-      <field name="EmissPerPlant" type="TVar" visibility="published" size="4" offset="5996" file="SubmodRootStructureNew.pas" line="720" />
-      <field name="numberRootSeg" type="TVar" visibility="published" size="4" offset="6000" file="SubmodRootStructureNew.pas" line="721" />
-      <field name="SumWL" type="TVar" visibility="published" size="4" offset="6004" file="SubmodRootStructureNew.pas" line="722" />
-      <field name="MeanSegLenWC" type="TVar" visibility="published" size="4" offset="6008" file="SubmodRootStructureNew.pas" line="726" />
-      <field name="StdDevSegLenWC" type="TVar" visibility="published" size="4" offset="6012" file="SubmodRootStructureNew.pas" line="727" />
-      <field name="RootDM" type="TVar" visibility="published" size="4" offset="6016" file="SubmodRootStructureNew.pas" line="728" />
-      <field name="RootDMWSdt" type="TVar" visibility="published" size="4" offset="6020" file="SubmodRootStructureNew.pas" line="729" />
-      <field name="numberPlants" type="TVar" visibility="published" size="4" offset="6024" file="SubmodRootStructureNew.pas" line="731" />
-      <field name="Red_WL" type="TVar" visibility="published" size="4" offset="6028" file="SubmodRootStructureNew.pas" line="732" />
-      <field name="TempSumAir" type="TVar" visibility="published" size="4" offset="6032" file="SubmodRootStructureNew.pas" line="733" />
-      <field name="SumWL_PW" type="TVar" visibility="published" size="4" offset="6036" file="SubmodRootStructureNew.pas" line="738" />
-      <field name="SumWL_E1" type="TVar" visibility="published" size="4" offset="6040" file="SubmodRootStructureNew.pas" line="739" />
-      <field name="SumWL_E2" type="TVar" visibility="published" size="4" offset="6044" file="SubmodRootStructureNew.pas" line="740" />
-      <field name="SumWL_E3" type="TVar" visibility="published" size="4" offset="6048" file="SubmodRootStructureNew.pas" line="741" />
-      <field name="TotSLVZPW" type="TVar" visibility="published" size="4" offset="6052" file="SubmodRootStructureNew.pas" line="742" />
-      <field name="TotSLVZE1" type="TVar" visibility="published" size="4" offset="6056" file="SubmodRootStructureNew.pas" line="743" />
-      <field name="TotSLVZE2" type="TVar" visibility="published" size="4" offset="6060" file="SubmodRootStructureNew.pas" line="744" />
-      <field name="TotSLVZE3" type="TVar" visibility="published" size="4" offset="6064" file="SubmodRootStructureNew.pas" line="745" />
-      <field name="MeanSLVZPW" type="TVar" visibility="published" size="4" offset="6068" file="SubmodRootStructureNew.pas" line="747" />
-      <field name="MeanSLVZE1" type="TVar" visibility="published" size="4" offset="6072" file="SubmodRootStructureNew.pas" line="749" />
-      <field name="MeanSLVZE2" type="TVar" visibility="published" size="4" offset="6076" file="SubmodRootStructureNew.pas" line="751" />
-      <field name="MeanSLVZE3" type="TVar" visibility="published" size="4" offset="6080" file="SubmodRootStructureNew.pas" line="753" />
-      <field name="StdDSLVZPW" type="TVar" visibility="published" size="4" offset="6084" file="SubmodRootStructureNew.pas" line="755" />
-      <field name="StdDSLVZE1" type="TVar" visibility="published" size="4" offset="6088" file="SubmodRootStructureNew.pas" line="757" />
-      <field name="StdDSLVZE2" type="TVar" visibility="published" size="4" offset="6092" file="SubmodRootStructureNew.pas" line="759" />
-      <field name="StdDSLVZE3" type="TVar" visibility="published" size="4" offset="6096" file="SubmodRootStructureNew.pas" line="761" />
-      <field name="TotNZ_PW" type="TVar" visibility="published" size="4" offset="6100" file="SubmodRootStructureNew.pas" line="773" />
-      <field name="TotApNBZ_PW" type="TVar" visibility="published" size="4" offset="6104" file="SubmodRootStructureNew.pas" line="774" />
-      <field name="TotApNBZ_E1" type="TVar" visibility="published" size="4" offset="6108" file="SubmodRootStructureNew.pas" line="775" />
-      <field name="TotApNBZ_E2" type="TVar" visibility="published" size="4" offset="6112" file="SubmodRootStructureNew.pas" line="776" />
-      <field name="TotApNBZ_E3" type="TVar" visibility="published" size="4" offset="6116" file="SubmodRootStructureNew.pas" line="777" />
-      <field name="TotBasNBZ_PW" type="TVar" visibility="published" size="4" offset="6120" file="SubmodRootStructureNew.pas" line="778" />
-      <field name="MeanNZ_PW" type="TVar" visibility="published" size="4" offset="6124" file="SubmodRootStructureNew.pas" line="779" />
-      <field name="MeanApNBZ_PW" type="TVar" visibility="published" size="4" offset="6128" file="SubmodRootStructureNew.pas" line="781" />
-      <field name="MeanBasNBZ_PW" type="TVar" visibility="published" size="4" offset="6132" file="SubmodRootStructureNew.pas" line="782" />
-      <field name="MeanBZ_PW" type="TVar" visibility="published" size="4" offset="6136" file="SubmodRootStructureNew.pas" line="783" />
-      <field name="StdNZ_PW" type="TVar" visibility="published" size="4" offset="6140" file="SubmodRootStructureNew.pas" line="785" />
-      <field name="StdApNBZ_PW" type="TVar" visibility="published" size="4" offset="6144" file="SubmodRootStructureNew.pas" line="787" />
-      <field name="StdBasNBZ_PW" type="TVar" visibility="published" size="4" offset="6148" file="SubmodRootStructureNew.pas" line="788" />
-      <field name="MeanApNBZ_E1" type="TVar" visibility="published" size="4" offset="6152" file="SubmodRootStructureNew.pas" line="790" />
-      <field name="StdApNBZ_E1" type="TVar" visibility="published" size="4" offset="6156" file="SubmodRootStructureNew.pas" line="791" />
-      <field name="MeanApNBZ_E2" type="TVar" visibility="published" size="4" offset="6160" file="SubmodRootStructureNew.pas" line="793" />
-      <field name="StdApNBZ_E2" type="TVar" visibility="published" size="4" offset="6164" file="SubmodRootStructureNew.pas" line="794" />
-      <field name="MeanApNBZ_E3" type="TVar" visibility="published" size="4" offset="6168" file="SubmodRootStructureNew.pas" line="796" />
-      <field name="StdApNBZ_E3" type="TVar" visibility="published" size="4" offset="6172" file="SubmodRootStructureNew.pas" line="797" />
-      <field name="MeanAxisPW" type="TVar" visibility="published" size="4" offset="6176" file="SubmodRootStructureNew.pas" line="811" />
-      <field name="VCAxisPW" type="TVar" visibility="published" size="4" offset="6180" file="SubmodRootStructureNew.pas" line="812" />
-      <field name="MeanAxisE1" type="TVar" visibility="published" size="4" offset="6184" file="SubmodRootStructureNew.pas" line="813" />
-      <field name="VCAxisE1" type="TVar" visibility="published" size="4" offset="6188" file="SubmodRootStructureNew.pas" line="814" />
-      <field name="MeanAxisE2" type="TVar" visibility="published" size="4" offset="6192" file="SubmodRootStructureNew.pas" line="815" />
-      <field name="VCAxisE2" type="TVar" visibility="published" size="4" offset="6196" file="SubmodRootStructureNew.pas" line="816" />
-      <field name="MeanAxisE3" type="TVar" visibility="published" size="4" offset="6200" file="SubmodRootStructureNew.pas" line="817" />
-      <field name="VCAxisE3" type="TVar" visibility="published" size="4" offset="6204" file="SubmodRootStructureNew.pas" line="818" />
-      <field name="sowingDate" type="TPar" visibility="published" size="4" offset="6208" file="SubmodRootStructureNew.pas" line="821" />
-      <field name="contRad" type="TPar" visibility="published" size="4" offset="6212" file="SubmodRootStructureNew.pas" line="822" />
-      <field name="NumCompToCalc" type="TPar" visibility="published" size="4" offset="6216" file="SubmodRootStructureNew.pas" line="823" />
-      <field name="border1stLayer" type="TPar" visibility="published" size="4" offset="6220" file="SubmodRootStructureNew.pas" line="824" />
-      <field name="DimX" type="TPar" visibility="published" size="4" offset="6224" file="SubmodRootStructureNew.pas" line="825" />
-      <field name="DimY" type="TPar" visibility="published" size="4" offset="6228" file="SubmodRootStructureNew.pas" line="826" />
-      <field name="DimZ" type="TPar" visibility="published" size="4" offset="6232" file="SubmodRootStructureNew.pas" line="827" />
-      <field name="RowSpace" type="TPar" visibility="published" size="4" offset="6236" file="SubmodRootStructureNew.pas" line="828" />
-      <field name="SpaceWithinRows" type="TPar" visibility="published" size="4" offset="6240" file="SubmodRootStructureNew.pas" line="829" />
-      <field name="PosXPlant" type="TPar" visibility="published" size="4" offset="6244" file="SubmodRootStructureNew.pas" line="830" />
-      <field name="PosYPlant" type="TPar" visibility="published" size="4" offset="6248" file="SubmodRootStructureNew.pas" line="831" />
-      <field name="SowingDepth" type="TPar" visibility="published" size="4" offset="6252" file="SubmodRootStructureNew.pas" line="832" />
-      <field name="a_scaling" type="TPar" visibility="published" size="4" offset="6256" file="SubmodRootStructureNew.pas" line="835" />
-      <field name="b_scaling" type="TPar" visibility="published" size="4" offset="6260" file="SubmodRootStructureNew.pas" line="842" />
-      <field name="ram_scaling" type="TPar" visibility="published" size="4" offset="6264" file="SubmodRootStructureNew.pas" line="848" />
-      <field name="geo_scaling" type="TPar" visibility="published" size="4" offset="6268" file="SubmodRootStructureNew.pas" line="849" />
-      <field name="mech_scaling" type="TPar" visibility="published" size="4" offset="6272" file="SubmodRootStructureNew.pas" line="850" />
-      <field name="Add_Prim" type="TPar" visibility="published" size="4" offset="6276" file="SubmodRootStructureNew.pas" line="851" />
-      <field name="AddNumb_Gen" type="TPar" visibility="published" size="4" offset="6280" file="SubmodRootStructureNew.pas" line="852" />
-      <field name="Par_begin" type="TPar" visibility="published" size="4" offset="6284" file="SubmodRootStructureNew.pas" line="855" />
-      <field name="Par_disposition" type="TPar" visibility="published" size="4" offset="6288" file="SubmodRootStructureNew.pas" line="856" />
-      <field name="Par_AP_NBZ_Ord1" type="TPar" visibility="published" size="4" offset="6292" file="SubmodRootStructureNew.pas" line="859" />
-      <field name="Par_Bas_NBZ_Ord1" type="TPar" visibility="published" size="4" offset="6296" file="SubmodRootStructureNew.pas" line="860" />
-      <field name="Par_numberGen_Ord1" type="TPar" visibility="published" size="4" offset="6300" file="SubmodRootStructureNew.pas" line="861" />
-      <field name="Par_AverAngleInsert_Ord1" type="TPar" visibility="published" size="4" offset="6304" file="SubmodRootStructureNew.pas" line="861" />
-      <field name="Par_StdDevAngleInsert_Ord1" type="TPar" visibility="published" size="4" offset="6308" file="SubmodRootStructureNew.pas" line="862" />
-      <field name="Par_developPrim_Ord1" type="TPar" visibility="published" size="4" offset="6312" file="SubmodRootStructureNew.pas" line="863" />
-      <field name="Par_AverGrowthA_Ord1" type="TPar" visibility="published" size="4" offset="6316" file="SubmodRootStructureNew.pas" line="864" />
-      <field name="Par_AverGrowthB_Ord1" type="TPar" visibility="published" size="4" offset="6320" file="SubmodRootStructureNew.pas" line="865" />
-      <field name="Par_StdDevGrowthA_Ord1" type="TPar" visibility="published" size="4" offset="6324" file="SubmodRootStructureNew.pas" line="866" />
-      <field name="Par_StdDevGrowthB_Ord1" type="TPar" visibility="published" size="4" offset="6328" file="SubmodRootStructureNew.pas" line="867" />
-      <field name="Par_ConstRatePW" type="TPar" visibility="published" size="4" offset="6332" file="SubmodRootStructureNew.pas" line="868" />
-      <field name="Par_StdDevRamific_Ord1" type="TPar" visibility="published" size="4" offset="6336" file="SubmodRootStructureNew.pas" line="869" />
-      <field name="Par_Coeff_Geo_Ord1" type="TPar" visibility="published" size="4" offset="6340" file="SubmodRootStructureNew.pas" line="870" />
-      <field name="Par_mechResist_Ord1" type="TPar" visibility="published" size="4" offset="6344" file="SubmodRootStructureNew.pas" line="871" />
-      <field name="Par_AverRamific_Ord1" type="TPar" visibility="published" size="4" offset="6348" file="SubmodRootStructureNew.pas" line="872" />
-      <field name="Par_AP_NBZ_Ord2" type="TPar" visibility="published" size="4" offset="6352" file="SubmodRootStructureNew.pas" line="875" />
-      <field name="Par_Bas_NBZ_Ord2" type="TPar" visibility="published" size="4" offset="6356" file="SubmodRootStructureNew.pas" line="875" />
-      <field name="Par_numberGen_Ord2" type="TPar" visibility="published" size="4" offset="6360" file="SubmodRootStructureNew.pas" line="875" />
-      <field name="Par_AverAngleInsert_Ord2" type="TPar" visibility="published" size="4" offset="6364" file="SubmodRootStructureNew.pas" line="876" />
-      <field name="Par_StdDevAngleInsert_Ord2" type="TPar" visibility="published" size="4" offset="6368" file="SubmodRootStructureNew.pas" line="877" />
-      <field name="Par_developPrim_Ord2" type="TPar" visibility="published" size="4" offset="6372" file="SubmodRootStructureNew.pas" line="878" />
-      <field name="Par_AverGrowthA_Ord2" type="TPar" visibility="published" size="4" offset="6376" file="SubmodRootStructureNew.pas" line="879" />
-      <field name="Par_AverGrowthADist_Ord2" type="TPar" visibility="published" size="4" offset="6380" file="SubmodRootStructureNew.pas" line="880" />
-      <field name="Par_AverGrowthB_Ord2" type="TPar" visibility="published" size="4" offset="6384" file="SubmodRootStructureNew.pas" line="883" />
-      <field name="Par_StdDevGrowthA_Ord2" type="TPar" visibility="published" size="4" offset="6388" file="SubmodRootStructureNew.pas" line="884" />
-      <field name="Par_StdDevGrowthADist_Ord2" type="TPar" visibility="published" size="4" offset="6392" file="SubmodRootStructureNew.pas" line="885" />
-      <field name="Par_StdDevGrowthB_Ord2" type="TPar" visibility="published" size="4" offset="6396" file="SubmodRootStructureNew.pas" line="888" />
-      <field name="Par_AverRamific_Ord2" type="TPar" visibility="published" size="4" offset="6400" file="SubmodRootStructureNew.pas" line="889" />
-      <field name="Par_StdDevRamific_Ord2" type="TPar" visibility="published" size="4" offset="6404" file="SubmodRootStructureNew.pas" line="890" />
-      <field name="Par_Coeff_Geo_Ord2" type="TPar" visibility="published" size="4" offset="6408" file="SubmodRootStructureNew.pas" line="891" />
-      <field name="Par_mechResist_Ord2" type="TPar" visibility="published" size="4" offset="6412" file="SubmodRootStructureNew.pas" line="892" />
-      <field name="Par_AP_NBZ_Ord3" type="TPar" visibility="published" size="4" offset="6416" file="SubmodRootStructureNew.pas" line="895" />
-      <field name="Par_Bas_NBZ_Ord3" type="TPar" visibility="published" size="4" offset="6420" file="SubmodRootStructureNew.pas" line="895" />
-      <field name="Par_numberGen_Ord3" type="TPar" visibility="published" size="4" offset="6424" file="SubmodRootStructureNew.pas" line="895" />
-      <field name="Par_AverAngleInsert_Ord3" type="TPar" visibility="published" size="4" offset="6428" file="SubmodRootStructureNew.pas" line="896" />
-      <field name="Par_StdDevAngleInsert_Ord3" type="TPar" visibility="published" size="4" offset="6432" file="SubmodRootStructureNew.pas" line="897" />
-      <field name="Par_developPrim_Ord3" type="TPar" visibility="published" size="4" offset="6436" file="SubmodRootStructureNew.pas" line="898" />
-      <field name="Par_AverGrowthA_Ord3" type="TPar" visibility="published" size="4" offset="6440" file="SubmodRootStructureNew.pas" line="899" />
-      <field name="Par_AverGrowthB_Ord3" type="TPar" visibility="published" size="4" offset="6444" file="SubmodRootStructureNew.pas" line="900" />
-      <field name="Par_StdDevGrowthA_Ord3" type="TPar" visibility="published" size="4" offset="6448" file="SubmodRootStructureNew.pas" line="901" />
-      <field name="Par_StdDevGrowthB_Ord3" type="TPar" visibility="published" size="4" offset="6452" file="SubmodRootStructureNew.pas" line="902" />
-      <field name="Par_AverRamific_Ord3" type="TPar" visibility="published" size="4" offset="6456" file="SubmodRootStructureNew.pas" line="903" />
-      <field name="Par_StdDevRamific_Ord3" type="TPar" visibility="published" size="4" offset="6460" file="SubmodRootStructureNew.pas" line="904" />
-      <field name="Par_Coeff_Geo_Ord3" type="TPar" visibility="published" size="4" offset="6464" file="SubmodRootStructureNew.pas" line="905" />
-      <field name="Par_mechResist_Ord3" type="TPar" visibility="published" size="4" offset="6468" file="SubmodRootStructureNew.pas" line="906" />
-      <field name="Par_AP_NBZ_Ord4" type="TPar" visibility="published" size="4" offset="6472" file="SubmodRootStructureNew.pas" line="909" />
-      <field name="Par_Bas_NBZ_Ord4" type="TPar" visibility="published" size="4" offset="6476" file="SubmodRootStructureNew.pas" line="909" />
-      <field name="Par_numberGen_Ord4" type="TPar" visibility="published" size="4" offset="6480" file="SubmodRootStructureNew.pas" line="909" />
-      <field name="Par_AverAngleInsert_Ord4" type="TPar" visibility="published" size="4" offset="6484" file="SubmodRootStructureNew.pas" line="910" />
-      <field name="Par_StdDevAngleInsert_Ord4" type="TPar" visibility="published" size="4" offset="6488" file="SubmodRootStructureNew.pas" line="910" />
-      <field name="Par_developPrim_Ord4" type="TPar" visibility="published" size="4" offset="6492" file="SubmodRootStructureNew.pas" line="911" />
-      <field name="Par_AverGrowthA_Ord4" type="TPar" visibility="published" size="4" offset="6496" file="SubmodRootStructureNew.pas" line="911" />
-      <field name="Par_AverGrowthB_Ord4" type="TPar" visibility="published" size="4" offset="6500" file="SubmodRootStructureNew.pas" line="911" />
-      <field name="Par_StdDevGrowthA_Ord4" type="TPar" visibility="published" size="4" offset="6504" file="SubmodRootStructureNew.pas" line="912" />
-      <field name="Par_StdDevGrowthB_Ord4" type="TPar" visibility="published" size="4" offset="6508" file="SubmodRootStructureNew.pas" line="912" />
-      <field name="Par_AverRamific_Ord4" type="TPar" visibility="published" size="4" offset="6512" file="SubmodRootStructureNew.pas" line="912" />
-      <field name="Par_StdDevRamific_Ord4" type="TPar" visibility="published" size="4" offset="6516" file="SubmodRootStructureNew.pas" line="913" />
-      <field name="Par_Coeff_Geo_Ord4" type="TPar" visibility="published" size="4" offset="6520" file="SubmodRootStructureNew.pas" line="913" />
-      <field name="Par_mechResist_Ord4" type="TPar" visibility="published" size="4" offset="6524" file="SubmodRootStructureNew.pas" line="913" />
-      <field name="GeoMod" type="TPar" visibility="published" size="4" offset="6528" file="SubmodRootStructureNew.pas" line="919" />
-      <field name="GeoModRange" type="TPar" visibility="published" size="4" offset="6532" file="SubmodRootStructureNew.pas" line="921" />
-      <field name="DepthSubsoil" type="TPar" visibility="published" size="4" offset="6536" file="SubmodRootStructureNew.pas" line="923" />
-      <field name="ThresDistBase" type="TPar" visibility="published" size="4" offset="6540" file="SubmodRootStructureNew.pas" line="926" />
-      <field name="ElongAStartAv_Ord2" type="TPar" visibility="published" size="4" offset="6544" file="SubmodRootStructureNew.pas" line="929" />
-      <field name="ElongAStartDev_Ord2" type="TPar" visibility="published" size="4" offset="6548" file="SubmodRootStructureNew.pas" line="932" />
-      <field name="Thres_RamMod" type="TPar" visibility="published" size="4" offset="6552" file="SubmodRootStructureNew.pas" line="937" />
-      <field name="Par_RamMod_Gener" type="TPar" visibility="published" size="4" offset="6556" file="SubmodRootStructureNew.pas" line="940" />
-      <field name="Par_RamMod_Asem" type="TPar" visibility="published" size="4" offset="6560" file="SubmodRootStructureNew.pas" line="945" />
-      <field name="Par_RamMod_Bsem" type="TPar" visibility="published" size="4" offset="6564" file="SubmodRootStructureNew.pas" line="949" />
-      <field name="Par_RamMod_Acr" type="TPar" visibility="published" size="4" offset="6568" file="SubmodRootStructureNew.pas" line="954" />
-      <field name="Par_RamMod_Bcr" type="TPar" visibility="published" size="4" offset="6572" file="SubmodRootStructureNew.pas" line="954" />
-      <field name="dl_RedFWL" type="TPar" visibility="published" size="4" offset="6576" file="SubmodRootStructureNew.pas" line="958" />
-      <field name="Threshold_DMRoot" type="TPar" visibility="published" size="4" offset="6580" file="SubmodRootStructureNew.pas" line="960" />
-      <field name="SpezRL" type="TPar" visibility="published" size="4" offset="6584" file="SubmodRootStructureNew.pas" line="964" />
-      <field name="avTempYear" type="TPar" visibility="published" size="4" offset="6588" file="SubmodRootStructureNew.pas" line="965" />
-      <field name="BaseTemp" type="TPar" visibility="published" size="4" offset="6592" file="SubmodRootStructureNew.pas" line="968" />
-      <field name="Tmin" type="TPar" visibility="published" size="4" offset="6596" file="SubmodRootStructureNew.pas" line="970" />
-      <field name="Tmax" type="TPar" visibility="published" size="4" offset="6600" file="SubmodRootStructureNew.pas" line="973" />
-      <field name="theta_" type="TPar" visibility="published" size="4" offset="6604" file="SubmodRootStructureNew.pas" line="973" />
-      <field name="TetaAngl" type="TPar" visibility="published" size="4" offset="6608" file="SubmodRootStructureNew.pas" line="974" />
-      <field name="minDistWall" type="TPar" visibility="published" size="4" offset="6612" file="SubmodRootStructureNew.pas" line="976" />
-      <field name="NumbColVK" type="TPar" visibility="published" size="4" offset="6616" file="SubmodRootStructureNew.pas" line="977" />
-      <field name="spezRL_Sand" type="TPar" visibility="published" size="4" offset="6620" file="SubmodRootStructureNew.pas" line="981" />
-      <field name="spezRL_NL" type="TPar" visibility="published" size="4" offset="6624" file="SubmodRootStructureNew.pas" line="982" />
-      <field name="TransfSand_NL" type="TPar" visibility="published" size="4" offset="6628" file="SubmodRootStructureNew.pas" line="983" />
-      <field name="ThresholdGrowth" type="TPar" visibility="published" size="4" offset="6632" file="SubmodRootStructureNew.pas" line="985" />
-      <field name="L0_MerisPW" type="TPar" visibility="published" size="4" offset="6636" file="SubmodRootStructureNew.pas" line="987" />
-      <field name="rgr_expo" type="TPar" visibility="published" size="4" offset="6640" file="SubmodRootStructureNew.pas" line="990" />
-      <field name="LmaxMerisPW" type="TPar" visibility="published" size="4" offset="6644" file="SubmodRootStructureNew.pas" line="991" />
-      <field name="BordLeftFront" type="TPar" visibility="published" size="4" offset="6648" file="SubmodRootStructureNew.pas" line="999" />
-      <field name="BordRightBehind" type="TPar" visibility="published" size="4" offset="6652" file="SubmodRootStructureNew.pas" line="1000" />
-      <field name="CalibRLD" type="TPar" visibility="published" size="4" offset="6656" file="SubmodRootStructureNew.pas" line="1001" />
-      <field name="SegFile" type="TOption" visibility="published" size="4" offset="6660" file="SubmodRootStructureNew.pas" line="1006" />
-      <field name="IntersectFile" type="TOption" visibility="published" size="4" offset="6664" file="SubmodRootStructureNew.pas" line="1006" />
-      <field name="AggrRootData" type="TOption" visibility="published" size="4" offset="6668" file="SubmodRootStructureNew.pas" line="1006" />
-      <field name="WriteSegFile" type="TOption" visibility="published" size="4" offset="6672" file="SubmodRootStructureNew.pas" line="1008" />
-      <field name="WriteAggrData" type="TOption" visibility="published" size="4" offset="6676" file="SubmodRootStructureNew.pas" line="1009" />
-      <field name="ContGrowth" type="TOption" visibility="published" size="4" offset="6680" file="SubmodRootStructureNew.pas" line="1010" />
-      <field name="mode" type="TOption" visibility="published" size="4" offset="6684" file="SubmodRootStructureNew.pas" line="1011" />
-      <field name="modelQuality" type="TOption" visibility="published" size="4" offset="6688" file="SubmodRootStructureNew.pas" line="1012" />
-      <field name="Type_DMRoot" type="TOption" visibility="published" size="4" offset="6692" file="SubmodRootStructureNew.pas" line="1014" />
-      <field name="gridWidth" type="TOption" visibility="published" size="4" offset="6696" file="SubmodRootStructureNew.pas" line="1014" />
-      <field name="RelocateSowPoints" type="TOption" visibility="published" size="4" offset="6700" file="SubmodRootStructureNew.pas" line="1016" />
-      <field name="SoilTempMode" type="TOption" visibility="published" size="4" offset="6704" file="SubmodRootStructureNew.pas" line="1020" />
-      <field name="stochasticGrowth" type="TOption" visibility="published" size="4" offset="6708" file="SubmodRootStructureNew.pas" line="1021" />
-      <field name="RLDMode" type="TOption" visibility="published" size="4" offset="6712" file="SubmodRootStructureNew.pas" line="1026" />
-      <field name="PrecDeriveData" type="TOption" visibility="published" size="4" offset="6716" file="SubmodRootStructureNew.pas" line="1031" />
-      <field name="unlinkRS" type="TOption" visibility="published" size="4" offset="6720" file="SubmodRootStructureNew.pas" line="1035" />
-      <field name="enablePotentGrowth" type="TOption" visibility="published" size="4" offset="6724" file="SubmodRootStructureNew.pas" line="1037" />
-      <field name="SRL_input" type="TOption" visibility="published" size="4" offset="6728" file="SubmodRootStructureNew.pas" line="1042" />
-      <field name="drawMode" type="TOption" visibility="published" size="4" offset="6732" file="SubmodRootStructureNew.pas" line="1044" />
-      <field name="RandModePRoot" type="TOption" visibility="published" size="4" offset="6736" file="SubmodRootStructureNew.pas" line="1047" />
-      <field name="GrowthRatePW" type="TOption" visibility="published" size="4" offset="6740" file="SubmodRootStructureNew.pas" line="1055" />
-      <field name="GrowthRateSW" type="TOption" visibility="published" size="4" offset="6744" file="SubmodRootStructureNew.pas" line="1055" />
-      <field name="RamMode" type="TOption" visibility="published" size="4" offset="6748" file="SubmodRootStructureNew.pas" line="1055" />
-      <field name="CVMode" type="TOption" visibility="published" size="4" offset="6752" file="SubmodRootStructureNew.pas" line="1059" />
-      <field name="CVConsidCells" type="TOption" visibility="published" size="4" offset="6756" file="SubmodRootStructureNew.pas" line="1063" />
-      <field name="DrawPCroissLR" type="TOption" visibility="published" size="4" offset="6760" file="SubmodRootStructureNew.pas" line="1067" />
-      <field name="calcDistrAxis" type="TOption" visibility="published" size="4" offset="6764" file="SubmodRootStructureNew.pas" line="1072" />
-      <field name="showGrowth" type="TOption" visibility="published" size="4" offset="6768" file="SubmodRootStructureNew.pas" line="1075" />
-      <field name="DMRootDT" type="TExternV" visibility="published" size="4" offset="6772" file="SubmodRootStructureNew.pas" line="1079" />
-      <field name="Temp" type="TExternV" visibility="published" size="4" offset="6776" file="SubmodRootStructureNew.pas" line="1079" />
-      <field name="SRL" type="TExternV" visibility="published" size="4" offset="6780" file="SubmodRootStructureNew.pas" line="1080" />
+      <field name="mRLD" type="TState" visibility="published" size="4" offset="5868" file="SubmodRootStructureNew.pas" line="687" />
+      <field name="VC" type="TState" visibility="published" size="4" offset="5872" file="SubmodRootStructureNew.pas" line="688" />
+      <field name="RLD_1" type="TState" visibility="published" size="4" offset="5876" file="SubmodRootStructureNew.pas" line="693" />
+      <field name="RLD_2" type="TState" visibility="published" size="4" offset="5880" file="SubmodRootStructureNew.pas" line="693" />
+      <field name="RLD_3" type="TState" visibility="published" size="4" offset="5884" file="SubmodRootStructureNew.pas" line="693" />
+      <field name="RLD_4" type="TState" visibility="published" size="4" offset="5888" file="SubmodRootStructureNew.pas" line="693" />
+      <field name="RLD_5" type="TState" visibility="published" size="4" offset="5892" file="SubmodRootStructureNew.pas" line="693" />
+      <field name="RLD_6" type="TState" visibility="published" size="4" offset="5896" file="SubmodRootStructureNew.pas" line="693" />
+      <field name="RLD_7" type="TState" visibility="published" size="4" offset="5900" file="SubmodRootStructureNew.pas" line="693" />
+      <field name="RLD_8" type="TState" visibility="published" size="4" offset="5904" file="SubmodRootStructureNew.pas" line="693" />
+      <field name="RLD_9" type="TState" visibility="published" size="4" offset="5908" file="SubmodRootStructureNew.pas" line="693" />
+      <field name="RLD_10" type="TState" visibility="published" size="4" offset="5912" file="SubmodRootStructureNew.pas" line="693" />
+      <field name="VC_1" type="TState" visibility="published" size="4" offset="5916" file="SubmodRootStructureNew.pas" line="693" />
+      <field name="VC_2" type="TState" visibility="published" size="4" offset="5920" file="SubmodRootStructureNew.pas" line="694" />
+      <field name="VC_3" type="TState" visibility="published" size="4" offset="5924" file="SubmodRootStructureNew.pas" line="694" />
+      <field name="VC_4" type="TState" visibility="published" size="4" offset="5928" file="SubmodRootStructureNew.pas" line="694" />
+      <field name="VC_5" type="TState" visibility="published" size="4" offset="5932" file="SubmodRootStructureNew.pas" line="694" />
+      <field name="VC_6" type="TState" visibility="published" size="4" offset="5936" file="SubmodRootStructureNew.pas" line="694" />
+      <field name="VC_7" type="TState" visibility="published" size="4" offset="5940" file="SubmodRootStructureNew.pas" line="694" />
+      <field name="VC_8" type="TState" visibility="published" size="4" offset="5944" file="SubmodRootStructureNew.pas" line="694" />
+      <field name="VC_9" type="TState" visibility="published" size="4" offset="5948" file="SubmodRootStructureNew.pas" line="694" />
+      <field name="VC_10" type="TState" visibility="published" size="4" offset="5952" file="SubmodRootStructureNew.pas" line="694" />
+      <field name="depth" type="TState" visibility="published" size="4" offset="5956" file="SubmodRootStructureNew.pas" line="694" />
+      <field name="DeepestIntersection" type="TState" visibility="published" size="4" offset="5960" file="SubmodRootStructureNew.pas" line="696" />
+      <field name="numbRoots" type="TState" visibility="published" size="4" offset="5964" file="SubmodRootStructureNew.pas" line="697" />
+      <field name="WL_0_30" type="TState" visibility="published" size="4" offset="5968" file="SubmodRootStructureNew.pas" line="701" />
+      <field name="WL_30_60" type="TState" visibility="published" size="4" offset="5972" file="SubmodRootStructureNew.pas" line="702" />
+      <field name="WL_60_90" type="TState" visibility="published" size="4" offset="5976" file="SubmodRootStructureNew.pas" line="703" />
+      <field name="WL_30_100" type="TState" visibility="published" size="4" offset="5980" file="SubmodRootStructureNew.pas" line="704" />
+      <field name="BranchDens" type="TState" visibility="published" size="4" offset="5984" file="SubmodRootStructureNew.pas" line="705" />
+      <field name="BranchDensStDev" type="TState" visibility="published" size="4" offset="5988" file="SubmodRootStructureNew.pas" line="706" />
+      <field name="ZahlSegPW" type="TState" visibility="published" size="4" offset="5992" file="SubmodRootStructureNew.pas" line="712" />
+      <field name="ZahlSegE1" type="TState" visibility="published" size="4" offset="5996" file="SubmodRootStructureNew.pas" line="713" />
+      <field name="ZahlSegE2" type="TState" visibility="published" size="4" offset="6000" file="SubmodRootStructureNew.pas" line="714" />
+      <field name="ZahlSegE3" type="TState" visibility="published" size="4" offset="6004" file="SubmodRootStructureNew.pas" line="715" />
+      <field name="numberEmission" type="TVar" visibility="published" size="4" offset="6008" file="SubmodRootStructureNew.pas" line="719" />
+      <field name="EmissPerPlant" type="TVar" visibility="published" size="4" offset="6012" file="SubmodRootStructureNew.pas" line="720" />
+      <field name="numberRootSeg" type="TVar" visibility="published" size="4" offset="6016" file="SubmodRootStructureNew.pas" line="721" />
+      <field name="SumWL" type="TVar" visibility="published" size="4" offset="6020" file="SubmodRootStructureNew.pas" line="722" />
+      <field name="MeanSegLenWC" type="TVar" visibility="published" size="4" offset="6024" file="SubmodRootStructureNew.pas" line="726" />
+      <field name="StdDevSegLenWC" type="TVar" visibility="published" size="4" offset="6028" file="SubmodRootStructureNew.pas" line="727" />
+      <field name="RootDM" type="TVar" visibility="published" size="4" offset="6032" file="SubmodRootStructureNew.pas" line="728" />
+      <field name="RootDMWSdt" type="TVar" visibility="published" size="4" offset="6036" file="SubmodRootStructureNew.pas" line="729" />
+      <field name="numberPlants" type="TVar" visibility="published" size="4" offset="6040" file="SubmodRootStructureNew.pas" line="731" />
+      <field name="Red_WL" type="TVar" visibility="published" size="4" offset="6044" file="SubmodRootStructureNew.pas" line="732" />
+      <field name="TempSumAir" type="TVar" visibility="published" size="4" offset="6048" file="SubmodRootStructureNew.pas" line="733" />
+      <field name="SumWL_PW" type="TVar" visibility="published" size="4" offset="6052" file="SubmodRootStructureNew.pas" line="738" />
+      <field name="SumWL_E1" type="TVar" visibility="published" size="4" offset="6056" file="SubmodRootStructureNew.pas" line="739" />
+      <field name="SumWL_E2" type="TVar" visibility="published" size="4" offset="6060" file="SubmodRootStructureNew.pas" line="740" />
+      <field name="SumWL_E3" type="TVar" visibility="published" size="4" offset="6064" file="SubmodRootStructureNew.pas" line="741" />
+      <field name="TotSLVZPW" type="TVar" visibility="published" size="4" offset="6068" file="SubmodRootStructureNew.pas" line="742" />
+      <field name="TotSLVZE1" type="TVar" visibility="published" size="4" offset="6072" file="SubmodRootStructureNew.pas" line="743" />
+      <field name="TotSLVZE2" type="TVar" visibility="published" size="4" offset="6076" file="SubmodRootStructureNew.pas" line="744" />
+      <field name="TotSLVZE3" type="TVar" visibility="published" size="4" offset="6080" file="SubmodRootStructureNew.pas" line="745" />
+      <field name="MeanSLVZPW" type="TVar" visibility="published" size="4" offset="6084" file="SubmodRootStructureNew.pas" line="747" />
+      <field name="MeanSLVZE1" type="TVar" visibility="published" size="4" offset="6088" file="SubmodRootStructureNew.pas" line="749" />
+      <field name="MeanSLVZE2" type="TVar" visibility="published" size="4" offset="6092" file="SubmodRootStructureNew.pas" line="751" />
+      <field name="MeanSLVZE3" type="TVar" visibility="published" size="4" offset="6096" file="SubmodRootStructureNew.pas" line="753" />
+      <field name="StdDSLVZPW" type="TVar" visibility="published" size="4" offset="6100" file="SubmodRootStructureNew.pas" line="755" />
+      <field name="StdDSLVZE1" type="TVar" visibility="published" size="4" offset="6104" file="SubmodRootStructureNew.pas" line="757" />
+      <field name="StdDSLVZE2" type="TVar" visibility="published" size="4" offset="6108" file="SubmodRootStructureNew.pas" line="759" />
+      <field name="StdDSLVZE3" type="TVar" visibility="published" size="4" offset="6112" file="SubmodRootStructureNew.pas" line="761" />
+      <field name="TotNZ_PW" type="TVar" visibility="published" size="4" offset="6116" file="SubmodRootStructureNew.pas" line="773" />
+      <field name="TotApNBZ_PW" type="TVar" visibility="published" size="4" offset="6120" file="SubmodRootStructureNew.pas" line="774" />
+      <field name="TotApNBZ_E1" type="TVar" visibility="published" size="4" offset="6124" file="SubmodRootStructureNew.pas" line="775" />
+      <field name="TotApNBZ_E2" type="TVar" visibility="published" size="4" offset="6128" file="SubmodRootStructureNew.pas" line="776" />
+      <field name="TotApNBZ_E3" type="TVar" visibility="published" size="4" offset="6132" file="SubmodRootStructureNew.pas" line="777" />
+      <field name="TotBasNBZ_PW" type="TVar" visibility="published" size="4" offset="6136" file="SubmodRootStructureNew.pas" line="778" />
+      <field name="MeanNZ_PW" type="TVar" visibility="published" size="4" offset="6140" file="SubmodRootStructureNew.pas" line="779" />
+      <field name="MeanApNBZ_PW" type="TVar" visibility="published" size="4" offset="6144" file="SubmodRootStructureNew.pas" line="781" />
+      <field name="MeanBasNBZ_PW" type="TVar" visibility="published" size="4" offset="6148" file="SubmodRootStructureNew.pas" line="782" />
+      <field name="MeanBZ_PW" type="TVar" visibility="published" size="4" offset="6152" file="SubmodRootStructureNew.pas" line="783" />
+      <field name="StdNZ_PW" type="TVar" visibility="published" size="4" offset="6156" file="SubmodRootStructureNew.pas" line="785" />
+      <field name="StdApNBZ_PW" type="TVar" visibility="published" size="4" offset="6160" file="SubmodRootStructureNew.pas" line="787" />
+      <field name="StdBasNBZ_PW" type="TVar" visibility="published" size="4" offset="6164" file="SubmodRootStructureNew.pas" line="788" />
+      <field name="MeanApNBZ_E1" type="TVar" visibility="published" size="4" offset="6168" file="SubmodRootStructureNew.pas" line="790" />
+      <field name="StdApNBZ_E1" type="TVar" visibility="published" size="4" offset="6172" file="SubmodRootStructureNew.pas" line="791" />
+      <field name="MeanApNBZ_E2" type="TVar" visibility="published" size="4" offset="6176" file="SubmodRootStructureNew.pas" line="793" />
+      <field name="StdApNBZ_E2" type="TVar" visibility="published" size="4" offset="6180" file="SubmodRootStructureNew.pas" line="794" />
+      <field name="MeanApNBZ_E3" type="TVar" visibility="published" size="4" offset="6184" file="SubmodRootStructureNew.pas" line="796" />
+      <field name="StdApNBZ_E3" type="TVar" visibility="published" size="4" offset="6188" file="SubmodRootStructureNew.pas" line="797" />
+      <field name="MeanAxisPW" type="TVar" visibility="published" size="4" offset="6192" file="SubmodRootStructureNew.pas" line="811" />
+      <field name="VCAxisPW" type="TVar" visibility="published" size="4" offset="6196" file="SubmodRootStructureNew.pas" line="812" />
+      <field name="MeanAxisE1" type="TVar" visibility="published" size="4" offset="6200" file="SubmodRootStructureNew.pas" line="813" />
+      <field name="VCAxisE1" type="TVar" visibility="published" size="4" offset="6204" file="SubmodRootStructureNew.pas" line="814" />
+      <field name="MeanAxisE2" type="TVar" visibility="published" size="4" offset="6208" file="SubmodRootStructureNew.pas" line="815" />
+      <field name="VCAxisE2" type="TVar" visibility="published" size="4" offset="6212" file="SubmodRootStructureNew.pas" line="816" />
+      <field name="MeanAxisE3" type="TVar" visibility="published" size="4" offset="6216" file="SubmodRootStructureNew.pas" line="817" />
+      <field name="VCAxisE3" type="TVar" visibility="published" size="4" offset="6220" file="SubmodRootStructureNew.pas" line="818" />
+      <field name="sowingDate" type="TPar" visibility="published" size="4" offset="6224" file="SubmodRootStructureNew.pas" line="821" />
+      <field name="contRad" type="TPar" visibility="published" size="4" offset="6228" file="SubmodRootStructureNew.pas" line="822" />
+      <field name="NumCompToCalc" type="TPar" visibility="published" size="4" offset="6232" file="SubmodRootStructureNew.pas" line="823" />
+      <field name="border1stLayer" type="TPar" visibility="published" size="4" offset="6236" file="SubmodRootStructureNew.pas" line="824" />
+      <field name="DimX" type="TPar" visibility="published" size="4" offset="6240" file="SubmodRootStructureNew.pas" line="825" />
+      <field name="DimY" type="TPar" visibility="published" size="4" offset="6244" file="SubmodRootStructureNew.pas" line="826" />
+      <field name="DimZ" type="TPar" visibility="published" size="4" offset="6248" file="SubmodRootStructureNew.pas" line="827" />
+      <field name="RowSpace" type="TPar" visibility="published" size="4" offset="6252" file="SubmodRootStructureNew.pas" line="828" />
+      <field name="SpaceWithinRows" type="TPar" visibility="published" size="4" offset="6256" file="SubmodRootStructureNew.pas" line="829" />
+      <field name="PosXPlant" type="TPar" visibility="published" size="4" offset="6260" file="SubmodRootStructureNew.pas" line="830" />
+      <field name="PosYPlant" type="TPar" visibility="published" size="4" offset="6264" file="SubmodRootStructureNew.pas" line="831" />
+      <field name="SowingDepth" type="TPar" visibility="published" size="4" offset="6268" file="SubmodRootStructureNew.pas" line="832" />
+      <field name="a_scaling" type="TPar" visibility="published" size="4" offset="6272" file="SubmodRootStructureNew.pas" line="835" />
+      <field name="b_scaling" type="TPar" visibility="published" size="4" offset="6276" file="SubmodRootStructureNew.pas" line="842" />
+      <field name="ram_scaling" type="TPar" visibility="published" size="4" offset="6280" file="SubmodRootStructureNew.pas" line="848" />
+      <field name="geo_scaling" type="TPar" visibility="published" size="4" offset="6284" file="SubmodRootStructureNew.pas" line="849" />
+      <field name="mech_scaling" type="TPar" visibility="published" size="4" offset="6288" file="SubmodRootStructureNew.pas" line="850" />
+      <field name="Add_Prim" type="TPar" visibility="published" size="4" offset="6292" file="SubmodRootStructureNew.pas" line="851" />
+      <field name="AddNumb_Gen" type="TPar" visibility="published" size="4" offset="6296" file="SubmodRootStructureNew.pas" line="852" />
+      <field name="Par_begin" type="TPar" visibility="published" size="4" offset="6300" file="SubmodRootStructureNew.pas" line="855" />
+      <field name="Par_disposition" type="TPar" visibility="published" size="4" offset="6304" file="SubmodRootStructureNew.pas" line="856" />
+      <field name="Par_AP_NBZ_Ord1" type="TPar" visibility="published" size="4" offset="6308" file="SubmodRootStructureNew.pas" line="859" />
+      <field name="Par_Bas_NBZ_Ord1" type="TPar" visibility="published" size="4" offset="6312" file="SubmodRootStructureNew.pas" line="860" />
+      <field name="Par_numberGen_Ord1" type="TPar" visibility="published" size="4" offset="6316" file="SubmodRootStructureNew.pas" line="861" />
+      <field name="Par_AverAngleInsert_Ord1" type="TPar" visibility="published" size="4" offset="6320" file="SubmodRootStructureNew.pas" line="861" />
+      <field name="Par_StdDevAngleInsert_Ord1" type="TPar" visibility="published" size="4" offset="6324" file="SubmodRootStructureNew.pas" line="862" />
+      <field name="Par_developPrim_Ord1" type="TPar" visibility="published" size="4" offset="6328" file="SubmodRootStructureNew.pas" line="863" />
+      <field name="Par_AverGrowthA_Ord1" type="TPar" visibility="published" size="4" offset="6332" file="SubmodRootStructureNew.pas" line="864" />
+      <field name="Par_AverGrowthB_Ord1" type="TPar" visibility="published" size="4" offset="6336" file="SubmodRootStructureNew.pas" line="865" />
+      <field name="Par_StdDevGrowthA_Ord1" type="TPar" visibility="published" size="4" offset="6340" file="SubmodRootStructureNew.pas" line="866" />
+      <field name="Par_StdDevGrowthB_Ord1" type="TPar" visibility="published" size="4" offset="6344" file="SubmodRootStructureNew.pas" line="867" />
+      <field name="Par_ConstRatePW" type="TPar" visibility="published" size="4" offset="6348" file="SubmodRootStructureNew.pas" line="868" />
+      <field name="Par_StdDevRamific_Ord1" type="TPar" visibility="published" size="4" offset="6352" file="SubmodRootStructureNew.pas" line="869" />
+      <field name="Par_Coeff_Geo_Ord1" type="TPar" visibility="published" size="4" offset="6356" file="SubmodRootStructureNew.pas" line="870" />
+      <field name="Par_mechResist_Ord1" type="TPar" visibility="published" size="4" offset="6360" file="SubmodRootStructureNew.pas" line="871" />
+      <field name="Par_AverRamific_Ord1" type="TPar" visibility="published" size="4" offset="6364" file="SubmodRootStructureNew.pas" line="872" />
+      <field name="Par_AP_NBZ_Ord2" type="TPar" visibility="published" size="4" offset="6368" file="SubmodRootStructureNew.pas" line="875" />
+      <field name="Par_Bas_NBZ_Ord2" type="TPar" visibility="published" size="4" offset="6372" file="SubmodRootStructureNew.pas" line="875" />
+      <field name="Par_numberGen_Ord2" type="TPar" visibility="published" size="4" offset="6376" file="SubmodRootStructureNew.pas" line="875" />
+      <field name="Par_AverAngleInsert_Ord2" type="TPar" visibility="published" size="4" offset="6380" file="SubmodRootStructureNew.pas" line="876" />
+      <field name="Par_StdDevAngleInsert_Ord2" type="TPar" visibility="published" size="4" offset="6384" file="SubmodRootStructureNew.pas" line="877" />
+      <field name="Par_developPrim_Ord2" type="TPar" visibility="published" size="4" offset="6388" file="SubmodRootStructureNew.pas" line="878" />
+      <field name="Par_AverGrowthA_Ord2" type="TPar" visibility="published" size="4" offset="6392" file="SubmodRootStructureNew.pas" line="879" />
+      <field name="Par_AverGrowthADist_Ord2" type="TPar" visibility="published" size="4" offset="6396" file="SubmodRootStructureNew.pas" line="880" />
+      <field name="Par_AverGrowthB_Ord2" type="TPar" visibility="published" size="4" offset="6400" file="SubmodRootStructureNew.pas" line="883" />
+      <field name="Par_StdDevGrowthA_Ord2" type="TPar" visibility="published" size="4" offset="6404" file="SubmodRootStructureNew.pas" line="884" />
+      <field name="Par_StdDevGrowthADist_Ord2" type="TPar" visibility="published" size="4" offset="6408" file="SubmodRootStructureNew.pas" line="885" />
+      <field name="Par_StdDevGrowthB_Ord2" type="TPar" visibility="published" size="4" offset="6412" file="SubmodRootStructureNew.pas" line="888" />
+      <field name="Par_AverRamific_Ord2" type="TPar" visibility="published" size="4" offset="6416" file="SubmodRootStructureNew.pas" line="889" />
+      <field name="Par_StdDevRamific_Ord2" type="TPar" visibility="published" size="4" offset="6420" file="SubmodRootStructureNew.pas" line="890" />
+      <field name="Par_Coeff_Geo_Ord2" type="TPar" visibility="published" size="4" offset="6424" file="SubmodRootStructureNew.pas" line="891" />
+      <field name="Par_mechResist_Ord2" type="TPar" visibility="published" size="4" offset="6428" file="SubmodRootStructureNew.pas" line="892" />
+      <field name="Par_AP_NBZ_Ord3" type="TPar" visibility="published" size="4" offset="6432" file="SubmodRootStructureNew.pas" line="895" />
+      <field name="Par_Bas_NBZ_Ord3" type="TPar" visibility="published" size="4" offset="6436" file="SubmodRootStructureNew.pas" line="895" />
+      <field name="Par_numberGen_Ord3" type="TPar" visibility="published" size="4" offset="6440" file="SubmodRootStructureNew.pas" line="895" />
+      <field name="Par_AverAngleInsert_Ord3" type="TPar" visibility="published" size="4" offset="6444" file="SubmodRootStructureNew.pas" line="896" />
+      <field name="Par_StdDevAngleInsert_Ord3" type="TPar" visibility="published" size="4" offset="6448" file="SubmodRootStructureNew.pas" line="897" />
+      <field name="Par_developPrim_Ord3" type="TPar" visibility="published" size="4" offset="6452" file="SubmodRootStructureNew.pas" line="898" />
+      <field name="Par_AverGrowthA_Ord3" type="TPar" visibility="published" size="4" offset="6456" file="SubmodRootStructureNew.pas" line="899" />
+      <field name="Par_AverGrowthB_Ord3" type="TPar" visibility="published" size="4" offset="6460" file="SubmodRootStructureNew.pas" line="900" />
+      <field name="Par_StdDevGrowthA_Ord3" type="TPar" visibility="published" size="4" offset="6464" file="SubmodRootStructureNew.pas" line="901" />
+      <field name="Par_StdDevGrowthB_Ord3" type="TPar" visibility="published" size="4" offset="6468" file="SubmodRootStructureNew.pas" line="902" />
+      <field name="Par_AverRamific_Ord3" type="TPar" visibility="published" size="4" offset="6472" file="SubmodRootStructureNew.pas" line="903" />
+      <field name="Par_StdDevRamific_Ord3" type="TPar" visibility="published" size="4" offset="6476" file="SubmodRootStructureNew.pas" line="904" />
+      <field name="Par_Coeff_Geo_Ord3" type="TPar" visibility="published" size="4" offset="6480" file="SubmodRootStructureNew.pas" line="905" />
+      <field name="Par_mechResist_Ord3" type="TPar" visibility="published" size="4" offset="6484" file="SubmodRootStructureNew.pas" line="906" />
+      <field name="Par_AP_NBZ_Ord4" type="TPar" visibility="published" size="4" offset="6488" file="SubmodRootStructureNew.pas" line="909" />
+      <field name="Par_Bas_NBZ_Ord4" type="TPar" visibility="published" size="4" offset="6492" file="SubmodRootStructureNew.pas" line="909" />
+      <field name="Par_numberGen_Ord4" type="TPar" visibility="published" size="4" offset="6496" file="SubmodRootStructureNew.pas" line="909" />
+      <field name="Par_AverAngleInsert_Ord4" type="TPar" visibility="published" size="4" offset="6500" file="SubmodRootStructureNew.pas" line="910" />
+      <field name="Par_StdDevAngleInsert_Ord4" type="TPar" visibility="published" size="4" offset="6504" file="SubmodRootStructureNew.pas" line="910" />
+      <field name="Par_developPrim_Ord4" type="TPar" visibility="published" size="4" offset="6508" file="SubmodRootStructureNew.pas" line="911" />
+      <field name="Par_AverGrowthA_Ord4" type="TPar" visibility="published" size="4" offset="6512" file="SubmodRootStructureNew.pas" line="911" />
+      <field name="Par_AverGrowthB_Ord4" type="TPar" visibility="published" size="4" offset="6516" file="SubmodRootStructureNew.pas" line="911" />
+      <field name="Par_StdDevGrowthA_Ord4" type="TPar" visibility="published" size="4" offset="6520" file="SubmodRootStructureNew.pas" line="912" />
+      <field name="Par_StdDevGrowthB_Ord4" type="TPar" visibility="published" size="4" offset="6524" file="SubmodRootStructureNew.pas" line="912" />
+      <field name="Par_AverRamific_Ord4" type="TPar" visibility="published" size="4" offset="6528" file="SubmodRootStructureNew.pas" line="912" />
+      <field name="Par_StdDevRamific_Ord4" type="TPar" visibility="published" size="4" offset="6532" file="SubmodRootStructureNew.pas" line="913" />
+      <field name="Par_Coeff_Geo_Ord4" type="TPar" visibility="published" size="4" offset="6536" file="SubmodRootStructureNew.pas" line="913" />
+      <field name="Par_mechResist_Ord4" type="TPar" visibility="published" size="4" offset="6540" file="SubmodRootStructureNew.pas" line="913" />
+      <field name="GeoMod" type="TPar" visibility="published" size="4" offset="6544" file="SubmodRootStructureNew.pas" line="919" />
+      <field name="GeoModRange" type="TPar" visibility="published" size="4" offset="6548" file="SubmodRootStructureNew.pas" line="921" />
+      <field name="DepthSubsoil" type="TPar" visibility="published" size="4" offset="6552" file="SubmodRootStructureNew.pas" line="923" />
+      <field name="ThresDistBase" type="TPar" visibility="published" size="4" offset="6556" file="SubmodRootStructureNew.pas" line="926" />
+      <field name="ElongAStartAv_Ord2" type="TPar" visibility="published" size="4" offset="6560" file="SubmodRootStructureNew.pas" line="929" />
+      <field name="ElongAStartDev_Ord2" type="TPar" visibility="published" size="4" offset="6564" file="SubmodRootStructureNew.pas" line="932" />
+      <field name="Thres_RamMod" type="TPar" visibility="published" size="4" offset="6568" file="SubmodRootStructureNew.pas" line="937" />
+      <field name="Par_RamMod_Gener" type="TPar" visibility="published" size="4" offset="6572" file="SubmodRootStructureNew.pas" line="940" />
+      <field name="Par_RamMod_Asem" type="TPar" visibility="published" size="4" offset="6576" file="SubmodRootStructureNew.pas" line="945" />
+      <field name="Par_RamMod_Bsem" type="TPar" visibility="published" size="4" offset="6580" file="SubmodRootStructureNew.pas" line="949" />
+      <field name="Par_RamMod_Acr" type="TPar" visibility="published" size="4" offset="6584" file="SubmodRootStructureNew.pas" line="954" />
+      <field name="Par_RamMod_Bcr" type="TPar" visibility="published" size="4" offset="6588" file="SubmodRootStructureNew.pas" line="954" />
+      <field name="dl_RedFWL" type="TPar" visibility="published" size="4" offset="6592" file="SubmodRootStructureNew.pas" line="958" />
+      <field name="Threshold_DMRoot" type="TPar" visibility="published" size="4" offset="6596" file="SubmodRootStructureNew.pas" line="960" />
+      <field name="SpezRL" type="TPar" visibility="published" size="4" offset="6600" file="SubmodRootStructureNew.pas" line="964" />
+      <field name="avTempYear" type="TPar" visibility="published" size="4" offset="6604" file="SubmodRootStructureNew.pas" line="965" />
+      <field name="BaseTemp" type="TPar" visibility="published" size="4" offset="6608" file="SubmodRootStructureNew.pas" line="968" />
+      <field name="Tmin" type="TPar" visibility="published" size="4" offset="6612" file="SubmodRootStructureNew.pas" line="970" />
+      <field name="Tmax" type="TPar" visibility="published" size="4" offset="6616" file="SubmodRootStructureNew.pas" line="973" />
+      <field name="theta_" type="TPar" visibility="published" size="4" offset="6620" file="SubmodRootStructureNew.pas" line="973" />
+      <field name="TetaAngl" type="TPar" visibility="published" size="4" offset="6624" file="SubmodRootStructureNew.pas" line="974" />
+      <field name="minDistWall" type="TPar" visibility="published" size="4" offset="6628" file="SubmodRootStructureNew.pas" line="976" />
+      <field name="NumbColVK" type="TPar" visibility="published" size="4" offset="6632" file="SubmodRootStructureNew.pas" line="977" />
+      <field name="spezRL_Sand" type="TPar" visibility="published" size="4" offset="6636" file="SubmodRootStructureNew.pas" line="981" />
+      <field name="spezRL_NL" type="TPar" visibility="published" size="4" offset="6640" file="SubmodRootStructureNew.pas" line="982" />
+      <field name="TransfSand_NL" type="TPar" visibility="published" size="4" offset="6644" file="SubmodRootStructureNew.pas" line="983" />
+      <field name="ThresholdGrowth" type="TPar" visibility="published" size="4" offset="6648" file="SubmodRootStructureNew.pas" line="985" />
+      <field name="L0_MerisPW" type="TPar" visibility="published" size="4" offset="6652" file="SubmodRootStructureNew.pas" line="987" />
+      <field name="rgr_expo" type="TPar" visibility="published" size="4" offset="6656" file="SubmodRootStructureNew.pas" line="990" />
+      <field name="LmaxMerisPW" type="TPar" visibility="published" size="4" offset="6660" file="SubmodRootStructureNew.pas" line="991" />
+      <field name="BordLeftFront" type="TPar" visibility="published" size="4" offset="6664" file="SubmodRootStructureNew.pas" line="999" />
+      <field name="BordRightBehind" type="TPar" visibility="published" size="4" offset="6668" file="SubmodRootStructureNew.pas" line="1000" />
+      <field name="CalibRLD" type="TPar" visibility="published" size="4" offset="6672" file="SubmodRootStructureNew.pas" line="1001" />
+      <field name="SegFile" type="TOption" visibility="published" size="4" offset="6676" file="SubmodRootStructureNew.pas" line="1006" />
+      <field name="IntersectFile" type="TOption" visibility="published" size="4" offset="6680" file="SubmodRootStructureNew.pas" line="1006" />
+      <field name="AggrRootData" type="TOption" visibility="published" size="4" offset="6684" file="SubmodRootStructureNew.pas" line="1006" />
+      <field name="WriteSegFile" type="TOption" visibility="published" size="4" offset="6688" file="SubmodRootStructureNew.pas" line="1008" />
+      <field name="WriteAggrData" type="TOption" visibility="published" size="4" offset="6692" file="SubmodRootStructureNew.pas" line="1009" />
+      <field name="ContGrowth" type="TOption" visibility="published" size="4" offset="6696" file="SubmodRootStructureNew.pas" line="1010" />
+      <field name="mode" type="TOption" visibility="published" size="4" offset="6700" file="SubmodRootStructureNew.pas" line="1011" />
+      <field name="modelQuality" type="TOption" visibility="published" size="4" offset="6704" file="SubmodRootStructureNew.pas" line="1012" />
+      <field name="Type_DMRoot" type="TOption" visibility="published" size="4" offset="6708" file="SubmodRootStructureNew.pas" line="1014" />
+      <field name="gridWidth" type="TOption" visibility="published" size="4" offset="6712" file="SubmodRootStructureNew.pas" line="1014" />
+      <field name="RelocateSowPoints" type="TOption" visibility="published" size="4" offset="6716" file="SubmodRootStructureNew.pas" line="1016" />
+      <field name="SoilTempMode" type="TOption" visibility="published" size="4" offset="6720" file="SubmodRootStructureNew.pas" line="1020" />
+      <field name="stochasticGrowth" type="TOption" visibility="published" size="4" offset="6724" file="SubmodRootStructureNew.pas" line="1021" />
+      <field name="RLDMode" type="TOption" visibility="published" size="4" offset="6728" file="SubmodRootStructureNew.pas" line="1026" />
+      <field name="PrecDeriveData" type="TOption" visibility="published" size="4" offset="6732" file="SubmodRootStructureNew.pas" line="1031" />
+      <field name="unlinkRS" type="TOption" visibility="published" size="4" offset="6736" file="SubmodRootStructureNew.pas" line="1035" />
+      <field name="enablePotentGrowth" type="TOption" visibility="published" size="4" offset="6740" file="SubmodRootStructureNew.pas" line="1037" />
+      <field name="SRL_input" type="TOption" visibility="published" size="4" offset="6744" file="SubmodRootStructureNew.pas" line="1042" />
+      <field name="drawMode" type="TOption" visibility="published" size="4" offset="6748" file="SubmodRootStructureNew.pas" line="1044" />
+      <field name="RandModePRoot" type="TOption" visibility="published" size="4" offset="6752" file="SubmodRootStructureNew.pas" line="1047" />
+      <field name="GrowthRatePW" type="TOption" visibility="published" size="4" offset="6756" file="SubmodRootStructureNew.pas" line="1055" />
+      <field name="GrowthRateSW" type="TOption" visibility="published" size="4" offset="6760" file="SubmodRootStructureNew.pas" line="1055" />
+      <field name="RamMode" type="TOption" visibility="published" size="4" offset="6764" file="SubmodRootStructureNew.pas" line="1055" />
+      <field name="CVMode" type="TOption" visibility="published" size="4" offset="6768" file="SubmodRootStructureNew.pas" line="1059" />
+      <field name="CVConsidCells" type="TOption" visibility="published" size="4" offset="6772" file="SubmodRootStructureNew.pas" line="1063" />
+      <field name="DrawPCroissLR" type="TOption" visibility="published" size="4" offset="6776" file="SubmodRootStructureNew.pas" line="1067" />
+      <field name="calcDistrAxis" type="TOption" visibility="published" size="4" offset="6780" file="SubmodRootStructureNew.pas" line="1072" />
+      <field name="showGrowth" type="TOption" visibility="published" size="4" offset="6784" file="SubmodRootStructureNew.pas" line="1075" />
+      <field name="DMRootDT" type="TExternV" visibility="published" size="4" offset="6788" file="SubmodRootStructureNew.pas" line="1079" />
+      <field name="Temp" type="TExternV" visibility="published" size="4" offset="6792" file="SubmodRootStructureNew.pas" line="1079" />
+      <field name="SRL" type="TExternV" visibility="published" size="4" offset="6796" file="SubmodRootStructureNew.pas" line="1080" />
       <property name="MyPaintBox" visibility="published" read="fPaintBox" write="fPaintBox" type="TMyPaintBox" file="SubmodRootStructureNew.pas" line="1084" />
       <property name="MyVorCheck" visibility="published" read="fCheckBoxVor" write="fCheckBoxVor" type="TCheckBox" file="SubmodRootStructureNew.pas" line="1085" />
       <property name="MyTriangCheck" visibility="published" read="fCheckBoxTriang" write="fCheckBoxTriang" type="TCheckBox" file="SubmodRootStructureNew.pas" line="1086" />

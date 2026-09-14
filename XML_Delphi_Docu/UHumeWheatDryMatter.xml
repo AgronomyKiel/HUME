@@ -80,6 +80,8 @@
        </remarks>
     </devnotes>
     <ancestor name="TSubmodel" namespace="UMod">
+      <methodref name="RecordEntityProvenance" visibility="private">
+      </methodref>
       <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
       </methodref>
       <methodref name="RegistrateOption" visibility="private" procflags="virtual">
@@ -125,6 +127,8 @@
       <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
       </methodref>
       <methodref name="UpdateValue" visibility="protected" />
+      <methodref name="SetEntityDeclarationClass" visibility="protected">
+      </methodref>
       <methodref name="Paint" visibility="protected" procflags="override">
       </methodref>
       <methodref name="Notification" visibility="protected" procflags="virtual" />
@@ -1276,22 +1280,22 @@
            <summary>Calculates the effect of drought on dry-matter production.</summary>
         </devnotes>
       </procedure>
-      <field name="fSoilWaterModel" type="TSoilWaterModelR" visibility="protected" size="4" offset="656" file="UHumeWheatDryMatter.pas" line="60">
+      <field name="fSoilWaterModel" type="TSoilWaterModelR" visibility="protected" size="4" offset="664" file="UHumeWheatDryMatter.pas" line="60">
         <devnotes>
            <summary>References the soil-water model used by this submodel.</summary>
         </devnotes>
       </field>
-      <field name="fDroughtImpact" type="TDroughtImpact" visibility="protected" size="1" offset="660" file="UHumeWheatDryMatter.pas" line="63">
+      <field name="fDroughtImpact" type="TDroughtImpact" visibility="protected" size="1" offset="668" file="UHumeWheatDryMatter.pas" line="63">
         <devnotes>
            <summary>Stores the selected drought-impact option.</summary>
         </devnotes>
       </field>
-      <field name="fNImpact" type="Boolean" visibility="protected" size="1" offset="661" file="UHumeWheatDryMatter.pas" line="66">
+      <field name="fNImpact" type="Boolean" visibility="protected" size="1" offset="669" file="UHumeWheatDryMatter.pas" line="66">
         <devnotes>
            <summary>Indicates whether nitrogen availability affects assimilation.</summary>
         </devnotes>
       </field>
-      <field name="fCalcTempEffect" type="TCalcTempEffect" visibility="protected" size="1" offset="662" file="UHumeWheatDryMatter.pas" line="69">
+      <field name="fCalcTempEffect" type="TCalcTempEffect" visibility="protected" size="1" offset="670" file="UHumeWheatDryMatter.pas" line="69">
         <devnotes>
            <summary>Stores the selected temperature-effect calculation method.</summary>
         </devnotes>
@@ -1312,292 +1316,292 @@
           <retval type="Double" />
         </parameters>
       </function>
-      <field name="CumPAR" type="TState" visibility="public" size="4" offset="664" file="UHumeWheatDryMatter.pas" line="81">
+      <field name="CumPAR" type="TState" visibility="public" size="4" offset="672" file="UHumeWheatDryMatter.pas" line="81">
         <devnotes>
            <summary>Cumulative intercepted photosynthetically active radiation [MJ/m2].</summary>
         </devnotes>
       </field>
-      <field name="CumCarbo" type="TState" visibility="public" size="4" offset="668" file="UHumeWheatDryMatter.pas" line="83">
+      <field name="CumCarbo" type="TState" visibility="public" size="4" offset="676" file="UHumeWheatDryMatter.pas" line="83">
         <devnotes>
            <summary>Cumulative assimilated dry matter [g/m2].</summary>
         </devnotes>
       </field>
-      <field name="pSWDF" type="TPar" visibility="public" size="4" offset="672" file="UHumeWheatDryMatter.pas" line="86">
+      <field name="pSWDF" type="TPar" visibility="public" size="4" offset="680" file="UHumeWheatDryMatter.pas" line="86">
         <devnotes>
            <summary>Controls the nonlinear relationship between transpiration ratio and SWDF (Ferreyra 2003).</summary>
         </devnotes>
       </field>
-      <field name="SLN_crit_int" type="TPar" visibility="public" size="4" offset="676" file="UHumeWheatDryMatter.pas" line="89">
+      <field name="SLN_crit_int" type="TPar" visibility="public" size="4" offset="684" file="UHumeWheatDryMatter.pas" line="89">
         <devnotes>
            <summary>Intercept of the critical-SLN function (Ratjen &amp; Kage 2015).</summary>
         </devnotes>
       </field>
-      <field name="SLN_crit_inc" type="TPar" visibility="public" size="4" offset="680" file="UHumeWheatDryMatter.pas" line="92">
+      <field name="SLN_crit_inc" type="TPar" visibility="public" size="4" offset="688" file="UHumeWheatDryMatter.pas" line="92">
         <devnotes>
            <summary>Slope of the critical-SLN function (Ratjen &amp; Kage 2015).</summary>
         </devnotes>
       </field>
-      <field name="SLNI_a" type="TPar" visibility="public" size="4" offset="684" file="UHumeWheatDryMatter.pas" line="95">
+      <field name="SLNI_a" type="TPar" visibility="public" size="4" offset="692" file="UHumeWheatDryMatter.pas" line="95">
         <devnotes>
            <summary>Constant coefficient of the SLN-index response.</summary>
         </devnotes>
       </field>
-      <field name="SLNI_b" type="TPar" visibility="public" size="4" offset="688" file="UHumeWheatDryMatter.pas" line="98">
+      <field name="SLNI_b" type="TPar" visibility="public" size="4" offset="696" file="UHumeWheatDryMatter.pas" line="98">
         <devnotes>
            <summary>Linear coefficient of the SLN-index response.</summary>
         </devnotes>
       </field>
-      <field name="SLNI_c" type="TPar" visibility="public" size="4" offset="692" file="UHumeWheatDryMatter.pas" line="101">
+      <field name="SLNI_c" type="TPar" visibility="public" size="4" offset="700" file="UHumeWheatDryMatter.pas" line="101">
         <devnotes>
            <summary>Quadratic coefficient of the SLN-index response.</summary>
         </devnotes>
       </field>
-      <field name="k_ini" type="TPar" visibility="public" size="4" offset="696" file="UHumeWheatDryMatter.pas" line="104">
+      <field name="k_ini" type="TPar" visibility="public" size="4" offset="704" file="UHumeWheatDryMatter.pas" line="104">
         <devnotes>
            <summary>Initial PAR extinction coefficient, which decreases as LAI increases.</summary>
         </devnotes>
       </field>
-      <field name="k_inc" type="TPar" visibility="public" size="4" offset="700" file="UHumeWheatDryMatter.pas" line="107">
+      <field name="k_inc" type="TPar" visibility="public" size="4" offset="708" file="UHumeWheatDryMatter.pas" line="107">
         <devnotes>
            <summary>Decrease in the PAR extinction coefficient per unit of LAI.</summary>
         </devnotes>
       </field>
-      <field name="pLUE" type="TPar" visibility="public" size="4" offset="704" file="UHumeWheatDryMatter.pas" line="110">
+      <field name="pLUE" type="TPar" visibility="public" size="4" offset="712" file="UHumeWheatDryMatter.pas" line="110">
         <devnotes>
            <summary>Potential light-use efficiency assuming a constant LUE.</summary>
         </devnotes>
       </field>
-      <field name="Tmin" type="TPar" visibility="public" size="4" offset="708" file="UHumeWheatDryMatter.pas" line="113">
+      <field name="Tmin" type="TPar" visibility="public" size="4" offset="716" file="UHumeWheatDryMatter.pas" line="113">
         <devnotes>
            <summary>Minimum temperature for assimilation.</summary>
         </devnotes>
       </field>
-      <field name="Topt1" type="TPar" visibility="public" size="4" offset="712" file="UHumeWheatDryMatter.pas" line="116">
+      <field name="Topt1" type="TPar" visibility="public" size="4" offset="720" file="UHumeWheatDryMatter.pas" line="116">
         <devnotes>
            <summary>Temperature at which the optimum assimilation range begins.</summary>
         </devnotes>
       </field>
-      <field name="Topt2" type="TPar" visibility="public" size="4" offset="716" file="UHumeWheatDryMatter.pas" line="119">
+      <field name="Topt2" type="TPar" visibility="public" size="4" offset="724" file="UHumeWheatDryMatter.pas" line="119">
         <devnotes>
            <summary>Temperature at which the optimum assimilation range ends.</summary>
         </devnotes>
       </field>
-      <field name="Topt_WE" type="TPar" visibility="public" size="4" offset="720" file="UHumeWheatDryMatter.pas" line="122">
+      <field name="Topt_WE" type="TPar" visibility="public" size="4" offset="728" file="UHumeWheatDryMatter.pas" line="122">
         <devnotes>
            <summary>Optimum temperature of the Wang-Engel response function.</summary>
         </devnotes>
       </field>
-      <field name="Tmax" type="TPar" visibility="public" size="4" offset="724" file="UHumeWheatDryMatter.pas" line="125">
+      <field name="Tmax" type="TPar" visibility="public" size="4" offset="732" file="UHumeWheatDryMatter.pas" line="125">
         <devnotes>
            <summary>Maximum temperature for assimilation.</summary>
         </devnotes>
       </field>
-      <field name="kPAR" type="TPar" visibility="public" size="4" offset="728" file="UHumeWheatDryMatter.pas" line="128">
+      <field name="kPAR" type="TPar" visibility="public" size="4" offset="736" file="UHumeWheatDryMatter.pas" line="128">
         <devnotes>
            <summary>PAR extinction coefficient.</summary>
         </devnotes>
       </field>
-      <field name="fCO2_scale" type="TPar" visibility="public" size="4" offset="732" file="UHumeWheatDryMatter.pas" line="130">
+      <field name="fCO2_scale" type="TPar" visibility="public" size="4" offset="740" file="UHumeWheatDryMatter.pas" line="130">
         <devnotes>
            <summary>Baseline scaling parameter for the atmospheric CO2 effect.</summary>
         </devnotes>
       </field>
-      <field name="fCO2" type="TPar" visibility="public" size="4" offset="736" file="UHumeWheatDryMatter.pas" line="132">
+      <field name="fCO2" type="TPar" visibility="public" size="4" offset="744" file="UHumeWheatDryMatter.pas" line="132">
         <devnotes>
            <summary>Exponent used to calculate the atmospheric CO2 effect.</summary>
         </devnotes>
       </field>
-      <field name="fCWSI" type="TPar" visibility="public" size="4" offset="740" file="UHumeWheatDryMatter.pas" line="134">
+      <field name="fCWSI" type="TPar" visibility="public" size="4" offset="748" file="UHumeWheatDryMatter.pas" line="134">
         <devnotes>
            <summary>Adjusts the atmospheric CO2 effect according to drought stress.</summary>
         </devnotes>
       </field>
-      <field name="CiCompensation" type="TPar" visibility="public" size="4" offset="744" file="UHumeWheatDryMatter.pas" line="136">
+      <field name="CiCompensation" type="TPar" visibility="public" size="4" offset="752" file="UHumeWheatDryMatter.pas" line="136">
         <devnotes>
            <summary>CO2 concentration at which photosynthesis is not limited by CO2 [ppm].</summary>
         </devnotes>
       </field>
-      <field name="critTempDiff" type="TPar" visibility="public" size="4" offset="748" file="UHumeWheatDryMatter.pas" line="138">
+      <field name="critTempDiff" type="TPar" visibility="public" size="4" offset="756" file="UHumeWheatDryMatter.pas" line="138">
         <devnotes>
            <summary>Critical daily temperature range for recalculating mean temperature [°C].</summary>
         </devnotes>
       </field>
-      <field name="TmaxweightingF" type="TPar" visibility="public" size="4" offset="752" file="UHumeWheatDryMatter.pas" line="140">
+      <field name="TmaxweightingF" type="TPar" visibility="public" size="4" offset="760" file="UHumeWheatDryMatter.pas" line="140">
         <devnotes>
            <summary>Weight assigned to maximum temperature when the critical daily range is exceeded.</summary>
         </devnotes>
       </field>
-      <field name="CARBOred" type="TVar" visibility="public" size="4" offset="756" file="UHumeWheatDryMatter.pas" line="143">
+      <field name="CARBOred" type="TVar" visibility="public" size="4" offset="764" file="UHumeWheatDryMatter.pas" line="143">
         <devnotes>
            <summary>Assimilation reduction factor during ripening [0..1].</summary>
         </devnotes>
       </field>
-      <field name="PAR" type="TVar" visibility="public" size="4" offset="760" file="UHumeWheatDryMatter.pas" line="145">
+      <field name="PAR" type="TVar" visibility="public" size="4" offset="768" file="UHumeWheatDryMatter.pas" line="145">
         <devnotes>
            <summary>Photosynthetically active radiation [MJ/(m2*d)].</summary>
         </devnotes>
       </field>
-      <field name="kPar_eff" type="TVar" visibility="public" size="4" offset="764" file="UHumeWheatDryMatter.pas" line="147">
+      <field name="kPar_eff" type="TVar" visibility="public" size="4" offset="772" file="UHumeWheatDryMatter.pas" line="147">
         <devnotes>
            <summary>Effective PAR extinction coefficient.</summary>
         </devnotes>
       </field>
-      <field name="fINT" type="TVar" visibility="public" size="4" offset="768" file="UHumeWheatDryMatter.pas" line="149">
+      <field name="fINT" type="TVar" visibility="public" size="4" offset="776" file="UHumeWheatDryMatter.pas" line="149">
         <devnotes>
            <summary>Fraction of PAR intercepted by the canopy.</summary>
         </devnotes>
       </field>
-      <field name="SWDF" type="TVar" visibility="public" size="4" offset="772" file="UHumeWheatDryMatter.pas" line="151">
+      <field name="SWDF" type="TVar" visibility="public" size="4" offset="780" file="UHumeWheatDryMatter.pas" line="151">
         <devnotes>
            <summary>Soil-water deficit factor [0..1].</summary>
         </devnotes>
       </field>
-      <field name="SLNI" type="TVar" visibility="public" size="4" offset="776" file="UHumeWheatDryMatter.pas" line="153">
+      <field name="SLNI" type="TVar" visibility="public" size="4" offset="784" file="UHumeWheatDryMatter.pas" line="153">
         <devnotes>
            <summary>Specific-leaf-nitrogen nutrition index (Ratjen &amp; Kage 2015).</summary>
         </devnotes>
       </field>
-      <field name="TempF" type="TVar" visibility="public" size="4" offset="780" file="UHumeWheatDryMatter.pas" line="155">
+      <field name="TempF" type="TVar" visibility="public" size="4" offset="788" file="UHumeWheatDryMatter.pas" line="155">
         <devnotes>
            <summary>Temperature factor calculated from mean daily temperature.</summary>
         </devnotes>
       </field>
-      <field name="Tempf_surface" type="TVar" visibility="public" size="4" offset="784" file="UHumeWheatDryMatter.pas" line="157">
+      <field name="Tempf_surface" type="TVar" visibility="public" size="4" offset="792" file="UHumeWheatDryMatter.pas" line="157">
         <devnotes>
            <summary>Temperature factor calculated from the weighted surface temperature.</summary>
         </devnotes>
       </field>
-      <field name="CARBO" type="TVar" visibility="public" size="4" offset="788" file="UHumeWheatDryMatter.pas" line="160">
+      <field name="CARBO" type="TVar" visibility="public" size="4" offset="796" file="UHumeWheatDryMatter.pas" line="160">
         <devnotes>
            <summary>Daily biomass production [g/(plant*d)].</summary>
         </devnotes>
       </field>
-      <field name="PCARB" type="TVar" visibility="public" size="4" offset="792" file="UHumeWheatDryMatter.pas" line="162">
+      <field name="PCARB" type="TVar" visibility="public" size="4" offset="800" file="UHumeWheatDryMatter.pas" line="162">
         <devnotes>
            <summary>Potential daily biomass production [g/(m2*d)].</summary>
         </devnotes>
       </field>
-      <field name="LUE" type="TVar" visibility="public" size="4" offset="796" file="UHumeWheatDryMatter.pas" line="164">
+      <field name="LUE" type="TVar" visibility="public" size="4" offset="804" file="UHumeWheatDryMatter.pas" line="164">
         <devnotes>
            <summary>Light-use efficiency [g/MJ].</summary>
         </devnotes>
       </field>
-      <field name="SLN_crit" type="TVar" visibility="public" size="4" offset="800" file="UHumeWheatDryMatter.pas" line="166">
+      <field name="SLN_crit" type="TVar" visibility="public" size="4" offset="808" file="UHumeWheatDryMatter.pas" line="166">
         <devnotes>
            <summary>Critical specific leaf nitrogen concentration (Ratjen &amp; Kage 2015).</summary>
         </devnotes>
       </field>
-      <field name="CO2_factor" type="TVar" visibility="public" size="4" offset="804" file="UHumeWheatDryMatter.pas" line="168">
+      <field name="CO2_factor" type="TVar" visibility="public" size="4" offset="812" file="UHumeWheatDryMatter.pas" line="168">
         <devnotes>
            <summary>Factor that adjusts light-use efficiency for atmospheric CO2.</summary>
         </devnotes>
       </field>
-      <field name="IPAR" type="TVar" visibility="public" size="4" offset="808" file="UHumeWheatDryMatter.pas" line="170">
+      <field name="IPAR" type="TVar" visibility="public" size="4" offset="816" file="UHumeWheatDryMatter.pas" line="170">
         <devnotes>
            <summary>Intercepted photosynthetically active radiation [MJ/(m2*d)].</summary>
         </devnotes>
       </field>
-      <field name="EC" type="TExternV" visibility="public" size="4" offset="812" file="UHumeWheatDryMatter.pas" line="172">
+      <field name="EC" type="TExternV" visibility="public" size="4" offset="820" file="UHumeWheatDryMatter.pas" line="172">
         <devnotes>
            <summary>External EC or BBCH development stage.</summary>
         </devnotes>
       </field>
-      <field name="Ncleaf" type="TExternV" visibility="public" size="4" offset="816" file="UHumeWheatDryMatter.pas" line="174">
+      <field name="Ncleaf" type="TExternV" visibility="public" size="4" offset="824" file="UHumeWheatDryMatter.pas" line="174">
         <devnotes>
            <summary>Actual nitrogen concentration of the leaf fraction [%%].</summary>
         </devnotes>
       </field>
-      <field name="SLN" type="TExternV" visibility="public" size="4" offset="820" file="UHumeWheatDryMatter.pas" line="176">
+      <field name="SLN" type="TExternV" visibility="public" size="4" offset="828" file="UHumeWheatDryMatter.pas" line="176">
         <devnotes>
            <summary>Actual area-based nitrogen concentration of the leaf fraction [g/m2].</summary>
         </devnotes>
       </field>
-      <field name="GAI" type="TExternV" visibility="public" size="4" offset="824" file="UHumeWheatDryMatter.pas" line="178">
+      <field name="GAI" type="TExternV" visibility="public" size="4" offset="832" file="UHumeWheatDryMatter.pas" line="178">
         <devnotes>
            <summary>Green area index [m2/m2].</summary>
         </devnotes>
       </field>
-      <field name="TMPM" type="TExternV" visibility="public" size="4" offset="828" file="UHumeWheatDryMatter.pas" line="180">
+      <field name="TMPM" type="TExternV" visibility="public" size="4" offset="836" file="UHumeWheatDryMatter.pas" line="180">
         <devnotes>
            <summary>Mean daily temperature [°C].</summary>
         </devnotes>
       </field>
-      <field name="TMPMX" type="TExternV" visibility="public" size="4" offset="832" file="UHumeWheatDryMatter.pas" line="182">
+      <field name="TMPMX" type="TExternV" visibility="public" size="4" offset="840" file="UHumeWheatDryMatter.pas" line="182">
         <devnotes>
            <summary>Maximum daily temperature [°C].</summary>
         </devnotes>
       </field>
-      <field name="TMPMN" type="TExternV" visibility="public" size="4" offset="836" file="UHumeWheatDryMatter.pas" line="184">
+      <field name="TMPMN" type="TExternV" visibility="public" size="4" offset="844" file="UHumeWheatDryMatter.pas" line="184">
         <devnotes>
            <summary>Minimum daily temperature [°C].</summary>
         </devnotes>
       </field>
-      <field name="DryMatterTemp" type="TExternV" visibility="public" size="4" offset="840" file="UHumeWheatDryMatter.pas" line="186">
+      <field name="DryMatterTemp" type="TExternV" visibility="public" size="4" offset="848" file="UHumeWheatDryMatter.pas" line="186">
         <devnotes>
            <summary>Weighted surface temperature used by the dry-matter submodel [°C].</summary>
         </devnotes>
       </field>
-      <field name="LAI" type="TExternV" visibility="public" size="4" offset="844" file="UHumeWheatDryMatter.pas" line="188">
+      <field name="LAI" type="TExternV" visibility="public" size="4" offset="852" file="UHumeWheatDryMatter.pas" line="188">
         <devnotes>
            <summary>Leaf area index [m2/m2].</summary>
         </devnotes>
       </field>
-      <field name="GlobRad" type="TExternV" visibility="public" size="4" offset="848" file="UHumeWheatDryMatter.pas" line="190">
+      <field name="GlobRad" type="TExternV" visibility="public" size="4" offset="856" file="UHumeWheatDryMatter.pas" line="190">
         <devnotes>
            <summary>Global radiation [MJ/(m2*d)].</summary>
         </devnotes>
       </field>
-      <field name="Plants" type="TExternV" visibility="public" size="4" offset="852" file="UHumeWheatDryMatter.pas" line="192">
+      <field name="Plants" type="TExternV" visibility="public" size="4" offset="860" file="UHumeWheatDryMatter.pas" line="192">
         <devnotes>
            <summary>Plant density [plants/m2].</summary>
         </devnotes>
       </field>
-      <field name="TransIntRatio" type="TExternV" visibility="public" size="4" offset="856" file="UHumeWheatDryMatter.pas" line="194">
+      <field name="TransIntRatio" type="TExternV" visibility="public" size="4" offset="864" file="UHumeWheatDryMatter.pas" line="194">
         <devnotes>
            <summary>Ratio of actual to potential transpiration plus interception.</summary>
         </devnotes>
       </field>
-      <field name="CO2pp" type="TExternV" visibility="public" size="4" offset="860" file="UHumeWheatDryMatter.pas" line="196">
+      <field name="CO2pp" type="TExternV" visibility="public" size="4" offset="868" file="UHumeWheatDryMatter.pas" line="196">
         <devnotes>
            <summary>Atmospheric CO2 concentration [ppm].</summary>
         </devnotes>
       </field>
-      <field name="optSLN" type="TExternV" visibility="public" size="4" offset="864" file="UHumeWheatDryMatter.pas" line="198">
+      <field name="optSLN" type="TExternV" visibility="public" size="4" offset="872" file="UHumeWheatDryMatter.pas" line="198">
         <devnotes>
            <summary>Optimum specific leaf nitrogen concentration.</summary>
         </devnotes>
       </field>
-      <field name="SWMIN_pl" type="TExternV" visibility="public" size="4" offset="868" file="UHumeWheatDryMatter.pas" line="200">
+      <field name="SWMIN_pl" type="TExternV" visibility="public" size="4" offset="876" file="UHumeWheatDryMatter.pas" line="200">
         <devnotes>
            <summary>Minimum stem weight used to calculate translocation and senescence.</summary>
         </devnotes>
       </field>
-      <field name="STMWT_pl" type="TExternV" visibility="public" size="4" offset="872" file="UHumeWheatDryMatter.pas" line="202">
+      <field name="STMWT_pl" type="TExternV" visibility="public" size="4" offset="880" file="UHumeWheatDryMatter.pas" line="202">
         <devnotes>
            <summary>Stem weight per plant.</summary>
         </devnotes>
       </field>
-      <field name="SUMDTT5" type="TExternV" visibility="public" size="4" offset="876" file="UHumeWheatDryMatter.pas" line="204">
+      <field name="SUMDTT5" type="TExternV" visibility="public" size="4" offset="884" file="UHumeWheatDryMatter.pas" line="204">
         <devnotes>
            <summary>Temperature sum accumulated from the beginning of stage 5.</summary>
         </devnotes>
       </field>
-      <field name="P5" type="TExternV" visibility="public" size="4" offset="880" file="UHumeWheatDryMatter.pas" line="206">
+      <field name="P5" type="TExternV" visibility="public" size="4" offset="888" file="UHumeWheatDryMatter.pas" line="206">
         <devnotes>
            <summary>CERES-Wheat development parameter for stage 5.</summary>
         </devnotes>
       </field>
-      <field name="SUMGRHI" type="Double" visibility="public" size="8" offset="888" file="UHumeWheatDryMatter.pas" line="207" />
-      <field name="k_" type="Double" visibility="public" size="8" offset="896" file="UHumeWheatDryMatter.pas" line="209">
+      <field name="SUMGRHI" type="Double" visibility="public" size="8" offset="896" file="UHumeWheatDryMatter.pas" line="207" />
+      <field name="k_" type="Double" visibility="public" size="8" offset="904" file="UHumeWheatDryMatter.pas" line="209">
         <devnotes>
            <summary>Intermediate value used in the PAR extinction calculation.</summary>
         </devnotes>
       </field>
-      <field name="SUMTEMPHI" type="Double" visibility="public" size="8" offset="904" file="UHumeWheatDryMatter.pas" line="210" />
-      <field name="OptDroughtimpact" type="TOption" visibility="public" size="4" offset="912" file="UHumeWheatDryMatter.pas" line="213" />
-      <field name="OptNimpact" type="TOption" visibility="public" size="4" offset="916" file="UHumeWheatDryMatter.pas" line="214" />
-      <field name="OptWithCO2" type="TOption" visibility="public" size="4" offset="920" file="UHumeWheatDryMatter.pas" line="215" />
-      <field name="OptCalcTempEffect" type="TOption" visibility="public" size="4" offset="924" file="UHumeWheatDryMatter.pas" line="217">
+      <field name="SUMTEMPHI" type="Double" visibility="public" size="8" offset="912" file="UHumeWheatDryMatter.pas" line="210" />
+      <field name="OptDroughtimpact" type="TOption" visibility="public" size="4" offset="920" file="UHumeWheatDryMatter.pas" line="213" />
+      <field name="OptNimpact" type="TOption" visibility="public" size="4" offset="924" file="UHumeWheatDryMatter.pas" line="214" />
+      <field name="OptWithCO2" type="TOption" visibility="public" size="4" offset="928" file="UHumeWheatDryMatter.pas" line="215" />
+      <field name="OptCalcTempEffect" type="TOption" visibility="public" size="4" offset="932" file="UHumeWheatDryMatter.pas" line="217">
         <devnotes>
            <summary>Selects the temperature-response function used for assimilation.</summary>
         </devnotes>
@@ -1635,6 +1639,6 @@
       <property name="SoilWaterModel" visibility="published" read="fSoilWaterModel" write="SetSoilWaterMod" type="TSoilWaterModelR" file="UHumeWheatDryMatter.pas" line="244" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="UHumeWheatDryMatter.pas" line="537">
+  <procedure name="Register" visibility="public" file="UHumeWheatDryMatter.pas" line="538">
   </procedure>
 </namespace>

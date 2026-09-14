@@ -32,12 +32,12 @@
       fromPlantModel
     </value>
   </const>
-  <const name="linear" type="TRootingDepthIncrease" file="UAbstractPlant.pas" line="31">
+  <const name="linear" type="TRootingDepthIncrease" file="UAbstractPlant.pas" line="32">
     <value>
       linear
     </value>
   </const>
-  <const name="monomolecular" type="TRootingDepthIncrease" file="UAbstractPlant.pas" line="31">
+  <const name="monomolecular" type="TRootingDepthIncrease" file="UAbstractPlant.pas" line="32">
     <value>
       monomolecular
     </value>
@@ -50,15 +50,20 @@
     <element value="0" name="fromParameter" file="UAbstractPlant.pas" line="29" />
     <element value="1" name="fromPlantModel" file="UAbstractPlant.pas" line="29" />
   </enum>
-  <enum name="TRootingDepthIncrease" file="UAbstractPlant.pas" line="31">
-    <element value="0" name="linear" file="UAbstractPlant.pas" line="31" />
-    <element value="1" name="monomolecular" file="UAbstractPlant.pas" line="31" />
+  <enum name="TRootingDepthIncrease" file="UAbstractPlant.pas" line="32">
+    <devnotes>
+       <summary>Rooting depth increase function type</summary>
+    </devnotes>
+    <element value="0" name="linear" file="UAbstractPlant.pas" line="32" />
+    <element value="1" name="monomolecular" file="UAbstractPlant.pas" line="32" />
   </enum>
-  <class name="TPlantRelatedSubMod" file="UAbstractPlant.pas" line="37">
+  <class name="TPlantRelatedSubMod" file="UAbstractPlant.pas" line="38">
     <devnotes>
        <summary>abstract type for plant related soil submodels</summary>
     </devnotes>
     <ancestor name="TSubmodel" namespace="UMod">
+      <methodref name="RecordEntityProvenance" visibility="private">
+      </methodref>
       <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
       </methodref>
       <methodref name="RegistrateOption" visibility="private" procflags="virtual">
@@ -73,18 +78,30 @@
       </methodref>
       <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
       </methodref>
-      <methodref name="set_State" visibility="private" procflags="virtual" />
-      <methodref name="get_State" visibility="private" />
-      <methodref name="set_Par" visibility="private" />
-      <methodref name="Get_Par" visibility="private" />
-      <methodref name="set_Var" visibility="private" />
-      <methodref name="Get_Var" visibility="private" />
-      <methodref name="set_Const" visibility="private" />
-      <methodref name="get_Const" visibility="private" />
-      <methodref name="set_Option" visibility="private" />
-      <methodref name="get_Option" visibility="private" />
-      <methodref name="set_ExternVar" visibility="private" />
-      <methodref name="get_ExternVar" visibility="private" />
+      <methodref name="set_State" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="get_State" visibility="private">
+      </methodref>
+      <methodref name="set_Par" visibility="private">
+      </methodref>
+      <methodref name="Get_Par" visibility="private">
+      </methodref>
+      <methodref name="set_Var" visibility="private">
+      </methodref>
+      <methodref name="Get_Var" visibility="private">
+      </methodref>
+      <methodref name="set_Const" visibility="private">
+      </methodref>
+      <methodref name="get_Const" visibility="private">
+      </methodref>
+      <methodref name="set_Option" visibility="private">
+      </methodref>
+      <methodref name="get_Option" visibility="private">
+      </methodref>
+      <methodref name="set_ExternVar" visibility="private">
+      </methodref>
+      <methodref name="get_ExternVar" visibility="private">
+      </methodref>
       <methodref name="InitStates" visibility="private" procflags="virtual">
       </methodref>
       <methodref name="InitParms" visibility="private" procflags="virtual">
@@ -103,10 +120,14 @@
       </methodref>
       <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
       </methodref>
-      <methodref name="UpdateValue" visibility="protected" />
+      <methodref name="UpdateValue" visibility="protected">
+      </methodref>
+      <methodref name="SetEntityDeclarationClass" visibility="protected">
+      </methodref>
       <methodref name="Paint" visibility="protected" procflags="override">
       </methodref>
-      <methodref name="Notification" visibility="protected" procflags="virtual" />
+      <methodref name="Notification" visibility="protected" procflags="virtual">
+      </methodref>
       <methodref name="Create" visibility="public" procflags="constructor override">
       </methodref>
       <methodref name="free" visibility="public">
@@ -179,7 +200,8 @@
       </propertyref>
       <methodref name="DblClick" visibility="public" procflags="override">
       </methodref>
-      <propertyref name="CalcTimeTicks" visibility="public" />
+      <propertyref name="CalcTimeTicks" visibility="public">
+      </propertyref>
       <propertyref name="SM_GlobMod" visibility="published">
       </propertyref>
       <propertyref name="SM_ExternVStrList" visibility="published">
@@ -206,12 +228,18 @@
       </propertyref>
       <propertyref name="OptContOutput" visibility="published">
       </propertyref>
-      <propertyref name="Parent" visibility="published" />
-      <propertyref name="Canvas" visibility="published" />
-      <propertyref name="Visible" visibility="published" />
-      <propertyref name="color" visibility="published" />
-      <propertyref name="DebugForm" visibility="published" />
-      <propertyref name="OnDblclick" visibility="published" />
+      <propertyref name="Parent" visibility="published">
+      </propertyref>
+      <propertyref name="Canvas" visibility="published">
+      </propertyref>
+      <propertyref name="Visible" visibility="published">
+      </propertyref>
+      <propertyref name="color" visibility="published">
+      </propertyref>
+      <propertyref name="DebugForm" visibility="published">
+      </propertyref>
+      <propertyref name="OnDblclick" visibility="published">
+      </propertyref>
       <ancestor name="TGraphicControl" namespace="Vcl.Controls">
         <methodref name="WMPaint" visibility="private" procflags="message">
         </methodref>
@@ -1236,17 +1264,17 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fFirstPlantMod" type="TAbstractPlant" visibility="private" size="4" offset="656" file="UAbstractPlant.pas" line="40">
+      <field name="fFirstPlantMod" type="TAbstractPlant" visibility="private" size="4" offset="664" file="UAbstractPlant.pas" line="41">
         <devnotes>
            <summary>first plant model from a possible list of</summary>
         </devnotes>
       </field>
-      <field name="fPlantModel" type="TAbstractPlant" visibility="private" size="4" offset="660" file="UAbstractPlant.pas" line="42">
+      <field name="fPlantModel" type="TAbstractPlant" visibility="private" size="4" offset="668" file="UAbstractPlant.pas" line="43">
         <devnotes>
            <summary>actual plant submodel instance</summary>
         </devnotes>
       </field>
-      <function name="GetIsPlantModelset" visibility="protected" file="UAbstractPlant.pas" line="47">
+      <function name="GetIsPlantModelset" visibility="protected" file="UAbstractPlant.pas" line="48">
         <devnotes>
            <summary> getter to check if a plant model is set</summary>
            <returns>boolean indicating if a plant model is set</returns>  
@@ -1255,17 +1283,17 @@
           <retval type="Boolean" />
         </parameters>
       </function>
-      <procedure name="SetPlantModel" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="52">
+      <procedure name="SetPlantModel" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="53">
         <devnotes>
            <summary>setter for the plant model</summary>
-           <param name="NewPlantmodel">new plant model to set</param>
+           <param name> &quot;NewPlantModel&quot; new plant model to set</param>
            <remarks>This method sets the plant model and initializes the first plant model if not already set.</remarks>    
         </devnotes>
         <parameters>
           <parameter name="NewPlantmodel" type="TAbstractPlant" />
         </parameters>
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="UAbstractPlant.pas" line="59">
+      <procedure name="Init" visibility="public" procflags="override" file="UAbstractPlant.pas" line="60">
         <devnotes>
            <summary>initialization method for the submodel</summary>
            <param name="GlobMod">global model instance</param>
@@ -1275,8 +1303,8 @@
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <property name="IsPlantModelSet" visibility="public" read="GetIsPlantModelset" type="Boolean" file="UAbstractPlant.pas" line="60" />
-      <property name="PlantModel" visibility="published" read="fPlantModel" write="SetPlantModel" type="TAbstractPlant" file="UAbstractPlant.pas" line="68">
+      <property name="IsPlantModelSet" visibility="public" read="GetIsPlantModelset" type="Boolean" file="UAbstractPlant.pas" line="61" />
+      <property name="PlantModel" visibility="published" read="fPlantModel" write="SetPlantModel" type="TAbstractPlant" file="UAbstractPlant.pas" line="69">
         <devnotes>
            <summary>property to access the plant model</summary>
            <remarks>This property allows access to the current plant model instance.</remarks>
@@ -1287,12 +1315,14 @@
       </property>
     </members>
   </class>
-  <class name="TAbstractPlant" file="UAbstractPlant.pas" line="72">
+  <class name="TAbstractPlant" file="UAbstractPlant.pas" line="73">
     <devnotes>
        <summary>base class for plant components interacting with soil components</summary>
        <summary>abstract base type for plant submodel</summary>
     </devnotes>
     <ancestor name="TSubmodel" namespace="UMod">
+      <methodref name="RecordEntityProvenance" visibility="private">
+      </methodref>
       <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
       </methodref>
       <methodref name="RegistrateOption" visibility="private" procflags="virtual">
@@ -1307,18 +1337,30 @@
       </methodref>
       <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
       </methodref>
-      <methodref name="set_State" visibility="private" procflags="virtual" />
-      <methodref name="get_State" visibility="private" />
-      <methodref name="set_Par" visibility="private" />
-      <methodref name="Get_Par" visibility="private" />
-      <methodref name="set_Var" visibility="private" />
-      <methodref name="Get_Var" visibility="private" />
-      <methodref name="set_Const" visibility="private" />
-      <methodref name="get_Const" visibility="private" />
-      <methodref name="set_Option" visibility="private" />
-      <methodref name="get_Option" visibility="private" />
-      <methodref name="set_ExternVar" visibility="private" />
-      <methodref name="get_ExternVar" visibility="private" />
+      <methodref name="set_State" visibility="private" procflags="virtual">
+      </methodref>
+      <methodref name="get_State" visibility="private">
+      </methodref>
+      <methodref name="set_Par" visibility="private">
+      </methodref>
+      <methodref name="Get_Par" visibility="private">
+      </methodref>
+      <methodref name="set_Var" visibility="private">
+      </methodref>
+      <methodref name="Get_Var" visibility="private">
+      </methodref>
+      <methodref name="set_Const" visibility="private">
+      </methodref>
+      <methodref name="get_Const" visibility="private">
+      </methodref>
+      <methodref name="set_Option" visibility="private">
+      </methodref>
+      <methodref name="get_Option" visibility="private">
+      </methodref>
+      <methodref name="set_ExternVar" visibility="private">
+      </methodref>
+      <methodref name="get_ExternVar" visibility="private">
+      </methodref>
       <methodref name="InitStates" visibility="private" procflags="virtual">
       </methodref>
       <methodref name="InitParms" visibility="private" procflags="virtual">
@@ -1337,10 +1379,14 @@
       </methodref>
       <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
       </methodref>
-      <methodref name="UpdateValue" visibility="protected" />
+      <methodref name="UpdateValue" visibility="protected">
+      </methodref>
+      <methodref name="SetEntityDeclarationClass" visibility="protected">
+      </methodref>
       <methodref name="Paint" visibility="protected" procflags="override">
       </methodref>
-      <methodref name="Notification" visibility="protected" procflags="virtual" />
+      <methodref name="Notification" visibility="protected" procflags="virtual">
+      </methodref>
       <methodref name="Create" visibility="public" procflags="constructor override">
       </methodref>
       <methodref name="free" visibility="public">
@@ -1413,7 +1459,8 @@
       </propertyref>
       <methodref name="DblClick" visibility="public" procflags="override">
       </methodref>
-      <propertyref name="CalcTimeTicks" visibility="public" />
+      <propertyref name="CalcTimeTicks" visibility="public">
+      </propertyref>
       <propertyref name="SM_GlobMod" visibility="published">
       </propertyref>
       <propertyref name="SM_ExternVStrList" visibility="published">
@@ -1440,12 +1487,18 @@
       </propertyref>
       <propertyref name="OptContOutput" visibility="published">
       </propertyref>
-      <propertyref name="Parent" visibility="published" />
-      <propertyref name="Canvas" visibility="published" />
-      <propertyref name="Visible" visibility="published" />
-      <propertyref name="color" visibility="published" />
-      <propertyref name="DebugForm" visibility="published" />
-      <propertyref name="OnDblclick" visibility="published" />
+      <propertyref name="Parent" visibility="published">
+      </propertyref>
+      <propertyref name="Canvas" visibility="published">
+      </propertyref>
+      <propertyref name="Visible" visibility="published">
+      </propertyref>
+      <propertyref name="color" visibility="published">
+      </propertyref>
+      <propertyref name="DebugForm" visibility="published">
+      </propertyref>
+      <propertyref name="OnDblclick" visibility="published">
+      </propertyref>
       <ancestor name="TGraphicControl" namespace="Vcl.Controls">
         <methodref name="WMPaint" visibility="private" procflags="message">
         </methodref>
@@ -2470,7 +2523,7 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fNextCrop" type="TAbstractPlant" visibility="private" size="4" offset="656" file="UAbstractPlant.pas" line="78">
+      <field name="fNextCrop" type="TAbstractPlant" visibility="private" size="4" offset="664" file="UAbstractPlant.pas" line="79">
         <devnotes>
            <summary>next crop in the rotation</summary>
            <remarks>This property holds a reference to the next crop in the rotation.</remarks>
@@ -2478,255 +2531,320 @@
            <returns>next crop in the rotation</returns> 
         </devnotes>
       </field>
-      <field name="fRotationlength" type="Byte" visibility="private" size="1" offset="660" file="UAbstractPlant.pas" line="84">
+      <field name="fRotationlength" type="Byte" visibility="private" size="1" offset="668" file="UAbstractPlant.pas" line="85">
         <devnotes>
 <!-- Badly formed XML comment ignored for member 'fRotationlength' -->
         </devnotes>
       </field>
-      <field name="fSetNewDates" type="Boolean" visibility="private" size="1" offset="661" file="UAbstractPlant.pas" line="87">
+      <field name="fSetNewDates" type="Boolean" visibility="private" size="1" offset="669" file="UAbstractPlant.pas" line="88">
         <devnotes>
            <summary>flag to indicate if new sowing and harvest dates should be set for the next crop </summary>    
         </devnotes>
       </field>
-      <field name="fSoilNitrogenMod" type="TPlantRelatedSubMod" visibility="private" size="4" offset="664" file="UAbstractPlant.pas" line="89">
+      <field name="fSoilNitrogenMod" type="TPlantRelatedSubMod" visibility="private" size="4" offset="672" file="UAbstractPlant.pas" line="90">
         <devnotes>
            <summary>pointer to soil water &amp; nitrogen module</summary>
         </devnotes>
       </field>
-      <field name="fSoilMinMod" type="TPlantRelatedSubMod" visibility="private" size="4" offset="668" file="UAbstractPlant.pas" line="90" />
-      <field name="fSoilLayerMod" type="TPlantRelatedSubMod" visibility="private" size="4" offset="672" file="UAbstractPlant.pas" line="91" />
-      <field name="fEvapModel" type="TPlantRelatedSubMod" visibility="private" size="4" offset="676" file="UAbstractPlant.pas" line="92" />
-      <field name="fDMprodModel" type="TPlantRelatedSubMod" visibility="private" size="4" offset="680" file="UAbstractPlant.pas" line="93" />
-      <field name="fwithRoots" type="Boolean" visibility="protected" size="1" offset="684" file="UAbstractPlant.pas" line="96" />
-      <procedure name="setNextCrop" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="98">
+      <field name="fSoilMinMod" type="TPlantRelatedSubMod" visibility="private" size="4" offset="676" file="UAbstractPlant.pas" line="92">
+        <devnotes>
+           <summary>pointer to soil mineralisation module</summary>
+        </devnotes>
+      </field>
+      <field name="fSoilLayerMod" type="TPlantRelatedSubMod" visibility="private" size="4" offset="680" file="UAbstractPlant.pas" line="94">
+        <devnotes>
+           <summary>pointer to soil layer module</summary>
+        </devnotes>
+      </field>
+      <field name="fEvapModel" type="TPlantRelatedSubMod" visibility="private" size="4" offset="684" file="UAbstractPlant.pas" line="96">
+        <devnotes>
+           <summary>pointer to evapotranspiration module</summary>
+        </devnotes>
+      </field>
+      <field name="fDMprodModel" type="TPlantRelatedSubMod" visibility="private" size="4" offset="688" file="UAbstractPlant.pas" line="98">
+        <devnotes>
+           <summary>pointer to dry matter production module</summary>
+        </devnotes>
+      </field>
+      <field name="fwithRoots" type="Boolean" visibility="protected" size="1" offset="692" file="UAbstractPlant.pas" line="102">
+        <devnotes>
+           <summary>flag to indicate if the plant has roots</summary>
+        </devnotes>
+      </field>
+      <procedure name="setNextCrop" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="105">
+        <devnotes>
+           <summary>sets the next crop in the rotation</summary>
+        </devnotes>
         <parameters>
           <parameter name="NextCrop" type="TAbstractPlant" />
         </parameters>
       </procedure>
-      <function name="GetLAI" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="99">
+      <function name="GetLAI" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="108">
+        <devnotes>
+           <summary>getter for total leaf area index</summary>
+        </devnotes>
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
-               <summary>
-               THumeNumEntity is an abstract base class for numerical entities in the model,
-               such as variables and external values. It extends THumeEntity with
-               properties for numerical values, units, and flags for plotting and output.
-               </summary>
+               <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+               <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
             </devnotes>
           </retval>
         </parameters>
       </function>
-      <procedure name="SetLai" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="100">
+      <procedure name="SetLai" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="110">
+        <devnotes>
+           <summary>setter for total leaf area index</summary>
+        </devnotes>
         <parameters>
           <parameter name="NewLAI" type="THumeNumEntity" />
         </parameters>
       </procedure>
-      <function name="GetCropHeight" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="101">
+      <function name="GetCropHeight" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="112">
+        <devnotes>
+           <summary>getter for crop height</summary>
+        </devnotes>
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
-               <summary>
-               THumeNumEntity is an abstract base class for numerical entities in the model,
-               such as variables and external values. It extends THumeEntity with
-               properties for numerical values, units, and flags for plotting and output.
-               </summary>
+               <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+               <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
             </devnotes>
           </retval>
         </parameters>
       </function>
-      <procedure name="SetCropHeight" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="102">
+      <procedure name="SetCropHeight" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="114">
+        <devnotes>
+           <summary>setter for crop height</summary>
+        </devnotes>
         <parameters>
           <parameter name="NewCropHeight" type="THumeNumEntity" />
         </parameters>
       </procedure>
-      <function name="GetNUptakeRate" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="103">
+      <function name="GetNUptakeRate" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="116">
+        <devnotes>
+           <summary>getter for nitrogen uptake rate</summary>
+        </devnotes>
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
-               <summary>
-               THumeNumEntity is an abstract base class for numerical entities in the model,
-               such as variables and external values. It extends THumeEntity with
-               properties for numerical values, units, and flags for plotting and output.
-               </summary>
+               <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+               <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
             </devnotes>
           </retval>
         </parameters>
       </function>
-      <procedure name="SetNUptakeRate" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="104">
+      <procedure name="SetNUptakeRate" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="118">
+        <devnotes>
+           <summary>setter for nitrogen uptake rate</summary>
+        </devnotes>
         <parameters>
           <parameter name="NewNUptakeRate" type="THumeNumEntity" />
         </parameters>
       </procedure>
-      <function name="GetWLD" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="105">
+      <function name="GetWLD" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="121">
+        <devnotes>
+           <summary>getter for root length density in a specific soil layer</summary>
+        </devnotes>
         <parameters>
           <parameter name="Index" type="Integer" />
           <retval type="THumeNumEntity">
             <devnotes>
-               <summary>
-               THumeNumEntity is an abstract base class for numerical entities in the model,
-               such as variables and external values. It extends THumeEntity with
-               properties for numerical values, units, and flags for plotting and output.
-               </summary>
+               <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+               <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
             </devnotes>
           </retval>
         </parameters>
       </function>
-      <function name="GetSumRootLength" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="106">
+      <function name="GetSumRootLength" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="123">
+        <devnotes>
+           <summary>getter for total root length</summary>
+        </devnotes>
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
-               <summary>
-               THumeNumEntity is an abstract base class for numerical entities in the model,
-               such as variables and external values. It extends THumeEntity with
-               properties for numerical values, units, and flags for plotting and output.
-               </summary>
+               <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+               <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
             </devnotes>
           </retval>
         </parameters>
       </function>
-      <function name="GetSumRootLength_eff" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="107">
+      <function name="GetSumRootLength_eff" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="126">
+        <devnotes>
+           <summary>getter for effective root length</summary>
+        </devnotes>
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
-               <summary>
-               THumeNumEntity is an abstract base class for numerical entities in the model,
-               such as variables and external values. It extends THumeEntity with
-               properties for numerical values, units, and flags for plotting and output.
-               </summary>
+               <summary>THumeNumEntity is a base class for numerical entities in the model, such as variables and external values.</summary>
+               <remarks>Extends THumeEntity with properties for numerical values, units, and flags for plotting and output.</remarks>
             </devnotes>
           </retval>
         </parameters>
       </function>
-      <procedure name="SetWLD" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="108">
+      <procedure name="SetWLD" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="129">
+        <devnotes>
+           <summary>setter for root length density in a specific soil layer</summary>
+        </devnotes>
         <parameters>
           <parameter name="Index" type="Integer" />
           <parameter name="NewWLD" type="THumeNumEntity" />
         </parameters>
       </procedure>
-      <function name="getExtCoeffPAR" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="109">
+      <function name="getExtCoeffPAR" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="131">
+        <devnotes>
+           <summary>getter for extinction coefficient for PAR</summary>
+        </devnotes>
         <parameters>
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="getExtCoeffGlobRad" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="110">
+      <function name="getExtCoeffGlobRad" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="133">
+        <devnotes>
+           <summary>getter for extinction coefficient for global radiation</summary>
+        </devnotes>
         <parameters>
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="getrc0" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="111">
+      <function name="getrc0" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="135">
+        <devnotes>
+           <summary>getter for canopy resistance at potential transpiration</summary>
+        </devnotes>
         <parameters>
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="getPsi2" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="112">
+      <function name="getPsi2" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="138">
+        <devnotes>
+           <summary>getter for water potential at which water uptake by the plant starts to decrease</summary>
+        </devnotes>
         <parameters>
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="getWeff" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="113">
+      <function name="getWeff" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="141">
+        <devnotes>
+           <summary>getter for effective rooting depth</summary>
+        </devnotes>
         <parameters>
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="getDM_c" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="114">
+      <function name="getDM_c" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="144">
+        <devnotes>
+           <summary>getter for dry matter change rate</summary>
+        </devnotes>
         <parameters>
           <retval type="Double" />
         </parameters>
       </function>
-      <procedure name="setDM_c" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="115">
+      <procedure name="setDM_c" visibility="protected" procflags="abstract virtual" file="UAbstractPlant.pas" line="147">
+        <devnotes>
+           <summary>setter for dry matter change rate</summary>
+        </devnotes>
         <parameters>
           <parameter name="DM_c" type="Double" />
         </parameters>
       </procedure>
-      <procedure name="SetDMprodModel" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="116">
+      <procedure name="SetDMprodModel" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="150">
+        <devnotes>
+           <summary>setter for the dry matter production submodel</summary>
+        </devnotes>
         <parameters>
           <parameter name="DMProdmodel" type="TPlantRelatedSubMod" />
         </parameters>
       </procedure>
-      <procedure name="setSoilNitrogenMod" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="117">
+      <procedure name="setSoilNitrogenMod" visibility="protected" procflags="virtual" file="UAbstractPlant.pas" line="153">
+        <devnotes>
+           <summary>setter for the soil nitrogen submodel</summary> 
+        </devnotes>
         <parameters>
           <parameter name="AModel" type="TPlantRelatedSubMod" />
         </parameters>
       </procedure>
-      <field name="DMtotal" type="TState" visibility="public" size="4" offset="688" file="UAbstractPlant.pas" line="122">
+      <field name="DMtotal" type="TState" visibility="public" size="4" offset="696" file="UAbstractPlant.pas" line="158">
         <devnotes>
            <summary>Total dry matter</summary>
         </devnotes>
       </field>
-      <field name="DMFineRoot" type="TState" visibility="public" size="4" offset="692" file="UAbstractPlant.pas" line="125">
+      <field name="DMFineRoot" type="TState" visibility="public" size="4" offset="700" file="UAbstractPlant.pas" line="161">
         <devnotes>
            <summary>Fine root dry matter</summary>
         </devnotes>
       </field>
-      <field name="C_Residues" type="TState" visibility="public" size="4" offset="696" file="UAbstractPlant.pas" line="128">
+      <field name="C_Residues" type="TState" visibility="public" size="4" offset="704" file="UAbstractPlant.pas" line="164">
         <devnotes>
            <summary>C residues [g C/m2]</summary>
         </devnotes>
       </field>
-      <field name="N_Residues" type="TState" visibility="public" size="4" offset="700" file="UAbstractPlant.pas" line="131">
+      <field name="N_Residues" type="TState" visibility="public" size="4" offset="708" file="UAbstractPlant.pas" line="167">
         <devnotes>
            <summary>N residues [g N/m2]</summary>
         </devnotes>
       </field>
-      <field name="DoHarvest" type="Boolean" visibility="public" size="1" offset="704" file="UAbstractPlant.pas" line="134">
+      <field name="DoHarvest" type="Boolean" visibility="public" size="1" offset="712" file="UAbstractPlant.pas" line="170">
         <devnotes>
            <summary>Do harvest</summary>
         </devnotes>
       </field>
-      <field name="Harvested" type="Boolean" visibility="public" size="1" offset="705" file="UAbstractPlant.pas" line="137">
+      <field name="Harvested" type="Boolean" visibility="public" size="1" offset="713" file="UAbstractPlant.pas" line="173">
         <devnotes>
            <summary>Harvested?</summary>
         </devnotes>
       </field>
-      <field name="SowingDate" type="TPar" visibility="public" size="4" offset="708" file="UAbstractPlant.pas" line="140">
+      <field name="SowingDate" type="TPar" visibility="public" size="4" offset="716" file="UAbstractPlant.pas" line="176">
         <devnotes>
            <summary>Parameter sowing date (TPar object) [day]</summary>
         </devnotes>
       </field>
-      <field name="HarvestDate" type="TPar" visibility="public" size="4" offset="712" file="UAbstractPlant.pas" line="143">
+      <field name="HarvestDate" type="TPar" visibility="public" size="4" offset="720" file="UAbstractPlant.pas" line="179">
         <devnotes>
            <summary>Parameter harvest date (TPar object) [day]</summary>
         </devnotes>
       </field>
-      <field name="Par_Psi2" type="TPar" visibility="public" size="4" offset="716" file="UAbstractPlant.pas" line="146">
+      <field name="Par_Psi2" type="TPar" visibility="public" size="4" offset="724" file="UAbstractPlant.pas" line="182">
         <devnotes>
            <summary>Parameter water potential at which water uptake by the plant starts to decrease (only valid if SoilWaterModel uses Option Opt_Psi2=fromPlantModel)</summary>
         </devnotes>
       </field>
-      <field name="Par_rc0" type="TPar" visibility="public" size="4" offset="720" file="UAbstractPlant.pas" line="149">
+      <field name="Par_rc0" type="TPar" visibility="public" size="4" offset="728" file="UAbstractPlant.pas" line="185">
         <devnotes>
            <summary>Parameter Canopy resistance at potential transpiration (only valid if EvapotranspirationModel uses Option Opt_rc0=fromPlantModel)</summary>
         </devnotes>
       </field>
-      <field name="Par_ExtCoeffPAR" type="TPar" visibility="public" size="4" offset="724" file="UAbstractPlant.pas" line="152">
+      <field name="Par_ExtCoeffPAR" type="TPar" visibility="public" size="4" offset="732" file="UAbstractPlant.pas" line="188">
         <devnotes>
            <summary>Extinction coefficient for PAR (only valid if EvapotranspirationModel uses Option Opt_Exk_Glob = fromPlantModel)</summary>
         </devnotes>
       </field>
-      <field name="Par_Weff" type="TPar" visibility="public" size="4" offset="728" file="UAbstractPlant.pas" line="155">
+      <field name="Par_Weff" type="TPar" visibility="public" size="4" offset="736" file="UAbstractPlant.pas" line="191">
         <devnotes>
            <summary>Effective rooting depth [cm] (only valid if SoilWaterModel uses Option Opt_Weff=fromPlantModel)</summary>
         </devnotes>
       </field>
-      <field name="pWLD_arr" visibility="public" size="200" offset="732" file="UAbstractPlant.pas" line="158">
+      <field name="pWLD_arr" visibility="public" size="200" offset="740" file="UAbstractPlant.pas" line="194">
         <devnotes>
            <summary>Pointer array to root length density data</summary>
         </devnotes>
-        <array name="pWLD_arr" visibility="public" low="1" high="50" file="UAbstractPlant.pas" line="158">
+        <array name="pWLD_arr" visibility="public" low="1" high="50" file="UAbstractPlant.pas" line="194">
           <element />
         </array>
       </field>
-      <field name="OptWithRoots" type="TOption" visibility="public" size="4" offset="932" file="UAbstractPlant.pas" line="161">
+      <field name="OptWithRoots" type="TOption" visibility="public" size="4" offset="940" file="UAbstractPlant.pas" line="197">
         <devnotes>
            <summary>Option added HK 2025/03/20</summary>
         </devnotes>
       </field>
-      <procedure name="SetSowingDate" visibility="public" procflags="virtual" file="UAbstractPlant.pas" line="162">
+      <procedure name="SetSowingDate" visibility="public" procflags="virtual" file="UAbstractPlant.pas" line="200">
+        <devnotes>
+           <summary>Setter for sowing date</summary>
+        </devnotes>
         <parameters>
           <parameter name="NewSowingDate" type="Double" />
         </parameters>
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="override" file="UAbstractPlant.pas" line="164">
+      <procedure name="Integrate" visibility="public" procflags="override" file="UAbstractPlant.pas" line="203">
         <devnotes>
            <summary>Integrates the plant model state variables and performs harvest if conditions are met</summary>
            <remarks>This method checks if the harvest date has been reached or if harvesting is triggered.
@@ -2735,11 +2853,17 @@
            furthermore it moves pointer of coupled submodels to the next crop in the rotation.  </remarks>
         </devnotes>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="UAbstractPlant.pas" line="165">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="UAbstractPlant.pas" line="205">
+        <devnotes>
+           <summary>Calculate rates for the plant model</summary>
+        </devnotes>
       </procedure>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="UAbstractPlant.pas" line="166">
+      <procedure name="CreateAll" visibility="public" procflags="override" file="UAbstractPlant.pas" line="208">
+        <devnotes>
+           <summary>Instantiate the plant model objects</summary>
+        </devnotes>
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="UAbstractPlant.pas" line="167">
+      <procedure name="Init" visibility="public" procflags="override" file="UAbstractPlant.pas" line="211">
         <devnotes>
            <summary>Initializes the plant model with global model parameters</summary>
            <remarks>This method sets the initial conditions for the plant model
@@ -2751,105 +2875,117 @@
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <property name="ExtCoeffPAR" visibility="public" read="getExtCoeffPAR" type="Double" default="0" file="UAbstractPlant.pas" line="171">
+      <property name="ExtCoeffPAR" visibility="public" read="getExtCoeffPAR" type="Double" default="0" file="UAbstractPlant.pas" line="215">
         <devnotes>
            <summary>Extinction coefficient for photosynthetically active radiation</summary>
         </devnotes>
       </property>
-      <property name="ExtCoeffGlobRad" visibility="public" read="getExtCoeffGlobRad" type="Double" default="0" file="UAbstractPlant.pas" line="174">
+      <property name="ExtCoeffGlobRad" visibility="public" read="getExtCoeffGlobRad" type="Double" default="0" file="UAbstractPlant.pas" line="218">
         <devnotes>
            <summary>Extinction coefficient for global radiation</summary>
         </devnotes>
       </property>
-      <property name="rc0" visibility="public" read="getrc0" type="Double" default="0" file="UAbstractPlant.pas" line="177">
+      <property name="rc0" visibility="public" read="getrc0" type="Double" default="0" file="UAbstractPlant.pas" line="221">
         <devnotes>
            <summary>Canopy resistance at potential transpiration</summary>
         </devnotes>
       </property>
-      <property name="Psi2" visibility="public" read="getPsi2" type="Double" default="0" file="UAbstractPlant.pas" line="180">
+      <property name="Psi2" visibility="public" read="getPsi2" type="Double" default="0" file="UAbstractPlant.pas" line="224">
         <devnotes>
            <summary>Water potential at which water uptake by the plant starts to decrease</summary>
         </devnotes>
       </property>
-      <property name="Weff" visibility="public" read="getWeff" type="Double" default="0" file="UAbstractPlant.pas" line="183">
+      <property name="Weff" visibility="public" read="getWeff" type="Double" default="0" file="UAbstractPlant.pas" line="227">
         <devnotes>
            <summary>Effective rooting depth [cm]</summary>
         </devnotes>
       </property>
-      <property name="p_WLD[Index]" visibility="public" read="GetWLD" type="THumeNumEntity" file="UAbstractPlant.pas" line="186">
+      <property name="p_WLD[Index]" visibility="public" read="GetWLD" type="THumeNumEntity" file="UAbstractPlant.pas" line="230">
         <devnotes>
            <summary>getter for root length density in a certain soil layser</summary>
         </devnotes>
       </property>
-      <property name="p_SumRootLength" visibility="public" read="GetSumRootLength" type="THumeNumEntity" file="UAbstractPlant.pas" line="190">
+      <property name="p_SumRootLength" visibility="public" read="GetSumRootLength" type="THumeNumEntity" file="UAbstractPlant.pas" line="234">
         <devnotes>
            <summary> propterty for total root length</summary>
            <remarks>This property returns the total root length of the plant.</remarks>    
         </devnotes>
       </property>
-      <property name="p_SumRootLength_eff" visibility="public" read="GetSumRootLength_eff" type="THumeNumEntity" file="UAbstractPlant.pas" line="195">
+      <property name="p_SumRootLength_eff" visibility="public" read="GetSumRootLength_eff" type="THumeNumEntity" file="UAbstractPlant.pas" line="239">
         <devnotes>
            <summary> Property for effective root length</summary>
            <remarks>This property returns the effective root length of the plant. The effective root length
              is the root length that is actively taking up water and nutrients.</remarks>    
         </devnotes>
       </property>
-      <property name="p_LAI" visibility="public" read="GetLAI" write="SetLai" type="THumeNumEntity" file="UAbstractPlant.pas" line="199">
+      <property name="p_LAI" visibility="public" read="GetLAI" write="SetLai" type="THumeNumEntity" file="UAbstractPlant.pas" line="243">
         <devnotes>
            <summary> property for leaf area index (LAI)</summary>
            <remarks>This property returns the leaf area index of the plant.</remarks>   
         </devnotes>
       </property>
-      <property name="p_CropHeight" visibility="public" read="GetCropHeight" write="SetCropHeight" type="THumeNumEntity" file="UAbstractPlant.pas" line="202">
+      <property name="p_CropHeight" visibility="public" read="GetCropHeight" write="SetCropHeight" type="THumeNumEntity" file="UAbstractPlant.pas" line="246">
         <devnotes>
            <summary>property for crop height</summary>    
         </devnotes>
       </property>
-      <property name="p_TotalDryMatterGR" visibility="public" read="getDM_c" type="Double" default="0" file="UAbstractPlant.pas" line="205">
+      <property name="p_TotalDryMatterGR" visibility="public" read="getDM_c" type="Double" default="0" file="UAbstractPlant.pas" line="249">
         <devnotes>
            <summary>property for total dry matter growth rate </summary>    
         </devnotes>
       </property>
-      <property name="p_NUptakeRate" visibility="public" read="GetNUptakeRate" write="SetNUptakeRate" type="THumeNumEntity" file="UAbstractPlant.pas" line="208">
+      <property name="p_NUptakeRate" visibility="public" read="GetNUptakeRate" write="SetNUptakeRate" type="THumeNumEntity" file="UAbstractPlant.pas" line="252">
         <devnotes>
            <summary>property for nitrogen uptake rate</summary>    
         </devnotes>
       </property>
-      <property name="SoilMinMod" visibility="published" read="fSoilMinMod" write="fSoilMinMod" type="TPlantRelatedSubMod" file="UAbstractPlant.pas" line="213">
+      <property name="SoilMinMod" visibility="published" read="fSoilMinMod" write="fSoilMinMod" type="TPlantRelatedSubMod" file="UAbstractPlant.pas" line="257">
         <devnotes>
            <summary>property for soil mineralisation sub model linked to the plant</summary>  
         </devnotes>
       </property>
-      <property name="SoilLayerMod" visibility="published" read="fSoilLayerMod" write="fSoilLayerMod" type="TPlantRelatedSubMod" file="UAbstractPlant.pas" line="216">
+      <property name="SoilLayerMod" visibility="published" read="fSoilLayerMod" write="fSoilLayerMod" type="TPlantRelatedSubMod" file="UAbstractPlant.pas" line="260">
         <devnotes>
 <!-- Badly formed XML comment ignored for member 'SoilLayerMod' -->
         </devnotes>
       </property>
-      <property name="EvapModel" visibility="published" read="fEvapModel" write="fEvapModel" type="TPlantRelatedSubMod" file="UAbstractPlant.pas" line="219">
+      <property name="EvapModel" visibility="published" read="fEvapModel" write="fEvapModel" type="TPlantRelatedSubMod" file="UAbstractPlant.pas" line="263">
         <devnotes>
            <summary>property for evapotranspiration sub model linked to the plant</summary>
         </devnotes>
       </property>
-      <property name="DMprodModel" visibility="published" read="fDMprodModel" write="SetDMprodModel" type="TPlantRelatedSubMod" file="UAbstractPlant.pas" line="222">
+      <property name="DMprodModel" visibility="published" read="fDMprodModel" write="SetDMprodModel" type="TPlantRelatedSubMod" file="UAbstractPlant.pas" line="266">
         <devnotes>
            <summary>property for dry matter production sub model linked to the plant</summary>    
         </devnotes>
       </property>
-      <property name="SoilNitrogenMod" visibility="published" read="fSoilNitrogenMod" write="setSoilNitrogenMod" type="TPlantRelatedSubMod" file="UAbstractPlant.pas" line="225">
+      <property name="SoilNitrogenMod" visibility="published" read="fSoilNitrogenMod" write="setSoilNitrogenMod" type="TPlantRelatedSubMod" file="UAbstractPlant.pas" line="269">
         <devnotes>
            <summary>property for soil nitrogen sub model linked to the plant</summary>    
         </devnotes>
       </property>
-      <property name="Par_SowingDate" visibility="published" read="SowingDate" write="SowingDate" type="TPar" file="UAbstractPlant.pas" line="227" />
-      <property name="Par_HarvestDate" visibility="published" read="HarvestDate" write="HarvestDate" type="TPar" file="UAbstractPlant.pas" line="228" />
-      <property name="NextCrop" visibility="published" read="fNextCrop" write="setNextCrop" type="TAbstractPlant" file="UAbstractPlant.pas" line="229" />
-      <property name="Rotationlength" visibility="published" read="fRotationlength" write="fRotationlength" type="Byte" file="UAbstractPlant.pas" line="230" />
-      <property name="St_C_Residues" visibility="published" read="C_Residues" write="C_Residues" type="TState" file="UAbstractPlant.pas" line="231" />
-      <property name="St_N_Residues" visibility="published" read="N_Residues" write="N_Residues" type="TState" file="UAbstractPlant.pas" line="232" />
-      <property name="St_DMtotal" visibility="published" read="DMtotal" write="DMtotal" type="TState" file="UAbstractPlant.pas" line="233" />
-      <property name="St_DMFineRoot" visibility="published" read="DMFineRoot" write="DMFineRoot" type="TState" file="UAbstractPlant.pas" line="234" />
-      <property name="SetNewDates" visibility="published" read="fSetNewDates" write="fSetNewDates" type="Boolean" file="UAbstractPlant.pas" line="235" />
-      <property name="withRoots" visibility="published" read="fwithRoots" write="fwithRoots" type="Boolean" file="UAbstractPlant.pas" line="236" />
+      <property name="Par_SowingDate" visibility="published" read="SowingDate" write="SowingDate" type="TPar" file="UAbstractPlant.pas" line="272">
+        <devnotes>
+           <summary>property for sowing date parameter</summary>
+        </devnotes>
+      </property>
+      <property name="Par_HarvestDate" visibility="published" read="HarvestDate" write="HarvestDate" type="TPar" file="UAbstractPlant.pas" line="275">
+        <devnotes>
+           <summary>property for harvest date parameter</summary>
+        </devnotes>
+      </property>
+      <property name="NextCrop" visibility="published" read="fNextCrop" write="setNextCrop" type="TAbstractPlant" file="UAbstractPlant.pas" line="278">
+        <devnotes>
+           
+        </devnotes>
+      </property>
+      <property name="Rotationlength" visibility="published" read="fRotationlength" write="fRotationlength" type="Byte" file="UAbstractPlant.pas" line="279" />
+      <property name="St_C_Residues" visibility="published" read="C_Residues" write="C_Residues" type="TState" file="UAbstractPlant.pas" line="280" />
+      <property name="St_N_Residues" visibility="published" read="N_Residues" write="N_Residues" type="TState" file="UAbstractPlant.pas" line="281" />
+      <property name="St_DMtotal" visibility="published" read="DMtotal" write="DMtotal" type="TState" file="UAbstractPlant.pas" line="282" />
+      <property name="St_DMFineRoot" visibility="published" read="DMFineRoot" write="DMFineRoot" type="TState" file="UAbstractPlant.pas" line="283" />
+      <property name="SetNewDates" visibility="published" read="fSetNewDates" write="fSetNewDates" type="Boolean" file="UAbstractPlant.pas" line="284" />
+      <property name="withRoots" visibility="published" read="fwithRoots" write="fwithRoots" type="Boolean" file="UAbstractPlant.pas" line="285" />
     </members>
   </class>
 </namespace>

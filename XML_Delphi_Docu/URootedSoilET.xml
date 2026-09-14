@@ -160,6 +160,8 @@
           <propertyref name="PlantModel" visibility="published">
           </propertyref>
           <ancestor name="TSubmodel" namespace="UMod">
+            <methodref name="RecordEntityProvenance" visibility="private">
+            </methodref>
             <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
             </methodref>
             <methodref name="RegistrateOption" visibility="private" procflags="virtual">
@@ -217,6 +219,8 @@
             <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
             </methodref>
             <methodref name="UpdateValue" visibility="protected">
+            </methodref>
+            <methodref name="SetEntityDeclarationClass" visibility="protected">
             </methodref>
             <methodref name="Paint" visibility="protected" procflags="override">
             </methodref>
@@ -1361,11 +1365,11 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="Sum_Sink" type="Double" visibility="private" size="8" offset="12848" file="URootedSoilET.pas" line="17" />
-      <field name="FWithRoots" type="Boolean" visibility="private" size="1" offset="12856" file="URootedSoilET.pas" line="18" />
-      <field name="FSinkTermMethod" type="TSinkTermMethod" visibility="private" size="1" offset="12857" file="URootedSoilET.pas" line="19" />
-      <field name="FTransCalcMethod" type="TTransCalcMethod" visibility="private" size="1" offset="12858" file="URootedSoilET.pas" line="20" />
-      <field name="FUseExternalWG" type="Boolean" visibility="private" size="1" offset="12859" file="URootedSoilET.pas" line="21" />
+      <field name="Sum_Sink" type="Double" visibility="private" size="8" offset="12856" file="URootedSoilET.pas" line="17" />
+      <field name="FWithRoots" type="Boolean" visibility="private" size="1" offset="12864" file="URootedSoilET.pas" line="18" />
+      <field name="FSinkTermMethod" type="TSinkTermMethod" visibility="private" size="1" offset="12865" file="URootedSoilET.pas" line="19" />
+      <field name="FTransCalcMethod" type="TTransCalcMethod" visibility="private" size="1" offset="12866" file="URootedSoilET.pas" line="20" />
+      <field name="FUseExternalWG" type="Boolean" visibility="private" size="1" offset="12867" file="URootedSoilET.pas" line="21" />
       <procedure name="setWithRoots" visibility="private" file="URootedSoilET.pas" line="22">
         <parameters>
           <parameter name="settrue" type="Boolean" />
@@ -1391,35 +1395,35 @@
       </function>
       <procedure name="UpdateWGs" visibility="protected" file="URootedSoilET.pas" line="29">
       </procedure>
-      <field name="FTransCalcOption" type="TOption" visibility="public" size="4" offset="12860" file="URootedSoilET.pas" line="32" />
-      <field name="FUseExternalWGOption" type="TOption" visibility="public" size="4" offset="12864" file="URootedSoilET.pas" line="33" />
-      <field name="Wld_arr" type="TSoilExtArray" visibility="public" size="208" offset="12868" file="URootedSoilET.pas" line="34" />
-      <field name="ExternWG_Arr" type="TSoilExtArray" visibility="public" size="208" offset="13076" file="URootedSoilET.pas" line="35" />
-      <field name="WLges" type="TVar" visibility="public" size="4" offset="13284" file="URootedSoilET.pas" line="37" />
-      <field name="SinkRedF" type="TSoilArray" visibility="public" size="416" offset="13288" file="URootedSoilET.pas" line="38" />
-      <field name="K_arr" type="TSoilVarArray" visibility="public" size="212" offset="13704" file="URootedSoilET.pas" line="39" />
-      <field name="psi_2" type="TPar" visibility="public" size="4" offset="13916" file="URootedSoilET.pas" line="41" />
-      <field name="psi_3" type="TPar" visibility="public" size="4" offset="13920" file="URootedSoilET.pas" line="42" />
-      <field name="CompFactor" type="TPar" visibility="public" size="4" offset="13924" file="URootedSoilET.pas" line="43" />
-      <field name="nFKcrit" type="TPar" visibility="public" size="4" offset="13928" file="URootedSoilET.pas" line="46" />
-      <field name="r_stem" type="TPar" visibility="public" size="4" offset="13932" file="URootedSoilET.pas" line="47" />
-      <field name="ActTrans" type="TVar" visibility="public" size="4" offset="13936" file="URootedSoilET.pas" line="49" />
-      <field name="ActTrans_" type="TVar" visibility="public" size="4" offset="13940" file="URootedSoilET.pas" line="50" />
-      <field name="CumActTrans" type="TState" visibility="public" size="4" offset="13944" file="URootedSoilET.pas" line="51" />
-      <field name="CumWaterUptake" type="TState" visibility="public" size="4" offset="13948" file="URootedSoilET.pas" line="52" />
-      <field name="PotTrans" type="TVar" visibility="public" size="4" offset="13952" file="URootedSoilET.pas" line="54" />
-      <field name="PotTrans_" type="TVar" visibility="public" size="4" offset="13956" file="URootedSoilET.pas" line="55" />
-      <field name="PotEvap" type="TVar" visibility="public" size="4" offset="13960" file="URootedSoilET.pas" line="57" />
-      <field name="PotEvap_" type="TVar" visibility="public" size="4" offset="13964" file="URootedSoilET.pas" line="58" />
-      <field name="ActEvap_" type="TVar" visibility="public" size="4" offset="13968" file="URootedSoilET.pas" line="59" />
-      <field name="CumPotTrans" type="TState" visibility="public" size="4" offset="13972" file="URootedSoilET.pas" line="60" />
-      <field name="TransRatio" type="TVar" visibility="public" size="4" offset="13976" file="URootedSoilET.pas" line="61" />
-      <field name="max_TransErr" type="TPar" visibility="public" size="4" offset="13980" file="URootedSoilET.pas" line="62" />
-      <field name="CWSI" type="TVar" visibility="public" size="4" offset="13984" file="URootedSoilET.pas" line="63" />
-      <field name="Tcrop" type="TVar" visibility="public" size="4" offset="13988" file="URootedSoilET.pas" line="64" />
-      <field name="Tbase" type="TVar" visibility="public" size="4" offset="13992" file="URootedSoilET.pas" line="66" />
-      <field name="Tmax" type="TVar" visibility="public" size="4" offset="13996" file="URootedSoilET.pas" line="67" />
-      <field name="delta_T" type="TVar" visibility="public" size="4" offset="14000" file="URootedSoilET.pas" line="68" />
+      <field name="FTransCalcOption" type="TOption" visibility="public" size="4" offset="12868" file="URootedSoilET.pas" line="32" />
+      <field name="FUseExternalWGOption" type="TOption" visibility="public" size="4" offset="12872" file="URootedSoilET.pas" line="33" />
+      <field name="Wld_arr" type="TSoilExtArray" visibility="public" size="208" offset="12876" file="URootedSoilET.pas" line="34" />
+      <field name="ExternWG_Arr" type="TSoilExtArray" visibility="public" size="208" offset="13084" file="URootedSoilET.pas" line="35" />
+      <field name="WLges" type="TVar" visibility="public" size="4" offset="13292" file="URootedSoilET.pas" line="37" />
+      <field name="SinkRedF" type="TSoilArray" visibility="public" size="416" offset="13296" file="URootedSoilET.pas" line="38" />
+      <field name="K_arr" type="TSoilVarArray" visibility="public" size="212" offset="13712" file="URootedSoilET.pas" line="39" />
+      <field name="psi_2" type="TPar" visibility="public" size="4" offset="13924" file="URootedSoilET.pas" line="41" />
+      <field name="psi_3" type="TPar" visibility="public" size="4" offset="13928" file="URootedSoilET.pas" line="42" />
+      <field name="CompFactor" type="TPar" visibility="public" size="4" offset="13932" file="URootedSoilET.pas" line="43" />
+      <field name="nFKcrit" type="TPar" visibility="public" size="4" offset="13936" file="URootedSoilET.pas" line="46" />
+      <field name="r_stem" type="TPar" visibility="public" size="4" offset="13940" file="URootedSoilET.pas" line="47" />
+      <field name="ActTrans" type="TVar" visibility="public" size="4" offset="13944" file="URootedSoilET.pas" line="49" />
+      <field name="ActTrans_" type="TVar" visibility="public" size="4" offset="13948" file="URootedSoilET.pas" line="50" />
+      <field name="CumActTrans" type="TState" visibility="public" size="4" offset="13952" file="URootedSoilET.pas" line="51" />
+      <field name="CumWaterUptake" type="TState" visibility="public" size="4" offset="13956" file="URootedSoilET.pas" line="52" />
+      <field name="PotTrans" type="TVar" visibility="public" size="4" offset="13960" file="URootedSoilET.pas" line="54" />
+      <field name="PotTrans_" type="TVar" visibility="public" size="4" offset="13964" file="URootedSoilET.pas" line="55" />
+      <field name="PotEvap" type="TVar" visibility="public" size="4" offset="13968" file="URootedSoilET.pas" line="57" />
+      <field name="PotEvap_" type="TVar" visibility="public" size="4" offset="13972" file="URootedSoilET.pas" line="58" />
+      <field name="ActEvap_" type="TVar" visibility="public" size="4" offset="13976" file="URootedSoilET.pas" line="59" />
+      <field name="CumPotTrans" type="TState" visibility="public" size="4" offset="13980" file="URootedSoilET.pas" line="60" />
+      <field name="TransRatio" type="TVar" visibility="public" size="4" offset="13984" file="URootedSoilET.pas" line="61" />
+      <field name="max_TransErr" type="TPar" visibility="public" size="4" offset="13988" file="URootedSoilET.pas" line="62" />
+      <field name="CWSI" type="TVar" visibility="public" size="4" offset="13992" file="URootedSoilET.pas" line="63" />
+      <field name="Tcrop" type="TVar" visibility="public" size="4" offset="13996" file="URootedSoilET.pas" line="64" />
+      <field name="Tbase" type="TVar" visibility="public" size="4" offset="14000" file="URootedSoilET.pas" line="66" />
+      <field name="Tmax" type="TVar" visibility="public" size="4" offset="14004" file="URootedSoilET.pas" line="67" />
+      <field name="delta_T" type="TVar" visibility="public" size="4" offset="14008" file="URootedSoilET.pas" line="68" />
       <procedure name="CreateAll" visibility="public" procflags="override" file="URootedSoilET.pas" line="70">
       </procedure>
       <procedure name="Init" visibility="public" procflags="override" file="URootedSoilET.pas" line="71">
@@ -1480,6 +1484,6 @@
       <property name="OptDebug" visibility="published" type="Boolean" file="URootedSoilET.pas" line="109" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="URootedSoilET.pas" line="801">
+  <procedure name="Register" visibility="public" file="URootedSoilET.pas" line="802">
   </procedure>
 </namespace>

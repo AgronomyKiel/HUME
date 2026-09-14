@@ -862,6 +862,8 @@
         </methodref>
         <methodref name="CalcConductivities" visibility="private">
         </methodref>
+        <methodref name="AverageTransportCoefficient" visibility="private">
+        </methodref>
         <methodref name="CapWatSolut" visibility="private">
         </methodref>
         <methodref name="get_water_contents" visibility="private" />
@@ -909,6 +911,8 @@
         <methodref name="InitGenuchtenPars" visibility="private">
         </methodref>
         <methodref name="SetCompMethod" visibility="private">
+        </methodref>
+        <methodref name="SetTransportAveraging" visibility="private">
         </methodref>
         <methodref name="InitVectors" visibility="private">
         </methodref>
@@ -979,6 +983,7 @@
         <propertyref name="ShowWarnings" visibility="published" />
         <propertyref name="m_model" visibility="published" />
         <propertyref name="Opt_CompMethod" visibility="published" />
+        <propertyref name="Opt_TransportAveraging" visibility="published" />
         <propertyref name="Opt_red_f" visibility="published" />
         <propertyref name="Opt_maxWGchange" visibility="published" />
         <propertyref name="Opt_IterError" visibility="published" />
@@ -1120,6 +1125,8 @@
             <propertyref name="PlantModel" visibility="published">
             </propertyref>
             <ancestor name="TSubmodel" namespace="UMod">
+              <methodref name="RecordEntityProvenance" visibility="private">
+              </methodref>
               <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
               </methodref>
               <methodref name="RegistrateOption" visibility="private" procflags="virtual">
@@ -1134,18 +1141,30 @@
               </methodref>
               <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
               </methodref>
-              <methodref name="set_State" visibility="private" procflags="virtual" />
-              <methodref name="get_State" visibility="private" />
-              <methodref name="set_Par" visibility="private" />
-              <methodref name="Get_Par" visibility="private" />
-              <methodref name="set_Var" visibility="private" />
-              <methodref name="Get_Var" visibility="private" />
-              <methodref name="set_Const" visibility="private" />
-              <methodref name="get_Const" visibility="private" />
-              <methodref name="set_Option" visibility="private" />
-              <methodref name="get_Option" visibility="private" />
-              <methodref name="set_ExternVar" visibility="private" />
-              <methodref name="get_ExternVar" visibility="private" />
+              <methodref name="set_State" visibility="private" procflags="virtual">
+              </methodref>
+              <methodref name="get_State" visibility="private">
+              </methodref>
+              <methodref name="set_Par" visibility="private">
+              </methodref>
+              <methodref name="Get_Par" visibility="private">
+              </methodref>
+              <methodref name="set_Var" visibility="private">
+              </methodref>
+              <methodref name="Get_Var" visibility="private">
+              </methodref>
+              <methodref name="set_Const" visibility="private">
+              </methodref>
+              <methodref name="get_Const" visibility="private">
+              </methodref>
+              <methodref name="set_Option" visibility="private">
+              </methodref>
+              <methodref name="get_Option" visibility="private">
+              </methodref>
+              <methodref name="set_ExternVar" visibility="private">
+              </methodref>
+              <methodref name="get_ExternVar" visibility="private">
+              </methodref>
               <methodref name="InitStates" visibility="private" procflags="virtual">
               </methodref>
               <methodref name="InitParms" visibility="private" procflags="virtual">
@@ -1164,10 +1183,14 @@
               </methodref>
               <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
               </methodref>
-              <methodref name="UpdateValue" visibility="protected" />
+              <methodref name="UpdateValue" visibility="protected">
+              </methodref>
+              <methodref name="SetEntityDeclarationClass" visibility="protected">
+              </methodref>
               <methodref name="Paint" visibility="protected" procflags="override">
               </methodref>
-              <methodref name="Notification" visibility="protected" procflags="virtual" />
+              <methodref name="Notification" visibility="protected" procflags="virtual">
+              </methodref>
               <methodref name="Create" visibility="public" procflags="constructor override">
               </methodref>
               <methodref name="free" visibility="public">
@@ -1240,7 +1263,8 @@
               </propertyref>
               <methodref name="DblClick" visibility="public" procflags="override">
               </methodref>
-              <propertyref name="CalcTimeTicks" visibility="public" />
+              <propertyref name="CalcTimeTicks" visibility="public">
+              </propertyref>
               <propertyref name="SM_GlobMod" visibility="published">
               </propertyref>
               <propertyref name="SM_ExternVStrList" visibility="published">
@@ -1267,12 +1291,18 @@
               </propertyref>
               <propertyref name="OptContOutput" visibility="published">
               </propertyref>
-              <propertyref name="Parent" visibility="published" />
-              <propertyref name="Canvas" visibility="published" />
-              <propertyref name="Visible" visibility="published" />
-              <propertyref name="color" visibility="published" />
-              <propertyref name="DebugForm" visibility="published" />
-              <propertyref name="OnDblclick" visibility="published" />
+              <propertyref name="Parent" visibility="published">
+              </propertyref>
+              <propertyref name="Canvas" visibility="published">
+              </propertyref>
+              <propertyref name="Visible" visibility="published">
+              </propertyref>
+              <propertyref name="color" visibility="published">
+              </propertyref>
+              <propertyref name="DebugForm" visibility="published">
+              </propertyref>
+              <propertyref name="OnDblclick" visibility="published">
+              </propertyref>
               <ancestor name="TGraphicControl" namespace="Vcl.Controls">
                 <methodref name="WMPaint" visibility="private" procflags="message">
                 </methodref>
@@ -2446,6 +2476,6 @@
       <property name="Opt_TransferNMinsToNextINI" visibility="published" read="fTransferNminss" write="fTransferNminss" type="Boolean" file="USoilNitrogen.pas" line="105" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="USoilNitrogen.pas" line="655">
+  <procedure name="Register" visibility="public" file="USoilNitrogen.pas" line="656">
   </procedure>
 </namespace>

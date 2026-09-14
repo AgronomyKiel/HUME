@@ -126,6 +126,8 @@
         <propertyref name="PlantModel" visibility="published">
         </propertyref>
         <ancestor name="TSubmodel" namespace="UMod">
+          <methodref name="RecordEntityProvenance" visibility="private">
+          </methodref>
           <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
           </methodref>
           <methodref name="RegistrateOption" visibility="private" procflags="virtual">
@@ -183,6 +185,8 @@
           <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
           </methodref>
           <methodref name="UpdateValue" visibility="protected">
+          </methodref>
+          <methodref name="SetEntityDeclarationClass" visibility="protected">
           </methodref>
           <methodref name="Paint" visibility="protected" procflags="override">
           </methodref>
@@ -1326,96 +1330,96 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="NOrgLayers" type="TPar" visibility="public" size="4" offset="720" file="USoilMineralisation.pas" line="44" />
-      <field name="OrgDepth" type="TPar" visibility="public" size="4" offset="724" file="USoilMineralisation.pas" line="45" />
-      <field name="iLagerungsdichte" type="TPar" visibility="public" size="4" offset="728" file="USoilMineralisation.pas" line="46" />
-      <field name="Lagerungsdichte" type="TVar" visibility="public" size="4" offset="732" file="USoilMineralisation.pas" line="47" />
-      <field name="Humusgehalt" type="TPar" visibility="public" size="4" offset="736" file="USoilMineralisation.pas" line="48" />
-      <field name="MinNmin" type="TPar" visibility="public" size="4" offset="740" file="USoilMineralisation.pas" line="50" />
-      <field name="kBBf" type="TPar" visibility="public" size="4" offset="744" file="USoilMineralisation.pas" line="51" />
-      <field name="k_som_biom_intercept" type="TPar" visibility="public" size="4" offset="748" file="USoilMineralisation.pas" line="54">
+      <field name="NOrgLayers" type="TPar" visibility="public" size="4" offset="728" file="USoilMineralisation.pas" line="44" />
+      <field name="OrgDepth" type="TPar" visibility="public" size="4" offset="732" file="USoilMineralisation.pas" line="45" />
+      <field name="iLagerungsdichte" type="TPar" visibility="public" size="4" offset="736" file="USoilMineralisation.pas" line="46" />
+      <field name="Lagerungsdichte" type="TVar" visibility="public" size="4" offset="740" file="USoilMineralisation.pas" line="47" />
+      <field name="Humusgehalt" type="TPar" visibility="public" size="4" offset="744" file="USoilMineralisation.pas" line="48" />
+      <field name="MinNmin" type="TPar" visibility="public" size="4" offset="748" file="USoilMineralisation.pas" line="50" />
+      <field name="kBBf" type="TPar" visibility="public" size="4" offset="752" file="USoilMineralisation.pas" line="51" />
+      <field name="k_som_biom_intercept" type="TPar" visibility="public" size="4" offset="756" file="USoilMineralisation.pas" line="54">
         <devnotes>
            <summary> intercept parameter for reducing k_som_biom by Nmin availability </summary>
         </devnotes>
       </field>
-      <field name="k_som_biom_slope" type="TPar" visibility="public" size="4" offset="752" file="USoilMineralisation.pas" line="57">
+      <field name="k_som_biom_slope" type="TPar" visibility="public" size="4" offset="760" file="USoilMineralisation.pas" line="57">
         <devnotes>
            <summary> slope parameter for reducing k_som_biom by Nmin availability </summary>
         </devnotes>
       </field>
-      <field name="Temp" type="TExternV" visibility="public" size="4" offset="756" file="USoilMineralisation.pas" line="61" />
-      <field name="Theta_Array" visibility="public" size="36" offset="760" file="USoilMineralisation.pas" line="62">
+      <field name="Temp" type="TExternV" visibility="public" size="4" offset="764" file="USoilMineralisation.pas" line="61" />
+      <field name="Theta_Array" visibility="public" size="36" offset="768" file="USoilMineralisation.pas" line="62">
         <array name="Theta_Array" visibility="public" low="1" high="9" file="USoilMineralisation.pas" line="62">
           <element type="TExternV" />
         </array>
       </field>
-      <field name="Nmin_Array" visibility="public" size="36" offset="796" file="USoilMineralisation.pas" line="63">
+      <field name="Nmin_Array" visibility="public" size="36" offset="804" file="USoilMineralisation.pas" line="63">
         <array name="Nmin_Array" visibility="public" low="1" high="9" file="USoilMineralisation.pas" line="63">
           <element type="TExternV" />
         </array>
       </field>
-      <field name="MinProcesses" visibility="public" size="160" offset="832" file="USoilMineralisation.pas" line="66">
+      <field name="MinProcesses" visibility="public" size="160" offset="840" file="USoilMineralisation.pas" line="66">
         <array name="MinProcesses" visibility="public" low="0" high="9" file="USoilMineralisation.pas" line="66">
           <array name="MinProcesses" visibility="public" file="USoilMineralisation.pas" line="66">
             <element type="TMinProcess" />
           </array>
         </array>
       </field>
-      <field name="CFlowArr" visibility="public" size="160" offset="992" file="USoilMineralisation.pas" line="67">
+      <field name="CFlowArr" visibility="public" size="160" offset="1000" file="USoilMineralisation.pas" line="67">
         <array name="CFlowArr" visibility="public" file="USoilMineralisation.pas" line="67">
           <array name="CFlowArr" visibility="public" low="0" high="9" file="USoilMineralisation.pas" line="67">
             <element type="TVar" />
           </array>
         </array>
       </field>
-      <field name="C_ges" type="TState" visibility="public" size="4" offset="1152" file="USoilMineralisation.pas" line="69" />
-      <field name="C_ER" type="TState" visibility="public" size="4" offset="1156" file="USoilMineralisation.pas" line="70" />
-      <field name="N_ER" type="TState" visibility="public" size="4" offset="1160" file="USoilMineralisation.pas" line="71" />
-      <field name="N_ges" type="TVar" visibility="public" size="4" offset="1164" file="USoilMineralisation.pas" line="74" />
-      <field name="f_DPM" type="TVar" visibility="public" size="4" offset="1168" file="USoilMineralisation.pas" line="75" />
-      <field name="SumMinr" type="TVar" visibility="public" size="4" offset="1172" file="USoilMineralisation.pas" line="75" />
-      <field name="Net_ming" type="TVar" visibility="public" size="4" offset="1176" file="USoilMineralisation.pas" line="75" />
-      <field name="NBilanz" type="TVar" visibility="public" size="4" offset="1180" file="USoilMineralisation.pas" line="75" />
-      <field name="NetMinArr" visibility="public" size="160" offset="1184" file="USoilMineralisation.pas" line="76">
+      <field name="C_ges" type="TState" visibility="public" size="4" offset="1160" file="USoilMineralisation.pas" line="69" />
+      <field name="C_ER" type="TState" visibility="public" size="4" offset="1164" file="USoilMineralisation.pas" line="70" />
+      <field name="N_ER" type="TState" visibility="public" size="4" offset="1168" file="USoilMineralisation.pas" line="71" />
+      <field name="N_ges" type="TVar" visibility="public" size="4" offset="1172" file="USoilMineralisation.pas" line="74" />
+      <field name="f_DPM" type="TVar" visibility="public" size="4" offset="1176" file="USoilMineralisation.pas" line="75" />
+      <field name="SumMinr" type="TVar" visibility="public" size="4" offset="1180" file="USoilMineralisation.pas" line="75" />
+      <field name="Net_ming" type="TVar" visibility="public" size="4" offset="1184" file="USoilMineralisation.pas" line="75" />
+      <field name="NBilanz" type="TVar" visibility="public" size="4" offset="1188" file="USoilMineralisation.pas" line="75" />
+      <field name="NetMinArr" visibility="public" size="160" offset="1192" file="USoilMineralisation.pas" line="76">
         <array name="NetMinArr" visibility="public" file="USoilMineralisation.pas" line="76">
           <array name="NetMinArr" visibility="public" low="0" high="9" file="USoilMineralisation.pas" line="76">
             <element type="TVar" />
           </array>
         </array>
       </field>
-      <field name="km_Nmin" type="TPar" visibility="public" size="4" offset="1344" file="USoilMineralisation.pas" line="78" />
-      <field name="k_dpm_biom" type="TPar" visibility="public" size="4" offset="1348" file="USoilMineralisation.pas" line="79" />
-      <field name="k_rpm_biom" type="TPar" visibility="public" size="4" offset="1352" file="USoilMineralisation.pas" line="79" />
-      <field name="k_som_biom" type="TPar" visibility="public" size="4" offset="1356" file="USoilMineralisation.pas" line="79" />
-      <field name="k_biom_som" type="TPar" visibility="public" size="4" offset="1360" file="USoilMineralisation.pas" line="79" />
-      <field name="E_dpm_biom" type="TPar" visibility="public" size="4" offset="1364" file="USoilMineralisation.pas" line="79" />
-      <field name="E_rpm_biom" type="TPar" visibility="public" size="4" offset="1368" file="USoilMineralisation.pas" line="79" />
-      <field name="E_som_biom" type="TPar" visibility="public" size="4" offset="1372" file="USoilMineralisation.pas" line="80" />
-      <field name="E_biom_som" type="TPar" visibility="public" size="4" offset="1376" file="USoilMineralisation.pas" line="80" />
-      <field name="f_biom" type="TPar" visibility="public" size="4" offset="1380" file="USoilMineralisation.pas" line="80" />
-      <field name="ResidueIncorp" type="TOption" visibility="public" size="4" offset="1384" file="USoilMineralisation.pas" line="85" />
-      <field name="CPool" visibility="public" size="16" offset="1388" file="USoilMineralisation.pas" line="87">
+      <field name="km_Nmin" type="TPar" visibility="public" size="4" offset="1352" file="USoilMineralisation.pas" line="78" />
+      <field name="k_dpm_biom" type="TPar" visibility="public" size="4" offset="1356" file="USoilMineralisation.pas" line="79" />
+      <field name="k_rpm_biom" type="TPar" visibility="public" size="4" offset="1360" file="USoilMineralisation.pas" line="79" />
+      <field name="k_som_biom" type="TPar" visibility="public" size="4" offset="1364" file="USoilMineralisation.pas" line="79" />
+      <field name="k_biom_som" type="TPar" visibility="public" size="4" offset="1368" file="USoilMineralisation.pas" line="79" />
+      <field name="E_dpm_biom" type="TPar" visibility="public" size="4" offset="1372" file="USoilMineralisation.pas" line="79" />
+      <field name="E_rpm_biom" type="TPar" visibility="public" size="4" offset="1376" file="USoilMineralisation.pas" line="79" />
+      <field name="E_som_biom" type="TPar" visibility="public" size="4" offset="1380" file="USoilMineralisation.pas" line="80" />
+      <field name="E_biom_som" type="TPar" visibility="public" size="4" offset="1384" file="USoilMineralisation.pas" line="80" />
+      <field name="f_biom" type="TPar" visibility="public" size="4" offset="1388" file="USoilMineralisation.pas" line="80" />
+      <field name="ResidueIncorp" type="TOption" visibility="public" size="4" offset="1392" file="USoilMineralisation.pas" line="85" />
+      <field name="CPool" visibility="public" size="16" offset="1396" file="USoilMineralisation.pas" line="87">
         <array name="CPool" visibility="public" file="USoilMineralisation.pas" line="87">
           <element type="TState" />
         </array>
       </field>
-      <field name="NPool" visibility="public" size="16" offset="1404" file="USoilMineralisation.pas" line="88">
+      <field name="NPool" visibility="public" size="16" offset="1412" file="USoilMineralisation.pas" line="88">
         <array name="NPool" visibility="public" file="USoilMineralisation.pas" line="88">
           <element type="TVar" />
         </array>
       </field>
-      <field name="CN" type="TPoolParArray" visibility="public" size="16" offset="1420" file="USoilMineralisation.pas" line="89" />
-      <field name="Net_min" visibility="public" size="40" offset="1436" file="USoilMineralisation.pas" line="91">
+      <field name="CN" type="TPoolParArray" visibility="public" size="16" offset="1428" file="USoilMineralisation.pas" line="89" />
+      <field name="Net_min" visibility="public" size="40" offset="1444" file="USoilMineralisation.pas" line="91">
         <array name="Net_min" visibility="public" low="0" high="9" file="USoilMineralisation.pas" line="91">
           <element type="TVar" />
         </array>
       </field>
-      <field name="F_abiot" visibility="public" size="40" offset="1476" file="USoilMineralisation.pas" line="92">
+      <field name="F_abiot" visibility="public" size="40" offset="1484" file="USoilMineralisation.pas" line="92">
         <array name="F_abiot" visibility="public" low="0" high="9" file="USoilMineralisation.pas" line="92">
           <element type="TVar" />
         </array>
       </field>
-      <field name="f_Nmin" visibility="public" size="40" offset="1516" file="USoilMineralisation.pas" line="97">
+      <field name="f_Nmin" visibility="public" size="40" offset="1524" file="USoilMineralisation.pas" line="97">
         <devnotes>
            <summary>
            Relative factor for reducing decomposition rate under nitrogen shortage [0..1]
@@ -1425,7 +1429,7 @@
           <element type="TVar" />
         </array>
       </field>
-      <field name="f_som_biom" visibility="public" size="40" offset="1556" file="USoilMineralisation.pas" line="100">
+      <field name="f_som_biom" visibility="public" size="40" offset="1564" file="USoilMineralisation.pas" line="100">
         <devnotes>
            <summary> factor for affecting k_som_biom by soil mineral N availability </summary>
         </devnotes>
@@ -1433,43 +1437,43 @@
           <element type="TVar" />
         </array>
       </field>
-      <field name="BBf" visibility="public" size="40" offset="1596" file="USoilMineralisation.pas" line="102">
+      <field name="BBf" visibility="public" size="40" offset="1604" file="USoilMineralisation.pas" line="102">
         <array name="BBf" visibility="public" low="0" high="9" file="USoilMineralisation.pas" line="102">
           <element type="TState" />
         </array>
       </field>
-      <field name="Layerfactor" visibility="public" size="40" offset="1636" file="USoilMineralisation.pas" line="103">
+      <field name="Layerfactor" visibility="public" size="40" offset="1644" file="USoilMineralisation.pas" line="103">
         <array name="Layerfactor" visibility="public" low="0" high="9" file="USoilMineralisation.pas" line="103">
           <element type="TPar" />
         </array>
       </field>
-      <field name="c_frac" visibility="public" size="40" offset="1676" file="USoilMineralisation.pas" line="104">
+      <field name="c_frac" visibility="public" size="40" offset="1684" file="USoilMineralisation.pas" line="104">
         <array name="c_frac" visibility="public" low="0" high="9" file="USoilMineralisation.pas" line="104">
           <element type="TPar" />
         </array>
       </field>
-      <field name="NPool_i" visibility="public" size="160" offset="1716" file="USoilMineralisation.pas" line="106">
+      <field name="NPool_i" visibility="public" size="160" offset="1724" file="USoilMineralisation.pas" line="106">
         <array name="NPool_i" visibility="public" low="0" high="9" file="USoilMineralisation.pas" line="106">
           <array name="NPool_i" visibility="public" alias="UAbstractSoilMinOld.TPoolVarArray" file="USoilMineralisation.pas" line="106">
             <element type="TVar" />
           </array>
         </array>
       </field>
-      <field name="CPool_i" visibility="public" size="160" offset="1876" file="USoilMineralisation.pas" line="107">
+      <field name="CPool_i" visibility="public" size="160" offset="1884" file="USoilMineralisation.pas" line="107">
         <array name="CPool_i" visibility="public" low="0" high="9" file="USoilMineralisation.pas" line="107">
           <array name="CPool_i" visibility="public" alias="UAbstractSoilMinOld.TPoolStateArray" file="USoilMineralisation.pas" line="107">
             <element type="TState" />
           </array>
         </array>
       </field>
-      <field name="NetMinE" visibility="public" size="40" offset="2036" file="USoilMineralisation.pas" line="108">
+      <field name="NetMinE" visibility="public" size="40" offset="2044" file="USoilMineralisation.pas" line="108">
         <array name="NetMinE" visibility="public" low="0" high="9" file="USoilMineralisation.pas" line="108">
           <element type="TExternV" />
         </array>
       </field>
-      <field name="C_distributionmethod" type="TOption" visibility="public" size="4" offset="2076" file="USoilMineralisation.pas" line="109" />
-      <field name="Norg" type="TVar" visibility="public" size="4" offset="2080" file="USoilMineralisation.pas" line="110" />
-      <field name="Corg" type="TVar" visibility="public" size="4" offset="2084" file="USoilMineralisation.pas" line="111" />
+      <field name="C_distributionmethod" type="TOption" visibility="public" size="4" offset="2084" file="USoilMineralisation.pas" line="109" />
+      <field name="Norg" type="TVar" visibility="public" size="4" offset="2088" file="USoilMineralisation.pas" line="110" />
+      <field name="Corg" type="TVar" visibility="public" size="4" offset="2092" file="USoilMineralisation.pas" line="111" />
       <procedure name="CreateAll" visibility="public" procflags="override" file="USoilMineralisation.pas" line="113">
       </procedure>
       <procedure name="Init" visibility="public" procflags="override" file="USoilMineralisation.pas" line="115">
@@ -1506,6 +1510,6 @@
   <variable name="RefMin" type="Double" visibility="public" file="USoilMineralisation.pas" line="137" />
   <variable name="NsummeAlt" type="Double" visibility="public" file="USoilMineralisation.pas" line="138" />
   <variable name="Nsumme" type="Double" visibility="public" file="USoilMineralisation.pas" line="139" />
-  <procedure name="Register" visibility="public" file="USoilMineralisation.pas" line="805">
+  <procedure name="Register" visibility="public" file="USoilMineralisation.pas" line="806">
   </procedure>
 </namespace>

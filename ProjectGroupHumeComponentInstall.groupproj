@@ -15,6 +15,12 @@
         <Projects Include="Components\CERES Wheat\CeresSubModels.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Components\Soil\SoilWaterPackage.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Components\Maize\Maize.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -59,14 +65,32 @@
     <Target Name="CeresSubModels:Make">
         <MSBuild Projects="Components\CERES Wheat\CeresSubModels.dproj" Targets="Make"/>
     </Target>
+    <Target Name="SoilWaterPackage">
+        <MSBuild Projects="Components\Soil\SoilWaterPackage.dproj"/>
+    </Target>
+    <Target Name="SoilWaterPackage:Clean">
+        <MSBuild Projects="Components\Soil\SoilWaterPackage.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SoilWaterPackage:Make">
+        <MSBuild Projects="Components\Soil\SoilWaterPackage.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Maize">
+        <MSBuild Projects="Components\Maize\Maize.dproj"/>
+    </Target>
+    <Target Name="Maize:Clean">
+        <MSBuild Projects="Components\Maize\Maize.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Maize:Make">
+        <MSBuild Projects="Components\Maize\Maize.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="Hume1;ISIP_Components;OSR;CeresSubModels"/>
+        <CallTarget Targets="Hume1;ISIP_Components;OSR;CeresSubModels;SoilWaterPackage;Maize"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Hume1:Clean;ISIP_Components:Clean;OSR:Clean;CeresSubModels:Clean"/>
+        <CallTarget Targets="Hume1:Clean;ISIP_Components:Clean;OSR:Clean;CeresSubModels:Clean;SoilWaterPackage:Clean;Maize:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Hume1:Make;ISIP_Components:Make;OSR:Make;CeresSubModels:Make"/>
+        <CallTarget Targets="Hume1:Make;ISIP_Components:Make;OSR:Make;CeresSubModels:Make;SoilWaterPackage:Make;Maize:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
