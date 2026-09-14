@@ -842,6 +842,7 @@ end;
 procedure TOSRGrowth.createAll;
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TOSRGrowth);
   VarCreate('PARRad', 'W/m²',0, true, PARRad,'Photosynthetically active radiation');
   VarCreate('fT', '',0, true, fT,'Photosynthesis response factor');
   VarCreate('fRoot', '',0, true, fRoot,'Root growth fraction');

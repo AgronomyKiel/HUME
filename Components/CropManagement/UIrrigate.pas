@@ -52,6 +52,7 @@ var
   error: boolean;
 
 begin
+  SetEntityDeclarationClass(TIrrigate);
   ExternVcreate('Rain', '[mm]', STateField, Rain);
   IrrigateTermine := TStringList.create;
   for i := 1 to 50 do

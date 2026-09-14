@@ -130,6 +130,7 @@ procedure TsubDevelopment_Maize.createAll;
 
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TsubDevelopment_Maize);
   //Variables
 
   VarCreate('DevRateS0', '[1/(°Cd)]',0, true, DevRateS0, 'Development rate during IStage 0 (from sowing to emergence, 0 to 1)');

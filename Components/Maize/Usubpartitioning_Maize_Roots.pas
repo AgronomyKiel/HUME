@@ -87,6 +87,7 @@ ndx_str:string;
 
 begin
   inherited createAll;
+  SetEntityDeclarationClass(Tsubpartitioning_Maize_Roots);
   //Variables
   VarCreate ('ACroot', '', 0, true, ACroot);
 

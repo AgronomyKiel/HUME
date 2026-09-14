@@ -241,6 +241,7 @@ end;
 procedure TSubmodRoot2DNitrate.createAll;
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TSubmodRoot2DNitrate);
   // Create and initialize TVar
   { Caveat: variables are always initialized to 0. If a start value other than 0 is
     needed, calculation and assignment must occur in init. It would be better not to

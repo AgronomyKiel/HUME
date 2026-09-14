@@ -46,6 +46,7 @@ uses
 
 procedure TFertilization.CreateAll;
 begin
+  SetEntityDeclarationClass(TFertilization);
   ExternVcreate('Nmin_1', '[kgN/ha]', STateField, SoilNitrate);
 end;
 

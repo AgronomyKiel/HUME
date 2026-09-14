@@ -632,6 +632,7 @@ procedure TPenMonteith.CreateAll;
 
 begin
   Inherited CreateAll;
+  SetEntityDeclarationClass(TPenMonteith);
   CreatePars;
   CreateExterns;
   CreateVars;

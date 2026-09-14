@@ -47,6 +47,7 @@ uses
 
 procedure TDueng_Par.CreateAll;
 begin
+  SetEntityDeclarationClass(TDueng_Par);
   ExternVcreate('Nmin_1', '[kgN/ha]', STateField, SoilNitrate);
   DuengTermine := TStringList.Create;
 

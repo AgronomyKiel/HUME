@@ -65,6 +65,7 @@ procedure TLogGrowth.createAll;
 
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TLogGrowth);
   VarCreate('dW_dt', '[g/d]',0, true, dW_dt, 'Zuwachsrate');
   VarCreate('RGR', '',0, true, RGR, '');
 

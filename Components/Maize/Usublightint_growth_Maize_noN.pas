@@ -149,6 +149,7 @@ end;
 procedure Tsublightint_growth_Maize_noN.createAll;
 begin
   inherited createAll;
+  SetEntityDeclarationClass(Tsublightint_growth_Maize_noN);
   //Variables
   VarCreate('fInt', '',0, true, fInt);
   VarCreate('IntPar', '',0, true, IntPar);

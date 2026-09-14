@@ -56,6 +56,7 @@ var
   i, j: integer;
 
 begin
+  SetEntityDeclarationClass(TPlantIntegrator);
   VarCreate('LAI', '[-]', 0.0, false, LAI);
   VarCreate('PlantNDemand', '[gN.m-2.d-1]', 0.0, false, NUptake);
   VarCreate('CropHeight', '[-]', 0.0, false, PlantHeight);

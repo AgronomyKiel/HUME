@@ -70,6 +70,12 @@ type
     fSubmod: string;
     /// <summary>Field documentation link.</summary>
     fDocuWebLink: string;
+    /// <summary>Class in which the entity was registered.</summary>
+    FDeclarationClassName: string;
+    /// <summary>Unit containing the registration class.</summary>
+    FDeclarationUnitName: string;
+    /// <summary>Source file inferred from the registration unit.</summary>
+    FDeclarationSourceFile: string;
   public
     /// <summary>Units of the entity.</summary>
     U { nits }: string;
@@ -89,6 +95,15 @@ type
     SelForSensOut : boolean;
     /// <summary>Flag for initialisation from file; false indicates need for alternative initialisation.</summary>
     WasReadFromFile: boolean;
+    /// <summary>Class recorded when the entity is registered with its submodel.</summary>
+    property DeclarationClassName: string read FDeclarationClassName
+      write FDeclarationClassName;
+    /// <summary>Delphi unit recorded when the entity is registered with its submodel.</summary>
+    property DeclarationUnitName: string read FDeclarationUnitName
+      write FDeclarationUnitName;
+    /// <summary>Source file name derived and stored when the entity is registered.</summary>
+    property DeclarationSourceFile: string read FDeclarationSourceFile
+      write FDeclarationSourceFile;
   published
     /// <summary>Name of the object.</summary>
     property Name: string read N write N;

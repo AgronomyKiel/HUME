@@ -939,6 +939,7 @@ var
 begin
   fShowWarnings := true;
   inherited CreateAll; // call TLayeredSoil.CreateAll
+  SetEntityDeclarationClass(TSoilWaterMod);
   m_model := Mualem; // set Genuchten model option to Mualem model
   CreateParameters; // Wrapper for parameter creation
   CreateOptions;
@@ -1154,7 +1155,7 @@ var
   nfkPars: array [1 .. 6] of TPar;
   i: integer;
 begin
-  { Calculation von FK, PWP und nFK aus van-Genuchten-Parametern mit der Funktion b_psi_f (unit UGenucht) }
+  { Calculation of FK, PWP and nFK from van-Genuchten parameters using the function b_psi_f (unit UGenucht) }
   horizonBoundaries[1] := HoriNdx1;
   horizonBoundaries[2] := HoriNdx2;
   horizonBoundaries[3] := HoriNdx3;
@@ -1848,7 +1849,7 @@ begin
 
   OptCreate('IniMethod', 'Parameter', OptIniMethod,
     'Option for initialisation method, Watercontents: inital water' +
-    'content data are provided; Potentials: intial soil water matrix potential is provided, Parameter: initial soil water content is calculated from a matrix potential in the first layer.No license found');
+    'content data are provided, Potentials: intial soil water matrix potential is provided, Parameter: initial soil water content is calculated from a matrix potential in the first layer.No license found');
   OptIniMethod.OptionList.Clear;
   OptIniMethod.OptionList.Add('Watercontents');
   OptIniMethod.OptionList.Add('Potentials');
@@ -2356,7 +2357,7 @@ var
 
 begin
   InitDailySums_and_Changes(OldSumSoilwater);
-  { start value for time step ist der vorletzte Zeitschritt des vorherigen Tages. }
+  { start value for time step is the second-to-last time step of the previous day }
   act_n_comp := n_comp;
   Find_Number_of_computation_Layers;
   repeat
@@ -3819,7 +3820,7 @@ var
       stored in the variables "Wet" and "Dry". }
 
   begin
-    { Wasserspannungen im erlaubten Rahmen ? }
+    { Water potentials within permitted range? }
     start := 1;
     dry := false;
     wet := false;
@@ -3975,10 +3976,10 @@ var
     for i := act_n_comp downto start do
     begin
       last_iter_theta[i] := theta_new[i];
-      { Umsetzen der berechneten Spannungen }
+      { Apply the calculated potentials }
       psi_neu[i] := max(0, Res[i]);
       // TODO if necessary, further check whether resetting to zero is required ...
-      // Neue Wassergehalte aus Ableitung
+      // New water contents derived from water potential
       theta_new[i] := WPar[i].b_psi_f(psi_neu[i]);
       if ShowWarnings then
       begin

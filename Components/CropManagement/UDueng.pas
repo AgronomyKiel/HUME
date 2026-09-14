@@ -95,6 +95,7 @@ begin
   DuengTermine := TStringList.Create;
   Duengungen := TDuengungen.Create;
   inherited CreateAll;
+  SetEntityDeclarationClass(TDueng);
   ExternVcreate('Nmin_1', '[kgN/ha]', STateField, SoilNitrate);
   StateCreate('CumDueng', '[kgN/ha]', 0.0, false, CumDueng);
   ParCreate('f_rec', '', 1.0, f_rec);

@@ -116,6 +116,7 @@ procedure TDueng_ISIP.CreateAll;
 
 begin
   inherited;
+  SetEntityDeclarationClass(TDueng_ISIP);
 
   ParCreate('fNEff', '[-]', 0.7, fNEff, 'fraction of not immobilised nitrogen');
   ParCreate('STDNApp1', '[kg/ha]', 60, STDNApp1);

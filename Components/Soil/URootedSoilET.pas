@@ -123,6 +123,7 @@ var
 
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TSoilWaterETR);
   ParCreate('psi_2', '[cm]', 200, psi_2);
   ParCreate('psi_3', '[cm]', 15000, psi_3);
 

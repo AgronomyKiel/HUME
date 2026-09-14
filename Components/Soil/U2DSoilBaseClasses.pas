@@ -863,6 +863,7 @@ end;
 procedure TSubmodRootBase.createAll;
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TSubmodRootBase);
   initialised := false;
   ParCreate('Ini_dt', '[d]', 1/240, Ini_dt, 'initial time step');
   ParCreate('max_dt', '[d]', 1/240, max_dt, 'maximum time step');
@@ -932,6 +933,7 @@ procedure TSubmodRootBase2D.createAll;
 
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TSubmodRootBase2D);
   RasterData := TRasterData.create(self);
   // Create and initialize TPar
   ParCreate('dimensionX', '[cm]', 100, dimensionX, 'width of the area in x direction');

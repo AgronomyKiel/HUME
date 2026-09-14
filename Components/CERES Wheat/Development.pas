@@ -456,6 +456,7 @@ uses
 procedure TDevelopment.createall;
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TDevelopment);
   CreateVars;
   CreateStates;
   CreatePars;

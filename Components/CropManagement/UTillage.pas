@@ -76,6 +76,7 @@ var
   i: integer;
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TTillage);
   ParCreate('TillageMinEffect', '[]', 0.5, TillageMinEffect,
     'Tillage effect on mineralisation. This value is added to the BBf-factor.');
   for i := 1 to MaxTillLayers do

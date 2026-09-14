@@ -62,6 +62,7 @@ uses Math, SysUtils, vcl.Dialogs;
 
 procedure TIrrigate_ISIP.CreateAll;
 begin
+  SetEntityDeclarationClass(TIrrigate_ISIP);
   ExternVcreate('TransRatio', '[-]', StateField, TransRatio);
   ExternVcreate('ProzNFK0_Weff', '[-]', StateField, ProzNFK0_Weff);
   ExternVcreate('psiRoot', '[pF]', StateField, psiRoot);

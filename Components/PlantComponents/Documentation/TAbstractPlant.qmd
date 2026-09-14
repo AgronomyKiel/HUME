@@ -1,0 +1,282 @@
+---
+title: "TAbstractPlant"
+author: "Agronomy and Crop Science Group, Kiel University"
+date: "`r Sys.Date()`"
+chunk_output_type: console
+html-math-method: katex
+number-sections: true
+toc: true
+toc-expand: 4
+toc-depth: 4
+toc-location: left
+format:
+  html:
+    embed-resources: true
+---
+
+```{r}
+#| label: setup-libraries
+#| include: false
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE
+)
+
+library(dplyr)
+library(kableExtra)
+library(knitr)
+```
+
+```{r}
+#| label: setup-documentation-data
+#| include: false
+
+source_file <- "Components/PlantComponents/UAbstractPlant.pas"
+documentation_csv <- "csv_Hume_Docu/GrowthCurvePlant1.csv"
+
+if (!file.exists(source_file)) {
+  stop("Source file not found: ", source_file)
+}
+
+if (!file.exists(documentation_csv)) {
+  stop(
+    "Model-element documentation CSV not found: ", documentation_csv,
+    ". Generate it with TMod.write_documentation and copy it to csv_Hume_Docu."
+  )
+}
+
+entity_data <- read.delim(
+  documentation_csv,
+  header = TRUE,
+  sep = ";",
+  fileEncoding = "UTF-8-BOM",
+  check.names = TRUE,
+  stringsAsFactors = FALSE
+)
+
+# Older documentation CSV files used "SubModel" and "ExtVar". Normalize them
+# so that this draft works with both the legacy and current output formats.
+if ("SubModel" %in% names(entity_data) &&
+    !"Submodel" %in% names(entity_data)) {
+  names(entity_data)[names(entity_data) == "SubModel"] <- "Submodel"
+}
+
+entity_data <- entity_data %>%
+  mutate(EntityType = recode(EntityType, ExtVar = "ExternalValue"))
+
+# The checked-in example predates registration-time provenance. These explicit
+# base-class lists also make the inheritance shown in this document independent
+# of the concrete representative plant class.
+submodel_entities <- c("ContOutput", "FinalOutput")
+abstract_plant_entities <- c(
+  "C_Residues", "N_Residues", "DMtotal", "DMfineroot",
+  "SowingDate", "HarvestDate", "Par_Psi2", "Par_rc0",
+  "Par_ExtCoeffPAR", "Par_Weff", "WithRoots"
+)
+
+if (!"DeclarationClass" %in% names(entity_data)) {
+  entity_data$DeclarationClass <- "TGrowthCurvePlant"
+}
+
+entity_data <- entity_data %>%
+  mutate(
+    IntroductionClass = case_when(
+      EntityName %in% submodel_entities ~ "TSubmodel",
+      EntityName %in% abstract_plant_entities ~ "TAbstractPlant",
+      TRUE ~ DeclarationClass
+    )
+  )
+
+# Documentation output can contain one copy per INI file. Use one scenario for
+# structural entity tables because class provenance does not vary by scenario.
+if ("IniFile" %in% names(entity_data)) {
+  first_ini_file <- unique(entity_data$IniFile)[1]
+  entity_data <- entity_data %>% filter(IniFile == first_ini_file)
+}
+
+entity_data <- entity_data %>% distinct()
+
+make_entity_table <- function(entity_type, columns, headings) {
+  result <- entity_data %>%
+    filter(EntityType %in% entity_type) %>%
+    select(IntroductionClass, all_of(columns)) %>%
+    distinct()
+
+  names(result) <- c("Introduced in class", headings)
+  result
+}
+
+state_table <- make_entity_table(
+  "State",
+  c("EntityName", "Units", "Value", "Comment"),
+  c("State variable", "Units", "Initial value", "Description")
+)
+
+parameter_table <- make_entity_table(
+  "Parameter",
+  c("EntityName", "Units", "Value", "Comment"),
+  c("Parameter", "Units", "Value", "Description")
+)
+
+variable_table <- make_entity_table(
+  "Variable",
+  c("EntityName", "Units", "Comment"),
+  c("Variable", "Units", "Description")
+)
+
+constant_table <- make_entity_table(
+  "Constant",
+  c("EntityName", "Units", "Value", "Comment"),
+  c("Constant", "Units", "Value", "Description")
+)
+
+external_table <- make_entity_table(
+  "ExternalValue",
+  c("EntityName", "Units", "Option", "Comment"),
+  c("External variable", "Units", "Source", "Description")
+)
+
+option_table <- make_entity_table(
+  "Option",
+  c("EntityName", "Option", "Comment"),
+  c("Option", "Default value", "Description")
+)
+
+render_entity_table <- function(table_data, caption) {
+  if (nrow(table_data) == 0) {
+    cat("No entities of this type are present in the documentation data.")
+  } else {
+    print(
+      kable(
+        table_data,
+        caption = caption,
+        escape = FALSE
+      ) %>%
+        kable_styling(
+          bootstrap_options = c("striped", "hover", "condensed"),
+          full_width = TRUE
+        )
+    )
+  }
+}
+```
+
+# Summary
+
+`TAbstractPlant` is the abstract base class for HUME plant components. It provides common crop states and parameters, crop-rotation links to related soil and evapotranspiration submodels, and the interfaces that concrete plant classes must implement for leaf area, crop height, roots, dry-matter growth, and nitrogen uptake.
+
+The same source unit also declares `TPlantRelatedSubMod`, the base class for submodels that maintain a link to the currently active plant in a crop rotation.
+
+Source unit: `Components/PlantComponents/UAbstractPlant.pas`
+
+## Class hierarchy
+
+``` text
+TSubmodel
+|-- TPlantRelatedSubMod
+`-- TAbstractPlant
+    `-- concrete plant models, for example TGrowthCurvePlant
+```
+
+| Class | Responsibility |
+|------------------------------------|------------------------------------|
+| `TPlantRelatedSubMod` | Stores the active plant model, remembers the first linked plant, and restores that link during initialization. |
+| `TAbstractPlant` | Defines common plant entities, crop-rotation behavior, harvest handling, and the abstract plant/soil coupling interface. |
+
+## Source provenance
+
+The tables below use registration-time class information from the `DeclarationClass` field generated by `TMod.write_documentation`. The entity lists declared directly by `TSubmodel` and `TAbstractPlant` are also stated explicitly in the setup chunk. This ensures that inherited entities are assigned to their introducing base class even when the representative CSV was generated from a concrete descendant.
+
+The checked-in `GrowthCurvePlant1.csv` still uses the older CSV layout. It therefore receives `TGrowthCurvePlant` as the default class, after which the known base-class entities are assigned to `TSubmodel` and `TAbstractPlant`. Regenerating the CSV with the current code supplies the stored RTTI provenance for all other entities.
+
+# Model entities
+
+The tables describe the complete entity set of the representative `TGrowthCurvePlant` instance. The first column identifies the class that introduced each entity.
+
+## State variables
+
+The representative plant instance contains `r nrow(state_table)` state variable(s).
+
+```{r}
+#| label: table-state-variables
+#| results: asis
+render_entity_table(state_table, "Plant state variables")
+```
+
+## Parameters
+
+The representative plant instance contains `r nrow(parameter_table)` parameter(s).
+
+```{r}
+#| label: table-parameters
+#| results: asis
+render_entity_table(parameter_table, "Plant parameters")
+```
+
+## Variables
+
+The representative plant instance contains `r nrow(variable_table)` calculated variable(s).
+
+```{r}
+#| label: table-variables
+#| results: asis
+render_entity_table(variable_table, "Calculated plant variables")
+```
+
+## Constants
+
+The representative plant instance contains `r nrow(constant_table)` registered constant(s).
+
+```{r}
+#| label: table-constants
+#| results: asis
+render_entity_table(constant_table, "Plant constants")
+```
+
+## External variables
+
+The representative plant instance contains `r nrow(external_table)` external variable(s).
+
+```{r}
+#| label: table-external-variables
+#| results: asis
+render_entity_table(external_table, "External plant variables")
+```
+
+## Options
+
+The representative plant instance contains `r nrow(option_table)` option(s).
+
+```{r}
+#| label: table-options
+#| results: asis
+render_entity_table(option_table, "Plant options")
+```
+
+# Common behavior
+
+## Initialization
+
+`TAbstractPlant.CreateAll` registers the dates of sowing and harvest, residue pools, total and fine-root dry matter, coupling parameters for water uptake and evapotranspiration, and the `WithRoots` option. During initialization, `WithRoots` is converted to the internal Boolean flag and the residue pools and harvest state are reset.
+
+## Harvest and crop rotation
+
+`TAbstractPlant.Integrate` performs harvest when the configured harvest date is passed or `DoHarvest` is set. It transfers carbon and nitrogen residues to a connected soil-mineralization model, activates the next crop, and transfers the linked soil-water, soil-nitrogen, soil-layer, and evapotranspiration submodels to that crop. If `SetNewDates` is enabled, sowing and harvest dates are advanced by `RotationLength` years.
+
+## Interface for concrete plant models
+
+Concrete descendants must provide access to:
+
+- leaf area index and crop height;
+- nitrogen uptake rate;
+- root-length density by soil layer;
+- total and effective root length; and
+- the dry-matter growth rate.
+
+The common parameters `Par_ExtCoeffPAR`, `Par_rc0`, `Par_Psi2`, and `Par_Weff` allow other HUME components to obtain plant-specific radiation, canopy, water-stress, and rooting-depth values through the abstract plant interface.
+
+# Draft status
+
+This document is a source-code-based first draft. Before publication, regenerate the representative CSV with the current `TMod.write_documentation`, review the descriptions and units emitted by the model, and remove the legacy CSV fallback once the checked-in example data has been updated.

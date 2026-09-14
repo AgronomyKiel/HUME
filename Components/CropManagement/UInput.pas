@@ -178,6 +178,7 @@ begin
   ExtVars := TStringList.create;
 
   inherited CreateAll;
+  SetEntityDeclarationClass(TInput);
   VarCreate('f_FertSensVar', '', 1, true, f_FertSensVar);
   ParCreate('f_FertSens', '', 1, f_FertSens);
 

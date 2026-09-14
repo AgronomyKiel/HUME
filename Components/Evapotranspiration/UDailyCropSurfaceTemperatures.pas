@@ -340,6 +340,7 @@ var
   i: integer;
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TCropSurfaceTemp);
 
   ExternVCreate('EC', '[BBCH]', statefield, EC);
   ExternVCreate('TransIntRatio', '[-]', statefield, TransIntRatio);

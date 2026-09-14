@@ -114,6 +114,7 @@ var
   ndx_str: String;
 begin
   inherited createAll;
+  SetEntityDeclarationClass(TSubDataEx);
 
   // weather data
   ExternVCreate('TMPM', '[?C]', StateField, TMPM);

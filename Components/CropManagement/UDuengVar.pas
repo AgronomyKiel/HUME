@@ -72,6 +72,7 @@ var
 
 
 begin
+  SetEntityDeclarationClass(TDuengVar);
 //  FConsideredLayers := 1;
   ExternVcreate('Nmin_1', '[kgN/ha]', STateField, SoilNitrate);
   ExternVcreate('Nmin0_30', '[kgN/ha]', STateField, Nmin1);

@@ -257,6 +257,7 @@ ndx_str:string;
 
 begin
   inherited createAll;
+  SetEntityDeclarationClass(Tsubpartitioning_Maize);
 // Variables
 VarCreate('ACroot', '[-]', 0, true, ACroot, 'Dry matter allocation coefficient for roots (DM distribution coefficient at emergence)');
 VarCreate('BodBedeck', '[-]', 0, true, BodBedeck, 'Soil cover fraction (e.g., plant canopy cover)');

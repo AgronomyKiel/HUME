@@ -257,6 +257,7 @@ var
 
 begin
   inherited;
+  SetEntityDeclarationClass(TSoilMin);
   ParCreate('CN_dpm', '[-]', cn_dpm, CN[dpm]);
   ParCreate('CN_rpm', '[-]', cn_rpm, CN[rpm]);
   ParCreate('CN_som', '[-]', cn_som, CN[som]);

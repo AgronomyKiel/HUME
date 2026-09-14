@@ -137,6 +137,7 @@ var
   i: integer;
 begin
   inherited CreateAll;
+  SetEntityDeclarationClass(TSoilNitrogen);
   VarCreate('SumNmin', '[kg N/ha]', 0.0, false, SumNmin,
     'Summe des Nmin-Stickstoffs');
   StateCreate('SumNitrateLeaching', '[kg N/ha]', 0.0, false,
