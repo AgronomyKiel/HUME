@@ -156,6 +156,10 @@ begin
   if Tmod(component).LMOptions.WeightOptions = OptMeasErrorWeight then
     FormModelEditor.ComboBox_MO_WeightOptions.text := 'OptMeasErrorWeight';
 
+  if (Tmod(component).FIniFiles.Count = 0) and
+    (Trim(Tmod(component).GM_ControlFile) <> '') then
+    Tmod(component).LoadControlFile(Tmod(component).GM_ControlFile, false);
+
   FormModelEditor.ListBoxControlFileStrings.items := Tmod(component).FInifiles;
   FormModelEditor.EditNameControlFile.text := Tmod(component).get_ControlFileFN;
 

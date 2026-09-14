@@ -1620,7 +1620,7 @@ begin
 {$ELSE}
     ShowMessage('No ActIniFile');
 {$ENDIF}
-    Exit;
+    raise EInvalidOperation.Create('No ActIniFile');
   end;
 
   Inifn := ExpandFileName(ActIniFile.FileName);
@@ -1653,7 +1653,8 @@ begin
 {$ELSE}
       writeln('WeatherFile ' + WeatherFilefn + ' does not exist');
 {$ENDIF}
-      exit;
+      raise EFileNotFoundException.CreateFmt('WeatherFile "%s" does not exist',
+        [WeatherFilefn]);
     end;
     self.WeatherFile.Init(WeatherFilefn);
     // InitWeatherFile(WeatherFilefn);
@@ -1668,7 +1669,8 @@ begin
 {$ELSE}
     ShowMessage('ActIniFile "' + Inifn + '" does not exist');
 {$ENDIF}
-    Exit;
+    raise EFileNotFoundException.CreateFmt('ActIniFile "%s" does not exist',
+      [Inifn]);
   end;
 
 end;
@@ -3726,7 +3728,7 @@ var
   NewIniFile: TMyIniFile;
   ControlFile: TStreamReader;
   NewIniFiles, OldIniFiles: TStringList;
-  ApplicationDirectory, IniFileDirectory: string;
+  ApplicationDirectory, IniFileDirectory, ControlFileDirectory: string;
 
 begin
   Result := false;
@@ -3742,7 +3744,7 @@ begin
     ApplicationDirectory := System.IOUtils.TPath.GetDirectoryName(
       System.IOUtils.TPath.GetFullPath(ParamStr(0)));
     ResolvedControlFileName := ResolveReferencedFileName(
-      Trim(ControlFileName), ApplicationDirectory);
+      Trim(ControlFileName), GetCurrentDir);
     if not FileExists(ResolvedControlFileName) then
     begin
       ErrorMessage := Format('Control file "%s" does not exist.',
@@ -3752,6 +3754,8 @@ begin
 
     NewIniFiles := TStringList.Create;
     NewIniFiles.OwnsObjects := true;
+    ControlFileDirectory := System.IOUtils.TPath.GetDirectoryName(
+      ResolvedControlFileName);
     ControlFile := TStreamReader.Create(ResolvedControlFileName,
       TEncoding.UTF8, true);
     try
@@ -3764,7 +3768,7 @@ begin
           Continue;
 
         ActIniFn := ResolveReferencedFileName(ActIniFn,
-          ApplicationDirectory);
+          ControlFileDirectory);
         if NewIniFiles.IndexOf(ActIniFn) >= 0 then
           Continue;
 
