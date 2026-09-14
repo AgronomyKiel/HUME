@@ -48,7 +48,7 @@ type
     function GetIsPlantModelset: boolean;
 
 /// <summary>setter for the plant model</summary>
-    /// <param name> "NewPlantModel" new plant model to set</param>
+    /// <param> "NewPlantModel" new plant model to set</param>
     /// <remarks>This method sets the plant model and initializes the first plant model if not already set.</remarks>    
     procedure SetPlantModel(NewPlantmodel: TAbstractPlant); virtual;
   public
