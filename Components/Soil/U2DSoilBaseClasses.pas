@@ -13,8 +13,6 @@ uses
   UMod, UState, URootObject, Diffko, SubmodRootStructureNew,
   URootUptakeFunctions;
 
-
-
 //const
   /// <summary>Maximum number of roots.</summary>
 //  max_num_roots = 40000;
@@ -29,7 +27,6 @@ type
   real = double;
   // Arrays
   r2 = array [0 .. 1] of double; // Vektor im Punktraum
-
 
 const
   /// <summary>largest index, required for the vectors during the flux calculation</summary>
@@ -64,16 +61,23 @@ type
   fverticMargin: real;
 
   /// <summary>
-  ///   private field for defining a horitzonal margin of the
+  ///   private field for defining a horizontal margin of the
   ///  computational grid [cm]
   /// </summary>
-
   fhorizMargin : real;
-
+  
+  /// <summary> Field for the dimension of the computational grid in the x-direction [cm]</summary>
   fDimensionX : real;
+
+  /// <summary> Field for the dimension of the computational grid in the y-direction [cm]</summary>
   fDimensionY : real;
+
+  /// <summary>Field for the width of the center area of the computational grid in the x-direction [cm]</summary>
   fdim_xMiddle : real;
+
+  /// <summary>Field for the height of the center area of the computational grid in the y-direction [cm]</summary>
   fdim_yMiddle : real;
+  /// <summary>Field for the area of the computational grid [cm2]</summary> 
   fAreaMiddle  : real;
 
   /// <summary>
@@ -86,17 +90,16 @@ type
   /// </summary>
   fContRad: real;
 
-  fWriteSinkCells : boolean;
-  fSinkCellFileName : string;
-
-
   protected
-    /// <summary>Protected declarations</summary>
+    /// <summary>Protected declarations</summary> 
     ///
-    ///
+  /// <summary>Number of grid cells in the x-direction of the center area</summary>
   ndim_xMiddle : integer;
+
+  /// <summary>Number of grid cells in the y-direction of the center area</summary>
   ndim_yMiddle : integer;
 
+  /// <summary>Number of roots not located in the margins</summary>
   number_consid_roots : integer;
 
   public
@@ -122,9 +125,10 @@ type
     /// <summary>Width of rows [cm]</summary>
     RowHeight: double;
 
-    /// <summary> contains the x and y coordinates of the center of the container in container mode</summary>
+    /// <summary> contains the x coordinate of the center of the container in container mode</summary>
     contposx: real;
 
+    /// <summary> contains the y coordinate of the center of the container in container mode</summary>
     contposy: real;
 
 /// <summary>
@@ -148,7 +152,6 @@ type
 /// </summary>
     C_xy: array of array of double;
 
-
     /// <summary> Stores information on all roots in the form of TRootObjectIn2D entries</summary>
     RootList: TStringList;
 
@@ -163,6 +166,7 @@ type
                            verticMargin, horizMargin, ContRad,
                            C_Start:real);
 
+    /// <summary>extracts the middle part of the grid</summary>
     procedure ExtractMiddle;
 
     /// <summary>Reads aggregated raster data and generates random positions</summary>
@@ -199,8 +203,17 @@ type
     procedure testForContBorder(var start_, ende_: integer;
                  x_ndx, y_ndx: integer; zeile: boolean);
 
-      function calcAbsValue2D(vect: r2): double;
+    /// <summary>Calculates the absolute value of a 2D vector</summary>
+    /// <param name="vect">The 2D vector</param>
+    /// <returns>The absolute value of the vector</returns>
+    function calcAbsValue2D(vect: r2): double;
+
+    /// <summary>Subtracts two 2D vectors</summary>
+    /// <param name="vect2">The second 2D vector</param>
+    /// <param name="vect1">The first 2D vector</param>
+    /// <returns>The result of the subtraction</returns>
     function vectorSubtrakt2D(vect2, vect1: r2): r2;
+
     procedure zweid_solut(dt_globmod: real);
 
 
@@ -209,7 +222,7 @@ type
   end; { Ende Deklaration TRasterData }
 
 
-  TRasterDataH2ON = class(TRasterData)
+  TRasterDataH2O = class(TRasterData)
   private
 
 
@@ -406,6 +419,15 @@ type
 
   TSubmodRootBase2D = class(TSubmodRootBase)
   private
+
+    /// <summary>Field for writing sink cells</summary>
+    fWriteSinkCells : boolean;
+
+    /// <summary>Field for the name of the sink cell file</summary>
+    fSinkCellFileName : string;
+
+    /// <summary>Flag field for indicating if the sink cell file was created</summary>
+    FSinkCellFileWasCreated: boolean;
 
   protected
 
@@ -2151,7 +2173,7 @@ var
           ' ', 'Influx', ' ', 'Konz_Zelle');
         writeln(SinkCellFile);
         closefile(SinkCellFile);
-        SinkCellFileWasCreated := true;
+        fSinkCellFileWasCreated := true;
       end;
     end;
     linker_Rand(Start);
