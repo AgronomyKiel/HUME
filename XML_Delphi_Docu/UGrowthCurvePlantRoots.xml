@@ -59,9 +59,6 @@
         </methodref>
         <methodref name="GetWLD" visibility="protected" procflags="abstract virtual">
         </methodref>
-        <methodref name="GetWldMomentsAddress" visibility="protected" procflags="virtual">
-        </methodref>
-        <methodref name="GetEffWldMomentsAddress" visibility="protected" procflags="virtual" />
         <methodref name="GetSumRootLength" visibility="protected" procflags="abstract virtual">
         </methodref>
         <methodref name="GetSumRootLength_eff" visibility="protected" procflags="abstract virtual">
@@ -1421,164 +1418,126 @@
           </retval>
         </parameters>
       </function>
-      <field name="Root_Matrix" visibility="public" size="200000" offset="641232" file="UGrowthCurvePlantRoots.pas" line="53">
-        <devnotes>
-           <summary>Circular root-age cohorts and running active lengths.</summary>
-        </devnotes>
-        <array name="Root_Matrix" visibility="public" low="1" high="50" file="UGrowthCurvePlantRoots.pas" line="53">
-          <array name="Root_Matrix" visibility="public" alias="URootGrowthUtils.TRootAgeCohorts" low="1" high="500" file="UGrowthCurvePlantRoots.pas" line="53">
-            <devnotes>
-               <summary>Circular buffer of root length increments, one cohort per model step.</summary>
-            </devnotes>
-            <element type="Double">
-              <devnotes>
-                 <summary>Circular buffer of root length increments, one cohort per model step.</summary>
-              </devnotes>
-            </element>
+      <field name="Root_Matrix" visibility="public" size="200000" offset="641208" file="UGrowthCurvePlantRoots.pas" line="46">
+        <array name="Root_Matrix" visibility="public" low="1" high="50" file="UGrowthCurvePlantRoots.pas" line="46">
+          <array name="Root_Matrix" visibility="public" low="1" high="500" file="UGrowthCurvePlantRoots.pas" line="46">
+            <element type="Double" />
           </array>
         </array>
       </field>
-      <field name="n_age_cl" type="Integer" visibility="public" size="4" offset="841232" file="UGrowthCurvePlantRoots.pas" line="54" />
-      <field name="RootAgeHead" type="Integer" visibility="public" size="4" offset="841236" file="UGrowthCurvePlantRoots.pas" line="54" />
-      <field name="ActiveAgeClassCount" type="Integer" visibility="public" size="4" offset="841240" file="UGrowthCurvePlantRoots.pas" line="54" />
-      <field name="ActiveRootLength" visibility="public" size="400" offset="841248" file="UGrowthCurvePlantRoots.pas" line="55">
-        <array name="ActiveRootLength" visibility="public" low="1" high="50" file="UGrowthCurvePlantRoots.pas" line="55">
-          <element type="Double" />
-        </array>
-      </field>
-      <field name="SRLcalc" type="TOption" visibility="public" size="4" offset="841648" file="UGrowthCurvePlantRoots.pas" line="57">
-        <devnotes>
-           <summary>Root length calculation: growth curve (default) or fine-root biomass.</summary>
-        </devnotes>
-      </field>
-      <field name="sp_RL" type="TPar" visibility="public" size="4" offset="841652" file="UGrowthCurvePlantRoots.pas" line="59">
-        <devnotes>
-           <summary>Specific root length in cm per g fine-root dry matter.</summary>
-        </devnotes>
-      </field>
-      <field name="CalcMoments" type="TOption" visibility="public" size="4" offset="841656" file="UGrowthCurvePlantRoots.pas" line="61">
-        <devnotes>
-           <summary>Optional within-layer lognormal RLD variation.</summary>
-        </devnotes>
-      </field>
-      <field name="VK_lrv_int" type="TPar" visibility="public" size="4" offset="841660" file="UGrowthCurvePlantRoots.pas" line="62" />
-      <field name="VK_lrv_slope" type="TPar" visibility="public" size="4" offset="841664" file="UGrowthCurvePlantRoots.pas" line="62" />
-      <field name="VK_lrv" visibility="public" size="80" offset="841668" file="UGrowthCurvePlantRoots.pas" line="63">
-        <array name="VK_lrv" visibility="public" low="1" high="20" file="UGrowthCurvePlantRoots.pas" line="63">
-          <element type="TVar" />
-        </array>
-      </field>
-      <field name="Wld_moments" type="TRootLengthDensityMomentMatrix" visibility="public" size="1600" offset="841752" file="UGrowthCurvePlantRoots.pas" line="64" />
-      <field name="EffWld_moments" type="TRootLengthDensityMomentMatrix" visibility="public" size="1600" offset="843352" file="UGrowthCurvePlantRoots.pas" line="64" />
-      <field name="WldStdDev_arr" type="TSoilVarArray" visibility="public" size="212" offset="844952" file="UGrowthCurvePlantRoots.pas" line="65" />
-      <field name="EffWldStdDev_arr" type="TSoilVarArray" visibility="public" size="212" offset="845164" file="UGrowthCurvePlantRoots.pas" line="65" />
-      <field name="ActiveDuration" type="TPar" visibility="public" size="4" offset="845376" file="UGrowthCurvePlantRoots.pas" line="69">
+      <field name="n_age_cl" type="Integer" visibility="public" size="4" offset="841208" file="UGrowthCurvePlantRoots.pas" line="47" />
+      <field name="ActiveDuration" type="TPar" visibility="public" size="4" offset="841212" file="UGrowthCurvePlantRoots.pas" line="50">
         <devnotes>
            <summary>Active duration of root growth.</summary>
         </devnotes>
       </field>
-      <field name="Wld_arr" type="TSoilVarArray" visibility="public" size="212" offset="845380" file="UGrowthCurvePlantRoots.pas" line="72">
+      <field name="Wld_arr" type="TSoilVarArray" visibility="public" size="212" offset="841216" file="UGrowthCurvePlantRoots.pas" line="53">
         <devnotes>
            <summary>Array of root length densities [cm.cm-3].</summary>
         </devnotes>
       </field>
-      <field name="WL_arr" type="TSoilVarArray" visibility="public" size="212" offset="845592" file="UGrowthCurvePlantRoots.pas" line="75">
+      <field name="WL_arr" type="TSoilVarArray" visibility="public" size="212" offset="841428" file="UGrowthCurvePlantRoots.pas" line="56">
         <devnotes>
            <summary>Array of root lengths [cm.cm-2].</summary>
         </devnotes>
       </field>
-      <field name="EffWld_arr" type="TSoilVarArray" visibility="public" size="212" offset="845804" file="UGrowthCurvePlantRoots.pas" line="77">
+      <field name="EffWld_arr" type="TSoilVarArray" visibility="public" size="212" offset="841640" file="UGrowthCurvePlantRoots.pas" line="58">
         <devnotes>
            <summary>Array of effective root length densities [cm.cm-3].</summary>
         </devnotes>
       </field>
-      <field name="effWL_arr" type="TSoilVarArray" visibility="public" size="212" offset="846016" file="UGrowthCurvePlantRoots.pas" line="79">
+      <field name="effWL_arr" type="TSoilVarArray" visibility="public" size="212" offset="841852" file="UGrowthCurvePlantRoots.pas" line="60">
         <devnotes>
            <summary>Array of effective root lengths [cm.cm-2].</summary>
         </devnotes>
       </field>
-      <field name="N_Rootcomp" type="TVar" visibility="public" size="4" offset="846228" file="UGrowthCurvePlantRoots.pas" line="82">
+      <field name="N_Rootcomp" type="TVar" visibility="public" size="4" offset="842064" file="UGrowthCurvePlantRoots.pas" line="63">
         <devnotes>
            <summary>Number of potential rooted soil layers.</summary>
         </devnotes>
       </field>
-      <field name="Tiefe" type="TSoilExtArray" visibility="public" size="208" offset="846232" file="UGrowthCurvePlantRoots.pas" line="85">
+      <field name="Tiefe" type="TSoilExtArray" visibility="public" size="208" offset="842068" file="UGrowthCurvePlantRoots.pas" line="66">
         <devnotes>
            <summary>Soil depth for each root component [cm].</summary>
         </devnotes>
       </field>
-      <field name="zr_0" type="TPar" visibility="public" size="4" offset="846440" file="UGrowthCurvePlantRoots.pas" line="88">
+      <field name="zr_0" type="TPar" visibility="public" size="4" offset="842276" file="UGrowthCurvePlantRoots.pas" line="69">
         <devnotes>
            <summary>Root depth at planting or sowing [cm].</summary>
         </devnotes>
       </field>
-      <field name="zr_max" type="TPar" visibility="public" size="4" offset="846444" file="UGrowthCurvePlantRoots.pas" line="91">
+      <field name="zr_max" type="TPar" visibility="public" size="4" offset="842280" file="UGrowthCurvePlantRoots.pas" line="72">
         <devnotes>
            <summary>Maximum rooting depth [cm].</summary>
         </devnotes>
       </field>
-      <field name="WL_0" type="TPar" visibility="public" size="4" offset="846448" file="UGrowthCurvePlantRoots.pas" line="93">
+      <field name="WL_0" type="TPar" visibility="public" size="4" offset="842284" file="UGrowthCurvePlantRoots.pas" line="74">
         <devnotes>
            <summary>Root length at planting or sowing [cm].</summary>
         </devnotes>
       </field>
-      <field name="WL_max" type="TPar" visibility="public" size="4" offset="846452" file="UGrowthCurvePlantRoots.pas" line="95">
+      <field name="WL_max" type="TPar" visibility="public" size="4" offset="842288" file="UGrowthCurvePlantRoots.pas" line="76">
         <devnotes>
            <summary>Maximum root length [cm].</summary>
         </devnotes>
       </field>
-      <field name="k_z" type="TPar" visibility="public" size="4" offset="846456" file="UGrowthCurvePlantRoots.pas" line="98">
+      <field name="k_z" type="TPar" visibility="public" size="4" offset="842292" file="UGrowthCurvePlantRoots.pas" line="79">
         <devnotes>
            <summary>Growth-rate parameter for root depth development [cm.d-1.°C].</summary>
         </devnotes>
       </field>
-      <field name="k_za" type="TPar" visibility="public" size="4" offset="846460" file="UGrowthCurvePlantRoots.pas" line="100">
+      <field name="k_za" type="TPar" visibility="public" size="4" offset="842296" file="UGrowthCurvePlantRoots.pas" line="81">
         <devnotes>
            <summary>Growth-rate parameter for root depth in an exponential phase [cm.d-1.°C].</summary>
         </devnotes>
       </field>
-      <field name="k_Wl" type="TPar" visibility="public" size="4" offset="846464" file="UGrowthCurvePlantRoots.pas" line="103">
+      <field name="k_Wl" type="TPar" visibility="public" size="4" offset="842300" file="UGrowthCurvePlantRoots.pas" line="84">
         <devnotes>
            <summary>Growth-rate parameter for root length development [cm.d-1.°C].</summary>
         </devnotes>
       </field>
-      <field name="K_a" type="TPar" visibility="public" size="4" offset="846468" file="UGrowthCurvePlantRoots.pas" line="106">
+      <field name="K_a" type="TPar" visibility="public" size="4" offset="842304" file="UGrowthCurvePlantRoots.pas" line="87">
         <devnotes>
            <summary>Parameter for the vertical distribution of root length; ratio of RLD at z=0 to RLD at z=zr [-].</summary>
         </devnotes>
       </field>
-      <field name="TempSumRootBaseTemp" type="TPar" visibility="public" size="4" offset="846472" file="UGrowthCurvePlantRoots.pas" line="109">
+      <field name="TempSumRootBaseTemp" type="TPar" visibility="public" size="4" offset="842308" file="UGrowthCurvePlantRoots.pas" line="90">
         <devnotes>
            <summary>Base temperature for root growth.</summary>
         </devnotes>
       </field>
-      <field name="SRL" type="TVar" visibility="public" size="4" offset="846476" file="UGrowthCurvePlantRoots.pas" line="112">
+      <field name="SRL" type="TVar" visibility="public" size="4" offset="842312" file="UGrowthCurvePlantRoots.pas" line="93">
         <devnotes>
            <summary>Sum of root length [cm.cm-2].</summary>
         </devnotes>
       </field>
-      <field name="SRL_eff" type="TVar" visibility="public" size="4" offset="846480" file="UGrowthCurvePlantRoots.pas" line="115">
+      <field name="SRL_eff" type="TVar" visibility="public" size="4" offset="842316" file="UGrowthCurvePlantRoots.pas" line="96">
         <devnotes>
            <summary>Sum of effective root length [cm.cm-2].</summary>
         </devnotes>
       </field>
-      <field name="zr" type="TState" visibility="public" size="4" offset="846484" file="UGrowthCurvePlantRoots.pas" line="118">
+      <field name="zr" type="TState" visibility="public" size="4" offset="842320" file="UGrowthCurvePlantRoots.pas" line="99">
         <devnotes>
            <summary>State variable for root depth [cm].</summary>
         </devnotes>
       </field>
-      <field name="depthgrowthOptStr" type="TOption" visibility="public" size="4" offset="846488" file="UGrowthCurvePlantRoots.pas" line="121">
+      <field name="OptWithRoots" type="TOption" visibility="public" size="4" offset="842324" file="UGrowthCurvePlantRoots.pas" line="102">
+        <devnotes>
+           <summary>Option to enable root growth.</summary>
+        </devnotes>
+      </field>
+      <field name="depthgrowthOptStr" type="TOption" visibility="public" size="4" offset="842328" file="UGrowthCurvePlantRoots.pas" line="105">
         <devnotes>
            <summary>Option for the root depth growth model.</summary>
         </devnotes>
       </field>
-      <field name="Opt_RootAgeing" type="TOption" visibility="public" size="4" offset="846492" file="UGrowthCurvePlantRoots.pas" line="124">
+      <field name="Opt_RootAgeing" type="TOption" visibility="public" size="4" offset="842332" file="UGrowthCurvePlantRoots.pas" line="108">
         <devnotes>
            <summary>Option for root ageing.</summary>
         </devnotes>
       </field>
-      <field name="depthgrowthchoice" type="TRootingdepthIncrease" visibility="public" size="1" offset="846496" file="UGrowthCurvePlantRoots.pas" line="126" />
-      <procedure name="CreateAll" visibility="public" procflags="override" file="UGrowthCurvePlantRoots.pas" line="128">
+      <field name="depthgrowthchoice" type="TRootingdepthIncrease" visibility="public" size="1" offset="842336" file="UGrowthCurvePlantRoots.pas" line="110" />
+      <procedure name="CreateAll" visibility="public" procflags="override" file="UGrowthCurvePlantRoots.pas" line="112">
       </procedure>
       <procedure name="Init" visibility="public" procflags="override" file="UGrowthCurvePlantRoots.pas" line="130">
         <devnotes>
@@ -1603,6 +1562,6 @@
       <property name="Par_ActiveDuration" visibility="published" read="ActiveDuration" write="ActiveDuration" type="TPar" file="UGrowthCurvePlantRoots.pas" line="148" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="UGrowthCurvePlantRoots.pas" line="436">
+  <procedure name="Register" visibility="public" file="UGrowthCurvePlantRoots.pas" line="348">
   </procedure>
 </namespace>

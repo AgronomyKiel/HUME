@@ -148,6 +148,8 @@
   </enum>
   <class name="TMinModHan" file="UMinModHan2.pas" line="12">
     <ancestor name="TSubmodel" namespace="UMod">
+      <methodref name="RecordEntityProvenance" visibility="private">
+      </methodref>
       <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
       </methodref>
       <methodref name="RegistrateOption" visibility="private" procflags="virtual">
@@ -205,6 +207,8 @@
       <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
       </methodref>
       <methodref name="UpdateValue" visibility="protected">
+      </methodref>
+      <methodref name="SetEntityDeclarationClass" visibility="protected">
       </methodref>
       <methodref name="Paint" visibility="protected" procflags="override">
       </methodref>
@@ -1346,53 +1350,53 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fSWMOD" type="TSoilWaterMod" visibility="private" size="4" offset="656" file="UMinModHan2.pas" line="15" />
-      <field name="fdueng_isip" type="TDueng_ISIP" visibility="private" size="4" offset="660" file="UMinModHan2.pas" line="16" />
-      <field name="dNmin" visibility="private" size="72" offset="664" file="UMinModHan2.pas" line="17">
+      <field name="fSWMOD" type="TSoilWaterMod" visibility="private" size="4" offset="664" file="UMinModHan2.pas" line="15" />
+      <field name="fdueng_isip" type="TDueng_ISIP" visibility="private" size="4" offset="668" file="UMinModHan2.pas" line="16" />
+      <field name="dNmin" visibility="private" size="72" offset="672" file="UMinModHan2.pas" line="17">
         <array name="dNmin" visibility="private" low="1" high="9" file="UMinModHan2.pas" line="17">
           <element type="Double" />
         </array>
       </field>
-      <field name="strMinHash" type="string" visibility="private" size="4" offset="736" file="UMinModHan2.pas" line="18" />
-      <field name="fMinHash" type="TMinHash" visibility="protected" size="1" offset="740" file="UMinModHan2.pas" line="20" />
-      <field name="Vorfrucht" type="TPar" visibility="public" size="4" offset="744" file="UMinModHan2.pas" line="22" />
-      <field name="avNcrop" type="TPar" visibility="public" size="4" offset="748" file="UMinModHan2.pas" line="23" />
-      <field name="yRain" type="TPar" visibility="public" size="4" offset="752" file="UMinModHan2.pas" line="24" />
-      <field name="avMayTemp" type="TPar" visibility="public" size="4" offset="756" file="UMinModHan2.pas" line="25" />
-      <field name="TextureClass" type="TPar" visibility="public" size="4" offset="760" file="UMinModHan2.pas" line="26" />
-      <field name="BP" type="TPar" visibility="public" size="4" offset="764" file="UMinModHan2.pas" line="27" />
-      <field name="relImmoRate" type="TPar" visibility="public" size="4" offset="768" file="UMinModHan2.pas" line="28" />
-      <field name="ArrheniusRelMin" type="TPar" visibility="public" size="4" offset="772" file="UMinModHan2.pas" line="29" />
-      <field name="TextureClassIndex" type="TPar" visibility="public" size="4" offset="776" file="UMinModHan2.pas" line="30" />
-      <field name="avClayContent" type="TVar" visibility="public" size="4" offset="780" file="UMinModHan2.pas" line="32" />
-      <field name="MinRate" type="TVar" visibility="public" size="4" offset="784" file="UMinModHan2.pas" line="33" />
-      <field name="ft" type="TVar" visibility="public" size="4" offset="788" file="UMinModHan2.pas" line="34" />
-      <field name="PSI0_30" type="TVar" visibility="public" size="4" offset="792" file="UMinModHan2.pas" line="35" />
-      <field name="fpF" type="TVar" visibility="public" size="4" offset="796" file="UMinModHan2.pas" line="36" />
-      <field name="fclay" type="TVar" visibility="public" size="4" offset="800" file="UMinModHan2.pas" line="37" />
-      <field name="VFW" type="TVar" visibility="public" size="4" offset="804" file="UMinModHan2.pas" line="38" />
-      <field name="NImmoAutumn" type="TVar" visibility="public" size="4" offset="808" file="UMinModHan2.pas" line="39" />
-      <field name="avMineff" type="TVar" visibility="public" size="4" offset="812" file="UMinModHan2.pas" line="40" />
-      <field name="ImmoRate" type="TVar" visibility="public" size="4" offset="816" file="UMinModHan2.pas" line="41" />
-      <field name="Nslow" type="TVar" visibility="public" size="4" offset="820" file="UMinModHan2.pas" line="42" />
-      <field name="NminVB" type="TVar" visibility="public" size="4" offset="824" file="UMinModHan2.pas" line="43" />
-      <field name="MineralisedN" type="TState" visibility="public" size="4" offset="828" file="UMinModHan2.pas" line="45" />
-      <field name="cumImmoN" type="TState" visibility="public" size="4" offset="832" file="UMinModHan2.pas" line="46" />
-      <field name="DaisyWeightedTsumAutumn" type="TState" visibility="public" size="4" offset="836" file="UMinModHan2.pas" line="47" />
-      <field name="DaisyWeightedTsumS" type="TState" visibility="public" size="4" offset="840" file="UMinModHan2.pas" line="48" />
-      <field name="DaisyWeightedTsum" type="TState" visibility="public" size="4" offset="844" file="UMinModHan2.pas" line="49" />
-      <field name="EC" type="TExternV" visibility="public" size="4" offset="848" file="UMinModHan2.pas" line="52" />
-      <field name="Nmin0_90" type="TExternV" visibility="public" size="4" offset="852" file="UMinModHan2.pas" line="53" />
-      <field name="Tmpm" type="TExternV" visibility="public" size="4" offset="856" file="UMinModHan2.pas" line="54" />
-      <field name="WG0_30" type="TExternV" visibility="public" size="4" offset="860" file="UMinModHan2.pas" line="55" />
-      <field name="Nmin" visibility="public" size="36" offset="864" file="UMinModHan2.pas" line="56">
+      <field name="strMinHash" type="string" visibility="private" size="4" offset="744" file="UMinModHan2.pas" line="18" />
+      <field name="fMinHash" type="TMinHash" visibility="protected" size="1" offset="748" file="UMinModHan2.pas" line="20" />
+      <field name="Vorfrucht" type="TPar" visibility="public" size="4" offset="752" file="UMinModHan2.pas" line="22" />
+      <field name="avNcrop" type="TPar" visibility="public" size="4" offset="756" file="UMinModHan2.pas" line="23" />
+      <field name="yRain" type="TPar" visibility="public" size="4" offset="760" file="UMinModHan2.pas" line="24" />
+      <field name="avMayTemp" type="TPar" visibility="public" size="4" offset="764" file="UMinModHan2.pas" line="25" />
+      <field name="TextureClass" type="TPar" visibility="public" size="4" offset="768" file="UMinModHan2.pas" line="26" />
+      <field name="BP" type="TPar" visibility="public" size="4" offset="772" file="UMinModHan2.pas" line="27" />
+      <field name="relImmoRate" type="TPar" visibility="public" size="4" offset="776" file="UMinModHan2.pas" line="28" />
+      <field name="ArrheniusRelMin" type="TPar" visibility="public" size="4" offset="780" file="UMinModHan2.pas" line="29" />
+      <field name="TextureClassIndex" type="TPar" visibility="public" size="4" offset="784" file="UMinModHan2.pas" line="30" />
+      <field name="avClayContent" type="TVar" visibility="public" size="4" offset="788" file="UMinModHan2.pas" line="32" />
+      <field name="MinRate" type="TVar" visibility="public" size="4" offset="792" file="UMinModHan2.pas" line="33" />
+      <field name="ft" type="TVar" visibility="public" size="4" offset="796" file="UMinModHan2.pas" line="34" />
+      <field name="PSI0_30" type="TVar" visibility="public" size="4" offset="800" file="UMinModHan2.pas" line="35" />
+      <field name="fpF" type="TVar" visibility="public" size="4" offset="804" file="UMinModHan2.pas" line="36" />
+      <field name="fclay" type="TVar" visibility="public" size="4" offset="808" file="UMinModHan2.pas" line="37" />
+      <field name="VFW" type="TVar" visibility="public" size="4" offset="812" file="UMinModHan2.pas" line="38" />
+      <field name="NImmoAutumn" type="TVar" visibility="public" size="4" offset="816" file="UMinModHan2.pas" line="39" />
+      <field name="avMineff" type="TVar" visibility="public" size="4" offset="820" file="UMinModHan2.pas" line="40" />
+      <field name="ImmoRate" type="TVar" visibility="public" size="4" offset="824" file="UMinModHan2.pas" line="41" />
+      <field name="Nslow" type="TVar" visibility="public" size="4" offset="828" file="UMinModHan2.pas" line="42" />
+      <field name="NminVB" type="TVar" visibility="public" size="4" offset="832" file="UMinModHan2.pas" line="43" />
+      <field name="MineralisedN" type="TState" visibility="public" size="4" offset="836" file="UMinModHan2.pas" line="45" />
+      <field name="cumImmoN" type="TState" visibility="public" size="4" offset="840" file="UMinModHan2.pas" line="46" />
+      <field name="DaisyWeightedTsumAutumn" type="TState" visibility="public" size="4" offset="844" file="UMinModHan2.pas" line="47" />
+      <field name="DaisyWeightedTsumS" type="TState" visibility="public" size="4" offset="848" file="UMinModHan2.pas" line="48" />
+      <field name="DaisyWeightedTsum" type="TState" visibility="public" size="4" offset="852" file="UMinModHan2.pas" line="49" />
+      <field name="EC" type="TExternV" visibility="public" size="4" offset="856" file="UMinModHan2.pas" line="52" />
+      <field name="Nmin0_90" type="TExternV" visibility="public" size="4" offset="860" file="UMinModHan2.pas" line="53" />
+      <field name="Tmpm" type="TExternV" visibility="public" size="4" offset="864" file="UMinModHan2.pas" line="54" />
+      <field name="WG0_30" type="TExternV" visibility="public" size="4" offset="868" file="UMinModHan2.pas" line="55" />
+      <field name="Nmin" visibility="public" size="36" offset="872" file="UMinModHan2.pas" line="56">
         <array name="Nmin" visibility="public" low="1" high="9" file="UMinModHan2.pas" line="56">
           <element type="TExternV" />
         </array>
       </field>
-      <field name="sowingdate" type="TExternV" visibility="public" size="4" offset="900" file="UMinModHan2.pas" line="57" />
-      <field name="dayofyear" type="TExternV" visibility="public" size="4" offset="904" file="UMinModHan2.pas" line="58" />
-      <field name="OptMinHash" type="TOption" visibility="public" size="4" offset="908" file="UMinModHan2.pas" line="59" />
+      <field name="sowingdate" type="TExternV" visibility="public" size="4" offset="908" file="UMinModHan2.pas" line="57" />
+      <field name="dayofyear" type="TExternV" visibility="public" size="4" offset="912" file="UMinModHan2.pas" line="58" />
+      <field name="OptMinHash" type="TOption" visibility="public" size="4" offset="916" file="UMinModHan2.pas" line="59" />
       <procedure name="CreateAll" visibility="public" procflags="override" file="UMinModHan2.pas" line="60">
       </procedure>
       <procedure name="Init" visibility="public" procflags="override" file="UMinModHan2.pas" line="61">
@@ -1436,6 +1440,6 @@
       <property name="duengisip" visibility="published" read="fdueng_isip" write="fdueng_isip" type="TDueng_ISIP" file="UMinModHan2.pas" line="82" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="UMinModHan2.pas" line="490">
+  <procedure name="Register" visibility="public" file="UMinModHan2.pas" line="491">
   </procedure>
 </namespace>
