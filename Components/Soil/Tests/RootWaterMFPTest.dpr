@@ -43,7 +43,7 @@ var
   A, B, C: TRootObjectIn2D;
   Soil: TGenucht;
   Table: TMFP_table;
-  OldTheta, OldSum, OldInflux, Capacity, Demand: double;
+  OldTheta, OldSum, OldInflux, Capacity, Demand, CellVolume, RootUptakeVolume: double;
   Failed: boolean;
 begin
   FormatSettings.ShortDateFormat := 'dd.mm.yyyy';
@@ -75,13 +75,17 @@ begin
     C := AddRoot(Model, 2, 1);
     Model.NRoots := 999;
     Model.CalcRates;
-    Demand := 0.3 / 3 / 10 / 86400;
+    Demand := Model.PotentialWaterUptake.v * Model.Area.v / 3 / Model.Depth.v / 86400;
+    CellVolume := Model.gridWidth.v * Model.gridHeight.v * Model.Depth.v;
+    RootUptakeVolume := Demand * 86400 * Clock.Time.c * Model.Depth.v;
     Near('Equal root demand in seconds', A.WInflux, Demand);
     Near('Second root in same cell', B.WInflux, Demand);
     Near('Other cell root', C.WInflux, Demand);
-    Near('Cell aggregates both roots', Model.getWaterRasterData.Theta_xy[1, 1], 0.3 - 0.2 / 40 * 0.01);
-    Near('Whole domain water balance', Model.getWaterRasterData.LastWaterUptake * 10, 0.3 * 0.01);
-    Near('Cumulative influx per root length', A.SumWInflux, 0.1 / 10 * 0.01);
+    Near('Cell aggregates both roots', Model.getWaterRasterData.Theta_xy[1, 1],
+      0.3 - 2 * RootUptakeVolume / CellVolume);
+    Near('Whole domain water balance', Model.getWaterRasterData.LastWaterUptake,
+      Model.PotentialWaterUptake.v * Model.Area.v * Clock.Time.c);
+    Near('Cumulative influx per root length', A.SumWInflux, Demand * 86400 * Clock.Time.c);
     Near('Solver balance', Model.getWaterRasterData.WaterBalanceError, 0);
 
     VanGenuchtenFromTextureClass_RR(Soil, Sl3);
@@ -95,19 +99,20 @@ begin
     end;
     Model.PotentialWaterUptake.v := 1E8;
     Clock.Time.c := 1E-8;
-    Model.getWaterRasterData.Init(0.3);
+    Model.getWaterRasterData.Init(0.3, Model.Depth.v);
     Model.CalcRates;
     Check(Capacity > 0, 'Positive transport capacity');
     Near('Transport-limited root', A.WInflux * 86400, Capacity * 86400);
     Near('Full area for each colocated root', A.WInflux * 86400, C.WInflux * 86400);
-    Near('Transport-limited balance', Model.getWaterRasterData.LastWaterUptake, Capacity * 86400 * 3 * Clock.Time.c);
+    Near('Transport-limited balance', Model.getWaterRasterData.LastWaterUptake,
+      Capacity * 86400 * 3 * Clock.Time.c * Model.Depth.v);
 
     Model.getWaterRasterData.Theta_xy[1, 1] := Soil.b_rest;
     Model.CalcRates;
     Near('Dry cell uptake', A.WInflux, 0);
     Near('Second dry root', B.WInflux, 0);
     Check(C.WInflux > 0, 'Wet cell still supplies water');
-    Model.getWaterRasterData.Init(Soil.b_sat);
+    Model.getWaterRasterData.Init(Soil.b_sat, Model.Depth.v);
     Model.CalcRates;
     Check(A.WInflux > 0, 'Saturated endpoint is finite and positive');
 
