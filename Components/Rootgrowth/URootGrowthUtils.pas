@@ -10,6 +10,8 @@ const
 
 type
   real = double;
+  /// <summary>Circular buffer of root length increments, one cohort per model step.</summary>
+  TRootAgeCohorts = array [1 .. MaxAgeCl] of real;
   /// <summary>Ten representative quantiles of a root length density distribution.</summary>
   TRootLengthDensityMoments =
     array [1 .. RootLengthDensityMomentCount] of real;
@@ -64,7 +66,125 @@ function Logist_f(Wmax, W0, k, Tsum: real): real;
 
 function WLD_z_f(wld0, a, z: real): real;
 
+/// <summary>Normalizes ten lognormal quantiles to the supplied mean; CV is in percent.</summary>
+procedure CalculateLognormalMoments(const MeanRootLengthDensity,
+  CoefficientOfVariation: real; var Moments: TRootLengthDensityMoments);
+function CalculateMomentStandardDeviation(
+  const Moments: TRootLengthDensityMoments): real;
+
+/// <summary>Replaces the youngest cohort and updates the active sliding sum.</summary>
+/// <remarks>Heads are 1-based, PreviousHead may be zero at startup; counts are bounded to MaxAgeCl.</remarks>
+procedure UpdateRootAgeCohort(var Cohorts: TRootAgeCohorts;
+  Head, PreviousHead, ActiveCount, PreviousActiveCount: integer;
+  NewRootLength: real; var ActiveRootLength: real);
+
 implementation
+
+uses Math;
+
+procedure CalculateLognormalMoments(
+  const MeanRootLengthDensity, CoefficientOfVariation: real;
+  var Moments: TRootLengthDensityMoments);
+const
+  StandardNormalQuantiles: TRootLengthDensityMoments =
+    (-1.64485347566998, -1.03643338949379, -0.674489750196082,
+     -0.385320466407568, -0.125661346855074, 0.125661346855074,
+      0.385320466407568, 0.674489750196082, 1.03643338949379,
+      1.64485347566998);
+var
+  MomentIndex: integer;
+  CoefficientOfVariationFraction: real;
+  StandardDeviationLog, MeanLog, SumOfMoments, ScaleFactor: real;
+begin
+  if MeanRootLengthDensity <= 0.0 then
+  begin
+    for MomentIndex := 1 to RootLengthDensityMomentCount do
+      Moments[MomentIndex] := 0.0;
+    exit;
+  end;
+
+  CoefficientOfVariationFraction :=
+    max(0.0, CoefficientOfVariation) / 100.0;
+  StandardDeviationLog :=
+    sqrt(ln(sqr(CoefficientOfVariationFraction) + 1.0));
+  MeanLog := ln(MeanRootLengthDensity) -
+    0.5 * sqr(StandardDeviationLog);
+
+  SumOfMoments := 0.0;
+  for MomentIndex := 1 to RootLengthDensityMomentCount do
+  begin
+    Moments[MomentIndex] := exp(MeanLog + StandardDeviationLog *
+      StandardNormalQuantiles[MomentIndex]);
+    SumOfMoments := SumOfMoments + Moments[MomentIndex];
+  end;
+
+  if SumOfMoments > 0.0 then
+  begin
+    ScaleFactor := MeanRootLengthDensity * RootLengthDensityMomentCount /
+      SumOfMoments;
+    for MomentIndex := 1 to RootLengthDensityMomentCount do
+      Moments[MomentIndex] := Moments[MomentIndex] * ScaleFactor;
+  end;
+end;
+
+function CalculateMomentStandardDeviation(
+  const Moments: TRootLengthDensityMoments): real;
+var
+  MomentIndex: integer;
+  MomentMean, SumSquaredDeviations: real;
+begin
+  MomentMean := 0.0;
+  for MomentIndex := 1 to RootLengthDensityMomentCount do
+    MomentMean := MomentMean + Moments[MomentIndex];
+  MomentMean := MomentMean / RootLengthDensityMomentCount;
+
+  SumSquaredDeviations := 0.0;
+  for MomentIndex := 1 to RootLengthDensityMomentCount do
+    SumSquaredDeviations := SumSquaredDeviations +
+      sqr(Moments[MomentIndex] - MomentMean);
+
+  Result := sqrt(SumSquaredDeviations /
+    RootLengthDensityMomentCount);
+end;
+
+procedure UpdateRootAgeCohort(var Cohorts: TRootAgeCohorts;
+  Head, PreviousHead, ActiveCount, PreviousActiveCount: integer;
+  NewRootLength: real; var ActiveRootLength: real);
+var
+  j, Index: integer;
+  ExpiredRootLength: real;
+begin
+  ActiveCount := min(max(ActiveCount, 0), MaxAgeCl);
+  NewRootLength := max(0.0, NewRootLength);
+  if ActiveCount <> PreviousActiveCount then
+  begin
+    Cohorts[Head] := NewRootLength;
+    ActiveRootLength := 0.0;
+    for j := 1 to ActiveCount do
+    begin
+      Index := Head - j + 1;
+      if Index <= 0 then
+        inc(Index, MaxAgeCl);
+      ActiveRootLength := ActiveRootLength + Cohorts[Index];
+    end;
+  end
+  else if ActiveCount > 0 then
+  begin
+    Index := PreviousHead - ActiveCount + 1;
+    if Index <= 0 then
+      inc(Index, MaxAgeCl);
+    ExpiredRootLength := Cohorts[Index];
+    Cohorts[Head] := NewRootLength;
+    ActiveRootLength := max(0.0,
+      ActiveRootLength - ExpiredRootLength + NewRootLength);
+  end
+  else
+  begin
+    Cohorts[Head] := NewRootLength;
+    ActiveRootLength := 0.0;
+  end;
+end;
+
 
 function monomo_f(Pmax, P0, k, t: real): real;
 
