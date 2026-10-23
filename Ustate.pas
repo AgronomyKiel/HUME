@@ -139,6 +139,13 @@ type
     /// <summary>A list of possible options.</summary>
     OptionList: TStringList;
 
+    /// <summary>Enables the file-open button in the model editor.</summary>
+    IsFileInput: Boolean;
+    /// <summary>Enables a save dialog for an output filename, including new files.</summary>
+    IsFileOutput: Boolean;
+    /// <summary>File-open dialog filter; empty accepts all files.</summary>
+    FileFilter: string;
+
     /// <summary>Initializes the option with a name, default value, and comment.</summary>
     constructor create(name: string; Default: string; c: string);
     destructor Destroy; override;
@@ -353,6 +360,9 @@ constructor TOption.create(name: string; Default: string; c: string);
 begin
   inherited create; // call THumeEntity.create
   OptionList := TStringList.create;
+  IsFileInput := False;
+  IsFileOutput := False;
+  FileFilter := '';
   N := del_blank(name); // Name
   Option := default; // Value
   DefaultString := default;
