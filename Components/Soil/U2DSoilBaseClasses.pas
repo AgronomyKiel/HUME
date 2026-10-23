@@ -1039,10 +1039,27 @@ begin
     FReadingRootInput := True;
     try
       if IniMethod.Option = 'xyfile' then
-        readXYfromFile(RootInpDataFile.Option, SeriesXY)
+      begin
+        readXYfromFile(RootInpDataFile.Option, SeriesXY);
+        FitRootInputDomain;
+      end
       else
+      begin
         readRasterData(RootInpDataFile.Option, SeriesXY);
-      FitRootInputDomain;
+        /// <summary>The header defines the full raster domain, including empty
+        /// boundary cells. Keep sampled roots in their original coordinates.</summary>
+        dimensionX.v := RootRasterNCols * RootRasterColWidth;
+        dimensionY.v := RootRasterNRows * RootRasterRowHeight;
+        if IsNan(gridHeight.v) or IsInfinite(gridHeight.v) or (gridHeight.v <= 0) then
+          raise ERootInputError.Create('Raster input requires a positive finite gridHeight');
+        if IsNan(dimensionX.v) or IsInfinite(dimensionX.v) or (dimensionX.v <= 0) or
+           IsNan(dimensionY.v) or IsInfinite(dimensionY.v) or (dimensionY.v <= 0) or
+           (dimensionX.v / gridWidth.v > 65535) or
+           (dimensionY.v / gridHeight.v > 65535) then
+          raise ERootInputError.Create('Raster input domain exceeds the supported grid dimensions');
+        dim_x.v := Max(1, Ceil(dimensionX.v / gridWidth.v));
+        dim_y.v := Max(1, Ceil(dimensionY.v / gridHeight.v));
+      end;
     finally
       FReadingRootInput := False;
     end;
