@@ -1308,3 +1308,40 @@ is conservative and fast, but its treatment of transport across discontinuous
 retention properties produces a materially different transient and final
 profile. Capacity is useful as a fast conceptual reference, not as a numerical
 reference for the transport-equation solvers.
+
+## Saturation water content scaling by horizon
+
+The option `b_sat_scaling` selects how saturation water content is scaled:
+
+- `unique_b_sat_scaling` (default) preserves the existing behavior: the common
+  parameter `bsat_scaling` multiplies explicitly supplied `b_sat1` through
+  `b_sat6`. Texture-derived saturation values remain unscaled.
+- `Single_b_sat_scaling` uses `bsat_scaling1` through `bsat_scaling6`, each
+  defaulting to 1. Each horizon's factor replaces the common factor and
+  multiplies either its explicitly supplied or its texture-derived saturation
+  water content.
+
+The existing `HoriNdx1` through `HoriNdx6` boundaries determine which factor
+applies to each soil layer. The lower boundary layer uses its assigned horizon
+as well. Scaling changes the hydraulic saturation values used at initialization;
+it does not overwrite the in-memory base `b_sat1` through `b_sat6` parameters.
+Other hydraulic parameters and the layer geometry are unchanged.
+
+Example options entry:
+
+```ini
+[SoilWaterModel]
+b_sat_scaling=Single_b_sat_scaling
+```
+
+Corresponding parameter entries:
+
+```ini
+[SoilWaterModel]
+bsat_scaling1=0.95
+bsat_scaling2=1.00
+bsat_scaling3=1.05
+bsat_scaling4=1.00
+bsat_scaling5=0.98
+bsat_scaling6=1.00
+```

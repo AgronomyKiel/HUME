@@ -44,6 +44,7 @@ library(Weatherfunctions)
 library(xml2)
 library(ggpmisc)
 library(tidyr)
+library(patchwork)
 source("Q:/HUME/HUME/RLib/DokuUtilFunctions.R")
 source("Q:/HUME/HUME/RLib/WFlowFunctions.R")
 source("Q:/HUME/HUME/RLib/VanGenuchten.r")
@@ -117,7 +118,6 @@ Basically there are empirical heuristic approaches and more mechanistic approach
 
 The empirical heuristic approaches define reduction functions for root water uptake based on the soil water potential in the different soil layers and optional the potential transpiration rate. The reduction functions are based on the work of [@feddes1978] and [@ehlers1991].
 
-
 ## Options and parameters to calculate the potential and actual transpiration (T~act~) and the sink term for the different soil layers
 
 ### Options
@@ -170,7 +170,7 @@ The default option is to distribute the potential transpiration according to the
 
 The potential water uptake / potential sink term is calculated from the root length in the layer cm cm^-2^ (RL~i~), an exponential factor for root competition \[-\] (CompF) divided by the sum of root length in all layers \[cm cm^-2^\] (RL~\[j\]~) and CompF (@fig-CompF). The factor 0.1 is the conversion from cm to mm which is used to convert with the units of mm for the evapotranspiration variables and the default unit of the soil processes which is cm.
 
-$$S[i]_{pot}=0.1\cdot {{T}_{pot}}\cdot \frac{RL{{[i]}^{CompF}}}{\sum\limits_{j}{RL{{[i]}^{CompF}}}}\cdot {{f}_{sinkred}}$$ {#eq-SinkTerm}
+$$S[i]_{pot}=0.1\cdot {{T}_{pot}}\cdot \frac{RL{{[i]}^{CompF}}}{\sum\limits_{j}{RL{{[i]}^{CompF}}}}$$ {#eq-SinkTerm}
 
 The lower the value of the competition factor is, the more the potential sink term is distributed to the deeper soil layers with lower root length densities (@fig-CompF). Analysis of experimental data has, however, indicated that a value of compF lower than 1 may be more realistic for simulating root water uptake [@ehlers1991].
 
@@ -195,7 +195,7 @@ This function is used if the option *Sqrwl_funct* is set to *ReductionFactor*. I
 #| fig-cap: Example for an distribution of root length density within the soil profile and the distribution of the potential sink term calculated for different values of the competition factor (CompF).
 
 # library for adding plots
-library(patchwork)
+
 
 depths <- seq(5, 125, by = 5)
 
@@ -240,6 +240,61 @@ The potential sink term is reduced by the reduction factor for root water uptake
 With the option "psi_logscale" = false, the reduction factor for root water uptake (f~sinkred~) based on the untransformed soil water potential in each soil layer (psi~i~), the soil water potential from which on water uptake is 0 (psi0) and a parameter for the soil water potential from which on water uptake decrease (psi~crit~) as shown in Eq. @eq-fsinkred2.
 
 $$f_{sinkred}=max \left( 0, min \left(1, \frac{psi-psi_3}{psi_2-psi_3}\right) \right)$$ {#eq-fsinkred}
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-psi2redf
+#| fig.height: 7
+#| fig-cap: Examples of reduction function with either log scale or linear dependency on soil matrix potential. Dotted blue line indicates the value of psi_2, the soil water potential from which on water uptake decrease.
+
+psi_2 <- 200
+
+linpsis <- seq(from=0, to = 10^4.2, by=100)
+
+logpsis <-  seq(from=1, to = 4.2, by=0.05)
+
+fred_lin <- pmax(0, pmin(1, (linpsis-10^4.2)/(psi_2-10^4.2)))
+fred_log <- pmax(0, pmin(1, (logpsis-4.2)/(log10(psi_2)-4.2)))
+
+
+df1 <- data.frame(psi = linpsis, fred = fred_lin, type = "linear")
+df2 <- data.frame(psi = logpsis, fred = fred_log, type = "log")
+df1$logpsi <- log10(df1$psi)
+df1$linpsi <- df1$psi
+df2$logpsi <- df2$psi
+df2$linpsi <- 10^df2$psi 
+  
+
+
+df <- rbind(df1, df2)
+
+p1 <- ggplot(df1, aes(x = logpsi, y = fred), color = "red") +
+  geom_line(size=1.5) +
+  geom_vline(xintercept = log10(psi_2),  linetype = "dashed", color = "blue") +
+#  scale_color_manual(values = c("blue", "red"), labels = c("linear", "log")) +
+  labs(title = "linear-scaled", x = "pF  (log10(psi))", y = "Reduction factor for root water uptake", color = "Scale") +
+  scale_x_continuous(limits=c(1,5), breaks=c(1,2,3,4,5), labels=c("1","2","3","4","5")) +
+  theme_minimal(base_size = 22)
+#p1
+p2 <- ggplot(df2, aes(x = logpsi, y = fred), color = "blue") +
+  geom_line(size=1.5) +
+  geom_vline(xintercept = log10(psi_2),  linetype = "dashed", color = "blue") +
+  labs(title = "log scaled", x = "pF  (log10(psi))", y = "Reduction factor for root water uptake", color = "Scale") +
+  scale_x_continuous(limits=c(1,5), breaks=c(1,2,3,4,5), labels=c("1","2","3","4","5")) +
+  theme_minimal(base_size = 22)
+
+
+
+
+
+p <- p1 + p2 + plot_layout( guides = "collect") & theme(legend.position = "bottom", axis_titles="collect")
+p
+#ggsave("Components/Soil/Documentation/Figures/psi2redf.png", p, width = 12, height = 6, dpi = 400)
+```
+
+
 
 With the option "psi_logscale" = true the reduction factor is from log-scaled psi values:
 
@@ -548,7 +603,7 @@ $$\overline{\psi_s}-\psi_a=\frac{I_w}{4\pi K_u}\left[ln\left(\frac{4D_wt}{a^2}\r
 
 where $\overline{\psi_s}$ and $\psi_a$ are the water potentials at the root surface and in the bulk soil, and a is the root radius. The value 0.5772 is the so called Euler-Mascheroni constant.
 
-A similar formulation based on diffusivity and for water content differences is given by @vanLier2006: 
+A similar formulation based on diffusivity and for water content differences is given by @vanLier2006:
 
 $$\overline{\theta_s}-\theta_a=\frac{x^2T_p}{4z D_w}\left[ln\left(\frac{4D_wt}{a^2}\right)-0.5772\right]$$ {#eq-QuirindeJong2006}
 
@@ -562,7 +617,7 @@ The solution of the equation @eq-QuirindeJong2006 needs values for the soil wate
 
 ## Steady state and steady rate solutions for finite soil volumes
 
-The above equation assumes that each root absorbs water from an infinite amount of soil, and that there is always more soil, at a steadily increasing distance, which can be drawn upon. In real root-soil systems this is not correct, since roots compete, and each root can be assumed to have a limited amount of soil for its sole exploitation. The root surface water potential will therefore fall faster than predicted above, and the mean water content and potential of the soil volume will decrease steadily. 
+The above equation assumes that each root absorbs water from an infinite amount of soil, and that there is always more soil, at a steadily increasing distance, which can be drawn upon. In real root-soil systems this is not correct, since roots compete, and each root can be assumed to have a limited amount of soil for its sole exploitation. The root surface water potential will therefore fall faster than predicted above, and the mean water content and potential of the soil volume will decrease steadily.
 
 ### Boundary conditions
 
@@ -634,7 +689,6 @@ $$Iw_{max}=2\pi {{D}_{w}}\cdot \frac{{{\left( \overline{\theta }-{{\theta }_{PWP
 The water content $\theta_r$ in any distance r from the root center then is given by:
 
 $$\theta_{r}=\theta_a\left( 1+{\frac{I_w}{2\pi Dw}}ln\left( \frac{r}{a} \right) \right) $$ {#eq-thetar}
-
 
 In @fig-WcontProfilesQ the water content distribution around roots is shown for different values of the water uptake rate per unit root length (I~w~) and for different values of the soil water diffusivity (D~w~), as affected by texture and volumetric soil water content, which decreases during the simulated extraction of water from an isolated single root cylnder. The water content at the root surface is lower than in the bulk soil, and the difference increases with increasing water uptake rate per unit root length (I~w~) and decreasing soil water diffusivity (D~w~). The silty soil (Ut2) with the higher soil water diffusivity (D~w~) shows a smaller difference between the water content at the root surface and in the bulk soil than the sandy soils (Sl3 and especially gS) with the lower soil water diffusivity (D~w~).
 
@@ -872,7 +926,7 @@ the total root length then is 'r format(Wl, digits=1)' $[cm.cm^{-2}]$ and the wa
 
 According to @vanLier2006 eq. 38 a second order differential equation follows:
 
-$$-\frac{T_p}{z}=\frac{I_wL}{z}=-\frac{-q}{r}-\frac{\partial q}{\partial r}=\frac{\partial M}{r\partial r}+\frac{{{\partial }^{2}}M}{\partial {{r}^{2}}} $$ {#eq-Tpz3} 
+$$-\frac{T_p}{z}=\frac{I_wL}{z}=-\frac{-q}{r}-\frac{\partial q}{\partial r}=\frac{\partial M}{r\partial r}+\frac{{{\partial }^{2}}M}{\partial {{r}^{2}}} $$ {#eq-Tpz3}
 
 For this equation the following solution is found (@vanLier2006 eq. 39):
 
@@ -1035,7 +1089,7 @@ $$S_{act,k}=min\left(S_{pot,k},S_{max,k}\right)$$ {#eq-MFP-actual-sink}
 The two MFP options give four symmetric combinations:
 
 | `WithClasses` | `MFPuptakedistribution` | Potential-uptake allocation | Hydraulic limitation |
-|---|---|---|---|
+|------------------|------------------|------------------|------------------|
 | `false` | `empirical` | Empirical root-length and competition-factor weights between layers | Layer-average MFP capacity |
 | `false` | `MaximumFlow` | Relative maximum MFP capacity of each layer | Layer-average MFP capacity |
 | `true` | `empirical` | Empirical root-length and competition-factor weights between all classes | Class-specific MFP capacity |
@@ -1048,3 +1102,11 @@ The log normal distribution has density
 $$f(x) = \frac{1}{\sqrt{2\pi}\sigma x} e^{-(\log(x) - \mu)^2/2 \sigma^2}$$ {#eq-lognormal}
 
 where $\mu$ and $\sigma$ are the mean and standard deviation of the logarithm. The mean is $E(X) = exp(\mu + 1/2 \sigma^2)$ , the median is $med(X) = exp(\mu)$, and the variance $Var(X) = exp(2\mu + \sigma^2)(exp(\sigma^2) - 1)$ and hence the coefficient of variation is $\sqrt{exp(\sigma^2) - 1}$ which is approximately $\sigma$ when that is small (e.g., $\sigma < 1/2$).
+
+## Coupling root-density distributions to soil water
+
+Assigning `PlantModel` to a `TGrowthCurvePlantRoots` component now connects both its mean layer densities and its live `Wld_moments` / `EffWld_moments` matrices. `TAbstractPlant` supplies optional virtual matrix getters; plants without these distributions return `nil`. `TSoilWaterModelR.SetPlantModel` refreshes the links on initialization and crop changes and clears obsolete links on disconnection. Separate root modules such as `TSimpleRootModDM` can still connect explicitly through `RootedSoilWaterModel` / `SetRootLengthDensityMomentMatrices`.
+
+For variation to affect water contents, use `CalcMoments = true` in the root model, nonzero resulting `VK_lrv` coefficients, and `SinkTermMethod = MFP` with `WithClasses = true` in the soil-water model. The class uptake calculation reads **effective** root-density quantiles. A missing matrix falls back to the mean layer density; a linked zero row represents no active roots and gives zero uptake. Disabling `CalcMoments` gives uniform quantiles in both root models.
+
+Each class starts with one tenth of the layer water amount. Different class uptake rates subsequently produce different water contents; vertical flow is shared equally among classes. `theta_stdev_XX` reports the resulting within-layer standard deviation in cm³/cm³. `SoilWaterAmountMatrix[i,j]` is the class's contribution to layer water amount in cm, so its local volumetric water content is `10 * SoilWaterAmountMatrix[i,j] / Thick[i]`. The ten contributions sum to the layer's `WAmount[i]`.

@@ -15,6 +15,8 @@
   </array>
   <class name="TPlantIntegrator" file="PlantIntegrator.pas" line="17">
     <ancestor name="TSubmodel" namespace="UMod">
+      <methodref name="RecordEntityProvenance" visibility="private">
+      </methodref>
       <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
       </methodref>
       <methodref name="RegistrateOption" visibility="private" procflags="virtual">
@@ -72,6 +74,8 @@
       <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
       </methodref>
       <methodref name="UpdateValue" visibility="protected">
+      </methodref>
+      <methodref name="SetEntityDeclarationClass" visibility="protected">
       </methodref>
       <methodref name="Paint" visibility="protected" procflags="override">
       </methodref>
@@ -1213,25 +1217,25 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fNPlants" type="Integer" visibility="private" size="4" offset="656" file="PlantIntegrator.pas" line="20" />
-      <field name="fNLayers" type="Integer" visibility="private" size="4" offset="660" file="PlantIntegrator.pas" line="20" />
-      <field name="fLAIName" type="string" visibility="private" size="4" offset="664" file="PlantIntegrator.pas" line="21" />
-      <field name="fPlantHeightName" type="string" visibility="private" size="4" offset="668" file="PlantIntegrator.pas" line="21" />
-      <field name="fNuptake" type="string" visibility="private" size="4" offset="672" file="PlantIntegrator.pas" line="21" />
-      <field name="LAI" type="TVar" visibility="public" size="4" offset="676" file="PlantIntegrator.pas" line="25" />
-      <field name="PlantHeight" type="TVar" visibility="public" size="4" offset="680" file="PlantIntegrator.pas" line="25" />
-      <field name="NUptake" type="TVar" visibility="public" size="4" offset="684" file="PlantIntegrator.pas" line="25" />
-      <field name="WLD_arr" type="TSoilVarArray" visibility="public" size="212" offset="688" file="PlantIntegrator.pas" line="26" />
-      <field name="effWLD_arr" type="TSoilVarArray" visibility="public" size="212" offset="900" file="PlantIntegrator.pas" line="26" />
-      <field name="WL_arr" type="TSoilVarArray" visibility="public" size="212" offset="1112" file="PlantIntegrator.pas" line="26" />
-      <field name="effWL_arr" type="TSoilVarArray" visibility="public" size="212" offset="1324" file="PlantIntegrator.pas" line="26" />
-      <field name="exLAI" type="TExPlantArr" visibility="public" size="24" offset="1536" file="PlantIntegrator.pas" line="28" />
-      <field name="exNUptake" type="TExPlantArr" visibility="public" size="24" offset="1560" file="PlantIntegrator.pas" line="28" />
-      <field name="exPlantHeight" type="TExPlantArr" visibility="public" size="24" offset="1584" file="PlantIntegrator.pas" line="28" />
-      <field name="exWLD" type="TexPlantMatr" visibility="public" size="1200" offset="1608" file="PlantIntegrator.pas" line="29" />
-      <field name="exWL" type="TexPlantMatr" visibility="public" size="1200" offset="2808" file="PlantIntegrator.pas" line="29" />
-      <field name="exeffWLD" type="TexPlantMatr" visibility="public" size="1200" offset="4008" file="PlantIntegrator.pas" line="29" />
-      <field name="exeffWL" type="TexPlantMatr" visibility="public" size="1200" offset="5208" file="PlantIntegrator.pas" line="29" />
+      <field name="fNPlants" type="Integer" visibility="private" size="4" offset="664" file="PlantIntegrator.pas" line="20" />
+      <field name="fNLayers" type="Integer" visibility="private" size="4" offset="668" file="PlantIntegrator.pas" line="20" />
+      <field name="fLAIName" type="string" visibility="private" size="4" offset="672" file="PlantIntegrator.pas" line="21" />
+      <field name="fPlantHeightName" type="string" visibility="private" size="4" offset="676" file="PlantIntegrator.pas" line="21" />
+      <field name="fNuptake" type="string" visibility="private" size="4" offset="680" file="PlantIntegrator.pas" line="21" />
+      <field name="LAI" type="TVar" visibility="public" size="4" offset="684" file="PlantIntegrator.pas" line="25" />
+      <field name="PlantHeight" type="TVar" visibility="public" size="4" offset="688" file="PlantIntegrator.pas" line="25" />
+      <field name="NUptake" type="TVar" visibility="public" size="4" offset="692" file="PlantIntegrator.pas" line="25" />
+      <field name="WLD_arr" type="TSoilVarArray" visibility="public" size="212" offset="696" file="PlantIntegrator.pas" line="26" />
+      <field name="effWLD_arr" type="TSoilVarArray" visibility="public" size="212" offset="908" file="PlantIntegrator.pas" line="26" />
+      <field name="WL_arr" type="TSoilVarArray" visibility="public" size="212" offset="1120" file="PlantIntegrator.pas" line="26" />
+      <field name="effWL_arr" type="TSoilVarArray" visibility="public" size="212" offset="1332" file="PlantIntegrator.pas" line="26" />
+      <field name="exLAI" type="TExPlantArr" visibility="public" size="24" offset="1544" file="PlantIntegrator.pas" line="28" />
+      <field name="exNUptake" type="TExPlantArr" visibility="public" size="24" offset="1568" file="PlantIntegrator.pas" line="28" />
+      <field name="exPlantHeight" type="TExPlantArr" visibility="public" size="24" offset="1592" file="PlantIntegrator.pas" line="28" />
+      <field name="exWLD" type="TexPlantMatr" visibility="public" size="1200" offset="1616" file="PlantIntegrator.pas" line="29" />
+      <field name="exWL" type="TexPlantMatr" visibility="public" size="1200" offset="2816" file="PlantIntegrator.pas" line="29" />
+      <field name="exeffWLD" type="TexPlantMatr" visibility="public" size="1200" offset="4016" file="PlantIntegrator.pas" line="29" />
+      <field name="exeffWL" type="TexPlantMatr" visibility="public" size="1200" offset="5216" file="PlantIntegrator.pas" line="29" />
       <procedure name="CreateAll" visibility="public" procflags="override" file="PlantIntegrator.pas" line="31">
       </procedure>
       <constructor name="Create" visibility="public" file="PlantIntegrator.pas" line="33">
@@ -1245,6 +1249,6 @@
       <property name="NLayers" visibility="published" read="fNLayers" write="fNLayers" type="Integer" file="PlantIntegrator.pas" line="45" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="PlantIntegrator.pas" line="142">
+  <procedure name="Register" visibility="public" file="PlantIntegrator.pas" line="143">
   </procedure>
 </namespace>
