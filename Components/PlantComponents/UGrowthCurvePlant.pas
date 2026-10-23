@@ -118,6 +118,10 @@ public
 
   /// <summary> Temperature sum state variable for dry matter</summary>
   TSum_DM: TState;
+  /// <summary>Fine-root allocation at sowing and its decline per degree-day.</summary>
+  fFineRoot0, FFineRootDec: TPar;
+  /// <summary>Fraction of positive DM growth allocated to fine roots.</summary>
+  FFineRoot: TVar;
   Harvestindex, C_cont_Res, N_Harvestindex: TPar;
 
   /// <summary>Array of state variables for the growth model</summary>
@@ -154,6 +158,9 @@ public
   override;
 
 published
+  property Par_FFineRoot0: TPar read fFineRoot0 write fFineRoot0;
+  property Par_FFineRootDec: TPar read FFineRootDec write FFineRootDec;
+  property Var_FFineRoot: TVar read FFineRoot write FFineRoot;
   property withNUptake: boolean read fWithNUptake write fWithNUptake;
   property Ex_Temp: TExternV read temp write temp;
   property Par_LAImax: TPar read Parameters[LAI, Capacity]
@@ -291,6 +298,14 @@ var
 begin
   inherited CreateAll;
   SetEntityDeclarationClass(TGrowthCurvePlant);
+  StateCreate('DMFineRoot', '[g/m2]', 0.0, true, DMFineRoot,
+    'Fine-root biomass accumulated from positive dry matter growth');
+  ParCreate('fFineRoot0', '[-]', 0.4, fFineRoot0,
+    'Fine-root allocation fraction at sowing');
+  ParCreate('fFineRootDec', '[1/degCd]', 0.0002, FFineRootDec,
+    'Decline of fine-root allocation per degree-day since sowing');
+  VarCreate('fFineRoot', '[-]', 0.0, false, FFineRoot,
+    'Fine-root allocation fraction');
   StateCreate('TSum', '[°Cd]', 0.0, false, TSum,
     'Temperature sum for growth, starting at sowing date corrected for base temperature');
   StateCreate('TSum_DM', '[°Cd]', 0.0, false, TSum_DM,
@@ -356,6 +371,8 @@ var
 begin
   inherited Init(GlobMod);
   fEmergence := false;
+  DMFineRoot.c := 0.0;
+  FFineRoot.v := 0.0;
   for State := low(TStateVars) to high(TStateVars) do
   begin
     CurveSwitches[State] := false;
@@ -434,6 +451,12 @@ var
   State: TStateVars;
 
 begin
+  DMFineRoot.c := 0.0;
+  FFineRoot.v := 0.0;
+  TSum.c := 0.0;
+  TSum_DM.c := 0.0;
+  for State := low(TStateVars) to high(TStateVars) do
+    StateVars[State].c := 0.0;
   /// <summary>After sowing and before harvest, initialize state variables with their initial values.</summary>
   if (GlobTime.V >= SowingDate.V) and (GlobTime.V <= HarvestDate.V) then
   begin
@@ -511,6 +534,13 @@ begin
 
   for State := low(TStateVars) to high(TStateVars) do
     GrowthRates[State].V := StateVars[State].c;
+
+  if (GlobTime.v >= SowingDate.v) and (GlobTime.v < HarvestDate.v) then
+  begin
+    FFineRoot.v := max(0.0, fFineRoot0.v - FFineRootDec.v * TSum.v);
+    /// <summary>DM growth already has ground-area units, so no plant-density conversion is needed.</summary>
+    DMFineRoot.c := max(0.0, GrowthRates[DM].v) * FFineRoot.v;
+  end;
 
   inherited CalcRates;
 end;
