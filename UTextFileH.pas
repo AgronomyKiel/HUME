@@ -22,6 +22,9 @@ type
 //  TTextFileH = class(TObject)
   private
     fFileName: TMyFileName;
+    FCommaDelimited: Boolean;
+    procedure ParseLine(const Line: string; Values: TStringList);
+    function ParseValue(const Value: string; Default: Double): Double;
     procedure SetFilename (fn:TMyFileName);
     function  GetFilename:TMyFilename;
   public
@@ -82,6 +85,7 @@ end;
 procedure TTextFileH.init(fFileName: string);
 var
   i: integer;
+  InQuotes: Boolean;
 begin
   fFirstLine.clear;
   fUnitLine.Clear;
@@ -91,13 +95,21 @@ begin
   fn_line := 0;
   actnr := 0;
   FName := ffilename;
+  FCommaDelimited := False;
 
   if FileExists(FName) then begin
     slFile.LoadFromFile(FName);
     if slFile.Count > 2 then begin
 
-    FirstLine.CommaText := slFile[0];
-    UnitLine.CommaText := slFile[1];
+    InQuotes := False;
+    for i := 1 to Length(slFile[0]) do begin
+      if slFile[0][i] = '"' then
+        InQuotes := not InQuotes
+      else if (slFile[0][i] = ',') and not InQuotes then
+        FCommaDelimited := True;
+    end;
+    ParseLine(slFile[0], FirstLine);
+    ParseLine(slFile[1], UnitLine);
     if UnitLIne.Count < FirstLine.Count then
       for I := UnitLine.Count to FirstLine.Count - 1 do
         UnitLine.Append('[]');
@@ -107,6 +119,37 @@ begin
     fn_Line := slFile.Count - 2;
     end;
   end;
+end;
+
+
+/// <summary>Parse comma-delimited fields (including quoted and empty fields),
+/// or retain the legacy whitespace-delimited format. CSV files still require
+/// a column-name row followed by a unit row.</summary>
+procedure TTextFileH.ParseLine(const Line: string; Values: TStringList);
+var
+  i: Integer;
+begin
+  Values.StrictDelimiter := FCommaDelimited;
+  Values.Delimiter := ',';
+  Values.QuoteChar := '"';
+  Values.DelimitedText := Line;
+  if FCommaDelimited then
+    for i := 0 to Values.Count - 1 do
+      Values[i] := Trim(Values[i]);
+end;
+
+/// <summary>CSV numbers use a decimal point independently of the Windows
+/// locale. Legacy whitespace-delimited files retain locale-based conversion.</summary>
+function TTextFileH.ParseValue(const Value: string; Default: Double): Double;
+var
+  CSVFormat: TFormatSettings;
+begin
+  if FCommaDelimited then begin
+    CSVFormat := FormatSettings;
+    CSVFormat.DecimalSeparator := '.';
+    Result := StrToFloatDef(Value, Default, CSVFormat);
+  end else
+    Result := StrToFloatDef(Value, Default);
 end;
 
 
@@ -143,10 +186,10 @@ var
 begin
   if hasMoreLines() then begin
     Inc(actnr);
-    actLine.CommaText := slFile[actnr];
-    for i := 0 to actline.count - 1 do begin
+    ParseLine(slFile[actnr], ActLine);
+    for i := 0 to Min(ActLine.Count, FirstLine.Count) - 1 do begin
       ActVar := TVar(Firstline.Objects[i]);
-      ActVar.v := StrToFloatDef(actline[i], 0);
+      ActVar.v := ParseValue(actline[i], 0);
     end;
   end;
 end;
@@ -155,7 +198,7 @@ procedure TTextfileH.FastNextLine;
 begin
   if hasMoreLines() then begin
     Inc(actnr);
-    actLine.CommaText := slFile[actnr];
+    ParseLine(slFile[actnr], ActLine);
   end;
 end;
 
@@ -173,7 +216,7 @@ begin
     if ActLine[index] = '.' then
       result := NaN
     else
-      result := StrToFloatDef(ActLine[index], NaN);
+      result := ParseValue(ActLine[index], NaN);
   end else begin
     result := NaN;
   end;
@@ -188,7 +231,7 @@ begin
     Exit;
 
   if ActLine[Index] <> '.' then
-    Result := StrToFloatDef(ActLine[Index], NaN);
+    Result := ParseValue(ActLine[Index], NaN);
 end;
 {function TTextFileH.getIndexValue(Index: integer): real;
 begin
