@@ -92,7 +92,8 @@ var
 implementation
 
 uses
-  vcl.Dialogs, Ustate, UMeasValue, UFormRichTExt, IniFiles, UModUtils;
+  vcl.Dialogs, Ustate, UMeasValue, UFormRichTExt, IniFiles, UModUtils,
+  System.Hash;
 {$R *.DFM}
 
 procedure TFormOpt.IncludeBtnParClick(Sender: TObject);
@@ -466,10 +467,18 @@ var
   OptResultsDir: string;
 
   /// <summary>Builds the optimization output path for an INI or control file.</summary>
-  function OptimizationResultFileName(const SourceFileName: string): string;
+  function OptimizationResultFileName(const SourceFileName: string;
+    IncludeSourcePath: Boolean = False): string;
+  var
+    ResultFileBaseName: string;
   begin
+    ResultFileBaseName :=
+      System.IOUtils.TPath.GetFileNameWithoutExtension(SourceFileName);
+    if IncludeSourcePath then
+      ResultFileBaseName := ResultFileBaseName + '_' +
+        THashMD5.GetHashString(SourceFileName);
     Result := System.IOUtils.TPath.Combine(OptResultsDir,
-      System.IOUtils.TPath.GetFileNameWithoutExtension(SourceFileName) + '_opt.dat');
+      ResultFileBaseName + '_opt.dat');
   end;
 
 begin
@@ -488,7 +497,7 @@ begin
     for i := 0 to model.FIniFiles.count - 1 do begin
       model.ActIniFile := TMyIniFile(model.FIniFiles.objects[i]);
       lbl_actininame.Caption := model.ActIniFile.FileName;
-      fn := OptimizationResultFileName(model.ActIniFile.FileName);
+      fn := OptimizationResultFileName(model.ActIniFile.FileName, True);
       RunOptimizationForActIni;
       UebernehmenBtnClick(nil);
     end;
@@ -729,4 +738,3 @@ begin
 end;
 
 end.
-
