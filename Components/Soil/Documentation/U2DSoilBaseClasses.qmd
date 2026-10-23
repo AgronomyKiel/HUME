@@ -136,7 +136,7 @@ Both fields reference the same geometry instance. They do not free their borrowe
 
 The computational grid uses `NCols` and `NRows`. Field storage includes helper slots 0 and N+1 required by the existing solver, whose active indices are 1..N. The legacy coordinate expressions are retained pending the indexing review.
 
-The coarse root-input raster uses separate `RootRasterNCols`, `RootRasterNRows`, `RootRasterColWidth`, `RootRasterRowHeight` and `CountArr` on the submodel. Reading root counts must not overwrite computational dimensions or spacing.
+The coarse root-input raster uses separate `RootRasterNCols`, `RootRasterNRows`, `RootRasterColWidth`, `RootRasterRowHeight` and `CountArr` on the submodel. For .grid imports, the header defines the full physical domain: width = RootRasterNCols * RootRasterColWidth and height = RootRasterNRows * RootRasterRowHeight, including empty boundary cells. Sampled root coordinates retain the raster origin; they do not determine or resize the domain. Computational cell counts round upward using the configured gridWidth and gridHeight, independently of the coarse root-input raster. For .xy imports, the domain is fitted to the coordinate extents and margins.
 
 ## Relocated methods and caller changes
 

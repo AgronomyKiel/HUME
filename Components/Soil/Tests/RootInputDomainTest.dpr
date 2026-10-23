@@ -70,6 +70,33 @@ begin
     M.gridWidth.v := 0;
     try M.Init(Clock); raise Exception.Create('Zero gridWidth accepted');
     except on E: ERootInputError do ; end;
-    Writeln('PASS: automatic input extents, origins, grid counts and fresh Voronoi cells');
+    DeleteFile(F); F := ChangeFileExt(F, '.grid');
+    M.RootInpDataFile.Option := F; M.IniMethod.Option := 'file';
+    M.WithMargins.Option := 'withoutmargin';
+    M.verticMargin.v := 0; M.horizMargin.v := 0;
+    M.gridWidth.v := 3; M.gridHeight.v := 2.5;
+    /// <summary>Only the centre cell is occupied; all boundary cells are empty.
+    /// The coarse 30 by 18 cm domain must survive different random samples.</summary>
+    TFile.WriteAllText(F, 'counts'+sLineBreak+'0'+sLineBreak+
+      '3'+sLineBreak+'3'+sLineBreak+'6'+sLineBreak+'10'+sLineBreak+
+      '0 0 0'+sLineBreak+'0 1 0'+sLineBreak+'0 0 0'+sLineBreak);
+    for I := 1 to 3 do begin
+      RandSeed := I;
+      M.Init(Clock);
+      Near(M.dimensionX.v,30,'Raster header preserves empty X boundaries');
+      Near(M.dimensionY.v,18,'Raster header preserves empty Y boundaries');
+      Near(M.dim_x.v,10,'Computational columns use requested X resolution');
+      Near(M.dim_y.v,8,'Computational rows round up at requested Y resolution');
+      Near(M.gridHeight.v,2.5,'Raster input preserves requested Y resolution');
+      Near(M.getRasterData.ColWidth,3,'Computational X spacing');
+      Near(M.getRasterData.RowHeight,2.25,'Computational Y spacing fits header domain');
+      Check(M.RootList.Count=1,'Raster retains imported root count');
+      R := TRootObjectIn2D(M.RootList.Objects[0]);
+      Check((R.x>=10) and (R.x<20) and (R.y>=6) and (R.y<12),
+        'Raster root remains in its original occupied cell');
+      Near(M.ParMRLD.v,1/540,'Raster density uses full header area');
+      Near(M.VoronoiCells[0].Area,540,'Voronoi domain uses full raster bounds');
+    end;
+    Writeln('PASS: XY fitted extents and stable raster header domains');
   finally M.Free; Clock.Free; DeleteFile(F); end;
 end.
