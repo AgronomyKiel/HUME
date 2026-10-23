@@ -740,6 +740,7 @@ object FormMod: TFormMod
             ShowHint = True
             TabOrder = 0
             OnChange = EditOutputDirectoryChange
+            OnExit = EditOutputDirectoryExit
             OnMouseMove = EditWeatherfileMouseMove
           end
         end

@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<namespace name="URootVoronoi" platform="Win32">
+  <devnotes>
+     <summary>Bounded Voronoi cells in physical coordinates, independent of VCL.</summary>
+  </devnotes>
+  <struct name="TVoronoiPoint" size="16" file="URootVoronoi.pas" line="6">
+    <field name="X" type="Double" visibility="public" size="8" offset="0" file="URootVoronoi.pas" line="7" />
+    <field name="Y" type="Double" visibility="public" size="8" offset="8" file="URootVoronoi.pas" line="7" />
+  </struct>
+  <struct name="TVoronoiCell" size="24" file="URootVoronoi.pas" line="10">
+    <field name="Vertices" type="TArray&lt;URootVoronoi.TVoronoiPoint&gt;" visibility="public" size="4" offset="0" file="URootVoronoi.pas" line="11" />
+    <field name="Area" type="Double" visibility="public" size="8" offset="8" file="URootVoronoi.pas" line="12" />
+    <field name="EquivalentRadius" type="Double" visibility="public" size="8" offset="16" file="URootVoronoi.pas" line="12" />
+  </struct>
+  <procedure name="VoronoiAreaRLDMoments" visibility="public" file="URootVoronoi.pas" line="24">
+    <devnotes>
+       <summary>Area-weighted moments of local density 1/cell area over all bounded cells.
+       Equal root length through the layer makes these also soil-volume-weighted moments.</summary>
+    </devnotes>
+    <parameters>
+      <parameter name="Cells" paramflags="const">
+      </parameter>
+      <parameter name="Mean" type="Double" paramflags="out" />
+      <parameter name="CV" type="Double" paramflags="out" />
+    </parameters>
+  </procedure>
+  <function name="BuildRootVoronoi" visibility="public" file="URootVoronoi.pas" line="69">
+    <devnotes>
+       <summary>Clips each nearest-root cell to [0,Width] x [0,Height].
+       Duplicate sites share their geometric cell area equally. Complexity O(N squared).
+       Radius is sqrt(area/pi), in the same units as the coordinates.</summary>
+    </devnotes>
+    <parameters>
+      <parameter name="Sites" paramflags="const">
+      </parameter>
+      <parameter name="Width" type="Double" />
+      <parameter name="Height" type="Double" />
+      <retval>
+      </retval>
+    </parameters>
+  </function>
+</namespace>

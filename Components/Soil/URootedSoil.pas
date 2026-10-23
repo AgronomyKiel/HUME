@@ -66,6 +66,8 @@ type
 
     /// <summary>Link to the effective root length density moment matrix.</summary>
     fEffWldMoments: PRootLengthDensityMomentMatrix;
+    /// <summary>Tracks automatic plant coupling separately from explicitly supplied root-module matrices.</summary>
+    fMomentsFromPlant: boolean;
 
     /// <summary> internal variable for summing up all sink terms </summary>
     Sum_Sink: real;
@@ -479,7 +481,7 @@ var
   PotentialLayerSink: TSoilArray;
   ActiveRootLengthDensity, LocalTheta, LocalPsi, RootLengthDensity: real;
   MatrixFluxPotential, MaximumInflux, RootCylinderRadius: extended;
-  PotentialCellSink, PotentialProfileSink, RowMomentSum,
+  PotentialCellSink, PotentialProfileSink,
     TotalDistributionWeight: real;
 begin
   Sum_Sink := 0.0;
@@ -493,12 +495,6 @@ begin
     if LayerIndex <= n_comp then
       Sink_arr[LayerIndex].v := 0.0;
 
-    RowMomentSum := 0.0;
-    if (fEffWldMoments <> nil) and (LayerIndex <= act_n_comp) then
-      for MomentIndex := 1 to RootLengthDensityMomentCount do
-        RowMomentSum := RowMomentSum +
-          max(0.0, fEffWldMoments^[LayerIndex, MomentIndex]);
-
     if (LayerIndex <= act_n_comp) and (ExWld_arr[LayerIndex].v > 0.0) then
       act_rooted_comps.v := LayerIndex;
 
@@ -511,7 +507,8 @@ begin
       if FWithRoots and (LayerIndex <= act_n_comp) and
         (MFP_arr[LayerIndex] <> nil) then
       begin
-        if RowMomentSum > 0.0 then
+        /// <summary>A linked zero row means no active roots; only a missing matrix uses the mean-density fallback.</summary>
+        if fEffWldMoments <> nil then
           RootLengthDensity := max(0.0,
             fEffWldMoments^[LayerIndex, MomentIndex])
         else
@@ -663,6 +660,7 @@ procedure TSoilWaterModelR.SetRootLengthDensityMomentMatrices(AWldMoments,
 begin
   fWldMoments := AWldMoments;
   fEffWldMoments := AEffWldMoments;
+  fMomentsFromPlant := false;
 end;
 
 procedure TSoilWaterModelR.FreeMFPTables;
@@ -1384,21 +1382,45 @@ begin
 end;
 
 procedure TSoilWaterModelR.SetPlantModel(NewPlantModel: TAbstractplant);
-
 var
   i: integer;
-
+  PlantChanged: boolean;
+  NewWldMoments, NewEffWldMoments: PRootLengthDensityMomentMatrix;
 begin
+  PlantChanged := PlantModel <> NewPlantModel;
   inherited;
-  if (Plantmodel <> nil) and (Plantmodel.withroots = true) then
+  NewWldMoments := nil;
+  NewEffWldMoments := nil;
+  if NewPlantModel <> nil then
   begin
-    for i := 1 to n_comp do
-    begin
-      ExWld_arr[i].Search := false;
-      ExWld_arr[i].f_v := @Plantmodel.p_WLD[i].fv;
-      ExWld_arr[i].source := '[' + NewPlantModel.name + ']';
-    end;
+    NewWldMoments := NewPlantModel.WldMomentsAddress;
+    NewEffWldMoments := NewPlantModel.EffWldMomentsAddress;
   end;
+  if (NewWldMoments <> nil) or (NewEffWldMoments <> nil) then
+  begin
+    SetRootLengthDensityMomentMatrices(NewWldMoments, NewEffWldMoments);
+    fMomentsFromPlant := true;
+  end
+  else if PlantChanged or fMomentsFromPlant then
+    SetRootLengthDensityMomentMatrices(nil, nil);
+
+  /// <summary>Refresh both links on crop changes; preserve explicit root-module matrices when reinitializing the same mean-only plant.</summary>
+  for i := 1 to n_comp do
+    if ExWld_arr[i] <> nil then
+    begin
+      if (NewPlantModel <> nil) and NewPlantModel.withRoots then
+      begin
+        ExWld_arr[i].Search := false;
+        ExWld_arr[i].f_v := @NewPlantModel.p_WLD[i].fv;
+        ExWld_arr[i].source := '[' + NewPlantModel.name + ']';
+      end
+      else
+      begin
+        ExWld_arr[i].Search := true;
+        ExWld_arr[i].f_v := nil;
+        ExWld_arr[i].source := '';
+      end;
+    end;
 end;
 
 procedure Register;

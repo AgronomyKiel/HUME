@@ -9,7 +9,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs,
-  UMod, UState, Math, USubModRoot2DDiffNitrate, U2DSoilBaseClasses,
+  UMod, UState, Math, U2DSoilBaseClasses,
   U2DSoilBaseClassNitrate,
   URootObject, URootUptakeFunctions, get_mom;
 

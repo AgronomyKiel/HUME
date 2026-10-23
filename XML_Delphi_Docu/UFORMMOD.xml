@@ -3349,33 +3349,56 @@
         </parameters>
       </procedure>
       <procedure name="EditOutputDirectoryChange" visibility="published" file="UFORMMOD.pas" line="315">
+        <devnotes>
+           <summary>Apply user edits immediately without writing partial paths on every keystroke.
+           Programmatic display refreshes must not overwrite other scenarios' output settings.</summary>
+        </devnotes>
         <parameters>
           <parameter name="Sender" type="TObject" />
         </parameters>
       </procedure>
-      <procedure name="EditControlFileChange" visibility="published" file="UFORMMOD.pas" line="316">
+      <procedure name="EditOutputDirectoryExit" visibility="published" file="UFORMMOD.pas" line="316">
+        <devnotes>
+           <summary>Persist the completed edit when leaving the directory field.</summary>
+        </devnotes>
         <parameters>
           <parameter name="Sender" type="TObject" />
         </parameters>
       </procedure>
-      <procedure name="SpeedButtonRunActIniClick" visibility="published" file="UFORMMOD.pas" line="317">
+      <procedure name="EditControlFileChange" visibility="published" file="UFORMMOD.pas" line="317">
         <parameters>
           <parameter name="Sender" type="TObject" />
         </parameters>
       </procedure>
-      <field name="n_lineSeries" type="Integer" visibility="private" size="4" offset="1692" file="UFORMMOD.pas" line="319" />
-      <field name="n_PointSeries" type="Integer" visibility="private" size="4" offset="1696" file="UFORMMOD.pas" line="319" />
-      <field name="nFormGraph" type="Integer" visibility="private" size="4" offset="1700" file="UFORMMOD.pas" line="319" />
-      <field name="FormGraphArray" visibility="private" size="40" offset="1704" file="UFORMMOD.pas" line="320">
-        <array name="FormGraphArray" visibility="private" low="1" high="10" file="UFORMMOD.pas" line="320">
+      <procedure name="SpeedButtonRunActIniClick" visibility="published" file="UFORMMOD.pas" line="318">
+        <parameters>
+          <parameter name="Sender" type="TObject" />
+        </parameters>
+      </procedure>
+      <field name="n_lineSeries" type="Integer" visibility="private" size="4" offset="1692" file="UFORMMOD.pas" line="320" />
+      <field name="n_PointSeries" type="Integer" visibility="private" size="4" offset="1696" file="UFORMMOD.pas" line="320" />
+      <field name="nFormGraph" type="Integer" visibility="private" size="4" offset="1700" file="UFORMMOD.pas" line="320" />
+      <field name="FormGraphArray" visibility="private" size="40" offset="1704" file="UFORMMOD.pas" line="321">
+        <array name="FormGraphArray" visibility="private" low="1" high="10" file="UFORMMOD.pas" line="321">
           <element type="TFormGraph" />
         </array>
       </field>
-      <field name="LineSeriesArr" type="TLineSeriesArr" visibility="private" size="4000" offset="1744" file="UFORMMOD.pas" line="321" />
-      <field name="img_help" type="TBitmap" visibility="private" size="4" offset="5744" file="UFORMMOD.pas" line="325" />
-      <field name="img_savetoall" type="TBitmap" visibility="private" size="4" offset="5748" file="UFORMMOD.pas" line="325" />
-      <field name="EXE_PATH" type="string" visibility="private" size="4" offset="5752" file="UFORMMOD.pas" line="326" />
-      <function name="getLinkedModel" visibility="private" file="UFORMMOD.pas" line="327">
+      <field name="LineSeriesArr" type="TLineSeriesArr" visibility="private" size="4000" offset="1744" file="UFORMMOD.pas" line="322" />
+      <field name="img_help" type="TBitmap" visibility="private" size="4" offset="5744" file="UFORMMOD.pas" line="326" />
+      <field name="img_savetoall" type="TBitmap" visibility="private" size="4" offset="5748" file="UFORMMOD.pas" line="326" />
+      <field name="EXE_PATH" type="string" visibility="private" size="4" offset="5752" file="UFORMMOD.pas" line="327" />
+      <field name="FOutputDirectoryEdited" type="Boolean" visibility="private" size="1" offset="5756" file="UFORMMOD.pas" line="328" />
+      <procedure name="ApplyOutputDirectory" visibility="private" file="UFORMMOD.pas" line="329">
+        <devnotes>
+           <summary>Keep the active model and all loaded scenario settings consistent.
+           Updating the cached INI objects prevents Init/Run from restoring an old path.</summary>
+        </devnotes>
+        <parameters>
+          <parameter name="Directory" type="string" paramflags="const" />
+          <parameter name="Persist" type="Boolean" />
+        </parameters>
+      </procedure>
+      <function name="getLinkedModel" visibility="private" file="UFORMMOD.pas" line="330">
         <parameters>
           <retval type="TMod">
             <devnotes>
@@ -3391,43 +3414,47 @@
           </retval>
         </parameters>
       </function>
-      <procedure name="testSubModIndex" visibility="private" file="UFORMMOD.pas" line="328">
+      <procedure name="testSubModIndex" visibility="private" file="UFORMMOD.pas" line="331">
         <parameters>
           <parameter name="n" type="Integer" />
         </parameters>
       </procedure>
-      <procedure name="updatePropIniFile" visibility="private" file="UFORMMOD.pas" line="329">
+      <procedure name="updatePropIniFile" visibility="private" file="UFORMMOD.pas" line="332">
         <parameters>
           <parameter name="strList" type="TStringList" />
           <parameter name="submodname" type="string" />
         </parameters>
       </procedure>
-      <field name="ModelWasRunning" type="Boolean" visibility="public" size="1" offset="5756" file="UFORMMOD.pas" line="333" />
-      <procedure name="UpdateStringGridParam" visibility="public" file="UFORMMOD.pas" line="334">
+      <field name="ModelWasRunning" type="Boolean" visibility="public" size="1" offset="5757" file="UFORMMOD.pas" line="336" />
+      <procedure name="UpdateStringGridParam" visibility="public" file="UFORMMOD.pas" line="337">
       </procedure>
-      <procedure name="UpdateStringGridState" visibility="public" file="UFORMMOD.pas" line="335">
+      <procedure name="UpdateStringGridState" visibility="public" file="UFORMMOD.pas" line="338">
       </procedure>
-      <procedure name="UpdateStringGridVar" visibility="public" file="UFORMMOD.pas" line="336">
+      <procedure name="UpdateStringGridVar" visibility="public" file="UFORMMOD.pas" line="339">
       </procedure>
-      <procedure name="UpdateStringGridConst" visibility="public" file="UFORMMOD.pas" line="337">
+      <procedure name="UpdateStringGridConst" visibility="public" file="UFORMMOD.pas" line="340">
       </procedure>
-      <procedure name="UpdateStringGridData" visibility="public" file="UFORMMOD.pas" line="338">
+      <procedure name="UpdateStringGridData" visibility="public" file="UFORMMOD.pas" line="341">
+        <devnotes>
+           <summary>Display measurement data using the same CSV and legacy text
+           parsing as the model, without changing the model reader's position.</summary>
+        </devnotes>
       </procedure>
-      <procedure name="UpdatePageIntegration" visibility="public" file="UFORMMOD.pas" line="339">
+      <procedure name="UpdatePageIntegration" visibility="public" file="UFORMMOD.pas" line="342">
       </procedure>
-      <procedure name="UpdateStringGridOptions" visibility="public" file="UFORMMOD.pas" line="340">
+      <procedure name="UpdateStringGridOptions" visibility="public" file="UFORMMOD.pas" line="343">
       </procedure>
-      <procedure name="UpdateStringGridExternV" visibility="public" file="UFORMMOD.pas" line="341">
+      <procedure name="UpdateStringGridExternV" visibility="public" file="UFORMMOD.pas" line="344">
       </procedure>
-      <procedure name="SaveParams" visibility="public" file="UFORMMOD.pas" line="342">
+      <procedure name="SaveParams" visibility="public" file="UFORMMOD.pas" line="345">
       </procedure>
-      <procedure name="SaveState" visibility="public" file="UFORMMOD.pas" line="343">
+      <procedure name="SaveState" visibility="public" file="UFORMMOD.pas" line="346">
       </procedure>
-      <procedure name="SaveOptions" visibility="public" file="UFORMMOD.pas" line="344">
+      <procedure name="SaveOptions" visibility="public" procflags="virtual" file="UFORMMOD.pas" line="347">
       </procedure>
-      <procedure name="ChangeStateIniFile" visibility="public" file="UFORMMOD.pas" line="346">
+      <procedure name="ChangeStateIniFile" visibility="public" file="UFORMMOD.pas" line="349">
       </procedure>
     </members>
   </class>
-  <variable name="FormMod" type="TFormMod" file="UFORMMOD.pas" line="350" />
+  <variable name="FormMod" type="TFormMod" file="UFORMMOD.pas" line="353" />
 </namespace>

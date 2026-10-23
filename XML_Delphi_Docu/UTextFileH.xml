@@ -95,88 +95,111 @@
     </ancestor>
     <members>
       <field name="fFileName" type="string" visibility="private" size="4" offset="4" file="UTextFileH.pas" line="24" />
-      <procedure name="SetFilename" visibility="private" file="UTextFileH.pas" line="25">
+      <field name="FCommaDelimited" type="Boolean" visibility="private" size="1" offset="8" file="UTextFileH.pas" line="25" />
+      <procedure name="ParseLine" visibility="private" file="UTextFileH.pas" line="26">
+        <devnotes>
+           <summary>Parse comma-delimited fields (including quoted and empty fields),
+           or retain the legacy whitespace-delimited format. CSV files still require
+           a column-name row followed by a unit row.</summary>
+        </devnotes>
+        <parameters>
+          <parameter name="Line" type="string" paramflags="const" />
+          <parameter name="Values" type="TStringList" />
+        </parameters>
+      </procedure>
+      <function name="ParseValue" visibility="private" file="UTextFileH.pas" line="27">
+        <devnotes>
+           <summary>CSV numbers use a decimal point independently of the Windows
+           locale. Legacy whitespace-delimited files retain locale-based conversion.</summary>
+        </devnotes>
+        <parameters>
+          <parameter name="Value" type="string" paramflags="const" />
+          <parameter name="Default" type="Double" />
+          <retval type="Double" />
+        </parameters>
+      </function>
+      <procedure name="SetFilename" visibility="private" file="UTextFileH.pas" line="28">
         <parameters>
           <parameter name="fn" type="string" />
         </parameters>
       </procedure>
-      <function name="GetFilename" visibility="private" file="UTextFileH.pas" line="26">
+      <function name="GetFilename" visibility="private" file="UTextFileH.pas" line="29">
         <parameters>
           <retval type="string" />
         </parameters>
       </function>
-      <field name="fFirstLine" type="TStringList" visibility="public" size="4" offset="8" file="UTextFileH.pas" line="28" />
-      <field name="fUnitLine" type="TStringList" visibility="public" size="4" offset="12" file="UTextFileH.pas" line="29" />
-      <field name="fn_Line" type="Integer" visibility="public" size="4" offset="16" file="UTextFileH.pas" line="30" />
-      <field name="ActLine" type="TStringList" visibility="public" size="4" offset="20" file="UTextFileH.pas" line="31" />
-      <field name="actlines" type="TStringList" visibility="public" size="4" offset="24" file="UTextFileH.pas" line="32" />
-      <field name="slFile" type="THashedStringList" visibility="public" size="4" offset="28" file="UTextFileH.pas" line="33" />
-      <field name="actnr" type="Integer" visibility="public" size="4" offset="32" file="UTextFileH.pas" line="34" />
-      <constructor name="create" visibility="public" file="UTextFileH.pas" line="35">
+      <field name="fFirstLine" type="TStringList" visibility="public" size="4" offset="12" file="UTextFileH.pas" line="31" />
+      <field name="fUnitLine" type="TStringList" visibility="public" size="4" offset="16" file="UTextFileH.pas" line="32" />
+      <field name="fn_Line" type="Integer" visibility="public" size="4" offset="20" file="UTextFileH.pas" line="33" />
+      <field name="ActLine" type="TStringList" visibility="public" size="4" offset="24" file="UTextFileH.pas" line="34" />
+      <field name="actlines" type="TStringList" visibility="public" size="4" offset="28" file="UTextFileH.pas" line="35" />
+      <field name="slFile" type="THashedStringList" visibility="public" size="4" offset="32" file="UTextFileH.pas" line="36" />
+      <field name="actnr" type="Integer" visibility="public" size="4" offset="36" file="UTextFileH.pas" line="37" />
+      <constructor name="create" visibility="public" file="UTextFileH.pas" line="38">
         <parameters>
         </parameters>
       </constructor>
-      <procedure name="NextLine" visibility="public" file="UTextFileH.pas" line="36">
+      <procedure name="NextLine" visibility="public" file="UTextFileH.pas" line="39">
       </procedure>
-      <procedure name="FastNextLine" visibility="public" file="UTextFileH.pas" line="37">
+      <procedure name="FastNextLine" visibility="public" file="UTextFileH.pas" line="40">
       </procedure>
-      <function name="getValue" visibility="public" file="UTextFileH.pas" line="38">
+      <function name="getValue" visibility="public" file="UTextFileH.pas" line="41">
         <parameters>
           <parameter name="Name" type="string" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="getIndexValue" visibility="public" file="UTextFileH.pas" line="39">
+      <function name="getIndexValue" visibility="public" file="UTextFileH.pas" line="42">
         <parameters>
           <parameter name="Index" type="Integer" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="indexOf" visibility="public" file="UTextFileH.pas" line="40">
+      <function name="indexOf" visibility="public" file="UTextFileH.pas" line="43">
         <parameters>
           <parameter name="Name" type="string" />
           <retval type="Integer" />
         </parameters>
       </function>
-      <procedure name="LocateFor" visibility="public" file="UTextFileH.pas" line="41">
+      <procedure name="LocateFor" visibility="public" file="UTextFileH.pas" line="44">
         <parameters>
           <parameter name="Name" type="string" />
           <parameter name="Value" type="Double" />
         </parameters>
       </procedure>
-      <procedure name="GoTop" visibility="public" file="UTextFileH.pas" line="42">
+      <procedure name="GoTop" visibility="public" file="UTextFileH.pas" line="45">
       </procedure>
-      <function name="GetFirstLine" visibility="public" file="UTextFileH.pas" line="43">
+      <function name="GetFirstLine" visibility="public" file="UTextFileH.pas" line="46">
         <parameters>
           <retval type="string" />
         </parameters>
       </function>
-      <function name="GetLastLine" visibility="public" file="UTextFileH.pas" line="44">
+      <function name="GetLastLine" visibility="public" file="UTextFileH.pas" line="47">
         <parameters>
           <retval type="string" />
         </parameters>
       </function>
-      <function name="hasMoreLines" visibility="public" file="UTextFileH.pas" line="45">
+      <function name="hasMoreLines" visibility="public" file="UTextFileH.pas" line="48">
         <parameters>
           <retval type="Boolean" />
         </parameters>
       </function>
-      <function name="containsName" visibility="public" file="UTextFileH.pas" line="46">
+      <function name="containsName" visibility="public" file="UTextFileH.pas" line="49">
         <parameters>
           <parameter name="name" type="string" />
           <retval type="Boolean" />
         </parameters>
       </function>
-      <procedure name="init" visibility="public" procflags="virtual" file="UTextFileH.pas" line="47">
+      <procedure name="init" visibility="public" procflags="virtual" file="UTextFileH.pas" line="50">
         <parameters>
           <parameter name="fFileName" type="string" />
         </parameters>
       </procedure>
-      <property name="FName" visibility="published" read="GetFilename" write="SetFilename" type="string" default="0" file="UTextFileH.pas" line="50" />
-      <property name="n_Line" visibility="published" read="fn_Line" type="Integer" file="UTextFileH.pas" line="51" />
-      <property name="FirstLine" visibility="published" read="fFirstLine" type="TStringList" file="UTextFileH.pas" line="52" />
-      <property name="UnitLine" visibility="published" read="fUnitLine" type="TStringList" file="UTextFileH.pas" line="53" />
-      <procedure name="BeforeDestruction" visibility="published" procflags="override" file="UTextFileH.pas" line="54">
+      <property name="FName" visibility="published" read="GetFilename" write="SetFilename" type="string" default="0" file="UTextFileH.pas" line="53" />
+      <property name="n_Line" visibility="published" read="fn_Line" type="Integer" file="UTextFileH.pas" line="54" />
+      <property name="FirstLine" visibility="published" read="fFirstLine" type="TStringList" file="UTextFileH.pas" line="55" />
+      <property name="UnitLine" visibility="published" read="fUnitLine" type="TStringList" file="UTextFileH.pas" line="56" />
+      <procedure name="BeforeDestruction" visibility="published" procflags="override" file="UTextFileH.pas" line="57">
       </procedure>
     </members>
   </class>

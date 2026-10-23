@@ -1,0 +1,85 @@
+﻿program RootPDFGeometryTest;
+{$APPTYPE CONSOLE}
+uses System.SysUtils, System.Math, System.Classes, System.IOUtils, UMod, URootVoronoi,
+  U2DSoilBaseClasses, USubModRoot1DH2O, URootObject;
+procedure Check(B: Boolean; const S: string);
+begin if not B then raise Exception.Create(S); end;
+procedure Near(A,B: Double; const S: string);
+begin Check(Abs(A-B)<1E-9*Max(1,Abs(B)),S); end;
+procedure Run;
+var Cells: TVoronoiCells; Mean, CV, ClassMean: Double;
+  Source: TSubmodRoot2D; PDF: TSubmodRoot1DH2O; Clock: TMod;
+  R: TRootObjectIn2D; I: Integer; IniName: string;
+begin
+  SetLength(Cells,2); Cells[0].Area:=1; Cells[1].Area:=9;
+  VoronoiAreaRLDMoments(Cells,Mean,CV);
+  Near(Mean,0.2,'Area-weighted mean is N/total area');
+  Near(CV,4/3,'Area-weighted population CV differs from per-root CV');
+  Cells[1].Area:=1; VoronoiAreaRLDMoments(Cells,Mean,CV);
+  Near(Mean,1,'Equal cells mean'); Near(CV,0,'Equal cells CV');
+  SetLength(Cells,0); VoronoiAreaRLDMoments(Cells,Mean,CV);
+  Near(Mean,0,'Empty mean'); Near(CV,0,'Empty CV');
+  Source:=TSubmodRoot2D.Create; PDF:=TSubmodRoot1DH2O.Create; Clock:=TMod.Create;
+  try
+    Source.Name:='Geometry'; PDF.Name:='PDF';
+    Source.dimensionX.v:=10; Source.dimensionY.v:=1;
+    Source.verticMargin.v:=1; Source.horizMargin.v:=0;
+    R:=TRootObjectIn2D.Create; R.x:=0; R.y:=0.5; Source.RootList.AddObject('1',R);
+    R:=TRootObjectIn2D.Create; R.x:=2; R.y:=0.5; Source.RootList.AddObject('2',R);
+    Source.CalculateRootVoronoi;
+    Near(Source.VoronoiCells[0].Area,1,'Small cell area');
+    Near(Source.VoronoiCells[1].Area,9,'Large cell area');
+    Near(Source.VoronoiRLDCV.v,0,'Old central-root CV remains separate');
+    Near(Source.VoronoiAreaMeanRLD.v,0.2,'Whole-domain mean includes margin cells');
+    Near(Source.VoronoiAreaRLDCV.v,4/3,'Whole-domain CV includes margin cells');
+    Clock.ParamInifile:=TMyIniFile.Create('',TEncoding.UTF8);
+    IniName := TPath.Combine(TPath.GetTempPath,TPath.GetRandomFileName+'.ini');
+    Clock.OptionIniFile:=TMyIniFile.Create(IniName,TEncoding.UTF8);
+    Clock.ParamInifile.WriteFloat(PDF.Name,'ParMRLD',0.01);
+    Clock.ParamInifile.WriteFloat(PDF.Name,'ParCV',0);
+    Clock.OptionIniFile.WriteString(PDF.Name,'RootDistribution','single');
+    Clock.OptionIniFile.UpdateFile;
+    FreeAndNil(Clock.OptionIniFile);
+    Clock.OptionIniFile:=TMyIniFile.Create(IniName,TEncoding.UTF8);
+    PDF.RootGeometrySource:=Source;
+    PDF.Init(Clock);
+    Near(PDF.ParMRLD.v,0.2,'Linked mean overrides loaded parameters');
+    Near(PDF.ParCV.v,100*4/3,'Fraction CV converts to percent');
+    Near(PDF.RLD_mean.v,0.2,'Reported mean follows linked parameters');
+    Check(PDF.CylinderCount=1,'Linked model preserves single mode from INI');
+    Check(PDF.RootDistribution.Option='single','Initialization preserves configured mode');
+    Near(PDF.Cylinders[0].RLD,0.2,'Single cylinder uses the linked mean density');
+    PDF.Init(Clock);
+    Check(PDF.CylinderCount=1,'Repeated initialization preserves single mode');
+    Check(Clock.OptionIniFile.ReadString(PDF.Name,'RootDistribution','')='single',
+      'Initialization does not replace the saved option');
+    Clock.OptionIniFile.WriteString(PDF.Name,'RootDistribution','lognormal');
+    PDF.Init(Clock);
+    Check(PDF.CylinderCount=10,'Linked model honors lognormal mode from INI');
+    ClassMean:=0;
+    for I:=0 to 9 do ClassMean:=ClassMean+PDF.Cylinders[I].RLD*PDF.Cylinders[I].VolumeFraction;
+    Near(ClassMean,0.2,'Ten-class mean conserves measured root density');
+    TRootObjectIn2D(Source.RootList.Objects[0]).x:=2.5;
+    TRootObjectIn2D(Source.RootList.Objects[1]).x:=7.5;
+    Source.CalculateRootVoronoi; PDF.Init(Clock);
+    Near(PDF.ParMRLD.v,0.2,'Reinitialization retains density');
+    Near(PDF.ParCV.v,0,'Reinitialization picks up fresh geometry CV');
+    for I:=0 to 9 do Near(PDF.Cylinders[I].RLD,0.2,'Zero CV gives identical classes');
+    Clock.OptionIniFile.WriteString(PDF.Name,'RootDistribution','single');
+    PDF.RootGeometrySource:=nil; PDF.Init(Clock);
+    Near(PDF.ParMRLD.v,0.01,'Unlinked model keeps independent parameters');
+    Check(PDF.CylinderCount=1,'Unlinked model retains its configured distribution');
+    Clock.SubModStrList.AddObject(PDF.Name,PDF);
+    Clock.SubModStrList.AddObject(Source.Name,Source);
+    PDF.RootGeometrySource:=Source;
+    try
+      try PDF.Init(Clock); raise Exception.Create('Invalid initialization order accepted');
+      except on E:EInvalidOp do ; end;
+      Clock.SubModStrList.Exchange(0,1);
+      PDF.Init(Clock);
+      Near(PDF.ParMRLD.v,0.2,'Correct source order initializes linked PDF');
+    finally Clock.SubModStrList.Clear; end;
+    Writeln('PASS: area-weighted RLD moments, PDF link, INI overrides, ten classes and geometry reload');
+  finally PDF.Free; Source.Free; Clock.Free; if IniName<>'' then DeleteFile(IniName); end;
+end;
+begin try Run; except on E:Exception do begin Writeln(E.ClassName+': '+E.Message);Halt(1);end;end;end.

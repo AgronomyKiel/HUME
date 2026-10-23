@@ -8,7 +8,7 @@ unit UAbstractPlant;
 interface
 
 uses
-  UState, Umod,
+  UState, Umod, URootGrowthUtils,
 {$IFNDEF NONVISUAL}
   vcl.dialogs,
   vcl.Graphics, Windows, Messages,
@@ -48,7 +48,7 @@ type
     function GetIsPlantModelset: boolean;
 
 /// <summary>setter for the plant model</summary>
-    /// <param name> "NewPlantModel" new plant model to set</param>
+    /// <param> "NewPlantModel" new plant model to set</param>
     /// <remarks>This method sets the plant model and initializes the first plant model if not already set.</remarks>    
     procedure SetPlantModel(NewPlantmodel: TAbstractPlant); virtual;
   public
@@ -119,6 +119,9 @@ type
 
     /// <summary>getter for root length density in a specific soil layer</summary>
     function  GetWLD(Index: Integer): THumeNumEntity; virtual; abstract;
+    /// <summary>Optional root-density distributions; nil means only layer means are available.</summary>
+    function GetWldMomentsAddress: PRootLengthDensityMomentMatrix; virtual;
+    function GetEffWldMomentsAddress: PRootLengthDensityMomentMatrix; virtual;
     /// <summary>getter for total root length</summary>
     function  GetSumRootLength: THumeNumEntity; virtual; abstract;
 
@@ -211,6 +214,9 @@ type
     procedure Init(var GlobMod: Tmod); override;
 
 //    Property St_TotalDrymatter : TState read TotalDryMatter write TotalDryMatter;
+    /// <summary>Live moment matrices consumed by soil water models through PlantModel.</summary>
+    property WldMomentsAddress: PRootLengthDensityMomentMatrix read GetWldMomentsAddress;
+    property EffWldMomentsAddress: PRootLengthDensityMomentMatrix read GetEffWldMomentsAddress;
     /// <summary>Extinction coefficient for photosynthetically active radiation</summary>
     property ExtCoeffPAR: real read getExtCoeffPAR;
 
@@ -389,6 +395,16 @@ begin
       VarVar[i].v := 0.0; }
     //WriteTofile := false;
   end;
+end;
+
+function TAbstractPlant.GetWldMomentsAddress: PRootLengthDensityMomentMatrix;
+begin
+  Result := nil;
+end;
+
+function TAbstractPlant.GetEffWldMomentsAddress: PRootLengthDensityMomentMatrix;
+begin
+  Result := nil;
 end;
 
 procedure TAbstractPlant.CalcRates;

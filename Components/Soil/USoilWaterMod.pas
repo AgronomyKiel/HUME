@@ -237,6 +237,8 @@ type
     /// <summary> initialisation of vectors and arrays </summary>
     procedure InitVectors;
     procedure SetGenuchtenPars;
+    /// <summary>Selects the common or horizon-specific saturation scaling factor.</summary>
+    function BSatScalingForHorizon(HorizonIndex: integer): real;
     
     /// <summary> set the layer density classes and values </summary>
     procedure SetLDPars;
@@ -417,6 +419,11 @@ type
 
     /// <summary>Parameter for linear scaling of soil hydraulic Parameter bsat</summary>
     bsat_scaling: TPar;
+    /// <summary>Controls common (legacy) or individual saturation scaling.</summary>
+    b_sat_scaling: TOption;
+    /// <summary>Individual saturation scaling factors for horizons 1 through 6.</summary>
+    bsat_scaling1, bsat_scaling2, bsat_scaling3,
+      bsat_scaling4, bsat_scaling5, bsat_scaling6: TPar;
     /// <summary>Parameter for linear scaling of soil hydraulic Parameter alpha</summary>
     alpha_scaling: TPar;
 
@@ -1272,6 +1279,25 @@ begin
 end;
 
 /// <summary>set van-Genuchten parameters from texture classes</summary>
+function TSoilWaterMod.BSatScalingForHorizon(HorizonIndex: integer): real;
+begin
+  if SameText(b_sat_scaling.Option, 'unique_b_sat_scaling') then
+    Result := bsat_scaling.v
+  else if SameText(b_sat_scaling.Option, 'Single_b_sat_scaling') then
+    case HorizonIndex of
+      1: Result := bsat_scaling1.v;
+      2: Result := bsat_scaling2.v;
+      3: Result := bsat_scaling3.v;
+      4: Result := bsat_scaling4.v;
+      5: Result := bsat_scaling5.v;
+      6: Result := bsat_scaling6.v;
+    else
+      raise ERangeError.Create('Saturation scaling requires a horizon index from 1 to 6');
+    end
+  else
+    raise EArgumentException.Create('Unknown b_sat_scaling option: ' + b_sat_scaling.Option);
+end;
+
 procedure TSoilWaterMod.SetGenuchtenPars;
 type
   THorizonDescriptor = record
@@ -1320,11 +1346,16 @@ var
       else
         VanGenuchtenFromTextureClass_KA(WPar[LayerIndex],
           Descriptor.TextureClass);
+      /// <summary>Legacy texture values remain unscaled; individual mode scales the texture-derived saturation.</summary>
+      if SameText(b_sat_scaling.Option, 'Single_b_sat_scaling') then
+        WPar[LayerIndex].b_sat := WPar[LayerIndex].b_sat *
+          BSatScalingForHorizon(DescriptorIndex);
       WPar[LayerIndex].Ks := Descriptor.Ks.v;
     end
     else
     begin
-      WPar[LayerIndex].b_sat := Descriptor.BSat.v * bsat_scaling.v;
+      WPar[LayerIndex].b_sat := Descriptor.BSat.v *
+        BSatScalingForHorizon(DescriptorIndex);
       WPar[LayerIndex].b_rest := Descriptor.BRest.v;
       WPar[LayerIndex].alpha := Descriptor.Alpha.v * alpha_scaling.v;
       WPar[LayerIndex].n_par := Descriptor.NPar.v;
@@ -1541,7 +1572,7 @@ var
 begin
   for i := 1 to round(HoriNdx1.v) do
   begin
-    WPar[i].b_sat := b_sat1.v * bsat_scaling.v;
+    WPar[i].b_sat := b_sat1.v * BSatScalingForHorizon(1);
     WPar[i].b_rest := b_rest1.v;
     WPar[i].alpha := alpha1.v * alpha_scaling.v;
     WPar[i].n_par := n_par1.v;
@@ -1559,7 +1590,7 @@ begin
   end;
   for i := round(HoriNdx1.v) + 1 to round(HoriNdx2.v) do
   begin
-    WPar[i].b_sat := b_sat2.v * bsat_scaling.v;
+    WPar[i].b_sat := b_sat2.v * BSatScalingForHorizon(2);
     WPar[i].b_rest := b_rest2.v;
     WPar[i].alpha := alpha2.v * alpha_scaling.v;
     WPar[i].n_par := n_par2.v;
@@ -1577,7 +1608,7 @@ begin
   end;
   for i := round(HoriNdx2.v) + 1 to round(HoriNdx3.v) do
   begin
-    WPar[i].b_sat := b_sat3.v * bsat_scaling.v;
+    WPar[i].b_sat := b_sat3.v * BSatScalingForHorizon(3);
     WPar[i].b_rest := b_rest3.v;
     WPar[i].alpha := alpha3.v * alpha_scaling.v;
     WPar[i].n_par := n_par3.v;
@@ -1595,7 +1626,7 @@ begin
   end;
   for i := round(HoriNdx3.v) + 1 to n_comp + 1 do
   begin
-    WPar[i].b_sat := b_sat4.v * bsat_scaling.v;
+    WPar[i].b_sat := b_sat4.v * BSatScalingForHorizon(4);
     WPar[i].b_rest := b_rest4.v;
     WPar[i].alpha := alpha4.v * alpha_scaling.v;
     WPar[i].n_par := n_par4.v;
@@ -1613,7 +1644,7 @@ begin
   end;
   for i := round(HoriNdx4.v) + 1 to n_comp + 1 do
   begin
-    WPar[i].b_sat := b_sat5.v * bsat_scaling.v;
+    WPar[i].b_sat := b_sat5.v * BSatScalingForHorizon(5);
     WPar[i].b_rest := b_rest5.v;
     WPar[i].alpha := alpha5.v * alpha_scaling.v;
     WPar[i].n_par := n_par5.v;
@@ -1631,7 +1662,7 @@ begin
   end;
   for i := round(HoriNdx5.v) + 1 to n_comp + 1 do
   begin
-    WPar[i].b_sat := b_sat6.v * bsat_scaling.v;
+    WPar[i].b_sat := b_sat6.v * BSatScalingForHorizon(6);
     WPar[i].b_rest := b_rest6.v;
     WPar[i].alpha := alpha6.v * alpha_scaling.v;
     WPar[i].n_par := n_par6.v;
@@ -2046,9 +2077,6 @@ begin
         PWP6, 'residual soil water, not plant available content');
 
 
-
-
-
 end;
 
 procedure TSoilWaterMod.CreateParameters;
@@ -2085,6 +2113,22 @@ begin
     'lowest layer of the 6th soil horizon');
   ParCreate('bsat_scaling', '[-]', 1, bsat_scaling,
     'Scaling factor for bsat (multiplied in all horizons)');
+  OptCreate('b_sat_scaling', 'unique_b_sat_scaling', b_sat_scaling,
+    'Use the common factor or an individual saturation factor for each horizon');
+  b_sat_scaling.OptionList.Add('unique_b_sat_scaling');
+  b_sat_scaling.OptionList.Add('Single_b_sat_scaling');
+  ParCreate('bsat_scaling1', '[-]', 1, bsat_scaling1,
+    'Saturation scaling factor for horizon 1 in Single_b_sat_scaling mode');
+  ParCreate('bsat_scaling2', '[-]', 1, bsat_scaling2,
+    'Saturation scaling factor for horizon 2 in Single_b_sat_scaling mode');
+  ParCreate('bsat_scaling3', '[-]', 1, bsat_scaling3,
+    'Saturation scaling factor for horizon 3 in Single_b_sat_scaling mode');
+  ParCreate('bsat_scaling4', '[-]', 1, bsat_scaling4,
+    'Saturation scaling factor for horizon 4 in Single_b_sat_scaling mode');
+  ParCreate('bsat_scaling5', '[-]', 1, bsat_scaling5,
+    'Saturation scaling factor for horizon 5 in Single_b_sat_scaling mode');
+  ParCreate('bsat_scaling6', '[-]', 1, bsat_scaling6,
+    'Saturation scaling factor for horizon 6 in Single_b_sat_scaling mode');
   ParCreate('alpha_scaling', '[-]', 1, alpha_scaling,
     'Parameter for linear scaling of soil hydraulic Parameter alpha');
   CreateHorizonParameters;

@@ -779,10 +779,12 @@ begin
         writeln(f, ' Iteration #', k, '   Chi2 = ', chisq: 6: 4);
       end;
 {$IFNDEF NONVISUAL}
-      model.StatusBarOpt.Panels.Items[2].Text := 'Iter #:' + IntToStr(k);
-      model.StatusBarOpt.Panels.Items[3].Text := 'Chi2 = ' + FloatToStrf(chisq,
-        ffgeneral, 6, 4);
-      model.StatusBarOpt.update;
+      if Assigned(model.StatusBarOpt) then begin
+        model.StatusBarOpt.Panels.Items[2].Text := 'Iter #:' + IntToStr(k);
+        model.StatusBarOpt.Panels.Items[3].Text := 'Chi2 = ' + FloatToStrf(chisq,
+          ffgeneral, 6, 4);
+        model.StatusBarOpt.update;
+      end;
 {$ENDIF}
       ochisq := chisq;
       inc(k);

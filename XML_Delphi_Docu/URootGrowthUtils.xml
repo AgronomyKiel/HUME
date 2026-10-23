@@ -18,23 +18,33 @@
       $A
     </value>
   </const>
-  <const name="linear" type="TRootingdepthIncrease" file="URootGrowthUtils.pas" line="27">
+  <const name="linear" type="TRootingdepthIncrease" file="URootGrowthUtils.pas" line="29">
     <value>
       linear
     </value>
   </const>
-  <const name="expolinear" type="TRootingdepthIncrease" file="URootGrowthUtils.pas" line="27">
+  <const name="expolinear" type="TRootingdepthIncrease" file="URootGrowthUtils.pas" line="29">
     <value>
       expolinear
     </value>
   </const>
-  <const name="monomolecular" type="TRootingdepthIncrease" file="URootGrowthUtils.pas" line="27">
+  <const name="monomolecular" type="TRootingdepthIncrease" file="URootGrowthUtils.pas" line="29">
     <value>
       monomolecular
     </value>
   </const>
   <type name="real" type="Double" file="System.pas" line="12" />
-  <array name="TRootLengthDensityMoments" low="1" high="10" file="URootGrowthUtils.pas" line="14">
+  <array name="TRootAgeCohorts" low="1" high="500" file="URootGrowthUtils.pas" line="14">
+    <devnotes>
+       <summary>Circular buffer of root length increments, one cohort per model step.</summary>
+    </devnotes>
+    <element type="Double">
+      <devnotes>
+         <summary>Circular buffer of root length increments, one cohort per model step.</summary>
+      </devnotes>
+    </element>
+  </array>
+  <array name="TRootLengthDensityMoments" low="1" high="10" file="URootGrowthUtils.pas" line="16">
     <devnotes>
        <summary>Ten representative quantiles of a root length density distribution.</summary>
     </devnotes>
@@ -44,11 +54,11 @@
       </devnotes>
     </element>
   </array>
-  <array name="TRootLengthDensityMomentMatrix" low="1" high="20" file="URootGrowthUtils.pas" line="18">
+  <array name="TRootLengthDensityMomentMatrix" low="1" high="20" file="URootGrowthUtils.pas" line="20">
     <devnotes>
        <summary>Root length density quantiles for each of the 20 soil layers.</summary>
     </devnotes>
-    <array name="TRootLengthDensityMomentMatrix" alias="URootGrowthUtils.TRootLengthDensityMoments" low="1" high="10" file="URootGrowthUtils.pas" line="18">
+    <array name="TRootLengthDensityMomentMatrix" alias="URootGrowthUtils.TRootLengthDensityMoments" low="1" high="10" file="URootGrowthUtils.pas" line="20">
       <devnotes>
          <summary>Ten representative quantiles of a root length density distribution.</summary>
       </devnotes>
@@ -59,21 +69,21 @@
       </element>
     </array>
   </array>
-  <pointer name="PRootLengthDensityMomentMatrix" type="TRootLengthDensityMomentMatrix" indircnt="1" file="URootGrowthUtils.pas" line="22">
+  <pointer name="PRootLengthDensityMomentMatrix" type="TRootLengthDensityMomentMatrix" indircnt="1" file="URootGrowthUtils.pas" line="24">
     <devnotes>
        <summary>Typed link to a root length density moment matrix.</summary>
     </devnotes>
   </pointer>
-  <enum name="TRootingdepthIncrease" file="URootGrowthUtils.pas" line="27">
+  <enum name="TRootingdepthIncrease" file="URootGrowthUtils.pas" line="29">
     <devnotes>
        Enumeration of options for the increase of rooting depth.
        The options include linear and expolinear.
     </devnotes>
-    <element value="0" name="linear" file="URootGrowthUtils.pas" line="27" />
-    <element value="1" name="expolinear" file="URootGrowthUtils.pas" line="27" />
-    <element value="2" name="monomolecular" file="URootGrowthUtils.pas" line="27" />
+    <element value="0" name="linear" file="URootGrowthUtils.pas" line="29" />
+    <element value="1" name="expolinear" file="URootGrowthUtils.pas" line="29" />
+    <element value="2" name="monomolecular" file="URootGrowthUtils.pas" line="29" />
   </enum>
-  <class name="TTextureEffect" file="URootGrowthUtils.pas" line="33">
+  <class name="TTextureEffect" file="URootGrowthUtils.pas" line="35">
     <devnotes>
        <summary>
        Represents a texture effect for root growth.
@@ -156,11 +166,11 @@
       </propertyref>
     </ancestor>
     <members>
-      <field name="fTextureClass" type="string" visibility="private" size="4" offset="4" file="URootGrowthUtils.pas" line="35" />
-      <field name="fLD" type="string" visibility="private" size="4" offset="8" file="URootGrowthUtils.pas" line="36" />
-      <field name="fWeff" type="Double" visibility="private" size="8" offset="16" file="URootGrowthUtils.pas" line="38" />
-      <field name="frelWeff" type="Double" visibility="private" size="8" offset="24" file="URootGrowthUtils.pas" line="39" />
-      <constructor name="Create" visibility="public" file="URootGrowthUtils.pas" line="51">
+      <field name="fTextureClass" type="string" visibility="private" size="4" offset="4" file="URootGrowthUtils.pas" line="37" />
+      <field name="fLD" type="string" visibility="private" size="4" offset="8" file="URootGrowthUtils.pas" line="38" />
+      <field name="fWeff" type="Double" visibility="private" size="8" offset="16" file="URootGrowthUtils.pas" line="40" />
+      <field name="frelWeff" type="Double" visibility="private" size="8" offset="24" file="URootGrowthUtils.pas" line="41" />
+      <constructor name="Create" visibility="public" file="URootGrowthUtils.pas" line="53">
         <devnotes>
            <summary>
            Constructor for TTextureeffect class.
@@ -177,13 +187,44 @@
           <parameter name="relWeff" type="Double" />
         </parameters>
       </constructor>
-      <property name="TextureClass" visibility="published" read="fTextureClass" write="fTextureClass" type="string" default="0" file="URootGrowthUtils.pas" line="54" />
-      <property name="LD" visibility="published" read="fLD" write="fLD" type="string" default="0" file="URootGrowthUtils.pas" line="55" />
-      <property name="Weff" visibility="published" read="fWeff" write="fWeff" type="Double" default="0" file="URootGrowthUtils.pas" line="56" />
-      <property name="relWeff" visibility="published" read="frelWeff" write="frelWeff" type="Double" default="0" file="URootGrowthUtils.pas" line="57" />
+      <property name="TextureClass" visibility="published" read="fTextureClass" write="fTextureClass" type="string" default="0" file="URootGrowthUtils.pas" line="56" />
+      <property name="LD" visibility="published" read="fLD" write="fLD" type="string" default="0" file="URootGrowthUtils.pas" line="57" />
+      <property name="Weff" visibility="published" read="fWeff" write="fWeff" type="Double" default="0" file="URootGrowthUtils.pas" line="58" />
+      <property name="relWeff" visibility="published" read="frelWeff" write="frelWeff" type="Double" default="0" file="URootGrowthUtils.pas" line="59" />
     </members>
   </class>
-  <function name="monomo_f" visibility="public" file="URootGrowthUtils.pas" line="69">
+  <procedure name="CalculateLognormalMoments" visibility="public" file="URootGrowthUtils.pas" line="87">
+    <devnotes>
+       <summary>Normalizes ten lognormal quantiles to the supplied mean; CV is in percent.</summary>
+    </devnotes>
+    <parameters>
+      <parameter name="MeanRootLengthDensity" type="Double" paramflags="const" />
+      <parameter name="CoefficientOfVariation" type="Double" paramflags="const" />
+      <parameter name="Moments" type="TRootLengthDensityMoments" paramflags="var" />
+    </parameters>
+  </procedure>
+  <function name="CalculateMomentStandardDeviation" visibility="public" file="URootGrowthUtils.pas" line="131">
+    <parameters>
+      <parameter name="Moments" type="TRootLengthDensityMoments" paramflags="const" />
+      <retval type="Double" />
+    </parameters>
+  </function>
+  <procedure name="UpdateRootAgeCohort" visibility="public" file="URootGrowthUtils.pas" line="152">
+    <devnotes>
+       <summary>Replaces the youngest cohort and updates the active sliding sum.</summary>
+       <remarks>Heads are 1-based, PreviousHead may be zero at startup; counts are bounded to MaxAgeCl.</remarks>
+    </devnotes>
+    <parameters>
+      <parameter name="Cohorts" type="TRootAgeCohorts" paramflags="var" />
+      <parameter name="Head" type="Integer" />
+      <parameter name="PreviousHead" type="Integer" />
+      <parameter name="ActiveCount" type="Integer" />
+      <parameter name="PreviousActiveCount" type="Integer" />
+      <parameter name="NewRootLength" type="Double" />
+      <parameter name="ActiveRootLength" type="Double" paramflags="var" />
+    </parameters>
+  </procedure>
+  <function name="monomo_f" visibility="public" file="URootGrowthUtils.pas" line="189">
     <parameters>
       <parameter name="Pmax" type="Double" />
       <parameter name="P0" type="Double" />
@@ -192,7 +233,7 @@
       <retval type="Double" />
     </parameters>
   </function>
-  <function name="Logist_f" visibility="public" file="URootGrowthUtils.pas" line="75">
+  <function name="Logist_f" visibility="public" file="URootGrowthUtils.pas" line="195">
     <parameters>
       <parameter name="Wmax" type="Double" />
       <parameter name="W0" type="Double" />
@@ -201,7 +242,7 @@
       <retval type="Double" />
     </parameters>
   </function>
-  <function name="WLD_z_f" visibility="public" file="URootGrowthUtils.pas" line="82">
+  <function name="WLD_z_f" visibility="public" file="URootGrowthUtils.pas" line="202">
     <parameters>
       <parameter name="wld0" type="Double" />
       <parameter name="a" type="Double" />

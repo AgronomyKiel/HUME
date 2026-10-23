@@ -56,13 +56,6 @@ type
     /// <summary>Clears root states, cohorts, and outputs once at harvest.</summary>
     procedure ResetAfterHarvest;
 
-    /// <summary>Calculates and normalizes ten lognormal quantiles.</summary>
-    procedure CalculateLognormalMoments(const MeanRootLengthDensity,
-      CoefficientOfVariation: real; var Moments: TRootLengthDensityMoments);
-
-    function CalculateMomentStandardDeviation(
-      const Moments: TRootLengthDensityMoments): real;
-
     /// <summary>Updates the RLD moment matrices for all soil layers.</summary>
     procedure CalculateRootLengthDensityMoments;
 
@@ -126,7 +119,7 @@ type
       WLD_60_70, WLD_70_80, WLD_80_90, WLD_90_100: TVar;
 
     /// <summary>Root matrix storing age-classed root length per soil compartment.</summary>
-    Root_Matrix: array [1 .. Max_Comp, 1 .. MaxAgeCl] of real;
+    Root_Matrix: array [1 .. Max_Comp] of TRootAgeCohorts;
     n_age_cl: integer;
 
     /// <summary>Physical position of the youngest cohort in the circular root-age buffer.</summary>
@@ -398,78 +391,14 @@ begin
 end;
 
 
-procedure TSimpleRootModDM.CalculateLognormalMoments(
-  const MeanRootLengthDensity, CoefficientOfVariation: real;
-  var Moments: TRootLengthDensityMoments);
-const
-  StandardNormalQuantiles: TRootLengthDensityMoments =
-    (-1.64485347566998, -1.03643338949379, -0.674489750196082,
-     -0.385320466407568, -0.125661346855074, 0.125661346855074,
-      0.385320466407568, 0.674489750196082, 1.03643338949379,
-      1.64485347566998);
-var
-  MomentIndex: integer;
-  CoefficientOfVariationFraction: real;
-  StandardDeviationLog, MeanLog, SumOfMoments, ScaleFactor: real;
-begin
-  if MeanRootLengthDensity <= 0.0 then
-  begin
-    for MomentIndex := 1 to RootLengthDensityMomentCount do
-      Moments[MomentIndex] := 0.0;
-    exit;
-  end;
-
-  CoefficientOfVariationFraction :=
-    max(0.0, CoefficientOfVariation) / 100.0;
-  StandardDeviationLog :=
-    sqrt(ln(sqr(CoefficientOfVariationFraction) + 1.0));
-  MeanLog := ln(MeanRootLengthDensity) -
-    0.5 * sqr(StandardDeviationLog);
-
-  SumOfMoments := 0.0;
-  for MomentIndex := 1 to RootLengthDensityMomentCount do
-  begin
-    Moments[MomentIndex] := exp(MeanLog + StandardDeviationLog *
-      StandardNormalQuantiles[MomentIndex]);
-    SumOfMoments := SumOfMoments + Moments[MomentIndex];
-  end;
-
-  if SumOfMoments > 0.0 then
-  begin
-    ScaleFactor := MeanRootLengthDensity * RootLengthDensityMomentCount /
-      SumOfMoments;
-    for MomentIndex := 1 to RootLengthDensityMomentCount do
-      Moments[MomentIndex] := Moments[MomentIndex] * ScaleFactor;
-  end;
-end;
-
-function TSimpleRootModDM.CalculateMomentStandardDeviation(
-  const Moments: TRootLengthDensityMoments): real;
-var
-  MomentIndex: integer;
-  MomentMean, SumSquaredDeviations: real;
-begin
-  MomentMean := 0.0;
-  for MomentIndex := 1 to RootLengthDensityMomentCount do
-    MomentMean := MomentMean + Moments[MomentIndex];
-  MomentMean := MomentMean / RootLengthDensityMomentCount;
-
-  SumSquaredDeviations := 0.0;
-  for MomentIndex := 1 to RootLengthDensityMomentCount do
-    SumSquaredDeviations := SumSquaredDeviations +
-      sqr(Moments[MomentIndex] - MomentMean);
-
-  Result := sqrt(SumSquaredDeviations /
-    RootLengthDensityMomentCount);
-end;
-
 procedure TSimpleRootModDM.CalculateRootLengthDensityMoments;
 var
   LayerIndex: integer;
 begin
   for LayerIndex := 1 to RootLengthDensityLayerCount do
   begin
-    if Wld_arr[LayerIndex].v > 0.0 then
+    if SameText(CalcMoments.Option, 'true') and
+      (Wld_arr[LayerIndex].v > 0.0) then
       VK_lrv[LayerIndex].v := max(0.0, VK_lrv_int.v +
         VK_lrv_slope.v * ln(Wld_arr[LayerIndex].v))
     else
@@ -1392,12 +1321,12 @@ end;
 procedure TSimpleRootModDM.CalcRates;
 
 var
-  i, j: integer;
-  WL_alt, WL_neu, ActiveRL, TsumKrit, zrkrit: real;
-  NewRootLength, ExpiredRootLength: real;
-  PreviousRootAgeHead, ExpiredAgeIndex, MatrixIndex: integer;
+  i: integer;
+  WL_alt, ActiveRL, zrkrit: real;
+  NewRootLength: real;
+  PreviousRootAgeHead: integer;
   CurrentActiveAgeClassCount: integer;
-  ActiveDurationChanged, InitializeSRL: boolean;
+  InitializeSRL: boolean;
   act_rooted_comps: integer;
   act_Texture: TTextureClass;
   act_LD: TLDClass;
@@ -1527,8 +1456,6 @@ begin
 
     CurrentActiveAgeClassCount :=
       min(max(trunc(ActiveDuration.v), 0), MaxAgeCl);
-    ActiveDurationChanged :=
-      CurrentActiveAgeClassCount <> ActiveAgeClassCount;
     PreviousRootAgeHead := RootAgeHead;
     if RootAgeHead < MaxAgeCl then
       inc(RootAgeHead)
@@ -1543,35 +1470,10 @@ begin
       WL_arr[i].v := Wld_arr[i].v * (Tiefe[i].v - Tiefe[i - 1].v);
       NewRootLength := max(0, WL_arr[i].v - WL_alt);
 
-      if ActiveDurationChanged then
-      begin
-        Root_Matrix[i, RootAgeHead] := NewRootLength;
-        ActiveRL := 0.0;
-        for j := 1 to CurrentActiveAgeClassCount do
-        begin
-          MatrixIndex := RootAgeHead - j + 1;
-          if MatrixIndex <= 0 then
-            inc(MatrixIndex, MaxAgeCl);
-          ActiveRL := ActiveRL + Root_Matrix[i, MatrixIndex];
-        end;
-      end
-      else if CurrentActiveAgeClassCount > 0 then
-      begin
-        ExpiredAgeIndex := PreviousRootAgeHead -
-          CurrentActiveAgeClassCount + 1;
-        if ExpiredAgeIndex <= 0 then
-          inc(ExpiredAgeIndex, MaxAgeCl);
-        ExpiredRootLength := Root_Matrix[i, ExpiredAgeIndex];
-        Root_Matrix[i, RootAgeHead] := NewRootLength;
-        ActiveRL := ActiveRootLength[i] - ExpiredRootLength + NewRootLength;
-        if ActiveRL < 0.0 then
-          ActiveRL := 0.0;
-      end
-      else
-      begin
-        Root_Matrix[i, RootAgeHead] := NewRootLength;
-        ActiveRL := 0.0;
-      end;
+      ActiveRL := ActiveRootLength[i];
+      UpdateRootAgeCohort(Root_Matrix[i], RootAgeHead,
+        PreviousRootAgeHead, CurrentActiveAgeClassCount, ActiveAgeClassCount,
+        NewRootLength, ActiveRL);
 
       ActiveRootLength[i] := ActiveRL;
       effWL_arr[i].v := ActiveRL;
@@ -1632,8 +1534,7 @@ begin
   WLD_70_80.v := Wld_arr[8].v;
   WLD_80_90.v := Wld_arr[9].v;
   WLD_90_100.v := Wld_arr[10].v;
-  if SameText(CalcMoments.Option, 'true') then
-    CalculateRootLengthDensityMoments;
+  CalculateRootLengthDensityMoments;
 
 end;
 

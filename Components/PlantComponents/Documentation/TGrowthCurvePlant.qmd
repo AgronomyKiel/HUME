@@ -382,3 +382,36 @@ The logistic with decay growth curve is defined by the following equation:
 $$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W \cdot (1 - \frac{W}{W_{max}}) - k \cdot W $$ {#eq-logistic-decay-growth}
 
 where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter, $W$ is the weight, $W_{max}$ is the maximum weight and $k$ is a decay parameter.
+
+## Fine-root biomass and root length
+
+`TGrowthCurvePlant` integrates `DMFineRoot` in g/m² using
+`DMFineRoot.c = max(0, DM_Change) * fFineRoot`, with
+`fFineRoot = max(0, fFineRoot0 - fFineRootDec * TSum)`.
+`TSum` is the existing base-temperature-corrected temperature sum from sowing.
+The defaults are `fFineRoot0 = 0.4` and `fFineRootDec = 0.0002` per degree-day.
+Fine-root accumulation stops at harvest; negative DM growth does not remove roots.
+The fitted DM curve remains unchanged. The older `TGrowthCurvePlantRootDM`
+subclass retains its separate `DM_Change * fFineRoot / (1 - fFineRoot)` convention.
+
+`TGrowthCurvePlantRoots` supports these settings:
+
+| Setting | Meaning |
+|---|---|
+| `WithRoots` | Single root-growth switch inherited from `TAbstractPlant`; default `true`. Set to `false` to disable root calculations and soil-depth connections. Use this instead of the removed duplicate `OptWithRoots` option in configuration files. |
+| `SRLcalc = fromGrowthcurve` | Default: use the existing logistic root-length curve. |
+| `SRLcalc = fromDMfineRoot` | Calculate root length as `DMFineRoot * sp_RL / 10000` in cm/cm². |
+| `sp_RL` | Specific fine-root length in cm/g DM; default 7000. |
+| `Opt_RootAgeing = true` | Use the circular box-car cohorts and running active-root totals. |
+| `ActiveDuration` | Number of active cohorts, truncated and bounded to 0–500. One cohort is added per `CalcRates` call, as in `TSimpleRootModDM`; daily calls give days. |
+| `CalcMoments = true` | Calculate ten lognormal quantiles per layer for total and effective RLD. |
+| `VK_lrv_int`, `VK_lrv_slope` | Define layer CV (%) as `max(0, VK_lrv_int + VK_lrv_slope * ln(mean RLD))`; both default to zero. |
+
+Quantiles are normalized to preserve the layer mean. `WLD_stdev_XX` and
+`effWLD_stdev_XX` report their actual standard deviations. With `CalcMoments`
+disabled, all quantiles equal the layer mean. `SoilWaterModel.PlantModel = GrowthCurvePlantRoots1` automatically links the
+live total and effective moment matrices, including after initialization and
+crop changes. The optional `RootedSoilWaterModel` property remains available
+for explicit coupling. Class-resolved water uptake requires
+`SinkTermMethod = MFP` and `WithClasses = true` in the soil-water options. Root lengths, cohorts, and distribution outputs are
+cleared outside the growing season and on initialization.

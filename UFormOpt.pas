@@ -3,7 +3,7 @@ unit UFormOpt;
 interface
 
 uses Windows, SysUtils, Classes, vcl.Graphics, vcl.Forms, vcl.Controls, vcl.StdCtrls,
-  vcl.Buttons, Umod, vcl.ComCtrls, vcl.Grids, AdvGrid, vcl.ExtCtrls;
+  vcl.Buttons, Umod, vcl.ComCtrls, vcl.Grids, AdvGrid, vcl.ExtCtrls, System.IOUtils;
 
 type
 
@@ -92,7 +92,8 @@ var
 implementation
 
 uses
-  vcl.Dialogs, Ustate, UMeasValue, UFormRichTExt, IniFiles, UModUtils;
+  vcl.Dialogs, Ustate, UMeasValue, UFormRichTExt, IniFiles, UModUtils,
+  System.Hash;
 {$R *.DFM}
 
 procedure TFormOpt.IncludeBtnParClick(Sender: TObject);
@@ -314,6 +315,7 @@ var
   Par, SavePar: TPar;
   DataSeries: TMeasList;
   StartTime, EndTime, Timeelapsed: TDateTime;
+  PreviousStatusBarOpt: TStatusBar;
 
 /// <summary> Loops over all selected parameters and data series and saves the parameter values for all selected
 /// parameters in the list SaveParList. The parameter values are needed to reset the parameters to their original values
@@ -414,9 +416,7 @@ begin
     StatusBarOpt.Panels[0].text := 'Optimization running !';
     StatusBarOpt.Panels[1].text := '';
     StatusBarOpt.Update;
-    {$IFNDEF NONVISUAL}
-    model.StatusbarOpt := StatusBarOpt;
-    {$ENDIF}
+    /// <summary>The optimizer uses the dialog status bar while reporting iteration progress.</summary>
 
     // init the model with the active ini-file and run the optimization for the active ini-file or for all ini-files depending on the selected optimization option
     if (model.LMOptions.OptOption = optAllInis)  then
@@ -424,7 +424,13 @@ begin
     else if (model.LMOptions.OptOption = optOnlyActIni) or (model.LMOptions.OptOption = optAllInisSeparate) then
       model.runActINI;
 
-    model.MarquardOptimization(fn);
+    PreviousStatusBarOpt := model.StatusBarOpt;
+    model.StatusBarOpt := StatusBarOpt;
+    try
+      model.MarquardOptimization(fn);
+    finally
+      model.StatusBarOpt := PreviousStatusBarOpt;
+    end;
     // update_StringGrid('reg.dat');
     EndTime := Time;
     Timeelapsed := EndTime - StartTime;
@@ -458,12 +464,31 @@ procedure TFormOpt.StartBtnClick(Sender: TObject);
 var
   I: Integer;
   actini: TMyIniFile;
+  OptResultsDir: string;
+
+  /// <summary>Builds the optimization output path for an INI or control file.</summary>
+  function OptimizationResultFileName(const SourceFileName: string;
+    IncludeSourcePath: Boolean = False): string;
+  var
+    ResultFileBaseName: string;
+  begin
+    ResultFileBaseName :=
+      System.IOUtils.TPath.GetFileNameWithoutExtension(SourceFileName);
+    if IncludeSourcePath then
+      ResultFileBaseName := ResultFileBaseName + '_' +
+        THashMD5.GetHashString(SourceFileName);
+    Result := System.IOUtils.TPath.Combine(OptResultsDir,
+      ResultFileBaseName + '_opt.dat');
+  end;
+
 begin
-  // take the name of the active ini-file and create the name of the optimization result file
+  OptResultsDir := System.IOUtils.TPath.Combine(model.GM_OutPutPath, 'OptResults');
+  System.IOUtils.TDirectory.CreateDirectory(OptResultsDir);
+  /// <summary>Use the same output directory for single, combined, and separate optimizations.</summary>
   lbl_actininame.Caption := model.ActIniFile.FileName;
-  fn := StripExtension(model.ActIniFile.FileName) + '_opt.dat';
+  fn := OptimizationResultFileName(model.ActIniFile.FileName);
   if model.LMOptions.OptOption = optAllInis then
-    fn := StripExtension(model.Get_ControlFileFn) + '_opt.dat';
+    fn := OptimizationResultFileName(model.Get_ControlFileFn);
 
   if model.LMOptions.OptOption = optAllInisSeparate then begin
     model.LMOptions.OptOption := optOnlyActIni;
@@ -472,7 +497,7 @@ begin
     for i := 0 to model.FIniFiles.count - 1 do begin
       model.ActIniFile := TMyIniFile(model.FIniFiles.objects[i]);
       lbl_actininame.Caption := model.ActIniFile.FileName;
-      fn := StripExtension(model.ActIniFile.FileName) + '_opt.dat';
+      fn := OptimizationResultFileName(model.ActIniFile.FileName, True);
       RunOptimizationForActIni;
       UebernehmenBtnClick(nil);
     end;
@@ -713,4 +738,3 @@ begin
 end;
 
 end.
-

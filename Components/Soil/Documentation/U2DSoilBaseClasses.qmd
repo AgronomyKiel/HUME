@@ -1,0 +1,457 @@
+---
+title: "2-D raster ownership and migration"
+---
+
+This page describes the structural migration of `U2DSoilBaseClasses.pas`. The nitrate methods formerly labelled `TSubmodRoot2DNitrate` now belong to `TRasterDataNO3`. The full unit compiles, but the coupled model still requires nitrate validation and water/nitrate coupling. A horizontal water-content diffusion method is now available on `TRasterDataH2O`.
+
+## Source units and component registration
+
+The transport classes are now split into two units:
+
+| Unit | Classes |
+|----|----|
+| `U2DSoilBaseClasses.pas` | `TRasterData`, `TSubmodRootBase`, `TSubmodRoot2D`: shared geometry and root placement |
+| `USubModRootH2O.pas` | `TRasterDataH2O`, `TSubmodRoot2DWithWater`, `TSubmodRoot2DH2O`: water storage, diffusion and MFP uptake |
+| `USubModRootNO3.pas` | `TRasterDataNO3`, `TSubmodRoot2DNO3`, `TSubmodRoot2DH2ONO3`: nitrate storage, transport and legacy combined-model compatibility |
+
+`TSubmodRoot2DWithWater` inherits from `TSubmodRoot2D` and owns the water raster. Both transport models inherit from this intermediate class. This avoids a circular unit dependency while keeping the nitrate model's water content fixed. Geometry and root placement remain in `TSubmodRoot2D`. Callers needing `getWaterRasterData` must use `TSubmodRoot2DWithWater` or one of its descendants. Add the appropriate transport unit to a caller's `uses` clause; the moved class names are unchanged.
+
+Both new units expose a `Register` procedure installing their respective transport submodel in the **Simulation** component category. Registration is omitted for `NONVISUAL` and console builds. `Diffusion1D2D.dpk` and its `.dproj` list both new units; dependency and output settings are unchanged. The combined compatibility class is not separately registered.
+
+The numerical methods were moved without changing their calculations. The four existing regression programs passed after updating their imports, and a Win32 GUI program referencing both registration procedures compiled and linked successfully. No package installation or Quarto rendering was performed.
+
+## Class ancestry and ownership {#class-graphs}
+
+This inventory follows the current [`Diffusion1D2D.dpk`](../Diffusion1D2D.dpk) `contains` list, not every historical unit in the Soil directory. The package explicitly lists six units: `SubmodRootDiff1DSolo`, `voro`, `U2DSoilBaseClasses`, `USubModRootH2O`, `USubModRootNO3`, and `URootObject`. `U2DSoilBaseClassNitrate` is an additional source dependency used by the 1-D model, although it is not explicitly listed in `contains`. Framework/VCL ancestors and hydraulic helper classes belong to other units/packages.
+
+### Inheritance
+
+An arrow with a hollow triangle points to the ancestor. Inheritance does not mean that one object owns another. `TSubmodRoot2DWithWater`, for example, is part of each transport-model instance, not a separately allocated object.
+
+```{mermaid}
+classDiagram
+  direction TB
+  TSubmodel <|-- TSubmodRootBase
+  TSubmodRootBase <|-- TSubmodRootBaseNitrate
+  TSubmodRootBaseNitrate <|-- TSubmodRootDiff1DSolo
+  TSubmodRootBase <|-- TSubmodRoot1DH2O
+  TSubmodRootBase <|-- TSubmodRoot2D
+  TSubmodRoot2D <|-- TSubmodRoot2DWithWater
+  TSubmodRoot2DWithWater <|-- TSubmodRoot2DH2O
+  TSubmodRoot2DWithWater <|-- TSubmodRoot2DNO3
+  TSubmodRoot2DNO3 <|-- TSubmodRoot2DH2ONO3
+  note for TSubmodel "Framework ancestor: UMod"
+  note for TSubmodRootBaseNitrate "Indirect source dependency; 1-D initialization"
+  note for TSubmodRoot2DWithWater "Shared water storage; no water transport"
+  note for TSubmodRoot2DH2ONO3 "Compatibility subclass; no coupled solver"
+```
+
+The data and geometry classes form separate inheritance trees. None of the three raster classes inherits from another raster class; their geometry is shared by reference.
+
+```{mermaid}
+classDiagram
+  direction LR
+  TObject <|-- TRasterData
+  TObject <|-- TRasterDataH2O
+  TObject <|-- TRasterDataNO3
+  TObject <|-- TRootObject
+  TRootObject <|-- TRootObjectIn2D
+  TObject <|-- TVoronoi
+```
+
+| Class | Defining unit | Current role / registration |
+|----|----|----|
+| `TSubmodRootBase` | `U2DSoilBaseClasses` | Common quantities, framework initialization and root-length calculations; not registered |
+| `TSubmodRootBaseNitrate` | `U2DSoilBaseClassNitrate` | Owns and registers nitrate quantities and preserves the 1-D initialization conventions; not registered |
+| `TSubmodRootDiff1DSolo` | `SubmodRootDiff1DSolo` | 1-D statistical root-uptake model; registered under `Soil2D` |
+| `TSubmodRoot2D` | `U2DSoilBaseClasses` | Grid geometry, root placement and root ownership; not registered |
+| `TSubmodRoot2DWithWater` | `USubModRootH2O` | Shared water-field allocation and initialization; not registered |
+| `TSubmodRoot2DH2O` | `USubModRootH2O` | Water diffusion, texture hydraulics and MFP uptake; registered under `Simulation` |
+| `TSubmodRoot2DNO3` | `USubModRootNO3` | Nitrate transport at fixed water content; registered under `Simulation` |
+| `TSubmodRoot2DH2ONO3` | `USubModRootNO3` | Nitrate compatibility subclass; only overrides `CreateAll` to set its declaration class; not registered |
+| `TRasterData` | `U2DSoilBaseClasses` | Computational geometry |
+| `TRasterDataH2O` | `USubModRootH2O` | Water field, ADI solver and water diagnostics |
+| `TRasterDataNO3` | `USubModRootNO3` | Nitrate field, solver and field-output bookkeeping |
+| `TRootObject` | `URootObject` | Single-root quantities and uptake functions |
+| `TRootObjectIn2D` | `URootObject` | Adds root coordinates and cell indices |
+| `TVoronoi` | `voro` | Voronoi helper; no construction site found in the searched repository sources |
+
+### Ownership and borrowed references
+
+A filled diamond marks an owned object whose lifetime is managed by the owner. Dotted arrows mark borrowed references. The model nodes below denote the class that introduces each field; derived instances inherit that ownership.
+
+```{mermaid}
+classDiagram
+  direction LR
+  TSubmodRoot2D *-- TRasterData : RasterData
+  TSubmodRoot2D *-- RootList2D : RootList
+  RootList2D *-- TRootObjectIn2D : Objects, owns objects
+  class RootList2D["TStringList (2-D roots)"]
+  TSubmodRoot2DWithWater *-- TRasterDataH2O : RasterDataH2O
+  TSubmodRoot2DH2O *-- TGenucht : FHydraulicSoil
+  TSubmodRoot2DH2O *-- TMFP_table : FMFPTable
+  TSubmodRoot2DNO3 *-- TRasterDataNO3 : RasterDataNO3
+  TRasterDataH2O ..> TRasterData : FGeometry
+  TRasterDataNO3 ..> TRasterData : FGeometry
+  TRasterDataNO3 ..> TRasterDataH2O : FWater
+  TRasterDataNO3 ..> TSubmodRoot2DNO3 : FSubmodel
+```
+
+The water model owns one hydraulic-law copy and one MFP table. The MFP table stores calculated values, not an owned `TGenucht` reference. The nitrate field borrows its geometry, water field and owner; it must not free them. Destruction runs from the most-derived model toward the ancestors: nitrate field or hydraulic objects first, then the water field, then the root list and geometry. Dynamic field arrays are managed by their containing objects. Framework parameters/options referenced by the raster remain registered with the model.
+
+Two additional allocation/reference relationships need different treatment:
+
+- `TSubmodRootDiff1DSolo.CreateAll` creates a separate `TStringList`; its `Init` creates `TRootObject` entries. Unlike the 2-D list, this list does not enable `OwnsObjects`, and the class has no destructor freeing it. `Init` calls `RootList.Clear`, which does not free those objects. This is an ownership cleanup issue, not evidence that the root classes are redundant.
+- `TVoronoi.Create` borrows its caller's `TCanvas` and `TList` as `Canvas` and `LGlobal`. Its methods add/remove geometric objects, and `ClearLines` frees line objects. It does not own the supplied canvas or list container.
+
+### Candidates for cleanup
+
+These findings are based on declarations, allocation/destruction code and repository searches of Pascal sources, package/project files, forms, test programs and INI files, excluding history/recovery copies. Absence from that search does not establish that external projects or saved model files no longer depend on a class. No classes or package entries were removed.
+
+| Candidate | Evidence | Assessment / next step |
+|----|----|----|
+| `TSubmodRoot2DH2ONO3` | Adds no fields, `Init`, `CalcRates`, or `Integrate`; its only override sets the declaration class. Repository construction sites found in two regression programs. | Strongest redundant-behavior candidate. Check external configurations and class-name compatibility before removing it or deliberately retaining it as a compatibility wrapper. Its name must not imply implemented water/nitrate coupling. |
+| `TVoronoi` / `voro.pas` | Explicit package entry, but no construction site found outside its own implementation. | Candidate for removal from this package after checking external consumers. This is an apparently unused helper, not a duplicate raster class. |
+| `TSubmodRootBaseNitrate.CreateAll` | Registers nitrate parameters, states, variables and the uptake option. | Required by the 1-D nitrate hierarchy; these objects no longer belong to the common root base. |
+| `TSubmodRoot2DWithWater` | Allocates, initializes and frees shared water storage used by both transport models. | Not redundant: removing it requires another ownership design and risks restoring circular unit dependencies. |
+| `TRasterData`, `TRasterDataH2O`, `TRasterDataNO3` | Geometry, water and nitrate are distinct owned objects with explicit borrowed links. | Not duplicate definitions; preserve the separation unless intentionally redesigning storage. |
+| Historical `USubmodRoot2DDiffNitrate.pas` and `USubmodDiff2DRootsNitrate.pas` | Not in the current `contains` list or used by the listed units. They still name the old ancestors `TSubmodRootBase2D` and `TBaseSubmodRootDiff`, respectively. Old support-file paths remain as `.dproj` `None` items. | Candidates for a separate legacy-source audit. Their presence on disk does not mean their classes are included in this package. |
+
+The current forward declaration `TSubmodRoot2DNO3 = class;` is required to connect the nitrate field to its owner; it is not a second class definition. Similarly named `TSubmodRootBaseNitrate` (1-D initialization) and `TSubmodRoot2DNO3` (2-D transport) are separate parts of the hierarchy.
+
+The new graph section was rendered successfully as standalone HTML with Quarto in a temporary directory. The generated website under `docs/` was not rebuilt. No Delphi build was run for this documentation-only update.
+
+## Ownership
+
+| Class | Owns | Borrows |
+|----|----|----|
+| `TRasterData` | Computational dimensions, spacing, midpoint coordinates, margins and container geometry | Nothing |
+| `TRasterDataH2O` | `Theta_xy`, water diffusion, uptake/balance diagnostics, mean `CellWaterAmount` | Shared geometry |
+| `TRasterDataNO3` | `C_xy`, extrema, diffusion, sources/sinks and uptake accounting | Shared geometry, water field, coordinating submodel and model-registered options |
+| `TSubmodRoot2D` | Geometry, root objects, root-input metadata and observation counts | Existing chart/grid/structural-model connections |
+| `TSubmodRoot2DWithWater` | Water field | Inherited geometry |
+| `TSubmodRoot2DNO3` | Nitrate field | Inherited geometry and water |
+
+Both fields reference the same geometry instance. They do not free their borrowed references. The submodel frees the fields before geometry and owns the objects in its `RootList`.
+
+The computational grid uses `NCols` and `NRows`. Field storage includes helper slots 0 and N+1 required by the existing solver, whose active indices are 1..N. The legacy coordinate expressions are retained pending the indexing review.
+
+The coarse root-input raster uses separate `RootRasterNCols`, `RootRasterNRows`, `RootRasterColWidth`, `RootRasterRowHeight` and `CountArr` on the submodel. Reading root counts must not overwrite computational dimensions or spacing.
+
+## Relocated methods and caller changes
+
+Root input, export, random/hexagonal generation, root-to-cell mapping and margin root removal now belong to `TSubmodRoot2D`. Replace calls such as `RasterData.CalcRootPosAsIndex` with `CalcRootPosAsIndex` and access `RootList` and `NRoots` on the submodel. `getRasterData` returns geometry; `getWaterRasterData` and `getNitrateRasterData` return the respective fields. External descendants still using the former root or concentration members on `RasterData` must be migrated in a subsequent step.
+
+The nitrate sweep now belongs to `TRasterDataNO3`. Its inputs are the internal timestep, a `TGridSinkEvent` callback and the container-mode flag. `CalcRates` passes the field's own `Get_Sink` method. The callback returns the existing signed cell source/sink; this move does not correct its units, weighting, or positivity treatment. The sweep reads its water volume from the shared water field rather than a duplicate submodel scalar.
+
+## Remaining work
+
+- Nitrate-specific fields and registrations now reside in TSubmodRootBaseNitrate and TSubmodRoot2DNO3. The separate 2-D branch retains its geometry/water ancestry; the common base and water models contain no nitrate fields. Registration names, defaults and initialization units are preserved. The former UsesNitrate switch is removed.
+- Complete nitrate amount storage, changing-water-volume coupling, hydraulic laws, root water uptake and statistical/lognormal root representations.
+- Review indexing, time units, boundary equations, multiple-root cell sinks, uptake accounting and the radial Michaelis-Menten expression before using numerical results. The legacy formulas remain unchanged in this pass.
+- Connect visualization consumers to `TRasterDataNO3.OnConcentrationChanged`. The nitrate field does not own a chart or MathImage control. Legacy consumers of the removed class must migrate to the field API.
+
+## Nitrate method ownership
+
+`Get_Sink`, `get_minGrid`, `InitConc`, `createSteadyState`, `avg_conz`, `influx_fVar`, `calcAmountUptakeRoots`, `convertConcToAmount` and `calcActArdt` are declared and implemented on `TRasterDataNO3`. `Get_Sink` retains its procedure-with-var-parameter signature to match `TGridSinkEvent`.
+
+The former nitrate initialization becomes `InitializeModel`, called once after the coordinator initializes geometry, water and roots. It does not reinitialize the owner or erase its roots. `TSubmodRoot2DNO3.CalcRates` delegates to the nitrate field; `Integrate` updates the framework nitrate total from the field. Framework parameters and scalar variables are still accessed through the borrowed submodel reference, avoiding duplicate parameter/state objects.
+
+Nitrate options are stored on the field and registered by the coordinator under their existing configuration names. Extrema and file-creation flags are also field-owned. Root loops in the migrated calculations use `RootList.Count` with zero-based indices, rather than a potentially stale count. Empty-root uptake aggregation returns zero. Optional uptake output preserves the per-root columns; concentration and sink output use their respective switches. These wiring and bounds corrections do not change the radial uptake or diffusion equations.
+
+## Verification of this step
+
+The complete `U2DSoilBaseClasses.pas` compiled with the Win32 Delphi compiler, using temporary DCU output and no changes to project/package settings. This replaces the previous check of only the prefix before the orphaned methods.
+
+`../Tests/NitrateRasterOwnershipTest.dpr` exercises shared geometry/water, concentration initialization, empty and occupied cell sinks, a stale legacy root count, and separate water/nitrate storage. Building its executable currently stops in the pre-existing `UFormOpt.pas` dependency because `StatusbarOpt` is undeclared; the test has not run. Compilation of the unit is not a validation of transport accuracy, water coupling or a full package build.
+
+Encoding and CRLF line endings were preserved. No generated site output was rebuilt. The user's package removal and unrelated source/generated-file changes were not modified by this migration.
+
+## Horizontal water transport
+
+`TRasterDataH2O.SolveWaterDiffusionADI` advances
+
+$$
+\frac{\partial\theta}{\partial t}
+= \frac{\partial}{\partial x}\left(D\frac{\partial\theta}{\partial x}\right)
++ \frac{\partial}{\partial y}\left(D\frac{\partial\theta}{\partial y}\right)-S.
+$$
+
+Here theta is volumetric water content \[cm3/cm3\], time is in days, cell widths are in cm, diffusivity D is in cm2/day, and nonnegative uptake S is in cm3/cm3/day. By default this is a horizontal cross-section without gravity; TransportPlane=vertical enables gravity toward increasing Y.
+
+The required diffusivity and optional uptake callbacks have signature `function(X, Y: integer; ATheta: double): double of object`. Both receive the old cell water content and active indices 1..N. They are evaluated once per cell and must not modify the fields. Pass `nil` for uptake when testing redistribution alone. For example, inside a model providing these methods:
+
+``` pascal
+getWaterRasterData.SolveWaterDiffusionADI(
+  0.01, WaterDiffusivity, WaterUptake, 0.05, 0.45);
+```
+
+The final arguments are caller-selected lower and upper water-content limits; defaults are 0 and 1. They must match the hydraulic law's domain. Do not use the nitrate diffusion coefficient as a water diffusivity. Existing `Diffko` functions that return diffusivity per second need a checked unit conversion before use with this days-based interface.
+
+Peaceman-Rachford ADI uses separate old, intermediate and new arrays. Shared faces use harmonic diffusivity; a zero diffusivity blocks exchange through its faces. Coefficients and uptake are frozen during the step. Constant-coefficient diffusion has second-order time discretization; nonlinear D(theta) is lagged without Picard iteration. The x and y sweeps use their respective cell widths and dimensions. Outer faces are impermeable; helper slots are preserved and excluded from transport and balance sums.
+
+Invalid inputs, nonfinite values, out-of-bound intermediate/final water contents or a failed balance check raise an exception before committing the field or diagnostics. ADI does not ensure positivity for every timestep: reduce the timestep after a bounds rejection. Values are not clipped. A zero timestep is a no-op. `LastWaterUptake` and `WaterBalanceError` report the last accepted step in cm3 for the full-depth domain; the latter is storage change plus removed water. `CellWaterAmount` is updated to the mean cell water volume.
+
+The supplied `UChatGPT.pas` was used as an algorithmic reference. Its theta solver mixed old nitrate identifiers with water variables and overwrote values still needed by later sweeps. The new method has explicit water inputs and separate buffers. The incomplete pressure-head/Picard section was not adopted for the selected horizontal model.
+
+This method is not automatically invoked by `TSubmodRootBase2D.CalcRates`. The caller must provide the hydraulic law and aggregate root water removal per cell. Circular container boundaries are not implemented in this water method. The legacy nitrate solver still uses a scalar water volume; its use with spatially varying theta requires local nitrate storage and transport coupling, including water-driven nitrate fluxes, before coupled simulation.
+
+### Water regression checks
+
+`../Tests/WaterRasterDiffusionTest.dpr` compiled and ran successfully using the Win32 Delphi compiler and the actual full unit. It checks a uniform field, discrete cosine decay on a 4-by-3 grid with unequal spacings, two-cell harmonic-face exchange, zero diffusion, uptake conservation, single-cell geometry, callback counts, and unchanged state/diagnostics after rejected steps. Outputs were placed under the temporary directory; local `ADV_STRGRD` resources were supplied on the command line for linking. This is a numerical regression check, not calibration or a full package build. The updated unit also compiled separately. Quarto output was not regenerated.
+
+## Single-root water uptake using matrix flux potential
+
+`TSubmodRoot2DH2O` now supplies its water solver with an MFP-limited uptake sink. This applies to the water-only class; the combined water/nitrate class still requires separate coupling work.
+
+Configure these model quantities before initialization:
+
+| Quantity | Meaning | Default |
+|----|----|----|
+| `PotentialWaterUptake` (`TPar`) | Potential extraction per unit ground area, cm/day | 0 (disabled) |
+| `SoilTexture` (`TOption`) | Uniform texture from the existing `USoilTexture.AddClasses` list | Sl3 |
+| `TextureVersion` (`TOption`) | Existing RR or KA hydraulic parameter tables | RR |
+| `SoilBulkDensity` (`TOption`) | RR conductivity lookup: LD13, LD142, LD15, LD164, LD17, OldVersion; ignored by KA | OldVersion |
+| `RootRadius` | Common root radius, cm; must be positive when uptake is enabled | inherited |
+| `Depth` | Layer thickness and length of each root segment, cm | inherited |
+
+Initialization builds a `TGenucht` law from the selected texture and uses Mualem's `m = 1 - 1/n`. Conductivity is in cm/day. A cached `TMFP_table` provides the matrix flux potential. Reinitialize after changing texture options. `ConfigureWaterUptakeSoil` can alternatively copy a caller-supplied hydraulic law after initialization; subsequent initialization restores the texture selection. The model owns the copy and its table.
+
+For potential extraction Q \[cm/day\], domain area G \[cm2\], N roots and layer depth L, equal demand is `Q * G / (N * L * 86400)` in cm3/cm root/second. N is `RootList.Count`, not the legacy `NRoots` scalar. Roots in the entire active domain, including margins, participate. If converting transpiration T in mm/day, set `Q = T / 10`.
+
+For each occupied cell, local theta is converted to positive tension using `TGenucht.psi_b_f`, then to MFP using `TMFP_table.get_sumku`. Each root uses **the full cell area A**, including when several roots occupy that cell: `xl = sqrt(A/pi)`. The existing `MFP_IWmax(MFP, xl, RootRadius)` provides the radial transport limit; divide it by 86400 to compare with per-second demand. The actual root influx is the minimum of demand and transport capacity. Unmet demand is not redistributed to other roots. Override `PotentialRootWaterInflux` for future distributions, ensuring the demands sum to no more than Q times domain area after conversion back to whole-root volumes per day.
+
+The cell sink is the sum of its root influxes times `86400/A`, in cm3/cm3/day. Layer depth cancels between root length and cell volume. The sink is frozen at the beginning of the ADI step. After acceptance, `TRootObject.WInflux` records cm3/cm root/second and `SumWInflux` accumulates cm3/cm root. `LastWaterUptake` is the actual water volume removed from the full domain \[cm3\]; divide by domain area and elapsed days for extraction \[cm/day\]. Rejected steps leave the field and published root diagnostics unchanged. Initialization resets root uptake diagnostics.
+
+The existing MFP table spans positive tensions 0.1 to 10\^4.2 cm. Wet values use its first endpoint; values at or beyond its dry endpoint have zero capacity. This retains the table's implicit zero root-surface MFP assumption; a separate minimum root water potential is not introduced. Radial geometry must satisfy `0.56 * xl > RootRadius`. Invalid geometry and out-of-grid roots raise exceptions rather than silently dropping root demand. When uptake would violate water-content bounds, reduce the timestep after rejection; the implementation does not clip removal to available storage.
+
+Horizontal diffusion uses `TGenucht.Dw_f(ATheta)` from the configured texture law, in cm2/day. `WaterDiffusionCoefficient` remains registered for compatibility but is unused by this default law. The callback uses the solver-supplied water content rather than reading the public field. No seconds/day conversion is needed because the hydraulic conductivity is already in cm/day.
+
+The ADI solver already supports a separate diffusivity in each cell and uses one harmonic-mean coefficient at each shared face. It recomputes coefficients at the start of each step and freezes them through both sweeps. This remains a conservative, lagged approximation for nonlinear D(theta); its temporal accuracy is generally first order, unlike the constant-coefficient case. Check timestep convergence when water content changes substantially. A fully implicit nonlinear treatment would require iteration and is not implemented. `Dw_f` retains its existing endpoint regularization at residual water content and saturation; this change does not introduce a saturated pressure-head model.
+
+The hydraulic-law regression uses the actual RR/Sl3 diffusivity on two cells, checks the independently calculated frozen-step solution over consecutive steps, and verifies water conservation and callback units. The pre-existing constant-diffusivity and uptake-only tests now explicitly supply those laws, so they continue to isolate the behavior they were designed to test.
+
+### MFP uptake verification
+
+`../Tests/RootWaterMFPTest.dpr` passes with the Win32 Delphi compiler and `NONVISUAL`, using temporary compiler output. It checks equal demand and seconds/day conversion, multiple roots using full cell area, transport limitation, dry and saturated endpoints, conservation, rejected-step root and field rollback, zero and invalid demand, invalid root geometry, and RR/KA texture initialization. Existing `WaterRasterDiffusionTest`, `RootTransportClassesTest`, and `NitrateRasterOwnershipTest` also pass. This verifies the implementation against the existing MFP functions, not independent experimental validation of those functions. No full package build or Quarto regeneration was performed for this uptake change.
+
+## Simulation initialization
+
+`TSubmodRoot2D`, `TSubmodRoot2DH2O`, and `TSubmodRoot2DNO3` expose explicit `Init(var GlobMod: TMod)` overrides, dispatched by `TMod.InitAllSubMods`. Each override calls `inherited Init(GlobMod)` first. The framework loads states, parameters, variables and options before derived calculations run. `CreateAll` continues to construct owned objects and register model quantities.
+
+- `TSubmodRoot2D.Init` initializes shared geometry, root positions and cell indices, margins, root counts and domain quantities.
+- `TSubmodRoot2DWithWater.Init` then initializes the water field from initial water content before either transport subclass finishes its initialization.
+- `TSubmodRoot2DH2O.Init` then rebuilds texture hydraulics and the MFP table, resets root uptake diagnostics, and initializes the timestep and water totals.
+- `TSubmodRoot2DNO3.Init` then allocates the nitrate field, applies its margin root option and finalizes root counts. The field `InitializeModel` helper initializes concentrations and output bookkeeping; nitrate model quantities and uptake conversions are calculated in `TSubmodRoot2DNO3.Init`.
+
+The former `InitializeTransport` hook is removed: the shared base no longer calls a virtual transport initializer from inside its own initialization. `TSubmodRoot2DH2ONO3` inherits the nitrate `Init` and retains its existing fixed-water behavior. Existing calculations and units are preserved. Initialization runs again for each simulation, including repeated runs with changed inputs; it is not restricted to construction.
+
+The extended `RootTransportClassesTest` checks initialization via `TSubmodel` references, shared-grid resizing, water reset and nitrate reset with changed inputs. This test and the three water/MFP/nitrate regression programs passed with the Win32 Delphi compiler (`NONVISUAL`) and temporary outputs. No full package build or Quarto regeneration was performed for this lifecycle change.
+
+### Transport-specific initialization ownership
+
+`TSubmodRootBase.Init` now performs only framework initialization, resets the common output flag, sets the existing initial timestep, and calculates shared root-length quantities. It no longer initializes water or nitrate states.
+
+`TSubmodRoot2DWithWater.Init` sets theta from `IniTheta`, calculates initial water depth as theta times layer depth, and initializes the water raster. Both `TSubmodRoot2DH2O` and the fixed-water nitrate model inherit this setup. The water model then initializes its hydraulics and water-uptake diagnostics.
+
+`TSubmodRoot2DNO3.Init` initializes nitrate diffusivity and initial N amount, then calculates concentration totals, the nitrate timestep, mineralization and potential influx after root geometry and field concentrations are ready. Its concentration-change notification runs after all these quantities are initialized. The intermediate base-class concentration calculation formerly overwritten by the raster initialization has been removed.
+
+The existing 1-D models retain their own initial water/nitrate calculations in `TSubmodRootBaseNitrate.Init` in `U2DSoilBaseClassNitrate.pas`. Their legacy concentration, mineralization and influx units are preserved. An unused `SubmodRootStructureNew` dependency was removed from this ancestor so its initialization regression can build without that unit's unrelated form code.
+
+The initialization regression verifies the common base with zero initial water, the preserved 1-D conventions, and the 2-D nitrate conversions and reinitialization. All four regression programs passed with Win32 Delphi `NONVISUAL` and temporary outputs. No full package build or Quarto rendering was performed for this move.
+
+## Initialization comparison with the legacy root model
+
+The reference is `Kohl_original/Kohl/BarleySubmodPackage/SubmodRootDiff.pas`. Its initialization work is spread across `AddDataValueToDataSeries`, the empty `init_`, `init_eingelesen`, `calcNumberConsRoots` and distribution helpers. The current classes perform setup in `Init`, after HUME loads parameters and options, rather than reinitializing during output collection.
+
+| Legacy behavior | Current implementation |
+|----|----|
+| Root count raster and XY files | `TSubmodRoot2D.Init` calls the existing readers; both use `RootInpDataFile` as requested. |
+| Parameter-derived root counts | `IniMethod=InpPar` uses density times domain area. `FromSource` becomes `Regular` for this mode. |
+| Regular placement | Row-oriented hexagons, matching the active legacy algorithm; both coordinates are initialized. |
+| Random placement | The requested number of root objects is created and placed in physical domain coordinates. |
+| Observation-window count | `RefreshRootStatistics` counts roots inside or on the window boundary and updates density, distance and root length. |
+| Margins | `verticMargin` trims X; `horizMargin` trims Y, as in legacy `calcNumberConsRoots`. Margin roots remain available for transport unless removal is selected. `WithMargins=withMargin` (or legacy `true`) removes them; nitrate also retains `DelMarginRoots=yes`. |
+| Root cell indices | Shared initialization maps physical positions to active indices `1..N`, with upper-domain-edge roots in the last cell. |
+| Reinitialization | File/parameter roots and counts are rebuilt; empty runs reset diagnostics. `SubmodStruct` preserves externally supplied root objects and forces `FromSource`; no structural-model provider is created automatically. |
+| Volume, mineralization, initial nitrate and diffusivity | Domain geometry remains shared; water and nitrate quantities remain in their respective subclasses, retaining their current unit conventions. |
+| GUI output | Chart/grid updates are optional; root initialization works without attached visual controls. |
+
+This restores initialization responsibilities, not bit-for-bit equivalence with legacy transport. In particular, current water diffusivity/MFP uptake and nitrate time units are retained. Invalid XY input now raises an exception rather than opening a dialog and silently continuing with incomplete data. Root indices no longer require a correction in the Soil2D test form.
+
+`Tests/RootInitializationTest.dpr` covers XY/raster input without visual controls, regular/random roots, asymmetric margins, cell indices, repeated initialization, zero roots and missing input files. Existing transport and MFP tests cover the subclass initialization and uptake behavior.
+
+## Adaptive water integration and display
+
+`TSubmodRoot2DH2O` now provides internal timestep control inspired by `TSoilWaterMod`: it limits the maximum absolute cell water-content change and allows accepted steps to grow by at most a factor of 1.5. This is a change limiter, not an estimate of numerical truncation error; the diffusivity remains frozen within each ADI substep.
+
+| Setting | Meaning |
+|----|----|
+| `AdaptiveWaterTimeStep=yes` | Enable internal substeps (default); `no` retains one solve per outer interval. |
+| `Ini_dt` | Initial internal step in days. |
+| `max_dt` | Maximum internal step in days. |
+| `MinWaterDt` | Minimum internal step, default `1e-8` d. |
+| `MaxThetaChange` | Maximum accepted absolute theta change per cell per substep, default `0.005` cm3/cm3. |
+
+Bounds violations or excessive changes halve the trial timestep. A final remainder may be shorter than `MinWaterDt` to finish the outer interval. Hydraulics and MFP sinks are recomputed after every accepted substep. The outer model clock is unchanged. Uptake and balance diagnostics aggregate over the complete outer interval; root influx is its time average. A failed outer interval restores its starting field and published diagnostics, including when earlier internal steps had succeeded.
+
+`WaterInternalSteps`, `WaterRejectedSteps` and `int_dt` expose accepted steps, rejected trials and the final accepted step size. The Soil2D form requests outer steps up to `max_dt` in adaptive mode. The timestep settings are ordinary HUME parameters/options, available in the inherited editor tabs.
+
+The Soil2D 3-D view uses `d3AspectRatio=False`, theta range 0..1, and the physical X/Y domain bounds. This normalizes the three ranges independently. Root-series refresh retains its existing chart when `MyChart` is unassigned, and includes valid roots on coordinate axes.
+
+Verification includes `AdaptiveWaterStepTest.dpr` (retries, aggregate balance, endpoint handling and outer rollback), the existing transport/MFP tests, and Soil2D's visual smoke check with raster input and chart/axis assertions.
+
+## Hourly per-root water influx
+
+Set `WriteRootWaterInflux=yes` to write a dedicated CSV. The option `RootWaterInfluxFile` defaults to `root_water_influx.csv`, relative to the model output directory. `RootInfluxOutputInterval` is a parameter in days, defaulting to `1/24` (one hour). Reporting starts at the simulation start time. The Soil2D test project enables this output.
+
+Each completed interval has one row per root, with `start_day`, `end_day`, `root_index` (unique one-based list position), `root_id` (input identifier), `x_cm`, `y_cm`, `mean_influx_cm3_cm_s`, `uptake_cm3` and `cumulative_uptake_cm3`. The mean influx is accumulated accepted uptake divided by the interval duration and root length. Uptake volumes use the layer depth as root length. Input identifiers need not be unique in raster files; use `root_index` to distinguish roots.
+
+Accepted solver-step influx is treated as constant over that step and split across reporting boundaries. This preserves integrated uptake without forcing the numerical solver to use hourly steps. Bins can span outer timesteps, and one outer timestep can produce several hourly bins. The final partial bin is written at the configured simulation end; an interrupted run retains only completed reporting intervals. Rejected solver trials contribute nothing, and rows are appended only after the whole outer interval succeeds.
+
+Initialization resets accumulators. The previous file is replaced on the first successful write of a new simulation, rather than each GUI initialization. Use distinct filenames for multiple water components or scenarios whose files must be retained. Root ordering/count and the reporting interval should remain fixed during a run; reinitialize after changing them.
+
+`Tests/RootInfluxOutputTest.dpr` checks multi-hour and fractional-hour steps, interval means, volume conservation, final partial output and rejected-interval rollback.
+
+## Diurnal potential water uptake
+
+`WaterUptakePattern=constant` retains the previous constant demand (component default). `WaterUptakePattern=diurnal16h` uses `WFlowFunctions.sinusf(hour)`, the curve selected by the `sinus_func` Boolean in `Water_flow_func`. Demand is zero outside 04:00..20:00 and peaks at noon. The fractional part of simulation time in days determines the hour; integer simulation times represent midnight.
+
+`PotentialWaterUptake` continues to specify the daily potential extraction in cm/day. Each substep uses the analytic mean of the legacy curve within that interval. The rounded legacy amplitude is normalized to an exact unit daily mean. Diurnal integration splits at hour boundaries even when adaptive stepping is disabled, and retries recompute the interval mean. This preserves the daily potential volume independently of timestep size and avoids applying a daytime rate through the night. Root sharing and MFP transport limits are unchanged: actual daily uptake may remain below the potential total. The hourly CSV therefore shows actual, transport-limited uptake.
+
+The Soil2D test project selects `diurnal16h`; choose `constant` in its Water options to return to the previous behavior. `DiurnalWaterUptakeTest.dpr` checks night/day transitions, midnight crossings, daily normalization and irregular and adaptive timesteps. `WFlowFunctions.pas` itself is unchanged.
+
+### Root density after Initialize / reset
+
+With `IniMethod=InpPar`, each initialization recalculates the root count from the current `ParMRLD` and domain dimensions, then regenerates the selected random or regular distribution. For roots spanning the full layer, soil volume is `Depth * dimensionX * dimensionY` and individual root length is `Depth`. Thus the requested count is `Trunc(ParMRLD * dimensionX * dimensionY)`; changing depth alone increases total root length and soil volume equally. Margin removal and regular placement can reduce the final count.
+
+With `IniMethod=XYFile` or `RasterDataFile`, the input file supplies the root count instead. Choosing `RootDistribution=random` changes placement but does not switch the count source to `ParMRLD`.
+
+### One-dimensional water uptake: TSubmodRoot1DH2O
+
+`USubModRoot1DH2O.pas` derives directly from `TSubmodRootBase` and is included in `Diffusion1D2D` with registration on the Simulation palette. It owns its hydraulic soil, MFP table and cylinder records. It contains no nitrate quantities or raster. `RootDistribution=single` uses one representative cylinder at `ParMRLD`; `lognormal` uses ten equal-volume classes at the 5%, 15%, ..., 95% quantiles of lognormal **root length density**, following the nitrate template. `ParCV` is the RLD coefficient of variation in percent. Midpoint values are rescaled to preserve the prescribed mean RLD exactly, so the discretized distribution's CV need not equal the continuous input CV exactly. Zero CV gives identical cylinders.
+
+Each class has outer radius `sqrt(1/(pi*RLD))`. Roots span `Depth`; `ContRad` specifies the represented circular domain, with area `pi*ContRad^2` and volume `Area*Depth`. The equivalent root count is `ParMRLD*Area` and need not be an integer in this statistical model. To represent exactly one physical root in single mode, set `ContRad=sqrt(1/(pi*ParMRLD))`.
+
+`WaterUptakeMode=fixed` shares `PotentialWaterUptake` (cm/day, converted to total domain volume using Area) equally per unit root length and caps each class at its radial MFP transport limit. `maximum` uses the MFP limit without a demand cap. Class deficits are not reassigned to wetter classes. `SoilTexture`, `TextureVersion` (RR/KA) and `SoilBulkDensity` use the same pedotransfer and Mualem conventions as the 2-D water model, with conductivity in cm/day. The existing `TMFP_table.get_sumku` and `MFP_IWmax` implement the transport limit; the same 0.1 to 10\^4.2 cm tension range is retained.
+
+`IntegrationInterval` is in **hours**, default **0.5**. `CalcRates` advances the complete governing model interval in steps no larger than this value, including a final partial step. Each step evaluates the quasi-steady radial transport limit from the current class mean water content, then reduces class storage. The classes are closed to external supply and exchange no water. This is a lumped cylinder storage model using the analytical MFP solution, not a discretized transient radial Richards solver. Root tissue volume is neglected consistently with the RLD-based cylinder approximation. Uptake is capped by available water above the larger of `MinTheta` and hydraulic residual water content.
+
+`ClassTheta_1..10` and `ClassInflux_1..10` report class water contents and interval-mean influxes in cm3/cm root/second; unused classes report zero. `ActualWaterUptake` is cm/day, `CumulativeWaterUptake` is cm, and `WaterBalanceError` is cm. As in the 2-D model, inherited `WAmount` stores water depth in cm. `Integrate` does not apply uptake a second time. Initialize again after changing geometry, distribution or initial conditions.
+
+`Tests/Root1DWaterTest.dpr` checks demand and transport limits, analytical MFP agreement, ten-class mean conservation, zero-CV equivalence, partial steps, storage bounds, invalid-step rollback, RR/KA initialization and reset.
+
+### Governing model run loop
+
+The Soil2DWater form delegates full runs to TMod.Run and active-scenario runs to TMod.RunActIni. These framework methods initialize submodels and manage variable/rate calculations, state integration and configured output files. The form reconstructs cumulative 2-D uptake from each root's SumWInflux after the run. TSubmodRootBase.Init initializes int_dt without overwriting GlobTime.c; the governing model's timestep remains authoritative, while water solvers retain their internal step controls.
+
+The Soil2DWater scenario uses a governing TimeStep of 1/48 day (0.020833333333333333), giving half-hour framework output. The 2-D solver retains adaptive internal steps with ini_dt=max_dt=0.001 day, MinWaterDt=1E-8 and MaxThetaChange=0.005. The 1-D cylinder IntegrationInterval remains 0.5 hours, and individual-root influx output remains approximately hourly. A global interval of 1E-5 day forces every solver and output cycle to run at that small interval even when the solver could safely take larger internal steps.
+
+Tests/WaterOuterStepTest.dpr compares both outer intervals over half an hour near midday using the scenario's 100 by 100 grid and 500 random roots. In a local Win32 test, solver steps fell from 2084 to 21 and transport runtime from about 10.8 seconds to 0.103 seconds. Total uptake and mean water content agreed to numerical precision; the maximum cell water-content difference was 8.50E-6 cm3/cm3. This is a short numerical comparison without framework/file-output overhead, not a full ten-day runtime or convergence guarantee. The framework also writes configured output and repaints its status bar each global cycle.
+
+### Diurnal demand in the 1-D water model
+
+`TSubmodRoot1DH2O.WaterUptakePattern` accepts `constant` (the backward-compatible default) or `diurnal16h`. With `WaterUptakeMode=fixed`, the latter applies the same normalized WFlowFunctions.sinusf curve as the 2-D water model: demand occurs between 04:00 and 20:00, with zero demand at night. Integer simulation days represent midnight. PotentialWaterUptake remains the daily extraction demand in cm/day; actual uptake may be smaller because of transport or storage limitations, and unmet demand is not carried forward.
+
+Internal intervals are additionally split at hour boundaries, and the curve is analytically averaged within each interval. This preserves the daily potential total for short, long or irregular governing timesteps and across midnight. The option applies to both single and ten-class distributions. Maximum uptake mode ignores the demand pattern and continues to use the transport limit at every time of day.
+
+To enable it for the comparison component, set `WaterUptakePattern=diurnal16h` and `WaterUptakeMode=fixed` under `[SubmodRoot1DH2O1]` in the scenario options. Rebuild the application and initialize the model after changing these options. Root1DWaterTest includes normalization, nighttime, midnight, irregular-step, ten-class and maximum-mode regressions.
+
+### Ground-area normalization and full cell volumes
+
+Both current water models expose WAmount \[cm\], PotentialWaterUptake and ActualWaterUptake \[cm/day\], CumulativeWaterUptake \[cm\] and WaterBalanceError \[cm\]. Domain area is dimensionX*dimensionY for 2-D and pi*ContRad\^2 for 1-D. Total physical volume divided by this area gives water depth. Total demand is PotentialWaterUptake*Area; total root length is ParMRLD*Volume for the statistical 1-D model and actual root count\*Depth for 2-D.
+
+The 2-D numerical field remains volumetric water content. Its local full-depth volume is available as CellWaterVolume\[x,y\] \[cm3\] = Theta_xy\[x,y\]*ColWidth*RowHeight\*LayerDepth. CellWaterAmount is the mean of these volumes. Raster LastWaterUptake, StorageChange and WaterBalanceError now use full-domain cm3; callers must not multiply them by Depth again. The legacy nitrate sweep explicitly converts the shared cell volume back to its existing unit-depth convention. Individual root influx and hourly root CSV volumes retain their physical units.
+
+Existing input values in cm3/day require division by domain area. The comparison scenario was migrated preserving its previous physical demands: Water 4000/10000 = 0.4 cm/day; SubmodRoot1DH2O1 4000/(pi\*10\^2) = 12.732395447351626 cm/day. Equal normalized demand between models requires choosing equal cm/day values explicitly. Other saved scenarios require the same conversion. WaterDepthUnitsTest checks area independence, full cell-volume accounting and agreement between the 1-D and 2-D models.
+
+### Selectable 1-D cylinder variables
+
+The TVar arrays ClassRLD, ClassTheta and ClassInflux are registered with the standard model output system as ClassRLD_1..10 \[cm/cm3\], ClassTheta_1..10 \[cm3/cm3\] and ClassInflux_1..10 \[cm3/cm root/s\]. Select these names in the component's variable output controls. Values are copied from FCylinders after initialization and each accepted outer integration interval. Influx is the mean over that interval. Single-cylinder mode uses class 1 and zeros classes 2..10, including after reinitializing from lognormal mode. Existing Theta and Influx output names are retained.
+
+### Optional gravity in the 2-D water model
+
+Set `TransportPlane=horizontal` (default) or `TransportPlane=vertical` on TSubmodRoot2DH2O. In vertical mode **Y increases downward**; the existing plots continue to show their numerical Y coordinates. The layer Depth remains the extrusion thickness used to calculate cell volume; dimensionY is the vertical extent of the simulated plane.
+
+The vertical flux is `qY = -D*dTheta/dY + Ku`, where Ku is in cm/day from the same TGenucht.Ku_b_f texture law as the diffusivity. SolveWaterDiffusionADI accepts an optional final AConductivity callback; nil means zero gravitational flux. Conductivity is evaluated at the beginning of each internal step and harmonically averaged at shared Y faces. The conservative source `(Ku_face_above - Ku_face_below)/gridHeight` enters each ADI sweep with half the timestep. Thus gravity contributes flux divergence, not an addition to the diffusion coefficient.
+
+By default all outer faces retain zero **total** flux. BottomBoundary=freeDrainage optionally opens the lower face as described below. The current adaptive rejection and water-content-change limits also apply to gravity steps. The explicit, lagged gravity contribution may require smaller steps; it is not an unconditionally stable nonlinear Richards solution. Root uptake, full-volume raster accounting and ground-area-normalized output units are unchanged.
+
+WaterGravityTest checks the default horizontal case, downward transport, closed-domain conservation, zero-conductivity barriers, a constant-coefficient zero-flux equilibrium, bounds rejection/rollback, a singleton grid and the texture-driven model option.
+
+### Optional bottom free drainage
+
+Use `TransportPlane=vertical` and `BottomBoundary=freeDrainage` for a unit-gradient lower boundary. The default `BottomBoundary=closed` preserves earlier behavior. Horizontal planes require a closed bottom. At the bottom face (largest Y), matric gradient is zero and outward flux is the bottom cell's Ku \[cm/day\]. The upper and lateral faces remain closed. Conductivity is frozen for each internal trial, just as for interior gravitational flux; adaptive bounds/change checks can reject and shorten the trial.
+
+SolveWaterDiffusionADI accepts the final boolean AFreeDrainage, default false. Free drainage requires a conductivity callback. The raster's LastDrainage reports total bottom outflow \[cm3\], accumulated over accepted internal steps. The submodel registers ActualDrainage \[cm/day\] and CumulativeDrainage \[cm\], normalized by the same domain ground area as other water outputs. Bottom-face area is NCols*ColWidth*LayerDepth; it is distinct from that normalization area. Drainage is separate from root uptake and from per-root CSV output.
+
+WaterBalanceError includes storage change plus root uptake plus drainage. Rejected outer intervals restore both field and drainage diagnostics. Initialization resets drainage totals. The Soil2DWater form includes cumulative drainage in its summary and water-balance check. Regression tests cover known conductivity outflow, volume and normalized accounting, zero conductivity, unchanged closed mode, rejection/rollback and the model option.
+
+### Voronoi root neighbourhoods
+
+`TSubmodRoot2D.CalculateRootVoronoi` constructs nearest-root polygons clipped to the full rectangular domain `[0,dimensionX] x [0,dimensionY]`. Initialization calls it after the final root list and margin removal are established. `VoronoiCells` follows `RootList` indexing and contains physical vertices \[cm\], cell area \[cm2\], and equivalent radius `sqrt(area/pi)` \[cm\]. It does not replace the legacy root `area` field or change transport and uptake calculations. Call it again after manually changing roots or domain parameters.
+
+Registered outputs `VoronoiRadiusMean`, `VoronoiRadiusSD` and `VoronoiRadiusCV` describe roots whose centres fall inside the observation window, using the existing inclusive margin convention. All retained roots compete for area, including margin roots. Cells are not clipped to the observation window. SD is the population SD (division by N), and CV is SD/mean as a fraction; multiply by 100 for percent. Empty observation windows return zero outputs. Boundary cells can bias comparisons with an infinite hexagonal lattice; retain surrounding roots and exclude boundary centres with margins to reduce this effect. If `WithMargins` removes surrounding roots, they cannot contribute to the tessellation.
+
+The construction uses half-plane clipping, handles collinear roots and regular layouts, and costs O(N squared) pair comparisons. It avoids the documented collinearity and intersection failures of the legacy `voro.pas`. Exact duplicate coordinates receive identical geometric polygons but divide their common area equally among those roots; these are a shared-site convention rather than distinct geometric cells. Nonfinite or out-of-domain coordinates raise an exception. The cells use rectangular boundaries even if a descendant uses a circular container mask.
+
+The 1-D `ParCV` specifies **RLD** variation in percent, whereas `VoronoiRadiusCV` measures **radius** variation. They should not be equated directly. Local RLD corresponding to a cell is `1/area` when each root spans the same extrusion depth. The ten 1-D classes are equal-volume classes, while these statistics weight each root equally. Matching those models requires matching both the transformed quantity and its weighting. No conversion to `ParCV` is performed automatically.
+
+`Tests/RootVoronoiTest.dpr` checks singleton, unequal bisector, collinear, duplicate and symmetric corner cases, random area conservation and invalid coordinates. Generated documentation was not rebuilt.
+
+`VoronoiRLDCV` additionally reports population SD/mean of local RLD `1/area = 1/(pi*EquivalentRadius^2)`, with the same equal-per-root weighting and central-root selection as the radius statistics. The Roots panel displays it in percent. It is calculated by transforming each cell, rather than converting radius CV alone, which does not uniquely determine RLD CV. A nonpositive selected cell area raises an exception because its local RLD is undefined. Empty windows and singleton populations return zero CV. The 1-D equal-volume class weighting still differs from this equal-per-root diagnostic.
+
+### Persistent random root geometry
+
+`TSubmodRoot2D` retains one random root realization across repeated `Init` calls while `RootDistribution` remains unchanged. Hydraulic initialization, resets and comparisons therefore retain the same root positions and Voronoi CV values. Switching to another distribution and back to `random` starts a new realization. Positions are cached in normalized domain coordinates before margin removal. Domain changes scale that same realization; density changes use a shorter or longer prefix of its retained seeded sequence. Increasing the count extends the sequence deterministically without advancing the global random generator. Restoring geometry, density or margin settings restores the corresponding realization. File-based `fromsource` inputs continue to be read during initialization.
+
+Initialization still reconstructs root objects, updates indices, applies margin removal and rebuilds Voronoi diagnostics for the final geometry. This preserves hydraulic state initialization and allows changed geometric parameters to take effect. In the Soil2DWater form, editing options through the inherited options grid reinitializes the models and immediately refreshes the Roots panel, including polygons and radius/RLD CV. Water accounting is reset against the newly initialized field. `Tests/RootRandomPersistenceTest.dpr` checks position and CV persistence, global RNG preservation, density/domain changes, margin restoration and a fresh realization after switching distributions.
+
+Selecting `RootDistribution=FromSource` while `IniMethod=InpPar` now selects `IniMethod=XYFile` and reads `RootInpDataFile` rather than silently reverting to a regular lattice. Existing `RasterDataFile` and `SubmodStruct` methods remain selected when applicable. Initialization builds Voronoi cells and radius/RLD statistics after loading roots and applying the configured margins. Missing or invalid input raises an error instead of substituting generated roots.
+
+XY-file imports now validate each row before replacing the root collection. The first line is a header; subsequent nonblank rows contain whitespace-separated x, y, integer root ID and positive area in the last column. Both dot and comma decimal separators are accepted. Invalid numeric fields, incomplete rows, out-of-domain coordinates and file-access failures raise `ERootInputError` with the filename and row context where applicable. Failed imports retain the previous collection rather than partial new roots. Voronoi analysis runs only after successful initialization. Soil2DWater catches these input errors during startup, displays the actionable message and leaves the form available to correct the input options and initialize/reset. `RootXYInputTest` verifies decimal formats, row/field messages and failed-import rollback.
+
+## Root input file selection
+
+Set `IniMethod` to `File` and use **Browse...** beside `RootInpDataFile` in the model editor's Options grid. The dialog starts at the current file's directory and accepts `.grid` raster-count files or `.xy` coordinate files. Selecting a file saves the option through the normal option-saving flow; cancelling preserves it. The extension selects the reader, including when the legacy `XYFile` or `RasterDataFile` initialization modes are used. Parameter and structural initialization remain available.
+
+The predefined input filenames now use `Q:\Soil2D\InpData`. There is one visible filename option. The legacy `RootInpDataFileXY` INI key is imported if `RootInpDataFile` is absent, or if an old `XYFile` configuration still has a `.txt` raster filename in that key. An existing `.grid` or `.xy` unified filename takes precedence. Old built-in `.txt` paths are translated to the new directory and extensions. `RootInpDataFileXY` remains a Pascal field alias for source compatibility.
+
+`TOption.IsFileInput` enables the Browse button for any option; `FileFilter` controls the dialog filter. These fields default to false and empty for other options.
+
+### Automatic domain after root-file import
+
+File initialization reads the roots before checking the old domain bounds. The new physical extent is `max(x) - min(x) + 2 * verticMargin` by `max(y) - min(y) + 2 * horizMargin`, following the existing convention that vertical boundary strips pad X and horizontal boundary strips pad Y. Coordinates are translated by the lower padded bounds into the solver's zero-based domain; pairwise root distances and identifiers remain unchanged. Negative coordinates and coordinates outside the previous domain are valid file inputs. An axis with no coordinate spread receives at least one `gridWidth` of observation width, plus its margins.
+
+`dim_x` and `dim_y` are the ceilings of the corresponding extent divided by `gridWidth`. Both axes use that requested resolution (`gridHeight` is set to `gridWidth`); actual computational cell sizes are extent/count so the outer boundary matches the fitted domain. File roots select `RootDistribution=FromSource` and are not replaced by a generated regular/random distribution. Parameter and structural initialization retain their existing domain behavior.
+
+The raster and active root indices are rebuilt before bounded Voronoi cells and statistics are recalculated. Soil2DWater's option-saving override updates the root table, polygon chart, water views, and parameter grid for both Browse and ordinary cell edits. Loading a different filename selects the Roots tab. The recalculated dimensions are model parameter values; Save Parameters persists them through the existing parameter-saving flow.
+
+### RLD moments for the 1-D water PDF comparison
+
+The 1-D water model represents ten equal soil-volume classes, so its input distribution must be weighted by soil volume, rather than equally per root. With a uniform root length through the layer, local density is `L_i = 1 / A_i`, and the corresponding volume fraction is `w_i = A_i / sum(A_i)`. All bounded Voronoi cells are included, including the boundary strips:
+
+- `VoronoiAreaMeanRLD = sum(w_i * L_i) = N / sum(A_i)` \[cm/cm3\].
+- `VoronoiAreaRLDCV = sqrt(sum(w_i * (L_i - mean)^2)) / mean` \[fraction\].
+
+The root count and total represented area are therefore conserved. Heterogeneity is carried by the CV; it is not a correction that increases the mean density. The existing `VoronoiRLDCV` remains the different statistic that weights each central root equally. Radius CV is also not interchangeable with RLD CV.
+
+Soil2DWater displays the PDF mean and CV on Root locations, along with each root's local RLD. Its `SubmodRoot1DH2O1.RootGeometrySource` points to the 2-D water model. After normal INI loading on every initialization, this link sets `ParMRLD` to `VoronoiAreaMeanRLD`, sets `ParCV` to `100 * VoronoiAreaRLDCV`, and preserves the INI-selected `RootDistribution`. Select `single` for one representative cylinder at the linked mean RLD, or `lognormal` for ten classes using the linked CV. The geometry source must precede the PDF model in the model's initialization order (CompIndex 0 and 1 in Soil2DWater). With no source assigned, the 1-D model keeps its independent parameter and option behavior. Parameter files are not automatically overwritten by the link; Save Parameters can persist the current derived values.
+
+The PDF uses `sigma = sqrt(ln(1 + (ParCV/100)^2))`. Ten midpoint quantiles approximate that parent lognormal distribution, and the class densities are normalized to conserve the specified mean exactly. The discrete ten-class CV generally differs from the parent PDF CV; fitting two moments also does not reproduce every feature of the empirical Voronoi distribution. The link adjusts density statistics only: hydraulic inputs, depth, boundary conditions and uptake demand must still be set consistently for a controlled comparison.
+
+## Root output filenames and time-series consistency
+
+The Options grid provides **Browse...** for RootXYOutpDataFile, RootWaterInfluxFile and RootSinkOutpDataFile. Output options use a Save dialog so a new filename can be chosen. Existing files trigger an overwrite prompt; selecting a filename only saves the option, and cancelling leaves it unchanged. Input options continue to require an existing file.
+
+RootXYOutpDataFile controls the legacy OutputXY geometry snapshot (root ID, position and area), not influx history. Initialization clears this file when OutputXY=yes, and nitrate calculations replace the snapshot. RootWaterInfluxFile controls the water CSV enabled by WriteRootWaterInflux; relative water filenames resolve against the model output directory. RootSinkOutpDataFile controls the nitrate output enabled by OutputSink; this legacy path is used directly.
+
+Water output already integrates accepted internal steps into RootInfluxOutputInterval reporting windows, recording mean influx, interval uptake and cumulative uptake, including the final partial window. Nitrate output appends observation-window roots once per outer calculation and records the last internal step's NInflux, rather than an interval mean. Its text blocks and time labels therefore cannot be interpreted as equivalent to the water CSV.
+
+A consistent future writer can share reporting windows, start/end times, stable root IDs, positions, explicit units, interval amounts and cumulative amounts while keeping water and nitrate files separate. Nitrate must accumulate accepted per-root uptake over every internal step and split reporting boundaries, with validated conversion between molar influx, nitrogen mass and root length. It must use the same root inclusion policy and file lifecycle as water. Regression checks should cover variable internal and outer timesteps, final partial windows, conservation of integrated uptake, repeated initialization and failed-step behavior. This requires a numerical output change; the filename picker change leaves the existing calculations and file formats intact.
+
+## Regular arrangement of imported roots
+
+With file initialization, RootDistribution=Regular now retains the input root count and the domain fitted from the file. TSubmodRoot2D places the imported roots in centered regular rows within the observation area (excluding the configured margin strips). Row populations differ by at most one root; arbitrary counts therefore remain possible without dropping roots at the boundary. Root IDs remain unchanged. Repeated initialization reloads the file and reproduces the arrangement. FromSource continues to retain the imported positions.
+
+After file initialization, ParMRLD is updated in memory to RLD_mean: the number of observation-window roots divided by the observation area, in cm of root per cubic cm of soil. This is equivalent to root length divided by volume for the model's equal-depth roots. The source file still determines root count on subsequent initialization. The shared base implementation applies to water and nitrate descendants. Parameter-only initialization retains its existing distribution behavior. RootInputDomainTest covers count preservation, regular spacing, margins, IDs, repeatability and the density update. Generated documentation is not rebuilt.

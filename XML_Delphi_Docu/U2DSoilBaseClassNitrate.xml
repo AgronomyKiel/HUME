@@ -13,6 +13,8 @@
       <methodref name="Init" visibility="public" procflags="override">
       </methodref>
       <ancestor name="TSubmodel" namespace="UMod">
+        <methodref name="RecordEntityProvenance" visibility="private">
+        </methodref>
         <methodref name="RegistrateParameter" visibility="private" procflags="virtual">
         </methodref>
         <methodref name="RegistrateOption" visibility="private" procflags="virtual">
@@ -70,6 +72,8 @@
         <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
         </methodref>
         <methodref name="UpdateValue" visibility="protected">
+        </methodref>
+        <methodref name="SetEntityDeclarationClass" visibility="protected">
         </methodref>
         <methodref name="Paint" visibility="protected" procflags="override">
         </methodref>
@@ -147,6 +151,8 @@
         </propertyref>
         <methodref name="DblClick" visibility="public" procflags="override">
         </methodref>
+        <propertyref name="CalcTimeTicks" visibility="public">
+        </propertyref>
         <propertyref name="SM_GlobMod" visibility="published">
         </propertyref>
         <propertyref name="SM_ExternVStrList" visibility="published">
@@ -1210,7 +1216,101 @@
       </ancestor>
     </ancestor>
     <members>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="U2DSoilBaseClassNitrate.pas" line="29">
+      <field name="NUptakeratepot" type="TPar" visibility="public" size="4" offset="744" file="U2DSoilBaseClassNitrate.pas" line="29">
+        <devnotes>
+           <summary>Protected declarations, also accessible by derived classes</summary>
+           <summary> Potential N uptake rate [Kg N/ha*d]</summary>
+        </devnotes>
+      </field>
+      <field name="NMinerRate_kgNha" type="TPar" visibility="public" size="4" offset="748" file="U2DSoilBaseClassNitrate.pas" line="32">
+        <devnotes>
+           <summary>Mineralization rate [kg N/ha*d]</summary>
+        </devnotes>
+      </field>
+      <field name="Clmin" type="TPar" visibility="public" size="4" offset="752" file="U2DSoilBaseClassNitrate.pas" line="35">
+        <devnotes>
+           <summary>Minimum soil solution concentration [g N/l], also needed for the numerical solution in the 1D model; note: originally in micromol/l</summary>
+        </devnotes>
+      </field>
+      <field name="Km" type="TPar" visibility="public" size="4" offset="756" file="U2DSoilBaseClassNitrate.pas" line="38">
+        <devnotes>
+           <summary>Michaelis-Menten constant [mol/cm3]</summary>
+        </devnotes>
+      </field>
+      <field name="IniSoilNitrate" type="TPar" visibility="public" size="4" offset="760" file="U2DSoilBaseClassNitrate.pas" line="43">
+        <devnotes>
+           <summary>
+             initial soil nitrate [kg N/ha]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="NAmount" type="TState" visibility="public" size="4" offset="764" file="U2DSoilBaseClassNitrate.pas" line="47">
+        <devnotes>
+           <summary>Member HUME base class TState (state variables)</summary>
+           <summary>N amount [kg N/ha], also basis for calculating concentrations in the calculation elements; see Kage dissertation p.79 where concentrations of 10.0 micromol/l were assumed</summary>
+        </devnotes>
+      </field>
+      <field name="SumNUptake" type="TState" visibility="public" size="4" offset="768" file="U2DSoilBaseClassNitrate.pas" line="50">
+        <devnotes>
+           <summary>Cumulative amount of N taken up by the roots [kg N/ha] for the specified depth</summary>
+        </devnotes>
+      </field>
+      <field name="Min_S" type="TVar" visibility="public" size="4" offset="772" file="U2DSoilBaseClassNitrate.pas" line="53">
+        <devnotes>
+           <summary>Mineralization rate [Mol/cm^3*d]</summary>
+        </devnotes>
+      </field>
+      <field name="c_start" type="TVar" visibility="public" size="4" offset="776" file="U2DSoilBaseClassNitrate.pas" line="56">
+        <devnotes>
+           <summary>Initial concentration [kg N/cm], calculated from the initial N amount; the 1D model can also calculate concentrations</summary>
+        </devnotes>
+      </field>
+      <field name="cl_av" type="TVar" visibility="public" size="4" offset="780" file="U2DSoilBaseClassNitrate.pas" line="59">
+        <devnotes>
+           <summary>Average concentration in the soil solution [kg N/cm]</summary>
+        </devnotes>
+      </field>
+      <field name="c_av" type="TVar" visibility="public" size="4" offset="784" file="U2DSoilBaseClassNitrate.pas" line="64">
+        <devnotes>
+           <summary>
+           average Concentration [mol/cm3]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="Imax" type="TVar" visibility="public" size="4" offset="788" file="U2DSoilBaseClassNitrate.pas" line="67">
+        <devnotes>
+           <summary>maximum influx [g N/cm*d]</summary>
+        </devnotes>
+      </field>
+      <field name="ActArFromConc" type="TVar" visibility="public" size="4" offset="792" file="U2DSoilBaseClassNitrate.pas" line="69" />
+      <field name="ActAr" type="TVar" visibility="public" size="4" offset="796" file="U2DSoilBaseClassNitrate.pas" line="71" />
+      <field name="PotentialNInfluxrate" type="TVar" visibility="public" size="4" offset="800" file="U2DSoilBaseClassNitrate.pas" line="76">
+        <devnotes>
+           <summary>
+             Potential N Influx rate [mol/cm/d]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="De" type="TVar" visibility="public" size="4" offset="804" file="U2DSoilBaseClassNitrate.pas" line="81">
+        <devnotes>
+           <summary>
+             effective Diffusion coefficient [cm2/d]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="Dl" type="TVar" visibility="public" size="4" offset="808" file="U2DSoilBaseClassNitrate.pas" line="86">
+        <devnotes>
+           <summary>
+             Diffusion coefficient of nitrate in water [cm2/d]
+           </summary>
+        </devnotes>
+      </field>
+      <field name="NitrateUptakeFunction" type="TOption" visibility="public" size="4" offset="812" file="U2DSoilBaseClassNitrate.pas" line="89">
+        <devnotes>
+           <summary>Type of uptake calculation</summary>
+        </devnotes>
+      </field>
+      <procedure name="CreateAll" visibility="public" procflags="override" file="U2DSoilBaseClassNitrate.pas" line="92">
         <devnotes>
            <summary>Implementierung TSubmodRootDiff</summary>
            <summary>
@@ -1223,7 +1323,7 @@
            </summary>
         </devnotes>
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="U2DSoilBaseClassNitrate.pas" line="32">
+      <procedure name="Init" visibility="public" procflags="override" file="U2DSoilBaseClassNitrate.pas" line="95">
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>

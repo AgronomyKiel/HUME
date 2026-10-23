@@ -16,7 +16,7 @@
      environmental conditions.
      </remarks>
   </devnotes>
-  <class name="TGrowthCurvePlantRoots" file="UGrowthCurvePlantRoots.pas" line="32">
+  <class name="TGrowthCurvePlantRoots" file="UGrowthCurvePlantRoots.pas" line="33">
     <devnotes>
        <summary> TGrowthCurvePlantRoots extends TGrowthCurvePlant to model root growth dynamics. </summary>
     </devnotes>
@@ -35,6 +35,9 @@
       <methodref name="CreateAll" visibility="public" procflags="override" />
       <methodref name="Init" visibility="public" procflags="override">
       </methodref>
+      <propertyref name="Par_FFineRoot0" visibility="published" />
+      <propertyref name="Par_FFineRootDec" visibility="published" />
+      <propertyref name="Var_FFineRoot" visibility="published" />
       <propertyref name="withNUptake" visibility="published" />
       <propertyref name="Ex_Temp" visibility="published" />
       <propertyref name="Par_LAImax" visibility="published" />
@@ -90,6 +93,9 @@
         </methodref>
         <methodref name="Init" visibility="public" procflags="override">
         </methodref>
+        <propertyref name="WldMomentsAddress" visibility="public">
+        </propertyref>
+        <propertyref name="EffWldMomentsAddress" visibility="public" />
         <propertyref name="ExtCoeffPAR" visibility="public">
         </propertyref>
         <propertyref name="ExtCoeffGlobRad" visibility="public">
@@ -1342,19 +1348,46 @@
       </ancestor>
     </ancestor>
     <members>
-      <function name="WLD_z_t_f" visibility="private" file="UGrowthCurvePlantRoots.pas" line="36">
+      <field name="fRootedSoilWaterModel" type="TSoilWaterModelR" visibility="private" size="4" offset="641224" file="UGrowthCurvePlantRoots.pas" line="36" />
+      <function name="WLD_z_t_f" visibility="private" file="UGrowthCurvePlantRoots.pas" line="38">
         <parameters>
           <parameter name="z1" type="Double" />
           <parameter name="z2" type="Double" />
-          <parameter name="t" type="Double" />
-          <parameter name="SRLmax" type="Double" />
-          <parameter name="SRL0" type="Double" />
-          <parameter name="kL" type="Double" />
-          <parameter name="ka" type="Double" />
+          <parameter name="TotalRootLength" type="Double" />
           <retval type="Double" />
         </parameters>
       </function>
-      <function name="GetWLD" visibility="protected" procflags="override" file="UGrowthCurvePlantRoots.pas" line="40">
+      <procedure name="ResetRoots" visibility="private" file="UGrowthCurvePlantRoots.pas" line="39">
+      </procedure>
+      <procedure name="CalculateRootLengthDensityMoments" visibility="private" file="UGrowthCurvePlantRoots.pas" line="40">
+      </procedure>
+      <procedure name="SetRootedSoilWaterModel" visibility="private" file="UGrowthCurvePlantRoots.pas" line="41">
+        <parameters>
+          <parameter name="Value" type="TSoilWaterModelR" paramflags="const" />
+        </parameters>
+      </procedure>
+      <function name="GetWldMomentsAddress" visibility="protected" procflags="override" file="UGrowthCurvePlantRoots.pas" line="43">
+        <devnotes>
+           <summary>Use full layer thickness, including the unrooted part of a partial layer.</summary>
+        </devnotes>
+        <parameters>
+          <retval type="PRootLengthDensityMomentMatrix">
+            <devnotes>
+               <summary>Typed link to a root length density moment matrix.</summary>
+            </devnotes>
+          </retval>
+        </parameters>
+      </function>
+      <function name="GetEffWldMomentsAddress" visibility="protected" procflags="override" file="UGrowthCurvePlantRoots.pas" line="44">
+        <parameters>
+          <retval type="PRootLengthDensityMomentMatrix">
+            <devnotes>
+               <summary>Typed link to a root length density moment matrix.</summary>
+            </devnotes>
+          </retval>
+        </parameters>
+      </function>
+      <function name="GetWLD" visibility="protected" procflags="override" file="UGrowthCurvePlantRoots.pas" line="46">
         <parameters>
           <parameter name="Index" type="Integer" />
           <retval type="THumeNumEntity">
@@ -1365,7 +1398,7 @@
           </retval>
         </parameters>
       </function>
-      <function name="GetSumRootLength" visibility="protected" procflags="override" file="UGrowthCurvePlantRoots.pas" line="42">
+      <function name="GetSumRootLength" visibility="protected" procflags="override" file="UGrowthCurvePlantRoots.pas" line="48">
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
@@ -1375,7 +1408,7 @@
           </retval>
         </parameters>
       </function>
-      <function name="GetSumRootLength_eff" visibility="protected" procflags="override" file="UGrowthCurvePlantRoots.pas" line="43">
+      <function name="GetSumRootLength_eff" visibility="protected" procflags="override" file="UGrowthCurvePlantRoots.pas" line="49">
         <parameters>
           <retval type="THumeNumEntity">
             <devnotes>
@@ -1506,20 +1539,27 @@
       <field name="depthgrowthchoice" type="TRootingdepthIncrease" visibility="public" size="1" offset="842336" file="UGrowthCurvePlantRoots.pas" line="110" />
       <procedure name="CreateAll" visibility="public" procflags="override" file="UGrowthCurvePlantRoots.pas" line="112">
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="UGrowthCurvePlantRoots.pas" line="114">
+      <procedure name="Init" visibility="public" procflags="override" file="UGrowthCurvePlantRoots.pas" line="130">
+        <devnotes>
+           <summary>Use the inherited WithRoots option; Init synchronizes the runtime flag.</summary>
+        </devnotes>
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="UGrowthCurvePlantRoots.pas" line="116">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="UGrowthCurvePlantRoots.pas" line="132">
       </procedure>
-      <property name="Par_zr0" visibility="published" read="zr_0" write="zr_0" type="TPar" file="UGrowthCurvePlantRoots.pas" line="120" />
-      <property name="Par_zrmax" visibility="published" read="zr_max" write="zr_max" type="TPar" file="UGrowthCurvePlantRoots.pas" line="121" />
-      <property name="Par_kz" visibility="published" read="k_z" write="k_z" type="TPar" file="UGrowthCurvePlantRoots.pas" line="122" />
-      <property name="Par_Wl0" visibility="published" read="WL_0" write="WL_0" type="TPar" file="UGrowthCurvePlantRoots.pas" line="124" />
-      <property name="Par_Wlmax" visibility="published" read="WL_max" write="WL_max" type="TPar" file="UGrowthCurvePlantRoots.pas" line="125" />
-      <property name="Par_kWL" visibility="published" read="k_Wl" write="k_Wl" type="TPar" file="UGrowthCurvePlantRoots.pas" line="126" />
-      <property name="Par_ActiveDuration" visibility="published" read="ActiveDuration" write="ActiveDuration" type="TPar" file="UGrowthCurvePlantRoots.pas" line="127" />
+      <property name="RootedSoilWaterModel" visibility="published" read="fRootedSoilWaterModel" write="SetRootedSoilWaterModel" type="TSoilWaterModelR" file="UGrowthCurvePlantRoots.pas" line="136" />
+      <property name="Par_sp_RL" visibility="published" read="sp_RL" write="sp_RL" type="TPar" file="UGrowthCurvePlantRoots.pas" line="138" />
+      <property name="Par_VK_lrv_int" visibility="published" read="VK_lrv_int" write="VK_lrv_int" type="TPar" file="UGrowthCurvePlantRoots.pas" line="139" />
+      <property name="Par_VK_lrv_slope" visibility="published" read="VK_lrv_slope" write="VK_lrv_slope" type="TPar" file="UGrowthCurvePlantRoots.pas" line="140" />
+      <property name="Par_zr0" visibility="published" read="zr_0" write="zr_0" type="TPar" file="UGrowthCurvePlantRoots.pas" line="141" />
+      <property name="Par_zrmax" visibility="published" read="zr_max" write="zr_max" type="TPar" file="UGrowthCurvePlantRoots.pas" line="142" />
+      <property name="Par_kz" visibility="published" read="k_z" write="k_z" type="TPar" file="UGrowthCurvePlantRoots.pas" line="143" />
+      <property name="Par_Wl0" visibility="published" read="WL_0" write="WL_0" type="TPar" file="UGrowthCurvePlantRoots.pas" line="145" />
+      <property name="Par_Wlmax" visibility="published" read="WL_max" write="WL_max" type="TPar" file="UGrowthCurvePlantRoots.pas" line="146" />
+      <property name="Par_kWL" visibility="published" read="k_Wl" write="k_Wl" type="TPar" file="UGrowthCurvePlantRoots.pas" line="147" />
+      <property name="Par_ActiveDuration" visibility="published" read="ActiveDuration" write="ActiveDuration" type="TPar" file="UGrowthCurvePlantRoots.pas" line="148" />
     </members>
   </class>
   <procedure name="Register" visibility="public" file="UGrowthCurvePlantRoots.pas" line="348">

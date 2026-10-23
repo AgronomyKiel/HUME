@@ -313,6 +313,7 @@ type
     procedure ToggleSwitchStateContOutputClick(Sender: TObject);
     procedure ToggleSwitchExternContOutputClick(Sender: TObject);
     procedure EditOutputDirectoryChange(Sender: TObject);
+    procedure EditOutputDirectoryExit(Sender: TObject);
     procedure EditControlFileChange(Sender: TObject);
     procedure SpeedButtonRunActIniClick(Sender: TObject);
   private
@@ -324,6 +325,8 @@ type
 
     img_help, img_savetoall: TBitmap;
     EXE_PATH: string;
+    FOutputDirectoryEdited: Boolean;
+    procedure ApplyOutputDirectory(const Directory: string; Persist: Boolean);
     function getLinkedModel(): TMod;
     procedure testSubModIndex(n: Integer);
     procedure updatePropIniFile(strList: TStringList; submodname: string);
@@ -341,7 +344,7 @@ type
     procedure UpdateStringGridExternV;
     procedure SaveParams;
     procedure SaveState;
-    procedure SaveOptions;
+    procedure SaveOptions; virtual;
     // procedure SaveExterns;
     procedure ChangeStateIniFile;
   end;
@@ -804,7 +807,7 @@ begin
 
       EditOptionsFileName.Text := LMod.fModel.OptionIniFile.FileName;
       Clear;
-      Rows[0].commatext := 'Name, Options, SaveToAllIni, Info, DocuLink';
+      Rows[0].commatext := 'Name, Options, SaveToAllIni, Info, DocuLink, Browse';
       RowCount := 2;
       FixedRows := 1;
       actSubModIndex := ComboBoxSubMod.ItemIndex;
@@ -835,6 +838,8 @@ begin
           // line := line + ',' + Option.Option;
           // Rows[i + 1].commatext := line;
           AddBitButton(2, i + 1, 20, 20, '', img_savetoall, haCenter, vaCenter);
+          if Option.IsFileInput or Option.IsFileOutput then
+            AddButton(5, i + 1, 70, 20, 'Browse...', haCenter, vaCenter);
           if Option.Comment <> '' then
             AddBitButton(3, i + 1, 20, 20, '', img_help, haCenter, vaCenter);
 
@@ -1168,76 +1173,71 @@ begin
     FreeAndNil(DataFileMeas);
 end;
 
+/// <summary>Display measurement data using the same CSV and legacy text
+/// parsing as the model, without changing the model reader's position.</summary>
 procedure TFormMod.UpdateStringGridData;
-
 var
-  i, actSubModIndex: Integer;
+  i, col, actSubModIndex: Integer;
   SubModel: TSubModel;
-  filedata, linedata: TStringList;
-
+  DataFile: TTextFileH;
+  DataDate: Double;
+  SavedCursor: TCursor;
 begin
-  Screen.cursor := CrHourGlass;
+  SavedCursor := Screen.Cursor;
+  Screen.Cursor := CrHourGlass;
   AdvStringGridData.BeginUpdate;
-  AdvStringGridData.Clear;
-  AdvStringGridData.ColCount := 3;
-  AdvStringGridData.RowCount := 3;
+  try
+    AdvStringGridData.Clear;
+    AdvStringGridData.ColCount := 3;
+    AdvStringGridData.RowCount := 3;
+    AdvStringGridData.FixedRows := 2;
+    AdvStringGridData.FixedCols := 0;
+    EditDataFileName.Text := '';
+    EditDataFileName.Hint := '';
 
-  actSubModIndex := ComboBoxSubMod.ItemIndex;
-  if actSubModIndex <> -1 then
-  begin
-
-    SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
-
-    if SubModel.SomethingMeasured then
+    actSubModIndex := ComboBoxSubMod.ItemIndex;
+    if actSubModIndex <> -1 then
     begin
-      filedata := TStringList.create;
-      try
-        filedata.loadfromfile(SubModel.FMeasValues.FName);
-        AdvStringGridData.RowCount := math.Max(filedata.count,
-          AdvStringGridData.FixedRows + 1);
-        linedata := TStringList.create;
+      SubModel := TSubModel(LMod.fModel.SubModStrList.Objects[actSubModIndex]);
+      if SubModel.SomethingMeasured then
+      begin
+        DataFile := TTextFileH.Create;
         try
-          linedata.Delimiter := #32;
-          // space, multiple spaces are treated as one delimiter
-          for i := 0 to filedata.count - 1 do
+          DataFile.Init(SubModel.FMeasValues.FName);
+          AdvStringGridData.RowCount := Max(DataFile.n_Line + 2, 3);
+          AdvStringGridData.ColCount := Max(DataFile.FirstLine.Count, 3);
+          for col := 0 to DataFile.FirstLine.Count - 1 do
           begin
-            linedata.DelimitedText := filedata[i];
-            if AdvStringGridData.ColCount < linedata.count then
-              AdvStringGridData.ColCount := linedata.count;
-            AdvStringGridData.Rows[i].Assign(linedata);
+            AdvStringGridData.Cells[col, 0] := DataFile.FirstLine[col];
+            AdvStringGridData.Cells[col, 1] := DataFile.UnitLine[col];
+          end;
+          DataFile.GoTop;
+          for i := 2 to DataFile.n_Line + 1 do
+          begin
+            DataFile.FastNextLine;
+            if AdvStringGridData.ColCount < DataFile.ActLine.Count then
+              AdvStringGridData.ColCount := DataFile.ActLine.Count;
+            AdvStringGridData.Rows[i].Assign(DataFile.ActLine);
+            if CheckBoxDataDateFormat.Checked then
+            begin
+              DataDate := DataFile.getIndexValue(0);
+              if not IsNan(DataDate) then
+                AdvStringGridData.Cells[0, i] := DateTimeToStr(DataDate);
+            end;
           end;
         finally
-          linedata.Free;
+          DataFile.Free;
         end;
-      finally
-        filedata.Free;
+        EditDataFileName.Text := SubModel.FMeasValues.FName;
+        EditDataFileName.Hint := SubModel.FMeasValues.FName;
       end;
-      AdvStringGridData.FixedRows := 2;
-      AdvStringGridData.FixedCols := 0;
-
-      EditDataFileName.Text := SubModel.FMeasValues.FName;
-      EditDataFileName.hint := SubModel.FMeasValues.FName;
-
-      // LoadFromCSV(SubModel.FMeasValues.FileName);
-      // w�re wesentlich einfacher, geht aber nicht,
-      // weil die Daten mit beliebig vielen Leerzeichen getrennt sind
-
-      if CheckBoxDataDateFormat.Checked then
-        for i := 1 to AdvStringGridData.RowCount - 1 do
-          AdvStringGridData.cells[0, i + 1] :=
-            datetimetostr(strtofloat(AdvStringGridData.cells[0, i + 1]));
-    end
-    else
-    begin
-      EditDataFileName.Text := '';
-      EditDataFileName.hint := '';
+      AdvStringGridData.AutoSizeColumns(True);
     end;
-    AdvStringGridData.AutoSizeColumns(True);
+  finally
+    AdvStringGridData.EndUpdate;
+    Screen.Cursor := SavedCursor;
   end;
-  AdvStringGridData.Endupdate;
-  Screen.cursor := CrDefault;
-  AdvStringGridData.visible := True;
-  // AdvStringGridData.Show;
+  AdvStringGridData.Visible := True;
 end;
 
 procedure TFormMod.UpdatePageIntegration;
@@ -1987,41 +1987,63 @@ var
   actIniFile, ActOptionIniFile: TMyIniFile;
   actSubModIndex, index, i: Integer;
   SubModel: TSubModel;
-  // Model: TMod;
   ActOption: TOption;
   OptionIniFileFN: string;
+  FileDialog: TOpenDialog;
 begin
-  // Model := getLinkedModel();
+  if (aRow < 1) or (aRow >= AdvStringGridOptions.RowCount) then Exit;
   actSubModIndex := ComboBoxSubMod.ItemIndex;
-  testSubModIndex(actSubModIndex);
+  if actSubModIndex < 0 then Exit;
   SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
   index := SubModel.OptionStrList.indexOf(AdvStringGridOptions.cells[0, aRow]);
-  if index >= 0 then
+  if index < 0 then Exit;
+  ActOption := TOption(SubModel.OptionStrList.objects[index]);
+  if (aCol = 5) and (ActOption.IsFileInput or ActOption.IsFileOutput) then
   begin
-    ActOption := TOption(SubModel.OptionStrList.objects[index]);
-    if ActOption.writeToIniFile then
-    begin
-      for i := 0 to LMod.fModel.FIniFiles.count - 1 do
+    if ActOption.IsFileOutput then
+      FileDialog := TSaveDialog.Create(Self)
+    else
+      FileDialog := TOpenDialog.Create(Self);
+    try
+      FileDialog.Title := 'Select ' + ActOption.Name;
+      FileDialog.Filter := ActOption.FileFilter;
+      if FileDialog.Filter = '' then FileDialog.Filter := 'All files (*.*)|*.*';
+      if ActOption.IsFileOutput then
+        FileDialog.Options := [ofOverwritePrompt, ofPathMustExist, ofNoChangeDir]
+      else
+        FileDialog.Options := [ofFileMustExist, ofPathMustExist, ofNoChangeDir];
+      FileDialog.FileName := AdvStringGridOptions.cells[1, aRow];
+      FileDialog.InitialDir := ExtractFilePath(FileDialog.FileName);
+      if FileDialog.Execute then
       begin
-        actIniFile := TMyIniFile(LMod.fModel.FIniFiles.objects[i]);
-        OptionIniFileFN := actIniFile.ReadString
-          (LMod.fModel.Str_SectionName_FileNames,
-          LMod.fModel.Str_SectionTopic_OptionIniFN, '');
-        ActOptionIniFile := TMyIniFile.create(OptionIniFileFN, TEncoding.UTF8);
-        with ActOptionIniFile, AdvStringGridOptions do
-        begin
-          WriteString(SubModel.submodname, cells[0, aRow], cells[1, aRow]);
-          UpdateFile;
-          FreeAndNil(ActOptionIniFile);
-        end;
+        AdvStringGridOptions.cells[1, aRow] := FileDialog.FileName;
+        SaveOptions;
       end;
+    finally
+      FileDialog.Free;
     end;
-    if (aCol = 3) then
-      showmessage(ActOption.Comment);
-
+    Exit;
   end;
-  ActOptionIniFile.Free
-  // UpdateStringGridOptions;
+  if aCol = 3 then
+  begin
+    ShowMessage(ActOption.Comment);
+    Exit;
+  end;
+  if (aCol <> 2) or not ActOption.WriteToIniFile then Exit;
+  for i := 0 to LMod.fModel.FIniFiles.count - 1 do
+  begin
+    actIniFile := TMyIniFile(LMod.fModel.FIniFiles.objects[i]);
+    OptionIniFileFN := actIniFile.ReadString(LMod.fModel.Str_SectionName_FileNames,
+      LMod.fModel.Str_SectionTopic_OptionIniFN, '');
+    ActOptionIniFile := TMyIniFile.create(OptionIniFileFN, TEncoding.UTF8);
+    try
+      ActOptionIniFile.WriteString(SubModel.submodname,
+        AdvStringGridOptions.cells[0, aRow], AdvStringGridOptions.cells[1, aRow]);
+      ActOptionIniFile.UpdateFile;
+    finally
+      ActOptionIniFile.Free;
+    end;
+  end;
 end;
 
 procedure TFormMod.AdvStringGridVarButtonClick(Sender: TObject;
@@ -2123,23 +2145,21 @@ end;
 
 procedure TFormMod.AdvStringOptionsGetEditorType(Sender: TObject;
   aCol, aRow: Integer; var aEditor: TEditorType);
-
 var
-  ActStrLst: TStringList;
   ActOption: TOption;
-  actSubModIndex: Integer;
+  actSubModIndex, OptionIndex: Integer;
   SubModel: TSubModel;
 begin
-  if aCol = 1 then
-    aEditor := edComboList;
+  aEditor := BaseGrid.edNone;
+  if (aCol <> 1) or (aRow < 1) then Exit;
   actSubModIndex := ComboBoxSubMod.ItemIndex;
+  if actSubModIndex < 0 then Exit;
   SubModel := TSubModel(LMod.fModel.SubModStrList.objects[actSubModIndex]);
-  if self.AdvStringGridOptions.cells[aCol, aRow] <> '' then
-  begin
-    ActOption := TOption(SubModel.OptionStrList.objects[aRow - 1]);
-    ActStrLst := ActOption.OptionList;
-    AdvStringGridOptions.combobox.Items.Assign(ActStrLst);
-  end;
+  OptionIndex := SubModel.OptionStrList.IndexOf(AdvStringGridOptions.cells[0, aRow]);
+  if OptionIndex < 0 then Exit;
+  ActOption := TOption(SubModel.OptionStrList.objects[OptionIndex]);
+  aEditor := edComboList;
+  AdvStringGridOptions.combobox.Items.Assign(ActOption.OptionList);
 end;
 
 procedure TFormMod.AdvStringGridStateCheckBoxClick(Sender: TObject;
@@ -3060,10 +3080,47 @@ begin
   PageControl.ActivePage := self.TabSheetOptions;
 end;
 
+/// <summary>Keep the active model and all loaded scenario settings consistent.
+/// Updating the cached INI objects prevents Init/Run from restoring an old path.</summary>
+procedure TFormMod.ApplyOutputDirectory(const Directory: string; Persist: Boolean);
+var Model: TMod; I: Integer; Ini: TMyIniFile;
+  procedure UpdateIni(AIni: TMyIniFile);
+  begin
+    if AIni = nil then Exit;
+    AIni.WriteString(Model.Str_SectionName_FileNames,
+      Model.Str_SectionTopic_OutputDir, Directory);
+    if Persist then AIni.UpdateFile;
+  end;
+begin
+  if (LMod = nil) or (LMod.LinkedModel = nil) then Exit;
+  Model := LMod.LinkedModel;
+  if Persist and (Trim(Directory) <> '') and not ForceDirectories(Directory) then
+    raise Exception.CreateFmt('Cannot create output directory: %s', [Directory]);
+  Model.GM_OutPutPath := Directory;
+  UpdateIni(Model.ActIniFile);
+  if Model.IniFileNames <> nil then
+    for I := 0 to Model.IniFileNames.Count-1 do begin
+      Ini := TMyIniFile(Model.IniFileNames.Objects[I]);
+      if Ini <> Model.ActIniFile then UpdateIni(Ini);
+    end;
+end;
+
+/// <summary>Apply user edits immediately without writing partial paths on every keystroke.
+/// Programmatic display refreshes must not overwrite other scenarios' output settings.</summary>
 procedure TFormMod.EditOutputDirectoryChange(Sender: TObject);
 begin
-  if self.LMod.LinkedModel <> nil then
-    LMod.LinkedModel.GM_OutPutPath := self.EditOutputDirectory.Text;
+  if not EditOutputDirectory.Modified then Exit;
+  FOutputDirectoryEdited := True;
+  ApplyOutputDirectory(EditOutputDirectory.Text, False);
+end;
+
+/// <summary>Persist the completed edit when leaving the directory field.</summary>
+procedure TFormMod.EditOutputDirectoryExit(Sender: TObject);
+begin
+  if not FOutputDirectoryEdited then Exit;
+  ApplyOutputDirectory(EditOutputDirectory.Text, True);
+  FOutputDirectoryEdited := False;
+  EditOutputDirectory.Modified := False;
 end;
 
 procedure TFormMod.Statistics1Click(Sender: TObject);
@@ -3395,51 +3452,22 @@ begin
 end;
 
 procedure TFormMod.SpeedButtonOutputDirectoryClick(Sender: TObject);
-
-var
-  fn, SectionName, SectionTopic, SelectedFolder: string;
-  i: Integer;
-  actIni: TMyIniFile;
-  OpenDialog: TFileOpenDialog;
+var SelectedFolder: string; OpenDialog: TFileOpenDialog;
 begin
-  OpenDialog := TFileOpenDialog.create(nil);
+  if (LMod = nil) or (LMod.LinkedModel = nil) then Exit;
+  OpenDialog := TFileOpenDialog.Create(nil);
   try
     OpenDialog.Options := OpenDialog.Options + [fdoPickFolders];
-    if not OpenDialog.Execute then
-      Abort;
+    if not OpenDialog.Execute then Exit;
     SelectedFolder := OpenDialog.FileName;
   finally
     OpenDialog.Free;
   end;
-
-  showmessage(SelectedFolder);
+  ApplyOutputDirectory(SelectedFolder, True);
   EditOutputDirectory.Text := SelectedFolder;
-  LMod.LinkedModel.GM_OutPutPath := SelectedFolder;
-  for i := 0 to LMod.LinkedModel.IniFileNames.count - 1 do
-  begin
-    fn := LMod.LinkedModel.IniFileNames.Strings[i];
-    actIni := TMyIniFile.create(fn, TEncoding.UTF8);
-    SectionName := LMod.LinkedModel.Str_SectionName_FileNames;
-    SectionTopic := LMod.LinkedModel.Str_SectionTopic_OutputDir;
-    actIni.WriteString(SectionName, SectionTopic, SelectedFolder);
-    actIni.UpdateFile;
-  end;
-
-  { with SaveDialog1 do begin
-    title := 'OutputDirectory';
-    Filter := 'All Files (*.*)|*.*';
-    Options := Options + [fdoPickFolders];
-    if Execute then begin
-    NewDirectory := ExtractFilePath(SaveDialog1.FileName);
-    LMod.LinkedModel.GM_OutPutPath := ExtractFilePath(SaveDialog1.FileName);
-    EditOutputDirectory.Text := NewDirectory;
-    //      WriteString('FileNames', 'WeatherFileFN', NewWeatherFName);
-    //UpdateFile;
-    end;
-    end; }
-
+  EditOutputDirectory.Modified := False;
+  FOutputDirectoryEdited := False;
 end;
-
 procedure TFormMod.EditParamIniFileNameMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin

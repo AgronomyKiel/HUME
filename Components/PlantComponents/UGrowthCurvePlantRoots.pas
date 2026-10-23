@@ -24,6 +24,7 @@ uses
   UGrowthCurvePlant,
   UAbstractPlant,
   URootGrowthUtils,
+  URootedSoil,
   classes;
 
 type
@@ -32,10 +33,15 @@ type
   TGrowthCurvePlantRoots = class(TGrowthCurvePlant)
 
   private
+    fRootedSoilWaterModel: TSoilWaterModelR;
 
-    function WLD_z_t_f(z1, z2, t, // Zrmax, Zr0, Kz,
-      SRLmax, SRL0, kL, ka: real): real;
+    function WLD_z_t_f(z1, z2, TotalRootLength: real): real;
+    procedure ResetRoots;
+    procedure CalculateRootLengthDensityMoments;
+    procedure SetRootedSoilWaterModel(const Value: TSoilWaterModelR);
   protected
+    function GetWldMomentsAddress: PRootLengthDensityMomentMatrix; override;
+    function GetEffWldMomentsAddress: PRootLengthDensityMomentMatrix; override;
 
     function GetWLD(Index: Integer): THumeNumEntity; override;
 
@@ -43,8 +49,21 @@ type
     function GetSumRootLength_eff: THumeNumEntity; override;
 
   public
-    Root_Matrix: array [1 .. Max_Comp, 1 .. MaxAgeCl] of real;
-    n_age_cl: Integer;
+    /// <summary>Circular root-age cohorts and running active lengths.</summary>
+    Root_Matrix: array [1 .. Max_Comp] of TRootAgeCohorts;
+    n_age_cl, RootAgeHead, ActiveAgeClassCount: Integer;
+    ActiveRootLength: array [1 .. Max_Comp] of real;
+    /// <summary>Root length calculation: growth curve (default) or fine-root biomass.</summary>
+    SRLcalc: TOption;
+    /// <summary>Specific root length in cm per g fine-root dry matter.</summary>
+    sp_RL: TPar;
+    /// <summary>Optional within-layer lognormal RLD variation.</summary>
+    CalcMoments: TOption;
+    VK_lrv_int, VK_lrv_slope: TPar;
+    VK_lrv: array [1 .. RootLengthDensityLayerCount] of TVar;
+    Wld_moments, EffWld_moments: TRootLengthDensityMomentMatrix;
+    WldStdDev_arr, EffWldStdDev_arr: TSoilVarArray;
+
 
     /// <summary>Active duration of root growth.</summary>
     ActiveDuration: TPar;
@@ -98,9 +117,6 @@ type
     /// <summary>State variable for root depth [cm].</summary>
     zr: TState;
 
-    /// <summary>Option to enable root growth.</summary>
-    OptWithRoots: TOption;
-
     /// <summary>Option for the root depth growth model.</summary>
     depthgrowthOptStr: TOption;
 
@@ -117,6 +133,11 @@ type
 
   published
 
+    property RootedSoilWaterModel: TSoilWaterModelR read fRootedSoilWaterModel
+      write SetRootedSoilWaterModel;
+    property Par_sp_RL: TPar read sp_RL write sp_RL;
+    property Par_VK_lrv_int: TPar read VK_lrv_int write VK_lrv_int;
+    property Par_VK_lrv_slope: TPar read VK_lrv_slope write VK_lrv_slope;
     property Par_zr0: TPar read zr_0 write zr_0;
     property Par_zrmax: TPar read zr_max write zr_max;
     property Par_kz: TPar read k_z write k_z;
@@ -136,31 +157,96 @@ implementation
 uses
   SysUtils, math; // , Dialogs;
 
-function TGrowthCurvePlantRoots.WLD_z_t_f(z1, z2, t, // Zrmax, Zr0, Kz,
-  SRLmax, SRL0, kL, ka: real): real;
-
+function TGrowthCurvePlantRoots.WLD_z_t_f(z1, z2,
+  TotalRootLength: real): real;
 var
-  SRL, WLD0, a: real;
-
+  a, RootedBottom, Thickness: real;
 begin
-
-  if z1 > zr.v then
-  begin
-    WLD_z_t_f := 0.0;
+  Result := 0.0;
+  Thickness := z2 - z1;
+  if (Thickness <= 0.0) or (zr.v <= 0.0) or (z1 >= zr.v) or
+    (TotalRootLength <= 0.0) then
     exit;
-  end;
-  if (z2 > zr.v) and (z1 <> zr.v) then
-    z2 := zr.v;
-  // a   := 1/(ka*zr.v);
-  a := -ln(ka) / zr.v;
-  // if a > zr.v then begin
-  // showmessage('GrowthCurvePlantRoots, Objectname:'+self.name+ 'Par a>Zr.v');
-  // halt;
-  // end;
-  SRL := logist_f(SRLmax, SRL0, kL, t);
-  WLD0 := (SRL * a) / (1 - exp(-a * zr.v));
-  WLD_z_t_f := WLD0 * (exp(-a * z1) - exp(-a * z2)) / (a * (z2 - z1));
+  RootedBottom := min(z2, zr.v);
+  if K_a.v <= 0.0 then
+    raise EArgumentException.Create('k_a must be positive');
+  a := -ln(K_a.v) / zr.v;
+  /// <summary>Use full layer thickness, including the unrooted part of a partial layer.</summary>
+  if abs(a * zr.v) < 1E-8 then
+    Result := TotalRootLength * (RootedBottom - z1) / (zr.v * Thickness)
+  else
+    Result := TotalRootLength * (exp(-a * z1) - exp(-a * RootedBottom)) /
+      ((1 - exp(-a * zr.v)) * Thickness);
+end;
 
+function TGrowthCurvePlantRoots.GetWldMomentsAddress: PRootLengthDensityMomentMatrix;
+begin
+  Result := @Wld_moments;
+end;
+
+function TGrowthCurvePlantRoots.GetEffWldMomentsAddress: PRootLengthDensityMomentMatrix;
+begin
+  Result := @EffWld_moments;
+end;
+
+procedure TGrowthCurvePlantRoots.SetRootedSoilWaterModel(const Value: TSoilWaterModelR);
+begin
+  if fRootedSoilWaterModel <> nil then
+    fRootedSoilWaterModel.SetRootLengthDensityMomentMatrices(nil, nil);
+  fRootedSoilWaterModel := Value;
+  if Value <> nil then
+    Value.SetRootLengthDensityMomentMatrices(WldMomentsAddress, EffWldMomentsAddress);
+end;
+
+procedure TGrowthCurvePlantRoots.ResetRoots;
+var
+  i: Integer;
+begin
+  FillChar(Root_Matrix, SizeOf(Root_Matrix), 0);
+  FillChar(ActiveRootLength, SizeOf(ActiveRootLength), 0);
+  FillChar(Wld_moments, SizeOf(Wld_moments), 0);
+  FillChar(EffWld_moments, SizeOf(EffWld_moments), 0);
+  n_age_cl := 0;
+  RootAgeHead := 0;
+  ActiveAgeClassCount := min(max(trunc(ActiveDuration.v), 0), MaxAgeCl);
+  SRL.v := 0.0;
+  SRL_eff.v := 0.0;
+  zr.v := 0.0;
+  zr.c := 0.0;
+  for i := 1 to RootLengthDensityLayerCount do
+  begin
+    Wld_arr[i].v := 0.0;
+    WL_arr[i].v := 0.0;
+    EffWld_arr[i].v := 0.0;
+    effWL_arr[i].v := 0.0;
+    VK_lrv[i].v := 0.0;
+    WldStdDev_arr[i].v := 0.0;
+    EffWldStdDev_arr[i].v := 0.0;
+  end;
+end;
+
+procedure TGrowthCurvePlantRoots.CalculateRootLengthDensityMoments;
+var
+  LayerIndex: integer;
+begin
+  for LayerIndex := 1 to RootLengthDensityLayerCount do
+  begin
+    if SameText(CalcMoments.Option, 'true') and
+      (Wld_arr[LayerIndex].v > 0.0) then
+      VK_lrv[LayerIndex].v := max(0.0, VK_lrv_int.v +
+        VK_lrv_slope.v * ln(Wld_arr[LayerIndex].v))
+    else
+      VK_lrv[LayerIndex].v := 0.0;
+
+    CalculateLognormalMoments(Wld_arr[LayerIndex].v,
+      VK_lrv[LayerIndex].v, Wld_moments[LayerIndex]);
+    CalculateLognormalMoments(EffWld_arr[LayerIndex].v,
+      VK_lrv[LayerIndex].v, EffWld_moments[LayerIndex]);
+    WldStdDev_arr[LayerIndex].v := CalculateMomentStandardDeviation(
+      Wld_moments[LayerIndex]);
+    EffWldStdDev_arr[LayerIndex].v := CalculateMomentStandardDeviation(
+      EffWld_moments[LayerIndex]);
+  end;
 end;
 
 function TGrowthCurvePlantRoots.GetWLD(Index: Integer): THumeNumEntity;
@@ -189,6 +275,16 @@ var
 begin
   inherited CreateAll;
   SetEntityDeclarationClass(TGrowthCurvePlantRoots);
+  OptCreate('SRLcalc', 'fromGrowthcurve', SRLcalc);
+  SRLcalc.OptionList.Add('fromGrowthcurve');
+  SRLcalc.OptionList.Add('fromDMfineRoot');
+  ParCreate('sp_RL', '[cm/g DM]', 7000, sp_RL, 'Specific fine-root length');
+  OptCreate('CalcMoments', 'false', CalcMoments);
+  CalcMoments.OptionList.Add('false');
+  CalcMoments.OptionList.Add('true');
+  ParCreate('VK_lrv_int', '[%]', 0.0, VK_lrv_int, 'Intercept of CV versus ln(mean RLD)');
+  ParCreate('VK_lrv_slope', '[%]', 0.0, VK_lrv_slope, 'Slope of CV versus ln(mean RLD)');
+  ParCreate('k_za', '[1/degCd]', 0.01, k_za, 'Exponential root depth growth rate');
   ParCreate('zr_0', '[cm]', 10, zr_0, 'planting/sowing depth');
   ParCreate('zr_max', '[cm]', 120, zr_max, 'maximum rooting depth');
   ParCreate('WL_0', '[cmcm2]', 1, WL_0, 'root length at begin of root growth');
@@ -204,14 +300,15 @@ begin
   VarCreate('SRL', '[cm.cm-2]', 0.0, false, SRL, 'som of root length');
   VarCreate('SRL_eff', '[cm.cm-2]', 0.0, false, SRL_eff,
     'sum of effective root length');
+  for i := 1 to RootLengthDensityLayerCount do
+  begin
+    VarCreate('VK_lrv_' + ndx_str(i), '[%]', 0.0, false, VK_lrv[i]);
+    VarCreate('WLD_stdev_' + ndx_str(i), '[cm.cm-3]', 0.0, false, WldStdDev_arr[i]);
+    VarCreate('effWLD_stdev_' + ndx_str(i), '[cm.cm-3]', 0.0, false, EffWldStdDev_arr[i]);
+  end;
 
-  OptCreate('OptWithRoots', 'true', OptWithRoots);
-  OptWithRoots.OptionList.Add('true');
-  OptWithRoots.OptionList.Add('false');
-
-
+  /// <summary>Use the inherited WithRoots option; Init synchronizes the runtime flag.</summary>
   fwithRoots := true;
-  OptWithRoots.Option := 'true';
   OptCreate('Rootdepthgrowth', 'linear', depthgrowthOptStr);
   depthgrowthOptStr.optionlist.Clear;
   depthgrowthOptStr.optionlist.Add('linear');
@@ -255,94 +352,85 @@ begin
   if uppercase(depthgrowthOptStr.Option) = uppercase('expolinear') then
     depthgrowthchoice := expolinear;
 
-  for i := 1 to trunc(N_Rootcomp.v) do
-  begin
-    Wld_arr[i].v := 0.0;
-    WL_arr[i].v := 0.0;
-  end;
-  N_Rootcomp.v := 20;
+  N_Rootcomp.v := RootLengthDensityLayerCount;
+  ResetRoots;
   for i := 0 to trunc(N_Rootcomp.v) do
     Tiefe[i].Search := withRoots;
 
 end;
 
 procedure TGrowthCurvePlantRoots.CalcRates;
-
 var
-  i, j: Integer;
-  wl_alt, ActiveRL, zrkrit: real;
-
+  i, PreviousHead, CurrentActiveCount: Integer;
+  TotalRootLength, OldLength, Thickness, zrkrit: real;
 begin
   inherited;
-  if (GlobTime.v >= SowingDate.v) and (GlobTime.v < HarvestDate.v) then
+  if not withRoots or (GlobTime.v < SowingDate.v) or
+    (GlobTime.v >= HarvestDate.v) then
   begin
-    SRL.v := 0.0;
-    SRL_eff.v := 0.0;
-    if depthgrowthchoice = monomolecular then
-    begin
-      zr.v := monomo_f(zr_max.v, zr_0.v, k_z.v, TSum.v);
-      zr.c := 0.0;
-    end;
-    if depthgrowthchoice = linear then
-    begin
-      zr.v := min(zr_max.v, zr_0.v + TSum.v * k_z.v);
-      zr.c := 0.0;
-    end;
-    if depthgrowthchoice = expolinear then
-      zr.v := min(zr_max.v, zr_0.v + TSum.v * k_z.v);
-    If depthgrowthchoice = expolinear then
-    begin
-      zrkrit := k_z.v / k_za.v;
-      // TsumKrit := ln(zrkrit / zr0.v) / k_za.v;
-      if zr.v < zrkrit then
-        zr.c := zr.v * (max(0, Temp.v - TempSumRootBaseTemp.v)) * k_za.v
-      else
-        zr.c := k_z.v * max(0, Temp.v - TempSumRootBaseTemp.v);
-    end;
+    ResetRoots;
+    exit;
+  end;
 
-    if withRoots then
-      for i := 1 to trunc(N_Rootcomp.v) do
+  zr.c := 0.0;
+  case depthgrowthchoice of
+    monomolecular: zr.v := monomo_f(zr_max.v, zr_0.v, k_z.v, TSum.v);
+    linear: zr.v := min(zr_max.v, zr_0.v + TSum.v * k_z.v);
+    expolinear:
       begin
-
-        if (Opt_RootAgeing.Option = 'true') then
-        begin
-
-          for j := n_age_cl downto 2 do
-            Root_Matrix[i, j] := Root_Matrix[i, j - 1];
-          wl_alt := Wld_arr[i].v * (Tiefe[i].v - Tiefe[i - 1].v);
-
-          Wld_arr[i].v := WLD_z_t_f(Tiefe[i - 1].v, Tiefe[i].v, TSum.v,
-            // Zr_max.v, Zr_0.v, K_z.v,
-            WL_max.v, WL_0.v, k_Wl.v, K_a.v);
-
-          WL_arr[i].v := Wld_arr[i].v * (Tiefe[i].v - Tiefe[i - 1].v);
-
-          Root_Matrix[i, 1] := max(0, WL_arr[i].v - wl_alt);
-          ActiveRL := 0.0;
-          for j := 1 to trunc(ActiveDuration.v) do
-            ActiveRL := ActiveRL + Root_Matrix[i, j];
-
-          effWL_arr[i].v := ActiveRL;
-          SRL_eff.v := SRL_eff.v + ActiveRL;
-          EffWld_arr[i].v := ActiveRL / (Tiefe[i].v - Tiefe[i - 1].v);
-
-          SRL.v := SRL.v + WL_arr[i].v;
-        end
+        if zr.v <= 0.0 then
+          zr.v := zr_0.v;
+        if k_za.v <= 0.0 then
+          raise EArgumentException.Create('k_za must be positive for expolinear root growth');
+        zrkrit := k_z.v / k_za.v;
+        if zr.v < zrkrit then
+          zr.c := zr.v * max(0.0, Temp.v - TempSumRootBaseTemp.v) * k_za.v
         else
-        begin
-
-          Wld_arr[i].v := WLD_z_t_f(Tiefe[i - 1].v, Tiefe[i].v, TSum.v,
-            // Zr_max.v, Zr_0.v, K_z.v,
-            WL_max.v, WL_0.v, k_Wl.v, K_a.v);
-          WL_arr[i].v := Wld_arr[i].v * (Tiefe[i].v - Tiefe[i - 1].v);
-          SRL.v := SRL.v + WL_arr[i].v;
-          SRL_eff.v := SRL_eff.v + WL_arr[i].v;
-          EffWld_arr[i].v := Wld_arr[i].v;
-
-        end;
-
+          zr.c := k_z.v * max(0.0, Temp.v - TempSumRootBaseTemp.v);
+        if GlobTime.c > 0.0 then
+          zr.c := min(zr.c, max(0.0, zr_max.v - zr.v) / GlobTime.c);
       end;
   end;
+
+  if SameText(SRLcalc.Option, 'fromDMfineRoot') then
+    TotalRootLength := max(0.0, DMFineRoot.v) * max(0.0, sp_RL.v) / 1E4
+  else if SameText(SRLcalc.Option, 'fromGrowthcurve') then
+  begin
+    if (WL_0.v > 0.0) and (WL_max.v > 0.0) then
+      TotalRootLength := logist_f(WL_max.v, WL_0.v, k_Wl.v, TSum.v)
+    else
+      TotalRootLength := 0.0;
+  end
+  else
+    raise EArgumentException.Create('Unknown SRLcalc option: ' + SRLcalc.Option);
+
+  PreviousHead := RootAgeHead;
+  RootAgeHead := RootAgeHead mod MaxAgeCl + 1;
+  n_age_cl := min(n_age_cl + 1, MaxAgeCl);
+  CurrentActiveCount := min(max(trunc(ActiveDuration.v), 0), MaxAgeCl);
+  SRL.v := 0.0;
+  SRL_eff.v := 0.0;
+  for i := 1 to trunc(N_Rootcomp.v) do
+  begin
+    Thickness := Tiefe[i].v - Tiefe[i - 1].v;
+    if Thickness <= 0.0 then
+      raise EArgumentException.Create('Root layer depths must be strictly increasing');
+    OldLength := WL_arr[i].v;
+    Wld_arr[i].v := WLD_z_t_f(Tiefe[i - 1].v, Tiefe[i].v, TotalRootLength);
+    WL_arr[i].v := Wld_arr[i].v * Thickness;
+    UpdateRootAgeCohort(Root_Matrix[i], RootAgeHead, PreviousHead,
+      CurrentActiveCount, ActiveAgeClassCount,
+      max(0.0, WL_arr[i].v - OldLength), ActiveRootLength[i]);
+    if SameText(Opt_RootAgeing.Option, 'true') then
+      effWL_arr[i].v := ActiveRootLength[i]
+    else
+      effWL_arr[i].v := WL_arr[i].v;
+    EffWld_arr[i].v := effWL_arr[i].v / Thickness;
+    SRL.v := SRL.v + WL_arr[i].v;
+    SRL_eff.v := SRL_eff.v + effWL_arr[i].v;
+  end;
+  ActiveAgeClassCount := CurrentActiveCount;
+  CalculateRootLengthDensityMoments;
 end;
 
 procedure Register;
