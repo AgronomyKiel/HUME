@@ -9,7 +9,7 @@ This page describes the structural migration of `U2DSoilBaseClasses.pas`. The ni
 The transport classes are now split into two units:
 
 | Unit | Classes |
-|----|----|
+|------------------------------------|------------------------------------|
 | `U2DSoilBaseClasses.pas` | `TRasterData`, `TSubmodRootBase`, `TSubmodRoot2D`: shared geometry and root placement |
 | `USubModRootH2O.pas` | `TRasterDataH2O`, `TSubmodRoot2DWithWater`, `TSubmodRoot2DH2O`: water storage, diffusion and MFP uptake |
 | `USubModRootNO3.pas` | `TRasterDataNO3`, `TSubmodRoot2DNO3`, `TSubmodRoot2DH2ONO3`: nitrate storage, transport and legacy combined-model compatibility |
@@ -60,7 +60,7 @@ classDiagram
 ```
 
 | Class | Defining unit | Current role / registration |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | `TSubmodRootBase` | `U2DSoilBaseClasses` | Common quantities, framework initialization and root-length calculations; not registered |
 | `TSubmodRootBaseNitrate` | `U2DSoilBaseClassNitrate` | Owns and registers nitrate quantities and preserves the 1-D initialization conventions; not registered |
 | `TSubmodRootDiff1DSolo` | `SubmodRootDiff1DSolo` | 1-D statistical root-uptake model; registered under `Soil2D` |
@@ -109,7 +109,7 @@ Two additional allocation/reference relationships need different treatment:
 These findings are based on declarations, allocation/destruction code and repository searches of Pascal sources, package/project files, forms, test programs and INI files, excluding history/recovery copies. Absence from that search does not establish that external projects or saved model files no longer depend on a class. No classes or package entries were removed.
 
 | Candidate | Evidence | Assessment / next step |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | `TSubmodRoot2DH2ONO3` | Adds no fields, `Init`, `CalcRates`, or `Integrate`; its only override sets the declaration class. Repository construction sites found in two regression programs. | Strongest redundant-behavior candidate. Check external configurations and class-name compatibility before removing it or deliberately retaining it as a compatibility wrapper. Its name must not imply implemented water/nitrate coupling. |
 | `TVoronoi` / `voro.pas` | Explicit package entry, but no construction site found outside its own implementation. | Candidate for removal from this package after checking external consumers. This is an apparently unused helper, not a duplicate raster class. |
 | `TSubmodRootBaseNitrate.CreateAll` | Registers nitrate parameters, states, variables and the uptake option. | Required by the 1-D nitrate hierarchy; these objects no longer belong to the common root base. |
@@ -124,7 +124,7 @@ The new graph section was rendered successfully as standalone HTML with Quarto i
 ## Ownership
 
 | Class | Owns | Borrows |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | `TRasterData` | Computational dimensions, spacing, midpoint coordinates, margins and container geometry | Nothing |
 | `TRasterDataH2O` | `Theta_xy`, water diffusion, uptake/balance diagnostics, mean `CellWaterAmount` | Shared geometry |
 | `TRasterDataNO3` | `C_xy`, extrema, diffusion, sources/sinks and uptake accounting | Shared geometry, water field, coordinating submodel and model-registered options |
@@ -136,7 +136,7 @@ Both fields reference the same geometry instance. They do not free their borrowe
 
 The computational grid uses `NCols` and `NRows`. Field storage includes helper slots 0 and N+1 required by the existing solver, whose active indices are 1..N. The legacy coordinate expressions are retained pending the indexing review.
 
-The coarse root-input raster uses separate `RootRasterNCols`, `RootRasterNRows`, `RootRasterColWidth`, `RootRasterRowHeight` and `CountArr` on the submodel. For .grid imports, the header defines the full physical domain: width = RootRasterNCols * RootRasterColWidth and height = RootRasterNRows * RootRasterRowHeight, including empty boundary cells. Sampled root coordinates retain the raster origin; they do not determine or resize the domain. Computational cell counts round upward using the configured gridWidth and gridHeight, independently of the coarse root-input raster. For .xy imports, the domain is fitted to the coordinate extents and margins.
+The coarse root-input raster uses separate `RootRasterNCols`, `RootRasterNRows`, `RootRasterColWidth`, `RootRasterRowHeight` and `CountArr` on the submodel. For .grid imports, the header defines the full physical domain: width = RootRasterNCols \* RootRasterColWidth and height = RootRasterNRows \* RootRasterRowHeight, including empty boundary cells. Sampled root coordinates retain the raster origin; they do not determine or resize the domain. Computational cell counts round upward using the configured gridWidth and gridHeight, independently of the coarse root-input raster. For .xy imports, the domain is fitted to the coordinate extents and margins.
 
 ## Relocated methods and caller changes
 
@@ -207,7 +207,7 @@ This method is not automatically invoked by `TSubmodRootBase2D.CalcRates`. The c
 Configure these model quantities before initialization:
 
 | Quantity | Meaning | Default |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | `PotentialWaterUptake` (`TPar`) | Potential extraction per unit ground area, cm/day | 0 (disabled) |
 | `SoilTexture` (`TOption`) | Uniform texture from the existing `USoilTexture.AddClasses` list | Sl3 |
 | `TextureVersion` (`TOption`) | Existing RR or KA hydraulic parameter tables | RR |
@@ -265,7 +265,7 @@ The initialization regression verifies the common base with zero initial water, 
 The reference is `Kohl_original/Kohl/BarleySubmodPackage/SubmodRootDiff.pas`. Its initialization work is spread across `AddDataValueToDataSeries`, the empty `init_`, `init_eingelesen`, `calcNumberConsRoots` and distribution helpers. The current classes perform setup in `Init`, after HUME loads parameters and options, rather than reinitializing during output collection.
 
 | Legacy behavior | Current implementation |
-|----|----|
+|------------------------------------|------------------------------------|
 | Root count raster and XY files | `TSubmodRoot2D.Init` calls the existing readers; both use `RootInpDataFile` as requested. |
 | Parameter-derived root counts | `IniMethod=InpPar` uses density times domain area. `FromSource` becomes `Regular` for this mode. |
 | Regular placement | Row-oriented hexagons, matching the active legacy algorithm; both coordinates are initialized. |
@@ -286,7 +286,7 @@ This restores initialization responsibilities, not bit-for-bit equivalence with 
 `TSubmodRoot2DH2O` now provides internal timestep control inspired by `TSoilWaterMod`: it limits the maximum absolute cell water-content change and allows accepted steps to grow by at most a factor of 1.5. This is a change limiter, not an estimate of numerical truncation error; the diffusivity remains frozen within each ADI substep.
 
 | Setting | Meaning |
-|----|----|
+|------------------------------------|------------------------------------|
 | `AdaptiveWaterTimeStep=yes` | Enable internal substeps (default); `no` retains one solve per outer interval. |
 | `Ini_dt` | Initial internal step in days. |
 | `max_dt` | Maximum internal step in days. |
