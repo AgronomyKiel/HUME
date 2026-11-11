@@ -96,7 +96,6 @@ type
     NSyn: real;
     Np2, nc_: real;
 
-    Swmin: real;
     /// <summary> minimum stem weight per plant for translocation and senescence calculations, determined at stage 37 </summary>
     swmin_min: real;
     SumGRHI: real;
@@ -854,10 +853,11 @@ begin
     // file:
   // SWmin: Minimum stem weight of a plant after anthesis, used to calculate amount of reserves that can be used to fill grain - g
 
-  Swmin := max(swmin_min, (STMWT_m2.v - (TSDM_m2.v * potHI.v - GRNWT_m2.v)) / Plants.v);
+  if (fRSWT = gf_pothi) and (EC.v >= 60) then
+    SWMIN_pl.v := max(swmin_min, (STMWT_m2.v - (TSDM_m2.v * potHI.v - GRNWT_m2.v)) / Plants.v);
 
   //RSWT: stem reserves during grain filling in g/m²
-   RSWT.v := max(0,STMWT_m2.v - (Swmin * Plants.v));
+   RSWT.v := max(0,STMWT_m2.v - (SWMIN_pl.v * Plants.v));
 
 end;
 
@@ -1444,15 +1444,12 @@ begin
   if (EC.v > 50) and (EC.v < 75) then
     CalcQHI;
 
-  if (fRSWT = gf_pothi) and (EC.v >= 60) then
-  begin
-    CalcPotHI;
-  end
-//  else if (EC.v >= 50) and (Swmin <= 0) and (fRSWT = gf_cwt3) then
-  else if (EC.v >= 37) and (Swmin_pl.v <= 0) and (fRSWT = gf_cwt3) then
-    Swmin_pl.v := STMWT_pl.v
-  else
-    Swmin_pl.v := 0;
+  /// <summary> Capture the CWT3 structural stem weight once and retain it during grain filling. </summary>
+  if (fRSWT = gf_cwt3) and (EC.v >= 37) and (SWMIN_pl.v <= 0) then
+    SWMIN_pl.v := STMWT_pl.v;
+
+  /// <summary> Both reserve options use the potential harvest index for logistic grain filling. </summary>
+  CalcPotHI;
 
   if (GPSM.v <= 0) and (EC.v >= 40) then
     CalcGPSM;
@@ -1901,7 +1898,7 @@ begin
   inherited Init(GlobMod);
   SumGRHI := 0;
   SumTempHI := 0;
-  Swmin := 0;
+  SWMIN_pl.v := 0;
   swmin_min := 0;
   if OptDroughtimpact.option = 'droughtimpact' then
   begin
@@ -1991,7 +1988,7 @@ begin
 //      potGROGRN.v := (TOPWT_pl.v + Senwt_pl.v) * HI_Rose.v * RHI - GRNWT_pl.v;
 
       // actual grain growth is limited by the potential (sink limited) grain growth and
-      GROGRN.v := max(0, min(potGROGRN.v, STMWT_pl.v - Swmin));
+      GROGRN.v := max(0, min(potGROGRN.v, STMWT_pl.v - SWMIN_pl.v));
       STMWT_pl.c := STMWT_pl.c - GROGRN.v; // substract grain weight change from stem weight change
       GRNWT_pl.c := GROGRN.v; // grain weight change from grain growth variable GROGRN
     end;
