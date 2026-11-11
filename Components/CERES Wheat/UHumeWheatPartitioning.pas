@@ -988,19 +988,21 @@ end;
 
 procedure THumeWheatPartitioning.CreateAllOptions;
 begin
-  OptCreate('optRSWT', 'CWT3', optRSWT);
+  OptCreate('optRSWT', 'CWT3', optRSWT, 'Option for calculation of harvest index');
   optRSWT.OptionList.Clear;
   optRSWT.OptionList.Add('pothi');
   optRSWT.OptionList.Add('CWT3');
-  OptCreate('optDroughtimpact', 'DroughtImpact', OptDroughtimpact);
+  OptCreate('optDroughtimpact', 'DroughtImpact', OptDroughtimpact,
+  'Option for inclusion of drought stress effects in leaf-stem partitioning');
   OptDroughtimpact.OptionList.Clear;
   OptDroughtimpact.OptionList.Add('DroughtImpact');
   OptDroughtimpact.OptionList.Add('NoDroughtImpact');
-  OptCreate('optNimpact', 'NoNImpact', OptNimpact);
+  OptCreate('optNimpact', 'NoNImpact', OptNimpact,
+  'Option for inclusion of nitrogen deficiency effects in leaf-stem partitioning');
   OptNimpact.OptionList.Clear;
   OptNimpact.OptionList.Add('NImpact');
   OptNimpact.OptionList.Add('NoNImpact');
-  OptCreate('optHIcalcversion', 'ratjen', OptHIcalcversion);
+  OptCreate('optHIcalcversion', 'ratjen', OptHIcalcversion, 'Option for harvest index calculation');
   OptHIcalcversion.OptionList.Clear;
   OptHIcalcversion.OptionList.Add('ratjen');
   OptHIcalcversion.OptionList.Add('rose');
@@ -1090,7 +1092,7 @@ begin
   ParCreate('pintercept', '[-]', 33.989, pintercept, 'intercept parameter for empirical HI approach according to Rose');
   ParCreate('pBioPostAnth', '[-]', -0.48536, pBioPostAnth, 'slope parameter for biomass post anthesis effect on empirical HI approach according to Rose');
   ParCreate('pBioPreAnth', '[-]', 0.50254, pBioPreAnth, 'slope parameter for biomass pre anthesis effect on empirical HI approach according to Rose');
-  ParCreate('pBioPreAnth2', '[-]', -0.0000046665, pBioPreAnth2, 'quadratic parameter for biomass pre anthesis effect on empirical HI approach according to Rose');
+  ParCreate('pBioPreAnth2', '[-]', -0.000046665, pBioPreAnth2, 'quadratic parameter for biomass pre anthesis effect on empirical HI approach according to Rose');
 
 
 end;
@@ -1403,11 +1405,11 @@ begin
 
 
   if self.EC.v <= 65 then
-    self.BioPreAnthesis.v := TSDM_m2.v
+    BioPreAnthesis.v := TSDM_m2.v
   else
-    self.BioPostAnthesis.v := TSDM_m2.v-BioPreAnthesis.v;
+    BioPostAnthesis.v := TSDM_m2.v-BioPreAnthesis.v;
 
-  if self.EC.v > 90 then begin
+  if EC.v > 90 then begin
   Translocation.v := pintercept.v + pBioPostAnth.v * BioPostAnthesis.v + pBioPreAnth.v * BioPreAnthesis.v + pBioPreAnth2.v * sqr(BioPreAnthesis.v);
   Translocation_pl.v := Translocation.v / Plants.v;
   HI_Rose.v := (BioPostAnthesis.v + Translocation.v)/(BioPreAnthesis.v + BioPostAnthesis.v);
