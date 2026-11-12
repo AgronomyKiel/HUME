@@ -119,7 +119,7 @@ type
  /// <summary> calculates the harvest index according to the empirical approach by Ratjen </summary>
     procedure CalcQHI;
 
-        procedure CalcPotHI;
+    procedure CalcPotHI;
     // not going into the mobile N pool;
 
   protected
@@ -844,20 +844,18 @@ end;
 procedure THumeWheatPartitioning.CalcPotHI;
 
 begin
-
-
-  //potHI: potential harvest index, calculated from the ratio of global radiation and temperature sum
+  // potHI: potential harvest index, calculated from the ratio of global radiation and temperature sum
   // by an empirical regression function
   potHI.v := QHI_INC.v * QHI.v + QHI_INT.v;
   /// <summary> C:/Users/h_kage/Documents/R_Statistik/HumeWheatDoku/HUMEWheatDocu.html#potential-harvest-index </summary>
-    // file:
+  // file:
   // SWmin: Minimum stem weight of a plant after anthesis, used to calculate amount of reserves that can be used to fill grain - g
 
   if (fRSWT = gf_pothi) and (EC.v >= 60) then
     SWMIN_pl.v := max(swmin_min, (STMWT_m2.v - (TSDM_m2.v * potHI.v - GRNWT_m2.v)) / Plants.v);
 
   //RSWT: stem reserves during grain filling in g/m²
-   RSWT.v := max(0,STMWT_m2.v - (SWMIN_pl.v * Plants.v));
+   RSWT.v := max(0, STMWT_m2.v - (SWMIN_pl.v * Plants.v));
 
 end;
 
@@ -988,24 +986,29 @@ end;
 
 procedure THumeWheatPartitioning.CreateAllOptions;
 begin
-  OptCreate('optRSWT', 'CWT3', optRSWT, 'Option for calculation of harvest index');
+
+  OptCreate('optRSWT', 'CWT3', optRSWT, 'method for calculating the minimum stem weight available for grain filling');
   optRSWT.OptionList.Clear;
   optRSWT.OptionList.Add('pothi');
   optRSWT.OptionList.Add('CWT3');
+
   OptCreate('optDroughtimpact', 'DroughtImpact', OptDroughtimpact,
   'Option for inclusion of drought stress effects in leaf-stem partitioning');
   OptDroughtimpact.OptionList.Clear;
   OptDroughtimpact.OptionList.Add('DroughtImpact');
   OptDroughtimpact.OptionList.Add('NoDroughtImpact');
+
   OptCreate('optNimpact', 'NoNImpact', OptNimpact,
   'Option for inclusion of nitrogen deficiency effects in leaf-stem partitioning');
   OptNimpact.OptionList.Clear;
   OptNimpact.OptionList.Add('NImpact');
   OptNimpact.OptionList.Add('NoNImpact');
+
   OptCreate('optHIcalcversion', 'ratjen', OptHIcalcversion, 'Option for harvest index calculation');
   OptHIcalcversion.OptionList.Clear;
   OptHIcalcversion.OptionList.Add('ratjen');
   OptHIcalcversion.OptionList.Add('rose');
+  OptHIcalcversion.DocuWebLink := 'https://agronomykiel.github.io/HUME/Components/CERES%20Wheat/Documentation/THumeWheatPartitioning.html#potential-harvest-index'
 
 end;
 
@@ -1954,7 +1957,7 @@ var
   b_RHI,       // b value of the logistic grain filling 
   Xmid,        // inflection point at end of endosperm phase  
   Xm,          // unscaled P5 parameter, grain filling duration in degree days 
-  RHI
+  RHI          // relative harvest index
   : real;
 
 
@@ -1974,13 +1977,13 @@ begin
     if GPSM.v > 0 then
     begin
       // logistic grain filling; side condition: at the end of grain filling
-      Xm := (P5.v + 21.5) / 0.05; // unscale P5 parameter (length of grain filling)
+      Xm := (P5.v + 21.5) / 0.05; // unscaled P5 parameter (length of grain filling in degree days)
       // dECDP: Duration of endosperm cell devision phase
       Xmid := dECDP.v; // inflection point at end of endosperm phase
       // initial value for HI/potHI
       RHI_ini := ((GPP.v * (iniGRNWT.v / 1000)) / TOPWT_pl.v) / potHI.v;
       r_RHI := ln(1 / RHI_ini - 1) / Xmid; // intrinsic rate of logistic RHI increase
-      K_RHI := 1; // ((exp(r_GF * Xm) - 1) * INI_GF) / (exp(r_GF * Xm) * INI_GF - 1); // changed to a maximum value of 1
+      K_RHI := 1; // maximum value of 1 !
       b_RHI := (K_RHI - RHI_ini) / RHI_ini; // relative HI at start of grain filling
       RHI := K_RHI / (1 + b_RHI * exp(-r_RHI * SUMDTTGF.v)); // logistic development of relative HI
 
@@ -1990,6 +1993,7 @@ begin
 //      potGROGRN.v := (TOPWT_pl.v + Senwt_pl.v) * HI_Rose.v * RHI - GRNWT_pl.v;
 
       // actual grain growth is limited by the potential (sink limited) grain growth and
+      // the source limitation calculated from the difference of actual to minimum stem weigth
       GROGRN.v := max(0, min(potGROGRN.v, STMWT_pl.v - SWMIN_pl.v));
       STMWT_pl.c := STMWT_pl.c - GROGRN.v; // substract grain weight change from stem weight change
       GRNWT_pl.c := GROGRN.v; // grain weight change from grain growth variable GROGRN
