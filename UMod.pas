@@ -2495,12 +2495,14 @@ begin
   WriteAllFinalNames;
   // initialize actual INI file
   { ActIniFile := TMyIniFile(FIniFiles.objects[ActInifileIndex]); }
+
   Init(ActIniFile);
-  // Initialize all external variables
-  InitAllExternV;
   // Initialize all submodels
   InitAllSubMods;
   InitAllDataSeries;
+  // Initialize all external variables
+  InitAllExternV;
+
   // Set weather file pointer to actual time step
   // #TS#029: infinite loop depending on ModTime.Name
   WeatherFile.LocateFor(Time.Name, Time.v);
