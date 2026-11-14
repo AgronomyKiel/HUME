@@ -108,6 +108,18 @@ type
     procedure CreateAllExternV;
     procedure CreateAllPars;
     procedure CreateAllOptions;
+    /// <summary> Clear conditional rates and flow diagnostics before the emergence gate. </summary>
+    procedure ResetRatesAndFlows;
+    /// <summary> Prepare current remobilization and CARBO, then add seed-reserve mobilization before allocation. </summary>
+    procedure CalcAssimilateSupply;
+    /// <summary> Capture the first positive stem mass from EC 37 as the fixed structural floor. </summary>
+    procedure CaptureStructuralStemMinimum;
+    /// <summary> Update QHI, the selected HI target and grain number before calculating grain growth. </summary>
+    procedure CalcGrainFillingRates;
+    /// <summary> Adjust stem and senescent dry-matter rates using Ndsen after CalcNRates. </summary>
+    procedure CalcDroughtInducedStemSenescence;
+    /// <summary> Calculate uncapped and capped soil N demand from final organ rates after all adjustments. </summary>
+    procedure CalcPlantNDemand;
     procedure CalcSeedReserveChange;
     procedure CalcLeafNChange;
     procedure InitStatesAfterEmergence;
@@ -869,7 +881,7 @@ var
     : real;
 
 begin
-  if (EC.v < EC_LGend.v) and (ISTAGE.v >= 1) and (LFWT_pl.v > 0) then
+  if (EC.v < EC_LGend.v) and (LFWT_pl.v > 0) then
   begin
     // kf_d discribes the influence of psi-root to stem partitioning
     if (fDroughtImpact = DroughtImpact) then
@@ -898,8 +910,7 @@ begin
   else
   begin
     STMWT_pl.c := Assiflow.v;
-    if (ISTAGE.v >= 1) then
-      fStem.v := 1;
+    fStem.v := 1;
     LFWT_pl.c := 0.0;
   end;
   GROLF.v := LFWT_pl.c;
@@ -1023,24 +1034,21 @@ var
   LeafLossRatio, StemLoss: real;
 
 begin
-  if ISTAGE.v >= 1.0 then
-  begin
-    LFWT_pl.c := max(-LFWT_pl.v, LFWT_pl.c - SENL.v);
+  LFWT_pl.c := max(-LFWT_pl.v, LFWT_pl.c - SENL.v);
 
-    // to ensure allometric growth relations
-    if (EC.v < 37) and (SENL.v > 0) then
-    begin
-      LeafLossRatio := SENL.v / LFWT_pl.v;
-      StemLoss := LeafLossRatio * STMWT_pl.v;
-      STMWT_pl.c := max(-STMWT_pl.v, STMWT_pl.c - StemLoss);
-    end;
-    // correction of net change of leaf dry matter due to senescence
-    DMTrans_pl.v := SENL.v * pDMTrans.v / 100;
-    // translocatable fraction of DM change  g/(pl*d)
-    Senwt_pl.c := SENL.v * (1 - pDMTrans.v / 100);
-    // non translocatable fraction of DM remains as dead leaves
-    NLeaf_pl.c := NLeaf_pl.c - SENL.v * NcLeaf.v / 100;
+  // to ensure allometric growth relations
+  if (EC.v < 37) and (SENL.v > 0) then
+  begin
+    LeafLossRatio := SENL.v / LFWT_pl.v;
+    StemLoss := LeafLossRatio * STMWT_pl.v;
+    STMWT_pl.c := max(-STMWT_pl.v, STMWT_pl.c - StemLoss);
   end;
+  // correction of net change of leaf dry matter due to senescence
+  DMTrans_pl.v := SENL.v * pDMTrans.v / 100;
+  // translocatable fraction of DM change  g/(pl*d)
+  Senwt_pl.c := SENL.v * (1 - pDMTrans.v / 100);
+  // non translocatable fraction of DM remains as dead leaves
+  NLeaf_pl.c := NLeaf_pl.c - SENL.v * NcLeaf.v / 100;
 end;
 
 procedure THumeWheatPartitioning.CalcNStem;
@@ -1114,7 +1122,7 @@ end;
 /// <summary> Calculates the change in seed reserve for the Hume Wheat Partitioning component. </summary>
 procedure THumeWheatPartitioning.CalcSeedReserveChange;
 begin
-  if (ISTAGE.v >= 0.99) and (ISTAGE.v < 2) and (SEEDRV.v > 0) then
+  if (ISTAGE.v < 2) and (SEEDRV.v > 0) then
   begin
     SEEDRV.c := -k_SEEDRV.v * SEEDRV.v;
     Assiflow.v := Assiflow.v - SEEDRV.c;
@@ -1719,49 +1727,55 @@ begin
 
 end;
 
-procedure THumeWheatPartitioning.CalcRates;
+/// <summary> Clear conditional rates and flow diagnostics before the emergence gate. </summary>
+procedure THumeWheatPartitioning.ResetRatesAndFlows;
 
+var
+ i : integer;
 begin
-  /// <summary> Rebuild conditional rates from zero instead of carrying them across timesteps. </summary>
-  TEMPsum.c := 0;
-  NcLeafWinter.c := 0;
-  NcStemWinter.c := 0;
-  NStoragepool_pl.c := 0;
+  /// <summary> Reset rates and flow diagnostics even when the crop has not emerged. </summary>
+  for i := 0 to StateStrList.Count - 1 do
+    TState(StateStrList.Objects[i]).c := 0;  TEMPsum.c := 0;
+
+  /// set selected variables to zero as well
+  Assiflow.v := 0;
+  DMTrans_pl.v := 0;
+  GROLF.v := 0;
+  GROGRN.v := 0;
   potGROGRN.v := 0;
+  NDemand_pl.v := 0;
+  NDemand.v := 0;
+  PlantNDemand_rate_limited_m2.v := 0;
   Ndsen := 0;
+end;
+
+/// <summary> Prepare current remobilization and CARBO, then add seed-reserve mobilization before allocation. </summary>
+procedure THumeWheatPartitioning.CalcAssimilateSupply;
+begin
   /// <summary> Calculate today's remobilization before it enters today's assimilate flow. </summary>
   DMTrans_pl.v := 0;
-  if ISTAGE.v >= 1 then
-    DMTrans_pl.v := SENL.v * pDMTrans.v / 100;
-  LAIShoot.v := LAI.v;
-  Assiflow.v := CARBO.v + DMTrans_pl.v; // daily assimilation + translocation
+  DMTrans_pl.v := SENL.v * pDMTrans.v / 100;
+  Assiflow.v := CARBO.v + DMTrans_pl.v; // daily assimilation + translocation  seed reserves are added later
+  CalcSeedReserveChange;
+end;
 
-  if (GlobTime.v >= SowingDate.v) and (ISTAGE.v >= 1) then
-  begin
-    TEMPsum.c := max(TEMPM.v, 0); // rate of change of temperature sum
-  end;
-
+/// <summary> Capture the first positive stem mass from EC 37 as the fixed structural floor. </summary>
+procedure THumeWheatPartitioning.CaptureStructuralStemMinimum;
+begin
   /// <summary> Capture the fixed structural stem floor at the first positive stem mass from EC 37. </summary>
   if (EC.v >= 37) and (swmin_min <= 0) and (STMWT_pl.v > 0) then
   begin
     swmin_min := STMWT_pl.v;
     SWMIN_pl.v := swmin_min;
   end;
+end;
 
-  CalcSeedReserveChange;
-  CalcRootDMandN;
-  CalcAllometricLeafStemPartitioning;
-  CalcLeafNChange;
-  CalcNStem;
-  CalcSenescenceAndTranslocation;
-
+/// <summary> Update QHI, the selected HI target and grain number before calculating grain growth. </summary>
+procedure THumeWheatPartitioning.CalcGrainFillingRates;
+begin
   // calc. of translocatable carbon fraction of the stem according to
   if (EC.v > 50) and (EC.v < 75) then
     CalcQHI;
-
-  /// <summary> Capture the structural stem weight for both reserve options; pothi updates it from EC 60. </summary>
-  if (EC.v >= 37) and (SWMIN_pl.v <= 0) then
-    SWMIN_pl.v := STMWT_pl.v;
 
   /// <summary> Both reserve options use the potential harvest index for logistic grain filling. </summary>
   CalcPotHI;
@@ -1776,9 +1790,11 @@ begin
     GRNWT_pl.c := 0;
     CalcQ45;
   end;
+end;
 
-  CalcNRates;
-
+/// <summary> Adjust stem and senescent dry-matter rates using Ndsen after CalcNRates. </summary>
+procedure THumeWheatPartitioning.CalcDroughtInducedStemSenescence;
+begin
   if ((Ndsen > 0) and (PSIroot.v > PsiSen1.v)) then
   begin
     // reduce also stem mass if drought induced leaf senescence occurs.
@@ -1787,11 +1803,11 @@ begin
     STMWT_pl.c := STMWT_pl.c - STMWT_pl.v * (Ndsen / NStem_pl.v) *
       ((PsiSen1.v - PSIroot.v) * PsiSen2.v);
   end;
+end;
 
-  // transfer of shoot N and C to senescent pool at the end of grain filling
-  if (EC.v > 90) and (STMWT_pl.v > 0) then
-    TransferToSenescentPools;
-
+/// <summary> Calculate uncapped and capped soil N demand from final organ rates after all adjustments. </summary>
+procedure THumeWheatPartitioning.CalcPlantNDemand;
+begin
   /// <summary> Reconcile soil demand with the final rates, including maturity transfers. </summary>
   // N demand of the plant (net N uptake from soil)  g/(pl*d)
   NDemand_pl.v := max(NStem_pl.c + NLeaf_pl.c + NGrain_pl.c + NSen_pl.c +
@@ -1802,7 +1818,37 @@ begin
     NDemand_pl.v * Plants.v); // theoretical demand
 
   NDemand.v := NDemand_pl.v * Plants.v * 10;
+end;
 
+procedure THumeWheatPartitioning.CalcRates;
+
+begin
+  ResetRatesAndFlows;
+  LAIShoot.v := LAI.v;
+  if GlobTime.v >= SowingDate.v then
+  begin
+    TEMPsum.c := max(TEMPM.v, 0); // rate of change of temperature sum
+  end;
+
+  /// <summary> All growth, senescence, grain filling, and N demand calculations require emergence. </summary>
+  if ISTAGE.v >= 1 then
+  begin
+    CalcAssimilateSupply;
+    CaptureStructuralStemMinimum;
+    CalcRootDMandN;
+    CalcAllometricLeafStemPartitioning;
+    CalcLeafNChange;
+    CalcNStem;
+    CalcSenescenceAndTranslocation;
+    CalcGrainFillingRates;
+    CalcNRates;
+    CalcDroughtInducedStemSenescence;
+    // transfer of shoot N and C to senescent pool at the end of grain filling
+    if (EC.v > 90) and (STMWT_pl.v > 0) then
+      TransferToSenescentPools;
+
+    CalcPlantNDemand;
+  end;
 end;
 
 procedure THumeWheatPartitioning.setNimpact;
@@ -2175,13 +2221,6 @@ begin
     CropHeight.c := LAI.v / 5 + 0.05 - CropHeight.v
   else // first proxy for crop height
     CropHeight.c := 0;
-  // N demand of the plant (net N uptake from soil)  g/(pl*d)
-  NDemand_pl.v := max(NStem_pl.c + NLeaf_pl.c + NGrain_pl.c + NSen_pl.c +
-    NStoragepool_pl.c + NRoot_pl.c, 0);
-  // interface soil model
-  // limited in order to avoid unrealistic high N-uptake rates
-  PlantNDemand_rate_limited_m2.v := min(maxNupTake.v / 10, // X kgN/ha
-    NDemand_pl.v * Plants.v); // theoretical demand
 
 end;
 
