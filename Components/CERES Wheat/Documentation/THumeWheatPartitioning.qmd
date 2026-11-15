@@ -1373,16 +1373,18 @@ r(t)
 {\displaystyle\sum_i N_{l[i]}^{ph}(t)}.
 $$ {#eq-n-mobile-photosynthetic-ratio}
 
-The change in photosynthetic stem N is then
+When photosynthetic leaf N is positive, the implemented change in nonstructural stem N is
 
 $$
 \frac{dN_s^{ph}}{dt}
 =
-\min\left(
-0,
-N_s^{ph}(t)\,r(t)-N_s^{mob}(t)
-\right).
+-\max\left(0,\min\left(
+N_s^{ph}(t),
+\max\left(0,N_s^{ph}(t)\,r(t)-N_s^{mob}(t)\right)
+\right)\right).
 $$ {#eq-n-photosynthetic-stem-change}
+
+When no photosynthetic leaf N remains, the code instead releases all positive nonstructural stem N: $dN_s^{ph}/dt=-\max(0,N_s^{ph})$.
 
 Unlike the original model, HumeWheat transfers mobile N to grains from the stem pool first.
 
