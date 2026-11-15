@@ -42,6 +42,8 @@ type
     FSoilUrea: TExternV;
     FUreaHandling: TUreaHandling;
 
+    /// <summary> Build mixed-fertilizer events after sensitivity inputs have been resolved. </summary>
+    procedure InitApplications(var GlobMod: TMod);
     procedure ApplyAmount(Target: TExternV; Amount: real);
     procedure ClearApplications;
     function FindApplication(const ADateString: string): TMixedFertilizerEvent;
@@ -60,12 +62,17 @@ type
     /// <summary>Option defining whether urea is routed to ammonium or to a separate urea pool.</summary>
     UreaHandlingOption: TOption;
 
+{$IFNDEF NONVISUAL}
     constructor Create(AOwner: TComponent); override;
+{$ELSE}
+    constructor Create;
+{$ENDIF}
     destructor Destroy; override;
 
     procedure CalcRates; override;
     procedure CreateAll; override;
     procedure Init(var GlobMod: TMod); override;
+    procedure InitAfterBinding(var GlobMod: TMod); override;
 
   published
     /// <summary>External target for ammonium in the top soil layer, typically `NH4_Arr_1`.</summary>
@@ -96,9 +103,17 @@ begin
   result := TryStrToDate(DateString, DateValue, LocalFormatSettings);
 end;
 
+{$IFNDEF NONVISUAL}
 constructor TDuengMixed.Create(AOwner: TComponent);
+{$ELSE}
+constructor TDuengMixed.Create;
+{$ENDIF}
 begin
+{$IFNDEF NONVISUAL}
   inherited Create(AOwner);
+{$ELSE}
+  inherited Create;
+{$ENDIF}
   FApplications := TList.Create;
 end;
 
@@ -226,6 +241,19 @@ begin
 end;
 
 procedure TDuengMixed.Init(var GlobMod: TMod);
+begin
+  inherited Init(GlobMod);
+  if (GlobMod = nil) or not GlobMod.InitializingRun then
+    InitApplications(GlobMod);
+end;
+
+procedure TDuengMixed.InitAfterBinding(var GlobMod: TMod);
+begin
+  inherited InitAfterBinding(GlobMod);
+  InitApplications(GlobMod);
+end;
+
+procedure TDuengMixed.InitApplications(var GlobMod: TMod);
 var
   i: integer;
   Name: string;
@@ -235,7 +263,6 @@ var
   FertilizerKind: TFertilizerKind;
   Application: TMixedFertilizerEvent;
 begin
-  inherited Init(GlobMod);
   ClearApplications;
   UpdateUreaHandling;
 
