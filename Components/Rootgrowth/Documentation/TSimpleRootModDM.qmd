@@ -433,11 +433,11 @@ The RLD classes are updated at every model time step only when `CalcMoments` is 
 Assigning a `TSoilWaterModelR` component to the `RootedSoilWaterModel` property links the total and effective RLD class matrices directly to that soil water model. To use the classes for water uptake, configure the linked soil water model with `SinkTermMethod = MFP` and `WithClasses = true`; see the [TSoilWaterModelR documentation](../../Soil/Documentation/TSoilWaterModelR.qmd). The soil water model then calculates MFP-limited uptake separately for every RLD class, maintains a separate water amount for each class, and sums the ten class contributions to recover each layer's sink term. `MFPuptakedistribution` controls whether potential uptake is allocated empirically or in proportion to maximum flow.
 
 | Item | Unit or values | Default | Role |
-|---|---:|---:|---|
+|-----------------|------------------:|------------------:|-----------------|
 | `CalcMoments` | `false`, `true` | `false` | Recalculate total and effective RLD classes at every time step. |
-| `VK_lrv_int` | % | 0 | Intercept $CV_{int}$ in @eq-rld-cv. |
-| `VK_lrv_slope` | % | 0 | Slope $CV_{slope}$ in @eq-rld-cv. |
-| `VK_lrv_i` | % | calculated | Coefficient of variation in layer $i$. |
+| `VK_lrv_int` | \% | 0 | Intercept $CV_{int}$ in @eq-rld-cv. |
+| `VK_lrv_slope` | \% | 0 | Slope $CV_{slope}$ in @eq-rld-cv. |
+| `VK_lrv_i` | \% | calculated | Coefficient of variation in layer $i$. |
 | `WLD_stdev_i` | $cm\,cm^{-3}$ | calculated | Standard deviation of the ten total-RLD representatives in layer $i$. |
 | `effWLD_stdev_i` | $cm\,cm^{-3}$ | calculated | Standard deviation of the ten effective-RLD representatives in layer $i$. |
 | `RootedSoilWaterModel` | component reference | none | Links the RLD class matrices to a `TSoilWaterModelR` instance. |
@@ -517,8 +517,8 @@ names(df) <- c("Parameter", "Units", "Value", "Description")
 ```
 
 ## Parameters
-The parameters configured for `SimpleRootModDM1` in the silage maize model are shown in @tbl-Parameter.
 
+The parameters configured for `SimpleRootModDM1` in the silage maize model are shown in @tbl-Parameter.
 
 ```{r}
 #| label: tbl-Parameter

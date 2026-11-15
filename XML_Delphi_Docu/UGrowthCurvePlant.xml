@@ -215,6 +215,9 @@
       </methodref>
       <methodref name="GetWLD" visibility="protected" procflags="abstract virtual">
       </methodref>
+      <methodref name="GetWldMomentsAddress" visibility="protected" procflags="virtual">
+      </methodref>
+      <methodref name="GetEffWldMomentsAddress" visibility="protected" procflags="virtual" />
       <methodref name="GetSumRootLength" visibility="protected" procflags="abstract virtual">
       </methodref>
       <methodref name="GetSumRootLength_eff" visibility="protected" procflags="abstract virtual">
@@ -316,30 +319,18 @@
         </methodref>
         <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
         </methodref>
-        <methodref name="set_State" visibility="private" procflags="virtual">
-        </methodref>
-        <methodref name="get_State" visibility="private">
-        </methodref>
-        <methodref name="set_Par" visibility="private">
-        </methodref>
-        <methodref name="Get_Par" visibility="private">
-        </methodref>
-        <methodref name="set_Var" visibility="private">
-        </methodref>
-        <methodref name="Get_Var" visibility="private">
-        </methodref>
-        <methodref name="set_Const" visibility="private">
-        </methodref>
-        <methodref name="get_Const" visibility="private">
-        </methodref>
-        <methodref name="set_Option" visibility="private">
-        </methodref>
-        <methodref name="get_Option" visibility="private">
-        </methodref>
-        <methodref name="set_ExternVar" visibility="private">
-        </methodref>
-        <methodref name="get_ExternVar" visibility="private">
-        </methodref>
+        <methodref name="set_State" visibility="private" procflags="virtual" />
+        <methodref name="get_State" visibility="private" />
+        <methodref name="set_Par" visibility="private" />
+        <methodref name="Get_Par" visibility="private" />
+        <methodref name="set_Var" visibility="private" />
+        <methodref name="Get_Var" visibility="private" />
+        <methodref name="set_Const" visibility="private" />
+        <methodref name="get_Const" visibility="private" />
+        <methodref name="set_Option" visibility="private" />
+        <methodref name="get_Option" visibility="private" />
+        <methodref name="set_ExternVar" visibility="private" />
+        <methodref name="get_ExternVar" visibility="private" />
         <methodref name="InitStates" visibility="private" procflags="virtual">
         </methodref>
         <methodref name="InitParms" visibility="private" procflags="virtual">
@@ -358,14 +349,12 @@
         </methodref>
         <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
         </methodref>
-        <methodref name="UpdateValue" visibility="protected">
-        </methodref>
+        <methodref name="UpdateValue" visibility="protected" />
         <methodref name="SetEntityDeclarationClass" visibility="protected">
         </methodref>
         <methodref name="Paint" visibility="protected" procflags="override">
         </methodref>
-        <methodref name="Notification" visibility="protected" procflags="virtual">
-        </methodref>
+        <methodref name="Notification" visibility="protected" procflags="virtual" />
         <methodref name="Create" visibility="public" procflags="constructor override">
         </methodref>
         <methodref name="free" visibility="public">
@@ -389,6 +378,8 @@
         <methodref name="CreateAll" visibility="public" procflags="virtual">
         </methodref>
         <methodref name="Init" visibility="public" procflags="virtual">
+        </methodref>
+        <methodref name="InitAfterBinding" visibility="public" procflags="virtual">
         </methodref>
         <methodref name="CalcRates" visibility="public" procflags="virtual">
         </methodref>
@@ -438,8 +429,7 @@
         </propertyref>
         <methodref name="DblClick" visibility="public" procflags="override">
         </methodref>
-        <propertyref name="CalcTimeTicks" visibility="public">
-        </propertyref>
+        <propertyref name="CalcTimeTicks" visibility="public" />
         <propertyref name="SM_GlobMod" visibility="published">
         </propertyref>
         <propertyref name="SM_ExternVStrList" visibility="published">
@@ -466,18 +456,12 @@
         </propertyref>
         <propertyref name="OptContOutput" visibility="published">
         </propertyref>
-        <propertyref name="Parent" visibility="published">
-        </propertyref>
-        <propertyref name="Canvas" visibility="published">
-        </propertyref>
-        <propertyref name="Visible" visibility="published">
-        </propertyref>
-        <propertyref name="color" visibility="published">
-        </propertyref>
-        <propertyref name="DebugForm" visibility="published">
-        </propertyref>
-        <propertyref name="OnDblclick" visibility="published">
-        </propertyref>
+        <propertyref name="Parent" visibility="published" />
+        <propertyref name="Canvas" visibility="published" />
+        <propertyref name="Visible" visibility="published" />
+        <propertyref name="color" visibility="published" />
+        <propertyref name="DebugForm" visibility="published" />
+        <propertyref name="OnDblclick" visibility="published" />
         <ancestor name="TGraphicControl" namespace="Vcl.Controls">
           <methodref name="WMPaint" visibility="private" procflags="message">
           </methodref>
@@ -1607,10 +1591,21 @@
            <summary> Temperature sum state variable for dry matter</summary>
         </devnotes>
       </field>
-      <field name="Harvestindex" type="TPar" visibility="public" size="4" offset="641032" file="UGrowthCurvePlant.pas" line="121" />
-      <field name="C_cont_Res" type="TPar" visibility="public" size="4" offset="641036" file="UGrowthCurvePlant.pas" line="121" />
-      <field name="N_Harvestindex" type="TPar" visibility="public" size="4" offset="641040" file="UGrowthCurvePlant.pas" line="121" />
-      <field name="StateVars" visibility="public" size="16" offset="641044" file="UGrowthCurvePlant.pas" line="124">
+      <field name="fFineRoot0" type="TPar" visibility="public" size="4" offset="641032" file="UGrowthCurvePlant.pas" line="122">
+        <devnotes>
+           <summary>Fine-root allocation at sowing and its decline per degree-day.</summary>
+        </devnotes>
+      </field>
+      <field name="FFineRootDec" type="TPar" visibility="public" size="4" offset="641036" file="UGrowthCurvePlant.pas" line="122" />
+      <field name="FFineRoot" type="TVar" visibility="public" size="4" offset="641040" file="UGrowthCurvePlant.pas" line="124">
+        <devnotes>
+           <summary>Fraction of positive DM growth allocated to fine roots.</summary>
+        </devnotes>
+      </field>
+      <field name="Harvestindex" type="TPar" visibility="public" size="4" offset="641044" file="UGrowthCurvePlant.pas" line="125" />
+      <field name="C_cont_Res" type="TPar" visibility="public" size="4" offset="641048" file="UGrowthCurvePlant.pas" line="125" />
+      <field name="N_Harvestindex" type="TPar" visibility="public" size="4" offset="641052" file="UGrowthCurvePlant.pas" line="125" />
+      <field name="StateVars" visibility="public" size="16" offset="641056" file="UGrowthCurvePlant.pas" line="128">
         <devnotes>
            <summary>Array of state variables for the growth model</summary>
         </devnotes>
@@ -1618,7 +1613,7 @@
           <element type="TState" />
         </array>
       </field>
-      <field name="CurveTypes" visibility="public" size="4" offset="641060" file="UGrowthCurvePlant.pas" line="127">
+      <field name="CurveTypes" visibility="public" size="4" offset="641072" file="UGrowthCurvePlant.pas" line="131">
         <devnotes>
            <summary>Array of growth curve types for each state variable</summary>
         </devnotes>
@@ -1626,7 +1621,7 @@
           <element type="TGrowth" />
         </array>
       </field>
-      <field name="CurveOptions" visibility="public" size="16" offset="641064" file="UGrowthCurvePlant.pas" line="131">
+      <field name="CurveOptions" visibility="public" size="16" offset="641076" file="UGrowthCurvePlant.pas" line="135">
         <devnotes>
            <summary>Array of curve options for each state variable</summary>
            <remarks>Options are the user interface to define the type of growth curve used for each state variable.</remarks>
@@ -1635,12 +1630,12 @@
           <element type="TOption" />
         </array>
       </field>
-      <field name="CurveSwitches" visibility="public" size="4" offset="641080" file="UGrowthCurvePlant.pas" line="132">
-        <array name="CurveSwitches" visibility="public" file="UGrowthCurvePlant.pas" line="132">
+      <field name="CurveSwitches" visibility="public" size="4" offset="641092" file="UGrowthCurvePlant.pas" line="136">
+        <array name="CurveSwitches" visibility="public" file="UGrowthCurvePlant.pas" line="136">
           <element type="Boolean" />
         </array>
       </field>
-      <field name="GrowthRates" visibility="public" size="16" offset="641084" file="UGrowthCurvePlant.pas" line="135">
+      <field name="GrowthRates" visibility="public" size="16" offset="641096" file="UGrowthCurvePlant.pas" line="139">
         <devnotes>
            <summary>Array of variable changes for each state variable</summary>
         </devnotes>
@@ -1648,7 +1643,7 @@
           <element type="TVar" />
         </array>
       </field>
-      <field name="Parameters" visibility="public" size="96" offset="641100" file="UGrowthCurvePlant.pas" line="138">
+      <field name="Parameters" visibility="public" size="96" offset="641112" file="UGrowthCurvePlant.pas" line="142">
         <devnotes>
            <summary>Two dimensional Array of parameters for each state variable</summary>
         </devnotes>
@@ -1658,14 +1653,14 @@
           </array>
         </array>
       </field>
-      <field name="TempSumEmerge" type="TPar" visibility="public" size="4" offset="641196" file="UGrowthCurvePlant.pas" line="141">
+      <field name="TempSumEmerge" type="TPar" visibility="public" size="4" offset="641208" file="UGrowthCurvePlant.pas" line="145">
         <devnotes>
            <summary>Temperature sum for emergence</summary>
         </devnotes>
       </field>
-      <field name="SoilNUptakeGrowthRate" type="TExternV" visibility="public" size="4" offset="641200" file="UGrowthCurvePlant.pas" line="143" />
-      <field name="SumSoilNUptakeGrowth" type="TState" visibility="public" size="4" offset="641204" file="UGrowthCurvePlant.pas" line="144" />
-      <procedure name="CalcRates" visibility="public" procflags="override" file="UGrowthCurvePlant.pas" line="146">
+      <field name="SoilNUptakeGrowthRate" type="TExternV" visibility="public" size="4" offset="641212" file="UGrowthCurvePlant.pas" line="147" />
+      <field name="SumSoilNUptakeGrowth" type="TState" visibility="public" size="4" offset="641216" file="UGrowthCurvePlant.pas" line="148" />
+      <procedure name="CalcRates" visibility="public" procflags="override" file="UGrowthCurvePlant.pas" line="150">
       </procedure>
       <procedure name="Integrate" visibility="public" procflags="override" file="UGrowthCurvePlant.pas" line="152">
         <devnotes>
@@ -1694,6 +1689,6 @@
       <property name="Par_TempsumEmerge" visibility="published" read="TempSumEmerge" write="TempSumEmerge" type="TPar" file="UGrowthCurvePlant.pas" line="168" />
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="UGrowthCurvePlant.pas" line="539">
+  <procedure name="Register" visibility="public" file="UGrowthCurvePlant.pas" line="569">
   </procedure>
 </namespace>

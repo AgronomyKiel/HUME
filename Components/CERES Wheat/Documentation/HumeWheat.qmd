@@ -1,0 +1,36 @@
+---
+title: "Overview HumeWheat"
+author: "Agronomy and Crop Science Group, Kiel University"
+date: "`r Sys.Date()`"
+---
+
+# HumeWheat
+
+Starting point of the model was mainly the CERES-Wheat model, but many features clearly distinguishes the current HumeWheat model from it. The parameterisation of the most empirical equations is based on own experimental work.
+Phenology simulation explicitly contains two digit BBCH/EC stages. Dry matter production is based on light use efficiency, but several options are available to modify the effects of temperature, CO2, drought stress and nitrogen deficiency on daily growth rates. The dry matter and N partitioning component is mainly based on the principle of allometry and organ specific N dilution curves. The work is mainy based on the PhD thesis of Arne Ratjen with contributions of Ulf Böttcher, Tobias Johnen, Franziska Meyer-Schatz (Brüggemann), Adam Luig, Dorothee Neukam.  
+
+The motivation for developing a *new* model was mainly the aim to couple experimental work and data analysis with the systems approach of dynamic models.
+
+The HumeWheat model consists of/is constructed from several components. The crop growth related component are listed below. A whole agroecosystem model then needs forther components which are described in the sections soil water balance and in the section soil nitrogen balance, which has to follow. Root growth is calculated in a component which is used in other crop growth models and is therefore descibed in a separate section.
+
+## Phenology
+
+The phenology of the wheat crop is simulated within the class THumeWheatDryMatter, its source code is placed within the file Development.pas and documented within the file TDevelopment.qmd. For historical reasons, the calculation of daylength is placed in an own component.
+
+## Dry matter production
+
+The daily dry matter production of the wheat crop is simulated within the class THumeWheatDryMatter, its source code is placed within the file UHumeWheatDryMatter.pas and documented within the file THumeWheatDryMatter.qmd. 
+
+## Dry matter and nitrogen partitioning
+
+The Dry matter and nitrogen partitioning of the wheat crop is simulated within the class THumeWheatPartitioning, its source code is placed within the file UHumeWheatPartitioning.pas and documented within the file THumeWheatPartitioning.qmd.
+
+## Leaf area growth
+
+The leaf area dynamics is calculated in a separate component, TWheatLeafArea, its source code ts source code is placed within the file UHumeWheatLeafArea.pas and documented within the file TWheatLeafArea.qmd. 
+
+# Binding the components
+
+
+
+

@@ -1,0 +1,305 @@
+---
+title: "TGrowthCurvePlantRoots"
+author: "Agronomy and Crop Science Group, Kiel University"
+date: "`r Sys.Date()`"
+---
+
+```{r}
+#| label: SetupLibraries
+#| include: FALSE
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center", fig.width = 12, fig.height = 8, fig.pos = "h", fig.cap = TRUE)
+rm(list = ls(all.names = TRUE))
+
+library(rmarkdown)
+library(bookdown)
+library(soilwater)
+library(pracma)
+library(dplyr)
+library(ggplot2)
+library(extrafont)
+library(gifski)
+library(gganimate)
+library(transformr)
+library(reticulate)
+library(tinytex)
+library(magick)
+library(bibtex)
+library(ggsci)
+library(knitcitations)
+library(kableExtra)
+library(Weatherfunctions)
+library(xml2)
+library(ggpmisc)
+library(tidyr)
+options("citation_format" = "pandoc")
+
+```
+
+```{r}
+#| label: SetupPathsReadXML
+#| message: false
+#| warning: false
+#| include: false
+fn_source <- "Q:/HUME/HUME/Components/PlantComponents/UGrowthCurvePlantRoots.pas"
+fn_xml_docu <- "Q:/HUME/HUME/XML_Delphi_Docu/UGrowthCurvePlantRoots.xml"
+doc <- read_xml(fn_xml_docu)
+
+
+```
+
+# Summary
+
+```{r}
+#| label: SummaryDevnotes
+#| message: false
+#| warning: false
+#| include: false
+
+classes <- xml_find_all(doc, ".//class")
+
+# Extract <devnotes> content and class names
+result <- data.frame(
+  class_name = xml_attr(classes, "name"),
+  devnotes   = sapply(classes, function(class_node) {
+    devnotes_node <- xml_find_first(class_node, "./devnotes")
+    if (!is.na(devnotes_node)) trimws(xml_text(devnotes_node)) else NA_character_
+  }),
+  stringsAsFactors = FALSE
+)
+```
+
+```{r}
+#| include: false
+# Find the TGrowthCurvePlant class node
+class_node <- xml_find_first(doc, ".//class[@name='TGrowthCurvePlant']")
+
+# Extract all propertyref nodes inside that class
+properties <- xml_find_all(class_node, ".//propertyref")
+
+# Extract attributes: name and visibility
+property_df <- data.frame(
+  name       = xml_attr(properties, "name"),
+  visibility = xml_attr(properties, "visibility"),
+  stringsAsFactors = FALSE
+)
+```
+
+```{r}
+#| include: false
+library(xml2)
+library(dplyr)
+library(tidyr)
+library(stringr)
+
+# Load XML
+#doc <- read_xml("UGrowthCurvePlant.xml")
+
+# Find TGrowthCurvePlant class node
+class_node <- xml_find_first(doc, ".//class[@name='TGrowthCurvePlant']")
+
+# Extract <propertyref> elements
+property_refs <- xml_find_all(class_node, ".//propertyref")
+
+property_df <- data.frame(
+  name       = xml_attr(property_refs, "name"),
+  visibility = xml_attr(property_refs, "visibility"),
+  stringsAsFactors = FALSE
+)
+
+
+
+# Extract <field> elements under <members>
+#field_nodes <- xml_find_all(class_node, ".//members/field")
+field_nodes <- xml_find_all(class_node, ".//field")
+
+# Extract name, type, and optional <summary> and <remarks>
+field_df <- data.frame(
+  name     = xml_attr(field_nodes, "name"),
+  type     = xml_attr(field_nodes, "type"),
+  summary  = sapply(field_nodes, function(x) {
+    summary_node <- xml_find_first(x, ".//summary")
+    if (!is.na(summary_node)) xml_text(summary_node) else NA_character_
+  }),
+  remarks  = sapply(field_nodes, function(x) {
+    remarks_node <- xml_find_first(x, ".//remarks")
+    if (!is.na(remarks_node)) xml_text(remarks_node) else NA_character_
+  }),
+  stringsAsFactors = FALSE
+)
+
+# Combine property_ref and field info by matching name
+full_df <- left_join(property_df, field_df, by = "name")
+
+# Optional: clean up whitespace
+full_df <- full_df %>%
+  mutate(across(where(is.character), ~str_squish(.)))
+
+# View result
+#print(full_df)
+
+```
+
+```{r}
+#| label: SummaryDevnotesOutput
+#| echo: false
+#| message: false
+#| warning: false
+#| results: asis
+#cat(result$devnotes, sep="\n\n")
+
+```
+
+`r result$devnotes`
+
+## Descendence
+
+The class TGrowthCurvePlantRoots is derived from TGrowthCurvePlant which derived from TSubmodel which is derived from TObject or TGraphicControl when compiled for a console app or a Delphi VCL application.
+
+TGrowthCurvePlant \|TAbstractPlant \|\_\_\_\_TSubmodel
+
+## Scientific Background
+
+The class TGrowthCurvePlantRoots adds root growth functionality to the class TGrowthCurvePlant. It uses many functions from the source code file URootGrowthUtils.pas which is also used by the class TSimpleRootModDM.
+
+
+## Fine-root biomass and root length
+
+The `TGrowthCurvePlantRoots` can simulated the development of total root length either using growth curves or indirectly from the development of fine root biomass and the parameter specific root length. 
+
+`TGrowthCurvePlantRoots` integrates `DMFineRoot` in g/m² from its ancestor TAbstractPlant. Its change is calculated from `DMFineRoot.c = max(0, DM_Change) * fFineRoot`, with `fFineRoot = max(0, fFineRoot0 - fFineRootDec * TSum)`. `TSum` is the existing base-temperature-corrected temperature sum from sowing. The defaults are `fFineRoot0 = 0.4` and `fFineRootDec = 0.0002` per degree-day. Fine-root accumulation stops at harvest; negative DM growth does not remove roots. The fitted DM curve remains unchanged. The older `TGrowthCurvePlantRootDM` subclass retains its separate `DM_Change * fFineRoot / (1 - fFineRoot)` convention.
+
+Root ageing is an optional feature which is implemented as a simple box-car approach, i.e. after a certain duration the roots are seen as not longer effective and then are not part of the `effective root lenth` anymore.
+
+
+`TGrowthCurvePlantRoots` supports these settings:
+
+| Setting | Meaning |
+|------------------------------------|------------------------------------|
+| `WithRoots` | Single root-growth switch inherited from `TAbstractPlant`; default `true`. Set to `false` to disable root calculations and soil-depth connections. Use this instead of the removed duplicate `OptWithRoots` option in configuration files. |
+| `SRLcalc = fromGrowthcurve` | Default: use the existing logistic root-length curve. |
+| `SRLcalc = fromDMfineRoot` | Calculate root length as `DMFineRoot * sp_RL / 10000` in cm/cm². |
+| `sp_RL` | Specific fine-root length in cm/g DM; default 7000. |
+| `Opt_RootAgeing = true` | Use the circular box-car cohorts and running active-root totals. |
+| `ActiveDuration` | Number of active cohorts, truncated and bounded to 0–500. One cohort is added per `CalcRates` call, as in `TSimpleRootModDM`; daily calls give days. |
+| `CalcMoments = true` | Calculate ten lognormal quantiles per layer for total and effective RLD. |
+| `VK_lrv_int`, `VK_lrv_slope` | Define layer CV (%) as `max(0, VK_lrv_int + VK_lrv_slope * ln(mean RLD))`; both default to zero. |
+
+Quantiles are normalized to preserve the layer mean. `WLD_stdev_XX` and `effWLD_stdev_XX` report their actual standard deviations. With `CalcMoments` disabled, all quantiles equal the layer mean. `SoilWaterModel.PlantModel = GrowthCurvePlantRoots1` automatically links the live total and effective moment matrices, including after initialization and crop changes. The optional `RootedSoilWaterModel` property remains available for explicit coupling. Class-resolved water uptake requires `SinkTermMethod = MFP` and `WithClasses = true` in the soil-water options. Root lengths, cohorts, and distribution outputs are cleared outside the growing season and on initialization.
+
+
+## State variables
+
+```{r}
+#| label: StateVariables
+#| message: false
+#| warning: false
+#| include: false
+fn <- "csv_Hume_Docu/GrowthCurvePlantRoots1.csv"
+df <- read.delim(fn, header = TRUE, sep = ";", fileEncoding = "UTF-8-BOM")
+df.state <- df %>% filter(Submodel == "GrowthCurvePlantRoots1", EntityType == "State") %>% dplyr::select(EntityName, Units, Value, Comment)
+names(df.state) <- c("State variable", "Units", "InitialValue", "Description")
+```
+
+The class TGrowthCurvePlant has `r trunc(nrow(df.state))` following state variable(s).
+
+```{r}
+#| label: StateVariablesOutput
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.state)
+```
+
+## Parameters
+
+```{r}
+#| label: Parameters
+#| message: false
+#| warning: false
+#| include: false
+
+df.par <- df %>% filter(Submodel == "GrowthCurvePlantRoots1", EntityType == "Parameter") %>% dplyr::select(EntityName, Units, Value, Comment)
+names(df.par) <- c("Parameter", "Units", "Value", "Description")
+
+```
+
+The class TGrowthCurvePlant has `r trunc(nrow(df.par))` following parameter(s).
+
+```{r}
+#| label: ParametersOutput
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.par,  escape = FALSE)
+```
+
+## Variables
+
+```{r}
+#| label: Variables
+#| message: false
+#| warning: false
+#| include: false
+
+df.var <- df %>% filter(Submodel == "GrowthCurvePlantRoots1", EntityType == "Variable") %>% dplyr::select(EntityName, Units, Comment)
+names(df.var) <- c("Variable", "Units", "Description")
+
+```
+
+The class TGrowthCurvePlant has `r trunc(nrow(df.var))` following variable(s).
+
+```{r}
+#| label: VariablesOutput
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.var,  escape = FALSE)
+```
+
+## External variables
+
+```{r}
+#| label: ExternalVariables
+#| message: false
+#| warning: false
+#| include: false
+
+df.ext <- df %>% filter(Submodel == "GrowthCurvePlantRoots1", EntityType == "ExtVar") %>% dplyr::select(EntityName, Units, Comment, Option)
+names(df.ext) <- c("External variable", "Units", "Description", "Source")
+
+```
+
+The class TGrowthCurvePlant has `r trunc(nrow(df.ext))` following external variable(s).
+
+```{r}
+#| label: ExternalVariablesOutput
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.ext,  escape = FALSE)
+```
+
+## Options
+
+```{r}
+#| label: Options
+#| message: false
+#| warning: false
+#| include: false
+
+df.opt <- df %>% filter(Submodel == "GrowthCurvePlantRoots1",EntityType == "Option" ) %>% dplyr::select(EntityName, Units, Comment)
+names(df.opt) <- c("Option", "Units", "Description")
+
+```
+
+The class TGrowthCurvePlant has `r trunc(nrow(df.opt))` following option(s).
+
+```{r}
+#| label: OptionsOutput
+#| echo: false
+#| message: false
+#| warning: false
+kable(df.opt,  escape = FALSE)
+```
+

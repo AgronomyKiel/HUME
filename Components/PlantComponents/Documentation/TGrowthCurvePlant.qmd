@@ -52,9 +52,9 @@ doc <- read_xml(fn_xml_docu)
 
 ```{r}
 #| label: SummaryDevnotes
-#| echo: false
 #| message: false
 #| warning: false
+#| include: false
 
 classes <- xml_find_all(doc, ".//class")
 
@@ -70,6 +70,7 @@ result <- data.frame(
 ```
 
 ```{r}
+#| include: false
 # Find the TGrowthCurvePlant class node
 class_node <- xml_find_first(doc, ".//class[@name='TGrowthCurvePlant']")
 
@@ -85,6 +86,7 @@ property_df <- data.frame(
 ```
 
 ```{r}
+#| include: false
 library(xml2)
 library(dplyr)
 library(tidyr)
@@ -155,6 +157,118 @@ full_df <- full_df %>%
 The class TGrowthCurvePlant is derived from TAbstractPlant which derived from TSubmodel which is derived from TObject or TGraphicControl when compiled for a console app or a Delphi VCL application.
 
 TAbstractPlant \|\_\_\_\_TSubmodel
+
+## Scientific Background
+
+The interpolation of measured values is a task which is supported by the class TGrowthCurvePlant. Thereby growth curves as well as linear interpolation can be used. The component thereby acts as a substitute for a crop model as the interface for the soil water and soil nitrogen models. The state varibles LAI, DM, CropHeight, ShootN are calculated based on the growth curves and the temperature sum. The growth curves are based on the effective temperature which is calculated from the daily mean temperature and a base temperature. The growth curves are defined by differential equations which are integrated with respect to the temperature sum. The growth curves can be used to simulate the growth of crops in a crop rotation.
+
+### Growth curves
+
+The growth curves supported by this class are:
+
+- Linear Growth
+- Exponential growth
+- Logistic growth
+- Expolinear growth
+- Richards function
+- Logistic with decay
+- LogInt growth
+- LogInt with decay
+
+### Temperature sum and effective Temperature
+
+All growth curves are based on growth rates which are defined as a function of the effectiv temperature $T_{eff}$, which is the daily mean temperatures above a base temperature $T_b$.
+
+The effective temperature is defined as:
+
+$$ T_{eff} = max \left( 0, T_{mean}-T_b  \right) $$ {#eq-effective-temperature}
+
+where $T_{mean}$ is the daily mean temperature and $T_b$ is the base temperature.
+
+The temperature sum $T_{sum}$ is defined as the sum of the effective temperatures over time:
+
+$$ T_{sum} = \sum_0^t T_{eff}(t) dt $$ {eq -temperature-sum}
+
+where $T_{sum}$ is the temperature sum at time $t$ and $T_{eff}(t)$ is the effective temperature at time $t$.
+
+#### Linear growth
+
+The linear growth curve is defined by the following equation:
+
+$$ \frac{dW}{dt} = gr \cdot T_{eff} $$ {#eq-linear-growth}
+
+where $dW/dt$ is the growth rate and $gr$ is the growth rate parameter.
+
+Integration with respect to temperature sum and with W_0 as the initial value gives:
+
+$$ W(t) = W_0 + gr \cdot Tsum $$ {#eq-linear-growth-integration}
+
+where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
+
+#### Exponential growth
+
+The exponential growth curve is defined by the following equation:
+
+$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W $$ {#eq-exponential-growth}
+
+where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter and $W$ is the weight.
+
+Integration with respect to temperature sum and with $W_0$ as the initial value gives:
+
+$$ W(t) = W_0 \cdot e^{rgr \cdot T_{sum}} $$ {#eq-exponential-growth-integration}
+
+where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
+
+#### Logistic growth
+
+The logistic growth curve is defined by the following equation:
+
+$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W \cdot (1 - \frac{W}{W_{max}}) $$ {#eq-logistic-growth}
+
+where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter, $W$ is the weight and $W_{max}$ is the maximum weight.
+
+Integration with respect to temperature sum and with $W_0$ as the initial value gives:
+
+$$ W(t) = \frac{W_{max} \cdot W_0}{W_{max} + (W_{0} - W_{max}) \cdot e^{-rgr \cdot T_{sum}}} $$ {#eq-logistic-growth-integration}
+
+where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
+
+#### Expolinear growth
+
+The expolinear growth curve is defined by the following equation:
+
+$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W \cdot (1 - e^{-k \cdot T_{sum}}) $$ {#eq-expolinear-growth}
+
+where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter, $W$ is the weight, $k$ is a decay parameter and $T_{sum}$ is the temperature sum.
+
+Integration with respect to temperature sum and with $W_0$ as the initial value gives:
+
+$$ W(t) = W_0 \cdot e^{rgr \cdot T_{sum}} \cdot (1 - e^{-k \cdot T_{sum}}) $$ {#eq-expolinear-growth-integration}
+
+where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
+
+#### Richards function
+
+The Richards function is defined by the following equation:
+
+$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W \cdot (1 - (W/W_{max})^{\frac{1}{m}}) $$ {#eq-richards-growth}
+
+where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter, $W$ is the weight, $W_{max}$ is the maximum weight and $m$ is a shape parameter.
+
+Integration with respect to temperature sum and with $W_0$ as the initial value gives:
+
+$$ W(t) = W_{max} \cdot (1 + (W_{0}/W_{max})^{m} \cdot e^{-rgr \cdot T_{sum}})^{-\frac{1}{m}} $$ {#eq-richards-growth-integration}
+
+where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
+
+#### Logistic with decay
+
+The logistic with decay growth curve is defined by the following equation:
+
+$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W \cdot (1 - \frac{W}{W_{max}}) - k \cdot W $$ {#eq-logistic-decay-growth}
+
+where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter, $W$ is the weight, $W_{max}$ is the maximum weight and $k$ is a decay parameter.
+
 
 ## State variables
 
@@ -271,147 +385,3 @@ The class TGrowthCurvePlant has `r trunc(nrow(df.opt))` following option(s).
 #| warning: false
 kable(df.opt,  escape = FALSE)
 ```
-
-## Scientific Background
-
-The interpolation of measured values is a task which is supported by the class TGrowthCurvePlant. Thereby growth curves as well as linear interpolation can be used.
-
-### Growth curves
-
-The growth curves supported by this class are:
-
--   Linear Growth
--   Exponential growth
--   Logistic growth
--   Expolinear growth
--   Richards function
--   Logistic with decay
--   LogInt growth
--   LogInt with decay
-
-### Temperature sum and effective Temperature
-
-All growth curves are based on growth rates which are defined as a function of the effectiv temperature $T_{eff}$, which is the daily mean temperatures above a base temperature $T_b$.
-
-The effective temperature is defined as:
-
-$$ T_{eff} = max \left( 0, T_{mean}-T_b  \right) $$ {#eq-effective-temperature}
-
-where $T_{mean}$ is the daily mean temperature and $T_b$ is the base temperature.
-
-The temperature sum $T_{sum}$ is defined as the sum of the effective temperatures over time:
-
-$$ T_{sum} = \sum_0^t T_{eff}(t) dt $$ {eq -temperature-sum}
-
-where $T_{sum}$ is the temperature sum at time $t$ and $T_{eff}(t)$ is the effective temperature at time $t$.
-
-#### Linear growth
-
-The linear growth curve is defined by the following equation:
-
-$$ \frac{dW}{dt} = gr \cdot T_{eff} $$ {#eq-linear-growth}
-
-where $dW/dt$ is the growth rate and $gr$ is the growth rate parameter.
-
-Integration with respect to temperature sum and with W_0 as the initial value gives:
-
-$$ W(t) = W_0 + gr \cdot Tsum $$ {#eq-linear-growth-integration}
-
-where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
-
-#### Exponential growth
-
-The exponential growth curve is defined by the following equation:
-
-$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W $$ {#eq-exponential-growth}
-
-where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter and $W$ is the weight.
-
-Integration with respect to temperature sum and with $W_0$ as the initial value gives:
-
-$$ W(t) = W_0 \cdot e^{rgr \cdot T_{sum}} $$ {#eq-exponential-growth-integration}
-
-where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
-
-#### Logistic growth
-
-The logistic growth curve is defined by the following equation:
-
-$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W \cdot (1 - \frac{W}{W_{max}}) $$ {#eq-logistic-growth}
-
-where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter, $W$ is the weight and $W_{max}$ is the maximum weight.
-
-Integration with respect to temperature sum and with $W_0$ as the initial value gives:
-
-$$ W(t) = \frac{W_{max} \cdot W_0}{W_{max} + (W_{0} - W_{max}) \cdot e^{-rgr \cdot T_{sum}}} $$ {#eq-logistic-growth-integration}
-
-where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
-
-#### Expolinear growth
-
-The expolinear growth curve is defined by the following equation:
-
-$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W \cdot (1 - e^{-k \cdot T_{sum}}) $$ {#eq-expolinear-growth}
-
-where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter, $W$ is the weight, $k$ is a decay parameter and $T_{sum}$ is the temperature sum.
-
-Integration with respect to temperature sum and with $W_0$ as the initial value gives:
-
-$$ W(t) = W_0 \cdot e^{rgr \cdot T_{sum}} \cdot (1 - e^{-k \cdot T_{sum}}) $$ {#eq-expolinear-growth-integration}
-
-where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
-
-#### Richards function
-
-The Richards function is defined by the following equation:
-
-$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W \cdot (1 - (W/W_{max})^{\frac{1}{m}}) $$ {#eq-richards-growth}
-
-where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter, $W$ is the weight, $W_{max}$ is the maximum weight and $m$ is a shape parameter.
-
-Integration with respect to temperature sum and with $W_0$ as the initial value gives:
-
-$$ W(t) = W_{max} \cdot (1 + (W_{0}/W_{max})^{m} \cdot e^{-rgr \cdot T_{sum}})^{-\frac{1}{m}} $$ {#eq-richards-growth-integration}
-
-where $W(t)$ is the weight at temperature sum $T_{sum}$ and $W_0$ is the initial weight.
-
-#### Logistic with decay
-
-The logistic with decay growth curve is defined by the following equation:
-
-$$ \frac{dW}{dt} = rgr \cdot T_{eff} \cdot W \cdot (1 - \frac{W}{W_{max}}) - k \cdot W $$ {#eq-logistic-decay-growth}
-
-where $dW/dt$ is the growth rate, $rgr$ is a growth rate parameter, $W$ is the weight, $W_{max}$ is the maximum weight and $k$ is a decay parameter.
-
-## Fine-root biomass and root length
-
-`TGrowthCurvePlant` integrates `DMFineRoot` in g/m² using
-`DMFineRoot.c = max(0, DM_Change) * fFineRoot`, with
-`fFineRoot = max(0, fFineRoot0 - fFineRootDec * TSum)`.
-`TSum` is the existing base-temperature-corrected temperature sum from sowing.
-The defaults are `fFineRoot0 = 0.4` and `fFineRootDec = 0.0002` per degree-day.
-Fine-root accumulation stops at harvest; negative DM growth does not remove roots.
-The fitted DM curve remains unchanged. The older `TGrowthCurvePlantRootDM`
-subclass retains its separate `DM_Change * fFineRoot / (1 - fFineRoot)` convention.
-
-`TGrowthCurvePlantRoots` supports these settings:
-
-| Setting | Meaning |
-|---|---|
-| `WithRoots` | Single root-growth switch inherited from `TAbstractPlant`; default `true`. Set to `false` to disable root calculations and soil-depth connections. Use this instead of the removed duplicate `OptWithRoots` option in configuration files. |
-| `SRLcalc = fromGrowthcurve` | Default: use the existing logistic root-length curve. |
-| `SRLcalc = fromDMfineRoot` | Calculate root length as `DMFineRoot * sp_RL / 10000` in cm/cm². |
-| `sp_RL` | Specific fine-root length in cm/g DM; default 7000. |
-| `Opt_RootAgeing = true` | Use the circular box-car cohorts and running active-root totals. |
-| `ActiveDuration` | Number of active cohorts, truncated and bounded to 0–500. One cohort is added per `CalcRates` call, as in `TSimpleRootModDM`; daily calls give days. |
-| `CalcMoments = true` | Calculate ten lognormal quantiles per layer for total and effective RLD. |
-| `VK_lrv_int`, `VK_lrv_slope` | Define layer CV (%) as `max(0, VK_lrv_int + VK_lrv_slope * ln(mean RLD))`; both default to zero. |
-
-Quantiles are normalized to preserve the layer mean. `WLD_stdev_XX` and
-`effWLD_stdev_XX` report their actual standard deviations. With `CalcMoments`
-disabled, all quantiles equal the layer mean. `SoilWaterModel.PlantModel = GrowthCurvePlantRoots1` automatically links the
-live total and effective moment matrices, including after initialization and
-crop changes. The optional `RootedSoilWaterModel` property remains available
-for explicit coupling. Class-resolved water uptake requires
-`SinkTermMethod = MFP` and `WithClasses = true` in the soil-water options. Root lengths, cohorts, and distribution outputs are
-cleared outside the growing season and on initialization.

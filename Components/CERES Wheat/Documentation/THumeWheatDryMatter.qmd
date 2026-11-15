@@ -2,6 +2,9 @@
 title: "THumeWheatDryMatter"
 author: "Agronomy and Crop Science Group, Kiel University"
 date: "`r Sys.Date()`"
+html-math-method: katex
+crossref:
+  eq-prefix: Eq.
 ---
 
 ```{r}
@@ -59,7 +62,9 @@ output <- ExtractXMLDocuInformation(
 #| echo: false
 #| results: asis
 
-GetFirstDevNotes(fn_xml_docu)
+# XML indentation is not Markdown indentation: four spaces create a code block.
+summary_lines <- capture.output(GetFirstDevNotes(fn_xml_docu))
+cat(paste(trimws(summary_lines), collapse = "\n"), "\n\n", sep = "")
 ```
 
 `THumeWheatDryMatter` calculates intercepted photosynthetically active radiation, potential canopy dry-matter production, and the reductions caused by temperature, water supply, nitrogen status, ripening, and atmospheric CO2. It provides daily biomass production per unit ground area and per plant, as well as cumulative radiation interception and biomass production.
@@ -102,8 +107,9 @@ The main calculation sequence is:
 
 The externally supplied mean temperature $T_m$ is normally used directly. If the daily temperature range exceeds the threshold $\Delta T_{crit}$ and $T_m>0$, the submodel recalculates mean temperature from daily maximum and minimum temperature:
 
-$$T_m = w_{max} T_{max,d} + (1-w_{max})T_{min,d}$$
- {#eq-DMMeanTemperature}
+$$
+T_m = w_{max} T_{max,d} + (1-w_{max})T_{min,d}
+$$ {#eq-DMMeanTemperature}
 
 where $w_{max}$ is `TmaxweightingF`. With the current defaults, recalculation occurs when $T_{max,d}-T_{min,d}>8\ ^\circ\mathrm{C}$ and $w_{max}=0.567$.
 
@@ -111,26 +117,30 @@ where $w_{max}$ is `TmaxweightingF`. With the current defaults, recalculation oc
 
 PAR is assumed to be 50% of incoming global radiation:
 
-$$PAR = 0.5 R_g$$
- {#eq-DMPAR}
+$$
+PAR = 0.5 R_g
+$$ {#eq-DMPAR}
 
-where $R_g$\$R_g\$ is daily global radiation \[MJ m^-2^ d^-1^\].
+where $R_g$ is daily global radiation \[MJ m^-2^ d^-1^\].
 
 For $LAI>0$, the effective extinction coefficient is calculated as
 
-$$k_{eff} =
-\min\left(0.9,\max\left(k_{ini}+k_{inc}\ln(LAI),k_{PAR}\right)\right).$$
- {#eq-DMExtinctionCoefficient}
+$$
+k_{eff} =
+\min\left(0.9,\max\left(k_{ini}+k_{inc}\ln(LAI),k_{PAR}\right)\right)
+$$ {#eq-DMExtinctionCoefficient}
 
 For $LAI\leq 0$, $k_{eff}=k_{PAR}$. The intercepted fraction of PAR follows a Beer--Lambert-type canopy attenuation equation:
 
-$$f_{INT}=1-\exp(-k_{eff}LAI)$$
- {#eq-DMFractionalInterception}
+$$
+f_{INT}=1-\exp(-k_{eff}LAI)
+$$ {#eq-DMFractionalInterception}
 
 and intercepted PAR is
 
-$$IPAR=PAR\,f_{INT}.$$
- {#eq-DMIPAR}
+$$
+IPAR=PAR\,f_{INT}.
+$$ {#eq-DMIPAR}
 
 The daily increase of the state variable `CumPAR` is set equal to $IPAR$.
 
@@ -142,21 +152,23 @@ The option `OptCalcTempEffect` selects either the Wang--Engel response (`WangEng
 
 The Wang--Engel function describes a curvilinear temperature response using minimum, optimum, and maximum temperatures [@Wang1998]. The shape parameter is
 
-$$\alpha =
+$$
+\alpha =
 \frac{\ln(2)}
-{\ln\left(\dfrac{T_{max}-T_{min}}{T_{opt}-T_{min}}\right)}$$
- {#eq-DMWangEngelAlpha}
+{\ln\left(\dfrac{T_{max}-T_{min}}{T_{opt}-T_{min}}\right)}
+$$ {#eq-DMWangEngelAlpha}
 
 and, for $T_{min}\leq T\leq T_{max}$, the temperature factor is
 
-$$f_{T,WE}(T)=
+$$
+f_{T,WE}(T)=
 \frac{
 2(T-T_{min})^\alpha(T_{opt}-T_{min})^\alpha
 -(T-T_{min})^{2\alpha}
 }{
 (T_{opt}-T_{min})^{2\alpha}
-}.$$
- {#eq-DMWangEngel}
+}.
+$$ {#eq-DMWangEngel}
 
 Outside this temperature interval, $f_{T,WE}=0$. The function reaches 1 at $T=T_{opt}$. The current default values are $T_{min}=0\ ^\circ\mathrm{C}$, $T_{opt}=20\ ^\circ\mathrm{C}$, and $T_{max}=35\ ^\circ\mathrm{C}$.
 
@@ -164,26 +176,28 @@ Outside this temperature interval, $f_{T,WE}=0$. The function reaches 1 at $T=T_
 
 The alternative response uses a linear increase from $T_{min}$ to $T_{opt1}$, an optimum plateau between $T_{opt1}$ and $T_{opt2}$, and a linear decrease to zero at $T_{max}$:
 
-$$f_{T,tr}(T)=
+$$
+f_{T,tr}(T)=
 \begin{cases}
 0, & T\leq T_{min},\\
 \dfrac{T-T_{min}}{T_{opt1}-T_{min}}, & T_{min}<T<T_{opt1},\\
 1, & T_{opt1}\leq T\leq T_{opt2},\\
 \dfrac{T_{max}-T}{T_{max}-T_{opt2}}, & T_{opt2}<T<T_{max},\\
 0, & T\geq T_{max}.
-\end{cases}$$
- {#eq-DMTrapezoidal}
+\end{cases}
+$$ {#eq-DMTrapezoidal}
 
 The default optimum range is 10--20 °C.
 
 For either option, the selected response is first evaluated for mean air temperature. If `DryMatterTemp` is higher than mean air temperature, the response is also evaluated for `DryMatterTemp`, and the lower of the two response factors is used:
 
-$$f_T^* =
+$$
+f_T^* =
 \begin{cases}
 \min\left(f_T(T_m),f_T(T_s)\right), & T_m<T_s,\\
 f_T(T_m), & T_m\geq T_s,
-\end{cases}$$
- {#eq-DMEffectiveTemperatureFactor}
+\end{cases}
+$$ {#eq-DMEffectiveTemperatureFactor}
 
 where $T_s$ is `DryMatterTemp`.
 
@@ -191,9 +205,10 @@ where $T_s$ is `DryMatterTemp`.
 
 Before the stress and CO2 corrections are applied, potential canopy biomass production is
 
-$$PCARB_{pot}=pLUE\;PAR\;f_{INT}\;f_T^*
-           =pLUE\;IPAR\;f_T^*,$$
- {#eq-DMPotentialBiomass}
+$$
+PCARB_{pot}=pLUE\;PAR\;f_{INT}\;f_T^*
+           =pLUE\;IPAR\;f_T^*,
+$$ {#eq-DMPotentialBiomass}
 
 where `pLUE` is potential light-use efficiency \[g MJ^-1^\]. Its current default is 3.1 g MJ^-1^.
 
@@ -201,8 +216,9 @@ where `pLUE` is potential light-use efficiency \[g MJ^-1^\]. Its current default
 
 When drought impact is enabled and a soil-water model is linked, the soil-water deficit factor is calculated from the ratio $r_{TI}$ of actual to potential transpiration plus interception:
 
-$$SWDF = 1-\left(1-r_{TI}\right)^{p_{SWDF}}.$$
- {#eq-DMSWDF}
+$$
+SWDF = 1-\left(1-r_{TI}\right)^{p_{SWDF}}.
+$$ {#eq-DMSWDF}
 
 This nonlinear formulation is attributed in the source to @ferreyra2003. With the default $p_{SWDF}=1$, $SWDF=r_{TI}$. For ratios between 0 and 1, values of $p_{SWDF}>1$ weaken the simulated limitation by increasing $SWDF$. If drought impact is disabled or no soil-water model is linked, $SWDF=1$.
 
@@ -210,30 +226,35 @@ This nonlinear formulation is attributed in the source to @ferreyra2003. With th
 
 The critical specific leaf nitrogen concentration is calculated as a linear function of green area index:
 
-$$SLN_{crit}=SLN_{crit,int}+SLN_{crit,inc}\,GAI.$$
- {#eq-DMCriticalSLN}
+$$
+SLN_{crit}=SLN_{crit,int}+SLN_{crit,inc}\,GAI.
+$$ {#eq-DMCriticalSLN}
 
 Before BBCH 30, a positive externally supplied optimum SLN additionally limits this value:
 
-$$SLN_{crit}=\min(SLN_{crit},SLN_{opt}).$$
- {#eq-DMCriticalSLNAutumn}
+$$
+SLN_{crit}=\min(SLN_{crit},SLN_{opt}).
+$$ {#eq-DMCriticalSLNAutumn}
 
 The specific-leaf-nitrogen index is
 
-$$SLNI=\min\left(1,\frac{SLN}{SLN_{crit}}\right).$$
- {#eq-DMSLNI}
+$$
+SLNI=\min\left(1,\frac{SLN}{SLN_{crit}}\right).
+$$ {#eq-DMSLNI}
 
 If nitrogen impact is enabled, the reduction factor is calculated with the quadratic response described by @ratjen2015:
 
-$$CARBOred_N=
-\min\left(1,\max\left(0,a_N+b_N\,SLNI+c_N\,SLNI^2\right)\right).$$
- {#eq-DMNitrogenReduction}
+$$
+CARBOred_N=
+\min\left(1,\max\left(0,a_N+b_N\,SLNI+c_N\,SLNI^2\right)\right).
+$$ {#eq-DMNitrogenReduction}
 
 The current coefficients are $a_N=-0.197$, $b_N=2.80$, and $c_N=-1.60$.
 
 If nitrogen impact is disabled, `CARBOred` instead represents a CERES-Wheat-type reduction during ripening. Before BBCH 62, $CARBOred=1$. From BBCH 62 onward:
 
-$$CARBOred_R =
+$$
+CARBOred_R =
 \max\left[
 0,\;
 1-
@@ -241,8 +262,8 @@ $$CARBOred_R =
 1.2-0.8\frac{SWMIN_{pl}}{STMWT_{pl}}
 \right)
 \frac{SUMDTT5+100}{430+20P5+100}
-\right].$$
- {#eq-DMRipeningReduction}
+\right].
+$$ {#eq-DMRipeningReduction}
 
 Thus the nitrogen-dependent and ripening-dependent formulations are alternative uses of the same reduction variable in the current implementation.
 
@@ -250,22 +271,25 @@ Thus the nitrogen-dependent and ripening-dependent formulations are alternative 
 
 If `optCO2` is set to `WithCO2Effect`, a drought-sensitive empirical CO2 factor is calculated. First,
 
-$$CWSI=1-r_{TI}$$
- {#eq-DMCWSI}
+$$
+CWSI=1-r_{TI}
+$$ {#eq-DMCWSI}
 
 and the minimum CO2 factor is
 
-$$f_{CO2,min}=f_{CO2,scale}+f_{CWSI}\,CWSI.$$
- {#eq-DMMinimumCO2Factor}
+$$
+f_{CO2,min}=f_{CO2,scale}+f_{CWSI}\,CWSI.
+$$ {#eq-DMMinimumCO2Factor}
 
 For atmospheric CO2 concentration $C_a$ above the compensation concentration $C_i$,
 
-$$f_{CO2}=
+$$
+f_{CO2}=
 \max\left[
 f_{CO2,min},
 f_{CO2,min}(C_a-C_i)^{p_{CO2}}
-\right].$$
- {#eq-DMCO2Factor}
+\right].
+$$ {#eq-DMCO2Factor}
 
 For $C_a\leq C_i$, $f_{CO2}=f_{CO2,min}$. Potential biomass is multiplied by this factor. The current defaults are $f_{CO2,scale}=0.723$, $f_{CWSI}=0.077$, $C_i=350$ ppm, and $p_{CO2}=0.086$.
 
@@ -277,26 +301,29 @@ The CO2 formulation is identified as empirical in the source documentation. Its 
 
 After the optional CO2 correction, canopy biomass production is reduced by the stronger of water limitation and nitrogen/ripening limitation:
 
-$$PCARB =
+$$
+PCARB =
 PCARB_{pot}\,f_{CO2}\,
-\min(SWDF,CARBOred),$$
- {#eq-DMFinalBiomass}
+\min(SWDF,CARBOred),
+$$ {#eq-DMFinalBiomass}
 
 where $f_{CO2}=1$ when the CO2 effect is disabled. If $IPAR=0$, $PCARB=0$.
 
 For a positive plant density $N_{plants}$, daily biomass production per plant is
 
-$$CARBO=\frac{PCARB}{N_{plants}}.$$
- {#eq-DMBiomassPerPlant}
+$$
+CARBO=\frac{PCARB}{N_{plants}}.
+$$ {#eq-DMBiomassPerPlant}
 
 The daily increase of `CumCarbo` is $PCARB$. The realized light-use efficiency is updated after integration as
 
-$$LUE=
+$$
+LUE=
 \begin{cases}
 \dfrac{PCARB}{IPAR}, & IPAR>0,\\
 0, & IPAR=0.
-\end{cases}$$
- {#eq-DMRealizedLUE}
+\end{cases}
+$$ {#eq-DMRealizedLUE}
 
 # Submodel objects
 

@@ -12,6 +12,18 @@
 /// calculating growth rates based on the current state of the plant and the prevailing
 /// environmental conditions.
 /// </remarks>
+/// <remarks>
+/// <author>
+/// Henning Kage & Agronomy Group, University of Kiel
+/// </author>
+/// <Timestamp>
+/// First edited: 6.10.89
+/// Last edited: 02.08.25
+/// </Timestamp>
+/// <References>
+/// <item>Kage, H., Kochler, M., Stutzel, H., 2000. Root growth of cauliflower (Brassica oleracea L. botrytis) under unstressed conditions: Measurement and modelling. Plant Soil 223, 131–145.</item>
+/// </References>
+/// </remarks>
 
 unit UGrowthCurvePlantRoots;
 
@@ -29,7 +41,32 @@ uses
 
 type
 
-  /// <summary> TGrowthCurvePlantRoots extends TGrowthCurvePlant to model root growth dynamics. </summary>
+/// <summary>
+/// This unit defines the TGrowthCurvePlantRoots class, which extends its parent class to
+/// model the growth of plant roots. It evaluates parameters such as root depth, root
+/// length and the associated growth rates. The unit also calculates root length density
+/// and effective root length and provides several models for the development of root
+/// depth. Optional features include root ageing and different choices for depth growth.
+/// </summary>
+/// <remarks>
+/// TGrowthCurvePlantRoots inherits from TGrowthCurvePlant and provides specific
+/// implementations for root growth dynamics. It exposes properties for root depth,
+/// root length and growth parameters, as well as methods for initialising and
+/// calculating growth rates based on the current state of the plant and the prevailing
+/// environmental conditions.
+/// </remarks>
+/// <remarks>
+/// <author>
+/// Henning Kage & Agronomy Group, University of Kiel
+/// </author>
+/// <Timestamp>
+/// First edited: 6.10.89
+/// Last edited: 02.08.25
+/// </Timestamp>
+/// <References>
+/// <item>Kage, H., Kochler, M., Stutzel, H., 2000. Root growth of cauliflower (Brassica oleracea L. botrytis) under unstressed conditions: Measurement and modelling. Plant Soil 223, 131–145.</item>
+/// </References>
+/// </remarks>
   TGrowthCurvePlantRoots = class(TGrowthCurvePlant)
 
   private

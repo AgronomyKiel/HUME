@@ -1,5 +1,5 @@
 ﻿/// <summary>
-/// Provides the dry-matter production submodel for CERES-Wheat.
+/// Provides the dry-matter production submodel for HumeWheat.
 /// </summary>
 /// <remarks>
 /// This simplified module supports parameterisation. The soil-water deficit factor

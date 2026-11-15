@@ -494,7 +494,7 @@ else
 
 Above the critical BBCH stage ($EC_{crit_{NcLeaf}}$, set to EC 27, i.e. end of tillering) the optimum leaf nitrogen concentration is calculated from a linear dilution curve:
 
-$$Nc_{opt_{Leaf}} = Nc_{Leaf_{Vf1}} \cdot LFWT_{m2} + Nc_{Leaf_{Vf2}}$$
+$$Nc_{opt_{Leaf}} = Nc_{Leaf_{Vf1}} \cdot LFWT_{m2} + Nc_{Leaf_{Vf2}}$$ {#eq-NcOptLeaf2}
 
 where $Nc_{Leaf_{Vf1}}$ and $Nc_{Leaf_{Vf2}}$ are parameters of the linear relationship between leaf nitrogen concentration and leaf dry matter. The default values of $Nc_{Leaf_{Vf1}}$ and $Nc_{Leaf_{Vf2}}$ are set to -0.0061 and 5.9543 in the model.
 
@@ -545,7 +545,7 @@ $$\frac {N_{Leaf_{pl}}}{dt} = \frac {LFWT_{pl}}{dt} \cdot Nc_{opt_{Leaf}} / 100 
 
 A similar approach is used to calculate the stem nitrogen concentration under optimal N supply. The stem nitrogen concentration under optimal N supply is, however, calculated from a non-linear dilution curve:
 
-$$NearOptNCStem = 0.98 \cdot (1 / (NcStem_a + NcStem_b \cdot STMWT_{m2}))$$
+$$NearOptNCStem = 0.98 \cdot (1 / (NcStem_a + NcStem_b \cdot STMWT_{m2}))$$ {#eq-NcOptStem1}
 
 ```{r}
 #| label: fig-NcStem
@@ -1566,9 +1566,9 @@ kable(df.par,  escape = FALSE)
 ## Variables
 
 ```{r}
+#| echo: false
 #| message: false
 #| warning: false
-#| include: false
 
 df.var <- df %>% filter(Submodel == InstanceName, EntityType == "Variable") %>% dplyr::select(EntityName, Units, Comment)
 names(df.var) <- c("Variable", "Units", "Description")
@@ -1578,16 +1578,16 @@ names(df.var) <- c("Variable", "Units", "Description")
 The class THumePartitioning has `r trunc(nrow(df.var))` following variable(s).
 
 ```{r}
-#| include: false
+#| echo: false
 kable(df.var,  escape = FALSE)
 ```
 
 ## External variables
 
 ```{r}
+#| echo: false
 #| message: false
 #| warning: false
-#| include: false
 
 df.ext <- df %>% filter(Submodel == InstanceName, EntityType == "ExternalValue") %>% dplyr::select(EntityName, Units, Comment, Option)
 names(df.ext) <- c("External variable", "Units", "Description", "Source")
