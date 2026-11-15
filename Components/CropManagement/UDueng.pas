@@ -37,6 +37,8 @@ type
     procedure CalcRates; override;
     procedure CreateAll; override;
     procedure Init(var GlobMod: TMod); override;
+    /// <summary> Apply the bound sensitivity factor to freshly loaded fertilizer amounts. </summary>
+    procedure InitAfterBinding(var GlobMod: TMod); override;
 
   published
     property Ex_SoilNitrate: TExternV read SoilNitrate write SoilNitrate;
@@ -154,14 +156,31 @@ begin
       name := DuengTermine[i];
       // writeln('Duengetermin: ', name);
       Menge := stateIniF.ReadFloat(SubModName, DuengTermine[i], 0.0);
-      if (f_ExtFertSens.Source <> '') then
-        Menge := Menge * f_ExtFertSens.v; // Adjust during Sensitivity analysis
+      if (GlobMod = nil) or not GlobMod.InitializingRun then
+        if f_ExtFertSens.Source <> '' then
+          Menge := Menge * f_ExtFertSens.v;
       StateCreate(name, '[kg N/ha]', Menge, false, NewState);
       Duengungen[i] := NewState;
       Duengungen[i].v := Menge;
     end;
   end;
   // writeln(DuengTermine.Strings[1]);
+end;
+
+procedure TDueng.InitAfterBinding(var GlobMod: TMod);
+var
+  i: Integer;
+  Amount: Real;
+begin
+  inherited InitAfterBinding(GlobMod);
+  for i := 0 to DuengTermine.Count - 1 do
+  begin
+    Amount := Duengungen[i].DefaultValue;
+    if f_ExtFertSens.Source <> '' then
+      Amount := Amount * f_ExtFertSens.v;
+    Duengungen[i].v := Amount;
+    Duengungen[i].iv := Amount;
+  end;
 end;
 
 procedure TDueng.CalcRates;

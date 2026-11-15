@@ -587,6 +587,8 @@ type
     /// method for initializing the module
     /// </summary>
     procedure Init(var GlobMod: TMod); override;
+    /// <summary> Cache the grain-filling duration after the development-model P5 input is bound. </summary>
+    procedure InitAfterBinding(var GlobMod: TMod); override;
 
     /// <summary>
     /// method for calculating all rates
@@ -1414,7 +1416,8 @@ begin
   end;
   SENLA.v := 0;
   SUMDTT5.v := 0;
-  p5_ := 430 + P5.v * 20; // unscaled value of parameter p5
+  if (GlobMod = nil) or not GlobMod.InitializingRun then
+    p5_ := 430 + P5.v * 20; // Preserve direct Init callers outside the phased runners.
   LAIs := 0;
   for i := 10 downto 1 do
     Icrop[i] := 0;
@@ -1440,6 +1443,12 @@ begin
   for i := 10 downto 1 do
     avTransIntRatio_arr[i] := 1;
   potSLA.v := 0;
+end;
+
+procedure THumeWheatLeafArea.InitAfterBinding(var GlobMod: TMod);
+begin
+  inherited InitAfterBinding(GlobMod);
+  p5_ := 430 + P5.v * 20;
 end;
 
 procedure THumeWheatLeafArea.CalcRates;

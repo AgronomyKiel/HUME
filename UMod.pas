@@ -244,6 +244,7 @@ type
   TMod = class(TGraphicControl)
 {$ENDIF}
   private
+    FInitializingRun: Boolean;
 
 {$IFDEF NONVISUAL}
     /// <PrivateField> Name of Model </PrivateField>
@@ -558,6 +559,10 @@ type
 
     /// call inititalisation methods of sub-models
     procedure InitAllSubMods;
+    /// <summary> Initialize one run in load/configure, binding, and dependent-setup phases. </summary>
+    procedure InitializeRun(AIniFile: TMyIniFile);
+    /// <summary> True while run initialization defers external-dependent setup until after binding. </summary>
+    property InitializingRun: Boolean read FInitializingRun;
     /// call data inititalisation methods of sub-models
     procedure InitAllDataSeries;
     /// call data inititalisation methods of sub-models
@@ -981,6 +986,8 @@ type
 
     /// <summary> Method for initialising the submodel </summary>
     procedure Init(var GlobMod: TMod); virtual;
+    /// <summary> Complete setup that requires initialized providers and resolved external values. </summary>
+    procedure InitAfterBinding(var GlobMod: TMod); virtual;
     /// initialisation method
 
     /// <summary> Method for calculating the rates of change for every time step for the submodel </summary>
@@ -1675,6 +1682,33 @@ begin
 
 end;
 
+/// <summary> Shared initialization for batch and single-file runs; each submodel is initialized once. </summary>
+procedure TMod.InitializeRun(AIniFile: TMyIniFile);
+var
+  SubModIndex: Integer;
+  Model: TMod;
+begin
+  if FInitializingRun then
+    raise EInvalidOperation.Create('Run initialization is already in progress');
+  FInitializingRun := True;
+  try
+    Init(AIniFile);
+    // All providers load states/parameters and all consumers configure lookup first.
+    InitAllSubMods;
+    if not InitAllExternV then
+      raise EInvalidOperation.Create('External-value binding failed during run initialization');
+    // Position weather-backed inputs before dependent initializers read them.
+    WeatherFile.LocateFor(Time.Name, Time.v);
+    Model := Self;
+    for SubModIndex := 0 to SubModStrList.Count - 1 do
+      if Assigned(SubModel[SubModIndex]) then
+        SubModel[SubModIndex].InitAfterBinding(Model);
+    InitAllDataSeries;
+  finally
+    FInitializingRun := False;
+  end;
+end;
+
 /// <summary> Call initialization methods of sub-models </summary>
 procedure TMod.InitAllSubMods;
 var
@@ -2328,12 +2362,7 @@ begin
   // assignfile(globRes, globResFN);
   // rewrite(globRes);
 
-  ActIniFile := TMyIniFile(FIniFiles.Objects[0]);
-  Init(ActIniFile); // Init for actual initialisation file
-  InitAllSubMods; // Initialize all submodels
-  // For all submodels write state names to final output file
-  // if FinalOutput then   begin
-  WriteAllFinalNames;
+  // The first loop iteration initializes the first file and opens final-output headers.
   // set the run time counter to zero for each submodel
   for i  := 0 to SubModStrList.Count-1 do
       SubModel[i].CalcTimeTicks := 0;
@@ -2355,7 +2384,9 @@ begin
 {$ENDIF}
     // showmessage(ActIniFile.FileName);    // for debugging
 
-    Init(ActIniFile); // Init for actual initialisation file
+    InitializeRun(ActIniFile);
+    if i = 0 then
+      WriteAllFinalNames;
 
     if self.WriteResIni then
     begin
@@ -2368,12 +2399,7 @@ begin
 {$ENDIF}
     end;
 
-    InitAllSubMods; // Initialize all submodels
-    InitAllDataSeries;
-    InitAllExternV; // Initialize all external variables
 
-    // Set weather file pointer to actual time step
-    WeatherFile.LocateFor(Time.Name, Time.v);
     // write names, state and rate values (if ContOutput true)
 
     if fContOutput <> NoContOutput then
@@ -2492,20 +2518,11 @@ begin
   ClearAllDataSeries;
   // For all submodels write state names to final output file
   // if FinalOutput then
-  WriteAllFinalNames;
   // initialize actual INI file
   { ActIniFile := TMyIniFile(FIniFiles.objects[ActInifileIndex]); }
 
-  Init(ActIniFile);
-  // Initialize all submodels
-  InitAllSubMods;
-  InitAllDataSeries;
-  // Initialize all external variables
-  InitAllExternV;
-
-  // Set weather file pointer to actual time step
-  // #TS#029: infinite loop depending on ModTime.Name
-  WeatherFile.LocateFor(Time.Name, Time.v);
+  InitializeRun(ActIniFile);
+  WriteAllFinalNames;
   // write names, state and rate values (if ContOutput true)
   if fContOutput <> NoContOutput then
   begin
@@ -4377,6 +4394,11 @@ end;
 
 /// <summary> Initialisation method for TSubmodel </summary>
 /// <param name="GlobMod"> TMod </param>
+
+procedure TSubmodel.InitAfterBinding(var GlobMod: TMod);
+begin
+  // Default implementation: no external-dependent setup.
+end;
 
 procedure TSubmodel.Init(var GlobMod: TMod);
 var
