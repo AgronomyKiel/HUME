@@ -89,15 +89,15 @@ ExtractXMLDocuInformation <- function(fn_xml_docu, ClassName = "TPenMonteith")  
   # Extract relevant data
   enum_df <- data.frame(
     name = xml_attr(enum_nodes, "name"),
-    summary = sapply(enum_nodes, function(node) {
+    summary = vapply(enum_nodes, function(node) {
       summary_node <- xml_find_first(node, ".//summary")
       if (!is.na(summary_node)) xml_text(summary_node) else NA_character_
-    }),
-    elements = sapply(enum_nodes, function(node) {
+    }, character(1)),
+    elements = vapply(enum_nodes, function(node) {
       elements <- xml_find_all(node, ".//element")
       element_names <- xml_attr(elements, "name")
       paste(element_names, collapse = ", ")
-    }),
+    }, character(1)),
     stringsAsFactors = FALSE
   )
 
@@ -246,7 +246,25 @@ ExtractInformationFromCSV <- function(fn) {
 
 }
 
+combine_doc_lists <- function(x, y) {
+  stopifnot(setequal(names(x), names(y)))
 
+  result <- lapply(names(x), function(nm) {
+    a <- x[[nm]]
+    b <- y[[nm]]
+
+    if (is.data.frame(a) && is.data.frame(b)) {
+      dplyr::bind_rows(a, b) |> dplyr::distinct()
+    } else if (nm == "md_text") {
+      paste(c(a, b), collapse = "\n\n")
+    } else {
+      unique(c(a, b))
+    }
+  })
+
+  names(result) <- names(x)
+  result
+}
 
 
 

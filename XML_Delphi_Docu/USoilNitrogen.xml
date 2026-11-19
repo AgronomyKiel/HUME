@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="USoilNitrogen" platform="Win32">
-  <class name="TMyIniFile" alias="System.IniFiles.TMemIniFile" file="USoilNitrogen.pas" line="10">
+  <class name="TMyIniFile" alias="System.IniFiles.TMemIniFile" file="USoilNitrogen.pas" line="11">
     <ancestor name="TCustomIniFile" namespace="System.IniFiles">
       <methodref name="InternalReadSections" visibility="protected" procflags="virtual">
       </methodref>
@@ -799,7 +799,10 @@
       </property>
     </members>
   </class>
-  <class name="TSoilNitrogen" file="USoilNitrogen.pas" line="12">
+  <class name="TSoilNitrogen" file="USoilNitrogen.pas" line="14">
+    <devnotes>
+       <summary>Layered soil nitrate transport model coupled to root-zone water flow, mineralization inputs, uptake sinks, and nitrogen balances.</summary>
+    </devnotes>
     <ancestor name="TSoilWaterModelR" namespace="URootedSoil">
       <methodref name="setWithRoots" visibility="private">
       </methodref>
@@ -2313,151 +2316,267 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="ConcOld" type="TSoilArray" visibility="private" size="416" offset="22536" file="USoilNitrogen.pas" line="15" />
-      <field name="fTransferNminss" type="Boolean" visibility="private" size="1" offset="22952" file="USoilNitrogen.pas" line="16" />
-      <field name="NminStart" type="Double" visibility="private" size="8" offset="22960" file="USoilNitrogen.pas" line="17" />
-      <field name="NFlowInt" type="TSoilArray" visibility="private" size="416" offset="22968" file="USoilNitrogen.pas" line="19">
+      <field name="ConcOld" type="TSoilArray" visibility="private" size="416" offset="22536" file="USoilNitrogen.pas" line="18">
         <devnotes>
-           nitrate amount in soil profile at simulation start [Kg N/ha]
+           <summary>Nitrate concentrations at the start of the internal transport step, in the same units as NConc.</summary>
         </devnotes>
       </field>
-      <procedure name="InitSoilNVectors" visibility="protected" file="USoilNitrogen.pas" line="23">
+      <field name="fTransferNminss" type="Boolean" visibility="private" size="1" offset="22952" file="USoilNitrogen.pas" line="20">
         <devnotes>
-           Nitratflüsse during internal time steps [Kg N/ha*d] ///
+           <summary>Enables writing final nitrate amounts to the state file of the next configured simulation.</summary>
+        </devnotes>
+      </field>
+      <field name="NminStart" type="Double" visibility="private" size="8" offset="22960" file="USoilNitrogen.pas" line="23">
+        <devnotes>
+           <summary>Initial nitrate amount within the nitrogen-balance profile, in kg N/ha.</summary>
+        </devnotes>
+      </field>
+      <field name="NFlowInt" type="TSoilArray" visibility="private" size="416" offset="22968" file="USoilNitrogen.pas" line="26">
+        <devnotes>
+           <summary>Nitrate fluxes evaluated during internal transport steps, in kg N/(ha d).</summary>
+        </devnotes>
+      </field>
+      <procedure name="InitSoilNVectors" visibility="protected" file="USoilNitrogen.pas" line="31">
+        <devnotes>
+           <summary>Initializes nitrate concentrations, transport buffers, fluxes, and available layer source and sink variables.</summary>
         </devnotes>
       </procedure>
-      <field name="NitrateAmount" type="TSoilStateArray" visibility="public" size="208" offset="23384" file="USoilNitrogen.pas" line="29">
+      <field name="NitrateAmount" type="TSoilStateArray" visibility="public" size="208" offset="23384" file="USoilNitrogen.pas" line="36">
         <devnotes>
-           <summary>
-           Nitrat menge im Kompartiment [Kg N/ha]
-           </summary>
+           <summary>Nitrate-N amount in each soil compartment, in kg N/ha.</summary>
         </devnotes>
       </field>
-      <field name="NConc" type="TSoilVarArray" visibility="public" size="212" offset="23592" file="USoilNitrogen.pas" line="41">
+      <field name="NConc" type="TSoilVarArray" visibility="public" size="212" offset="23592" file="USoilNitrogen.pas" line="40">
         <devnotes>
-           <summary>
-           Nitrate Concentration [Kg NO3-N/cm H2O]
-           this unusual unit is the consequence of
-           giving the amount of water in cm troughout the
-            classes of this class library
-            in order to convert to g N /l
-            multiply by 1000 -&gt; from kg to g
-            multiply by 10000 x 10 from cm to l
-            -&gt; multiply by 1e8
-           </summary>
+           <summary>Nitrate-N concentration calculated as layer nitrate amount divided by layer water depth.</summary>
+           <remarks>Internal units are (kg N/ha)/cm water depth; retain the area basis when converting to solution concentration.</remarks>
         </devnotes>
       </field>
-      <field name="Nsink" type="TSoilVarArray" visibility="public" size="212" offset="23804" file="USoilNitrogen.pas" line="43" />
-      <field name="NetMin" type="TSoilVarArray" visibility="public" size="212" offset="24016" file="USoilNitrogen.pas" line="45">
+      <field name="Nsink" type="TSoilVarArray" visibility="public" size="212" offset="23804" file="USoilNitrogen.pas" line="43">
         <devnotes>
-           Sink term [Kg N/ha*d }
+           <summary>Signed nitrate source or sink rate for each layer, in kg N/(ha d); added to the transport balance.</summary>
         </devnotes>
       </field>
-      <field name="NFlow" type="TSoilVarArray" visibility="public" size="212" offset="24228" file="USoilNitrogen.pas" line="47">
+      <field name="NetMin" type="TSoilVarArray" visibility="public" size="212" offset="24016" file="USoilNitrogen.pas" line="46">
         <devnotes>
-           Source term [Kg N/ha*d }
+           <summary>Net mineralization rate supplied to each layer, in kg N/(ha d).</summary>
         </devnotes>
       </field>
-      <field name="CumSumUptake" type="TState" visibility="public" size="4" offset="24440" file="USoilNitrogen.pas" line="49">
+      <field name="NFlow" type="TSoilVarArray" visibility="public" size="212" offset="24228" file="USoilNitrogen.pas" line="49">
         <devnotes>
-           Nitrate flows [Kg N/ha*d] }
+           <summary>Nitrate transport accumulated across compartment interfaces during internal steps.</summary>
         </devnotes>
       </field>
-      <field name="CumSumMinera" type="TState" visibility="public" size="4" offset="24444" file="USoilNitrogen.pas" line="51">
+      <field name="CumSumUptake" type="TState" visibility="public" size="4" offset="24440" file="USoilNitrogen.pas" line="52">
         <devnotes>
-           cumulative sum of soil N uptake
+           <summary>Cumulative signed nitrate uptake contribution within the balance profile, in kg N/ha.</summary>
         </devnotes>
       </field>
-      <field name="CumSumNitrateLeaching" type="TState" visibility="public" size="4" offset="24448" file="USoilNitrogen.pas" line="53">
+      <field name="CumSumMinera" type="TState" visibility="public" size="4" offset="24444" file="USoilNitrogen.pas" line="55">
         <devnotes>
-           cumulative sum of soil N mineralisation
+           <summary>Cumulative net nitrate mineralization within the balance profile, in kg N/ha.</summary>
         </devnotes>
       </field>
-      <field name="Nmin0_10" type="TVar" visibility="public" size="4" offset="24452" file="USoilNitrogen.pas" line="55">
+      <field name="CumSumNitrateLeaching" type="TState" visibility="public" size="4" offset="24448" file="USoilNitrogen.pas" line="58">
         <devnotes>
-           Sum of nitrate leaching
+           <summary>Cumulative nitrate leaching below the balance profile, in kg N/ha.</summary>
         </devnotes>
       </field>
-      <field name="Nmin0_30" type="TVar" visibility="public" size="4" offset="24456" file="USoilNitrogen.pas" line="56" />
-      <field name="Nmin30_60" type="TVar" visibility="public" size="4" offset="24460" file="USoilNitrogen.pas" line="57" />
-      <field name="Nmin60_90" type="TVar" visibility="public" size="4" offset="24464" file="USoilNitrogen.pas" line="58" />
-      <field name="Nmin90_120" type="TVar" visibility="public" size="4" offset="24468" file="USoilNitrogen.pas" line="59" />
-      <field name="Nmin0_90" type="TVar" visibility="public" size="4" offset="24472" file="USoilNitrogen.pas" line="60" />
-      <field name="Nmin0_60" type="TVar" visibility="public" size="4" offset="24476" file="USoilNitrogen.pas" line="61" />
-      <field name="LongTermNBalance" type="TVar" visibility="public" size="4" offset="24480" file="USoilNitrogen.pas" line="62" />
-      <field name="DailyNBalance" type="TState" visibility="public" size="4" offset="24484" file="USoilNitrogen.pas" line="64">
+      <field name="Nmin0_10" type="TVar" visibility="public" size="4" offset="24452" file="USoilNitrogen.pas" line="61">
         <devnotes>
-           long term nitrogen computational balance
+           <summary>Nitrate-N amount in the 0-10 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
         </devnotes>
       </field>
-      <field name="TotalNBalance" type="TState" visibility="public" size="4" offset="24488" file="USoilNitrogen.pas" line="66">
+      <field name="Nmin0_30" type="TVar" visibility="public" size="4" offset="24456" file="USoilNitrogen.pas" line="63">
         <devnotes>
-           daily nitrogen computational balance
+           <summary>Nitrate-N amount in the 0-30 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
         </devnotes>
       </field>
-      <field name="SumNmin" type="TVar" visibility="public" size="4" offset="24492" file="USoilNitrogen.pas" line="68">
+      <field name="Nmin30_60" type="TVar" visibility="public" size="4" offset="24460" file="USoilNitrogen.pas" line="65">
         <devnotes>
-           cumulative N balance
+           <summary>Nitrate-N amount in the 30-60 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
         </devnotes>
       </field>
-      <field name="NitrateLeachingRate" type="TVar" visibility="public" size="4" offset="24496" file="USoilNitrogen.pas" line="70">
+      <field name="Nmin60_90" type="TVar" visibility="public" size="4" offset="24464" file="USoilNitrogen.pas" line="67">
         <devnotes>
-           Sum of Nmin-nitrate
+           <summary>Nitrate-N amount in the 60-90 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
         </devnotes>
       </field>
-      <field name="Dispersion_length" type="TPar" visibility="public" size="4" offset="24500" file="USoilNitrogen.pas" line="72">
+      <field name="Nmin90_120" type="TVar" visibility="public" size="4" offset="24468" file="USoilNitrogen.pas" line="69">
         <devnotes>
-           Leachingrate as daily average
+           <summary>Nitrate-N amount in the 90-120 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
         </devnotes>
       </field>
-      <field name="Imp_factor" type="TPar" visibility="public" size="4" offset="24504" file="USoilNitrogen.pas" line="74">
+      <field name="Nmin0_90" type="TVar" visibility="public" size="4" offset="24472" file="USoilNitrogen.pas" line="71">
         <devnotes>
-           Dispersion length
+           <summary>Nitrate-N amount in the 0-90 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
         </devnotes>
       </field>
-      <field name="LeachingStartDay" type="TPar" visibility="public" size="4" offset="24508" file="USoilNitrogen.pas" line="76">
+      <field name="Nmin0_60" type="TVar" visibility="public" size="4" offset="24476" file="USoilNitrogen.pas" line="73">
         <devnotes>
-           relative &quot;implicitness&quot; of calculation procedure
+           <summary>Nitrate-N amount in the 0-60 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
         </devnotes>
       </field>
-      <field name="LeachingEndDay" type="TPar" visibility="public" size="4" offset="24512" file="USoilNitrogen.pas" line="76" />
-      <field name="SelectedLeachingPeriod" type="TOption" visibility="public" size="4" offset="24516" file="USoilNitrogen.pas" line="78" />
-      <field name="Groundwaterconc" type="TExternV" visibility="public" size="4" offset="24520" file="USoilNitrogen.pas" line="80">
+      <field name="LongTermNBalance" type="TVar" visibility="public" size="4" offset="24480" file="USoilNitrogen.pas" line="75">
         <devnotes>
-           Option for restricting Leaching accumulation to a certain period
+           <summary>Variable registered for the long-term computational nitrogen balance, in kg N/ha.</summary>
         </devnotes>
       </field>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="USoilNitrogen.pas" line="81">
+      <field name="DailyNBalance" type="TState" visibility="public" size="4" offset="24484" file="USoilNitrogen.pas" line="78">
+        <devnotes>
+           <summary>Computational nitrogen-balance residual accumulated over internal transport steps.</summary>
+        </devnotes>
+      </field>
+      <field name="TotalNBalance" type="TState" visibility="public" size="4" offset="24488" file="USoilNitrogen.pas" line="81">
+        <devnotes>
+           <summary>Cumulative computational nitrogen-balance state.</summary>
+        </devnotes>
+      </field>
+      <field name="SumNmin" type="TVar" visibility="public" size="4" offset="24492" file="USoilNitrogen.pas" line="84">
+        <devnotes>
+           <summary>Total nitrate-N amount within the configured balance profile, in kg N/ha.</summary>
+        </devnotes>
+      </field>
+      <field name="NitrateLeachingRate" type="TVar" visibility="public" size="4" offset="24496" file="USoilNitrogen.pas" line="87">
+        <devnotes>
+           <summary>Nitrate-leaching rate reported from accumulated internal-step fluxes, in kg N/(ha d).</summary>
+        </devnotes>
+      </field>
+      <field name="Dispersion_length" type="TPar" visibility="public" size="4" offset="24500" file="USoilNitrogen.pas" line="90">
+        <devnotes>
+           <summary>Dispersivity used to calculate hydrodynamic dispersion, in cm.</summary>
+        </devnotes>
+      </field>
+      <field name="Imp_factor" type="TPar" visibility="public" size="4" offset="24504" file="USoilNitrogen.pas" line="93">
+        <devnotes>
+           <summary>Implicit weighting of the transport discretization; 0.5 gives equal old and new weighting, and 1 is fully implicit.</summary>
+        </devnotes>
+      </field>
+      <field name="LeachingStartDay" type="TPar" visibility="public" size="4" offset="24508" file="USoilNitrogen.pas" line="96">
+        <devnotes>
+           <summary>Start and end times for optional restricted leaching accumulation; registered as day of year.</summary>
+        </devnotes>
+      </field>
+      <field name="LeachingEndDay" type="TPar" visibility="public" size="4" offset="24512" file="USoilNitrogen.pas" line="96" />
+      <field name="SelectedLeachingPeriod" type="TOption" visibility="public" size="4" offset="24516" file="USoilNitrogen.pas" line="99">
+        <devnotes>
+           <summary>Selects whether leaching accumulation is restricted to the configured start and end times.</summary>
+        </devnotes>
+      </field>
+      <field name="Groundwaterconc" type="TExternV" visibility="public" size="4" offset="24520" file="USoilNitrogen.pas" line="102">
+        <devnotes>
+           <summary>Optional groundwater nitrate concentration used for compartments below the active transport domain.</summary>
+        </devnotes>
+      </field>
+      <procedure name="CreateAll" visibility="public" procflags="override" file="USoilNitrogen.pas" line="104">
+        <devnotes>
+           <summary>Registers nitrate states, fluxes, balance variables, transport parameters, and leaching options.</summary>
+        </devnotes>
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="USoilNitrogen.pas" line="82">
+      <procedure name="Init" visibility="public" procflags="override" file="USoilNitrogen.pas" line="107">
+        <devnotes>
+           <summary>Initializes nitrate transport variables and records the initial profile nitrate amount after inherited initialization.</summary>
+           <param name="GlobMod">Global model providing simulation configuration and timing.</param>
+        </devnotes>
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="CalcRatesAndIntegrate" visibility="public" procflags="override" file="USoilNitrogen.pas" line="83">
+      <procedure name="CalcRatesAndIntegrate" visibility="public" procflags="override" file="USoilNitrogen.pas" line="109">
+        <devnotes>
+           <summary>Advances soil water and solves one-dimensional nitrate convection and dispersion during an internal time step.</summary>
+        </devnotes>
       </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="USoilNitrogen.pas" line="84">
+      <procedure name="CalcRates" visibility="public" procflags="override" file="USoilNitrogen.pas" line="111">
+        <devnotes>
+           <remarks>Convert solution concentration to nitrate amount using the new layer water depth.</remarks>
+           <remarks>Change in nitrate amount within the balance profile during this internal step.</remarks>
+           <remarks>Optionally restrict leaching accumulation to the selected time interval.</remarks>
+           <remarks>Set equal concentrations across the lower boundary after updating the balance.</remarks>
+        </devnotes>
       </procedure>
-      <procedure name="Integrate" visibility="public" procflags="override" file="USoilNitrogen.pas" line="85">
+      <procedure name="Integrate" visibility="public" procflags="override" file="USoilNitrogen.pas" line="113">
+        <devnotes>
+           <remarks>Reset quantities accumulated during internal transport steps.</remarks>
+        </devnotes>
       </procedure>
-      <procedure name="update_Nmin_Values" visibility="public" file="USoilNitrogen.pas" line="86">
+      <procedure name="update_Nmin_Values" visibility="public" file="USoilNitrogen.pas" line="115">
+        <devnotes>
+           <summary>Updates fixed-depth nitrate summaries using the compartment indices of a 10 cm soil-layer discretization.</summary>
+        </devnotes>
       </procedure>
-      <property name="Var_Nmin0_10" visibility="published" read="Nmin0_10" write="Nmin0_10" type="TVar" file="USoilNitrogen.pas" line="90" />
-      <property name="Var_Nmin0_30" visibility="published" read="Nmin0_30" write="Nmin0_30" type="TVar" file="USoilNitrogen.pas" line="91" />
-      <property name="Var_Nmin30_60" visibility="published" read="Nmin30_60" write="Nmin30_60" type="TVar" file="USoilNitrogen.pas" line="92" />
-      <property name="Var_Nmin60_90" visibility="published" read="Nmin60_90" write="Nmin60_90" type="TVar" file="USoilNitrogen.pas" line="93" />
-      <property name="Var_Nmin90_120" visibility="published" read="Nmin90_120" write="Nmin90_120" type="TVar" file="USoilNitrogen.pas" line="94" />
-      <property name="Var_Nmin0_60" visibility="published" read="Nmin0_60" write="Nmin0_60" type="TVar" file="USoilNitrogen.pas" line="95" />
-      <property name="Var_Nmin0_90" visibility="published" read="Nmin0_90" write="Nmin0_90" type="TVar" file="USoilNitrogen.pas" line="96" />
-      <property name="Var_SumNmin" visibility="published" read="SumNmin" write="SumNmin" type="TVar" file="USoilNitrogen.pas" line="97" />
-      <property name="Var_SumDrain" visibility="published" read="CumSumNitrateLeaching" write="CumSumNitrateLeaching" type="TState" file="USoilNitrogen.pas" line="98" />
-      <property name="Var_DrainageNFlow" visibility="published" read="NitrateLeachingRate" write="NitrateLeachingRate" type="TVar" file="USoilNitrogen.pas" line="100" />
-      <property name="Var_NBalance" visibility="published" read="LongTermNBalance" write="LongTermNBalance" type="TVar" file="USoilNitrogen.pas" line="102" />
-      <property name="Var_DailyNBalance" visibility="published" read="DailyNBalance" write="DailyNBalance" type="TState" file="USoilNitrogen.pas" line="103" />
-      <property name="Par_Imp_factor" visibility="published" read="Imp_factor" write="Imp_factor" type="TPar" file="USoilNitrogen.pas" line="104" />
-      <property name="Opt_TransferNMinsToNextINI" visibility="published" read="fTransferNminss" write="fTransferNminss" type="Boolean" file="USoilNitrogen.pas" line="105" />
+      <property name="Var_Nmin0_10" visibility="published" read="Nmin0_10" write="Nmin0_10" type="TVar" file="USoilNitrogen.pas" line="121">
+        <devnotes>
+           <summary>Published access to nitrate-N amount in the 0-10 cm depth interval.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_Nmin0_30" visibility="published" read="Nmin0_30" write="Nmin0_30" type="TVar" file="USoilNitrogen.pas" line="123">
+        <devnotes>
+           <summary>Published access to nitrate-N amount in the 0-30 cm depth interval.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_Nmin30_60" visibility="published" read="Nmin30_60" write="Nmin30_60" type="TVar" file="USoilNitrogen.pas" line="125">
+        <devnotes>
+           <summary>Published access to nitrate-N amount in the 30-60 cm depth interval.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_Nmin60_90" visibility="published" read="Nmin60_90" write="Nmin60_90" type="TVar" file="USoilNitrogen.pas" line="127">
+        <devnotes>
+           <summary>Published access to nitrate-N amount in the 60-90 cm depth interval.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_Nmin90_120" visibility="published" read="Nmin90_120" write="Nmin90_120" type="TVar" file="USoilNitrogen.pas" line="129">
+        <devnotes>
+           <summary>Published access to nitrate-N amount in the 90-120 cm depth interval.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_Nmin0_60" visibility="published" read="Nmin0_60" write="Nmin0_60" type="TVar" file="USoilNitrogen.pas" line="131">
+        <devnotes>
+           <summary>Published access to nitrate-N amount in the 0-60 cm depth interval.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_Nmin0_90" visibility="published" read="Nmin0_90" write="Nmin0_90" type="TVar" file="USoilNitrogen.pas" line="133">
+        <devnotes>
+           <summary>Published access to nitrate-N amount in the 0-90 cm depth interval.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_SumNmin" visibility="published" read="SumNmin" write="SumNmin" type="TVar" file="USoilNitrogen.pas" line="135">
+        <devnotes>
+           <summary>Published access to the total nitrate amount in the balance profile.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_SumDrain" visibility="published" read="CumSumNitrateLeaching" write="CumSumNitrateLeaching" type="TState" file="USoilNitrogen.pas" line="137">
+        <devnotes>
+           <summary>Published access to cumulative nitrate leaching.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_DrainageNFlow" visibility="published" read="NitrateLeachingRate" write="NitrateLeachingRate" type="TVar" file="USoilNitrogen.pas" line="140">
+        <devnotes>
+           <summary>Published access to the nitrate-leaching rate.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_NBalance" visibility="published" read="LongTermNBalance" write="LongTermNBalance" type="TVar" file="USoilNitrogen.pas" line="143">
+        <devnotes>
+           <summary>Published access to the long-term computational nitrogen-balance variable.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_DailyNBalance" visibility="published" read="DailyNBalance" write="DailyNBalance" type="TState" file="USoilNitrogen.pas" line="145">
+        <devnotes>
+           <summary>Published access to the daily computational nitrogen-balance state.</summary>
+        </devnotes>
+      </property>
+      <property name="Par_Imp_factor" visibility="published" read="Imp_factor" write="Imp_factor" type="TPar" file="USoilNitrogen.pas" line="147">
+        <devnotes>
+           <summary>Published access to the implicit transport weighting parameter.</summary>
+        </devnotes>
+      </property>
+      <property name="Opt_TransferNMinsToNextINI" visibility="published" read="fTransferNminss" write="fTransferNminss" type="Boolean" file="USoilNitrogen.pas" line="149">
+        <devnotes>
+           <summary>Controls transfer of final nitrate amounts to the next configured simulation.</summary>
+        </devnotes>
+      </property>
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="USoilNitrogen.pas" line="656">
+  <procedure name="Register" visibility="public" file="USoilNitrogen.pas" line="696">
   </procedure>
 </namespace>

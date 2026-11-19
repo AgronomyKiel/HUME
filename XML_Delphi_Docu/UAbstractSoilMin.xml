@@ -1,127 +1,247 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="UAbstractSoilMin" platform="Win32">
-  <const name="MaxNOrgLayers" type="Integer" file="UAbstractSoilMin.pas" line="8">
+  <const name="MaxNOrgLayers" type="Integer" file="UAbstractSoilMin.pas" line="9">
+    <devnotes>
+       <summary>Maximum supported number of 10 cm organic-matter soil layers.</summary>
+    </devnotes>
     <value>
       $9
     </value>
   </const>
-  <const name="MaxSoilLayers" type="Integer" file="UAbstractSoilMin.pas" line="9">
+  <const name="MaxSoilLayers" type="Integer" file="UAbstractSoilMin.pas" line="11">
+    <devnotes>
+       <summary>Maximum number of soil layers represented by the shared soil-model convention.</summary>
+    </devnotes>
     <value>
       $14
     </value>
   </const>
-  <const name="CN_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="11" />
-  <const name="CN_som" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="12">
+  <const name="CN_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="14">
     <devnotes>
-       CN ratio BIOM
+       <summary>Default carbon-to-nitrogen mass ratio of microbial biomass (BIOM); dimensionless.</summary>
     </devnotes>
   </const>
-  <const name="CN_iom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="13">
+  <const name="CN_som" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="16">
     <devnotes>
-       CN ratio SOM
+       <summary>Default carbon-to-nitrogen mass ratio of stabilized soil organic matter (SOM); dimensionless.</summary>
     </devnotes>
   </const>
-  <const name="CN_DPM" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="14">
+  <const name="CN_iom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="18">
     <devnotes>
-       CN ratio IOM
+       <summary>Default carbon-to-nitrogen mass ratio of inert organic matter (IOM); dimensionless.</summary>
     </devnotes>
   </const>
-  <const name="CN_RPM" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="15">
+  <const name="CN_DPM" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="20">
     <devnotes>
-       CN ratio DPM
+       <summary>Default carbon-to-nitrogen mass ratio of decomposable plant material (DPM); dimensionless.</summary>
     </devnotes>
   </const>
-  <const name="ik_dpm_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="17">
+  <const name="CN_RPM" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="22">
     <devnotes>
-       CN ratio RPM
+       <summary>Default carbon-to-nitrogen mass ratio of resistant plant material (RPM); dimensionless.</summary>
     </devnotes>
   </const>
-  <const name="iE_dpm_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="18">
+  <const name="ik_dpm_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="25">
     <devnotes>
-       reaction constants of respective processes
+       <summary>Default first-order decomposition rate coefficient for DPM turnover to BIOM, in inverse days.</summary>
     </devnotes>
   </const>
-  <const name="ik_rpm_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="19">
+  <const name="iE_dpm_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="27">
     <devnotes>
-       conversion efficiency of dpm carbon substrate into microbial biomass
+       <summary>Default fraction of decomposed DPM carbon converted to microbial biomass; dimensionless.</summary>
     </devnotes>
   </const>
-  <const name="iE_rpm_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="20" />
-  <const name="ik_som_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="21" />
-  <const name="iE_som_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="22" />
-  <const name="ik_biom_som" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="23" />
-  <const name="iE_biom_som" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="24" />
-  <const name="DPM" type="Pools" file="UAbstractSoilMin.pas" line="28">
+  <const name="ik_rpm_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="29">
+    <devnotes>
+       <summary>Default first-order decomposition rate coefficient for RPM turnover to BIOM, in inverse days.</summary>
+    </devnotes>
+  </const>
+  <const name="iE_rpm_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="31">
+    <devnotes>
+       <summary>Default fraction of decomposed RPM carbon converted to microbial biomass; dimensionless.</summary>
+    </devnotes>
+  </const>
+  <const name="ik_som_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="33">
+    <devnotes>
+       <summary>Default first-order decomposition rate coefficient for SOM turnover to BIOM, in inverse days.</summary>
+    </devnotes>
+  </const>
+  <const name="iE_som_biom" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="35">
+    <devnotes>
+       <summary>Default fraction of decomposed SOM carbon converted to microbial biomass; dimensionless.</summary>
+    </devnotes>
+  </const>
+  <const name="ik_biom_som" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="37">
+    <devnotes>
+       <summary>Default first-order turnover rate coefficient from microbial biomass to SOM, in inverse days.</summary>
+    </devnotes>
+  </const>
+  <const name="iE_biom_som" type="Double" visibility="public" file="UAbstractSoilMin.pas" line="39">
+    <devnotes>
+       <summary>Default fraction of microbial biomass carbon transferred to SOM during turnover; dimensionless.</summary>
+    </devnotes>
+  </const>
+  <const name="DPM" type="Pools" file="UAbstractSoilMin.pas" line="46">
+    <devnotes>
+       <summary>Decomposable plant material.</summary>
+    </devnotes>
     <value>
       DPM
     </value>
   </const>
-  <const name="RPM" type="Pools" file="UAbstractSoilMin.pas" line="29">
+  <const name="RPM" type="Pools" file="UAbstractSoilMin.pas" line="48">
+    <devnotes>
+       <summary>Resistant plant material.</summary>
+    </devnotes>
     <value>
       RPM
     </value>
   </const>
-  <const name="BIOM" type="Pools" file="UAbstractSoilMin.pas" line="30">
+  <const name="BIOM" type="Pools" file="UAbstractSoilMin.pas" line="50">
+    <devnotes>
+       <summary>Total microbial biomass.</summary>
+    </devnotes>
     <value>
       BIOM
     </value>
   </const>
-  <const name="SOM" type="Pools" file="UAbstractSoilMin.pas" line="31">
+  <const name="SOM" type="Pools" file="UAbstractSoilMin.pas" line="52">
+    <devnotes>
+       <summary>Stabilized soil organic matter.</summary>
+    </devnotes>
     <value>
       SOM
     </value>
   </const>
-  <const name="IOM" type="Pools" file="UAbstractSoilMin.pas" line="32">
+  <const name="IOM" type="Pools" file="UAbstractSoilMin.pas" line="54">
+    <devnotes>
+       <summary>Inert organic matter.</summary>
+    </devnotes>
     <value>
       IOM
     </value>
   </const>
-  <const name="dpm_biom" type="processes" file="UAbstractSoilMin.pas" line="37">
+  <const name="dpm_biom" type="processes" file="UAbstractSoilMin.pas" line="59">
+    <devnotes>
+       <summary>Decomposable plant material to microbial biomass.</summary>
+    </devnotes>
     <value>
       dpm_biom
     </value>
   </const>
-  <const name="rpm_biom" type="processes" file="UAbstractSoilMin.pas" line="37">
+  <const name="rpm_biom" type="processes" file="UAbstractSoilMin.pas" line="61">
+    <devnotes>
+       <summary>Resistant plant material to microbial biomass.</summary>
+    </devnotes>
     <value>
       rpm_biom
     </value>
   </const>
-  <const name="som_biom" type="processes" file="UAbstractSoilMin.pas" line="37">
+  <const name="som_biom" type="processes" file="UAbstractSoilMin.pas" line="63">
+    <devnotes>
+       <summary>Stabilized organic matter to microbial biomass.</summary>
+    </devnotes>
     <value>
       som_biom
     </value>
   </const>
-  <const name="biom_som" type="processes" file="UAbstractSoilMin.pas" line="37">
+  <const name="biom_som" type="processes" file="UAbstractSoilMin.pas" line="65">
+    <devnotes>
+       <summary>Microbial biomass to stabilized organic matter.</summary>
+    </devnotes>
     <value>
       biom_som
     </value>
   </const>
-  <enum name="Pools" file="UAbstractSoilMin.pas" line="28">
-    <element value="0" name="DPM" file="UAbstractSoilMin.pas" line="28" />
-    <element value="1" name="RPM" file="UAbstractSoilMin.pas" line="29" />
-    <element value="2" name="BIOM" file="UAbstractSoilMin.pas" line="30" />
-    <element value="3" name="SOM" file="UAbstractSoilMin.pas" line="31" />
-    <element value="4" name="IOM" file="UAbstractSoilMin.pas" line="32" />
-  </enum>
-  <enum name="processes" file="UAbstractSoilMin.pas" line="37">
+  <enum name="Pools" file="UAbstractSoilMin.pas" line="44">
     <devnotes>
-       inert organic matter
+       <summary>Organic-matter pool identifiers, including two plant-residue fractions, biomass, stabilized and inert material.</summary>
     </devnotes>
-    <element value="0" name="dpm_biom" file="UAbstractSoilMin.pas" line="37" />
-    <element value="1" name="rpm_biom" file="UAbstractSoilMin.pas" line="37" />
-    <element value="2" name="som_biom" file="UAbstractSoilMin.pas" line="37" />
-    <element value="3" name="biom_som" file="UAbstractSoilMin.pas" line="37" />
+    <element value="0" name="DPM" file="UAbstractSoilMin.pas" line="46">
+      <devnotes>
+         <summary>Decomposable plant material.</summary>
+      </devnotes>
+    </element>
+    <element value="1" name="RPM" file="UAbstractSoilMin.pas" line="48">
+      <devnotes>
+         <summary>Resistant plant material.</summary>
+      </devnotes>
+    </element>
+    <element value="2" name="BIOM" file="UAbstractSoilMin.pas" line="50">
+      <devnotes>
+         <summary>Total microbial biomass.</summary>
+      </devnotes>
+    </element>
+    <element value="3" name="SOM" file="UAbstractSoilMin.pas" line="52">
+      <devnotes>
+         <summary>Stabilized soil organic matter.</summary>
+      </devnotes>
+    </element>
+    <element value="4" name="IOM" file="UAbstractSoilMin.pas" line="54">
+      <devnotes>
+         <summary>Inert organic matter.</summary>
+      </devnotes>
+    </element>
   </enum>
-  <array name="TPoolStateArray" file="UAbstractSoilMin.pas" line="41">
-    <element type="TState" />
+  <enum name="processes" file="UAbstractSoilMin.pas" line="57">
+    <devnotes>
+       <summary>Organic-carbon transfer pathways between the decomposing pools.</summary>
+    </devnotes>
+    <element value="0" name="dpm_biom" file="UAbstractSoilMin.pas" line="59">
+      <devnotes>
+         <summary>Decomposable plant material to microbial biomass.</summary>
+      </devnotes>
+    </element>
+    <element value="1" name="rpm_biom" file="UAbstractSoilMin.pas" line="61">
+      <devnotes>
+         <summary>Resistant plant material to microbial biomass.</summary>
+      </devnotes>
+    </element>
+    <element value="2" name="som_biom" file="UAbstractSoilMin.pas" line="63">
+      <devnotes>
+         <summary>Stabilized organic matter to microbial biomass.</summary>
+      </devnotes>
+    </element>
+    <element value="3" name="biom_som" file="UAbstractSoilMin.pas" line="65">
+      <devnotes>
+         <summary>Microbial biomass to stabilized organic matter.</summary>
+      </devnotes>
+    </element>
+  </enum>
+  <array name="TPoolStateArray" file="UAbstractSoilMin.pas" line="70">
+    <devnotes>
+       <summary>Pool-indexed collection of model state variables.</summary>
+    </devnotes>
+    <element type="TState">
+      <devnotes>
+         <summary>Pool-indexed collection of model state variables.</summary>
+      </devnotes>
+    </element>
   </array>
-  <array name="TPoolVarArray" file="UAbstractSoilMin.pas" line="42">
-    <element type="TVar" />
+  <array name="TPoolVarArray" file="UAbstractSoilMin.pas" line="72">
+    <devnotes>
+       <summary>Pool-indexed collection of calculated model variables.</summary>
+    </devnotes>
+    <element type="TVar">
+      <devnotes>
+         <summary>Pool-indexed collection of calculated model variables.</summary>
+      </devnotes>
+    </element>
   </array>
-  <array name="TPoolParArray" file="UAbstractSoilMin.pas" line="43">
-    <element type="TPar" />
+  <array name="TPoolParArray" file="UAbstractSoilMin.pas" line="74">
+    <devnotes>
+       <summary>Pool-indexed collection of model parameters.</summary>
+    </devnotes>
+    <element type="TPar">
+      <devnotes>
+         <summary>Pool-indexed collection of model parameters.</summary>
+      </devnotes>
+    </element>
   </array>
-  <class name="TAbstractSoilMin" file="UAbstractSoilMin.pas" line="45">
+  <class name="TAbstractSoilMin" file="UAbstractSoilMin.pas" line="77">
+    <devnotes>
+       <summary>Base class for plant-related soil mineralization models, providing model links and layer-specific tillage factors.</summary>
+    </devnotes>
     <ancestor name="TPlantRelatedSubMod" namespace="UAbstractPlant">
       <methodref name="GetIsPlantModelset" visibility="protected">
       </methodref>
@@ -129,7 +249,8 @@
       </methodref>
       <methodref name="Init" visibility="public" procflags="override">
       </methodref>
-      <propertyref name="IsPlantModelSet" visibility="public" />
+      <propertyref name="IsPlantModelSet" visibility="public">
+      </propertyref>
       <propertyref name="PlantModel" visibility="published">
       </propertyref>
       <ancestor name="TSubmodel" namespace="UMod">
@@ -149,18 +270,30 @@
         </methodref>
         <methodref name="ClearDataSeries" visibility="private" procflags="virtual">
         </methodref>
-        <methodref name="set_State" visibility="private" procflags="virtual" />
-        <methodref name="get_State" visibility="private" />
-        <methodref name="set_Par" visibility="private" />
-        <methodref name="Get_Par" visibility="private" />
-        <methodref name="set_Var" visibility="private" />
-        <methodref name="Get_Var" visibility="private" />
-        <methodref name="set_Const" visibility="private" />
-        <methodref name="get_Const" visibility="private" />
-        <methodref name="set_Option" visibility="private" />
-        <methodref name="get_Option" visibility="private" />
-        <methodref name="set_ExternVar" visibility="private" />
-        <methodref name="get_ExternVar" visibility="private" />
+        <methodref name="set_State" visibility="private" procflags="virtual">
+        </methodref>
+        <methodref name="get_State" visibility="private">
+        </methodref>
+        <methodref name="set_Par" visibility="private">
+        </methodref>
+        <methodref name="Get_Par" visibility="private">
+        </methodref>
+        <methodref name="set_Var" visibility="private">
+        </methodref>
+        <methodref name="Get_Var" visibility="private">
+        </methodref>
+        <methodref name="set_Const" visibility="private">
+        </methodref>
+        <methodref name="get_Const" visibility="private">
+        </methodref>
+        <methodref name="set_Option" visibility="private">
+        </methodref>
+        <methodref name="get_Option" visibility="private">
+        </methodref>
+        <methodref name="set_ExternVar" visibility="private">
+        </methodref>
+        <methodref name="get_ExternVar" visibility="private">
+        </methodref>
         <methodref name="InitStates" visibility="private" procflags="virtual">
         </methodref>
         <methodref name="InitParms" visibility="private" procflags="virtual">
@@ -179,12 +312,14 @@
         </methodref>
         <methodref name="Set_GlobMod" visibility="protected" procflags="virtual">
         </methodref>
-        <methodref name="UpdateValue" visibility="protected" />
+        <methodref name="UpdateValue" visibility="protected">
+        </methodref>
         <methodref name="SetEntityDeclarationClass" visibility="protected">
         </methodref>
         <methodref name="Paint" visibility="protected" procflags="override">
         </methodref>
-        <methodref name="Notification" visibility="protected" procflags="virtual" />
+        <methodref name="Notification" visibility="protected" procflags="virtual">
+        </methodref>
         <methodref name="Create" visibility="public" procflags="constructor override">
         </methodref>
         <methodref name="free" visibility="public">
@@ -259,7 +394,8 @@
         </propertyref>
         <methodref name="DblClick" visibility="public" procflags="override">
         </methodref>
-        <propertyref name="CalcTimeTicks" visibility="public" />
+        <propertyref name="CalcTimeTicks" visibility="public">
+        </propertyref>
         <propertyref name="SM_GlobMod" visibility="published">
         </propertyref>
         <propertyref name="SM_ExternVStrList" visibility="published">
@@ -286,12 +422,18 @@
         </propertyref>
         <propertyref name="OptContOutput" visibility="published">
         </propertyref>
-        <propertyref name="Parent" visibility="published" />
-        <propertyref name="Canvas" visibility="published" />
-        <propertyref name="Visible" visibility="published" />
-        <propertyref name="color" visibility="published" />
-        <propertyref name="DebugForm" visibility="published" />
-        <propertyref name="OnDblclick" visibility="published" />
+        <propertyref name="Parent" visibility="published">
+        </propertyref>
+        <propertyref name="Canvas" visibility="published">
+        </propertyref>
+        <propertyref name="Visible" visibility="published">
+        </propertyref>
+        <propertyref name="color" visibility="published">
+        </propertyref>
+        <propertyref name="DebugForm" visibility="published">
+        </propertyref>
+        <propertyref name="OnDblclick" visibility="published">
+        </propertyref>
         <ancestor name="TGraphicControl" namespace="Vcl.Controls">
           <methodref name="WMPaint" visibility="private" procflags="message">
           </methodref>
@@ -1317,36 +1459,83 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fSoilHeatModel" type="TAbstractSoilHeat" visibility="protected" size="4" offset="672" file="UAbstractSoilMin.pas" line="47" />
-      <field name="fSoilWaterModel" type="TSoilWaterMod" visibility="protected" size="4" offset="676" file="UAbstractSoilMin.pas" line="48" />
-      <field name="fPlantModel" type="TAbstractPlant" visibility="protected" size="4" offset="680" file="UAbstractSoilMin.pas" line="49" />
-      <field name="NOrgLayers" type="TPar" visibility="public" size="4" offset="684" file="UAbstractSoilMin.pas" line="51" />
-      <field name="BBf" visibility="public" size="40" offset="688" file="UAbstractSoilMin.pas" line="52">
-        <array name="BBf" visibility="public" low="0" high="9" file="UAbstractSoilMin.pas" line="52">
+      <field name="fSoilHeatModel" type="TAbstractSoilHeat" visibility="protected" size="4" offset="672" file="UAbstractSoilMin.pas" line="80">
+        <devnotes>
+           <summary>Reference to the coupled soil heat model.</summary>
+        </devnotes>
+      </field>
+      <field name="fSoilWaterModel" type="TSoilWaterMod" visibility="protected" size="4" offset="676" file="UAbstractSoilMin.pas" line="82">
+        <devnotes>
+           <summary>Reference to the coupled soil water model.</summary>
+        </devnotes>
+      </field>
+      <field name="fPlantModel" type="TAbstractPlant" visibility="protected" size="4" offset="680" file="UAbstractSoilMin.pas" line="84">
+        <devnotes>
+           <summary>Reference to the coupled plant model.</summary>
+        </devnotes>
+      </field>
+      <field name="NOrgLayers" type="TPar" visibility="public" size="4" offset="684" file="UAbstractSoilMin.pas" line="87">
+        <devnotes>
+           <summary>Number of organic-matter soil layers, each representing 10 cm of soil.</summary>
+        </devnotes>
+      </field>
+      <field name="BBf" visibility="public" size="40" offset="688" file="UAbstractSoilMin.pas" line="90">
+        <devnotes>
+           <summary>Dimensionless layer-specific tillage factors; values above 1 increase decomposition rates temporarily.</summary>
+           <remarks>The array includes index 0; this base class creates states only for soil-layer indices starting at 1.</remarks>
+        </devnotes>
+        <array name="BBf" visibility="public" low="0" high="9" file="UAbstractSoilMin.pas" line="90">
           <element type="TState" />
         </array>
       </field>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="UAbstractSoilMin.pas" line="53">
+      <procedure name="CreateAll" visibility="public" procflags="override" file="UAbstractSoilMin.pas" line="92">
+        <devnotes>
+           <summary>Registers the organic-layer count and creates tillage-factor states for layers 1 through NOrgLayers, initially set to 1.</summary>
+        </devnotes>
       </procedure>
-      <procedure name="Init" visibility="public" procflags="override" file="UAbstractSoilMin.pas" line="54">
+      <procedure name="Init" visibility="public" procflags="override" file="UAbstractSoilMin.pas" line="94">
+        <devnotes>
+           <summary>Initializes the inherited model and resets tillage factors in layers 1 through MaxNOrgLayers to 1.</summary>
+        </devnotes>
         <parameters>
           <parameter name="GlobMod" type="TMod" paramflags="var" />
         </parameters>
       </procedure>
-      <procedure name="AddResidues" visibility="public" procflags="virtual" file="UAbstractSoilMin.pas" line="55">
+      <procedure name="AddResidues" visibility="public" procflags="virtual" file="UAbstractSoilMin.pas" line="98">
+        <devnotes>
+           <summary>Hook for adding residue carbon and nitrogen; the base implementation performs no action.</summary>
+           <param name="Carbon">Carbon amount supplied with the residues, using the units expected by the descendant.</param>
+           <param name="nitrogen">Nitrogen amount supplied with the residues, using the units expected by the descendant.</param>
+        </devnotes>
         <parameters>
           <parameter name="Carbon" type="Double" />
           <parameter name="nitrogen" type="Double" />
         </parameters>
       </procedure>
-      <procedure name="MixLayers" visibility="public" procflags="virtual" file="UAbstractSoilMin.pas" line="56">
+      <procedure name="MixLayers" visibility="public" procflags="virtual" file="UAbstractSoilMin.pas" line="101">
+        <devnotes>
+           <summary>Hook for redistributing organic matter within the tilled soil depth; the base implementation performs no action.</summary>
+           <param name="depth">Depth of soil mixing, in cm.</param>
+        </devnotes>
         <parameters>
           <parameter name="depth" type="Double" />
         </parameters>
       </procedure>
-      <property name="SoilHeatModel" visibility="published" read="fSoilHeatModel" write="fSoilHeatModel" type="TAbstractSoilHeat" file="UAbstractSoilMin.pas" line="58" />
-      <property name="SoilWaterModel" visibility="published" read="fSoilWaterModel" write="fSoilWaterModel" type="TSoilWaterMod" file="UAbstractSoilMin.pas" line="59" />
-      <property name="PlantModel" visibility="published" read="fPlantModel" write="fPlantModel" type="TAbstractPlant" file="UAbstractSoilMin.pas" line="60" />
+      <property name="SoilHeatModel" visibility="published" read="fSoilHeatModel" write="fSoilHeatModel" type="TAbstractSoilHeat" file="UAbstractSoilMin.pas" line="104">
+        <devnotes>
+           <summary>Coupled soil heat model supplying the thermal context for mineralization in descendants.</summary>
+        </devnotes>
+      </property>
+      <property name="SoilWaterModel" visibility="published" read="fSoilWaterModel" write="fSoilWaterModel" type="TSoilWaterMod" file="UAbstractSoilMin.pas" line="106">
+        <devnotes>
+           <summary>Coupled soil water model supplying the water-status context for mineralization in descendants.</summary>
+        </devnotes>
+      </property>
+      <property name="PlantModel" visibility="published" read="fPlantModel" write="fPlantModel" type="TAbstractPlant" file="UAbstractSoilMin.pas" line="108">
+        <devnotes>
+           <summary>Coupled plant model associated with this mineralization submodel.</summary>
+        </devnotes>
+      </property>
     </members>
   </class>
 </namespace>

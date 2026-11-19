@@ -1,0 +1,556 @@
+---
+title: "TSoilMinNH4"
+author: "Agronomy and Crop Science Group, Kiel University"
+date: "`r Sys.Date()`"
+chunk_output_type: console
+html-math-method: katex
+number-sections: true
+toc: true
+toc-expand: 4
+toc-depth: 4
+toc-location: left
+crossref:
+  eq-prefix: Eq.
+format: 
+  html:
+    embed-resources: true 
+---
+
+```{r}
+#| label: SetupLibraries
+#| include: FALSE
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center", fig.width = 12, fig.height = 6, fig.pos = "h", fig.cap = TRUE)
+rm(list = ls(all.names = TRUE))
+
+library(rmarkdown)
+library(bookdown)
+library(pracma)
+library(dplyr)
+library(ggplot2)
+library(gifski)
+library(reticulate)
+library(tinytex)
+library(magick)
+library(bibtex)
+library(ggsci)
+library(knitcitations)
+library(kableExtra)
+library(xml2)
+library(here)
+library(ggpmisc)
+library(tidyr)
+library(stringr)
+source("RLib/DokuUtilFunctions.R")
+source("ExtractInformationFromXML.R")
+
+
+options("citation_format" = "pandoc")
+
+```
+
+```{r}
+#| include: false
+fn_source <- "Components/Soil/USoilMineralisationNH4.pas"
+fn_xml_docu <- "XML_Delphi_Docu/USoilMineralisationNH4.xml"
+```
+
+# Summary
+
+```{r}
+#| echo: false
+#| results: "asis"
+#| message: false
+#| warning: false
+
+# 1. Load the XML file
+doc <- xml2::read_xml(fn_xml_docu)
+
+NameSource <- file_path_sans_ext(basename(fn_source))
+doc <- read_xml(fn_xml_docu)
+
+output <- ExtractXMLDocuInformation(
+  fn_xml_docu,
+  ClassName = "TSoilMinNH4"
+)
+
+fn_xml_docu_ancestor <- "XML_Delphi_Docu/UAbstractSoilMin.xml"
+output_ancestor <- ExtractXMLDocuInformation(
+  fn_xml_docu_ancestor,
+  ClassName = "TSoilMinNH4"
+)
+
+
+# Example:
+output <- combine_doc_lists(output, output_ancestor)
+
+
+```
+
+```{r}
+#| echo: false
+#| results: "asis"
+#| message: false
+#| warning: false
+
+GetClassDevNotes("TSoilMinNH4",fn_xml_docu)
+```
+
+## Ancestor classes
+
+The class TSimpleRootModDM has the following ancestor classes shown in @tbl-AncestorClasses.
+
+```{r}
+#| label: tbl-AncestorClasses
+#| echo: false
+#| tbl-cap: "Ancestor classes of TSoilMinNH4"
+
+df <- GetAncestorClasses(fn_xml_docu,"TSoilMinNH4")
+
+kable(df)
+
+```
+
+# Scientific Background
+
+## Model overview
+
+The model component/class TSoilMinNH4 simulates the mineralization of organic matter in soil, focusing on the transformation of carbon and nitrogen compounds. It incorporates environmental factors such as temperature and soil moisture, as well as management practices like tillage and residue incorporation. The model is designed to predict the availability of mineral nitrogen for plant uptake, which is crucial for crop growth and yield as well as a source of losses of N due to gaesous emissions and leaching.
+
+It is implemented in the `USoilMineralisationNH4.pas` unit and is part of the Hume wheat model framework. The model is based on the C pool concept, uses a set of coupled differential equations to represent the dynamics of carbon and coupled nitrogen pools in the soil, allowing for the simulation of various scenarios and management practices.
+
+It is usually linked to an instance of the class TSoilNitrogenUp, which provides the nitrate concentration for each layer and the soil water content. The class TSoilNitrogenUp does not implement ammonia pools in its layers, this is part of the class/component TSoilMinNH4, which includes ammonia pools in each layer. The ammonia pool is then usually quite fast transformed into nitrate, which is then is available for plant uptake. 
+
+Microbial processes which consume substrates with a wide C/N ratio lead to N immobilisation and decrease the soil nitrate pool.
+
+## C and N mineralization
+
+The submodel for mineralization of carbon and nitrogen (@Henke2008) was developed according to @Jenkinson1977b, @Verberne1990, and @PETERSEN2005359. It consists of four coupled carbon pools: soil organic matter (SOM), decomposable plant material (DPM), resistant plant material (RPM), and microbial biomass (BIOM). Parameters of the mineralization submodel are listed in @tbl-SoilMinNH4Parameters.
+
+### Organic pools and decomposition
+
+The mineralization submodel is a simplified modification of the model of Verberne et al. (1990). It represents crop residues and soil organic matter using four organic carbon pools, $C_i$:
+
+| Pool | Symbol | Description |
+|:--|:--|:--|
+| SOM | $C_{\mathrm{som}}$ | Soil organic matter |
+| BIOM | $C_{\mathrm{biom}}$ | Microbial biomass |
+| DPM | $C_{\mathrm{dpm}}$ | Easily decomposable crop residues |
+| RPM | $C_{\mathrm{rpm}}$ | More resistant crop residues |
+| IOM | $C_{\mathrm{iom}}$ | Inert organic matter |
+
+Each pool has a fixed C/N ratio and decomposes according to first-order kinetics:
+
+$$
+\frac{\mathrm{d}C_i}{\mathrm{d}t} = -k_i \cdot C_i \cdot f_{abiot}
+$$ {#eq-soilminnh4-kage-decomposition}
+
+Here, $k_i$ is the decomposition rate coefficient of pool $i$, and $f_{abiot}$ is a dimensionless factor describing abiotic limitations imposed by soil temperature and soil water content ($0 < f < 1$ in the supplied description).
+
+The corresponding change in organic nitrogen is obtained by multiplying the carbon change by the pool-specific N/C ratio:
+
+$$
+\frac{\mathrm{d}N_i}{\mathrm{d}t}
+= \frac{\mathrm{d}C_i}{\mathrm{d}t}\frac{N_i}{C_i}
+= \frac{1}{\mathrm{CN}_i}\frac{\mathrm{d}C_i}{\mathrm{d}t}
+$$ {#eq-soilminnh4-kage-organic-n}
+
+Here, $\mathrm{CN}_i=C_i/N_i$. With this sign convention, decomposition gives a negative change in pool organic nitrogen. Net release to the mineral nitrogen pool additionally depends on nitrogen demand associated with transfers between organic pools, as described in the preceding nitrogen-turnover equations.
+
+### Limitation by mineral nitrogen availability
+
+A reduction factor, $f_{\mathrm{SMN}}$, accounts for shortages of soil mineral nitrogen (SMN) for the processes which lead to a microbial immobilisation of mineral nitrogen. Decomposition stops at or below the critical mineral nitrogen content, $\mathrm{SMN}_{\mathrm{crit}}$. Above this threshold, the response follows Michaelis–Menten kinetics:
+
+$$
+f_{\mathrm{SMN}} =
+\begin{cases}
+0, & \mathrm{SMN} \leq \mathrm{SMN}_{\mathrm{crit}}, \\
+\displaystyle
+\frac{\mathrm{SMN}-\mathrm{SMN}_{\mathrm{crit}}}
+{\mathrm{SMN}-\mathrm{SMN}_{\mathrm{crit}}+K_{\mathrm{SMN}}},
+& \mathrm{SMN} > \mathrm{SMN}_{\mathrm{crit}}.
+\end{cases}
+$$ {#eq-soilminnh4-kage-smn}
+
+The stated values are $\mathrm{SMN}_{\mathrm{crit}}=2\,\mathrm{kg\ N\ ha^{-1}}$ and $K_{\mathrm{SMN}}=1\,\mathrm{kg\ N\ ha^{-1}}$, each referring to a soil layer of 10 cm thickness. The factor reduces decomposition in addition to abiotic limitation.
+
+::: {.callout-note title="Interpretation of the supplied nitrogen-limitation equation"}
+The supplied text writes this response as $\min(1,\max(0,x/(x+K_{\mathrm{SMN}})))$, where $x=\mathrm{SMN}-\mathrm{SMN}_{\mathrm{crit}}$. Applied below the threshold, that expression can be undefined or return a positive factor, contrary to the stated cessation of decomposition. @eq-soilminnh4-kage-smn explicitly implements the stated threshold behavior and retains the supplied response above it. This is a clarification of the description, not a verification of the Pascal implementation.
+:::
+
+### Surface crop residues
+
+Newly added crop residues are assumed to decompose at the soil surface. Their decomposition rate is 50% lower than the corresponding rate in the first soil layer.
+
+### Tillage effects
+
+Tillage temporarily increases decomposition rates in the tilled soil layer through a dimensionless factor, $f_{\mathrm{Till}}$, whose baseline value is 1. At each tillage event, the mineralization effect, $\mathrm{Min}_{\mathrm{eff}}$, is added to this factor:
+
+$$
+f_{\mathrm{Till}}(t_{\mathrm{Till}}^{+})
+= f_{\mathrm{Till}}(t_{\mathrm{Till}}^{-}) + \mathrm{Min}_{\mathrm{eff}}
+$$ {#eq-soilminnh4-kage-tillage-event}
+
+The superscripts $-$ and $+$ denote values immediately before and after the tillage event. Including this stimulation, the decomposition equation becomes:
+
+$$
+\frac{\mathrm{d}C_i}{\mathrm{d}t}
+= -k_i C_i f f_{\mathrm{Till}}
+$$ {#eq-soilminnh4-kage-tillage-decomposition}
+
+Between tillage events, the stimulation decays toward the baseline value:
+
+$$
+\frac{\mathrm{d}f_{\mathrm{Till}}}{\mathrm{d}t}
+= -d_{\mathrm{Till}}\left(f_{\mathrm{Till}}-1\right)
+$$ {#eq-soilminnh4-kage-tillage-decay}
+
+Here, $d_{\mathrm{Till}}$ is the decay rate coefficient. Tillage also incorporates surface crop residues into the soil and uniformly redistributes each of the four carbon pools throughout the tilled soil layer.
+
+Further details of this model approach are given by Kage (2000).
+
+## Abiotic factor for carbon mineralization {#sec-soilminnh4-abiotic-methods}
+
+The option `f_abiot_min_Calcmethod` selects the environmental response used by `Calc_f_abiot(minp, layer)` in `USoilMineralisationNH4.pas`. The dimensionless method result, denoted here by $f_{\mathrm{method}}$, scales carbon turnover according to the environmental conditions in each layer. The following equations describe the current implementation; the factor is not universally restricted to values between 0 and 1.
+
+| Option | Status | Environmental response |
+|:--|:--|:--|
+| `Verbruggen` | Implemented | Joint response to water content and temperature, using bulk density and a reference normalization |
+| `Petersen` | **Not yet implemented** | Returns 1; no environmental limitation is calculated by this option |
+| `Zhou` | **Not yet implemented** | Returns 1; no environmental limitation is calculated by this option |
+| `DAISY` | Implemented; default | Product of water, temperature, and combined clay–humus factors |
+| `Mueller` | Implemented, with a temperature-function limitation noted below | Product of a water-filled-pore-space response and a temperature response |
+
+### Environmental inputs
+
+$T$ is soil temperature in °C, $\theta$ (`WC`) is volumetric water content, and $\rho_b$ (`BulkDensity`) is bulk density in $\mathrm{g\,cm^{-3}}$. Water-filled pore space, $w$ (`WFPS`), is used as a fraction rather than a percentage.
+
+When a soil heat model is linked, its layer temperature is used; otherwise, the submodel uses `temp`. When a soil water model is linked, water content and saturation come from that model:
+
+$$
+w=\frac{\theta}{\theta_{\mathrm{sat}}},
+\qquad
+pF=\log_{10}\!\left(\max(1,\mathtt{psi\_arr}[\mathrm{layer}])\right).
+$$ {#eq-soilminnh4-abiotic-inputs-linked}
+
+The logarithm uses the water model's pressure-head value in cm. Clay content, $c$, is obtained from the layer texture only when the water model uses `fromTexture`; otherwise, it remains zero in this calculation. Without a linked soil water model, the fallback inputs are:
+
+$$
+w=\frac{\theta}{1-\rho_b/2.65},
+\qquad pF=5(1-w),
+\qquad c=0.
+$$ {#eq-soilminnh4-abiotic-inputs-fallback}
+
+Here, 2.65 is the particle density assumed by the porosity calculation, in $\mathrm{g\,cm^{-3}}$. Clay content $c$ and humus content $h$ (`HumusContent`) are fractions; `HumusContent` defaults to 0.018.
+
+### Verbruggen
+
+`calc_f_abiot_Verbruggen` computes a joint water–temperature response:
+
+$$
+\begin{aligned}
+a(T)&=0.22(T+0.00064)^{1.4425},\\
+b(T)&=0.1737\exp(-0.119T)+0.1107,\\
+R(T,\theta,\rho_b)&=a(T)\left[1-\exp\!\left(-b(T)\frac{\theta}{\rho_b}\right)\right].
+\end{aligned}
+$$ {#eq-soilminnh4-verbruggen-response}
+
+The response is normalized to $T=20$ °C, $\theta=0.35$, and $\rho_b=1.5\,\mathrm{g\,cm^{-3}}$, and bounded between 0 and 3:
+
+$$
+f_{\mathrm{method}}=
+\begin{cases}
+0, & T\leq0,\\
+\displaystyle\min\!\left(3,\max\!\left(0,
+\frac{R(T,\theta,\rho_b)}{R(20,0.35,1.5)}\right)\right), & T>0.
+\end{cases}
+$$ {#eq-soilminnh4-verbruggen-factor}
+
+Thus, the factor equals 1 at the reference conditions and may exceed 1 under more favorable conditions. The implementation comment attributes this formulation to Verbruggen (1985), cited in Groot (1987).
+
+### DAISY
+
+For carbon mineralization (`minp`), `calc_f_abiot_DAISY` returns:
+
+$$
+f_{\mathrm{method}}=f_W\,f_T\,f_{\mathrm{Clay,Hum}}.
+$$ {#eq-soilminnh4-daisy-factor}
+
+The soil-water response is expressed in terms of $pF$:
+
+$$
+f_W=
+\begin{cases}
+1-0.4(1.5-pF)/1.5, & pF<1.5,\\
+1, & 1.5\leq pF<2.5,\\
+1-0.25(pF-2.5), & 2.5\leq pF<6.5,\\
+0, & pF\geq6.5.
+\end{cases}
+$$ {#eq-soilminnh4-daisy-water}
+
+The temperature response is normalized by the response at 28 °C. Defining $G(T)=\exp(0.47-0.027T+0.00193T^2)$ gives:
+
+$$
+f_T=
+\begin{cases}
+0, & T\leq0,\\
+0.1T/G(28), & 0<T\leq20,\\
+G(T)/G(28), & 20<T\leq28,\\
+1, & T>28.
+\end{cases}
+$$ {#eq-soilminnh4-daisy-temperature}
+
+The active clay–humus modifier is:
+
+$$
+f_{\mathrm{Clay,Hum}}=
+\max\!\left(0.25,\min\!\left(1,
+1-2.727(c+10h-0.125)\right)\right).
+$$ {#eq-soilminnh4-daisy-clay-humus}
+
+It ranges from 0.25 to 1. Although the function also computes a clay-only factor, $1-2\min(0.25,c)$, that factor is not used in the returned mineralization response. `WFPS` is passed to the DAISY function but is not used directly in its `minp` branch.
+
+### Mueller
+
+`calc_f_abiot_Mueller` returns the product $f_{\mathrm{method}}=f_W f_T$. The water response is obtained by linear interpolation between the following points:
+
+| Water-filled pore space $w$ | $f_W$ |
+|--:|--:|
+| 0.00 | 0.00000 |
+| 0.40 | 0.57000 |
+| 0.58 | 1.00000 |
+| 0.63 | 1.00000 |
+| 1.00 | 0.36914 |
+
+Below the first point, the first response value is retained; above the last point, the last response value is retained. The maximum water response therefore occurs between water-filled pore-space fractions 0.58 and 0.63.
+
+The temperature response calls `QF(-5, 60, 35, 1.6, T)`. Written exactly as implemented, this is:
+
+$$
+f_T=
+\begin{cases}
+0, & T<-5\ \text{or}\ T>60,\\
+\displaystyle
+\frac{(T+5)^{1.6}(60-T)}{40^{1.6}(35-T)},
+& -5\leq T\leq60,\ T\ne35.
+\end{cases}
+$$ {#eq-soilminnh4-mueller-temperature}
+
+::: {.callout-warning title="Mueller temperature function in the current code"}
+The denominator contains $(35-T)$. The expression is undefined at 35 °C and becomes negative for $35<T<60$ °C; the function does not bound the returned factor. This documents the current implementation and should be reviewed before interpreting it as a physiological temperature response.
+:::
+
+### Application to layers and carbon turnover
+
+For soil layers $l\geq1$, the selected method result is multiplied by the configured layer factor:
+
+$$
+f_{\mathrm{abiot,min},l}
+=f_{\mathrm{method},l}\,\mathtt{Layerfactor}[l].
+$$ {#eq-soilminnh4-abiotic-layer}
+
+For surface residues (layer 0), the code instead uses half the method result of the first soil layer, without multiplying by `Layerfactor[1]`:
+
+$$
+f_{\mathrm{abiot,min},0}=0.5\,f_{\mathrm{method},1}.
+$$ {#eq-soilminnh4-abiotic-surface}
+
+Mineral-nitrogen limitation (`f_Nmin`) is supplied separately to the turnover calculations. In soil layers, the tillage factor `BBf` additionally multiplies the abiotic factor for all transfer processes except `biom_som`.
+
+In the current process loop, the stored abiotic factor is also multiplied by `f_som_biom` when `som_biom` is reached. Because the same stored value is subsequently used for `biom_som`, that modifier also carries forward to the final process. These additional adjustments are distinct from the environmental response selected by `f_abiot_min_Calcmethod`.
+
+# Submodel objects
+
+Following the Hume implementation of dynamic system models, the submodel registers state variables, parameters, calculated variables, external driving variables, and options. The tables below are generated from `HumeWheatSoilMinNH4.csv`.
+
+```{r}
+#| label: ReadCSVInformation
+#| echo: false
+#| include: false
+fn_csv <- "csv_Hume_Docu/SoilMinNH4.csv"
+
+Entities <- ExtractInformationFromCSV(fn_csv)
+
+csv_entities <- read.delim(
+  fn_csv,
+  header = TRUE,
+  sep = ";",
+  stringsAsFactors = FALSE,
+  check.names = FALSE
+) %>%
+  filter(!is.na(EntityType), EntityType != "")
+
+Entities$df.state <- Entities$df.state %>% distinct()
+Entities$df.par <- Entities$df.par %>% distinct()
+Entities$df.var <- Entities$df.var %>% distinct()
+
+# Current generated files use ExternalValue, whereas the shared helper expects ExtVar.
+Entities$df.ext <- csv_entities %>%
+  filter(EntityType %in% c("ExtVar", "ExternalValue")) %>%
+  mutate(
+    EntityName = if_else(
+      EntityName == "TMPM" &
+        str_detect(Comment, regex("weighted surface", ignore_case = TRUE)),
+      "SoilMinNH4Temp",
+      EntityName
+    )
+  ) %>%
+  select(EntityName, Units, Comment, Option) %>%
+  distinct()
+names(Entities$df.ext) <- c(
+  "External variable",
+  "Units",
+  "Description",
+  "Source"
+)
+
+Entities$df.opt <- csv_entities %>%
+  filter(EntityType == "Option") %>%
+  select(EntityName, Option, Comment) %>%
+  distinct()
+names(Entities$df.opt) <- c(
+  "Option",
+  "Configured value",
+  "Description"
+)
+```
+
+## State variables
+
+The class `TSoilMinNH4` has `r nrow(Entities$df.state)` state variable(s).
+
+```{r}
+#| label: tbl-SoilMinNH4States
+#| echo: false
+#| tbl-cap: State variables of TSoilMinNH4
+
+kable(Entities$df.state, escape = FALSE)
+```
+
+## Parameters
+
+The class `TSoilMinNH4` has `r nrow(Entities$df.par)` parameter(s).
+
+```{r}
+#| label: tbl-SoilMinNH4Parameters
+#| echo: false
+#| tbl-cap: Parameters of TSoilMinNH4
+
+kable(Entities$df.par, escape = FALSE)
+```
+
+## Variables
+
+The class `TSoilMinNH4` has `r nrow(Entities$df.var)` calculated variable(s).
+
+```{r}
+#| label: tbl-SoilMinNH4Variables
+#| echo: false
+#| tbl-cap: Variables of TSoilMinNH4
+
+kable(Entities$df.var, escape = FALSE)
+```
+
+## External variables
+
+The class `TSoilMinNH4` has `r nrow(Entities$df.ext)` external variable(s).
+
+```{r}
+#| label: tbl-SoilMinNH4ExternalVariables
+#| echo: false
+#| tbl-cap: External variables of TSoilMinNH4
+
+kable(Entities$df.ext, escape = FALSE)
+```
+
+The source column reflects the configuration from which the CSV documentation was generated and can differ between model setups. The current CSV labels the weighted surface-temperature entry as a second TMPM; the table displays this entry as SoilMinNH4Temp, matching the Pascal and XML declarations.
+
+## Options
+
+The CSV documentation contains `r nrow(Entities$df.opt)` option(s), including inherited output options.
+
+```{r}
+#| label: tbl-SoilMinNH4Options
+#| echo: false
+#| tbl-cap: Options of TSoilMinNH4
+
+kable(Entities$df.opt, escape = FALSE)
+```
+
+# Further source code documentation
+
+The following information is extracted from the XML documentation of `TSoilMinNH4`. It includes enumerations, constants, functions, and procedures.
+
+## Enumerations
+
+The unit defines `r nrow(output$enum_df)` enumeration type(s).
+
+```{r}
+#| label: tbl-SoilMinNH4Enumerations
+#| echo: false
+#| tbl-cap: Enumerations of unit USoilMineralisationNH4.pas
+
+kable(
+  output$enum_df,
+  escape = FALSE,
+  col.names = c("Name", "Summary", "Elements")
+) %>%
+  kable_styling(
+    full_width = FALSE,
+    bootstrap_options = c("striped", "hover")
+  ) %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "30em") %>%
+  column_spec(3, width = "30em")
+```
+
+## Constants
+
+```{r}
+#| label: tbl-SoilMinNH4Constants
+#| echo: false
+#| results: asis
+#| tbl-cap: Constants of unit UHumeWheatSoilMinNH4
+
+if (nrow(output$const_df) == 0) {
+  cat("No standalone constants are documented in this unit.")
+} else {
+  print(kable(
+    output$const_df,
+    escape = FALSE,
+    col.names = c("Name", "Type", "Summary", "Value")
+  ))
+}
+```
+
+## Functions
+
+```{r}
+#| label: tbl-SoilMinNH4Functions
+#| echo: false
+#| results: asis
+#| tbl-cap: Functions of class TSoilMinNH4
+
+if (nrow(output$fun_df) == 0) {
+  cat("No functions are documented for this class.")
+} else {
+  print(kable(output$fun_df, escape = FALSE))
+}
+```
+
+## Procedures
+
+```{r}
+#| label: tbl-SoilMinNH4Procedures
+#| echo: false
+#| results: asis
+#| tbl-cap: Procedures of class TSoilMinNH4
+
+if (nrow(output$proc_df) == 0) {
+  cat("No procedures are documented for this class.")
+} else {
+  print(kable(output$proc_df, escape = FALSE))
+}
+```
+
+## References

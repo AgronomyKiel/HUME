@@ -1,0 +1,589 @@
+---
+title: "TSoilNitrogenUp"
+author: "Agronomy and Crop Science Group, Kiel University"
+date: "`r Sys.Date()`"
+chunk_output_type: console
+html-math-method: katex
+number-sections: true
+toc: true
+toc-expand: 4
+toc-depth: 4
+toc-location: left
+crossref:
+  eq-prefix: Eq.
+format: 
+  html:
+    embed-resources: true 
+---
+
+```{r}
+#| label: SetupLibraries
+#| include: FALSE
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center", fig.width = 12, fig.height = 6, fig.pos = "h", fig.cap = TRUE)
+rm(list = ls(all.names = TRUE))
+
+library(rmarkdown)
+library(bookdown)
+library(pracma)
+library(dplyr)
+library(ggplot2)
+library(gifski)
+library(reticulate)
+library(tinytex)
+library(magick)
+library(bibtex)
+library(ggsci)
+library(knitcitations)
+library(kableExtra)
+library(xml2)
+library(here)
+library(ggpmisc)
+library(tidyr)
+library(stringr)
+source("RLib/DokuUtilFunctions.R")
+source("ExtractInformationFromXML.R")
+
+
+options("citation_format" = "pandoc")
+
+```
+
+```{r}
+#| include: false
+fn_source <- "Components/Soil/USoilNitrogenUp.pas"
+fn_xml_docu <- "XML_Delphi_Docu/USoilNitrogenUp.xml"
+```
+
+# Summary
+
+`TSoilNitrogenUp` combines the nitrate transport and nitrogen balances inherited from `TSoilNitrogen` with root nitrate uptake limited by transport capacity and external plant demand. Soil water flow and root-distribution inputs are inherited from [TSoilWaterModelR](TSoilWaterModelR.qmd). Organic-matter turnover and ammonium transformations are handled by a separate mineralization component, such as [TSoilMinNH4](TSoilMinNH4.qmd), which supplies the layer mineralization terms.
+
+```{r}
+#| echo: false
+#| results: "asis"
+#| message: false
+#| warning: false
+
+# Load declarations for the uptake model and its nitrate-transport ancestor.
+NameSource <- file_path_sans_ext(basename(fn_source))
+
+output <- ExtractXMLDocuInformation(
+  fn_xml_docu,
+  ClassName = "TSoilNitrogenUp"
+)
+
+fn_xml_docu_ancestor <- "XML_Delphi_Docu/USoilNitrogen.xml"
+output_ancestor <- ExtractXMLDocuInformation(
+  fn_xml_docu_ancestor,
+  ClassName = "TSoilNitrogen"
+)
+
+
+# Include declarations from both nitrogen-model classes.
+output <- combine_doc_lists(output, output_ancestor)
+
+
+```
+
+```{r}
+#| echo: false
+#| results: "asis"
+#| message: false
+#| warning: false
+
+GetClassDevNotes("TSoilNitrogenUp",fn_xml_docu)
+```
+
+## Ancestor classes
+
+The class TSoilNitrogenUp has the following ancestor classes shown in @tbl-AncestorClasses.
+
+```{r}
+#| label: tbl-AncestorClasses
+#| echo: false
+#| tbl-cap: "Ancestor classes of TSoilNitrogenUp"
+
+df <- GetAncestorClasses(fn_xml_docu,"TSoilNitrogenUp")
+
+kable(df)
+
+```
+
+# Scientific Background
+
+## Soil nitrogen balance {#sec-soilnitrogenup-n-balance}
+
+The nitrate-balance approach described here assumes that ammonium concentrations are small relative to nitrate concentrations in well-aerated soils. Consequently, only nitrate nitrogen is represented in this transport and root-uptake component. Nitrogen released from organic matter enters as a source term.
+
+### Vertical nitrate transport
+
+Vertical nitrate transport is described by the convection–dispersion equation [@Addiscott1985]:
+
+$$
+\frac{\partial(\theta C_{\mathrm{l}})}{\partial t}
+=
+\frac{\partial}{\partial z}
+\left(\theta D_{\mathrm{s}}\frac{\partial C_{\mathrm{l}}}{\partial z}\right)
+-\frac{\partial(F_{\mathrm{w}}C_{\mathrm{l}})}{\partial z}
+-S(z,t)+P_{\mathrm{m}}.
+$$ {#eq-soilnitrogenup-convection-dispersion}
+
+Here, $\theta$ is volumetric soil water content, $C_{\mathrm{l}}$ is nitrate-N concentration in the soil solution ($\mathrm{g\ N\,cm^{-3}}$ of solution), $z$ is depth (cm), and $t$ is time (d). $D_{\mathrm{s}}$ is the apparent dispersion coefficient ($\mathrm{cm^2\,d^{-1}}$), and $F_{\mathrm{w}}$ is the water flux per unit soil area ($\mathrm{cm^3\,cm^{-2}\,d^{-1}}$). The root-uptake sink $S(z,t)$ and nitrate-production term $P_{\mathrm{m}}$ are expressed per unit soil volume ($\mathrm{g\ N\,cm^{-3}\,d^{-1}}$). In the supplied description, nitrate production from organic matter is an external input.
+
+The apparent dispersion coefficient combines hydrodynamic dispersion and effective diffusion [@Beese1980]:
+
+$$
+D_{\mathrm{s}}=D_{\mathrm{h}}(v)+D_{\mathrm{e}}(\theta).
+$$ {#eq-soilnitrogenup-dispersion-components}
+
+Hydrodynamic dispersion is proportional to pore-water velocity, $v=F_{\mathrm{w}}/\theta$:
+
+$$
+D_{\mathrm{h}}=\lambda\frac{|F_{\mathrm{w}}|}{\theta}.
+$$ {#eq-soilnitrogenup-hydrodynamic-dispersion}
+
+The implementation uses the absolute water flux so dispersion remains non-negative for either flow direction. The parameter `Dispersion length` defaults to 1 cm in `USoilNitrogen.CreateAll`; 0.5 cm was the value in the supplied study description, rather than the current default.
+
+The transport equation uses the soil-water compartments and a weighted implicit discretization [@Remson1971]. `Imp_factor` defaults to 0.5, corresponding to Crank–Nicolson weighting; a value of 1 gives fully implicit weighting. The upper nitrate inflow is set to zero in the transport boundary routine. The lower equation uses the concentration in the compartment below the active domain; after the balance update, the bottom auxiliary concentration is set equal to the adjacent concentration. With groundwater enabled, concentrations below the active transport domain are assigned from `Groundwaterconc`. Consequently, a fixed zero-gradient boundary at 200 cm is a study setup, not a universal boundary condition of this class.
+
+### Nitrate uptake by plant roots
+
+Actual nitrate uptake by the root system, $U_{\mathrm{R,act}}$, is limited by plant nitrogen demand, $N_{\mathrm{dem}}$, and the maximum nitrate supply to the root system, $U_{\mathrm{R,max}}$:
+
+$$
+U_{\mathrm{R,act}}=\min\left(U_{\mathrm{R,max}},N_{\mathrm{dem}}\right).
+$$ {#eq-soilnitrogenup-demand-limited-uptake}
+
+All three rates are expressed in $\mathrm{g\ N\,m^{-2}\,d^{-1}}$. Plant nitrogen demand is the sum of the demands of individual organs:
+
+$$
+N_{\mathrm{dem}}=\sum_i N_{\mathrm{dem},i}.
+$$ {#eq-soilnitrogenup-organ-n-demand}
+
+Organ demand is derived from organ growth rates and nitrogen contents under optimal nitrogen supply, as specified by the plant model.
+
+### Nitrogen transport to individual roots
+
+The maximum nitrate influx per unit root length, $I_{\mathrm{n,max}}$ ($\mathrm{g\ N\,cm^{-1}\,d^{-1}}$), is calculated using a single-root model [@Gardner1960]. A root is placed at the centre of a cylindrical soil domain. Radial nitrate transport is described by the following equation:
+
+$$
+\theta\frac{\partial C_{\mathrm{l}}}{\partial t}
+=\frac{1}{r}\frac{\partial}{\partial r}
+\left[
+ rD_{\mathrm{l}}f(\theta)\theta\frac{\partial C_{\mathrm{l}}}{\partial r}
+ +rJ_{\mathrm{w}}C_{\mathrm{l}}
+\right].
+$$ {#eq-soilnitrogenup-radial-root-transport}
+
+Here, $r$ is distance from the root centre (cm), $D_{\mathrm{l}}$ is the diffusion coefficient of nitrate in water ($\mathrm{cm^2\,d^{-1}}$), $f(\theta)$ is a dimensionless tortuosity factor, and $J_{\mathrm{w}}$ is radial water flux density ($\mathrm{cm^3\,cm^{-2}\,d^{-1}}$). The advective term follows the inward-flow convention of the supplied equation.
+
+@Baldwin1973 developed an analytical steady-state solution for this transport problem. The description uses a modified version, with its derivation attributed to @Kage1997. The analytical influx expressions used here are presented in @sec-soilnitrogenup-quasisteady-influx.
+
+The calculation includes a minimum solution concentration, $C_{\mathrm{l,min}}$, defined as the lowest concentration at which nitrate uptake matches transport to the root [@Willigen1987]. Efficient nitrate uptake by most plant species allows this threshold to be small [@Peuke1996]. The supplied study sets $C_{\mathrm{l,min}}=0$ to calculate maximum uptake. In the implementation, setting `Cmin` to zero alone does not reproduce that assumption because the unavailable-nitrate term also contributes to the threshold; see @sec-soilnitrogenup-practical-use.
+
+The tortuosity factor is calculated using the empirical relationship derived from @Barraclough1981:
+
+$$
+f(\theta)=3.35\theta^2.
+$$ {#eq-soilnitrogenup-diffusion-tortuosity}
+
+### Layer uptake capacity and total nitrogen supply
+
+For each rooted soil layer $i$, the maximum uptake rate per unit ground area, $A_{\mathrm{R,max},i}$ ($\mathrm{g\ N\,cm^{-2}\,d^{-1}}$), is obtained from the maximum influx per unit root length and the root length in that layer per unit ground area, $\mathrm{RL}_i$ ($\mathrm{cm\,cm^{-2}}$):
+
+$$
+A_{\mathrm{R,max},i}=I_{\mathrm{n,max},i}\,\mathrm{RL}_i.
+$$ {#eq-soilnitrogenup-layer-uptake-capacity}
+
+Total potential nitrogen supply, $N_{\mathrm{supp}}$ ($\mathrm{g\ N\,m^{-2}\,d^{-1}}$), is the sum over rooted layers, with an area conversion from $\mathrm{cm^{-2}}$ to $\mathrm{m^{-2}}$:
+
+$$
+N_{\mathrm{supp}}=10^4\sum_i A_{\mathrm{R,max},i}
+=U_{\mathrm{R,max}}.
+$$ {#eq-soilnitrogenup-total-n-supply}
+
+### Allocation of uptake among soil layers
+
+When nitrogen demand exceeds supply, each layer supplies its maximum uptake rate. When supply exceeds demand, demand is allocated in proportion to the uptake capacity of each layer:
+
+$$
+S_i=
+\begin{cases}
+A_{\mathrm{R,max},i}, & N_{\mathrm{dem}}\geq N_{\mathrm{supp}},\\
+\displaystyle N_{\mathrm{dem}}\,10^{-4}
+\frac{A_{\mathrm{R,max},i}}{\sum_j A_{\mathrm{R,max},j}},
+& N_{\mathrm{dem}}<N_{\mathrm{supp}}.
+\end{cases}
+$$ {#eq-soilnitrogenup-layer-uptake-allocation}
+
+The sum in the denominator runs over all rooted layers. It replaces the malformed sum/integral notation in the supplied text. If total uptake capacity is zero, all layer uptake rates are zero.
+
+Here, $S_i$ is a layer-integrated uptake rate per unit ground area ($\mathrm{g\ N\,cm^{-2}\,d^{-1}}$). To use it as the volumetric sink in @eq-soilnitrogenup-convection-dispersion, it is divided by layer thickness, $\Delta z_i$ (cm):
+
+$$
+S(z,t)\big|_i=\frac{S_i}{\Delta z_i},
+\qquad
+U_{\mathrm{R,act}}=10^4\sum_i S_i.
+$$ {#eq-soilnitrogenup-volumetric-sink-total-uptake}
+
+This distinction keeps the layer uptake rates and the transport-equation sink dimensionally consistent.
+
+## Maximum nitrate influx under quasi-steady conditions {#sec-soilnitrogenup-quasisteady-influx}
+
+### Quasi-steady approximation
+
+If water and nutrients removed by a root are continuously replenished and all other conditions remain constant, the surrounding cylindrical soil domain approaches a steady concentration distribution. Under these quasi-steady conditions, water content and nitrate concentration at a fixed position no longer change with time:
+
+$$
+\frac{\partial\theta}{\partial t}=0,\qquad \frac{\partial C_{\mathrm{l}}}{\partial t}=0.
+$$ {#eq-soilnitrogenup-quasisteady-assumptions}
+
+The radial transport equations then reduce from partial differential equations to ordinary differential equations in the radial coordinate. Although these solutions describe equilibrium states, they can be used within dynamic simulations if local equilibrium adjusts rapidly relative to the simulation time step. Changing water contents, water uptake rates, and root length densities are accounted for by recalculating the quasi-steady transport capacity at each step.
+
+@Baldwin1973 derived analytical solutions with and without mass flow using a root-absorbing-power boundary condition. The original source refers to a root-absorbing-power substitution following @Burns1980. That substitution was unavailable in the supplied material; the equations below directly specify the transport relationships and the minimum-concentration boundary condition.
+
+### Geometry and diffusion coefficient
+
+Let $a$ be root radius (cm), $x$ the outer radius of the cylindrical soil domain (cm), $\overline{C_{\mathrm{l}}}$ the mean solution concentration, and $C_{\mathrm{la}}$ the concentration at the root surface. $C_{\mathrm{l,min}}$ is the minimum root-surface concentration. Concentrations must use consistent mass-per-volume units. $I_{\mathrm{n}}$ is nitrate influx per unit root length. In this section, $a$ always denotes root radius, rather than root-absorbing power.
+
+For root length density $L_{\mathrm{v}}$ ($\mathrm{cm\,cm^{-3}}$), the implementation uses:
+
+$$
+x=\frac{1}{\sqrt{\pi L_{\mathrm{v}}}},\qquad D_b=D_{\mathrm{l}}f(\theta)\theta.
+$$ {#eq-soilnitrogenup-root-cylinder-diffusion}
+
+Here, $D_b$ is the combined diffusion coefficient ($\mathrm{cm^2\,d^{-1}}$), $D_{\mathrm{l}}$ is the nitrate diffusion coefficient in water, and $f(\theta)$ is the tortuosity factor from @eq-soilnitrogenup-diffusion-tortuosity.
+
+### Diffusion without mass flow
+
+The supplied relation between mean concentration, root-surface concentration, and nitrate influx can be written in the following additive form:
+
+$$
+\overline{C_{\mathrm{l}}}=C_{\mathrm{la}}+\frac{I_{\mathrm{n}}}{2\pi D_b}\left[-\frac{1}{2}+\frac{x^2}{x^2-a^2}\ln\!\left(\frac{x}{a}\right)\right].
+$$ {#eq-soilnitrogenup-diffusion-mean-concentration}
+
+This is algebraically equivalent to the supplied expression and avoids division by root-surface concentration. Maximum nitrate transport is reached when $C_{\mathrm{la}}=C_{\mathrm{l,min}}$. For $x$ sufficiently large relative to $a$, $x^2/(x^2-a^2)\approx1$. Using $\sqrt{e}\approx1.65$ gives the diffusion-only approximation used in the code:
+
+$$
+I_{\mathrm{n,max}}=\frac{2\pi D_b\left(\overline{C_{\mathrm{l}}}-C_{\mathrm{l,min}}\right)}{\ln\!\left(\dfrac{x}{1.65a}\right)}.
+$$ {#eq-soilnitrogenup-maximum-influx-diffusion}
+
+The approximation requires a positive logarithmic denominator and is intended for soil cylinders appreciably wider than the root. If mean concentration does not exceed the minimum concentration, the implementation returns zero influx.
+
+### Combined diffusion and mass flow
+
+Water uptake transports dissolved nitrate toward the root in addition to diffusion. Let $J_{\mathrm{wa}}$ be inward water flux density at the root surface ($\mathrm{cm\,d^{-1}}$), positive for uptake. Define:
+
+$$
+\beta=\frac{aJ_{\mathrm{wa}}}{D_b},\qquad \zeta=\frac{\displaystyle\frac{2}{2-\beta}\left[\left(\frac{x}{a}\right)^{2-\beta}-1\right]}{\displaystyle\left(\frac{x}{a}\right)^2-1}.
+$$ {#eq-soilnitrogenup-massflow-geometry-factor}
+
+The dimensionless factor $\zeta$ replaces the source's symbol $z$ to distinguish it from soil depth. Setting root-surface concentration to its minimum gives the transport-limited influx:
+
+$$
+I_{\mathrm{n,max}}=2\pi aJ_{\mathrm{wa}}\frac{\overline{C_{\mathrm{l}}}-C_{\mathrm{l,min}}\zeta}{1-\zeta}.
+$$ {#eq-soilnitrogenup-maximum-influx-massflow}
+
+The corresponding relation for an arbitrary root-surface concentration is:
+
+$$
+\overline{C_{\mathrm{l}}}=\frac{I_{\mathrm{n}}}{2\pi aJ_{\mathrm{wa}}}+\left(C_{\mathrm{la}}-\frac{I_{\mathrm{n}}}{2\pi aJ_{\mathrm{wa}}}\right)\zeta.
+$$ {#eq-soilnitrogenup-massflow-mean-concentration}
+
+For $C_{\mathrm{la}}\ne0$, the equivalent concentration ratio is:
+
+$$
+\frac{\overline{C_{\mathrm{l}}}}{C_{\mathrm{la}}}=\frac{I_{\mathrm{n}}}{2\pi aC_{\mathrm{la}}J_{\mathrm{wa}}}+\left(1-\frac{I_{\mathrm{n}}}{2\pi aC_{\mathrm{la}}J_{\mathrm{wa}}}\right)\zeta.
+$$ {#eq-soilnitrogenup-massflow-concentration-ratio}
+
+::: {.callout-note title="Clarification of the supplied concentration-ratio equation"}
+The final supplied equation appears to omit the root-radius factor $a$ from the influx denominators and the subtraction of 1 in the numerator of the geometry factor. The form above uses the previously defined $\zeta$ and is algebraically consistent with @eq-soilnitrogenup-maximum-influx-massflow and the influx calculation in `Imax_f`.
+:::
+
+The mass-flow expressions require limiting forms when $\beta=2$ or water uptake vanishes. For $\beta\to2$, the numerator of $\zeta$ tends to $2\ln(x/a)$. For vanishing water uptake, the diffusion-only expression is used. These are mathematical limits: the implementation switches to its diffusion-only approximation for very small water influx but does not provide a separate $\beta=2$ branch.
+
+### Application in the model
+
+`TSoilNitrogenUp` calls `Imax_f` in `URootUptakeFunctions.pas` for rooted layers. Water influx per unit root length, $Q_{\mathrm{w}}$, is converted to root-surface flux density through $J_{\mathrm{wa}}=Q_{\mathrm{w}}/(2\pi a)$. The function returns zero when roots are absent, mean nitrate concentration is non-positive, the diffusion coefficient is non-positive, or mean concentration does not exceed the minimum concentration. The final influx is bounded below by zero.
+
+The calling model additionally applies a configured physiological maximum influx and a layer-availability safeguard. Influx is multiplied by root length to obtain the layer uptake capacity, as described in @eq-soilnitrogenup-layer-uptake-capacity. Actual uptake is subsequently limited by plant nitrogen demand.
+
+
+## Configuration, units, and implementation limits {#sec-soilnitrogenup-practical-use}
+
+### Inputs and calculation sequence
+
+The root uptake calculation needs layer nitrate amounts and water contents, water uptake (`Sink_Arr`), root length density (`Exwld_arr`), layer thickness (`Thick`), and root radius (`RootRad`). Plant nitrogen demand is read through `PlantNDemand`; root-length outputs use `SRL` and `SRL_eff`. When a plant model is assigned, `SetPlantModel` connects the demand input to `PlantModel.p_NUptakeRate` and, when roots are enabled, connects the root-length inputs. The plant interface name should not be confused with the soil's realized uptake output: the supplied value is used as demand.
+
+At the start of `CalcRates`, demand is bounded below by zero and converted from g N/(m2 d) to kg N/(ha d) by multiplying by 10. Each internal step calculates layer supply, applies uptake as a negative nitrate sink, then calls the inherited water and nitrate transport calculation. Organic-matter mineralization enters separately through `NetMin`; it is not calculated by this uptake class.
+
+The effective minimum concentration used for layer $i$ is:
+
+$$
+C_{\min,i}^{\mathrm{internal}}
+=\frac{\mathtt{Not\_av\_N}}{\mathtt{WAmount}_i}
++\mathtt{Cmin}.
+$$ {#eq-soilnitrogenup-effective-minimum-concentration}
+
+`Not_av_N` defaults to 1.5 in the registered units kg N per 10 cm soil layer, while `Cmin` defaults to zero. `WAmount` is layer water depth in cm. Both terms must be interpreted in the internal concentration convention. The `Not_av_N` contribution is an uptake-availability threshold, not removal of nitrate from the transport pool.
+
+### Internal units and output interpretation
+
+| Quantity | Interpretation in the calculation |
+|:--|:--|
+| `NitrateAmount[i]` | Layer nitrate amount in kg N/ha |
+| `NConc[i]` | Layer amount divided by water depth: (kg N/ha)/cm water; multiply by $10^{-8}$ for kg N/cm3 solution, or by 0.01 for g N/L |
+| `NUptake[i]`, `NSink[i]` | Negative for nitrate removal; internal rates are kg N/(ha d) |
+| `ActNUptake`, `MaxNUptake`, `MassFlow` | Sums of internal rates multiplied by `dt`; interpret as interval totals unless the enclosing reporting interval is one day |
+| `SumSoilNUptake` | Cumulative uptake state; its assigned rate is `ActNUptake` |
+| `SoilNUptakeGrowth` | State with rate assigned as `ActNUptake / 10`; its registered unit is unspecified (`[?]`) |
+| `NInflux_WL`, `NInflux_WL_eff` | Calculated with g/kg, seconds/day, molar mass of N, and root length conversions, giving mol N/(cm root s) |
+
+`MassFlow` is apparent nitrate delivery calculated from water uptake and mean solution concentration. It is not the difference between the maximum-influx formulas with and without mass flow, and should not be added again to the computed uptake capacity.
+
+### Limits requiring attention
+
+::: {.callout-warning title="Implementation limitations to check for a simulation setup"}
+The root uptake loops use the fixed constant `Max_Root_Index = 20`, rather than the active layer count. They first test root presence in layer 1, then only calculate a layer capacity when `Exwld_arr[i] * Thick[i] > 1E-4`. Confirm that layer arrays and root distributions are compatible with these assumptions; a root-free first layer suppresses uptake even if deeper root inputs are positive.
+
+The availability safeguard compares a layer uptake rate directly with its stored nitrate amount. If the rate exceeds the amount, the rate is replaced by half the amount, without an explicit `dt` conversion. This empirical check is not a general proof of non-negative nitrate amounts for arbitrary time steps. Separately, the nitrate solver clips negative concentrations to zero, which can affect mass conservation.
+
+`Imax_f` has no explicit special branch for the removable singularity at $\beta=2$. Very small water influx uses the approximate diffusion-only formula; values near singular cases should be checked before relying on uptake estimates. These limitations are documented here; the Pascal algorithms have not been changed.
+:::
+
+For interpretation of nitrogen balances, `SumNmin` and cumulative uptake, mineralization, and leaching are evaluated over the profile selected by `bil_nr`. Leaching is accumulated at the interface below that profile, which can differ from the full model depth. Check the computational nitrogen-balance outputs together with nitrate stocks and boundary fluxes, particularly when groundwater, restricted leaching periods, or concentration clipping are active.
+
+# Submodel objects
+
+Following the Hume implementation of dynamic system models, the submodel registers state variables, parameters, calculated variables, external driving variables, and options. The tables below are generated from `csv_Hume_Docu/SoilNitrogenUp.csv`. They report only entities declared by `TSoilNitrogen` and `TSoilNitrogenUp`. Entities inherited from [TSoilWaterModelR](TSoilWaterModelR.qmd) and its ancestors are omitted; configured values do not affect this inheritance filter.
+
+```{r}
+#| label: ReadCSVInformation
+#| echo: false
+#| include: false
+fn_csv <- "csv_Hume_Docu/SoilNitrogenUp.csv"
+
+csv_entities <- read.delim(
+  fn_csv,
+  header = TRUE,
+  sep = ";",
+  stringsAsFactors = FALSE,
+  check.names = FALSE
+)
+
+# Keep declarations introduced after TSoilWaterModelR in the inheritance chain.
+# Use declaration metadata rather than names or configuration-dependent values.
+stopifnot("DeclarationClass" %in% names(csv_entities))
+nitrogen_classes <- c("TSoilNitrogen", "TSoilNitrogenUp")
+csv_entities <- csv_entities %>%
+  filter(
+    !is.na(EntityType),
+    EntityType != "",
+    DeclarationClass %in% nitrogen_classes
+  )
+
+# Build every table from the same filtered rows, including empty tables.
+entity_table <- function(types, columns, headings) {
+  result <- csv_entities %>%
+    filter(EntityType %in% types) %>%
+    select(all_of(columns)) %>%
+    distinct()
+  names(result) <- headings
+  result
+}
+
+Entities <- list(
+  df.state = entity_table(
+    "State", c("EntityName", "Units", "Value", "Comment"),
+    c("State variable", "Units", "InitialValue", "Description")
+  ),
+  df.par = entity_table(
+    "Parameter", c("EntityName", "Units", "Value", "Comment"),
+    c("Parameter", "Units", "Value", "Description")
+  ),
+  df.var = entity_table(
+    "Variable", c("EntityName", "Units", "Comment"),
+    c("Variable", "Units", "Description")
+  ),
+  df.ext = entity_table(
+    c("ExtVar", "ExternalValue"),
+    c("EntityName", "Units", "Comment", "Option"),
+    c("External variable", "Units", "Description", "Source")
+  ),
+  df.opt = entity_table(
+    "Option", c("EntityName", "Option", "Comment"),
+    c("Option", "Configured value", "Description")
+  )
+)
+```
+
+## State variables
+
+The nitrogen-model extension declares `r nrow(Entities$df.state)` state variable(s) beyond `TSoilWaterModelR` and its ancestors.
+
+```{r}
+#| label: tbl-SoilNitrogenUpStates
+#| echo: false
+#| results: asis
+#| tbl-cap: State variables introduced by TSoilNitrogen and TSoilNitrogenUp
+
+if (nrow(Entities$df.state) == 0) {
+  cat("No additional entities of this type are declared beyond TSoilWaterModelR and its ancestors.")
+} else {
+  print(kable(Entities$df.state, escape = FALSE))
+}
+```
+
+## Parameters
+
+The nitrogen-model extension declares `r nrow(Entities$df.par)` parameter(s) beyond `TSoilWaterModelR` and its ancestors.
+
+```{r}
+#| label: tbl-SoilNitrogenUpParameters
+#| echo: false
+#| results: asis
+#| tbl-cap: Parameters introduced by TSoilNitrogen and TSoilNitrogenUp
+
+if (nrow(Entities$df.par) == 0) {
+  cat("No additional entities of this type are declared beyond TSoilWaterModelR and its ancestors.")
+} else {
+  print(kable(Entities$df.par, escape = FALSE))
+}
+```
+
+## Variables
+
+The nitrogen-model extension declares `r nrow(Entities$df.var)` calculated variable(s) beyond `TSoilWaterModelR` and its ancestors.
+
+```{r}
+#| label: tbl-SoilNitrogenUpVariables
+#| echo: false
+#| results: asis
+#| tbl-cap: Variables introduced by TSoilNitrogen and TSoilNitrogenUp
+
+if (nrow(Entities$df.var) == 0) {
+  cat("No additional entities of this type are declared beyond TSoilWaterModelR and its ancestors.")
+} else {
+  print(kable(Entities$df.var, escape = FALSE))
+}
+```
+
+## External variables
+
+The nitrogen-model extension declares `r nrow(Entities$df.ext)` external variable(s) beyond `TSoilWaterModelR` and its ancestors.
+
+```{r}
+#| label: tbl-SoilNitrogenUpExternalVariables
+#| echo: false
+#| results: asis
+#| tbl-cap: External variables introduced by TSoilNitrogen and TSoilNitrogenUp
+
+if (nrow(Entities$df.ext) == 0) {
+  cat("No additional entities of this type are declared beyond TSoilWaterModelR and its ancestors.")
+} else {
+  print(kable(Entities$df.ext, escape = FALSE))
+}
+```
+
+The source column reflects the configuration from which the CSV documentation was generated and can differ between model setups.
+
+## Options
+
+The nitrogen-model extension declares `r nrow(Entities$df.opt)` option(s) beyond `TSoilWaterModelR` and its ancestors.
+
+```{r}
+#| label: tbl-SoilNitrogenUpOptions
+#| echo: false
+#| results: asis
+#| tbl-cap: Options introduced by TSoilNitrogen and TSoilNitrogenUp
+
+if (nrow(Entities$df.opt) == 0) {
+  cat("No additional entities of this type are declared beyond TSoilWaterModelR and its ancestors.")
+} else {
+  print(kable(Entities$df.opt, escape = FALSE))
+}
+```
+
+# Further source code documentation
+
+The following tables combine XML documentation for `TSoilNitrogenUp` and `TSoilNitrogen`. They include unit-level enumerations and constants, and methods of both classes. Overridden methods can therefore appear twice with different descriptions. The XML and CSV are snapshots and should be regenerated through the normal documentation workflow after source changes.
+
+## Enumerations
+
+The documented units define `r nrow(output$enum_df)` enumeration type(s).
+
+```{r}
+#| label: tbl-SoilNitrogenUpEnumerations
+#| echo: false
+#| results: asis
+#| tbl-cap: Enumerations documented in USoilNitrogenUp and USoilNitrogen
+
+if (nrow(output$enum_df) == 0) {
+  cat("No enumeration types are documented in these units.")
+} else {
+  print(kable(
+    output$enum_df,
+    escape = FALSE,
+    col.names = c("Name", "Summary", "Elements")
+  ) %>%
+    kable_styling(
+      full_width = FALSE,
+      bootstrap_options = c("striped", "hover")
+    ) %>%
+    column_spec(1, bold = TRUE) %>%
+    column_spec(2, width = "30em") %>%
+    column_spec(3, width = "30em"))
+}
+```
+
+## Constants
+
+```{r}
+#| label: tbl-SoilNitrogenUpConstants
+#| echo: false
+#| results: asis
+#| tbl-cap: Constants documented in USoilNitrogenUp and USoilNitrogen
+
+if (nrow(output$const_df) == 0) {
+  cat("No standalone constants are documented in these units.")
+} else {
+  print(kable(
+    output$const_df,
+    escape = FALSE,
+    col.names = c("Name", "Type", "Summary", "Value")
+  ))
+}
+```
+
+## Functions
+
+```{r}
+#| label: tbl-SoilNitrogenUpFunctions
+#| echo: false
+#| results: asis
+#| tbl-cap: Functions documented for TSoilNitrogenUp and TSoilNitrogen
+
+if (nrow(output$fun_df) == 0) {
+  cat("No functions are documented for this class.")
+} else {
+  print(kable(output$fun_df, escape = FALSE))
+}
+```
+
+## Procedures
+
+```{r}
+#| label: tbl-SoilNitrogenUpProcedures
+#| echo: false
+#| results: asis
+#| tbl-cap: Procedures documented for TSoilNitrogenUp and TSoilNitrogen
+
+if (nrow(output$proc_df) == 0) {
+  cat("No procedures are documented for this class.")
+} else {
+  print(kable(output$proc_df, escape = FALSE))
+}
+```
+
+## References

@@ -7,106 +7,151 @@ uses
   System.IniFiles;
 
 type
+  /// <summary>In-memory INI-file type used when transferring nitrate states to the next simulation.</summary>
   TMyIniFile = TMemInifile;
 
+  /// <summary>Layered soil nitrate transport model coupled to root-zone water flow, mineralization inputs, uptake sinks, and nitrogen balances.</summary>
   TSoilNitrogen = class(TSoilWaterModelR)
 
   private
+    /// <summary>Nitrate concentrations at the start of the internal transport step, in the same units as NConc.</summary>
     ConcOld: TSoilArray;
+    /// <summary>Enables writing final nitrate amounts to the state file of the next configured simulation.</summary>
     fTransferNminss: boolean;
+
+    /// <summary>Initial nitrate amount within the nitrogen-balance profile, in kg N/ha.</summary>
     NminStart: real;
-    /// nitrate amount in soil profile at simulation start [Kg N/ha]
+
+    /// <summary>Nitrate fluxes evaluated during internal transport steps, in kg N/(ha d).</summary>
     NFlowInt: TSoilArray;
-    /// Nitratflüsse during internal time steps [Kg N/ha*d] ///
 
   protected
+
+    /// <summary>Initializes nitrate concentrations, transport buffers, fluxes, and available layer source and sink variables.</summary>
     procedure InitSoilNVectors;
 
   public
-    /// <summary>
-    /// Nitrat menge im Kompartiment [Kg N/ha]
-    /// </summary>
+
+    /// <summary>Nitrate-N amount in each soil compartment, in kg N/ha.</summary>
     NitrateAmount: TSoilStateArray;
 
-    /// <summary>
-    /// Nitrate Concentration [Kg NO3-N/cm H2O]
-    /// this unusual unit is the consequence of
-    /// giving the amount of water in cm troughout the
-    ///  classes of this class library
-    ///  in order to convert to g N /l
-    ///  multiply by 1000 -> from kg to g
-    ///  multiply by 10000 x 10 from cm to l
-    ///  -> multiply by 1e8
-    /// </summary>
+    /// <summary>Nitrate-N concentration calculated as layer nitrate amount divided by layer water depth.</summary>
+    /// <remarks>Internal units are (kg N/ha)/cm water depth; retain the area basis when converting to solution concentration.</remarks>
     NConc: TSoilVarArray;
 
+    /// <summary>Signed nitrate source or sink rate for each layer, in kg N/(ha d); added to the transport balance.</summary>
     Nsink: TSoilVarArray;
-    /// Sink term [Kg N/ha*d }
+
+    /// <summary>Net mineralization rate supplied to each layer, in kg N/(ha d).</summary>
     NetMin: TSoilVarArray;
-    /// Source term [Kg N/ha*d }
+
+    /// <summary>Nitrate transport accumulated across compartment interfaces during internal steps.</summary>
     NFlow: TSoilVarArray;
-    /// Nitrate flows [Kg N/ha*d] }
+
+    /// <summary>Cumulative signed nitrate uptake contribution within the balance profile, in kg N/ha.</summary>
     CumSumUptake: TState;
-    /// cumulative sum of soil N uptake
+
+    /// <summary>Cumulative net nitrate mineralization within the balance profile, in kg N/ha.</summary>
     CumSumMinera: TState;
-    /// cumulative sum of soil N mineralisation
+
+    /// <summary>Cumulative nitrate leaching below the balance profile, in kg N/ha.</summary>
     CumSumNitrateLeaching: TState;
-    /// Sum of nitrate leaching
+
+    /// <summary>Nitrate-N amount in the 0-10 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
     Nmin0_10: TVar;
+    /// <summary>Nitrate-N amount in the 0-30 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
     Nmin0_30: TVar;
+    /// <summary>Nitrate-N amount in the 30-60 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
     Nmin30_60: TVar;
+    /// <summary>Nitrate-N amount in the 60-90 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
     Nmin60_90: TVar;
+    /// <summary>Nitrate-N amount in the 90-120 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
     Nmin90_120: TVar;
+    /// <summary>Nitrate-N amount in the 0-90 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
     Nmin0_90: TVar;
+    /// <summary>Nitrate-N amount in the 0-60 cm depth interval for 10 cm compartments, in kg N/ha.</summary>
     Nmin0_60: TVar;
+    /// <summary>Variable registered for the long-term computational nitrogen balance, in kg N/ha.</summary>
     LongTermNBalance: TVar;
-    /// long term nitrogen computational balance
+
+    /// <summary>Computational nitrogen-balance residual accumulated over internal transport steps.</summary>
     DailyNBalance: TState;
-    /// daily nitrogen computational balance
+
+    /// <summary>Cumulative computational nitrogen-balance state.</summary>
     TotalNBalance: TState;
-    /// cumulative N balance
+
+    /// <summary>Total nitrate-N amount within the configured balance profile, in kg N/ha.</summary>
     SumNmin: TVar;
-    /// Sum of Nmin-nitrate
+
+    /// <summary>Nitrate-leaching rate reported from accumulated internal-step fluxes, in kg N/(ha d).</summary>
     NitrateLeachingRate: TVar;
-    /// Leachingrate as daily average
+
+    /// <summary>Dispersivity used to calculate hydrodynamic dispersion, in cm.</summary>
     Dispersion_length: Tpar;
-    /// Dispersion length
+
+    /// <summary>Implicit weighting of the transport discretization; 0.5 gives equal old and new weighting, and 1 is fully implicit.</summary>
     Imp_factor: Tpar;
-    /// relative "implicitness" of calculation procedure
+
+    /// <summary>Start and end times for optional restricted leaching accumulation; registered as day of year.</summary>
     LeachingStartDay, LeachingEndDay: Tpar;
-    // start and end of cumulation period for leaching
+
+    /// <summary>Selects whether leaching accumulation is restricted to the configured start and end times.</summary>
     SelectedLeachingPeriod: TOption;
-    /// Option for restricting Leaching accumulation to a certain period
+
+    /// <summary>Optional groundwater nitrate concentration used for compartments below the active transport domain.</summary>
     Groundwaterconc: TExternV;
+    /// <summary>Registers nitrate states, fluxes, balance variables, transport parameters, and leaching options.</summary>
     procedure CreateAll; override;
+    /// <summary>Initializes nitrate transport variables and records the initial profile nitrate amount after inherited initialization.</summary>
+    /// <param name="GlobMod">Global model providing simulation configuration and timing.</param>
     procedure Init(var GlobMod: Tmod); override;
+    /// <summary>Advances soil water and solves one-dimensional nitrate convection and dispersion during an internal time step.</summary>
     procedure CalcRatesAndIntegrate; override;
+    /// <summary>Resets internal-step accumulators, runs inherited rate calculations, and updates nitrate-leaching and balance rates.</summary>
     procedure CalcRates; override;
+    /// <summary>Updates depth summaries, integrates model states, and optionally writes final nitrate amounts to the next simulation state file.</summary>
     procedure Integrate; override;
+    /// <summary>Updates fixed-depth nitrate summaries using the compartment indices of a 10 cm soil-layer discretization.</summary>
     procedure update_Nmin_Values();
 
   published
     // property ShowWarnings  : boolean read Warnings write warnings;
+
+    /// <summary>Published access to nitrate-N amount in the 0-10 cm depth interval.</summary>
     property Var_Nmin0_10: TVar read Nmin0_10 write Nmin0_10;
+    /// <summary>Published access to nitrate-N amount in the 0-30 cm depth interval.</summary>
     property Var_Nmin0_30: TVar read Nmin0_30 write Nmin0_30;
+    /// <summary>Published access to nitrate-N amount in the 30-60 cm depth interval.</summary>
     property Var_Nmin30_60: TVar read Nmin30_60 write Nmin30_60;
+    /// <summary>Published access to nitrate-N amount in the 60-90 cm depth interval.</summary>
     property Var_Nmin60_90: TVar read Nmin60_90 write Nmin60_90;
+    /// <summary>Published access to nitrate-N amount in the 90-120 cm depth interval.</summary>
     property Var_Nmin90_120: TVar read Nmin90_120 write Nmin90_120;
+    /// <summary>Published access to nitrate-N amount in the 0-60 cm depth interval.</summary>
     property Var_Nmin0_60: TVar read Nmin0_60 write Nmin0_60;
+    /// <summary>Published access to nitrate-N amount in the 0-90 cm depth interval.</summary>
     property Var_Nmin0_90: TVar read Nmin0_90 write Nmin0_90;
+    /// <summary>Published access to the total nitrate amount in the balance profile.</summary>
     property Var_SumNmin: TVar read SumNmin write SumNmin;
+    /// <summary>Published access to cumulative nitrate leaching.</summary>
     property Var_SumDrain: TState read CumSumNitrateLeaching
       write CumSumNitrateLeaching;
+    /// <summary>Published access to the nitrate-leaching rate.</summary>
     property Var_DrainageNFlow: TVar read NitrateLeachingRate
       write NitrateLeachingRate;
+    /// <summary>Published access to the long-term computational nitrogen-balance variable.</summary>
     property Var_NBalance: TVar read LongTermNBalance write LongTermNBalance;
+    /// <summary>Published access to the daily computational nitrogen-balance state.</summary>
     property Var_DailyNBalance: TState read DailyNBalance write DailyNBalance;
+    /// <summary>Published access to the implicit transport weighting parameter.</summary>
     property Par_Imp_factor: Tpar read Imp_factor write Imp_factor;
+    /// <summary>Controls transfer of final nitrate amounts to the next configured simulation.</summary>
     property Opt_TransferNMinsToNextINI: boolean read fTransferNminss
       write fTransferNminss;
 
   end;
 
+/// <summary>Registers the soil nitrate component on the Simulation palette in visual builds.</summary>
 procedure Register;
 
 // var
@@ -139,7 +184,7 @@ begin
   inherited CreateAll;
   SetEntityDeclarationClass(TSoilNitrogen);
   VarCreate('SumNmin', '[kg N/ha]', 0.0, false, SumNmin,
-    'Summe des Nmin-Stickstoffs');
+    'Total soil mineral nitrate nitrogen');
   StateCreate('SumNitrateLeaching', '[kg N/ha]', 0.0, false,
     CumSumNitrateLeaching, 'Sum of leached Nitrate');
   StateCreate('CumSumUptake', '[kg N/ha]', 0.0, false, CumSumUptake,
@@ -170,13 +215,13 @@ begin
   SelectedLeachingPeriod.OptionList.Add('false');
   SelectedLeachingPeriod.OptionList.Add('true');
 
-  VarCreate('Nmin0_10', '[kg N/ha]', 0.0, false, Nmin0_10);
-  VarCreate('Nmin0_30', '[kg N/ha]', 0.0, false, Nmin0_30);
-  VarCreate('Nmin30_60', '[kg N/ha]', 0.0, false, Nmin30_60);
-  VarCreate('Nmin60_90', '[kg N/ha]', 0.0, false, Nmin60_90);
-  VarCreate('Nmin90_120', '[kg N/ha]', 0.0, false, Nmin90_120);
-  VarCreate('Nmin0_60', '[kg N/ha]', 0.0, false, Nmin0_60);
-  VarCreate('Nmin0_90', '[kg N/ha]', 0.0, false, Nmin0_90);
+  VarCreate('Nmin0_10', '[kg N/ha]', 0.0, false, Nmin0_10, 'Nitrate in 0-10 cm depth');
+  VarCreate('Nmin0_30', '[kg N/ha]', 0.0, false, Nmin0_30, 'Nitrate in 0-30 cm depth');
+  VarCreate('Nmin30_60', '[kg N/ha]', 0.0, false, Nmin30_60, 'Nitrate in 30-60 cm depth');
+  VarCreate('Nmin60_90', '[kg N/ha]', 0.0, false, Nmin60_90, 'Nitrate in 60-90 cm depth');
+  VarCreate('Nmin90_120', '[kg N/ha]', 0.0, false, Nmin90_120, 'Nitrate in 90-120 cm depth');
+  VarCreate('Nmin0_60', '[kg N/ha]', 0.0, false, Nmin0_60, 'Nitrate in 0-60 cm depth');
+  VarCreate('Nmin0_90', '[kg N/ha]', 0.0, false, Nmin0_90, 'Nitrate in 0-90 cm depth');
   VarCreate('LT_NBal', '[kg N/ha]', 0.0, false, LongTermNBalance,
     'computational N balance of simulation');
   ExternVCreate('Groundwaterconc', '[kg NO3-N/cm H20]', StateField,
@@ -191,6 +236,7 @@ begin
       'Soil nitrate in layer ' + inttostr(i));
     VarCreate('NKonz' + ndx_str(i), '[kg NO3/cm H20]', 0.0, false, NConc[i],
       'Nitrate concentration in layer ' + inttostr(i));
+
     // NConc[i].writetofile := false;
     NConc[i].writetofile := true;
     VarCreate('NFlow' + ndx_str(i), '[kg.d-1]', 0.0, false, NFlow[i],
@@ -200,8 +246,8 @@ begin
 
   for i := 1 to n_comp do
   begin
-    VarCreate('NSink' + ndx_str(i), '[kg N.ha-1.d-1]', 0.0, false, Nsink[i]);
-    VarCreate('NetMin' + ndx_str(i), '[kg N.ha-1.d-1]', 0.0, false, NetMin[i]);
+    VarCreate('NSink' + ndx_str(i), '[kg N.ha-1.d-1]', 0.0, false, Nsink[i], 'Nitrate sink in layer ' + inttostr(i));
+    VarCreate('NetMin' + ndx_str(i), '[kg N.ha-1.d-1]', 0.0, false, NetMin[i], 'Net mineralization in layer ' + inttostr(i));
   end;
 
   ShowWarnings := false;
@@ -253,11 +299,14 @@ begin
 
 end;
 
+/// <summary>Calculates the effective nitrate diffusion coefficient from volumetric water content, in cm2/s.</summary>
+/// <param name="b">Volumetric soil water content, in cm3/cm3.</param>
+/// <returns>Water diffusion coefficient multiplied by tortuosity and water content; negative results are replaced by 1E-9.</returns>
 function Dbf(b: real): real;
-{ Berechnung des effektiven Diffusionskoeffizienten von Nitrat in
-  der Bodenlösung }
+
 const
-  D0 = 1.92E-5; // Diffusionskoeffizient in Wasser [cm2.s-1]
+  /// <summary>Nitrate diffusion coefficient in water, in cm2/s.</summary>
+  D0 = 1.92E-5;
 var
   Db: real;
 begin
@@ -271,64 +320,46 @@ end;
 
 procedure TSoilNitrogen.CalcRatesAndIntegrate;
 
-//
-
-{ ********************************************************************** }
-{ Zweck :   Lösung der eindimensionalen Diffusions-, Konvektionsgleichung
-  zur Verlagerung Nicht-Wechselwirkender Ionen ohne Berücksichtigung
-  von Anionenausschluss oder immobilen Wasser }
-
-{ Parameter :
-
-  Name             Inhalt                          Einheit      Typ
-
-  n_comp           Zahl der Kompartimente           [-]          I
-  dt               Zeitschrittweite                 [d]          I
-  w_rec            Record mit den Wasserdaten                    I
-  ( siehe Typdefinitionen )
-  geo_rec          Record mit den Geometriedaten                 I
-  n_rec            Record mit den Stickstoffdaten                I/O }
-
-{ ********************************************************************** }
-
 var
-  Db_arr, { effektive Diffusionskoeffizienten [cm2/d] }
-  Db_alt, Dh_arr, { Hydrodynamische Dispersionskoeffizienten [cm2/d] }
-  Dh_alt, Ds_arr, { scheinbarer Diffusionskoeffizient [cm2/d] }
-  Ds_alt, avg_Ds, { mittlerer scheinbarer Diffusionskoeffizient }
+  /// <summary>Effective diffusion coefficients at the new time level, in cm2/d.</summary>
+  Db_arr,
+  /// <summary>Old effective diffusion and new hydrodynamic dispersion coefficients, in cm2/d.</summary>
+  Db_alt, Dh_arr,
+  /// <summary>Old hydrodynamic dispersion and new total dispersion coefficients, in cm2/d.</summary>
+  Dh_alt, Ds_arr,
+  /// <summary>Old total dispersion and new interface-average dispersion coefficients, in cm2/d.</summary>
+  Ds_alt, avg_Ds,
+  /// <summary>Old interface dispersion, transport-system right-hand side, weighted factors, matrix diagonals, and previous nitrate amounts.</summary>
   avg_Dsalt, B_vektor, Ds_fact, Ds_alt_fact, Flw_n_fact, flow_alt_fact, lower,
     diag, upper, NitrateAmountOld: TSoilArray;
   result, i: byte;
 
-  function Flow_f(Cond, C_1, C, Abst, FLW: real): real;
-
-  { Funktion zur Berechnung des Flusses durch Diffusion und Massenfluss
-    zwischen zwei Kompartimenten
-
-    Parameter            Bedeutung                    Einheit
-    Cond                 Dispersionskoeffizient       [cm2/d]
-    C                    Konzentration unt.Komp.      [kg/mm]
-    C_1                  Konzentration im
-    oberen        Kompartiment   [kg/mm]
-    Abst                 Abstand der Kompartiment-
-    mittelpunkte                 [cm]
-    FlW                  Wasserfluss                  [mm/d]
-  }
+  /// <summary>Calculates nitrate flux between adjacent compartments by diffusion and mass flow.</summary>
+  /// <param name="Cond">Interface dispersion coefficient, in cm2/d.</param>
+  /// <param name="C_1">Nitrate concentration in the upper compartment, in internal concentration units.</param>
+  /// <param name="C">Nitrate concentration in the lower compartment, in internal concentration units.</param>
+  /// <param name="Abst">Distance between compartment centres, in cm.</param>
+  /// <param name="FLW">Water flux in the soil-water model units.</param>
+  /// <returns>Sum of the concentration-gradient flux and water flux multiplied by mean concentration.</returns>
+  function Flow_f(Cond, C_1, C, Distance, FLW: real): real;
 
   var
-    Diff_flow, { Fluß durch Diffusion }
-    Mass_flow { Fluß durch Massenfluß }
+    /// <summary>Diffusive component of the nitrate flux.</summary>
+    Diff_flow,
+    /// <summary>Advective component of the nitrate flux.</summary>
+    Mass_flow
       : real;
   begin
-    Diff_flow := Cond * (C_1 - C) / Abst;
+    Diff_flow := Cond * (C_1 - C) / Distance;
+
+    /// <summary>Advective component of the nitrate flux.</summary>
     // Mass_flow := FLW * sqrt(C * C_1);
     Mass_flow := FLW * (C + C_1) / 2;
     Flow_f := Diff_flow + Mass_flow;
   end;
 
-  procedure Leitfaehigkeiten;
-
-  { Berechnung der scheinbaren Diffusionskoeffizienten }
+  /// <summary>Calculates old and new effective diffusion and hydrodynamic dispersion coefficients and weighted interface factors.</summary>
+  procedure Conductivities;
 
   var
     i: byte;
@@ -363,11 +394,8 @@ var
     end;
   end;
 
-  procedure obere_Randbedingung;
-
-  { Berechnung der oberen Randbedingung, wobei in der hier dargestellten
-    Form ein bekannter Nitratfluss in das erste Kompartiment angenommen wird,
-    der durch geeignete Werte der Variable Flow[1] berücksichtigt wird }
+  /// <summary>Assembles the upper boundary equation with zero external nitrate inflow and exchange with the second compartment.</summary>
+  procedure upper_boundary;
 
   var
     inflow, outflow: real;
@@ -383,7 +411,8 @@ var
     upper[1] := (-Ds_fact[1] + Flw_n_fact[2]) / WAmount[1].v;
   end;
 
-  procedure Mittelteil;
+  /// <summary>Assembles transport equations for interior soil compartments, including layer source and sink rates.</summary>
+  procedure CalcMiddleLayers;
   var
     i: byte;
     inflow, outflow: real;
@@ -399,9 +428,9 @@ var
       begin
         if ShowWarnings then
 {$IFNDEF NONVISUAL}
-          showmessage('Fehler: WAmount_' + inttostr(i) + ' = 0');
+          showmessage('Error: WAmount_' + inttostr(i) + ' = 0');
 {$ELSE}
-          writeln('Fehler: WAmount_' + inttostr(i) + ' = 0');
+          writeln('Error: WAmount_' + inttostr(i) + ' = 0');
 {$ENDIF}
         if (i < (n_comp - 1)) then
         begin
@@ -410,9 +439,9 @@ var
         end
         else if ShowWarnings then
 {$IFNDEF NONVISUAL}
-          showmessage('Fehler: WAmount_' + inttostr(i) + ' = 0');
+          showmessage('Error: WAmount_' + inttostr(i) + ' = 0');
 {$ELSE}
-          writeln('Fehler: WAmount_' + inttostr(i) + ' = 0')
+          writeln('Error: WAmount_' + inttostr(i) + ' = 0')
 {$ENDIF}
       end;
 
@@ -427,17 +456,16 @@ var
     end;
   end;
 
-  procedure untere_Randbedingung;
-  { Berechnung der unteren Randbedingung, Annahme einer
-    bekannten Konzentration am unteren Rand (Kompartiment[n_comp+1]) }
+  /// <summary>Assembles the lower boundary equation using the known concentration below the active transport domain.</summary>
+  procedure Lower_boundary;
 
   var
     inflow, outflow: real;
     ncomp: integer;
   begin
+    /// <remarks>The active compartment count may change with the groundwater level.</remarks>
     ncomp := act_n_comp;
-    // in case of groundwater number of calculated comps may change
-    // calculation of the flows from known old concentrations
+
     inflow := Flow_f(avg_Dsalt[ncomp - 1], ConcOld[ncomp - 1], ConcOld[ncomp],
       Dist[ncomp - 1], Wflow_old[ncomp]);
     outflow := Flow_f(avg_Dsalt[ncomp], ConcOld[ncomp], ConcOld[ncomp + 1],
@@ -456,18 +484,20 @@ var
 
   end;
 
-  procedure Loesung_Gleichungssystem;
+  /// <summary>Solves the tridiagonal transport system, clips negative concentrations, and assigns groundwater concentrations below the active domain.</summary>
+  procedure Solve_equation_system;
   var
     i: byte;
   begin
-    // Änderung n_comp -> act_n_comp (ckluss)
+
+    /// <remarks>Solve only the active transport compartments.</remarks>
     result := trdiag(false, act_n_comp, 1, lower, diag, upper, B_vektor);
     if result <> 0 then
       if ShowWarnings then
 {$IFNDEF NONVISUAL}
-        showmessage('Fehler Lösung Gleichungsystem NSoil!');
+        showmessage('Error solving the soil nitrate equation system!');
 {$ELSE}
-        writeln('Fehler Lösung Gleichungsystem NSoil!');
+        writeln('Error solving the soil nitrate equation system!');
 {$ENDIF}
     for i := 1 to act_n_comp do
     begin
@@ -476,10 +506,10 @@ var
       begin
         if ShowWarnings then
 {$IFNDEF NONVISUAL}
-          showmessage('Negative N-Konzentration = ' + FloatToStrF(NConc[i].v,
+          showmessage('Negative nitrate concentration = ' + FloatToStrF(NConc[i].v,
             FFgeneral, 6, 3) + ' comp' + inttostr(i));
 {$ELSE}
-          writeln('Negative N-Konzentration = ' + FloatToStrF(NConc[i].v,
+          writeln('Negative nitrate concentration = ' + FloatToStrF(NConc[i].v,
             FFgeneral, 6, 3) + ' comp' + inttostr(i));
 {$ENDIF}
         NConc[i].v := 0.0;
@@ -492,36 +522,39 @@ var
     end;
   end;
 
+  /// <summary>Calculates interface nitrate fluxes from old and new concentrations using the implicit weighting.</summary>
   procedure find_flows;
   var
-    diff_flow_new, diff_flow_alt, mass_flow_new, mass_flow_alt: real;
+    diff_flow_new, diff_flow_old, mass_flow_new, mass_flow_old: real;
     i: byte;
   begin
     for i := 2 to n_comp do
     begin
-      diff_flow_alt := avg_Dsalt[i - 1] * (ConcOld[i - 1] - ConcOld[i])
+      diff_flow_old := avg_Dsalt[i - 1] * (ConcOld[i - 1] - ConcOld[i])
         / Dist[i];
+
       // mass_flow_alt := Wflow_old[i] * sqrt(ConcOld[i] * ConcOld[i - 1]);
-      mass_flow_alt := Wflow_old[i] * (ConcOld[i] + ConcOld[i - 1]) / 2;
+      mass_flow_old := Wflow_old[i] * (ConcOld[i] + ConcOld[i - 1]) / 2;
       diff_flow_new := avg_Ds[i - 1] * (NConc[i - 1].v - NConc[i].v) / Dist[i];
+
       // mass_flow_new := WflowInt_arr[i].v * sqrt(NConc[i - 1].v * NConc[i].v);
       mass_flow_new := Wflowint_arr[i].v * (NConc[i - 1].v + NConc[i].v) / 2;
-      NFlowInt[i] := (diff_flow_alt + mass_flow_alt) * (1 - Imp_factor.v) +
+      NFlowInt[i] := (diff_flow_old + mass_flow_old) * (1 - Imp_factor.v) +
         (diff_flow_new + mass_flow_new) * Imp_factor.v;
     end;
-    diff_flow_alt := avg_Dsalt[n_comp] * (ConcOld[n_comp] - ConcOld[n_comp + 1])
+    diff_flow_old := avg_Dsalt[n_comp] * (ConcOld[n_comp] - ConcOld[n_comp + 1])
       / Dist[n_comp];
-    mass_flow_alt := Wflow_old[n_comp + 1] *
+    mass_flow_old := Wflow_old[n_comp + 1] *
       (ConcOld[n_comp + 1] + ConcOld[n_comp]) / 2;
-    NFlowInt[n_comp + 1] := (diff_flow_alt + mass_flow_alt);
+    NFlowInt[n_comp + 1] := (diff_flow_old + mass_flow_old);
   end;
 
+  /// <summary>Updates nitrate amounts, accumulated fluxes, leaching, uptake, mineralization, and computational balances.</summary>
   procedure UpdateDailySums;
-  // updating daily sums of flows during iteration calcrates and integrate
 
   var
     i: byte;
-    NewAmount, SumNminOld, DiffNmin, // Bilanz,
+    NewAmount, SumNminOld, DiffNmin,
     SumUptake, SumMinera: real;
     Net_flow: TSoilArray;
     ncomp: integer;
@@ -531,8 +564,9 @@ var
     SumNminOld := SumNmin.v;
     for i := 1 to n_comp do
     begin
+      /// <remarks>Convert solution concentration to nitrate amount using the new layer water depth.</remarks>
       NewAmount := NConc[i].v * theta_new[i] * Thick[i];
-      // new nitrate amount from concentration and water amount
+
       if NewAmount < 0.0 then
         NewAmount := 0.0;
       Net_flow[i] := (NitrateAmount[i].v - NewAmount) / dt.v +
@@ -554,8 +588,10 @@ var
     for i := 1 to n_comp + 1 do
       NFlow[i].v := NFlow[i].v + NFlowInt[i] * dt.v;
 
-    DiffNmin := (SumNmin.v - SumNminOld); // change rate of soil mineral nitrate
-    // Leaching can be calculated for only certain time periods hk 2023/08/18
+    /// <remarks>Change in nitrate amount within the balance profile during this internal step.</remarks>
+    DiffNmin := (SumNmin.v - SumNminOld);
+
+    /// <remarks>Optionally restrict leaching accumulation to the selected time interval.</remarks>
     if lowercase(SelectedLeachingPeriod.Option) = 'true' then
     begin
       if (GlobTime.v >= LeachingStartDay.v) and (GlobTime.v < LeachingEndDay.v)
@@ -570,12 +606,13 @@ var
         NFlowInt[trunc(bil_nr.v) + 1] * dt.v;
     CumSumUptake.C := CumSumUptake.C + SumUptake * dt.v;
     CumSumMinera.C := CumSumMinera.C + SumMinera * dt.v;
+
     // LongTermNBalance.v := DiffNmin + SumNitrateLeaching.v - CumSumUptake - CumSumMinera;
     // DiffNmin := (SumNmin.v - NminOld);
     DailyNBalance.C := DailyNBalance.C + DiffNmin + NFlowInt
       [trunc(bil_nr.v) + 1] * dt.v - SumUptake * dt.v - SumMinera * dt.v;
 
-    // einstellen einer gleichen Konzentration
+    /// <remarks>Set equal concentrations across the lower boundary after updating the balance.</remarks>
     NConc[ncomp + 1].v := NConc[ncomp].v;
     NitrateAmount[ncomp + 1].v := NConc[ncomp + 1].v * WAmount[ncomp + 1].v;
 
@@ -590,11 +627,11 @@ begin
 
   inherited CalcRatesAndIntegrate;
 
-  Leitfaehigkeiten;
-  obere_Randbedingung;
-  Mittelteil;
-  untere_Randbedingung;
-  Loesung_Gleichungssystem;
+  Conductivities;
+  upper_boundary;
+  CalcMiddleLayers;
+  Lower_boundary;
+  Solve_equation_system;
   find_flows;
   UpdateDailySums;
 
@@ -604,7 +641,7 @@ procedure TSoilNitrogen.CalcRates;
 var
   i: integer;
 begin
-  // set values which are derived from cumulation during internal iteration to zero
+  /// <remarks>Reset quantities accumulated during internal transport steps.</remarks>
   for i := 1 to n_comp + 1 do
     NFlow[i].v := 0.0;
   NitrateLeachingRate.v := 0.0;
@@ -624,6 +661,7 @@ procedure TSoilNitrogen.Integrate;
 var
   NextINI, NextStateINI: TMyIniFile;
   // ndx_str : string;
+
   i: integer;
 begin
   update_Nmin_Values;
@@ -638,11 +676,13 @@ begin
     NextINI := TMyIniFile.create
       (GlobMod.IniFileNames[GlobMod.IniFileNames.IndexOf
       (GlobMod.ActIniFile.FileName) + 1], TEncoding.UTF8);
+
     // NextINI.Init(GlobMod.IniFileNames[GlobMod.IniFileNames.IndexOf
     // (GlobMod.ActIniFile.FileName) + 1]);
     NextStateINI := TMyIniFile.create(NextINI.ReadString('FileNames',
       'StateIniFN', ''), TEncoding.UTF8);
     // NextStateINI.Init(NextINI.ReadString('FileNames', 'StateIniFN', ''));
+
     for i := 1 to n_comp + 1 do
     begin
       NextStateINI.WriteString(self.Name, 'Nmin' + ndx_str(i),

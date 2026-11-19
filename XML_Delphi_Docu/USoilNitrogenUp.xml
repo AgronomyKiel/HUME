@@ -1,34 +1,61 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <namespace name="USoilNitrogenUp" platform="Win32">
-  <const name="Max_Root_Index" type="Integer" file="USoilNitrogenUp.pas" line="10">
+  <const name="Max_Root_Index" type="Integer" file="USoilNitrogenUp.pas" line="11">
+    <devnotes>
+       <summary>Maximum soil-layer index used for root nitrate uptake calculations.</summary>
+    </devnotes>
     <value>
       $14
     </value>
   </const>
-  <class name="TSoilNitrogenUp" file="USoilNitrogenUp.pas" line="13">
+  <class name="TSoilNitrogenUp" file="USoilNitrogenUp.pas" line="17">
+    <devnotes>
+       <summary>Soil nitrate transport and root uptake model in which actual uptake is limited by plant demand and maximum nitrate supply.</summary>
+       <remarks>Extends TSoilNitrogen and requires plant demand and root-distribution inputs. Maximum supply uses the quasi-steady single-root transport approach.</remarks>
+    </devnotes>
     <ancestor name="TSoilNitrogen" namespace="USoilNitrogen">
       <methodref name="InitSoilNVectors" visibility="protected">
       </methodref>
-      <methodref name="CreateAll" visibility="public" procflags="override" />
-      <methodref name="Init" visibility="public" procflags="override" />
-      <methodref name="CalcRatesAndIntegrate" visibility="public" procflags="override" />
-      <methodref name="CalcRates" visibility="public" procflags="override" />
-      <methodref name="Integrate" visibility="public" procflags="override" />
-      <methodref name="update_Nmin_Values" visibility="public" />
-      <propertyref name="Var_Nmin0_10" visibility="published" />
-      <propertyref name="Var_Nmin0_30" visibility="published" />
-      <propertyref name="Var_Nmin30_60" visibility="published" />
-      <propertyref name="Var_Nmin60_90" visibility="published" />
-      <propertyref name="Var_Nmin90_120" visibility="published" />
-      <propertyref name="Var_Nmin0_60" visibility="published" />
-      <propertyref name="Var_Nmin0_90" visibility="published" />
-      <propertyref name="Var_SumNmin" visibility="published" />
-      <propertyref name="Var_SumDrain" visibility="published" />
-      <propertyref name="Var_DrainageNFlow" visibility="published" />
-      <propertyref name="Var_NBalance" visibility="published" />
-      <propertyref name="Var_DailyNBalance" visibility="published" />
-      <propertyref name="Par_Imp_factor" visibility="published" />
-      <propertyref name="Opt_TransferNMinsToNextINI" visibility="published" />
+      <methodref name="CreateAll" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="Init" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="CalcRatesAndIntegrate" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="CalcRates" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="Integrate" visibility="public" procflags="override">
+      </methodref>
+      <methodref name="update_Nmin_Values" visibility="public">
+      </methodref>
+      <propertyref name="Var_Nmin0_10" visibility="published">
+      </propertyref>
+      <propertyref name="Var_Nmin0_30" visibility="published">
+      </propertyref>
+      <propertyref name="Var_Nmin30_60" visibility="published">
+      </propertyref>
+      <propertyref name="Var_Nmin60_90" visibility="published">
+      </propertyref>
+      <propertyref name="Var_Nmin90_120" visibility="published">
+      </propertyref>
+      <propertyref name="Var_Nmin0_60" visibility="published">
+      </propertyref>
+      <propertyref name="Var_Nmin0_90" visibility="published">
+      </propertyref>
+      <propertyref name="Var_SumNmin" visibility="published">
+      </propertyref>
+      <propertyref name="Var_SumDrain" visibility="published">
+      </propertyref>
+      <propertyref name="Var_DrainageNFlow" visibility="published">
+      </propertyref>
+      <propertyref name="Var_NBalance" visibility="published">
+      </propertyref>
+      <propertyref name="Var_DailyNBalance" visibility="published">
+      </propertyref>
+      <propertyref name="Par_Imp_factor" visibility="published">
+      </propertyref>
+      <propertyref name="Opt_TransferNMinsToNextINI" visibility="published">
+      </propertyref>
       <ancestor name="TSoilWaterModelR" namespace="URootedSoil">
         <methodref name="setWithRoots" visibility="private">
         </methodref>
@@ -1543,112 +1570,182 @@
       </ancestor>
     </ancestor>
     <members>
-      <field name="fplantNDemand" type="Double" visibility="private" size="8" offset="24528" file="USoilNitrogenUp.pas" line="16" />
-      <procedure name="SetPlantModel" visibility="protected" procflags="override" file="USoilNitrogenUp.pas" line="19">
+      <field name="fplantNDemand" type="Double" visibility="private" size="8" offset="24528" file="USoilNitrogenUp.pas" line="21">
+        <devnotes>
+           <summary>Non-negative plant nitrogen demand converted to kg N/(ha d).</summary>
+        </devnotes>
+      </field>
+      <procedure name="SetPlantModel" visibility="protected" procflags="override" file="USoilNitrogenUp.pas" line="26">
+        <devnotes>
+           <summary>Links plant nitrogen demand and, when present, total and effective root-length inputs to the coupled plant model.</summary>
+           <param name="NewPlantModel">Plant model to link through the inherited coupling mechanism.</param>
+        </devnotes>
         <parameters>
           <parameter name="NewPlantModel" type="TAbstractPlant" />
         </parameters>
       </procedure>
-      <field name="ActNUptake" type="TVar" visibility="public" size="4" offset="24536" file="USoilNitrogenUp.pas" line="23">
+      <field name="ActNUptake" type="TVar" visibility="public" size="4" offset="24536" file="USoilNitrogenUp.pas" line="31">
         <devnotes>
-           <summary>Actual N uptake rate averaged over the day.</summary>
+           <summary>Actual nitrate uptake accumulated over internal steps using dt, reported in kg N/(ha d).</summary>
         </devnotes>
       </field>
-      <field name="MaxNUptake" type="TVar" visibility="public" size="4" offset="24540" file="USoilNitrogenUp.pas" line="25">
+      <field name="MaxNUptake" type="TVar" visibility="public" size="4" offset="24540" file="USoilNitrogenUp.pas" line="34">
         <devnotes>
-           <summary>Maximum N uptake rate averaged over the day.</summary>
+           <summary>Maximum nitrate uptake accumulated over internal steps using dt, reported in kg N/(ha d).</summary>
         </devnotes>
       </field>
-      <field name="MassFlow" type="TVar" visibility="public" size="4" offset="24544" file="USoilNitrogenUp.pas" line="27">
+      <field name="MassFlow" type="TVar" visibility="public" size="4" offset="24544" file="USoilNitrogenUp.pas" line="37">
         <devnotes>
-           <summary>Sum of apparent mass flow transport to roots [kg N/ha/d].</summary>
+           <summary>Apparent nitrate transport to roots by water uptake, accumulated over internal steps and reported in kg N/(ha d).</summary>
         </devnotes>
       </field>
-      <field name="NUptake" type="TSoilVarArray" visibility="public" size="212" offset="24548" file="USoilNitrogenUp.pas" line="29">
+      <field name="NUptake" type="TSoilVarArray" visibility="public" size="212" offset="24548" file="USoilNitrogenUp.pas" line="40">
         <devnotes>
-           <summary>N uptake per day [kg N/ha/d].</summary>
+           <summary>Layer-specific nitrate uptake sinks, in kg N/(ha d); uptake is stored as a negative value.</summary>
         </devnotes>
       </field>
-      <field name="WInflux" type="TSoilArray" visibility="public" size="416" offset="24760" file="USoilNitrogenUp.pas" line="31">
+      <field name="WInflux" type="TSoilArray" visibility="public" size="416" offset="24760" file="USoilNitrogenUp.pas" line="44">
         <devnotes>
-           <summary>Water influx per unit root length [cm3/cm/d].</summary>
+           <summary>Layer-specific water influx per unit root length in internal area-scaled units used by Imax_f.</summary>
+           <remarks>The root length denominator includes 1E8 cm2/ha; Imax_f multiplies this input by 1E8 to recover physical water influx per unit root length.</remarks>
         </devnotes>
       </field>
-      <field name="NInflux_WL" type="TVar" visibility="public" size="4" offset="25176" file="USoilNitrogenUp.pas" line="33">
+      <field name="NInflux_WL" type="TVar" visibility="public" size="4" offset="25176" file="USoilNitrogenUp.pas" line="48">
         <devnotes>
-           <summary>Nitrate influx per unit root length.</summary>
+           <summary>Nitrate influx normalized by total root length; the calculation converts uptake to mol N/(cm root s).</summary>
+           <remarks>The registered unit label is kg/(cm d), which differs from the conversion performed by the current calculation.</remarks>
         </devnotes>
       </field>
-      <field name="NInflux_WL_eff" type="TVar" visibility="public" size="4" offset="25180" file="USoilNitrogenUp.pas" line="35">
+      <field name="NInflux_WL_eff" type="TVar" visibility="public" size="4" offset="25180" file="USoilNitrogenUp.pas" line="52">
         <devnotes>
-           <summary>Nitrate influx per unit effective root length.</summary>
+           <summary>Nitrate influx normalized by effective root length; the calculation converts uptake to mol N/(cm root s).</summary>
+           <remarks>The registered unit label is kg/(cm d), which differs from the conversion performed by the current calculation.</remarks>
         </devnotes>
       </field>
-      <field name="SumSoilNUptake" type="TState" visibility="public" size="4" offset="25184" file="USoilNitrogenUp.pas" line="38">
+      <field name="SumSoilNUptake" type="TState" visibility="public" size="4" offset="25184" file="USoilNitrogenUp.pas" line="55">
         <devnotes>
-           <summary>Average N uptake rate per day for plotting as a state variable.</summary>
+           <summary>Cumulative soil nitrogen uptake state, in kg N/ha; its rate is assigned from ActNUptake.</summary>
         </devnotes>
       </field>
-      <field name="SoilNUptakeGrowth" type="TState" visibility="public" size="4" offset="25188" file="USoilNitrogenUp.pas" line="40">
+      <field name="SoilNUptakeGrowth" type="TState" visibility="public" size="4" offset="25188" file="USoilNitrogenUp.pas" line="58">
         <devnotes>
-           <summary>Average N uptake rate per day in units of g/m2/d.</summary>
+           <summary>Soil nitrogen uptake state whose rate is assigned in g N/(m2 d) from ActNUptake divided by 10.</summary>
         </devnotes>
       </field>
-      <field name="SumPlantNDemand" type="TState" visibility="public" size="4" offset="25192" file="USoilNitrogenUp.pas" line="42">
+      <field name="SumPlantNDemand" type="TState" visibility="public" size="4" offset="25192" file="USoilNitrogenUp.pas" line="61">
         <devnotes>
-           <summary>Total sum of plant nitrogen demand.</summary>
+           <summary>Cumulative plant nitrogen demand state, in kg N/ha.</summary>
         </devnotes>
       </field>
-      <field name="Cmin" type="TPar" visibility="public" size="4" offset="25196" file="USoilNitrogenUp.pas" line="45">
+      <field name="Cmin" type="TPar" visibility="public" size="4" offset="25196" file="USoilNitrogenUp.pas" line="64">
         <devnotes>
-           <summary>Minimum nitrate concentration subtracted from the actual concentration [kg/cm water].</summary>
+           <summary>Minimum nitrate concentration that roots can deplete to, expressed in the internal units used by NConc.</summary>
         </devnotes>
       </field>
-      <field name="not_av_N" type="TPar" visibility="public" size="4" offset="25200" file="USoilNitrogenUp.pas" line="47">
+      <field name="not_av_N" type="TPar" visibility="public" size="4" offset="25200" file="USoilNitrogenUp.pas" line="67">
         <devnotes>
-           <summary>Plant unavailable share of nitrate [kg N/10 cm].</summary>
+           <summary>Unavailable nitrate amount subtracted through the layer concentration threshold; registered in kg N per 10 cm soil layer.</summary>
         </devnotes>
       </field>
-      <field name="Max_Wl_Nuptake" type="TPar" visibility="public" size="4" offset="25204" file="USoilNitrogenUp.pas" line="49">
+      <field name="Max_Wl_Nuptake" type="TPar" visibility="public" size="4" offset="25204" file="USoilNitrogenUp.pas" line="70">
         <devnotes>
-           <summary>Maximum value for N uptake per unit root length [kg/cm/d].</summary>
+           <summary>Physiological upper limit on nitrate influx per unit root length, applied to the result of Imax_f.</summary>
         </devnotes>
       </field>
-      <field name="Ex_PlantNDemand" type="TExternV" visibility="public" size="4" offset="25208" file="USoilNitrogenUp.pas" line="52">
+      <field name="Ex_PlantNDemand" type="TExternV" visibility="public" size="4" offset="25208" file="USoilNitrogenUp.pas" line="74">
         <devnotes>
-           <summary>Plant N demand [g N/m/d].</summary>
+           <summary>External plant nitrogen demand, in g N/(m2 d).</summary>
         </devnotes>
       </field>
-      <field name="SRL" type="TExternV" visibility="public" size="4" offset="25212" file="USoilNitrogenUp.pas" line="54">
+      <field name="SRL" type="TExternV" visibility="public" size="4" offset="25212" file="USoilNitrogenUp.pas" line="77">
         <devnotes>
-           <summary>Sum of root length [cm/cm2].</summary>
+           <summary>Total root length per unit ground area, in cm root/cm2 soil.</summary>
         </devnotes>
       </field>
-      <field name="SRL_eff" type="TExternV" visibility="public" size="4" offset="25216" file="USoilNitrogenUp.pas" line="56">
+      <field name="SRL_eff" type="TExternV" visibility="public" size="4" offset="25216" file="USoilNitrogenUp.pas" line="80">
         <devnotes>
-           <summary>Effective sum of root length [cm/cm2].</summary>
+           <summary>Effective root length per unit ground area, in cm root/cm2 soil.</summary>
         </devnotes>
       </field>
-      <procedure name="CreateAll" visibility="public" procflags="override" file="USoilNitrogenUp.pas" line="58">
+      <procedure name="CreateAll" visibility="public" procflags="override" file="USoilNitrogenUp.pas" line="83">
+        <devnotes>
+           <remarks>Convert external demand from g N/(m2 d) to kg N/(ha d), excluding negative demand.</remarks>
+        </devnotes>
       </procedure>
-      <procedure name="CalcRatesAndIntegrate" visibility="public" procflags="override" file="USoilNitrogenUp.pas" line="59">
-      </procedure>
-      <procedure name="CalcRates" visibility="public" procflags="override" file="USoilNitrogenUp.pas" line="60">
+      <procedure name="CalcRatesAndIntegrate" visibility="public" procflags="override" file="USoilNitrogenUp.pas" line="85">
         <devnotes>
-           Sum of maximum N uptake rate in the internal time step
+           <summary>Calculates layer uptake capacities, allocates demand, passes uptake sinks to nitrate transport, and accumulates uptake outputs.</summary>
         </devnotes>
       </procedure>
-      <property name="Par_Cmin" visibility="published" read="Cmin" write="Cmin" type="TPar" file="USoilNitrogenUp.pas" line="64" />
-      <property name="Par_Not_av_N" visibility="published" read="not_av_N" write="not_av_N" type="TPar" file="USoilNitrogenUp.pas" line="65" />
-      <property name="Var_MaxNuptake" visibility="published" read="MaxNUptake" write="MaxNUptake" type="TVar" file="USoilNitrogenUp.pas" line="67" />
-      <property name="Var_ActNUptake" visibility="published" read="ActNUptake" write="ActNUptake" type="TVar" file="USoilNitrogenUp.pas" line="68" />
-      <property name="Var_Massflow" visibility="published" read="MassFlow" write="MassFlow" type="TVar" file="USoilNitrogenUp.pas" line="69" />
-      <property name="Ex_PlantNUptake" visibility="published" read="Ex_PlantNDemand" write="Ex_PlantNDemand" type="TExternV" file="USoilNitrogenUp.pas" line="71" />
-      <property name="Ex_SRL" visibility="published" read="SRL" write="SRL" type="TExternV" file="USoilNitrogenUp.pas" line="73" />
-      <property name="Ex_SRL_eff" visibility="published" read="SRL_eff" write="SRL_eff" type="TExternV" file="USoilNitrogenUp.pas" line="74" />
-      <property name="St_SumSoilNUptake" visibility="published" read="SumSoilNUptake" write="SumSoilNUptake" type="TState" file="USoilNitrogenUp.pas" line="76" />
+      <procedure name="CalcRates" visibility="public" procflags="override" file="USoilNitrogenUp.pas" line="87">
+        <devnotes>
+           <remarks>Calculate maximum uptake across soil layers using the quasi-steady single-root approach of Baldwin/Kage.</remarks>
+           <remarks>The first layer is used to test whether roots are present.</remarks>
+           <remarks>Sum nitrate carried toward roots by water uptake; time integration follows below.</remarks>
+           <remarks>Divide layer water uptake by root length per hectare; 1E8 converts cm2 to ha in the root-length denominator.</remarks>
+           <remarks>Apply the physiological influx cap, including when large concentration changes follow fertilizer events.</remarks>
+           <remarks>Convert influx per unit root length to layer uptake using root length density, layer thickness, and 1E8 cm2/ha.</remarks>
+           <remarks>If uptake capacity exceeds the stored layer nitrate amount, replace it with half that amount as an empirical availability safeguard.</remarks>
+           <remarks>The current safeguard does not multiply or divide the comparison by dt.</remarks>
+           <remarks>The disabled alternative below attempted to limit uptake to available layer nitrogen.</remarks>
+           <remarks>Sum the safeguarded layer capacities directly; the disabled alternative could produce an incorrect total.</remarks>
+           <remarks>Allocate actual uptake among layers according to maximum layer supply.</remarks>
+           <remarks>When supply meets demand, scale layer uptake capacities to plant demand.</remarks>
+           <remarks>The disabled alternative limits layer uptake to available nitrate.</remarks>
+           <remarks>No nitrate uptake is assigned when roots are absent.</remarks>
+           <remarks>Accumulate actual uptake over internal steps for the reported uptake variable.</remarks>
+           <remarks>Use the accumulated uptake output as the rate of the cumulative uptake state.</remarks>
+           <remarks>Convert the uptake rate from kg N/(ha d) to g N/(m2 d) for the growth-related uptake state.</remarks>
+           <remarks>Convert kg N/(ha d) to mol N/(cm root s) using 1000 g/kg, 86400 s/d, 14 g/mol N, and 1E8 cm2/ha.</remarks>
+        </devnotes>
+      </procedure>
+      <property name="Par_Cmin" visibility="published" read="Cmin" write="Cmin" type="TPar" file="USoilNitrogenUp.pas" line="92">
+        <devnotes>
+           <summary>Published access to the minimum available nitrate concentration.</summary>
+        </devnotes>
+      </property>
+      <property name="Par_Not_av_N" visibility="published" read="not_av_N" write="not_av_N" type="TPar" file="USoilNitrogenUp.pas" line="94">
+        <devnotes>
+           <summary>Published access to the unavailable nitrate amount per soil layer.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_MaxNuptake" visibility="published" read="MaxNUptake" write="MaxNUptake" type="TVar" file="USoilNitrogenUp.pas" line="97">
+        <devnotes>
+           <summary>Published access to the maximum nitrate uptake output.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_ActNUptake" visibility="published" read="ActNUptake" write="ActNUptake" type="TVar" file="USoilNitrogenUp.pas" line="99">
+        <devnotes>
+           <summary>Published access to the actual nitrate uptake output.</summary>
+        </devnotes>
+      </property>
+      <property name="Var_Massflow" visibility="published" read="MassFlow" write="MassFlow" type="TVar" file="USoilNitrogenUp.pas" line="101">
+        <devnotes>
+           <summary>Published access to apparent mass-flow transport of nitrate to roots.</summary>
+        </devnotes>
+      </property>
+      <property name="Ex_PlantNUptake" visibility="published" read="Ex_PlantNDemand" write="Ex_PlantNDemand" type="TExternV" file="USoilNitrogenUp.pas" line="104">
+        <devnotes>
+           <summary>Published access to the external plant nitrogen-demand input.</summary>
+        </devnotes>
+      </property>
+      <property name="Ex_SRL" visibility="published" read="SRL" write="SRL" type="TExternV" file="USoilNitrogenUp.pas" line="107">
+        <devnotes>
+           <summary>Published access to total root length per unit ground area.</summary>
+        </devnotes>
+      </property>
+      <property name="Ex_SRL_eff" visibility="published" read="SRL_eff" write="SRL_eff" type="TExternV" file="USoilNitrogenUp.pas" line="109">
+        <devnotes>
+           <summary>Published access to effective root length per unit ground area.</summary>
+        </devnotes>
+      </property>
+      <property name="St_SumSoilNUptake" visibility="published" read="SumSoilNUptake" write="SumSoilNUptake" type="TState" file="USoilNitrogenUp.pas" line="112">
+        <devnotes>
+           <summary>Published access to the cumulative soil nitrogen uptake state.</summary>
+        </devnotes>
+      </property>
     </members>
   </class>
-  <procedure name="Register" visibility="public" file="USoilNitrogenUp.pas" line="315">
+  <procedure name="Register" visibility="public" file="USoilNitrogenUp.pas" line="349">
   </procedure>
 </namespace>
